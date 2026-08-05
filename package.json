@@ -1,0 +1,16 @@
+{
+  "name": "ashee-ecosystem",
+  "private": true,
+  "scripts": {
+    "build": "turbo run build",
+    "dev": "turbo run dev",
+    "lint": "turbo run lint",
+    "check": "biome check ."
+  },
+  "devDependencies": {
+    "@biomejs/biome": "latest",
+    "turbo": "latest",
+    "typescript": "^5.5.0"
+  },
+  "packageManager": "pnpm@11.19.0"
+}

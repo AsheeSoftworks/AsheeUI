@@ -1,0 +1,8 @@
+{
+  "name": "@ashee/icons",
+  "version": "1.0.0",
+  "main": "index.ts",
+  "dependencies": {
+    "react-icons": "^5.0.0"
+  }
+}

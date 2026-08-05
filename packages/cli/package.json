@@ -1,0 +1,7 @@
+{
+  "name": "@ashee/cli",
+  "version": "1.0.0",
+  "bin": {
+    "ashee": "./bin/index.js"
+  }
+}

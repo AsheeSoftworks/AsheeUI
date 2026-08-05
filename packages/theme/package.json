@@ -1,0 +1,18 @@
+{
+  "name": "@ashee/theme",
+  "version": "1.0.0",
+  "main": "./src/index.ts",
+  "dependencies": {
+    "@ashee/config": "workspace:*",
+    "react": "^18.3.1",
+    "tailwindcss": "^4.3.3"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.31"
+  },
+  "exports": {
+    ".": "./dist/index.js",
+    "./react": "./dist/react.js",
+    "./base.css": "./dist/base.css"
+  }
+}

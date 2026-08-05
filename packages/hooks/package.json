@@ -1,0 +1,8 @@
+{
+  "name": "@ashee/hooks",
+  "version": "1.0.0",
+  "main": "index.ts",
+  "peerDependencies": {
+    "react": "^18.0.0 || ^19.0.0"
+  }
+}

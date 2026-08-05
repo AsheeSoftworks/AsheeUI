@@ -1,0 +1,64 @@
+@theme inline {
+  --color-background: var(--ashee-background);
+  --color-foreground: var(--ashee-foreground);
+  --color-primary: var(--ashee-primary);
+  --color-secondary: var(--ashee-secondary);
+  --color-border: var(--ashee-border);
+  --color-danger: var(--ashee-danger);
+  --color-warning: var(--ashee-warning);
+  --color-success: var(--ashee-success);
+  --scrollbar-thumb: var(--ashee-scrollbar-thumb);
+  --scrollbar-track: var(--ashee-scrollbar-track);
+}
+
+:root {
+  --ashee-background: #f0f7ff;
+  --ashee-foreground: #1e3a8a;
+  --ashee-primary: #2563eb;
+  --ashee-secondary: #ffffff;
+  --ashee-border: #cbd5e1;
+  --ashee-danger: #dc2626;
+  --ashee-warning: #d97706;
+  --ashee-success: #16a34a;
+  --ashee-scrollbar-thumb: #3b82f6;
+  --ashee-scrollbar-track: transparent;
+}
+
+.theme-dark {
+  --ashee-background: #0f172a;
+  --ashee-foreground: #f1f5f9;
+  --ashee-primary: #3b82f6;
+  --ashee-secondary: #1d3145;
+  --ashee-border: #374e65;
+  --ashee-danger: #ef4444;
+  --ashee-warning: #f59e0b;
+  --ashee-success: #22c55e;
+  --ashee-scrollbar-thumb: #1e40af;
+  --ashee-scrollbar-track: #1f2937;
+}
+
+.theme-white {
+  --ashee-background: #ffffff;
+  --ashee-foreground: #000000;
+  --ashee-primary: #2563eb;
+  --ashee-secondary: #ffffff;
+  --ashee-border: #d5d5d5;
+  --ashee-danger: #dc2626;
+  --ashee-warning: #d97706;
+  --ashee-success: #16a34a;
+  --ashee-scrollbar-thumb: #3b82f6;
+  --ashee-scrollbar-track: transparent;
+}
+
+.theme-black {
+  --ashee-background: #111111;
+  --ashee-foreground: #ffffff;
+  --ashee-primary: #005bc4;
+  --ashee-secondary: #1a1a1a;
+  --ashee-border: #2a2a2a;
+  --ashee-danger: #ef4444;
+  --ashee-warning: #f59e0b;
+  --ashee-success: #22c55e;
+  --ashee-scrollbar-thumb: #1e40af;
+  --ashee-scrollbar-track: #1f293700;
+}

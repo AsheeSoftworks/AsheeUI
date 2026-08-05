@@ -1,0 +1,16 @@
+{
+  "name": "@ashee/ui",
+  "version": "1.0.0",
+  "main": "./src/index.ts",
+  "dependencies": {
+    "@ashee/theme": "workspace:*",
+    "@ashee/config": "workspace:*",
+    "@ashee/motion": "workspace:*",
+    "@ashee/icons": "workspace:*",
+    "@ashee/hooks": "workspace:*",
+    "@ashee/utils": "workspace:*"
+  },
+  "peerDependencies": {
+    "react": "^18.0.0 || ^19.0.0"
+  }
+}

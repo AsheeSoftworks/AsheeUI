@@ -1,0 +1,9 @@
+{
+  "name": "@ashee/sections",
+  "private": true,
+  "version": "1.0.0",
+  "main": "index.ts",
+  "dependencies": {
+    "@ashee/ui": "workspace:*"
+  }
+}
