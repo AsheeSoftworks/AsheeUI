@@ -10,5 +10,6 @@ export const defaultConfig: Config = {
     radius: defaultRadiusConfig,
     shadow: defaultShadowConfig,
     typography: defaultTypographyConfig,
+    defaultTheme: "system",
   },
 } as const;

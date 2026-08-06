@@ -1,1 +1,2 @@
-export const cx = (...classes: string[]) => classes.filter(Boolean.join(" "));
+export { mergeObject } from "./merge-object";
+export type { DeepPartial } from "./types";

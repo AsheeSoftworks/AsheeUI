@@ -1,11 +1,11 @@
 export type { Config, ExternalConfig } from "./config";
 export { defaultConfig } from "./default-config";
 export { defineConfig } from "./define-config";
-export { mergeConfig } from "./merge-config";
 export type {
-  ColorConfig,
-  ColorVariant,
+  AsheeThemeRegistry,
   ThemeName,
+  ColorVariant,
+  ColorConfig,
 } from "./theme/color/color-config";
 export { defaultColorConfig } from "./theme/color/default-color";
 export { defaultShadowConfig } from "./theme/shadow/default-shadow";

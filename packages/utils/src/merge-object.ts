@@ -1,10 +1,10 @@
-import type { DeepPartial } from "./config";
+import type { DeepPartial } from "./types";
 
 function isPlainObject(item: unknown): item is Record<string, unknown> {
   return typeof item === "object" && item !== null && !Array.isArray(item);
 }
 
-export function mergeConfig<T extends Record<string, unknown>>(
+export function mergeObject<T extends Record<string, unknown>>(
   defaults: T,
   userConfig?: DeepPartial<T>,
 ): T {
@@ -23,7 +23,7 @@ export function mergeConfig<T extends Record<string, unknown>>(
     if (userValue === undefined) continue;
 
     if (isPlainObject(defaultValue) && isPlainObject(userValue)) {
-      output[key] = mergeConfig(defaultValue, userValue);
+      output[key] = mergeObject(defaultValue, userValue);
     } else {
       output[key] = userValue;
     }

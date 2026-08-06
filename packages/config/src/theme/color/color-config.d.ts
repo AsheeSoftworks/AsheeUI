@@ -1,4 +1,11 @@
-export type ThemeName = "light" | "dark" | "white" | "black";
+export interface AsheeThemeRegistry {
+  light: true;
+  dark: true;
+  white: true;
+  black: true;
+}
+
+export type ThemeName = keyof AsheeThemeRegistry;
 
 export interface ColorVariant {
   background: string;
