@@ -1,4 +1,5 @@
 import type { DeepPartial } from "@ashee/utils";
+import type { ComponentsConfig } from "./components/components";
 import type {
   ColorConfig,
   ColorVariant,
@@ -7,6 +8,7 @@ import type {
 import type { ShadowConfig } from "./theme/shadow/shadow-config";
 import type { TypographyConfig } from "./theme/typography/typography-config";
 import type { RadiusConfig } from "./token/radius/radius-config";
+import type { SpacingConfig } from "./token/spacing/spacing";
 
 export type { DeepPartial } from "@ashee/utils";
 
@@ -26,8 +28,10 @@ export type Config = {
     radius: RadiusConfig;
     typography: TypographyConfig;
     shadow: ShadowConfig;
+    spacing: SpacingConfig;
     defaultTheme?: ThemeName | "system";
   };
+  components?: ComponentsConfig;
 };
 
 export type ExternalConfig = DeepPartial<Omit<Config, "theme">> & {

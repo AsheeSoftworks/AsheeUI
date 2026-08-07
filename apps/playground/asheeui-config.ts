@@ -20,4 +20,9 @@ export default defineConfig({
       },
     },
   },
+  components: {
+    container: { defaultMaxWidth: "lg", padding: "md", center: true },
+    flex: { direction: "row", align: "stretch", justify: "start", gap: "md" },
+    grid: { columns: 12, gap: "md" },
+  },
 });

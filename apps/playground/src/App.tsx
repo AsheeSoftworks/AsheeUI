@@ -1,9 +1,20 @@
 import { useSettings } from "@ashee/settings";
 import { useTheme } from "@ashee/theme/useTheme";
+import {
+  Button,
+  Container,
+  Flex,
+  Grid,
+  Input,
+  TextArea,
+  useAsheeConfig,
+} from "@ashee/ui";
 
 function AppInner() {
   const { resolvedTheme } = useTheme();
   const { settings, update } = useSettings();
+  const config = useAsheeConfig();
+  console.log(config.theme.radius);
 
   return (
     <main className="min-h-screen bg-background text-foreground">
@@ -16,7 +27,6 @@ function AppInner() {
             Workspace packages are wired up
           </h1>
         </div>
-
         <div className="grid gap-4 md:grid-cols-2">
           <div className="rounded-xl border border-slate-800 bg-slate-950/70 p-4">
             <p className="text-sm text-slate-400">Current theme</p>
@@ -29,13 +39,34 @@ function AppInner() {
             </p>
           </div>
         </div>
-
         <div className="rounded-lg shadow-md">
           <p className="text-xl leading-tall tracking-wide font-sans">
             Testing design tokens
           </p>
         </div>
+        <Container>
+          <Flex justify="between">
+            <Grid columns={3}>.................</Grid>
+          </Flex>
+        </Container>
+        <Button variant="secondary">Test Button</Button>
+        <Input
+          label="Email address"
+          labelAlign="left"
+          description="We'll never share this with anyone else."
+          status="error"
+          message="Please enter a valid email."
+          required
+        />
+        <TextArea
+          label="Bio"
+          labelAlign="center"
+          status="success"
+          message="Looks good!"
+          rows={6}
+        />
 
+        <Input placeholder="Search..." />
         <button
           type="button"
           className="w-fit rounded-lg border-2 border-red-500 bg-cyan-500 px-4 py-2 font-medium text-slate-950 transition hover:bg-cyan-400"

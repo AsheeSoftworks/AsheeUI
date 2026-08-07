@@ -1,20 +1,40 @@
 "use client";
 
-import type { Config } from "@ashee/config";
+import { defineConfig, type ExternalConfig } from "@ashee/config";
 import { settingsController } from "@ashee/settings";
 import { applyDesignTokens } from "@ashee/theme";
-import { type ReactNode, useLayoutEffect } from "react";
+import { mergeObject } from "@ashee/utils";
+import { MotionConfig } from "framer-motion";
+import { type ReactNode, useLayoutEffect, useMemo } from "react";
+import { AsheeConfigContext } from "./context";
+import { defaultComponentConfig } from "./default-config";
 
 export interface AsheeUIProviderProps {
-  config: Config;
+  config?: ExternalConfig;
   children: ReactNode;
 }
 
-export function AsheeUIProvider({ config, children }: AsheeUIProviderProps) {
+export function AsheeUIProvider({
+  config: externalConfig,
+  children,
+}: AsheeUIProviderProps) {
+  const config = useMemo(() => {
+    const themeConfig = defineConfig(externalConfig ?? {});
+    const components = mergeObject(
+      defaultComponentConfig,
+      externalConfig?.components ?? {},
+    );
+    return { ...themeConfig, components };
+  }, [externalConfig]);
+
   useLayoutEffect(() => {
     applyDesignTokens(config.theme);
     settingsController.init(config);
   }, [config]);
 
-  return <>{children}</>;
+  return (
+    <AsheeConfigContext.Provider value={config}>
+      <MotionConfig reducedMotion="user">{children}</MotionConfig>
+    </AsheeConfigContext.Provider>
+  );
 }

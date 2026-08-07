@@ -1,1 +1,2 @@
-export const defaultMotion = {};
+export * from "./presets";
+export * from "./utils/resolve-animation";
