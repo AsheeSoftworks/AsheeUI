@@ -1,5 +1,5 @@
-import type { AnimationProp } from "@ashee/motion";
 import type { Radius, ResponsiveValue } from "@ashee/theme";
+import type { AnimationProp } from "../../../motion/types";
 
 export type FieldSizeKey = "sm" | "md" | "lg";
 export type FieldStatus = "default" | "error" | "warning" | "success";

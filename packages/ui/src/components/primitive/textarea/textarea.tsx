@@ -1,10 +1,11 @@
-import { type AnimationProp, resolveAnimation } from "@ashee/motion";
 import { useSettings } from "@ashee/settings";
 import { type Radius, useResponsiveVars } from "@ashee/theme";
 import { cn } from "@ashee/utils";
 import { type HTMLMotionProps, motion } from "framer-motion";
 import { forwardRef, useId, useMemo } from "react";
 import { useAsheeConfig } from "../../../context";
+import { resolveAnimation } from "../../../motion/resolve-animation";
+import type { AnimationProp } from "../../../motion/types";
 import { resolveScale, resolveValue } from "../../../utils/resolve-token";
 import { defaultFieldSizeScale } from "../field/default-field-size-scale";
 import type {
@@ -137,7 +138,7 @@ export const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
             paddingBlock: `var(--ashee-textarea-${resolvedSizeKey}-padding-y)`,
             fontSize: `var(--ashee-textarea-${resolvedSizeKey}-font-size)`,
           }}
-          {...motionProps}
+          {...(motionProps as HTMLMotionProps<"textarea">)}
           {...rest}
         />
       </FieldShell>

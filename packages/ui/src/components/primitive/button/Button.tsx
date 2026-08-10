@@ -1,10 +1,11 @@
-import { type AnimationProp, resolveAnimation } from "@ashee/motion";
 import { useSettings } from "@ashee/settings";
 import { type Radius, useResponsiveVars } from "@ashee/theme";
 import { cn } from "@ashee/utils";
 import { type HTMLMotionProps, motion } from "framer-motion";
 import { forwardRef, type ReactNode, useMemo } from "react";
 import { useAsheeConfig } from "../../../context";
+import { resolveAnimation } from "../../../motion/resolve-animation";
+import type { AnimationProp } from "../../../motion/types";
 import {
   type Color,
   resolveVariantClass,
@@ -120,7 +121,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
           fontSize: `var(--ashee-button-${resolvedSizeKey}-font-size)`,
           gap: `var(--ashee-button-${resolvedSizeKey}-gap)`,
         }}
-        {...motionProps}
+        {...(motionProps as HTMLMotionProps<"button">)}
         {...rest}>
         {isLoading && <Spinner className={resolvedSizeKey} />}
         {isLoading && <span className="sr-only">Loading</span>}

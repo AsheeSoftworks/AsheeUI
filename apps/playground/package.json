@@ -10,7 +10,6 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@ashee/motion": "workspace:*",
     "@ashee/settings": "workspace:*",
     "@ashee/theme": "workspace:*",
     "@ashee/ui": "workspace:*",

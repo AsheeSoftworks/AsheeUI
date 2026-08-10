@@ -1,11 +1,26 @@
+import type { DrawerConfig } from "./components/complex/drawer/drawer-config";
+import type { KeyboardConfig } from "./components/complex/keyboard/keyboard-config";
+import type { ModalConfig } from "./components/complex/modal/modal-config";
+import type { MultiSelectConfig } from "./components/complex/multi-select/multi-select-config";
+import type { ResizableScreenConfig } from "./components/complex/resizable-screen/resizable-screen-config";
+import type { SidebarConfig } from "./components/complex/sidebar/sidebar-config";
+import type { TableConfig } from "./components/complex/table/table-config";
+import type { TabsConfig } from "./components/complex/tabs/tabs-config";
+import type { ToastConfig } from "./components/complex/toast/toast-config";
+import type { TooltipConfig } from "./components/complex/tooltip/tooltip-config";
 import type { ButtonConfig } from "./components/primitive/button/button-config";
+import type { ButtonDropdownConfig } from "./components/primitive/button-dropdown/button-dropdown-config";
 import type { ContainerConfig } from "./components/primitive/container/container-config";
+import type { DatePickerConfig } from "./components/primitive/date-picker/date-picker-config";
 import type { FlexConfig } from "./components/primitive/flex/flex-config";
 import type { GridConfig } from "./components/primitive/grid/grid-config";
 import type { HeadingConfig } from "./components/primitive/heading/heading-config";
 import type { InputConfig } from "./components/primitive/input/input-config";
 import type { ParagraphConfig } from "./components/primitive/paragraph/paragraph-config";
+import type { RadioConfig } from "./components/primitive/radio/radio-config";
+import type { SelectConfig } from "./components/primitive/select/select-config";
 import type { SpinnerConfig } from "./components/primitive/spinner/spinner-config";
+import type { SwitchConfig } from "./components/primitive/switch/switch-config";
 import type { TextAreaConfig } from "./components/primitive/textarea/textarea-config";
 
 export interface ComponentConfigRegistry {
@@ -18,4 +33,20 @@ export interface ComponentConfigRegistry {
   spinner: SpinnerConfig;
   input: InputConfig;
   textarea: TextAreaConfig;
+  radio: RadioConfig;
+  switch: SwitchConfig;
+  datePicker: DatePickerConfig;
+  select: SelectConfig;
+  buttonDropdown: ButtonDropdownConfig;
+
+  tooltip: TooltipConfig;
+  multiSelect: MultiSelectConfig;
+  resizableScreen: ResizableScreenConfig;
+  tabs: TabsConfig;
+  table: TableConfig;
+  drawer: DrawerConfig;
+  sidebar: SidebarConfig;
+  modal: ModalConfig;
+  toast: ToastConfig;
+  keyboard: KeyboardConfig;
 }

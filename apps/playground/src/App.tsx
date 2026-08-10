@@ -1,6 +1,8 @@
 import { useState } from "react";
-import { GlobalsPage } from "./pages/globals-page";
-import { LocalOverridesPage } from "./pages/local-overrides-page";
+import PlaygroundGlobalPage from "./pages/PlaygroundGlobal";
+import PlaygroundLocalPage from "./pages/PlaygroundLocal";
+// import { GlobalsPage } from "./pages/globals-page";
+// import { LocalOverridesPage } from "./pages/local-overrides-page";
 
 function App() {
   const [page, setPage] = useState<"globals" | "local">("globals");
@@ -22,7 +24,8 @@ function App() {
           Local overrides
         </button>
       </div>
-      {page === "globals" ? <GlobalsPage /> : <LocalOverridesPage />}
+      {/* {page === "globals" ? <GlobalsPage /> : <LocalOverridesPage />} */}
+      {page === "globals" ? <PlaygroundGlobalPage /> : <PlaygroundLocalPage />}
     </div>
   );
 }

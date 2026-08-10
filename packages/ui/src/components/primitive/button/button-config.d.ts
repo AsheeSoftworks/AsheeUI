@@ -1,4 +1,5 @@
 import type { ResponsiveValue } from "@ashee/theme";
+import type { Variant } from "../../../shared/variant";
 
 export type ButtonSizeKey = "sm" | "md" | "lg";
 

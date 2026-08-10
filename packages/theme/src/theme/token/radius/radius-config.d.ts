@@ -1,4 +1,5 @@
 export type Radius = {
+  none: string;
   xs: string;
   sm: string;
   md: string;
