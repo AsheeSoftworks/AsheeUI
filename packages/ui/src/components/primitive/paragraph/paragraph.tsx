@@ -1,9 +1,8 @@
-import type { Size } from "@ashee/config";
+import type { FontSizeKey, Size } from "@ashee/theme";
 import { cn } from "@ashee/utils";
 import type { ReactNode } from "react";
 import { useAsheeConfig } from "../../../context";
 import { resolveValue } from "../../../utils/resolve-token";
-import type { ParagraphConfig } from "./paragraph-config";
 
 export interface ParagraphProps {
   size?: keyof Size;
@@ -11,18 +10,27 @@ export interface ParagraphProps {
   children: ReactNode;
 }
 
+const SIZE_CLASS: Record<FontSizeKey, string> = {
+  xs: "text-xs",
+  sm: "text-sm",
+  md: "text-md",
+  lg: "text-lg",
+  xl: "text-xl",
+};
+
 export function P({ size, className, children }: ParagraphProps) {
   const config = useAsheeConfig();
-  const sectionConfig = config.components?.paragraph as
-    | ParagraphConfig
-    | undefined;
+  const sectionConfig = config.components?.paragraph;
   const resolvedSize = resolveValue(size, sectionConfig?.size, "md");
 
   return (
     <p
-      className={cn(sectionConfig?.className, className)}
+      className={cn(
+        SIZE_CLASS[resolvedSize],
+        sectionConfig?.className,
+        className,
+      )}
       style={{
-        fontSize: config.theme.typography.size[resolvedSize],
         fontWeight:
           config.theme.typography.weight[sectionConfig?.weight ?? "normal"],
         lineHeight:

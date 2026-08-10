@@ -1,5 +1,9 @@
-import type { ColorConfig, Config } from "@ashee/config";
-import { applyThemeConfig, themeController } from "@ashee/theme";
+import {
+  applyThemeConfig,
+  type ColorConfig,
+  type ThemeSelection,
+  themeController,
+} from "@ashee/theme";
 import { mergeObject } from "@ashee/utils";
 import {
   defaultUserSettings,
@@ -9,6 +13,11 @@ import {
 
 const STORAGE_KEY = "ashee-settings";
 type Listener = () => void;
+
+interface InitTheme {
+  color: ColorConfig;
+  defaultTheme?: ThemeSelection;
+}
 
 class SettingsController {
   private state: UserSettings = defaultUserSettings;
@@ -32,11 +41,11 @@ class SettingsController {
   }
 
   /** Called once by AsheeUIProvider with the resolved app config. */
-  init(config: Config): void {
-    this.baseColors = config.theme.color;
-    if (!this.hydrated && config.theme.defaultTheme) {
+  init(theme: InitTheme): void {
+    this.baseColors = theme.color;
+    if (!this.hydrated && theme.defaultTheme) {
       this.state = mergeObject(this.state, {
-        theme: config.theme.defaultTheme,
+        theme: theme.defaultTheme,
       } as ExternalUserSettings);
     }
     this.applyAll();

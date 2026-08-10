@@ -1,19 +1,21 @@
-import type { Radius } from "@ashee/config";
 import { type AnimationProp, resolveAnimation } from "@ashee/motion";
 import { useSettings } from "@ashee/settings";
+import { type Radius, useResponsiveVars } from "@ashee/theme";
 import { cn } from "@ashee/utils";
 import { type HTMLMotionProps, motion } from "framer-motion";
-import { forwardRef, useId } from "react";
+import { forwardRef, useId, useMemo } from "react";
 import { useAsheeConfig } from "../../../context";
 import { resolveScale, resolveValue } from "../../../utils/resolve-token";
-import type { FieldSize, FieldStatus, LabelAlign } from "../field/field-config";
+import { defaultFieldSizeScale } from "../field/default-field-size-scale";
+import type {
+  FieldSizeKey,
+  FieldSizeScale,
+  FieldStatus,
+  LabelAlign,
+} from "../field/field-config";
 import { FieldShell } from "../field/field-shell";
+import { flattenFieldSizeScale } from "../field/flatten-field-size-scale";
 
-const SIZE_CLASS: Record<FieldSize, string> = {
-  sm: "px-2.5 py-1.5 text-sm",
-  md: "px-3 py-2 text-md",
-  lg: "px-4 py-2.5 text-lg",
-};
 const STATUS_BORDER_CLASS: Record<FieldStatus, string> = {
   default: "border-border focus:border-primary",
   error: "border-danger focus:border-danger",
@@ -23,11 +25,12 @@ const STATUS_BORDER_CLASS: Record<FieldStatus, string> = {
 
 export interface TextAreaProps
   extends Omit<HTMLMotionProps<"textarea">, "size" | "children"> {
-  size?: FieldSize;
+  size?: FieldSizeKey;
   radius?: keyof Radius;
   animation?: AnimationProp;
   status?: FieldStatus;
   label?: string;
+  isLoading?: boolean;
   labelAlign?: LabelAlign;
   description?: string;
   message?: string;
@@ -47,9 +50,11 @@ export const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
       description,
       message,
       required,
+      isLoading,
       rows,
       id,
       className,
+      disabled,
       ...rest
     },
     ref,
@@ -59,8 +64,23 @@ export const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
     const sectionConfig = config.components?.textarea;
     const generatedId = useId();
     const fieldId = id ?? generatedId;
+    const descriptionId = description ? `${fieldId}-description` : undefined;
+    const messageId = message ? `${fieldId}-message` : undefined;
+    const describedBy =
+      [descriptionId, messageId].filter(Boolean).join(" ") || undefined;
 
-    const resolvedSize = resolveValue(size, sectionConfig?.size, "md");
+    const sizeScale = (sectionConfig?.size ??
+      defaultFieldSizeScale) as FieldSizeScale;
+    const resolvedSizeKey = size ?? sizeScale.default;
+    const responsiveVars = useMemo(
+      () => flattenFieldSizeScale("textarea", sizeScale),
+      [sizeScale],
+    );
+    useResponsiveVars(
+      "ashee-textarea-tokens",
+      responsiveVars,
+      config.theme.breakpoints,
+    );
     const resolvedRadius = resolveScale(
       radius,
       sectionConfig?.radius,
@@ -75,7 +95,7 @@ export const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
     );
     const resolvedRows = resolveValue(rows, sectionConfig?.rows, 4);
     const motionProps = resolveAnimation(
-      animation ?? (sectionConfig?.animation as AnimationProp),
+      animation ?? (sectionConfig?.animation as AnimationProp | undefined),
       settings.enableAnimations,
     );
 
@@ -85,24 +105,38 @@ export const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
         label={label}
         labelAlign={resolvedLabelAlign}
         description={description}
+        descriptionId={descriptionId}
         message={message}
+        messageId={messageId}
         status={resolvedStatus}
         required={required}
+        isLoading={isLoading}
         labelClassName={sectionConfig?.labelClassName}
         descriptionClassName={sectionConfig?.descriptionClassName}
         messageClassName={sectionConfig?.messageClassName}>
         <motion.textarea
           ref={ref}
           id={fieldId}
+          disabled={disabled}
+          required={required}
           rows={resolvedRows}
+          aria-busy={isLoading}
+          aria-invalid={resolvedStatus === "error"}
+          aria-describedby={describedBy}
           className={cn(
             "resize-y border bg-background text-foreground outline-none transition-colors",
+            "focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2",
+            "disabled:pointer-events-none disabled:opacity-50",
             STATUS_BORDER_CLASS[resolvedStatus],
-            SIZE_CLASS[resolvedSize],
             sectionConfig?.className,
             className,
           )}
-          style={{ borderRadius: resolvedRadius }}
+          style={{
+            borderRadius: resolvedRadius,
+            paddingInline: `var(--ashee-textarea-${resolvedSizeKey}-padding-x)`,
+            paddingBlock: `var(--ashee-textarea-${resolvedSizeKey}-padding-y)`,
+            fontSize: `var(--ashee-textarea-${resolvedSizeKey}-font-size)`,
+          }}
           {...motionProps}
           {...rest}
         />

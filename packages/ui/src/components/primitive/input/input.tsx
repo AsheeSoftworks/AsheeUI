@@ -1,20 +1,20 @@
-import type { Radius } from "@ashee/config";
 import { type AnimationProp, resolveAnimation } from "@ashee/motion";
 import { useSettings } from "@ashee/settings";
+import { type Radius, useResponsiveVars } from "@ashee/theme";
 import { cn } from "@ashee/utils";
 import { type HTMLMotionProps, motion } from "framer-motion";
-import { forwardRef, useId } from "react";
+import { forwardRef, useId, useMemo } from "react";
 import { useAsheeConfig } from "../../../context";
 import { resolveScale, resolveValue } from "../../../utils/resolve-token";
-import type { FieldSize, FieldStatus, LabelAlign } from "../field/field-config";
+import { defaultFieldSizeScale } from "../field/default-field-size-scale";
+import type {
+  FieldSizeKey,
+  FieldSizeScale,
+  FieldStatus,
+  LabelAlign,
+} from "../field/field-config";
 import { FieldShell } from "../field/field-shell";
-import type { InputConfig } from "./input-config";
-
-const SIZE_CLASS: Record<FieldSize, string> = {
-  sm: "px-2.5 py-1.5 text-sm",
-  md: "px-3 py-2 text-md",
-  lg: "px-4 py-2.5 text-lg",
-};
+import { flattenFieldSizeScale } from "../field/flatten-field-size-scale";
 
 const STATUS_BORDER_CLASS: Record<FieldStatus, string> = {
   default: "border-border focus:border-primary",
@@ -25,12 +25,13 @@ const STATUS_BORDER_CLASS: Record<FieldStatus, string> = {
 
 export interface InputProps
   extends Omit<HTMLMotionProps<"input">, "size" | "children"> {
-  size?: FieldSize;
+  size?: FieldSizeKey;
   radius?: keyof Radius;
   animation?: AnimationProp;
   status?: FieldStatus;
   label?: string;
   labelAlign?: LabelAlign;
+  isLoading?: boolean;
   description?: string;
   message?: string;
   required?: boolean;
@@ -48,23 +49,37 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
       description,
       message,
       required,
+      isLoading,
       id,
       className,
+      disabled,
       ...rest
     },
     ref,
   ) => {
     const config = useAsheeConfig();
     const { settings } = useSettings();
-    const sectionConfig = config.components?.input as InputConfig | undefined;
+    const sectionConfig = config.components?.input;
     const generatedId = useId();
     const fieldId = id ?? generatedId;
+    const descriptionId = description ? `${fieldId}-description` : undefined;
+    const messageId = message ? `${fieldId}-message` : undefined;
+    const describedBy =
+      [descriptionId, messageId].filter(Boolean).join(" ") || undefined;
 
-    const resolvedSize = resolveValue(
-      size,
-      sectionConfig?.size,
-      "md",
-    ) as FieldSize;
+    const sizeScale = (sectionConfig?.size ??
+      defaultFieldSizeScale) as FieldSizeScale;
+    const resolvedSizeKey = size ?? sizeScale.default;
+    const responsiveVars = useMemo(
+      () => flattenFieldSizeScale("input", sizeScale),
+      [sizeScale],
+    );
+    useResponsiveVars(
+      "ashee-input-tokens",
+      responsiveVars,
+      config.theme.breakpoints,
+    );
+
     const resolvedRadius = resolveScale(
       radius,
       sectionConfig?.radius,
@@ -76,9 +91,9 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
       labelAlign,
       sectionConfig?.labelAlign,
       "left",
-    ) as LabelAlign;
+    );
     const motionProps = resolveAnimation(
-      animation ?? sectionConfig?.animation,
+      animation ?? (sectionConfig?.animation as AnimationProp | undefined),
       settings.enableAnimations,
     );
 
@@ -88,24 +103,38 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
         label={label}
         labelAlign={resolvedLabelAlign}
         description={description}
+        descriptionId={descriptionId}
         message={message}
+        messageId={messageId}
         status={resolvedStatus}
         required={required}
+        isLoading={isLoading}
         labelClassName={sectionConfig?.labelClassName}
         descriptionClassName={sectionConfig?.descriptionClassName}
         messageClassName={sectionConfig?.messageClassName}>
         <motion.input
           ref={ref}
           id={fieldId}
+          disabled={disabled}
+          required={required}
           autoComplete="off"
+          aria-invalid={resolvedStatus === "error"}
+          aria-describedby={describedBy}
+          aria-busy={isLoading}
           className={cn(
             "border bg-background text-foreground outline-none transition-colors",
+            "focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2",
+            "disabled:pointer-events-none disabled:opacity-50",
             STATUS_BORDER_CLASS[resolvedStatus],
-            SIZE_CLASS[resolvedSize],
             sectionConfig?.className,
             className,
           )}
-          style={{ borderRadius: resolvedRadius }}
+          style={{
+            borderRadius: resolvedRadius,
+            paddingInline: `var(--ashee-input-${resolvedSizeKey}-padding-x)`,
+            paddingBlock: `var(--ashee-input-${resolvedSizeKey}-padding-y)`,
+            fontSize: `var(--ashee-input-${resolvedSizeKey}-font-size)`,
+          }}
           {...motionProps}
           {...rest}
         />

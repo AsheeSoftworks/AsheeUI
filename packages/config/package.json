@@ -1,9 +1,0 @@
-{
-  "name": "@ashee/config",
-  "version": "1.0.0",
-  "main": "./src/index.ts",
-  "dependencies": {
-    "@ashee/utils": "workspace:*",
-    "zod": "^3.23.0"
-  }
-}

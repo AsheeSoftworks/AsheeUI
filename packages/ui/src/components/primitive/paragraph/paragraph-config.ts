@@ -1,4 +1,4 @@
-import type { FontWeight, LineHeight, Size } from "@ashee/config";
+import type { FontWeight, LineHeight, Size } from "@ashee/theme";
 
 export interface ParagraphConfig {
   size?: keyof Size;

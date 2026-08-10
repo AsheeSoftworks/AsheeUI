@@ -1,5 +1,4 @@
-import type { ColorConfig } from "@ashee/config";
-import type { ThemeSelection } from "@ashee/theme";
+import type { ColorConfig, ThemeSelection } from "@ashee/theme";
 import type { DeepPartial } from "@ashee/utils";
 
 export type UserSettings = {

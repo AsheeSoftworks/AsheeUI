@@ -1,12 +1,23 @@
-import type { Radius } from "@ashee/config";
 import type { AnimationProp } from "@ashee/motion";
+import type { Radius, ResponsiveValue } from "@ashee/theme";
 
-export type FieldSize = "sm" | "md" | "lg";
+export type FieldSizeKey = "sm" | "md" | "lg";
 export type FieldStatus = "default" | "error" | "warning" | "success";
 export type LabelAlign = "left" | "center" | "right";
 
+export interface FieldSizeValue {
+  paddingX: ResponsiveValue<string>;
+  paddingY: ResponsiveValue<string>;
+  fontSize: ResponsiveValue<string>;
+}
+
+export interface FieldSizeScale {
+  default: FieldSizeKey;
+  values: Record<FieldSizeKey, FieldSizeValue>;
+}
+
 export interface FieldConfig {
-  size?: FieldSize;
+  size?: FieldSizeScale;
   radius?: keyof Radius;
   animation?: AnimationProp;
   labelAlign?: LabelAlign;

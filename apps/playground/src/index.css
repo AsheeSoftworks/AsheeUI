@@ -1,2 +1,6 @@
 @import "tailwindcss";
 @import "@ashee/theme/base.css";
+@source "../../../packages/ui/src";
+@source "../../../packages/theme/src";
+@source "../../../packages/settings/src";
+@source "../../../packages/motion/src";

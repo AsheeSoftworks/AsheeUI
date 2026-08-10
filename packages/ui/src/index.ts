@@ -22,9 +22,11 @@ export {
   P,
   type ParagraphProps,
 } from "./components/primitive/paragraph/paragraph";
+export { Spinner } from "./components/primitive/spinner/spinner";
 export {
   TextArea,
   type TextAreaProps,
 } from "./components/primitive/textarea/textarea";
+export type { Config, ExternalConfig } from "./config";
 export { useAsheeConfig } from "./context";
 export { resolveRadius } from "./utils/resolve-token";

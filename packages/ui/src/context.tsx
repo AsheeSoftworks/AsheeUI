@@ -1,5 +1,5 @@
-import type { Config } from "@ashee/config";
 import { createContext, useContext } from "react";
+import type { Config } from "./config";
 
 export const AsheeConfigContext = createContext<Config | null>(null);
 

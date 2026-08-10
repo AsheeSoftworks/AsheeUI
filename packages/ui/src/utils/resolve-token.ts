@@ -1,4 +1,4 @@
-import type { Radius, RadiusConfig } from "@ashee/config";
+import type { Radius, RadiusConfig } from "@ashee/theme";
 
 export function resolveRadius(
   instanceProp: keyof Radius | undefined,
@@ -19,11 +19,18 @@ export function resolveValue<T>(
 }
 
 /** 3-tier: instance prop, else component config key, else the global theme's default key — resolved against a shared value scale. */
-export function resolveScale<TKey extends string>(
+export function resolveScale<TKey extends string, TValue = string>(
   instance: TKey | undefined,
   section: TKey | undefined,
   globalDefault: TKey,
-  values: Record<TKey, string>,
-): string {
+  values: Record<TKey, TValue>,
+): TValue {
   return values[instance ?? section ?? globalDefault];
+}
+
+export function resolveComponentScale<TKey extends string, TValue>(
+  instance: TKey | undefined,
+  scale: { default: TKey; values: Record<TKey, TValue> },
+): TValue {
+  return scale.values[instance ?? scale.default];
 }

@@ -3,10 +3,21 @@
   "version": "1.0.0",
   "main": "./src/index.ts",
   "types": "./src/index.ts",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "import": "./src/index.ts",
+      "default": "./src/index.ts"
+    },
+    "./src": "./src",
+    "./src/index.ts": "./src/index.ts",
+    "./src/*": "./src/*"
+  },
+  "files": [
+    "src"
+  ],
   "dependencies": {
-    "@ashee/config": "workspace:*",
     "@ashee/hooks": "workspace:*",
-    "@ashee/icons": "workspace:*",
     "@ashee/motion": "workspace:*",
     "@ashee/settings": "workspace:*",
     "@ashee/theme": "workspace:*",

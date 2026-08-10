@@ -3,37 +3,37 @@ import type { HeadingConfig } from "./heading-config";
 export const defaultHeadingConfig: HeadingConfig = {
   levels: {
     1: {
-      fontSize: "2.25rem",
+      fontSize: { base: "2.25rem", lg: "2.5rem" },
       fontWeight: "bold",
       lineHeight: "short",
       letterSpacing: "tight",
     },
     2: {
-      fontSize: "1.875rem",
+      fontSize: { base: "1.875rem", lg: "2rem" },
       fontWeight: "bold",
       lineHeight: "short",
       letterSpacing: "tight",
     },
     3: {
-      fontSize: "1.5rem",
+      fontSize: { base: "1.5rem" },
       fontWeight: "semibold",
       lineHeight: "short",
       letterSpacing: "normal",
     },
     4: {
-      fontSize: "1.25rem",
+      fontSize: { base: "1.25rem" },
       fontWeight: "semibold",
       lineHeight: "base",
       letterSpacing: "normal",
     },
     5: {
-      fontSize: "1.125rem",
+      fontSize: { base: "1.125rem" },
       fontWeight: "medium",
       lineHeight: "base",
       letterSpacing: "normal",
     },
     6: {
-      fontSize: "1rem",
+      fontSize: { base: "1rem" },
       fontWeight: "medium",
       lineHeight: "base",
       letterSpacing: "normal",

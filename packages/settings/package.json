@@ -8,10 +8,15 @@
       "types": "./src/index.ts",
       "import": "./src/index.ts",
       "default": "./src/index.ts"
-    }
+    },
+    "./src": "./src",
+    "./src/index.ts": "./src/index.ts",
+    "./src/*": "./src/*"
   },
+  "files": [
+    "src"
+  ],
   "dependencies": {
-    "@ashee/config": "workspace:*",
     "@ashee/theme": "workspace:*",
     "@ashee/utils": "workspace:*"
   },

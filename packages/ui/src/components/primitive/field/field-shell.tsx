@@ -1,5 +1,6 @@
 import { cn } from "@ashee/utils";
 import type { ReactNode } from "react";
+import { Spinner } from "../spinner/spinner";
 import type { FieldStatus, LabelAlign } from "./field-config";
 
 const LABEL_ALIGN_CLASS: Record<LabelAlign, string> = {
@@ -7,7 +8,6 @@ const LABEL_ALIGN_CLASS: Record<LabelAlign, string> = {
   center: "text-center",
   right: "text-right",
 };
-
 const STATUS_TEXT_CLASS: Record<FieldStatus, string> = {
   default: "text-foreground",
   error: "text-danger",
@@ -20,9 +20,12 @@ export interface FieldShellProps {
   label?: string;
   labelAlign?: LabelAlign;
   description?: string;
+  descriptionId?: string;
   message?: string;
+  messageId?: string;
   status?: FieldStatus;
   required?: boolean;
+  isLoading?: boolean; // new
   labelClassName?: string;
   descriptionClassName?: string;
   messageClassName?: string;
@@ -34,9 +37,12 @@ export function FieldShell({
   label,
   labelAlign = "left",
   description,
+  descriptionId,
   message,
+  messageId,
   status = "default",
   required,
+  isLoading,
   labelClassName,
   descriptionClassName,
   messageClassName,
@@ -52,18 +58,29 @@ export function FieldShell({
             LABEL_ALIGN_CLASS[labelAlign],
             labelClassName,
           )}>
-          {label}
-          {required && <span className="ml-0.5 text-danger">*</span>}
+          <span className="inline-flex items-center gap-1.5">
+            {label}
+            {required && (
+              <span aria-hidden="true" className="text-danger">
+                *
+              </span>
+            )}
+            {isLoading && <Spinner size="sm" />}
+          </span>
         </label>
       )}
       {description && (
-        <p className={cn("text-sm text-foreground/60", descriptionClassName)}>
+        <p
+          id={descriptionId}
+          className={cn("text-sm text-foreground/60", descriptionClassName)}>
           {description}
         </p>
       )}
       {children}
       {message && (
         <p
+          id={messageId}
+          role={status === "error" ? "alert" : undefined}
           className={cn(
             "text-sm",
             STATUS_TEXT_CLASS[status],

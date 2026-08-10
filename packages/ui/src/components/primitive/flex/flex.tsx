@@ -1,3 +1,4 @@
+import type { Spacing } from "@ashee/theme";
 import { cn } from "@ashee/utils";
 import type { ReactNode } from "react";
 import { useAsheeConfig } from "../../../context";
@@ -36,7 +37,7 @@ export interface FlexProps {
   direction?: FlexDirection;
   align?: FlexAlign;
   justify?: FlexJustify;
-  gap?: keyof import("@ashee/config").Spacing;
+  gap?: keyof Spacing;
   wrap?: boolean;
   className?: string;
   children: ReactNode;

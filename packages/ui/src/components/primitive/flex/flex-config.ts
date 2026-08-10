@@ -1,4 +1,4 @@
-import type { Spacing } from "@ashee/config";
+import type { Spacing } from "@ashee/theme";
 
 export type FlexDirection = "row" | "row-reverse" | "col" | "col-reverse";
 export type FlexAlign = "start" | "center" | "end" | "stretch" | "baseline";
