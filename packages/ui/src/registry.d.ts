@@ -23,14 +23,15 @@ import type { HeadingConfig } from "./components/primitive/heading/heading-confi
 import type { ImageConfig } from "./components/primitive/image/image-config";
 import type { InputConfig } from "./components/primitive/input/input-config";
 import type { LinkConfig } from "./components/primitive/link/link-config";
-import type { TextConfig } from "./components/primitive/text/text-config";
 import type { RadioConfig } from "./components/primitive/radio/radio-config";
 import type { SelectConfig } from "./components/primitive/select/select-config";
 import type { SpinnerConfig } from "./components/primitive/spinner/spinner-config";
 import type { SwitchConfig } from "./components/primitive/switch/switch-config";
+import type { TextConfig } from "./components/primitive/text/text-config";
 import type { TextAreaConfig } from "./components/primitive/textarea/textarea-config";
 
 export interface ComponentConfigRegistry {
+  // Promitive
   container: ContainerConfig;
   flex: FlexConfig;
   grid: GridConfig;
@@ -48,6 +49,7 @@ export interface ComponentConfigRegistry {
   image: ImageConfig;
   link: LinkConfig;
 
+  // Complex
   tooltip: TooltipConfig;
   multiSelect: MultiSelectConfig;
   resizableScreen: ResizableScreenConfig;

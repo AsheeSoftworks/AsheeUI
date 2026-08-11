@@ -32,5 +32,5 @@ export const defaultChipConfig: ChipConfig = {
   color: "primary",
   size: defaultChipSizeScale,
   radius: "full",
-  animation: "scale",
+  animation: "none",
 };

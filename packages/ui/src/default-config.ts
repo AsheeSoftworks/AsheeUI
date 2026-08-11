@@ -32,16 +32,16 @@ import { defaultHeadingConfig } from "./components/primitive/heading/default-hea
 import { defaultImageConfig } from "./components/primitive/image/default-image-config";
 import { defaultInputConfig } from "./components/primitive/input/default-input-config";
 import { defaultLinkConfig } from "./components/primitive/link/default-link-config";
-import { defaultTextConfig } from "./components/primitive/text/default-text-config";
 import { defaultRadioConfig } from "./components/primitive/radio/default-radio-config";
 import { defaultSelectConfig } from "./components/primitive/select/default-select-config";
 import { defaultSpinnerConfig } from "./components/primitive/spinner/default-spinner-config";
 import { defaultSwitchConfig } from "./components/primitive/switch/default-switch-config";
+import { defaultTextConfig } from "./components/primitive/text/default-text-config";
 import { defaultTextAreaConfig } from "./components/primitive/textarea/default-textarea-config";
 import type { Config } from "./config";
 import type { ComponentConfigRegistry } from "./registry";
 
-export const defaultComponentConfig: Partial<ComponentConfigRegistry> = {
+export const defaultComponentConfig: ComponentConfigRegistry = {
   container: defaultContainerConfig,
   flex: defaultFlexConfig,
   grid: defaultGridConfig,

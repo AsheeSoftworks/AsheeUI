@@ -3,6 +3,8 @@ import {
   Card,
   Carousel,
   Chip,
+  Container,
+  Heading,
   Image,
   Link,
   Parallax,
@@ -22,25 +24,31 @@ export default function ConfigTestPage() {
       </header>
 
       {/* Chip */}
-      <section className="space-y-3">
-        <h2 className="text-lg font-semibold">Chip (Config)</h2>
-        <div className="flex gap-2">
-          <Chip>Default Chip</Chip>
+      <Container className="space-y-3">
+        <Heading level={4} className="text-lg font-semibold">
+          Chip (Config)
+        </Heading>
+        <Container className="flex gap-2">
+          <Chip animation={"none"}>Default Chip</Chip>
           <Chip>Configured Style</Chip>
-        </div>
-      </section>
+        </Container>
+      </Container>
 
       {/* Link */}
-      <section className="space-y-3">
-        <h2 className="text-lg font-semibold">Link (Config)</h2>
-        <div>
+      <Container className="space-y-3">
+        <Heading level={4} className="text-lg font-semibold">
+          Link (Config)
+        </Heading>
+        <Container>
           <Link href="/dashboard">Navigate to Dashboard</Link>
-        </div>
-      </section>
+        </Container>
+      </Container>
 
       {/* Card */}
-      <section className="space-y-3">
-        <h2 className="text-lg font-semibold">Card (Config)</h2>
+      <Container className="space-y-3">
+        <Heading level={4} className="text-lg font-semibold">
+          Card (Config)
+        </Heading>
         <Card
           title="Configured Card Title"
           description="Default card description text using global settings">
@@ -48,69 +56,77 @@ export default function ConfigTestPage() {
             Card body content relying on default padding, gap, and variants.
           </p>
         </Card>
-      </section>
+      </Container>
 
       {/* Image */}
-      <section className="space-y-3">
-        <h2 className="text-lg font-semibold">Image (Config)</h2>
+      <Container className="space-y-3">
+        <Heading level={4} className="text-lg font-semibold">
+          Image (Config)
+        </Heading>
         <Image
           src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe"
           alt="Abstract config test image"
         />
-      </section>
+      </Container>
 
       {/* Accordion */}
-      <section className="space-y-3">
-        <h2 className="text-lg font-semibold">Accordion (Config)</h2>
+      <Container className="space-y-3">
+        <Heading level={4} className="text-lg font-semibold">
+          Accordion (Config)
+        </Heading>
         <Accordion
           items={[
             {
               id: "item-1",
-              title: "Configured Section 1",
+              title: "Configured ContContainer 1",
               content:
-                "Section content using global spacing and default animation.",
+                "ContContainer content using global spacing and default animation.",
             },
             {
               id: "item-2",
-              title: "Configured Section 2",
+              title: "Configured ContContainer 2",
               content: "Additional panel content driven by configuration.",
             },
           ]}
         />
-      </section>
+      </Container>
 
       {/* Carousel */}
-      <section className="space-y-3">
-        <h2 className="text-lg font-semibold">Carousel (Config)</h2>
+      <Container className="space-y-3">
+        <Heading level={4} className="text-lg font-semibold">
+          Carousel (Config)
+        </Heading>
         <Carousel
           items={[
             {
               id: "1",
               content: (
-                <div className="bg-muted p-8 text-center rounded-lg">
+                <Container className="bg-muted p-8 text-center rounded-lg">
                   Slide 1
-                </div>
+                </Container>
               ),
             },
             {
               id: "2",
               content: (
-                <div className="bg-muted p-8 text-center rounded-lg">
+                <Container className="bg-muted p-8 text-center rounded-lg">
                   Slide 2
-                </div>
+                </Container>
               ),
             },
           ]}
         />
-      </section>
+      </Container>
 
       {/* Parallax */}
-      <section className="space-y-3">
-        <h2 className="text-lg font-semibold">Parallax (Config)</h2>
+      <Container className="space-y-3">
+        <Heading level={4} className="text-lg font-semibold">
+          Parallax (Config)
+        </Heading>
         <Parallax background={<div className="w-full h-full bg-slate-800" />}>
           <h3 className="text-xl font-semibold">Parallax Configured Banner</h3>
         </Parallax>
-      </section>
+      </Container>
     </main>
   );
 }

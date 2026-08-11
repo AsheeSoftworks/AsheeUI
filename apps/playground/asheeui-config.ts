@@ -3,7 +3,7 @@ import type { ExternalConfig } from "@ashee/ui";
 export const config: ExternalConfig = {
   theme: {
     defaultTheme: "company-red",
-    defaultVariant: "bordered",
+    defaultVariant: "ghost",
     defaultColor: "success",
     color: {
       dark: { primary: "#38bdf8", success: "#4ade80" },
@@ -81,47 +81,36 @@ export const config: ExternalConfig = {
     heading: {
       levels: {
         1: {
-          fontSize: "3rem",
           fontWeight: "bold",
           lineHeight: "short",
           letterSpacing: "tight",
         },
         2: {
-          fontSize: "2.25rem",
           fontWeight: "bold",
           lineHeight: "short",
           letterSpacing: "tight",
         },
         3: {
-          fontSize: "1.75rem",
           fontWeight: "semibold",
           lineHeight: "short",
           letterSpacing: "normal",
         },
         4: {
-          fontSize: "1.4rem",
           fontWeight: "semibold",
           lineHeight: "base",
           letterSpacing: "normal",
         },
         5: {
-          fontSize: "1.2rem",
           fontWeight: "medium",
           lineHeight: "base",
           letterSpacing: "normal",
         },
         6: {
-          fontSize: "1.05rem",
           fontWeight: "medium",
           lineHeight: "base",
           letterSpacing: "normal",
         },
       },
-    },
-    paragraph: {
-      size: "lg",
-      weight: "normal",
-      lineHeight: "tall",
     },
     button: {
       variant: "bordered",
@@ -148,31 +137,6 @@ export const config: ExternalConfig = {
             fontSize: { base: "1rem", md: "1.125rem" },
             gap: { base: "0.5rem", md: "0.625rem" },
           },
-        },
-      },
-    },
-    input: {
-      labelAlign: "center",
-      animation: "fade",
-      size: {
-        default: "md",
-        values: {
-          sm: { paddingX: "0.9rem", paddingY: "0.5rem", fontSize: "0.9rem" },
-          md: { paddingX: "1.1rem", paddingY: "0.65rem", fontSize: "1.05rem" },
-          lg: { paddingX: "1.4rem", paddingY: "0.85rem", fontSize: "1.2rem" },
-        },
-      },
-    },
-    textarea: {
-      labelAlign: "center",
-      animation: "fade",
-      rows: 5,
-      size: {
-        default: "md",
-        values: {
-          sm: { paddingX: "0.9rem", paddingY: "0.5rem", fontSize: "0.9rem" },
-          md: { paddingX: "1.1rem", paddingY: "0.65rem", fontSize: "1.05rem" },
-          lg: { paddingX: "1.4rem", paddingY: "0.85rem", fontSize: "1.2rem" },
         },
       },
     },

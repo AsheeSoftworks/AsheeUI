@@ -151,10 +151,6 @@ export {
   type PasswordInputProps,
 } from "./components/primitive/input/PasswordInput";
 export { Link, type LinkProps } from "./components/primitive/link/Link";
-export {
-  Text,
-  type TextProps,
-} from "./components/primitive/text/Text";
 export * from "./components/primitive/radio/Radio";
 export {
   RadioGroup,
@@ -171,6 +167,10 @@ export {
   type SpinnerProps,
 } from "./components/primitive/spinner/spinner";
 export { Switch, type SwitchProps } from "./components/primitive/switch/Switch";
+export {
+  Text,
+  type TextProps,
+} from "./components/primitive/text/Text";
 export {
   TextArea,
   type TextAreaProps,
