@@ -1,14 +1,14 @@
 "use client";
 
-import { useState } from "react";
 import {
-  Sidebar,
-  Table,
-  ClockIcon,
   ArrowLeftIcon,
+  ClockIcon,
   type ColumnDef,
   ResizableScreen,
+  Sidebar,
+  Table,
 } from "@ashee/ui";
+import { useState } from "react";
 
 // Mock User Data
 interface UserRow {

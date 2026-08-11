@@ -2,26 +2,26 @@ import type { Radius, ResponsiveValue } from "@ashee/theme";
 import type { AnimationProp } from "../../../motion/types";
 import type { Color, Variant } from "../../../shared/variant";
 
-export type ButtonSizeKey = "sm" | "md" | "lg";
+export type ChipSizeKey = "sm" | "md" | "lg";
 
-export interface ButtonSizeValue {
+export interface ChipSizeValue {
+  height: ResponsiveValue<string>;
   paddingX: ResponsiveValue<string>;
-  paddingY: ResponsiveValue<string>;
   fontSize: ResponsiveValue<string>;
   gap: ResponsiveValue<string>;
+  iconSize: ResponsiveValue<string>;
 }
 
-export interface ButtonSizeScale {
-  default: ButtonSizeKey;
-  values: Record<ButtonSizeKey, ButtonSizeValue>;
+export interface ChipSizeScale {
+  default: ChipSizeKey;
+  values: Record<ChipSizeKey, ChipSizeValue>;
 }
 
-export interface ButtonConfig {
+export interface ChipConfig {
   variant?: Variant;
   color?: Color;
-  size?: ButtonSizeScale;
+  size?: ChipSizeScale;
   radius?: keyof Radius;
   animation?: AnimationProp;
-  isExternal?: boolean;
   className?: string;
 }

@@ -13,7 +13,7 @@ export type {
 } from "./theme/color/color-config";
 export { defaultColorConfig } from "./theme/color/default-color-config";
 export { defaultShadowConfig } from "./theme/shadow/default-shadow-config";
-export type { ShadowConfig } from "./theme/shadow/shadow-config";
+export type { Shadow, ShadowConfig } from "./theme/shadow/shadow-config";
 export { defaultRadiusConfig } from "./theme/token/radius/default-radius-config";
 export type { Radius, RadiusConfig } from "./theme/token/radius/radius-config";
 export type { BreakpointConfig } from "./theme/token/responsive/breakpoint-config";

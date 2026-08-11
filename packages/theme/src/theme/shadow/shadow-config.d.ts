@@ -1,6 +1,13 @@
-import type { Size } from "../../token/token";
+export type Shadow = {
+  none: string;
+  xs: string;
+  sm: string;
+  md: string;
+  lg: string;
+  xl: string;
+};
 
 export interface ShadowConfig {
-  default: keyof Size;
-  values: Size;
+  default: keyof Shadow;
+  values: Shadow;
 }

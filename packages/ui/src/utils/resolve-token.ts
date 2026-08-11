@@ -19,7 +19,7 @@ export function resolveValue<T>(
 }
 
 /** 3-tier: instance prop, else component config key, else the global theme's default key — resolved against a shared value scale. */
-export function resolveScale<TKey extends string, TValue = string>(
+export function resolveScale<TKey extends PropertyKey, TValue = string>(
   instance: TKey | undefined,
   section: TKey | undefined,
   globalDefault: TKey,
@@ -28,7 +28,7 @@ export function resolveScale<TKey extends string, TValue = string>(
   return values[instance ?? section ?? globalDefault];
 }
 
-export function resolveComponentScale<TKey extends string, TValue>(
+export function resolveComponentScale<TKey extends PropertyKey, TValue>(
   instance: TKey | undefined,
   scale: { default: TKey; values: Record<TKey, TValue> },
 ): TValue {

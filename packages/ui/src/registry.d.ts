@@ -1,7 +1,12 @@
+import type { AccordionConfig } from "./components/complex/accordion/accordion-config";
+import type { CardConfig } from "./components/complex/card/card-config";
+import type { CarouselConfig } from "./components/complex/carousel/carousel-config";
+import type { ChipConfig } from "./components/complex/chip/chip-config";
 import type { DrawerConfig } from "./components/complex/drawer/drawer-config";
 import type { KeyboardConfig } from "./components/complex/keyboard/keyboard-config";
 import type { ModalConfig } from "./components/complex/modal/modal-config";
 import type { MultiSelectConfig } from "./components/complex/multi-select/multi-select-config";
+import type { ParallaxConfig } from "./components/complex/parallax/parallax-config";
 import type { ResizableScreenConfig } from "./components/complex/resizable-screen/resizable-screen-config";
 import type { SidebarConfig } from "./components/complex/sidebar/sidebar-config";
 import type { TableConfig } from "./components/complex/table/table-config";
@@ -15,8 +20,10 @@ import type { DatePickerConfig } from "./components/primitive/date-picker/date-p
 import type { FlexConfig } from "./components/primitive/flex/flex-config";
 import type { GridConfig } from "./components/primitive/grid/grid-config";
 import type { HeadingConfig } from "./components/primitive/heading/heading-config";
+import type { ImageConfig } from "./components/primitive/image/image-config";
 import type { InputConfig } from "./components/primitive/input/input-config";
-import type { ParagraphConfig } from "./components/primitive/paragraph/paragraph-config";
+import type { LinkConfig } from "./components/primitive/link/link-config";
+import type { TextConfig } from "./components/primitive/text/text-config";
 import type { RadioConfig } from "./components/primitive/radio/radio-config";
 import type { SelectConfig } from "./components/primitive/select/select-config";
 import type { SpinnerConfig } from "./components/primitive/spinner/spinner-config";
@@ -28,7 +35,7 @@ export interface ComponentConfigRegistry {
   flex: FlexConfig;
   grid: GridConfig;
   heading: HeadingConfig;
-  paragraph: ParagraphConfig;
+  text: TextConfig;
   button: ButtonConfig;
   spinner: SpinnerConfig;
   input: InputConfig;
@@ -38,6 +45,8 @@ export interface ComponentConfigRegistry {
   datePicker: DatePickerConfig;
   select: SelectConfig;
   buttonDropdown: ButtonDropdownConfig;
+  image: ImageConfig;
+  link: LinkConfig;
 
   tooltip: TooltipConfig;
   multiSelect: MultiSelectConfig;
@@ -49,4 +58,9 @@ export interface ComponentConfigRegistry {
   modal: ModalConfig;
   toast: ToastConfig;
   keyboard: KeyboardConfig;
+  accordion: AccordionConfig;
+  parallax: ParallaxConfig;
+  carousel: CarouselConfig;
+  card: CardConfig;
+  chip: ChipConfig;
 }

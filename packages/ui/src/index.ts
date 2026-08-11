@@ -1,5 +1,18 @@
 export type { AsheeUIProviderProps } from "./AsheeUIProvider";
 export { AsheeUIProvider } from "./AsheeUIProvider";
+export {
+  Accordion,
+  type AccordionProps,
+} from "./components/complex/accordion/Accordion";
+export { Card, type CardProps } from "./components/complex/card/Card";
+export {
+  Carousel,
+  type CarouselProps,
+} from "./components/complex/carousel/Carousel";
+export {
+  Chip,
+  type ChipProps,
+} from "./components/complex/chip/Chip";
 export { Drawer, type DrawerProps } from "./components/complex/drawer/Drawer";
 export type {
   DrawerConfig,
@@ -44,6 +57,10 @@ export type {
   MultiSelectOption,
   MultiSelectSizeKey,
 } from "./components/complex/multi-select/multi-select-config";
+export {
+  Parallax,
+  type ParallaxProps,
+} from "./components/complex/parallax/Parallax";
 export {
   ResizableScreen,
   type ResizableScreenProps,
@@ -97,6 +114,7 @@ export type {
   TooltipConfig,
   TooltipPlacement,
 } from "./components/complex/tooltip/tooltip-config";
+export * from "./components/icons/index";
 export { Button, type ButtonProps } from "./components/primitive/button/Button";
 export {
   ButtonDropdown,
@@ -122,52 +140,37 @@ export type {
 } from "./components/primitive/date-picker/date-picker-config";
 export { Flex, type FlexProps } from "./components/primitive/flex/flex";
 export { Grid, type GridProps } from "./components/primitive/grid/grid";
-export { H1 } from "./components/primitive/heading/h1";
-export { H2 } from "./components/primitive/heading/h2";
-export { H3 } from "./components/primitive/heading/h3";
-export { H4 } from "./components/primitive/heading/h4";
-export { H5 } from "./components/primitive/heading/h5";
-export { H6 } from "./components/primitive/heading/h6";
 export {
   Heading,
   type HeadingProps,
 } from "./components/primitive/heading/heading";
+export { Image, type ImageProps } from "./components/primitive/image/Image";
 export { Input, type InputProps } from "./components/primitive/input/Input";
 export {
   PasswordInput,
   type PasswordInputProps,
 } from "./components/primitive/input/PasswordInput";
+export { Link, type LinkProps } from "./components/primitive/link/Link";
 export {
-  P,
-  type ParagraphProps,
-} from "./components/primitive/paragraph/paragraph";
+  Text,
+  type TextProps,
+} from "./components/primitive/text/Text";
 export * from "./components/primitive/radio/Radio";
 export {
   RadioGroup,
   type RadioGroupProps,
 } from "./components/primitive/radio/RadioGroup";
-export type {
-  RadioConfig,
-  RadioSizeKey,
-  RadioVariant,
-} from "./components/primitive/radio/radio-config";
 export {
   Dropdown,
   type DropdownProps,
   Select,
   type SelectProps,
 } from "./components/primitive/select/Select";
-export type {
-  SelectConfig,
-  SelectOption,
-  SelectSizeKey,
-} from "./components/primitive/select/select-config";
-export { Spinner } from "./components/primitive/spinner/spinner";
+export {
+  Spinner,
+  type SpinnerProps,
+} from "./components/primitive/spinner/spinner";
 export { Switch, type SwitchProps } from "./components/primitive/switch/Switch";
-export type {
-  SwitchConfig,
-  SwitchSizeKey,
-} from "./components/primitive/switch/switch-config";
 export {
   TextArea,
   type TextAreaProps,
@@ -175,4 +178,3 @@ export {
 export type { Config, ExternalConfig } from "./config";
 export { useAsheeConfig } from "./context";
 export { resolveRadius } from "./utils/resolve-token";
-export * from "./components/icons/index";

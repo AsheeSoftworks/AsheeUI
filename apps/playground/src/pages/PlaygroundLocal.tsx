@@ -1,15 +1,15 @@
 "use client";
 
-import { useMemo, useState } from "react";
 import {
-  Sidebar,
-  Table,
   CalendarIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
-  EyeOffIcon,
   type ColumnDef,
+  EyeOffIcon,
+  Sidebar,
+  Table,
 } from "@ashee/ui";
+import { useMemo, useState } from "react";
 
 interface ProjectRow {
   id: string;

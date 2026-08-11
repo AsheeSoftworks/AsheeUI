@@ -7,10 +7,15 @@ import {
   defaultSpacingConfig,
   defaultTypographyConfig,
 } from "@ashee/theme";
+import { defaultAccordionConfig } from "./components/complex/accordion/default-accordion-config";
+import { defaultCardConfig } from "./components/complex/card/default-card-config";
+import { defaultCarouselConfig } from "./components/complex/carousel/default-carousel-config";
+import { defaultChipConfig } from "./components/complex/chip/default-chip-config";
 import { defaultDrawerConfig } from "./components/complex/drawer/default-drawer-config";
 import { defaultKeyboardConfig } from "./components/complex/keyboard/default-keyboard-config";
 import { defaultModalConfig } from "./components/complex/modal/default-modal-config";
 import { defaultMultiSelectConfig } from "./components/complex/multi-select/default-multi-select-config";
+import { defaultParallaxConfig } from "./components/complex/parallax/default-parallax-config";
 import { defaultResizableScreenConfig } from "./components/complex/resizable-screen/default-resizable-screen-config";
 import { defaultSidebarConfig } from "./components/complex/sidebar/default-sidebar-config";
 import { defaultTableConfig } from "./components/complex/table/default-table-config";
@@ -24,8 +29,10 @@ import { defaultDatePickerConfig } from "./components/primitive/date-picker/defa
 import { defaultFlexConfig } from "./components/primitive/flex/default-flex-config";
 import { defaultGridConfig } from "./components/primitive/grid/default-grid-config";
 import { defaultHeadingConfig } from "./components/primitive/heading/default-heading-config";
+import { defaultImageConfig } from "./components/primitive/image/default-image-config";
 import { defaultInputConfig } from "./components/primitive/input/default-input-config";
-import { defaultParagraphConfig } from "./components/primitive/paragraph/default-paragraph-config";
+import { defaultLinkConfig } from "./components/primitive/link/default-link-config";
+import { defaultTextConfig } from "./components/primitive/text/default-text-config";
 import { defaultRadioConfig } from "./components/primitive/radio/default-radio-config";
 import { defaultSelectConfig } from "./components/primitive/select/default-select-config";
 import { defaultSpinnerConfig } from "./components/primitive/spinner/default-spinner-config";
@@ -39,7 +46,7 @@ export const defaultComponentConfig: Partial<ComponentConfigRegistry> = {
   flex: defaultFlexConfig,
   grid: defaultGridConfig,
   heading: defaultHeadingConfig,
-  paragraph: defaultParagraphConfig,
+  text: defaultTextConfig,
   button: defaultButtonConfig,
   spinner: defaultSpinnerConfig,
   input: defaultInputConfig,
@@ -49,6 +56,8 @@ export const defaultComponentConfig: Partial<ComponentConfigRegistry> = {
   datePicker: defaultDatePickerConfig,
   select: defaultSelectConfig,
   buttonDropdown: defaultButtonDropdownConfig,
+  image: defaultImageConfig,
+  link: defaultLinkConfig,
 
   tooltip: defaultTooltipConfig,
   multiSelect: defaultMultiSelectConfig,
@@ -60,6 +69,11 @@ export const defaultComponentConfig: Partial<ComponentConfigRegistry> = {
   modal: defaultModalConfig,
   toast: defaultToastConfig,
   keyboard: defaultKeyboardConfig,
+  accordion: defaultAccordionConfig,
+  parallax: defaultParallaxConfig,
+  carousel: defaultCarouselConfig,
+  card: defaultCardConfig,
+  chip: defaultChipConfig,
 };
 
 export const defaultConfig: Config = {

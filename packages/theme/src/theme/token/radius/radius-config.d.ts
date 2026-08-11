@@ -4,6 +4,7 @@ export type Radius = {
   sm: string;
   md: string;
   lg: string;
+  xl: string;
   full: string;
 };
 

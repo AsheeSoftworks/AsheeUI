@@ -1,6 +1,9 @@
 import { useState } from "react";
-import PlaygroundGlobalPage from "./pages/PlaygroundGlobal";
-import PlaygroundLocalPage from "./pages/PlaygroundLocal";
+import ConfigTestPage from "./pages/ConfigTestPage";
+// import PlaygroundGlobalPage from "./pages/PlaygroundGlobal";
+// import PlaygroundLocalPage from "./pages/PlaygroundLocal";
+import LocalPropsTestPage from "./pages/LocalPropsTestPage";
+
 // import { GlobalsPage } from "./pages/globals-page";
 // import { LocalOverridesPage } from "./pages/local-overrides-page";
 
@@ -25,7 +28,7 @@ function App() {
         </button>
       </div>
       {/* {page === "globals" ? <GlobalsPage /> : <LocalOverridesPage />} */}
-      {page === "globals" ? <PlaygroundGlobalPage /> : <PlaygroundLocalPage />}
+      {page === "globals" ? <ConfigTestPage /> : <LocalPropsTestPage />}
     </div>
   );
 }
