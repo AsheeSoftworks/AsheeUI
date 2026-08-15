@@ -9,6 +9,7 @@
   },
   "devDependencies": {
     "@biomejs/biome": "latest",
+    "@types/node": "^22.15.3",
     "turbo": "latest",
     "typescript": "^5.5.0"
   },

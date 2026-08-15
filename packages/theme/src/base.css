@@ -1,6 +1,5 @@
 @source "@ashee/ui/src/index.ts";
 @source "@ashee/settings/src/index.ts";
-@source "@ashee/motion/src/index.ts";
 
 @theme inline {
   --color-background: var(--ashee-background);

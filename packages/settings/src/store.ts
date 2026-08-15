@@ -40,7 +40,6 @@ class SettingsController {
     }
   }
 
-  /** Called once by AsheeUIProvider with the resolved app config. */
   init(theme: InitTheme): void {
     this.baseColors = theme.color;
     if (!this.hydrated && theme.defaultTheme) {
@@ -74,8 +73,11 @@ class SettingsController {
       ? mergeObject(this.baseColors, this.state.customColors)
       : this.baseColors;
     applyThemeConfig(colors);
+
     this.applyFontScale();
     this.applyAnimations();
+    this.applyDensity();
+    this.applyHighContrast();
   }
 
   private applyFontScale() {
@@ -91,6 +93,25 @@ class SettingsController {
     document.documentElement.classList.toggle(
       "ashee-no-animations",
       !this.state.enableAnimations,
+    );
+  }
+
+  private applyDensity() {
+    if (typeof document === "undefined") return;
+    const el = document.documentElement;
+    el.classList.remove(
+      "ashee-density-compact",
+      "ashee-density-comfortable",
+      "ashee-density-spacious",
+    );
+    el.classList.add(`ashee-density-${this.state.density}`);
+  }
+
+  private applyHighContrast() {
+    if (typeof document === "undefined") return;
+    document.documentElement.classList.toggle(
+      "ashee-high-contrast",
+      this.state.highContrast,
     );
   }
 
