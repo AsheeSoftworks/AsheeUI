@@ -28,8 +28,6 @@ export const defaultChipSizeScale: ChipSizeScale = {
 };
 
 export const defaultChipConfig: ChipConfig = {
-  variant: "bordered",
-  color: "primary",
   size: defaultChipSizeScale,
   radius: "full",
   animation: "none",

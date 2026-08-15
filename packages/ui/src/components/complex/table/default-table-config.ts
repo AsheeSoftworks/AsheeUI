@@ -28,5 +28,4 @@ export const defaultTableConfig: TableConfig = {
   size: defaultTableSizeScale,
   variant: "default",
   radius: "md",
-  animation: "fade",
 };

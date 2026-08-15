@@ -8,19 +8,21 @@ import { forwardRef, type ReactNode, useMemo } from "react";
 import { useAsheeConfig } from "../../../context";
 import { resolveAnimation } from "../../../motion/resolve-animation";
 import type { AnimationProp } from "../../../motion/types";
-import {
-  type Color,
-  resolveVariantClass,
-  type Variant,
-} from "../../../shared/variant";
+import { type Color, resolveVariantClass } from "../../../shared/variant";
 import { resolveScale, resolveValue } from "../../../utils/resolve-token";
 import { CloseIcon } from "../../icons/CloseIcon";
-import type { ChipSizeKey, ChipSizeScale } from "./chip-config";
+import type {
+  ChipConfig,
+  ChipSizeKey,
+  ChipSizeScale,
+  ChipVariant,
+} from "./chip-config";
 import { defaultChipSizeScale } from "./default-chip-config";
 import { flattenChipSizeScale } from "./flatten-chip-size-scale";
 
-export interface ChipProps extends Omit<HTMLMotionProps<"div">, "color"> {
-  variant?: Variant;
+export interface ChipProps
+  extends Omit<React.SelectHTMLAttributes<HTMLDivElement>, "color" | "size"> {
+  variant?: ChipVariant;
   color?: Color;
   size?: ChipSizeKey;
   radius?: keyof Radius;
@@ -60,14 +62,19 @@ export const Chip = forwardRef<HTMLDivElement, ChipProps>(
   ) => {
     const config = useAsheeConfig();
     const { settings } = useSettings();
-    const sectionConfig = config.components?.chip;
+    const sectionConfig = config.components?.chip as ChipConfig | undefined;
 
     // Design Token Resolvers
-    const resolvedVariant = resolveValue(
+    const rawVariant = resolveValue(
       variant,
       sectionConfig?.variant,
       config.theme.defaultVariant ?? "bordered",
     );
+
+    // Fallback 'underlined' (e.g. from global theme) to 'bordered'
+    const resolvedVariant: ChipVariant =
+      rawVariant === "underlined" ? "bordered" : (rawVariant as ChipVariant);
+
     const resolvedColor = resolveValue(
       color,
       sectionConfig?.color,
@@ -135,7 +142,7 @@ export const Chip = forwardRef<HTMLDivElement, ChipProps>(
           ...style,
         }}
         {...(motionProps as HTMLMotionProps<"div">)}
-        {...props}>
+        {...(props as HTMLMotionProps<"div">)}>
         {/* Status Dot */}
         {dot && (
           <span

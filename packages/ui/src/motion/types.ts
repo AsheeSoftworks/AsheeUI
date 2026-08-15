@@ -1,6 +1,6 @@
 import type { TargetAndTransition, Transition, Variants } from "framer-motion";
 
-/** All built-in animation preset names across gesture and surface components. */
+/** All available preset keys in the library */
 export type BaseAnimationPreset =
   | "none"
   | "scale"
@@ -11,9 +11,10 @@ export type BaseAnimationPreset =
   | "zoom"
   | "pop";
 
-export type AnimationPresetName = BaseAnimationPreset;
+export type SurfaceAnimationPreset = "none" | "fade" | "slide" | "zoom" | "pop";
 
-/** Unified animation definition supporting interactive states and presence transitions. */
+// ─── Core Animation Interfaces ───────────────────────────────────────────────
+
 export interface AnimationPreset {
   whileHover?: TargetAndTransition;
   whileTap?: TargetAndTransition;
@@ -24,7 +25,10 @@ export interface AnimationPreset {
   transition?: Transition;
 }
 
-/** Flexibly accepts preset strings, custom objects/variants, or boolean toggles. */
+/**
+ * Accepts constrained preset strings based on `TPresets`,
+ * custom Framer Motion objects/variants, or boolean toggles.
+ */
 export type AnimationProp<TPresets extends string = BaseAnimationPreset> =
   | TPresets
   | AnimationPreset

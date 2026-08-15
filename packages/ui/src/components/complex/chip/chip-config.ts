@@ -4,6 +4,8 @@ import type { Color, Variant } from "../../../shared/variant";
 
 export type ChipSizeKey = "sm" | "md" | "lg";
 
+export type ChipVariant = Exclude<Variant, "underlined">;
+
 export interface ChipSizeValue {
   height: ResponsiveValue<string>;
   paddingX: ResponsiveValue<string>;
@@ -18,7 +20,7 @@ export interface ChipSizeScale {
 }
 
 export interface ChipConfig {
-  variant?: Variant;
+  variant?: ChipVariant;
   color?: Color;
   size?: ChipSizeScale;
   radius?: keyof Radius;

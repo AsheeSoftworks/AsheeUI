@@ -5,7 +5,7 @@
     "build": "turbo run build",
     "dev": "turbo run dev",
     "lint": "turbo run lint",
-    "check": "biome check ."
+    "check": "pnpx @biomejs/biome check --write"
   },
   "devDependencies": {
     "@biomejs/biome": "latest",

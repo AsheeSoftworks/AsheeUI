@@ -3,6 +3,7 @@ import type { AnimationProp } from "../../../motion/types";
 import type { Color, Variant } from "../../../shared/variant";
 
 export type ButtonSizeKey = "sm" | "md" | "lg";
+export type ButtonAnimationPreset = "none" | "scale" | "lift" | "bounce";
 
 export interface ButtonSizeValue {
   paddingX: ResponsiveValue<string>;
@@ -21,7 +22,6 @@ export interface ButtonConfig {
   color?: Color;
   size?: ButtonSizeScale;
   radius?: keyof Radius;
-  animation?: AnimationProp;
-  isExternal?: boolean;
+  animation?: AnimationProp<ButtonAnimationPreset>;
   className?: string;
 }

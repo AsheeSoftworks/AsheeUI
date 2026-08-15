@@ -3,7 +3,7 @@ import type { ExternalConfig } from "@ashee/ui";
 export const config: ExternalConfig = {
   theme: {
     defaultTheme: "company-red",
-    defaultVariant: "ghost",
+    defaultVariant: "solid",
     defaultColor: "success",
     color: {
       dark: { primary: "#38bdf8", success: "#4ade80" },
@@ -21,7 +21,7 @@ export const config: ExternalConfig = {
       },
     },
     radius: {
-      default: "lg",
+      default: "none",
       values: {
         xs: "0.125rem",
         sm: "0.25rem",
@@ -70,6 +70,9 @@ export const config: ExternalConfig = {
     scrollbar: { width: "6px", radius: "4px" },
   },
   components: {
+    toast: {
+      variant: "underlined",
+    },
     container: {
       defaultMaxWidth: "xl",
       padding: "lg",
@@ -113,11 +116,11 @@ export const config: ExternalConfig = {
       },
     },
     button: {
-      variant: "bordered",
-      color: "success",
-      animation: "bounce",
+      // variant: "bordered",
+      // color: "success",
+      // animation: "bounce",
       size: {
-        default: "md",
+        default: "lg",
         values: {
           sm: {
             paddingX: { base: "0.75rem" },

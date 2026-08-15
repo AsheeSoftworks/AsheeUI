@@ -23,12 +23,10 @@ export const defaultTooltipSizeScale: TooltipSizeScale = {
 
 export const defaultTooltipConfig: TooltipConfig = {
   variant: "solid",
-  color: "secondary",
   size: defaultTooltipSizeScale,
   placement: "top",
   delay: 200,
   offset: 8,
-  radius: "md",
   shadow: "md",
   animation: "scale",
   showArrow: false,

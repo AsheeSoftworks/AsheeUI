@@ -17,12 +17,12 @@ import { resolveAnimation } from "../../../motion/resolve-animation";
 import type { AnimationProp } from "../../../motion/types";
 import { type Color, resolveVariantClass } from "../../../shared/variant";
 import { resolveScale, resolveValue } from "../../../utils/resolve-token";
+import { FieldShell } from "../field/FieldShell";
 import type {
   FieldSizeKey,
   FieldStatus,
   LabelAlign,
 } from "../field/field-config";
-import { FieldShell } from "../field/field-shell";
 import { defaultSwitchSizeScale } from "./default-switch-config";
 import { flattenSwitchSizeScale } from "./flatten-switch-size-scale";
 import type { SwitchConfig, SwitchSizeScale } from "./switch-config";
@@ -35,7 +35,10 @@ const STATUS_BORDER_CLASS: Record<FieldStatus, string> = {
 };
 
 export interface SwitchProps
-  extends Omit<HTMLMotionProps<"input">, "size" | "onChange" | "children"> {
+  extends Omit<
+    React.SelectHTMLAttributes<HTMLInputElement>,
+    "size" | "onChange" | "children"
+  > {
   size?: FieldSizeKey;
   color?: string;
   radius?: keyof Radius;

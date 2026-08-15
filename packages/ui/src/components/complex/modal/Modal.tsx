@@ -4,27 +4,24 @@ import { useSettings } from "@ashee/settings";
 import { type Radius, useResponsiveVars } from "@ashee/theme";
 import { cn } from "@ashee/utils";
 import { AnimatePresence, type HTMLMotionProps, motion } from "framer-motion";
-import { type ReactNode, useCallback, useEffect, useMemo } from "react";
+import { type ReactNode, useEffect, useMemo } from "react";
 import { useAsheeConfig } from "../../../context";
-import { resolveAnimation } from "../../../motion/resolve-animation";
-import type { AnimationProp } from "../../../motion/types";
 import { resolveScale, resolveValue } from "../../../utils/resolve-token";
 import { defaultModalSizeScale } from "./default-modal-config";
 import { flattenModalSizeScale } from "./flatten-modal-size-scale";
 import type {
+  ModalAnimationPreset,
   ModalConfig,
   ModalPosition,
   ModalSizeKey,
   ModalSizeScale,
 } from "./modal-config";
-import { useModal } from "./modal-context";
+import { resolveModalAnimation } from "./modal-motion";
 
-export interface ModalProps extends Omit<HTMLMotionProps<"div">, "ref"> {
-  /** Optional unique identifier for state management via ModalProvider / useModal(). */
-  id?: string;
-
-  /** Controlled open state (overrides context if id is also provided). */
-  isOpen?: boolean;
+export interface ModalProps
+  extends Omit<React.SelectHTMLAttributes<HTMLDivElement>, "ref" | "size"> {
+  /** Controls open visibility state. */
+  isOpen: boolean;
 
   /** Close event callback. */
   onClose?: () => void;
@@ -32,7 +29,7 @@ export interface ModalProps extends Omit<HTMLMotionProps<"div">, "ref"> {
   /** Modal inner content. */
   children: ReactNode;
 
-  /** Modal content width override (e.g. "clamp(300px, 40vw, 800px)"). */
+  /** Modal content width override. */
   width?: string;
 
   /** Modal content height override. */
@@ -51,7 +48,7 @@ export interface ModalProps extends Omit<HTMLMotionProps<"div">, "ref"> {
   radius?: keyof Radius;
 
   /** Motion animation preset. */
-  animation?: AnimationProp;
+  animation?: ModalAnimationPreset;
 
   /** Close modal when clicking dark backdrop overlay. Default: true. */
   closeOnBackdropClick?: boolean;
@@ -67,8 +64,7 @@ export interface ModalProps extends Omit<HTMLMotionProps<"div">, "ref"> {
 }
 
 export function Modal({
-  id,
-  isOpen: controlledIsOpen,
+  isOpen,
   onClose,
   children,
   width,
@@ -88,19 +84,7 @@ export function Modal({
 }: ModalProps) {
   const config = useAsheeConfig();
   const { settings } = useSettings();
-  const { isOpen: isContextOpen, closeModal } = useModal();
-
   const sectionConfig = config.components?.modal as ModalConfig | undefined;
-
-  // Resolve Open State (Controlled vs Context ID)
-  const open = controlledIsOpen ?? (id ? isContextOpen(id) : false);
-
-  const handleClose = useCallback(() => {
-    if (id) {
-      closeModal(id);
-    }
-    onClose?.();
-  }, [id, closeModal, onClose]);
 
   // Design Token Resolvers
   const sizeScale = (sectionConfig?.size ??
@@ -121,10 +105,8 @@ export function Modal({
     sectionConfig?.position,
     "center",
   );
-
   const closeOnBackdropClick =
     closeOnBackdropClickProp ?? sectionConfig?.closeOnBackdropClick ?? true;
-
   const closeOnEscape =
     closeOnEscapeProp ?? sectionConfig?.closeOnEscape ?? true;
 
@@ -140,38 +122,37 @@ export function Modal({
     config.theme.radius.values,
   );
 
-  const motionProps = resolveAnimation(
-    animation ?? (sectionConfig?.animation as AnimationProp | undefined),
+  const motionProps = resolveModalAnimation(
+    animation ?? sectionConfig?.animation,
+    position,
     settings.enableAnimations,
   ) as unknown as Partial<HTMLMotionProps<"div">>;
 
   // Keyboard Escape Handler
   useEffect(() => {
-    if (!open || !closeOnEscape) return;
+    if (!isOpen || !closeOnEscape || !onClose) return;
 
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
-        handleClose();
-      }
+      if (e.key === "Escape") onClose();
     };
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [open, closeOnEscape, handleClose]);
+  }, [isOpen, closeOnEscape, onClose]);
 
   // Body Scroll Lock
   useEffect(() => {
-    if (!open) return;
+    if (!isOpen) return;
     const originalOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
     return () => {
       document.body.style.overflow = originalOverflow;
     };
-  }, [open]);
+  }, [isOpen]);
 
   return (
     <AnimatePresence>
-      {open && (
+      {isOpen && (
         <div
           role="dialog"
           aria-modal="true"
@@ -182,7 +163,7 @@ export function Modal({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.15 }}
-            onClick={closeOnBackdropClick ? handleClose : undefined}
+            onClick={closeOnBackdropClick ? onClose : undefined}
             className={cn(
               "fixed inset-0 bg-background/80 backdrop-blur-xs dark:bg-black/70",
               sectionConfig?.overlayClassName,
@@ -194,7 +175,7 @@ export function Modal({
           <motion.div
             {...motionProps}
             className={cn(
-              "relative z-10 w-full bg-card text-card-foreground border border-border shadow-xl overflow-y-auto scrollbar-hide max-h-[90vh]",
+              "relative z-10 w-full bg-background text-foreground overflow-y-auto scrollbar-hide max-h-[90vh]",
               position === "top" && "self-start mt-12",
               position === "bottom" && "self-end mb-12",
               sectionConfig?.contentClassName,
@@ -208,7 +189,7 @@ export function Modal({
               height,
               ...style,
             }}
-            {...props}>
+            {...(props as HTMLMotionProps<"div">)}>
             {children}
           </motion.div>
         </div>

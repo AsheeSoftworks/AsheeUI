@@ -24,9 +24,8 @@ export const defaultCardSizeScale: CardSizeScale = {
 export const defaultCardConfig: CardConfig = {
   variant: "bordered",
   size: defaultCardSizeScale,
-  radius: "xl",
   shadow: "none",
-  animation: "scale",
+  animation: "none",
   imagePosition: "top",
   imageRatio: "video",
   imageFit: "cover",

@@ -1,9 +1,13 @@
 "use client";
 
+import type { Radius } from "@ashee/theme";
 import { cn } from "@ashee/utils";
 import { FloatingPortal } from "@floating-ui/react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { useAsheeConfig } from "../../../context";
+import type { Color, Variant } from "../../../shared/variant";
+import { Button } from "../../primitive/button/Button";
 import type { LayoutName } from "./keyboard-config";
 import { type KeyboardElement, useKeyboard } from "./keyboard-context";
 
@@ -54,12 +58,20 @@ export interface OnScreenKeyboardProps {
   className?: string;
   heightClass?: string;
   initialLayout?: LayoutName;
+  variant?: Variant;
+  color?: Color;
+  radius?: keyof Radius;
+  keyClassName?: string;
 }
 
 export function OnScreenKeyboard({
   className,
   heightClass,
   initialLayout,
+  variant: variantProp,
+  color: colorProp,
+  radius: radiusProp,
+  keyClassName,
 }: OnScreenKeyboardProps) {
   const {
     isOpen,
@@ -70,16 +82,27 @@ export function OnScreenKeyboard({
     forceClose,
     getField,
   } = useKeyboard();
-
+  const globalConfig = useAsheeConfig();
   const activeLayouts = config.layouts ?? {};
   const activeDisplay = config.display ?? {};
   const effectiveHeightClass = heightClass ?? config.heightClass;
   const defaultLayoutName = config.defaultLayout ?? "default";
 
+  // Configuration token resolutions
+  const resolvedVariant =
+    variantProp ??
+    config.variant ??
+    globalConfig.theme.defaultVariant ??
+    "solid";
+  const resolvedColor =
+    colorProp ?? config.color ?? globalConfig.theme.defaultColor ?? "primary";
+  const resolvedRadius = radiusProp ?? config.radius;
+
   const [layout, setLayout] = useState<LayoutName>(
     initialLayout ?? defaultLayoutName,
   );
   const [pressedKeys, setPressedKeys] = useState<Set<string>>(new Set());
+  const [hoveredToken, setHoveredToken] = useState<string | null>(null);
 
   // Reset layout when opening
   useEffect(() => {
@@ -88,9 +111,6 @@ export function OnScreenKeyboard({
     }
   }, [isOpen, initialLayout, defaultLayoutName]);
 
-  // Pre-parse the layout into stable objects with deterministic IDs.
-  // This satisfies Biome, eliminates string splitting on every render,
-  // and guarantees React's DOM nodes are stable across state changes.
   const parsedRows = useMemo(() => {
     const rawRows =
       activeLayouts[layout] || activeLayouts[defaultLayoutName] || [];
@@ -239,7 +259,7 @@ export function OnScreenKeyboard({
               exit={{ y: "100%" }}
               transition={{ type: "spring", stiffness: 350, damping: 30 }}
               className={cn(
-                "w-full bg-card border-t border-border shadow-2xl flex flex-col select-none",
+                "w-full bg-background border-t border-border shadow-2xl flex flex-col select-none",
                 effectiveHeightClass,
                 className,
               )}>
@@ -248,23 +268,31 @@ export function OnScreenKeyboard({
                   <div key={row.id} className="flex gap-1.5 flex-1">
                     {row.keys.map(({ id, token }) => {
                       const isPressed = pressedKeys.has(token);
+                      const isHovered = hoveredToken === token;
+                      const isKeyActive = isPressed || isHovered;
                       const keyLabel = activeDisplay[token] ?? token;
 
+                      // Use "secondary" for resting state, resolved color when hovered or pressed
+                      const currentKeyColor: Color = isKeyActive
+                        ? resolvedColor
+                        : "secondary";
+
                       return (
-                        <button
+                        <Button
                           key={id}
-                          type="button"
+                          variant={resolvedVariant}
+                          color={currentKeyColor}
+                          radius={resolvedRadius}
                           onClick={() => handleKeyPress(token)}
+                          onMouseEnter={() => setHoveredToken(token)}
+                          onMouseLeave={() => setHoveredToken(null)}
                           className={cn(
-                            "h-full rounded-md border border-border/60 bg-background/80 text-foreground text-lg font-medium shadow-sm transition-all flex items-center justify-center outline-none",
-                            "hover:bg-primary hover:text-primary-foreground focus-visible:ring-2 focus-visible:ring-primary",
-                            "active:scale-95 active:bg-primary active:text-primary-foreground",
+                            "h-full text-lg font-medium p-0 flex items-center justify-center",
                             getKeyWidthClass(token),
-                            isPressed &&
-                              "bg-primary text-primary-foreground scale-95",
+                            keyClassName,
                           )}>
                           {keyLabel}
-                        </button>
+                        </Button>
                       );
                     })}
                   </div>

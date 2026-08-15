@@ -1,7 +1,10 @@
 import type { Radius, ResponsiveValue } from "@ashee/theme";
 import type { AnimationProp } from "../../../motion/types";
-import type { Color } from "../../../shared/variant";
-import type { FieldConfig, FieldSizeKey } from "../field/field-config";
+import type {
+  FieldConfig,
+  FieldSizeKey,
+  InputAnimationPreset,
+} from "../field/field-config";
 
 export type SwitchSizeKey = FieldSizeKey;
 
@@ -18,10 +21,9 @@ export interface SwitchSizeScale {
   values: Record<SwitchSizeKey, SwitchSizeValue>;
 }
 
-export interface SwitchConfig extends Omit<FieldConfig, "size"> {
+export interface SwitchConfig extends Omit<FieldConfig, "size" | "variant"> {
   size?: SwitchSizeScale;
-  color?: Color;
   radius?: keyof Radius;
-  animation?: AnimationProp;
+  animation?: AnimationProp<InputAnimationPreset>;
   className?: string;
 }

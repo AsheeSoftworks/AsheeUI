@@ -1,17 +1,19 @@
 "use client";
 
-import { useSettings } from "@ashee/settings";
 import {
   type FontWeight,
   type LineHeight,
   useResponsiveVars,
 } from "@ashee/theme";
 import { cn } from "@ashee/utils";
-import { type HTMLMotionProps, motion } from "framer-motion";
-import { forwardRef, type ReactNode, useMemo } from "react";
+import {
+  type AnchorHTMLAttributes,
+  forwardRef,
+  type ReactNode,
+  useMemo,
+} from "react";
 import { useAsheeConfig } from "../../../context";
-import { resolveAnimation } from "../../../motion/resolve-animation";
-import type { AnimationProp } from "../../../motion/types";
+import type { Color } from "../../../shared/variant";
 import { resolveValue } from "../../../utils/resolve-token";
 import { ExternalLinkIcon } from "../../icons/ExternalLinkIcon";
 import { defaultLinkSizeScale } from "./default-link-config";
@@ -26,12 +28,20 @@ import type {
 
 // ─── Style Mappings ──────────────────────────────────────────────────────────
 
-const VARIANT_CLASS: Record<LinkVariant, string> = {
+const COLOR_CLASS: Record<Color, string> = {
+  none: "text-foreground hover:text-foreground/80",
   default: "text-foreground hover:text-foreground/80",
   primary: "text-primary hover:text-primary/80",
-  muted: "text-muted-foreground hover:text-foreground",
-  subtle: "text-foreground/80 hover:text-foreground",
+  secondary: "text-secondary hover:text-secondary/80",
+  success: "text-success hover:text-success/80",
+  warning: "text-warning hover:text-warning/80",
   danger: "text-danger hover:text-danger/80",
+};
+
+const VARIANT_CLASS: Record<LinkVariant, string> = {
+  default: "",
+  muted: "text-muted-foreground hover:text-foreground",
+  subtle: "opacity-80 hover:opacity-100",
 };
 
 const UNDERLINE_CLASS: Record<LinkUnderline, string> = {
@@ -42,9 +52,11 @@ const UNDERLINE_CLASS: Record<LinkUnderline, string> = {
 
 // ─── Props Interface ──────────────────────────────────────────────────────────
 
-export interface LinkProps extends Omit<HTMLMotionProps<"a">, "size"> {
+export interface LinkProps
+  extends Omit<AnchorHTMLAttributes<HTMLAnchorElement>, "size"> {
   href?: string;
   variant?: LinkVariant;
+  color?: Color;
   size?: LinkSizeKey;
   underline?: LinkUnderline;
   weight?: keyof FontWeight;
@@ -53,7 +65,6 @@ export interface LinkProps extends Omit<HTMLMotionProps<"a">, "size"> {
   disabled?: boolean;
   startIcon?: ReactNode;
   endIcon?: ReactNode;
-  animation?: AnimationProp;
   children?: ReactNode;
 }
 
@@ -64,6 +75,7 @@ export const Link = forwardRef<HTMLAnchorElement, LinkProps>(
     {
       href,
       variant,
+      color,
       size,
       underline,
       weight,
@@ -72,7 +84,6 @@ export const Link = forwardRef<HTMLAnchorElement, LinkProps>(
       disabled = false,
       startIcon,
       endIcon,
-      animation,
       children,
       className,
       style,
@@ -84,7 +95,6 @@ export const Link = forwardRef<HTMLAnchorElement, LinkProps>(
     ref,
   ) => {
     const config = useAsheeConfig();
-    const { settings } = useSettings();
     const sectionConfig = config.components?.link as LinkConfig | undefined;
 
     // Design Token Resolvers
@@ -101,10 +111,15 @@ export const Link = forwardRef<HTMLAnchorElement, LinkProps>(
       config.theme.breakpoints,
     );
 
+    const resolvedColor = resolveValue(
+      color,
+      sectionConfig?.color,
+      config.theme.defaultColor ?? "primary",
+    );
     const resolvedVariant = resolveValue(
       variant,
       sectionConfig?.variant,
-      "primary" as LinkVariant,
+      "default" as LinkVariant,
     );
     const resolvedUnderline = resolveValue(
       underline,
@@ -123,11 +138,6 @@ export const Link = forwardRef<HTMLAnchorElement, LinkProps>(
     );
     const resolvedIsExternal = isExternal ?? sectionConfig?.isExternal ?? false;
 
-    const motionProps = resolveAnimation(
-      animation ?? (sectionConfig?.animation as AnimationProp | undefined),
-      settings.enableAnimations,
-    );
-
     const targetAttr = target ?? (resolvedIsExternal ? "_blank" : undefined);
     const relAttr =
       rel ??
@@ -140,11 +150,16 @@ export const Link = forwardRef<HTMLAnchorElement, LinkProps>(
         e.preventDefault();
         return;
       }
-      onClick?.(e as React.MouseEvent<HTMLAnchorElement, MouseEvent>);
+      onClick?.(e);
     };
 
+    const colorClass =
+      resolvedVariant === "muted"
+        ? VARIANT_CLASS.muted
+        : cn(COLOR_CLASS[resolvedColor], VARIANT_CLASS[resolvedVariant]);
+
     return (
-      <motion.a
+      <a
         ref={ref}
         href={disabled ? undefined : href}
         target={targetAttr}
@@ -154,7 +169,7 @@ export const Link = forwardRef<HTMLAnchorElement, LinkProps>(
         className={cn(
           "inline-flex items-center transition-colors duration-200 outline-none select-none",
           "focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 rounded-xs",
-          VARIANT_CLASS[resolvedVariant],
+          colorClass,
           UNDERLINE_CLASS[resolvedUnderline],
           disabled && "opacity-50 pointer-events-none cursor-not-allowed",
           sectionConfig?.className,
@@ -167,7 +182,6 @@ export const Link = forwardRef<HTMLAnchorElement, LinkProps>(
           lineHeight: config.theme.typography.lineHeight[resolvedLineHeight],
           ...style,
         }}
-        {...(motionProps as HTMLMotionProps<"a">)}
         {...props}>
         {startIcon && (
           <span
@@ -202,7 +216,7 @@ export const Link = forwardRef<HTMLAnchorElement, LinkProps>(
             />
           )
         )}
-      </motion.a>
+      </a>
     );
   },
 );

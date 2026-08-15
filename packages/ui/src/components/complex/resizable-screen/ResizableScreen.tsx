@@ -1,5 +1,6 @@
 "use client";
 
+import type { Radius } from "@ashee/theme";
 import { cn } from "@ashee/utils";
 import {
   forwardRef,
@@ -9,6 +10,12 @@ import {
   useState,
 } from "react";
 import { useAsheeConfig } from "../../../context";
+import {
+  type Color,
+  resolveVariantClass,
+  type Variant,
+} from "../../../shared/variant";
+import { resolveScale, resolveValue } from "../../../utils/resolve-token";
 import { defaultResizableScreenConfig } from "./default-resizable-screen-config";
 import type {
   ResizableOrientation,
@@ -63,12 +70,33 @@ export interface ResizableScreenProps
   orientation?: ResizableOrientation;
 
   /**
+   * Visual variant for the notch indicator, matching Button styling.
+   */
+  handleVariant?: Variant;
+
+  /**
+   * Color theme for the notch indicator, matching Button styling.
+   */
+  handleColor?: Color;
+
+  /**
+   * Border radius for the notch indicator.
+   */
+  handleRadius?: keyof Radius;
+
+  /**
+   * Option to completely hide the handle separator.
+   * @default false
+   */
+  hideHandle?: boolean;
+
+  /**
    * Callback fired when pane size changes.
    */
   onSizeChange?: (size: number) => void;
 
   /**
-   * Additional custom styling for the resize handle bar.
+   * Additional custom styling for the resize handle bar container.
    */
   handleClassName?: string;
 }
@@ -84,6 +112,10 @@ export const ResizableScreen = forwardRef<HTMLDivElement, ResizableScreenProps>(
       maxSize: maxSizeProp,
       step: stepProp,
       orientation: orientationProp,
+      handleVariant: handleVariantProp,
+      handleColor: handleColorProp,
+      handleRadius: handleRadiusProp,
+      hideHandle: hideHandleProp,
       onSizeChange,
       handleClassName,
       className,
@@ -113,6 +145,33 @@ export const ResizableScreen = forwardRef<HTMLDivElement, ResizableScreenProps>(
       orientationProp ??
       sectionConfig?.orientation ??
       (defaultResizableScreenConfig.orientation as number | undefined);
+
+    const hideHandle = hideHandleProp ?? sectionConfig?.hideHandle ?? false;
+
+    // Notch styling resolution matching Button standard
+    const resolvedHandleVariant = resolveValue(
+      handleVariantProp,
+      sectionConfig?.handleVariant,
+      config.theme.defaultVariant ?? "bordered",
+    );
+    const resolvedHandleColor = resolveValue(
+      handleColorProp,
+      sectionConfig?.handleColor,
+      config.theme.defaultColor ?? "primary",
+    );
+
+    const resolvedHandleRadiusKey =
+      typeof handleRadiusProp === "string" ? handleRadiusProp : undefined;
+    const resolvedSectionHandleRadiusKey =
+      typeof sectionConfig?.handleRadius === "string"
+        ? sectionConfig.handleRadius
+        : undefined;
+    const resolvedHandleRadius = resolveScale(
+      resolvedHandleRadiusKey,
+      resolvedSectionHandleRadiusKey,
+      config.theme.radius.default,
+      config.theme.radius.values,
+    );
 
     const initialSize =
       size ??
@@ -207,8 +266,7 @@ export const ResizableScreen = forwardRef<HTMLDivElement, ResizableScreenProps>(
           containerRef.current = node;
           if (typeof ref === "function") ref(node);
           else if (ref)
-            (ref as React.MutableRefObject<HTMLDivElement | null>).current =
-              node;
+            (ref as React.RefObject<HTMLDivElement | null>).current = node;
         }}
         className={cn(
           "w-full h-full min-h-0 relative select-none flex",
@@ -236,38 +294,44 @@ export const ResizableScreen = forwardRef<HTMLDivElement, ResizableScreenProps>(
           {child1}
         </div>
 
-        {/* Separator / Drag Handle */}
-        {/* biome-ignore lint/a11y/useSemanticElements: interactive resizable handle requires div styling */}
-        <div
-          role="separator"
-          tabIndex={0}
-          aria-valuenow={Math.round(currentSize)}
-          aria-valuemin={minSize}
-          aria-valuemax={maxSize}
-          aria-orientation={isHorizontal ? "horizontal" : "vertical"}
-          aria-label="Resize panel split"
-          onPointerDown={handlePointerDown}
-          onPointerMove={handlePointerMove}
-          onPointerUp={handlePointerUp}
-          onPointerCancel={handlePointerUp}
-          onKeyDown={handleKeyDown}
-          className={cn(
-            "relative z-10 shrink-0 flex items-center justify-center outline-none group transition-colors focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1",
-            isHorizontal
-              ? "w-2.5 h-full cursor-col-resize -mx-1"
-              : "h-2.5 w-full cursor-row-resize -my-1",
-            sectionConfig?.handleClassName,
-            handleClassName,
-          )}>
-          {/* Visual Divider Notch */}
+        {/* Separator / Drag Handle Container */}
+        {!hideHandle && (
+          // biome-ignore lint/a11y/useSemanticElements: interactive resizable handle requires div styling
           <div
+            role="separator"
+            tabIndex={0}
+            aria-valuenow={Math.round(currentSize)}
+            aria-valuemin={minSize}
+            aria-valuemax={maxSize}
+            aria-orientation={isHorizontal ? "horizontal" : "vertical"}
+            aria-label="Resize panel split"
+            onPointerDown={handlePointerDown}
+            onPointerMove={handlePointerMove}
+            onPointerUp={handlePointerUp}
+            onPointerCancel={handlePointerUp}
+            onKeyDown={handleKeyDown}
             className={cn(
-              "rounded-full bg-border group-hover:bg-primary group-focus-visible:bg-primary transition-colors duration-200",
-              isDragging && "bg-primary scale-105",
-              isHorizontal ? "w-1 h-10" : "h-1 w-10",
-            )}
-          />
-        </div>
+              "relative z-10 shrink-0 flex items-center justify-center outline-none group transition-colors focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1 select-none",
+              isHorizontal
+                ? "w-2.5 h-full cursor-col-resize -mx-1"
+                : "h-2.5 w-full cursor-row-resize -my-1",
+              sectionConfig?.handleClassName,
+              handleClassName,
+            )}>
+            {/* Visual Divider Notch styled like Button */}
+            <div
+              className={cn(
+                "transition-all duration-200 rounded-full",
+                isHorizontal ? "w-1 h-10" : "h-1 w-10",
+                resolveVariantClass(resolvedHandleVariant, resolvedHandleColor),
+                isDragging && "scale-110",
+              )}
+              style={{
+                borderRadius: resolvedHandleRadius,
+              }}
+            />
+          </div>
+        )}
 
         {/* Secondary Panel */}
         <div

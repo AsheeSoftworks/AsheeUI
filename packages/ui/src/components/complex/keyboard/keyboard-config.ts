@@ -1,4 +1,6 @@
+import type { Radius } from "@ashee/theme";
 import type { ReactNode } from "react";
+import type { Color, Variant } from "../../../shared/variant";
 
 export type StandardLayoutName = "default" | "shift" | "symbols" | "numeric";
 export type LayoutName = StandardLayoutName | (string & {});
@@ -12,4 +14,7 @@ export interface KeyboardConfig {
   defaultLayout?: LayoutName;
   heightClass?: string;
   autoShiftBack?: boolean;
+  variant?: Variant;
+  color?: Color;
+  radius?: keyof Radius;
 }

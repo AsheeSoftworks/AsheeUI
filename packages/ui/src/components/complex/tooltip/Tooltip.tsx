@@ -11,6 +11,7 @@ import {
   arrow,
   autoUpdate,
   FloatingArrow,
+  FloatingPortal,
   flip,
   offset as floatingOffset,
   shift,
@@ -207,44 +208,46 @@ export function Tooltip({
   return (
     <>
       {trigger}
-      <AnimatePresence>
-        {isOpen && (
-          <div
-            ref={refs.setFloating}
-            style={floatingStyles}
-            className="z-50 pointer-events-none"
-            {...getFloatingProps()}>
-            <motion.div
-              initial={{ opacity: 0, scale: 0.94 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.94 }}
-              transition={{ duration: 0.1, ease: "easeOut" }}
-              className={cn(
-                "font-medium border whitespace-nowrap select-none",
-                resolveVariantClass(resolvedVariant, resolvedColor),
-                sectionConfig?.className,
-                className,
-              )}
-              style={{
-                borderRadius: resolvedRadius,
-                boxShadow: resolvedShadow,
-                paddingInline: `var(--ashee-tooltip-${resolvedSizeKey}-padding-x)`,
-                paddingBlock: `var(--ashee-tooltip-${resolvedSizeKey}-padding-y)`,
-                fontSize: `var(--ashee-tooltip-${resolvedSizeKey}-font-size)`,
-              }}
-              {...(motionProps as HTMLMotionProps<"div">)}>
-              {content}
-              {resolvedShowArrow && (
-                <FloatingArrow
-                  ref={arrowRef}
-                  context={context}
-                  className="fill-current text-border"
-                />
-              )}
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
+      <FloatingPortal>
+        <AnimatePresence>
+          {isOpen && (
+            <div
+              ref={refs.setFloating}
+              style={floatingStyles}
+              className="z-50 pointer-events-none"
+              {...getFloatingProps()}>
+              <motion.div
+                initial={{ opacity: 0, scale: 0.94 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.94 }}
+                transition={{ duration: 0.1, ease: "easeOut" }}
+                className={cn(
+                  "font-medium border whitespace-nowrap select-none",
+                  resolveVariantClass(resolvedVariant, resolvedColor),
+                  sectionConfig?.className,
+                  className,
+                )}
+                style={{
+                  borderRadius: resolvedRadius,
+                  boxShadow: resolvedShadow,
+                  paddingInline: `var(--ashee-tooltip-${resolvedSizeKey}-padding-x)`,
+                  paddingBlock: `var(--ashee-tooltip-${resolvedSizeKey}-padding-y)`,
+                  fontSize: `var(--ashee-tooltip-${resolvedSizeKey}-font-size)`,
+                }}
+                {...(motionProps as HTMLMotionProps<"div">)}>
+                {content}
+                {resolvedShowArrow && (
+                  <FloatingArrow
+                    ref={arrowRef}
+                    context={context}
+                    className="fill-current text-border"
+                  />
+                )}
+              </motion.div>
+            </div>
+          )}
+        </AnimatePresence>
+      </FloatingPortal>
     </>
   );
 }

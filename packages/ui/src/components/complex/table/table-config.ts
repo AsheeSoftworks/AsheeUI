@@ -1,6 +1,6 @@
 import type { Radius, ResponsiveValue } from "@ashee/theme";
 import type { ReactNode } from "react";
-import type { AnimationProp } from "../../../motion/types";
+import type { Color } from "../../../shared/variant";
 
 export type TableSizeKey = "sm" | "md" | "lg";
 export type TableVariant = "default" | "striped" | "bordered" | "flush";
@@ -29,8 +29,8 @@ export interface TableSizeScale {
 export interface TableConfig {
   size?: TableSizeScale;
   variant?: TableVariant;
+  color?: Color;
   radius?: keyof Radius;
-  animation?: AnimationProp;
   className?: string;
   headerClassName?: string;
   rowClassName?: string;

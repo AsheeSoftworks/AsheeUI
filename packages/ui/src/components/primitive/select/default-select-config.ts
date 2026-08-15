@@ -25,5 +25,5 @@ export const defaultSelectConfig: SelectConfig = {
   size: defaultSelectSizeScale,
   radius: "md",
   labelAlign: "left",
-  animation: "scale",
+  animation: "none",
 };

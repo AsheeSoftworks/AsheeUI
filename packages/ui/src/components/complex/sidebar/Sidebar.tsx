@@ -8,8 +8,12 @@ import { type ReactNode, useCallback, useMemo } from "react";
 import { useAsheeConfig } from "../../../context";
 import { resolveAnimation } from "../../../motion/resolve-animation";
 import type { AnimationProp } from "../../../motion/types";
+import type { Color, Variant } from "../../../shared/variant";
 import { resolveScale, resolveValue } from "../../../utils/resolve-token";
 import { ArrowLeftIcon } from "../../icons/ArrowLeftIcon";
+import { Button } from "../../primitive/button/Button";
+import { Tooltip } from "../tooltip/Tooltip";
+import type { TooltipPlacement } from "../tooltip/tooltip-config";
 import { defaultSidebarSizeScale } from "./default-sidebar-config";
 import { flattenSidebarSizeScale } from "./flatten-sidebar-size-scale";
 import type {
@@ -60,8 +64,29 @@ export interface SidebarProps<T = string>
   /** Radius scale token for sidebar container. */
   radius?: keyof Radius;
 
+  /** Radius scale token for individual items. */
+  itemRadius?: keyof Radius;
+
   /** Animation configuration preset. */
   animation?: AnimationProp;
+
+  /** Active item variant. */
+  activeItemVariant?: Variant;
+
+  /** Active item color. */
+  activeItemColor?: Color;
+
+  /** Header back button variant. */
+  backButtonVariant?: Variant;
+
+  /** Header back button color. */
+  backButtonColor?: Color;
+
+  /** Whether to show tooltips on hover when the sidebar is collapsed. */
+  showTooltips?: boolean;
+
+  /** Preferred tooltip placement when collapsed. */
+  tooltipPlacement?: TooltipPlacement;
 
   /** Header section class override. */
   headerClassName?: string;
@@ -88,7 +113,14 @@ export function Sidebar<T = string>({
   variant: variantProp,
   size,
   radius,
+  itemRadius,
   animation,
+  activeItemVariant,
+  activeItemColor,
+  backButtonVariant,
+  backButtonColor,
+  showTooltips,
+  tooltipPlacement,
   headerClassName,
   bodyClassName,
   itemClassName,
@@ -120,6 +152,7 @@ export function Sidebar<T = string>({
     "default",
   );
 
+  // Radius Resolvers
   const resolvedRadiusKey = typeof radius === "string" ? radius : undefined;
   const resolvedSectionRadiusKey =
     typeof sectionConfig?.radius === "string"
@@ -130,6 +163,44 @@ export function Sidebar<T = string>({
     resolvedSectionRadiusKey,
     config.theme.radius.default,
     config.theme.radius.values,
+  );
+
+  const resolvedItemRadiusKey = (itemRadius ??
+    sectionConfig?.itemRadius ??
+    "md") as keyof Radius;
+
+  const resolvedActiveItemVariant = resolveValue<Variant>(
+    activeItemVariant,
+    sectionConfig?.activeItemVariant,
+    config.theme.defaultVariant ?? "solid",
+  );
+  const resolvedActiveItemColor = resolveValue<Color>(
+    activeItemColor,
+    sectionConfig?.activeItemColor,
+    config.theme.defaultColor ?? "primary",
+  );
+
+  const resolvedBackButtonVariant = resolveValue<Variant>(
+    backButtonVariant,
+    sectionConfig?.backButtonVariant,
+    "ghost",
+  );
+  const resolvedBackButtonColor = resolveValue<Color>(
+    backButtonColor,
+    sectionConfig?.backButtonColor,
+    "secondary",
+  );
+
+  // Tooltip Resolvers
+  const resolvedShowTooltips = resolveValue<boolean>(
+    showTooltips,
+    sectionConfig?.showTooltips,
+    true,
+  );
+  const resolvedTooltipPlacement = resolveValue<TooltipPlacement>(
+    tooltipPlacement,
+    sectionConfig?.tooltipPlacement,
+    "top",
   );
 
   const motionProps = resolveAnimation(
@@ -187,13 +258,17 @@ export function Sidebar<T = string>({
             height: `var(--ashee-sidebar-${resolvedSizeKey}-header-h)`,
           }}>
           {onBack && (
-            <button
-              type="button"
-              onClick={onBack}
+            <Button
+              icon
               aria-label="Navigate back"
-              className="flex items-center justify-center p-1.5 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-primary">
+              variant={resolvedBackButtonVariant}
+              color={resolvedBackButtonColor}
+              size={resolvedSizeKey}
+              radius={resolvedItemRadiusKey}
+              onClick={onBack}
+              className="shrink-0">
               {backIcon ?? <ArrowLeftIcon className="w-5 h-5" />}
-            </button>
+            </Button>
           )}
 
           {!isCollapsed && title && (
@@ -222,25 +297,19 @@ export function Sidebar<T = string>({
         {filteredItems.map((item) => {
           const isActive = item.id === activeKey;
 
-          return (
-            <button
+          const itemButton = (
+            <Button
               key={String(item.id)}
               type="button"
-              disabled={item.disabled}
+              isDisabled={item.disabled}
               onClick={() => handleItemClick(item)}
-              title={
-                isCollapsed && typeof item.label === "string"
-                  ? item.label
-                  : undefined
-              }
+              variant={isActive ? resolvedActiveItemVariant : "ghost"}
+              color={isActive ? resolvedActiveItemColor : "none"}
+              size={resolvedSizeKey}
+              radius={resolvedItemRadiusKey}
               className={cn(
-                "group relative w-full flex items-center gap-3 rounded-md transition-all duration-150 outline-none cursor-pointer truncate",
-                isActive
-                  ? "bg-primary text-primary-foreground font-medium shadow-xs"
-                  : "text-muted-foreground hover:text-foreground hover:bg-muted/60",
-                item.disabled &&
-                  "opacity-50 cursor-not-allowed pointer-events-none",
-                isCollapsed && "justify-center px-0",
+                "w-full flex items-center gap-3 transition-all truncate",
+                isCollapsed ? "justify-center px-0" : "justify-start",
                 sectionConfig?.itemClassName,
                 itemClassName,
               )}
@@ -252,13 +321,7 @@ export function Sidebar<T = string>({
                   : `var(--ashee-sidebar-${resolvedSizeKey}-px)`,
               }}>
               {item.icon && (
-                <span
-                  className={cn(
-                    "shrink-0 flex items-center justify-center transition-colors",
-                    isActive
-                      ? "text-primary-foreground"
-                      : "text-muted-foreground group-hover:text-foreground",
-                  )}>
+                <span className="shrink-0 flex items-center justify-center">
                   {item.icon}
                 </span>
               )}
@@ -270,8 +333,24 @@ export function Sidebar<T = string>({
               {!isCollapsed && item.badge && (
                 <span className="shrink-0">{item.badge}</span>
               )}
-            </button>
+            </Button>
           );
+
+          if (isCollapsed && resolvedShowTooltips) {
+            return (
+              <Tooltip
+                key={String(item.id)}
+                content={item.label}
+                placement={resolvedTooltipPlacement}
+                variant={sectionConfig?.tooltipVariant ?? "solid"}
+                color={sectionConfig?.tooltipColor ?? "secondary"}
+                radius={resolvedItemRadiusKey}>
+                {itemButton}
+              </Tooltip>
+            );
+          }
+
+          return itemButton;
         })}
       </nav>
 

@@ -5,26 +5,24 @@ import type {
   BaseAnimationPreset,
 } from "./types";
 
-/**
-  Resolves any input (preset string, boolean, custom Framer Motion object)
-  into a valid Framer Motion configuration object without breaking existing callers.
- */
-export function resolveAnimation(
-  animation: AnimationProp | undefined,
+export function resolveAnimation<
+  TPreset extends BaseAnimationPreset = BaseAnimationPreset,
+>(
+  animation: AnimationProp<TPreset> | undefined,
   enableAnimations = true,
-  defaultPreset: BaseAnimationPreset = "scale",
+  defaultPreset: TPreset = "scale" as TPreset,
 ): AnimationPreset {
-  // Global settings override or boolean `false` / `"none"`
+  // Global setting disabled or explicitly turned off
   if (!enableAnimations || animation === false || animation === "none") {
     return animationPresets.none;
   }
 
-  // Boolean `true` or `undefined` falls back to the requested or default preset
+  // Boolean `true` or `undefined` falls back to default preset
   if (animation === undefined || animation === true) {
     return animationPresets[defaultPreset] ?? animationPresets.scale;
   }
 
-  // String lookup matching preset keys
+  // String preset lookup
   if (typeof animation === "string") {
     return (
       animationPresets[animation as BaseAnimationPreset] ??
@@ -33,7 +31,7 @@ export function resolveAnimation(
     );
   }
 
-  // Direct Framer Motion Variants or custom AnimationPreset object
+  // Custom object / variants escape hatch
   if (typeof animation === "object") {
     return animation as AnimationPreset;
   }

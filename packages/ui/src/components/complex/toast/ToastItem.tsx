@@ -4,6 +4,11 @@ import { useSettings } from "@ashee/settings";
 import { cn } from "@ashee/utils";
 import { type HTMLMotionProps, motion } from "framer-motion";
 import { useMemo } from "react";
+import {
+  type Color,
+  resolveVariantClass,
+  type Variant,
+} from "../../../shared/variant";
 import { CheckIcon } from "../../icons/CheckIcon";
 import { CloseIcon } from "../../icons/CloseIcon";
 import { ErrorIcon } from "../../icons/ErrorIcon";
@@ -14,27 +19,48 @@ import type {
   ToastPlacement,
   ToastSizeKey,
   ToastType,
-  ToastVariant,
 } from "./toast-config";
 import { getToastMotionVariants } from "./toast-motion";
 import { usePausableTimeout } from "./use-pausable-timeout";
 
+// ─── Color Resolver ─────────────────────────────────────────────────────────
+
+/**
+ * Maps toast status state to design system Color tokens used by Button.
+ */
+function mapTypeToColor(type: ToastType = "info"): Color {
+  switch (type) {
+    case "success":
+      return "success";
+    case "error":
+      return "danger";
+    case "warning":
+      return "warning";
+    case "info":
+      return "primary";
+    default:
+      return "secondary";
+  }
+}
+
 // ─── Default SVG Icons ───────────────────────────────────────────────────────
 
-function getDefaultIcon(type?: ToastType) {
+function getDefaultIcon(type: ToastType = "info", isSolid = false) {
+  const iconClass = cn("w-5 h-5", isSolid && "text-current");
+
   switch (type) {
     case "success":
       return (
-        <CheckIcon className="w-5 h-5 text-emerald-500 dark:text-emerald-400" />
+        <CheckIcon className={cn(iconClass, !isSolid && "text-success")} />
       );
     case "error":
-      return <ErrorIcon className="w-5 h-5 text-destructive" />;
+      return <ErrorIcon className={cn(iconClass, !isSolid && "text-danger")} />;
     case "warning":
       return (
-        <WarningIcon className="w-5 h-5 text-amber-500 dark:text-amber-400" />
+        <WarningIcon className={cn(iconClass, !isSolid && "text-warning")} />
       );
     default:
-      return <InfoIcon className="w-5 h-5 text-sky-500 dark:text-sky-400" />;
+      return <InfoIcon className={cn(iconClass, !isSolid && "text-primary")} />;
   }
 }
 
@@ -44,7 +70,8 @@ export interface ToastItemProps extends ToastItemData {
   onDismiss: (id: string) => void;
   placement: ToastPlacement;
   sizeKey: ToastSizeKey;
-  variant: ToastVariant;
+  variant?: Variant;
+  color?: Color;
   radiusStyle?: string;
   className?: string;
 }
@@ -61,13 +88,18 @@ export function ToastItem({
   onDismiss,
   placement,
   sizeKey,
-  variant,
+  variant = "solid",
+  color,
   radiusStyle,
   className,
 }: ToastItemProps) {
   const { settings } = useSettings();
 
   const { pause, resume } = usePausableTimeout(() => onDismiss(id), timeout);
+
+  // Map state type to Button color token unless explicitly overridden
+  const resolvedColor = color ?? mapTypeToColor(type);
+  const isSolid = variant === "solid";
 
   const motionVariants = useMemo(
     () => getToastMotionVariants(placement),
@@ -94,39 +126,25 @@ export function ToastItem({
       }}
       className={cn(
         "pointer-events-auto relative flex gap-3 items-start shadow-lg border backdrop-blur-md select-none overflow-hidden transition-colors",
-        // Variants
-        variant === "flat" &&
-          "bg-card/95 text-card-foreground border-border/80",
-        variant === "solid" &&
-          type === "success" &&
-          "bg-emerald-600 text-white border-emerald-500",
-        variant === "solid" &&
-          type === "error" &&
-          "bg-destructive text-destructive-foreground border-destructive",
-        variant === "solid" &&
-          type === "info" &&
-          "bg-sky-600 text-white border-sky-500",
-        variant === "solid" &&
-          type === "warning" &&
-          "bg-amber-600 text-white border-amber-500",
-        variant === "bordered" &&
-          "bg-background border-2 border-primary text-foreground",
+        resolveVariantClass(variant, resolvedColor),
         className,
       )}>
       {/* Toast Icon */}
-      <div className="shrink-0 pt-0.5">{icon ?? getDefaultIcon(type)}</div>
+      <div className="shrink-0 pt-0.5">
+        {icon ?? getDefaultIcon(type, isSolid)}
+      </div>
 
       {/* Content Body */}
       <div className="flex-1 min-w-0 flex flex-col gap-0.5">
         {title && (
           <span
-            className="font-semibold leading-tight truncate text-foreground"
+            className="font-semibold leading-tight truncate text-current"
             style={{ fontSize: `var(--ashee-toast-${sizeKey}-title-font-s)` }}>
             {title}
           </span>
         )}
         <div
-          className="text-muted-foreground leading-snug wrap-break-word"
+          className="leading-snug wrap-break-word opacity-90 text-current"
           style={{ fontSize: `var(--ashee-toast-${sizeKey}-font-s)` }}>
           {message}
         </div>
@@ -139,7 +157,7 @@ export function ToastItem({
           type="button"
           onClick={() => onDismiss(id)}
           aria-label="Dismiss notification"
-          className="shrink-0 p-1 rounded-md opacity-70 hover:opacity-100 hover:bg-muted/60 transition-all cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-primary">
+          className="shrink-0 p-1 rounded-md opacity-70 hover:opacity-100 hover:bg-black/10 dark:hover:bg-white/10 transition-all cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-current">
           <CloseIcon className="w-4 h-4" />
         </button>
       )}

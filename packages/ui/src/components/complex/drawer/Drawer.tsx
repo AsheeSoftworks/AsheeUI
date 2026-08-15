@@ -12,10 +12,10 @@ import {
   useMemo,
 } from "react";
 import { useAsheeConfig } from "../../../context";
-import type { AnimationProp } from "../../../motion/types";
 import { resolveScale, resolveValue } from "../../../utils/resolve-token";
 import { defaultDrawerSizeScale } from "./default-drawer-config";
 import type {
+  DrawerAnimation,
   DrawerConfig,
   DrawerPlacement,
   DrawerSizeKey,
@@ -43,7 +43,7 @@ export interface DrawerProps extends HTMLAttributes<HTMLDivElement> {
   radius?: keyof Radius;
 
   /** Animation preset or custom motion configuration. */
-  animation?: AnimationProp;
+  animation?: DrawerAnimation;
 
   /** Whether clicking overlay fires onClose. */
   closeOnOverlayClick?: boolean;
@@ -123,7 +123,7 @@ export function Drawer({
   const drawerMotion = useMemo(
     () =>
       resolveDrawerAnimation(
-        animation ?? (sectionConfig?.animation as AnimationProp | undefined),
+        animation ?? sectionConfig?.animation,
         placement,
         settings.enableAnimations,
       ) as unknown as Partial<HTMLMotionProps<"div">>,

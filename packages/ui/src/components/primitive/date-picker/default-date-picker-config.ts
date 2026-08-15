@@ -29,7 +29,6 @@ export const defaultDatePickerSizeScale: DatePickerSizeScale = {
 
 export const defaultDatePickerConfig: DatePickerConfig = {
   size: defaultDatePickerSizeScale,
-  radius: "md",
   labelAlign: "left",
-  animation: "scale",
+  animation: "none",
 };

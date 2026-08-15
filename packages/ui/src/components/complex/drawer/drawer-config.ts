@@ -1,5 +1,15 @@
 import type { Radius, ResponsiveValue } from "@ashee/theme";
-import type { AnimationProp } from "../../../motion/types";
+import type { Transition, Variants } from "framer-motion";
+
+export type DrawerAnimationPreset = "slide" | "zoom" | "fade";
+
+export type DrawerAnimation =
+  | boolean
+  | DrawerAnimationPreset
+  | {
+      variants?: Variants;
+      transition?: Transition;
+    };
 
 export type DrawerPlacement = "right" | "left" | "top" | "bottom";
 export type DrawerSizeKey = "sm" | "md" | "lg" | "xl" | "full";
@@ -18,7 +28,7 @@ export interface DrawerConfig {
   size?: DrawerSizeScale;
   placement?: DrawerPlacement;
   radius?: keyof Radius;
-  animation?: AnimationProp;
+  animation?: DrawerAnimation;
   closeOnOverlayClick?: boolean;
   closeOnEsc?: boolean;
   className?: string;

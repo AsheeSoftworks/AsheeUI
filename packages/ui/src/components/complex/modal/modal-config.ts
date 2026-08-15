@@ -1,5 +1,23 @@
 import type { Radius, ResponsiveValue } from "@ashee/theme";
-import type { AnimationProp } from "../../../motion/types";
+import type { Transition, Variants } from "framer-motion";
+
+export type ModalAnimationPreset =
+  | "scale"
+  | "zoom"
+  | "slide-up"
+  | "slide-down"
+  | "fade"
+  | "drop"
+  | "flip"
+  | "pop";
+
+export type ModalAnimation =
+  | boolean
+  | ModalAnimationPreset
+  | {
+      variants?: Variants;
+      transition?: Transition;
+    };
 
 export type ModalSizeKey = "sm" | "md" | "lg" | "xl" | "full";
 export type ModalPosition = "center" | "top" | "bottom";
@@ -19,7 +37,7 @@ export interface ModalConfig {
   size?: ModalSizeScale;
   position?: ModalPosition;
   radius?: keyof Radius;
-  animation?: AnimationProp;
+  animation?: ModalAnimationPreset;
   closeOnBackdropClick?: boolean;
   closeOnEscape?: boolean;
   className?: string;

@@ -1,6 +1,8 @@
 import type { Radius, ResponsiveValue } from "@ashee/theme";
 import type { ReactNode } from "react";
 import type { AnimationProp } from "../../../motion/types";
+import type { Color, Variant } from "../../../shared/variant";
+import type { TooltipPlacement } from "../tooltip/tooltip-config";
 
 export type SidebarSizeKey = "sm" | "md" | "lg";
 export type SidebarVariant = "default" | "bordered" | "floating" | "flush";
@@ -38,7 +40,24 @@ export interface SidebarConfig {
   size?: SidebarSizeScale;
   variant?: SidebarVariant;
   radius?: keyof Radius;
+  itemRadius?: keyof Radius;
   animation?: AnimationProp;
+
+  // Item Button Styling Tokens
+  activeItemVariant?: Variant;
+  activeItemColor?: Color;
+
+  // Header Back Button Styling Tokens
+  backButtonVariant?: Variant;
+  backButtonColor?: Color;
+
+  // Tooltip Configuration
+  showTooltips?: boolean;
+  tooltipPlacement?: TooltipPlacement;
+  tooltipVariant?: Variant;
+  tooltipColor?: Color;
+
+  // Class Overrides
   className?: string;
   headerClassName?: string;
   bodyClassName?: string;

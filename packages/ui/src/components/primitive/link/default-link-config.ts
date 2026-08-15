@@ -22,11 +22,9 @@ export const defaultLinkSizeScale: LinkSizeScale = {
 };
 
 export const defaultLinkConfig: LinkConfig = {
-  variant: "primary",
   size: defaultLinkSizeScale,
   underline: "hover",
   weight: "medium",
   lineHeight: "base",
-  animation: "scale",
   isExternal: false,
 };

@@ -1,34 +1,54 @@
+"use client";
+
 import { useSettings } from "@ashee/settings";
 import { type Radius, useResponsiveVars } from "@ashee/theme";
 import { cn } from "@ashee/utils";
 import { type HTMLMotionProps, motion } from "framer-motion";
-import { forwardRef, useId, useMemo } from "react";
+import { forwardRef, type TextareaHTMLAttributes, useId, useMemo } from "react";
 import { useAsheeConfig } from "../../../context";
 import { resolveAnimation } from "../../../motion/resolve-animation";
 import type { AnimationProp } from "../../../motion/types";
+import {
+  type Color,
+  resolveVariantClass,
+  type Variant,
+} from "../../../shared/variant";
 import { resolveScale, resolveValue } from "../../../utils/resolve-token";
 import { defaultFieldSizeScale } from "../field/default-field-size-scale";
+import { FieldShell } from "../field/FieldShell";
 import type {
   FieldSizeKey,
   FieldSizeScale,
   FieldStatus,
+  InputAnimationPreset,
   LabelAlign,
 } from "../field/field-config";
-import { FieldShell } from "../field/field-shell";
 import { flattenFieldSizeScale } from "../field/flatten-field-size-scale";
 
+// ─── Status Class Override ───────────────────────────────────────────────────
+
 const STATUS_BORDER_CLASS: Record<FieldStatus, string> = {
-  default: "border-border focus:border-primary",
-  error: "border-danger focus:border-danger",
-  warning: "border-warning focus:border-warning",
-  success: "border-success focus:border-success",
+  default: "",
+  error:
+    "border-danger focus-visible:border-danger focus-visible:ring-danger/20",
+  warning:
+    "border-warning focus-visible:border-warning focus-visible:ring-warning/20",
+  success:
+    "border-success focus-visible:border-success focus-visible:ring-success/20",
 };
 
+// ─── Component Interface ──────────────────────────────────────────────────────
+
 export interface TextAreaProps
-  extends Omit<HTMLMotionProps<"textarea">, "size" | "children"> {
+  extends Omit<
+    TextareaHTMLAttributes<HTMLInputElement>,
+    "size" | "color" | "children"
+  > {
   size?: FieldSizeKey;
   radius?: keyof Radius;
-  animation?: AnimationProp;
+  variant?: Variant;
+  color?: Color;
+  animation?: AnimationProp<InputAnimationPreset>;
   status?: FieldStatus;
   label?: string;
   isLoading?: boolean;
@@ -39,11 +59,15 @@ export interface TextAreaProps
   rows?: number;
 }
 
+// ─── Component Implementation ─────────────────────────────────────────────────
+
 export const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
   (
     {
       size,
       radius,
+      variant,
+      color,
       animation,
       status,
       label,
@@ -70,6 +94,8 @@ export const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
     const describedBy =
       [descriptionId, messageId].filter(Boolean).join(" ") || undefined;
 
+    // ─── Token Resolvers ──────────────────────────────────────────────────────
+
     const sizeScale = (sectionConfig?.size ??
       defaultFieldSizeScale) as FieldSizeScale;
     const resolvedSizeKey = size ?? sizeScale.default;
@@ -82,12 +108,26 @@ export const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
       responsiveVars,
       config.theme.breakpoints,
     );
+
     const resolvedRadius = resolveScale(
       radius,
       sectionConfig?.radius,
       config.theme.radius.default,
       config.theme.radius.values,
     );
+
+    const resolvedVariant = resolveValue<Variant>(
+      variant,
+      sectionConfig?.variant,
+      (config.theme.defaultVariant as Variant) ?? "bordered",
+    );
+
+    const resolvedColor = resolveValue<Color>(
+      color,
+      sectionConfig?.color,
+      (config.theme.defaultColor as Color) ?? "primary",
+    );
+
     const resolvedStatus = status ?? "default";
     const resolvedLabelAlign = resolveValue(
       labelAlign,
@@ -95,10 +135,16 @@ export const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
       "left",
     );
     const resolvedRows = resolveValue(rows, sectionConfig?.rows, 4);
+
     const motionProps = resolveAnimation(
       animation ?? (sectionConfig?.animation as AnimationProp | undefined),
       settings.enableAnimations,
     );
+
+    // Apply global variant/color styling & active status override
+    const variantClass = resolveVariantClass(resolvedVariant, resolvedColor);
+    const statusClass =
+      resolvedStatus !== "default" ? STATUS_BORDER_CLASS[resolvedStatus] : "";
 
     return (
       <FieldShell
@@ -125,24 +171,27 @@ export const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
           aria-invalid={resolvedStatus === "error"}
           aria-describedby={describedBy}
           className={cn(
-            "resize-y border bg-background text-foreground outline-none transition-colors",
-            "focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2",
+            "resize-y w-full text-foreground outline-none transition-colors",
+            "focus-visible:ring-2 focus-visible:ring-offset-2",
             "disabled:pointer-events-none disabled:opacity-50",
-            STATUS_BORDER_CLASS[resolvedStatus],
+            variantClass,
+            statusClass,
             sectionConfig?.className,
             className,
           )}
           style={{
-            borderRadius: resolvedRadius,
+            borderRadius:
+              resolvedVariant === "underlined" ? "0px" : resolvedRadius,
             paddingInline: `var(--ashee-textarea-${resolvedSizeKey}-padding-x)`,
             paddingBlock: `var(--ashee-textarea-${resolvedSizeKey}-padding-y)`,
             fontSize: `var(--ashee-textarea-${resolvedSizeKey}-font-size)`,
           }}
           {...(motionProps as HTMLMotionProps<"textarea">)}
-          {...rest}
+          {...(rest as HTMLMotionProps<"textarea">)}
         />
       </FieldShell>
     );
   },
 );
+
 TextArea.displayName = "TextArea";

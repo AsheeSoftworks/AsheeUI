@@ -1,12 +1,13 @@
 import type { AccordionConfig } from "./components/complex/accordion/accordion-config";
+import type { AutocompleteConfig } from "./components/complex/autocomplete/autocomplete-config";
 import type { CardConfig } from "./components/complex/card/card-config";
 import type { CarouselConfig } from "./components/complex/carousel/carousel-config";
 import type { ChipConfig } from "./components/complex/chip/chip-config";
 import type { DrawerConfig } from "./components/complex/drawer/drawer-config";
 import type { KeyboardConfig } from "./components/complex/keyboard/keyboard-config";
+import type { MarqueeConfig } from "./components/complex/marquee/marquee-config";
 import type { ModalConfig } from "./components/complex/modal/modal-config";
 import type { MultiSelectConfig } from "./components/complex/multi-select/multi-select-config";
-import type { ParallaxConfig } from "./components/complex/parallax/parallax-config";
 import type { ResizableScreenConfig } from "./components/complex/resizable-screen/resizable-screen-config";
 import type { SidebarConfig } from "./components/complex/sidebar/sidebar-config";
 import type { TableConfig } from "./components/complex/table/table-config";
@@ -14,7 +15,6 @@ import type { TabsConfig } from "./components/complex/tabs/tabs-config";
 import type { ToastConfig } from "./components/complex/toast/toast-config";
 import type { TooltipConfig } from "./components/complex/tooltip/tooltip-config";
 import type { ButtonConfig } from "./components/primitive/button/button-config";
-import type { ButtonDropdownConfig } from "./components/primitive/button-dropdown/button-dropdown-config";
 import type { ContainerConfig } from "./components/primitive/container/container-config";
 import type { DatePickerConfig } from "./components/primitive/date-picker/date-picker-config";
 import type { FlexConfig } from "./components/primitive/flex/flex-config";
@@ -45,7 +45,6 @@ export interface ComponentConfigRegistry {
   switch: SwitchConfig;
   datePicker: DatePickerConfig;
   select: SelectConfig;
-  buttonDropdown: ButtonDropdownConfig;
   image: ImageConfig;
   link: LinkConfig;
 
@@ -61,8 +60,9 @@ export interface ComponentConfigRegistry {
   toast: ToastConfig;
   keyboard: KeyboardConfig;
   accordion: AccordionConfig;
-  parallax: ParallaxConfig;
+  marquee: MarqueeConfig;
   carousel: CarouselConfig;
   card: CardConfig;
   chip: ChipConfig;
+  autocomplete: AutocompleteConfig;
 }

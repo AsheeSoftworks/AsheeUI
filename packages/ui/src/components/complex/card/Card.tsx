@@ -163,7 +163,10 @@ CardFooter.displayName = "CardFooter";
 // ─── Main Card Component ──────────────────────────────────────────────────────
 
 export interface CardProps
-  extends Omit<HTMLMotionProps<"div">, "title" | "children"> {
+  extends Omit<
+    React.SelectHTMLAttributes<HTMLDivElement>,
+    "title" | "children" | "size"
+  > {
   variant?: CardVariant;
   size?: CardSizeKey;
   radius?: keyof Radius;
@@ -311,7 +314,7 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(
             ...style,
           }}
           {...(motionProps as HTMLMotionProps<"div">)}
-          {...rest}>
+          {...(rest as HTMLMotionProps<"div">)}>
           {/* Shorthand Top Image */}
           {imageSrc && resolvedImagePos === "top" && (
             <CardImage

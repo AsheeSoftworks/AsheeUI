@@ -3,7 +3,7 @@ import { cn } from "@ashee/utils";
 import type { ReactNode } from "react";
 import { useAsheeConfig } from "../../../context";
 import { resolveScale, resolveValue } from "../../../utils/resolve-token";
-import { Container } from "../container/container";
+import { Container } from "../container/Container";
 import type { GridConfig } from "./grid-config";
 
 export interface GridProps {

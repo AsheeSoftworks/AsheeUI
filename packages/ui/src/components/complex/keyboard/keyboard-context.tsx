@@ -1,5 +1,6 @@
 "use client";
 
+import type { Radius } from "@ashee/theme";
 import {
   createContext,
   type ReactNode,
@@ -10,6 +11,7 @@ import {
   useState,
 } from "react";
 import { useAsheeConfig } from "../../../context";
+import type { Color, Variant } from "../../../shared/variant";
 import { defaultKeyboardConfig } from "./default-keyboard-config";
 import type {
   KeyboardConfig,
@@ -46,6 +48,9 @@ export interface KeyboardProviderProps {
   heightClass?: string;
   autoShiftBack?: boolean;
   closeDelay?: number;
+  variant?: Variant;
+  color?: Color;
+  radius?: keyof Radius;
 }
 
 export function KeyboardProvider({
@@ -57,6 +62,9 @@ export function KeyboardProvider({
   heightClass,
   autoShiftBack,
   closeDelay = 120,
+  variant,
+  color,
+  radius,
 }: KeyboardProviderProps) {
   const globalConfig = useAsheeConfig();
   const themeKeyboardConfig = globalConfig?.components?.keyboard as
@@ -91,6 +99,9 @@ export function KeyboardProvider({
         propConfig?.autoShiftBack ??
         themeKeyboardConfig?.autoShiftBack ??
         defaultKeyboardConfig.autoShiftBack,
+      variant: variant ?? propConfig?.variant ?? themeKeyboardConfig?.variant,
+      color: color ?? propConfig?.color ?? themeKeyboardConfig?.color,
+      radius: radius ?? propConfig?.radius ?? themeKeyboardConfig?.radius,
     }),
     [
       layouts,
@@ -100,6 +111,9 @@ export function KeyboardProvider({
       defaultLayout,
       heightClass,
       autoShiftBack,
+      variant,
+      color,
+      radius,
     ],
   );
 

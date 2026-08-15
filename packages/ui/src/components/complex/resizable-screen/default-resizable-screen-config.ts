@@ -7,4 +7,5 @@ export const defaultResizableScreenConfig: ResizableScreenConfig = {
   step: 2,
   orientation: "horizontal",
   animation: "fade",
+  handleRadius: "full",
 };

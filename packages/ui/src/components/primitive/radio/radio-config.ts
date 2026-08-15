@@ -1,7 +1,11 @@
 import type { Radius, ResponsiveValue } from "@ashee/theme";
 import type { AnimationProp } from "../../../motion/types";
 import type { Color } from "../../../shared/variant";
-import type { FieldConfig, FieldSizeKey } from "../field/field-config";
+import type {
+  FieldConfig,
+  FieldSizeKey,
+  InputAnimationPreset,
+} from "../field/field-config";
 
 export type RadioSizeKey = FieldSizeKey;
 export type RadioVariant = "default" | "card";
@@ -18,11 +22,11 @@ export interface RadioSizeScale {
   values: Record<RadioSizeKey, RadioSizeValue>;
 }
 
-export interface RadioConfig extends Omit<FieldConfig, "size"> {
+export interface RadioConfig extends Omit<FieldConfig, "size" | "variant"> {
   size?: RadioSizeScale;
   color?: Color;
   radius?: keyof Radius;
   variant?: RadioVariant;
-  animation?: AnimationProp;
+  animation?: AnimationProp<InputAnimationPreset>;
   className?: string;
 }

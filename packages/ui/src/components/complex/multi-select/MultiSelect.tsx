@@ -1,11 +1,9 @@
 "use client";
 
-import { useSettings } from "@ashee/settings";
 import { type Radius, useResponsiveVars } from "@ashee/theme";
 import { cn } from "@ashee/utils";
 import {
   autoUpdate,
-  FloatingFocusManager,
   flip,
   offset,
   shift,
@@ -15,7 +13,6 @@ import {
   useInteractions,
   useRole,
 } from "@floating-ui/react";
-import { AnimatePresence, type HTMLMotionProps, motion } from "framer-motion";
 import {
   forwardRef,
   type ReactNode,
@@ -25,21 +22,20 @@ import {
   useState,
 } from "react";
 import { useAsheeConfig } from "../../../context";
-import { resolveAnimation } from "../../../motion/resolve-animation";
 import type { AnimationProp } from "../../../motion/types";
+import type { Color, Variant } from "../../../shared/variant";
 import { resolveScale, resolveValue } from "../../../utils/resolve-token";
-import { CheckIcon } from "../../icons/CheckIcon";
 import { ChevronDownIcon } from "../../icons/ChevronDownIcon";
 import { CloseIcon } from "../../icons/CloseIcon";
-import { SearchIcon } from "../../icons/SearchIcon";
 import { Button } from "../../primitive/button/Button";
+import type { ButtonSizeKey } from "../../primitive/button/button-config";
+import { FieldShell } from "../../primitive/field/FieldShell";
 import type {
   FieldSizeKey,
   FieldStatus,
   LabelAlign,
 } from "../../primitive/field/field-config";
-import { FieldShell } from "../../primitive/field/field-shell";
-import { Input } from "../../primitive/input/Input";
+import { SelectMenu } from "../../primitive/select-menu/SelectMenu";
 import { defaultMultiSelectSizeScale } from "./default-multi-select-config";
 import { flattenMultiSelectSizeScale } from "./flatten-multi-select-size-scale";
 import type {
@@ -75,7 +71,21 @@ export interface MultiSelectProps
   chipLabel?: string;
   disableChipDisplay?: boolean;
 
+  // Chip Specific Overrides
+  chipVariant?: Variant;
+  chipColor?: Color;
+  chipRadius?: keyof Radius;
+  chipSize?: ButtonSizeKey;
+
+  // Menu Overrides
+  menuVariant?: Variant;
+  menuColor?: Color;
+  menuRadius?: keyof Radius;
+  menuSize?: ButtonSizeKey;
+
   // Styling & Tokens
+  variant?: Variant;
+  color?: Color;
   size?: FieldSizeKey;
   radius?: keyof Radius;
   animation?: AnimationProp;
@@ -109,6 +119,16 @@ export const MultiSelect = forwardRef<HTMLButtonElement, MultiSelectProps>(
       handleAddChip,
       chipLabel,
       disableChipDisplay = false,
+      chipVariant,
+      chipColor,
+      chipRadius,
+      chipSize,
+      menuVariant,
+      menuColor,
+      menuRadius,
+      menuSize,
+      variant,
+      color,
       size,
       radius,
       animation,
@@ -129,7 +149,6 @@ export const MultiSelect = forwardRef<HTMLButtonElement, MultiSelectProps>(
     ref,
   ) => {
     const config = useAsheeConfig();
-    const { settings } = useSettings();
     const sectionConfig = config.components?.multiSelect as
       | MultiSelectConfig
       | undefined;
@@ -171,6 +190,19 @@ export const MultiSelect = forwardRef<HTMLButtonElement, MultiSelectProps>(
       config.theme.breakpoints,
     );
 
+    // Variant & Color Tokens
+    const resolvedVariant = resolveValue(
+      variant,
+      sectionConfig?.variant,
+      config.theme.defaultVariant ?? "bordered",
+    );
+
+    const resolvedColor = resolveValue(
+      color,
+      sectionConfig?.color,
+      config.theme.defaultColor ?? "primary",
+    );
+
     const resolvedRadiusKey = typeof radius === "string" ? radius : undefined;
     const resolvedSectionRadiusKey =
       typeof sectionConfig?.radius === "string"
@@ -183,15 +215,75 @@ export const MultiSelect = forwardRef<HTMLButtonElement, MultiSelectProps>(
       config.theme.radius.values,
     );
 
+    // Menu Token Resolvers
+    const resolvedMenuVariant = resolveValue(
+      menuVariant,
+      sectionConfig?.menuVariant,
+      resolvedVariant,
+    );
+
+    const resolvedMenuColor = resolveValue(
+      menuColor,
+      sectionConfig?.menuColor,
+      resolvedColor,
+    );
+
+    const resolvedMenuSize = resolveValue(
+      menuSize,
+      sectionConfig?.menuSize,
+      "sm",
+    );
+
+    const resolvedMenuRadiusKey =
+      typeof menuRadius === "string" ? menuRadius : undefined;
+    const resolvedSectionMenuRadiusKey =
+      typeof sectionConfig?.menuRadius === "string"
+        ? sectionConfig.menuRadius
+        : undefined;
+    const resolvedMenuRadius = resolveScale(
+      resolvedMenuRadiusKey,
+      resolvedSectionMenuRadiusKey,
+      resolvedRadius,
+      config.theme.radius.values,
+    );
+
+    // Chip Styling Resolvers
+    const resolvedChipVariant = resolveValue(
+      chipVariant,
+      sectionConfig?.chipVariant,
+      resolvedVariant,
+    );
+
+    const resolvedChipColor = resolveValue(
+      chipColor,
+      sectionConfig?.chipColor,
+      resolvedColor,
+    );
+
+    const resolvedChipSize = resolveValue(
+      chipSize,
+      sectionConfig?.chipSize,
+      "sm",
+    );
+
+    const resolvedChipRadiusKey =
+      typeof chipRadius === "string" ? chipRadius : undefined;
+    const resolvedSectionChipRadiusKey =
+      typeof sectionConfig?.chipRadius === "string"
+        ? sectionConfig.chipRadius
+        : undefined;
+    const resolvedChipRadius = resolveScale(
+      resolvedChipRadiusKey,
+      resolvedSectionChipRadiusKey,
+      resolvedRadius,
+      config.theme.radius.values,
+    );
+
     const resolvedStatus = status ?? "default";
     const resolvedLabelAlign = resolveValue(
       labelAlign,
       sectionConfig?.labelAlign,
       "left",
-    );
-    const motionProps = resolveAnimation(
-      animation ?? (sectionConfig?.animation as AnimationProp | undefined),
-      settings.enableAnimations,
     );
 
     // Controlled or Custom Chip Selection Determination
@@ -239,12 +331,10 @@ export const MultiSelect = forwardRef<HTMLButtonElement, MultiSelectProps>(
       [handleRemoveChip, onChange, value],
     );
 
-    const filteredOptions = useMemo(() => {
-      if (!isSearch || !searchQuery.trim()) return options;
-      return options.filter((opt) =>
-        opt.label.toLowerCase().includes(searchQuery.toLowerCase()),
-      );
-    }, [options, isSearch, searchQuery]);
+    const selectedValues = useMemo(
+      () => activeChips.map((chip) => chip.value),
+      [activeChips],
+    );
 
     return (
       <FieldShell
@@ -269,19 +359,18 @@ export const MultiSelect = forwardRef<HTMLButtonElement, MultiSelectProps>(
                 refs.setReference(node);
                 if (typeof ref === "function") ref(node);
                 else if (ref)
-                  (
-                    ref as React.MutableRefObject<HTMLButtonElement | null>
-                  ).current = node;
+                  (ref as React.RefObject<HTMLButtonElement | null>).current =
+                    node;
               }}
               type="button"
-              variant="bordered"
-              disabled={disabled}
+              variant={resolvedVariant}
+              color={resolvedColor}
+              isDisabled={disabled}
               aria-expanded={isOpen}
               aria-haspopup="listbox"
               aria-invalid={resolvedStatus === "error"}
               className={cn(
-                "w-full flex items-center justify-between font-normal text-left border bg-background text-foreground transition-all duration-200 outline-none select-none",
-                "focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2",
+                "w-full flex items-center justify-between font-normal text-left transition-all duration-200 outline-none select-none",
                 STATUS_BORDER_CLASS[resolvedStatus],
                 sectionConfig?.className,
                 className,
@@ -293,101 +382,45 @@ export const MultiSelect = forwardRef<HTMLButtonElement, MultiSelectProps>(
                 fontSize: `var(--ashee-multi-select-${resolvedSizeKey}-font-s)`,
               }}
               {...getReferenceProps()}>
-              <span
-                className={
-                  activeChips.length > 0
-                    ? "text-foreground"
-                    : "text-muted-foreground"
-                }>
+              <span>
                 {activeChips.length > 0
                   ? `${activeChips.length} selected`
                   : InputLabel}
               </span>
               <ChevronDownIcon
                 className={cn(
-                  "ml-2 shrink-0 text-muted-foreground",
+                  "ml-2 shrink-0 transition-transform duration-200",
                   isOpen && "rotate-180",
                 )}
               />
             </Button>
 
-            {/* Animated Options Popover */}
-            <AnimatePresence>
-              {isOpen && (
-                <FloatingFocusManager context={context} modal={false}>
-                  <div
-                    ref={refs.setFloating}
-                    style={{ ...floatingStyles, zIndex: 99999 }}
-                    className="w-full min-w-55 outline-none"
-                    {...getFloatingProps()}>
-                    <motion.div
-                      initial={{ opacity: 0, y: -4, scale: 0.98 }}
-                      animate={{ opacity: 1, y: 0, scale: 1 }}
-                      exit={{ opacity: 0, y: -4, scale: 0.98 }}
-                      transition={{ duration: 0.15, ease: "easeOut" }}
-                      className={cn(
-                        "w-full max-h-60 overflow-y-auto shadow-xl bg-background border border-border rounded-lg p-1 flex flex-col gap-0.5 overflow-x-hidden",
-                        dropdownClassName,
-                      )}
-                      {...(motionProps as HTMLMotionProps<"div">)}>
-                      {/* Search Input Bar */}
-                      {isSearch && (
-                        <div className="p-1 mb-1 sticky top-0 bg-background z-10 border-b border-border">
-                          <div className="relative flex items-center">
-                            <SearchIcon className="absolute left-2.5 w-4 h-4 text-muted-foreground pointer-events-none" />
-                            <Input
-                              name={searchInputName}
-                              type="text"
-                              value={searchQuery}
-                              onChange={(e) => setSearchQuery(e.target.value)}
-                              placeholder={searchPlaceholder}
-                              autoFocus
-                              className="w-full pl-8 h-8 text-xs bg-muted/30 border-none focus-visible:ring-0"
-                            />
-                          </div>
-                        </div>
-                      )}
-
-                      {/* Options List */}
-                      {filteredOptions.length === 0 ? (
-                        <div className="px-3 py-4 text-xs text-muted-foreground text-center">
-                          No options found
-                        </div>
-                      ) : (
-                        filteredOptions.map((option) => {
-                          const selected = isOptionSelected(option.value);
-                          return (
-                            <Button
-                              key={String(option.value)}
-                              type="button"
-                              variant="ghost"
-                              disabled={option.disabled}
-                              onClick={() => handleSelectOption(option)}
-                              className={cn(
-                                "w-full justify-between font-normal text-xs px-3 py-2 h-auto text-left rounded-md transition-colors",
-                                selected
-                                  ? "bg-primary/10 text-primary font-medium hover:bg-primary/20"
-                                  : "hover:bg-accent hover:text-accent-foreground text-foreground",
-                              )}>
-                              <span>{option.label}</span>
-                              {selected && (
-                                <CheckIcon className="w-3.5 h-3.5 text-primary shrink-0 ml-2" />
-                              )}
-                            </Button>
-                          );
-                        })
-                      )}
-
-                      {belowList && (
-                        <div className="border-t border-border pt-1 mt-1">
-                          {belowList}
-                        </div>
-                      )}
-                    </motion.div>
-                  </div>
-                </FloatingFocusManager>
-              )}
-            </AnimatePresence>
+            {/* Reusable SelectMenu */}
+            <SelectMenu
+              isOpen={isOpen}
+              context={context}
+              floatingStyles={floatingStyles}
+              getFloatingProps={getFloatingProps}
+              setFloatingRef={refs.setFloating}
+              options={options}
+              selectedValues={selectedValues}
+              onSelectOption={handleSelectOption}
+              isSearch={isSearch}
+              searchPlaceholder={searchPlaceholder}
+              searchInputName={searchInputName}
+              searchQuery={searchQuery}
+              onSearchChange={setSearchQuery}
+              belowList={belowList}
+              dropdownClassName={dropdownClassName}
+              variant={resolvedMenuVariant}
+              color={resolvedMenuColor}
+              size={resolvedMenuSize}
+              radius={resolvedMenuRadius}
+              animation={
+                animation ??
+                (sectionConfig?.animation as AnimationProp | undefined)
+              }
+            />
           </div>
 
           {/* Selected Chips Section */}
@@ -405,21 +438,37 @@ export const MultiSelect = forwardRef<HTMLButtonElement, MultiSelectProps>(
                   </span>
                 ) : (
                   activeChips.map((chip) => (
-                    <span
+                    <Button
                       key={String(chip.value)}
-                      className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-background border border-border text-xs text-foreground font-medium rounded-md shadow-xs">
+                      type="button"
+                      variant={resolvedChipVariant}
+                      color={resolvedChipColor}
+                      size={resolvedChipSize}
+                      isDisabled={disabled}
+                      className="inline-flex items-center gap-1.5 font-medium shadow-xs"
+                      style={{ borderRadius: resolvedChipRadius }}>
                       <span>{chip.label}</span>
-                      <Button
+                      <button
                         type="button"
-                        variant="ghost"
-                        size="sm"
-                        disabled={disabled}
-                        onClick={() => handleRemove(chip.value)}
+                        tabIndex={disabled ? -1 : 0}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          if (!disabled) handleRemove(chip.value);
+                        }}
+                        onKeyDown={(e) => {
+                          if (
+                            (e.key === "Enter" || e.key === " ") &&
+                            !disabled
+                          ) {
+                            e.stopPropagation();
+                            handleRemove(chip.value);
+                          }
+                        }}
                         aria-label={`Remove ${chip.label}`}
-                        className="h-4 w-4 p-0 min-w-0 hover:bg-danger/10 hover:text-danger rounded transition-colors">
-                        <CloseIcon />
-                      </Button>
-                    </span>
+                        className="inline-flex items-center justify-center h-3.5 w-3.5 rounded-full hover:bg-black/20 dark:hover:bg-white/20 transition-colors cursor-pointer shrink-0">
+                        <CloseIcon className="w-3 h-3" />
+                      </button>
+                    </Button>
                   ))
                 )}
               </div>

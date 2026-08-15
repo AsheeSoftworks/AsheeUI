@@ -1,6 +1,7 @@
 import type { Radius, ResponsiveValue } from "@ashee/theme";
 import type { ReactNode } from "react";
 import type { AnimationProp } from "../../../motion/types";
+import type { Variant } from "../../../shared/variant";
 
 export type ToastType = "success" | "error" | "info" | "warning" | "default";
 export type ToastPlacement =
@@ -39,7 +40,7 @@ export interface ToastSizeScale {
 export interface ToastConfig {
   size?: ToastSizeScale;
   placement?: ToastPlacement;
-  variant?: ToastVariant;
+  variant?: Variant;
   radius?: keyof Radius;
   animation?: AnimationProp;
   defaultTimeout?: number;

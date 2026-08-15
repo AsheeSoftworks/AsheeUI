@@ -4,6 +4,15 @@ export {
   Accordion,
   type AccordionProps,
 } from "./components/complex/accordion/Accordion";
+export {
+  Autocomplete,
+  type AutocompleteProps,
+} from "./components/complex/autocomplete/Autocomplete";
+export type {
+  AutocompleteConfig,
+  AutocompleteOption,
+  AutocompleteSizeKey,
+} from "./components/complex/autocomplete/autocomplete-config";
 export { Card, type CardProps } from "./components/complex/card/Card";
 export {
   Carousel,
@@ -37,17 +46,21 @@ export {
 } from "./components/complex/keyboard/keyboard-context";
 export { OnScreenKeyboard } from "./components/complex/keyboard/OnScreenKeyboard";
 export { useKeyboardField } from "./components/complex/keyboard/use-keyboard-field";
+export {
+  Marquee,
+  type MarqueeProps,
+} from "./components/complex/marquee/Marquee";
+export type {
+  MarqueeAxis,
+  MarqueeDirection,
+  MarqueeSpeedPreset,
+} from "./components/complex/marquee/marquee-config";
 export { Modal, type ModalProps } from "./components/complex/modal/Modal";
 export type {
   ModalConfig,
   ModalPosition,
   ModalSizeKey,
 } from "./components/complex/modal/modal-config";
-export {
-  type ModalContextType,
-  ModalProvider,
-  useModal,
-} from "./components/complex/modal/modal-context";
 export {
   MultiSelect,
   type MultiSelectProps,
@@ -57,10 +70,6 @@ export type {
   MultiSelectOption,
   MultiSelectSizeKey,
 } from "./components/complex/multi-select/multi-select-config";
-export {
-  Parallax,
-  type ParallaxProps,
-} from "./components/complex/parallax/Parallax";
 export {
   ResizableScreen,
   type ResizableScreenProps,
@@ -117,18 +126,9 @@ export type {
 export * from "./components/icons/index";
 export { Button, type ButtonProps } from "./components/primitive/button/Button";
 export {
-  ButtonDropdown,
-  type ButtonDropdownProps,
-} from "./components/primitive/button-dropdown/ButtonDropdown";
-export type {
-  ButtonDropdownConfig,
-  ButtonDropdownList,
-  ButtonDropdownSizeKey,
-} from "./components/primitive/button-dropdown/button-dropdown-config";
-export {
   Container,
   type ContainerProps,
-} from "./components/primitive/container/container";
+} from "./components/primitive/container/Container";
 export {
   DatePicker,
   type DatePickerProps,
@@ -138,12 +138,12 @@ export type {
   DatePickerSizeKey,
   PickerMode,
 } from "./components/primitive/date-picker/date-picker-config";
-export { Flex, type FlexProps } from "./components/primitive/flex/flex";
-export { Grid, type GridProps } from "./components/primitive/grid/grid";
+export { Flex, type FlexProps } from "./components/primitive/flex/Flex";
+export { Grid, type GridProps } from "./components/primitive/grid/Grid";
 export {
   Heading,
   type HeadingProps,
-} from "./components/primitive/heading/heading";
+} from "./components/primitive/heading/Heading";
 export { Image, type ImageProps } from "./components/primitive/image/Image";
 export { Input, type InputProps } from "./components/primitive/input/Input";
 export {
@@ -162,6 +162,7 @@ export {
   Select,
   type SelectProps,
 } from "./components/primitive/select/Select";
+export type { SelectOption } from "./components/primitive/select/select-config";
 export {
   Spinner,
   type SpinnerProps,
@@ -174,7 +175,7 @@ export {
 export {
   TextArea,
   type TextAreaProps,
-} from "./components/primitive/textarea/textarea";
+} from "./components/primitive/textarea/Textarea";
 export type { Config, ExternalConfig } from "./config";
 export { useAsheeConfig } from "./context";
 export { resolveRadius } from "./utils/resolve-token";

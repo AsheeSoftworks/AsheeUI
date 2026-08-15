@@ -12,6 +12,7 @@ import {
   useState,
 } from "react";
 import { useAsheeConfig } from "../../../context";
+import type { Variant } from "../../../shared/variant";
 import { resolveScale, resolveValue } from "../../../utils/resolve-token";
 import {
   defaultToastConfig,
@@ -25,7 +26,6 @@ import type {
   ToastPlacement,
   ToastSizeKey,
   ToastSizeScale,
-  ToastVariant,
 } from "./toast-config";
 
 // ─── Context Interface ────────────────────────────────────────────────────────
@@ -76,10 +76,10 @@ export function ToastProvider({ children }: { children: ReactNode }) {
     "top-right",
   );
 
-  const variant = resolveValue<ToastVariant>(
+  const variant = resolveValue<Variant>(
     sectionConfig?.variant,
     defaultToastConfig.variant,
-    "flat",
+    config.theme.defaultVariant ?? "solid",
   );
 
   const maxToasts =

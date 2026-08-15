@@ -3,12 +3,12 @@
 import { cn } from "@ashee/utils";
 import { forwardRef, type ReactNode, useId } from "react";
 import type { Color } from "../../../shared/variant";
+import { FieldShell } from "../field/FieldShell";
 import type {
   FieldSizeKey,
   FieldStatus,
   LabelAlign,
 } from "../field/field-config";
-import { FieldShell } from "../field/field-shell";
 import type { RadioVariant } from "./radio-config";
 import { RadioContext } from "./radio-context";
 

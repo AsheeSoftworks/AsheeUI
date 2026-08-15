@@ -1,6 +1,11 @@
 import type { Radius, ResponsiveValue } from "@ashee/theme";
 import type { AnimationProp } from "../../../motion/types";
-import type { FieldConfig, FieldSizeKey } from "../field/field-config";
+import type { Color, Variant } from "../../../shared/variant";
+import type {
+  FieldConfig,
+  FieldSizeKey,
+  InputAnimationPreset,
+} from "../field/field-config";
 
 export type PickerMode = "date" | "time" | "datetime";
 export type DatePickerSizeKey = FieldSizeKey;
@@ -20,6 +25,8 @@ export interface DatePickerSizeScale {
 export interface DatePickerConfig extends Omit<FieldConfig, "size"> {
   size?: DatePickerSizeScale;
   radius?: keyof Radius;
-  animation?: AnimationProp;
+  variant?: Variant;
+  color?: Color;
+  animation?: AnimationProp<InputAnimationPreset>;
   className?: string;
 }

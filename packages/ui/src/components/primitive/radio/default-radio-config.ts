@@ -26,8 +26,7 @@ export const defaultRadioSizeScale: RadioSizeScale = {
 
 export const defaultRadioConfig: RadioConfig = {
   size: defaultRadioSizeScale,
-  color: "primary",
   radius: "full",
   variant: "default",
-  animation: "scale",
+  animation: "none",
 };

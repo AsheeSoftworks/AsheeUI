@@ -16,22 +16,34 @@ import {
   useRole,
 } from "@floating-ui/react";
 import { AnimatePresence, type HTMLMotionProps, motion } from "framer-motion";
-import { forwardRef, useCallback, useId, useMemo, useState } from "react";
+import {
+  type CSSProperties,
+  forwardRef,
+  useCallback,
+  useId,
+  useMemo,
+  useState,
+} from "react";
 import { useAsheeConfig } from "../../../context";
 import { resolveAnimation } from "../../../motion/resolve-animation";
 import type { AnimationProp } from "../../../motion/types";
+import {
+  type Color,
+  resolveVariantClass,
+  type Variant,
+} from "../../../shared/variant";
 import { resolveScale, resolveValue } from "../../../utils/resolve-token";
 import { CalendarIcon } from "../../icons/CalendarIcon";
 import { ChevronLeftIcon } from "../../icons/ChevronLeftIcon";
 import { ChevronRightIcon } from "../../icons/ChevronRightIcon";
 import { ClearIcon } from "../../icons/ClearIcon";
 import { ClockIcon } from "../../icons/ClockIcon";
+import { FieldShell } from "../field/FieldShell";
 import type {
   FieldSizeKey,
   FieldStatus,
   LabelAlign,
 } from "../field/field-config";
-import { FieldShell } from "../field/field-shell";
 import type {
   DatePickerConfig,
   DatePickerSizeScale,
@@ -101,11 +113,62 @@ function buildDayCells(year: number, month: number): (number | null)[] {
   return cells;
 }
 
+// ─── Status Class Override ───────────────────────────────────────────────────
+
 const STATUS_BORDER_CLASS: Record<FieldStatus, string> = {
-  default: "border-border focus:border-primary",
-  error: "border-danger focus:border-danger",
-  warning: "border-warning focus:border-warning",
-  success: "border-success focus:border-success",
+  default: "",
+  error:
+    "border-danger focus-visible:border-danger focus-visible:ring-danger/20",
+  warning:
+    "border-warning focus-visible:border-warning focus-visible:ring-warning/20",
+  success:
+    "border-success focus-visible:border-success focus-visible:ring-success/20",
+};
+
+// ─── TimeSpinner ─────────────────────────────────────────────────────────────
+
+// ─── Color Helper Classes for Calendar Sub-elements ──────────────────────────
+
+const CALENDAR_COLOR_CLASSES: Record<
+  Color | string,
+  { bg: string; text: string; border: string; hover: string }
+> = {
+  default: {
+    bg: "bg-foreground text-background",
+    text: "text-foreground",
+    border: "border-foreground",
+    hover: "hover:text-foreground hover:bg-muted",
+  },
+  primary: {
+    bg: "bg-primary text-primary-foreground",
+    text: "text-primary",
+    border: "border-primary",
+    hover: "hover:text-primary hover:bg-primary/10",
+  },
+  secondary: {
+    bg: "bg-secondary text-secondary-foreground",
+    text: "text-secondary",
+    border: "border-secondary",
+    hover: "hover:text-secondary hover:bg-secondary/10",
+  },
+  success: {
+    bg: "bg-success text-success-foreground",
+    text: "text-success",
+    border: "border-success",
+    hover: "hover:text-success hover:bg-success/10",
+  },
+  warning: {
+    bg: "bg-warning text-warning-foreground",
+    text: "text-warning",
+    border: "border-warning",
+    hover: "hover:text-warning hover:bg-warning/10",
+  },
+  danger: {
+    bg: "bg-danger text-danger-foreground",
+    text: "text-danger",
+    border: "border-danger",
+    hover: "hover:text-danger hover:bg-danger/10",
+  },
 };
 
 // ─── TimeSpinner ─────────────────────────────────────────────────────────────
@@ -115,11 +178,22 @@ interface TimeSpinnerProps {
   max: number;
   label: string;
   onChange: (v: number) => void;
+  resolvedColor: Color;
+  resolvedRadius: string;
 }
 
-function TimeSpinner({ value, max, label, onChange }: TimeSpinnerProps) {
+function TimeSpinner({
+  value,
+  max,
+  label,
+  onChange,
+  resolvedColor,
+  resolvedRadius,
+}: TimeSpinnerProps) {
   const inc = () => onChange(value >= max ? 0 : value + 1);
   const dec = () => onChange(value <= 0 ? max : value - 1);
+  const colorStyles =
+    CALENDAR_COLOR_CLASSES[resolvedColor] ?? CALENDAR_COLOR_CLASSES.primary;
 
   return (
     <div className="flex flex-col items-center gap-0.5">
@@ -128,17 +202,27 @@ function TimeSpinner({ value, max, label, onChange }: TimeSpinnerProps) {
       </span>
       <button
         type="button"
-        className="w-10 h-7 flex items-center justify-center text-xs text-muted-foreground hover:text-primary hover:bg-background rounded transition-colors"
+        className={cn(
+          "w-10 h-7 flex items-center justify-center text-xs text-muted-foreground transition-colors",
+          colorStyles.hover,
+        )}
+        style={{ borderRadius: resolvedRadius }}
         onClick={inc}
         aria-label={`Increment ${label}`}>
         ▲
       </button>
-      <div className="w-10 h-10 flex items-center justify-center text-base font-mono font-bold text-foreground bg-background border border-border rounded select-none">
+      <div
+        className="w-10 h-10 flex items-center justify-center text-base font-mono font-bold text-foreground bg-background border border-border select-none"
+        style={{ borderRadius: resolvedRadius }}>
         {pad2(value)}
       </div>
       <button
         type="button"
-        className="w-10 h-7 flex items-center justify-center text-xs text-muted-foreground hover:text-primary hover:bg-background rounded transition-colors"
+        className={cn(
+          "w-10 h-7 flex items-center justify-center text-xs text-muted-foreground transition-colors",
+          colorStyles.hover,
+        )}
+        style={{ borderRadius: resolvedRadius }}
         onClick={dec}
         aria-label={`Decrement ${label}`}>
         ▼
@@ -154,6 +238,8 @@ interface CalendarProps {
   mode: PickerMode;
   isClearable: boolean;
   resolvedSizeKey: FieldSizeKey;
+  resolvedColor: Color;
+  resolvedRadius: string;
   onSelect: (date: Date | null) => void;
   onClose: () => void;
   disableFuture?: boolean;
@@ -164,6 +250,8 @@ function Calendar({
   mode,
   isClearable,
   resolvedSizeKey,
+  resolvedColor,
+  resolvedRadius,
   onSelect,
   onClose,
   disableFuture = false,
@@ -178,6 +266,9 @@ function Calendar({
   );
   const [hours, setHours] = useState<number>(selected?.getHours() ?? 0);
   const [minutes, setMinutes] = useState<number>(selected?.getMinutes() ?? 0);
+
+  const colorStyles =
+    CALENDAR_COLOR_CLASSES[resolvedColor] ?? CALENDAR_COLOR_CLASSES.primary;
 
   function applyTime(h: number, m: number): void {
     const base = selected ?? new Date();
@@ -261,7 +352,9 @@ function Calendar({
   }, [cells]);
 
   return (
-    <div className="bg-background border border-border rounded-lg shadow-xl select-none p-3 min-w-70">
+    <div
+      className="bg-background border border-border shadow-xl select-none p-3 min-w-70"
+      style={{ borderRadius: resolvedRadius }}>
       {showCalendar && (
         <>
           {/* Month/Year Header */}
@@ -270,7 +363,11 @@ function Calendar({
               type="button"
               onClick={prevMonth}
               aria-label="Previous month"
-              className="p-1 rounded-md text-foreground hover:text-primary hover:bg-secondary transition-colors">
+              style={{ borderRadius: resolvedRadius }}
+              className={cn(
+                "p-1 text-foreground transition-colors",
+                colorStyles.hover,
+              )}>
               <ChevronLeftIcon />
             </button>
             <span className="font-medium text-sm text-foreground">
@@ -281,7 +378,11 @@ function Calendar({
               onClick={nextMonth}
               disabled={!canGoNext}
               aria-label="Next month"
-              className="p-1 rounded-md text-foreground hover:text-primary hover:bg-secondary transition-colors disabled:opacity-30 disabled:cursor-not-allowed">
+              style={{ borderRadius: resolvedRadius }}
+              className={cn(
+                "p-1 text-foreground transition-colors disabled:opacity-30 disabled:cursor-not-allowed",
+                colorStyles.hover,
+              )}>
               <ChevronRightIcon />
             </button>
           </div>
@@ -306,16 +407,17 @@ function Calendar({
                   disabled={isDisabled(day)}
                   style={{
                     height: `var(--ashee-date-picker-${resolvedSizeKey}-cell-s)`,
+                    borderRadius: resolvedRadius,
                   }}
                   className={cn(
-                    "w-full flex items-center justify-center text-xs font-medium rounded-md transition-colors",
+                    "w-full flex items-center justify-center text-xs font-medium transition-colors",
                     isDisabled(day)
                       ? "opacity-30 cursor-not-allowed text-muted-foreground"
                       : isSelected(day)
-                        ? "bg-primary text-primary-foreground font-semibold"
+                        ? cn(colorStyles.bg, "font-semibold")
                         : isToday(day)
-                          ? "border border-primary text-primary"
-                          : "text-foreground hover:bg-secondary hover:text-primary",
+                          ? cn("border", colorStyles.border, colorStyles.text)
+                          : cn("text-foreground", colorStyles.hover),
                   )}>
                   {day}
                 </button>
@@ -333,6 +435,8 @@ function Calendar({
             max={23}
             label="HH"
             onChange={handleHoursChange}
+            resolvedColor={resolvedColor}
+            resolvedRadius={resolvedRadius}
           />
           <span className="text-xl font-bold text-muted-foreground select-none pt-3">
             :
@@ -342,6 +446,8 @@ function Calendar({
             max={59}
             label="MM"
             onChange={handleMinutesChange}
+            resolvedColor={resolvedColor}
+            resolvedRadius={resolvedRadius}
           />
         </div>
       )}
@@ -364,7 +470,11 @@ function Calendar({
             <button
               type="button"
               onClick={onClose}
-              className="ml-auto text-xs font-medium bg-primary text-primary-foreground px-3 py-1.5 rounded-md hover:opacity-90 transition-opacity">
+              style={{ borderRadius: resolvedRadius }}
+              className={cn(
+                "ml-auto text-xs font-medium px-3 py-1.5 hover:opacity-90 transition-opacity",
+                colorStyles.bg,
+              )}>
               Done
             </button>
           )}
@@ -382,6 +492,8 @@ export interface DatePickerProps {
   mode?: PickerMode;
   size?: FieldSizeKey;
   radius?: keyof Radius;
+  variant?: Variant;
+  color?: Color;
   animation?: AnimationProp;
   status?: FieldStatus;
   label?: string;
@@ -396,6 +508,7 @@ export interface DatePickerProps {
   placeholder?: string;
   className?: string;
   id?: string;
+  style?: CSSProperties;
 }
 
 export const DatePicker = forwardRef<HTMLDivElement, DatePickerProps>(
@@ -406,6 +519,8 @@ export const DatePicker = forwardRef<HTMLDivElement, DatePickerProps>(
       mode = "date",
       size,
       radius,
+      variant,
+      color,
       animation,
       status,
       label,
@@ -420,6 +535,7 @@ export const DatePicker = forwardRef<HTMLDivElement, DatePickerProps>(
       placeholder,
       className,
       id,
+      style,
     },
     ref,
   ) => {
@@ -477,6 +593,18 @@ export const DatePicker = forwardRef<HTMLDivElement, DatePickerProps>(
       config.theme.radius.values,
     );
 
+    const resolvedVariant = resolveValue<Variant>(
+      variant,
+      sectionConfig?.variant,
+      (config.theme.defaultVariant as Variant) ?? "bordered",
+    );
+
+    const resolvedColor = resolveValue<Color>(
+      color,
+      sectionConfig?.color,
+      (config.theme.defaultColor as Color) ?? "primary",
+    );
+
     const resolvedStatus = status ?? "default";
     const resolvedLabelAlign = resolveValue(
       labelAlign,
@@ -487,6 +615,10 @@ export const DatePicker = forwardRef<HTMLDivElement, DatePickerProps>(
       animation ?? (sectionConfig?.animation as AnimationProp | undefined),
       settings.enableAnimations,
     );
+
+    const variantClass = resolveVariantClass(resolvedVariant, resolvedColor);
+    const statusClass =
+      resolvedStatus !== "default" ? STATUS_BORDER_CLASS[resolvedStatus] : "";
 
     const handleSelect = useCallback(
       (date: Date | null) => onChange?.(date),
@@ -526,8 +658,7 @@ export const DatePicker = forwardRef<HTMLDivElement, DatePickerProps>(
               refs.setReference(node);
               if (typeof ref === "function") ref(node);
               else if (ref)
-                (ref as React.MutableRefObject<HTMLDivElement | null>).current =
-                  node;
+                (ref as React.RefObject<HTMLDivElement | null>).current = node;
             }}
             role="combobox"
             tabIndex={disabled ? -1 : 0}
@@ -536,19 +667,21 @@ export const DatePicker = forwardRef<HTMLDivElement, DatePickerProps>(
             aria-invalid={resolvedStatus === "error"}
             aria-disabled={disabled}
             className={cn(
-              "w-full flex items-center justify-between cursor-pointer border bg-background text-foreground transition-all duration-200 outline-none select-none",
-              "focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2",
-              disabled &&
-                "pointer-events-none opacity-50 cursor-not-allowed bg-muted/20",
-              STATUS_BORDER_CLASS[resolvedStatus],
+              "w-full flex items-center justify-between cursor-pointer text-foreground outline-none transition-colors select-none",
+              "focus-visible:ring-2 focus-visible:ring-offset-2",
+              disabled && "pointer-events-none opacity-50 cursor-not-allowed",
+              variantClass,
+              statusClass,
               sectionConfig?.className,
               className,
             )}
             style={{
-              borderRadius: resolvedRadius,
+              borderRadius:
+                resolvedVariant === "underlined" ? "0px" : resolvedRadius,
               height: `var(--ashee-date-picker-${resolvedSizeKey}-height)`,
               paddingInline: `var(--ashee-date-picker-${resolvedSizeKey}-padding-x)`,
               fontSize: `var(--ashee-date-picker-${resolvedSizeKey}-font-s)`,
+              ...style,
             }}
             {...getReferenceProps()}>
             <span
@@ -597,6 +730,12 @@ export const DatePicker = forwardRef<HTMLDivElement, DatePickerProps>(
                       onSelect={handleSelect}
                       onClose={handleClose}
                       disableFuture={disableFuture}
+                      resolvedColor={resolvedColor}
+                      resolvedRadius={
+                        resolvedVariant === "underlined"
+                          ? "0px"
+                          : resolvedRadius
+                      }
                     />
                   </motion.div>
                 </div>

@@ -25,7 +25,6 @@ export const defaultButtonSizeScale: ButtonSizeScale = {
 };
 
 export const defaultButtonConfig: ButtonConfig = {
-  variant: "solid",
   size: defaultButtonSizeScale,
-  animation: "scale",
+  animation: "none",
 };

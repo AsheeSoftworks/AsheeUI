@@ -21,13 +21,22 @@ import type { FieldSizeKey, FieldStatus } from "../field/field-config";
 import { defaultRadioSizeScale } from "./default-radio-config";
 import { flattenRadioSizeScale } from "./flatten-radio-size-scale";
 import type { RadioConfig, RadioSizeScale, RadioVariant } from "./radio-config";
-
 import { useRadioGroupContext } from "./radio-context";
 
 const RADIO_COLOR_CLASS: Record<
   Color,
   { border: string; bg: string; cardBg: string }
 > = {
+  none: {
+    border: "border-background",
+    bg: "bg-background",
+    cardBg: "bg-background/10",
+  },
+  default: {
+    border: "border-secondary",
+    bg: "bg-background",
+    cardBg: "bg-secondary/10",
+  },
   primary: {
     border: "border-primary",
     bg: "bg-primary",
@@ -59,7 +68,10 @@ const STATUS_BORDER_CLASS: Record<FieldStatus, string> = {
 };
 
 export interface RadioProps
-  extends Omit<HTMLMotionProps<"input">, "size" | "onChange" | "children"> {
+  extends Omit<
+    InputHTMLAttributes<HTMLInputElement>,
+    "size" | "onChange" | "children"
+  > {
   value: string;
   size?: FieldSizeKey;
   color?: Color;
@@ -115,6 +127,7 @@ export const Radio = forwardRef<HTMLInputElement, RadioProps>(
     const resolvedVariant =
       variant ?? group?.variant ?? sectionConfig?.variant ?? "default";
     const resolvedStatus = status ?? group?.status ?? "default";
+    const isCard = resolvedVariant === "card";
 
     // Controlled / Uncontrolled evaluation
     const [uncontrolledChecked, setUncontrolledChecked] =
@@ -143,11 +156,30 @@ export const Radio = forwardRef<HTMLInputElement, RadioProps>(
       sectionConfig?.color ??
       config.theme.defaultColor ??
       "primary") as Color;
+
     const resolvedRadiusKey = typeof radius === "string" ? radius : undefined;
     const resolvedSectionRadiusKey =
       typeof sectionConfig?.radius === "string"
         ? sectionConfig.radius
         : undefined;
+
+    // Determine key for radius check
+    const effectiveRadiusKey =
+      resolvedRadiusKey ??
+      resolvedSectionRadiusKey ??
+      config.theme.radius.default;
+
+    // Outer card container radius resolution (override "full" to "xl" for cards)
+    const cardRadiusKey =
+      isCard && effectiveRadiusKey === "full" ? "xl" : effectiveRadiusKey;
+
+    const resolvedCardRadius = resolveScale(
+      cardRadiusKey,
+      undefined,
+      config.theme.radius.default,
+      config.theme.radius.values,
+    );
+
     const resolvedRadius = resolveScale(
       resolvedRadiusKey,
       resolvedSectionRadiusKey,
@@ -174,8 +206,6 @@ export const Radio = forwardRef<HTMLInputElement, RadioProps>(
       onChange?.(e.target.checked, value, e);
     };
 
-    const isCard = resolvedVariant === "card";
-
     return (
       <label
         htmlFor={radioId}
@@ -190,7 +220,7 @@ export const Radio = forwardRef<HTMLInputElement, RadioProps>(
           className,
         )}
         style={{
-          borderRadius: isCard ? resolvedRadius : undefined,
+          borderRadius: isCard ? resolvedCardRadius : undefined,
           gap: `var(--ashee-radio-${resolvedSizeKey}-gap)`,
         }}>
         {/* Hidden Native Radio Input */}

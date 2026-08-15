@@ -15,6 +15,7 @@ import {
 import { useAsheeConfig } from "../../../context";
 import { resolveAnimation } from "../../../motion/resolve-animation";
 import type { AnimationProp } from "../../../motion/types";
+import type { Color, Variant } from "../../../shared/variant";
 import { resolveScale, resolveValue } from "../../../utils/resolve-token";
 import { Button } from "../../primitive/button/Button";
 import { defaultTabsSizeScale } from "./default-tabs-config";
@@ -49,7 +50,7 @@ export interface TabsProps
   onChange?: (id: string | number) => void;
 
   /**
-   * Visual style variant.
+   * Visual style variant for the tablist container.
    * @default "underline"
    */
   variant?: TabsVariant;
@@ -61,9 +62,25 @@ export interface TabsProps
   size?: TabsSizeKey;
 
   /**
-   * Border radius scale key.
+   * Border radius for the tablist container.
    */
   radius?: keyof Radius;
+
+  /**
+   * Border radius for only the active tab button.
+   */
+  activeRadius?: keyof Radius;
+
+  /**
+   * Button variant for only the active tab button.
+   */
+  activeVariant?: Variant;
+
+  /**
+   * Button color for only the active tab button.
+   * @default "primary"
+   */
+  activeColor?: Color;
 
   /**
    * Motion animation preset for panel transitions.
@@ -104,6 +121,9 @@ export const Tabs = forwardRef<HTMLDivElement, TabsProps>(
       variant: variantProp,
       size,
       radius,
+      activeRadius: activeRadiusProp,
+      activeVariant: activeVariantProp,
+      activeColor: activeColorProp,
       animation,
       fullWidth = false,
       tabListClassName,
@@ -152,17 +172,40 @@ export const Tabs = forwardRef<HTMLDivElement, TabsProps>(
       "underline",
     );
 
+    // Container Radius Resolution
     const resolvedRadiusKey = typeof radius === "string" ? radius : undefined;
     const resolvedSectionRadiusKey =
       typeof sectionConfig?.radius === "string"
         ? sectionConfig.radius
         : undefined;
-    const resolvedRadius = resolveScale(
+    const resolvedContainerRadius = resolveScale(
       resolvedRadiusKey,
       resolvedSectionRadiusKey,
       config.theme.radius.default,
       config.theme.radius.values,
     );
+
+    // Active Button Radius Resolution
+    const resolvedActiveRadiusKey =
+      activeRadiusProp ??
+      sectionConfig?.activeRadius ??
+      resolvedRadiusKey ??
+      resolvedSectionRadiusKey;
+    const resolvedActiveRadius = resolveScale(
+      resolvedActiveRadiusKey,
+      undefined,
+      config.theme.radius.default,
+      config.theme.radius.values,
+    );
+
+    // Global Active Button Fallbacks
+    const globalActiveVariant =
+      activeVariantProp ?? sectionConfig?.activeVariant;
+    const globalActiveColor =
+      activeColorProp ??
+      sectionConfig?.activeColor ??
+      (config.theme.defaultColor as Color) ??
+      "primary";
 
     const motionProps = resolveAnimation(
       animation ?? (sectionConfig?.animation as AnimationProp | undefined),
@@ -226,7 +269,7 @@ export const Tabs = forwardRef<HTMLDivElement, TabsProps>(
       [tabs, activeTabId],
     );
 
-    // Variant-driven container & active tab styles
+    // Variant-driven container layout classes
     const listVariantClasses = useMemo(() => {
       switch (variant) {
         case "pills":
@@ -261,13 +304,19 @@ export const Tabs = forwardRef<HTMLDivElement, TabsProps>(
             tabListClassName,
           )}
           style={{
-            borderRadius: variant !== "underline" ? resolvedRadius : undefined,
+            borderRadius:
+              variant !== "underline" ? resolvedContainerRadius : undefined,
           }}>
           {tabs.map((tab, index) => {
             const isActive = tab.id === activeTabId;
             const tabTitle = tab.label ?? tab.name;
             const tabHeaderId = `${baseId}-tab-${tab.id}`;
             const panelId = `${baseId}-panel-${tab.id}`;
+
+            // Resolve active button modifications
+            const activeVariant =
+              tab.activeVariant ?? globalActiveVariant ?? "solid";
+            const activeColor = tab.activeColor ?? globalActiveColor;
 
             return (
               <Button
@@ -283,36 +332,20 @@ export const Tabs = forwardRef<HTMLDivElement, TabsProps>(
                 aria-controls={panelId}
                 aria-disabled={tab.disabled}
                 tabIndex={isActive ? 0 : -1}
-                disabled={tab.disabled}
-                variant="ghost"
+                isDisabled={tab.disabled}
+                variant={
+                  isActive
+                    ? variant === "underline"
+                      ? "underlined"
+                      : activeVariant
+                    : "ghost"
+                }
+                color={isActive ? activeColor : "none"}
                 onClick={() => handleTabChange(tab.id)}
                 onKeyDown={(e) => handleKeyDown(e, index)}
                 className={cn(
-                  "relative flex items-center justify-center gap-2 font-medium transition-colors select-none outline-none",
+                  "relative flex items-center justify-center gap-2 font-medium transition-all select-none outline-none",
                   fullWidth && "flex-1",
-                  variant === "underline" && [
-                    "rounded-none border-b-2 border-transparent bg-transparent",
-                    isActive
-                      ? "text-primary border-primary font-semibold"
-                      : "text-muted-foreground hover:text-foreground hover:border-border",
-                  ],
-                  variant === "pills" && [
-                    "z-10",
-                    isActive
-                      ? "text-primary-foreground font-semibold"
-                      : "text-muted-foreground hover:text-foreground",
-                  ],
-                  variant === "bordered" && [
-                    "z-10",
-                    isActive
-                      ? "text-foreground font-semibold bg-background shadow-xs"
-                      : "text-muted-foreground hover:text-foreground",
-                  ],
-                  variant === "ghost" && [
-                    isActive
-                      ? "text-primary bg-primary/10 font-semibold"
-                      : "text-muted-foreground hover:text-foreground hover:bg-muted/40",
-                  ],
                   sectionConfig?.tabClassName,
                   tabClassName,
                 )}
@@ -321,7 +354,9 @@ export const Tabs = forwardRef<HTMLDivElement, TabsProps>(
                   paddingInline: `var(--ashee-tabs-${resolvedSizeKey}-padding-x)`,
                   fontSize: `var(--ashee-tabs-${resolvedSizeKey}-font-s)`,
                   borderRadius:
-                    variant !== "underline" ? resolvedRadius : undefined,
+                    isActive && variant !== "underline"
+                      ? resolvedActiveRadius
+                      : undefined,
                 }}>
                 {tab.icon && <span className="shrink-0">{tab.icon}</span>}
                 <span>{tabTitle}</span>
@@ -331,12 +366,11 @@ export const Tabs = forwardRef<HTMLDivElement, TabsProps>(
                   </span>
                 )}
 
-                {/* Animated Layout Pill for "pills" Variant */}
+                {/* Optional Animated Indicator for "pills" Variant */}
                 {variant === "pills" && isActive && (
                   <motion.div
                     layoutId={`${baseId}-active-pill`}
-                    className="absolute inset-0 bg-primary z-[-1]"
-                    style={{ borderRadius: resolvedRadius }}
+                    className="absolute inset-0 z-[-1] bg-primary rounded-[inherit]"
                     transition={{ type: "spring", stiffness: 400, damping: 30 }}
                   />
                 )}

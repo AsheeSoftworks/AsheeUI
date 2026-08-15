@@ -1,11 +1,9 @@
 "use client";
 
-import { useSettings } from "@ashee/settings";
 import { type Radius, useResponsiveVars } from "@ashee/theme";
 import { cn } from "@ashee/utils";
 import {
   autoUpdate,
-  FloatingFocusManager,
   flip,
   offset,
   shift,
@@ -15,7 +13,6 @@ import {
   useInteractions,
   useRole,
 } from "@floating-ui/react";
-import { AnimatePresence, type HTMLMotionProps, motion } from "framer-motion";
 import {
   forwardRef,
   type ReactNode,
@@ -25,20 +22,23 @@ import {
   useState,
 } from "react";
 import { useAsheeConfig } from "../../../context";
-import { resolveAnimation } from "../../../motion/resolve-animation";
 import type { AnimationProp } from "../../../motion/types";
+import {
+  type Color,
+  resolveVariantClass,
+  type Variant,
+} from "../../../shared/variant";
 import { resolveScale, resolveValue } from "../../../utils/resolve-token";
-import { CheckIcon } from "../../icons/CheckIcon";
 import { ChevronDownIcon } from "../../icons/ChevronDownIcon";
-import { SearchIcon } from "../../icons/SearchIcon";
-import { Button } from "../button/Button";
+import type { ButtonSizeKey } from "../../primitive/button/button-config";
+import { FieldShell } from "../field/FieldShell";
 import type {
   FieldSizeKey,
   FieldStatus,
+  InputAnimationPreset,
   LabelAlign,
 } from "../field/field-config";
-import { FieldShell } from "../field/field-shell";
-import { Input } from "../input/Input";
+import { SelectMenu } from "../select-menu/SelectMenu";
 import { defaultSelectSizeScale } from "./default-select-config";
 import { flattenSelectSizeScale } from "./flatten-select-size-scale";
 import type {
@@ -47,21 +47,24 @@ import type {
   SelectSizeScale,
 } from "./select-config";
 
-// ─── Inline Icon Helpers ──────────────────────────────────────────────────────
+// ─── Status Class Override ───────────────────────────────────────────────────
 
 const STATUS_BORDER_CLASS: Record<FieldStatus, string> = {
-  default: "border-border focus:border-primary",
-  error: "border-danger focus:border-danger",
-  warning: "border-warning focus:border-warning",
-  success: "border-success focus:border-success",
+  default: "",
+  error:
+    "border-danger focus-visible:border-danger focus-visible:ring-danger/20",
+  warning:
+    "border-warning focus-visible:border-warning focus-visible:ring-warning/20",
+  success:
+    "border-success focus-visible:border-success focus-visible:ring-success/20",
 };
 
-// ─── Props Interface ──────────────────────────────────────────────────────────
+// ─── Component Interface ──────────────────────────────────────────────────────
 
 export interface SelectProps
   extends Omit<
     React.SelectHTMLAttributes<HTMLSelectElement>,
-    "size" | "onChange" | "value"
+    "size" | "color" | "onChange" | "value"
   > {
   options: SelectOption[];
   value?: string | number;
@@ -69,7 +72,9 @@ export interface SelectProps
   onValueChange?: (value: string | number) => void;
   size?: FieldSizeKey;
   radius?: keyof Radius;
-  animation?: AnimationProp;
+  variant?: Variant;
+  color?: Color;
+  animation?: AnimationProp<InputAnimationPreset>;
   status?: FieldStatus;
   label?: string;
   labelAlign?: LabelAlign;
@@ -85,8 +90,15 @@ export interface SelectProps
   placeholder?: string;
   buttonColor?: string;
   className?: string;
+  dropdownClassName?: string;
   id?: string;
   name?: string;
+
+  // Menu / Popover Overrides
+  menuVariant?: Variant;
+  menuColor?: Color;
+  menuRadius?: keyof Radius;
+  menuSize?: ButtonSizeKey;
 }
 
 // ─── Component Implementation ─────────────────────────────────────────────────
@@ -100,6 +112,8 @@ export const Select = forwardRef<HTMLButtonElement, SelectProps>(
       onValueChange,
       size,
       radius,
+      variant,
+      color,
       animation,
       status,
       label,
@@ -111,19 +125,23 @@ export const Select = forwardRef<HTMLButtonElement, SelectProps>(
       disabled,
       isSearch = false,
       searchPlaceholder = "Search options...",
-      searchInputName,
+      searchInputName = "select-search",
       initialValue,
       belowList,
       placeholder = "Select...",
       buttonColor,
       className,
+      dropdownClassName,
       id,
       name,
+      menuVariant,
+      menuColor,
+      menuRadius,
+      menuSize,
     },
     ref,
   ) => {
     const config = useAsheeConfig();
-    const { settings } = useSettings();
     const sectionConfig = config.components?.select as SelectConfig | undefined;
 
     const generatedId = useId();
@@ -149,7 +167,8 @@ export const Select = forwardRef<HTMLButtonElement, SelectProps>(
       role,
     ]);
 
-    // Token Scale Resolvers
+    // ─── Token Resolvers ──────────────────────────────────────────────────────
+
     const sizeScale = (sectionConfig?.size ??
       defaultSelectSizeScale) as SelectSizeScale;
     const resolvedSizeKey = size ?? sizeScale.default;
@@ -163,16 +182,23 @@ export const Select = forwardRef<HTMLButtonElement, SelectProps>(
       config.theme.breakpoints,
     );
 
-    const resolvedRadiusKey = typeof radius === "string" ? radius : undefined;
-    const resolvedSectionRadiusKey =
-      typeof sectionConfig?.radius === "string"
-        ? sectionConfig.radius
-        : undefined;
     const resolvedRadius = resolveScale(
-      resolvedRadiusKey,
-      resolvedSectionRadiusKey,
+      radius,
+      sectionConfig?.radius,
       config.theme.radius.default,
       config.theme.radius.values,
+    );
+
+    const resolvedVariant = resolveValue<Variant>(
+      variant,
+      sectionConfig?.variant,
+      (config.theme.defaultVariant as Variant) ?? "bordered",
+    );
+
+    const resolvedColor = resolveValue<Color>(
+      color,
+      sectionConfig?.color,
+      (config.theme.defaultColor as Color) ?? "primary",
     );
 
     const resolvedStatus = status ?? "default";
@@ -181,29 +207,50 @@ export const Select = forwardRef<HTMLButtonElement, SelectProps>(
       sectionConfig?.labelAlign,
       "left",
     );
-    const motionProps = resolveAnimation(
-      animation ?? (sectionConfig?.animation as AnimationProp | undefined),
-      settings.enableAnimations,
+
+    // ─── Menu Token Resolvers ─────────────────────────────────────────────────
+
+    const resolvedMenuVariant = resolveValue<Variant>(
+      menuVariant,
+      sectionConfig?.menuVariant,
+      (config.theme.defaultVariant as Variant) ?? "bordered",
     );
+
+    const resolvedMenuColor = resolveValue<Color>(
+      menuColor,
+      sectionConfig?.menuColor,
+      resolvedColor,
+    );
+
+    const resolvedMenuRadius = resolveScale(
+      menuRadius,
+      sectionConfig?.menuRadius,
+      resolvedRadius,
+      config.theme.radius.values,
+    );
+
+    const resolvedMenuSize = resolveValue<ButtonSizeKey>(
+      menuSize,
+      sectionConfig?.menuSize,
+      "sm",
+    );
+
+    // Apply global variant/color styling & status overrides
+    const variantClass = resolveVariantClass(resolvedVariant, resolvedColor);
+    const statusClass =
+      resolvedStatus !== "default" ? STATUS_BORDER_CLASS[resolvedStatus] : "";
 
     const selectedOption = useMemo(
       () => options.find((opt) => opt.value === value),
       [options, value],
     );
 
-    const filteredOptions = useMemo(() => {
-      if (!isSearch || !searchQuery.trim()) return options;
-      return options.filter((opt) =>
-        opt.label.toLowerCase().includes(searchQuery.toLowerCase()),
-      );
-    }, [options, isSearch, searchQuery]);
-
-    const handleSelect = useCallback(
-      (val: string | number) => {
-        onValueChange?.(val);
+    const handleSelectOption = useCallback(
+      (option: SelectOption) => {
+        onValueChange?.(option.value);
         if (onChange) {
           const event = {
-            target: { value: val, name: name ?? "" },
+            target: { value: option.value, name: name ?? "" },
           } as React.ChangeEvent<HTMLSelectElement>;
           onChange(event);
         }
@@ -219,6 +266,11 @@ export const Select = forwardRef<HTMLButtonElement, SelectProps>(
       return placeholder;
     }, [selectedOption, initialValue, placeholder]);
 
+    const selectedValues = useMemo(
+      () => (value !== undefined && value !== null ? [value] : []),
+      [value],
+    );
+
     return (
       <FieldShell
         id={fieldId}
@@ -233,34 +285,38 @@ export const Select = forwardRef<HTMLButtonElement, SelectProps>(
         descriptionClassName={sectionConfig?.descriptionClassName}
         messageClassName={sectionConfig?.messageClassName}>
         <div className="w-full relative inline-block">
-          {/* Trigger Button using Button Primitive */}
-          <Button
+          {/* Trigger Button */}
+          <button
             ref={(node) => {
               refs.setReference(node);
               if (typeof ref === "function") ref(node);
               else if (ref)
-                (
-                  ref as React.MutableRefObject<HTMLButtonElement | null>
-                ).current = node;
+                (ref as React.RefObject<HTMLButtonElement | null>).current =
+                  node;
             }}
             type="button"
-            variant="bordered"
             disabled={disabled}
             aria-expanded={isOpen}
             aria-haspopup="listbox"
             aria-invalid={resolvedStatus === "error"}
             className={cn(
-              "w-full flex items-center justify-between font-normal text-left border bg-background text-foreground transition-all duration-200 outline-none select-none",
-              "focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2",
-              STATUS_BORDER_CLASS[resolvedStatus],
+              "w-full flex items-center justify-between font-normal text-left text-foreground transition-colors outline-none select-none cursor-pointer",
+              "focus-visible:ring-2 focus-visible:ring-offset-2",
+              "disabled:pointer-events-none disabled:opacity-50",
+              variantClass,
+              statusClass,
               buttonColor && `bg-[${buttonColor}]`,
               sectionConfig?.className,
               className,
             )}
             style={{
-              borderRadius: resolvedRadius,
+              borderRadius:
+                resolvedVariant === "underlined" ? "0px" : resolvedRadius,
               height: `var(--ashee-select-${resolvedSizeKey}-height)`,
-              paddingInline: `var(--ashee-select-${resolvedSizeKey}-padding-x)`,
+              paddingInline:
+                resolvedVariant === "underlined"
+                  ? "0px"
+                  : `var(--ashee-select-${resolvedSizeKey}-padding-x)`,
               fontSize: `var(--ashee-select-${resolvedSizeKey}-font-s)`,
             }}
             {...getReferenceProps()}>
@@ -274,86 +330,38 @@ export const Select = forwardRef<HTMLButtonElement, SelectProps>(
             </span>
             <ChevronDownIcon
               className={cn(
-                "ml-2 shrink-0 text-muted-foreground",
+                "ml-2 shrink-0 text-muted-foreground transition-transform duration-200",
                 isOpen && "rotate-180",
               )}
             />
-          </Button>
+          </button>
 
-          {/* Animated Floating Options Menu */}
-          <AnimatePresence>
-            {isOpen && (
-              <FloatingFocusManager context={context} modal={false}>
-                <div
-                  ref={refs.setFloating}
-                  style={{ ...floatingStyles, zIndex: 99999 }}
-                  className="w-full min-w-50 outline-none"
-                  {...getFloatingProps()}>
-                  <motion.div
-                    initial={{ opacity: 0, y: -4, scale: 0.98 }}
-                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                    exit={{ opacity: 0, y: -4, scale: 0.98 }}
-                    transition={{ duration: 0.15, ease: "easeOut" }}
-                    className="w-full max-h-60 overflow-y-auto shadow-xl bg-background border border-border rounded-lg p-1 flex flex-col gap-0.5 overflow-x-hidden"
-                    {...(motionProps as HTMLMotionProps<"div">)}>
-                    {/* Search Input Filter */}
-                    {isSearch && (
-                      <div className="p-1 mb-1 sticky top-0 bg-background z-10 border-b border-border">
-                        <div className="relative flex items-center">
-                          <SearchIcon className="absolute left-2.5 w-4 h-4 text-muted-foreground pointer-events-none" />
-                          <Input
-                            name={searchInputName ?? "select-search"}
-                            type="text"
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                            placeholder={searchPlaceholder}
-                            autoFocus
-                            className="w-full pl-8 h-8 text-xs bg-muted/30 border-none focus-visible:ring-0"
-                          />
-                        </div>
-                      </div>
-                    )}
-
-                    {/* Options List */}
-                    {filteredOptions.length === 0 ? (
-                      <div className="px-3 py-2 text-xs text-muted-foreground text-center">
-                        No options found.
-                      </div>
-                    ) : (
-                      filteredOptions.map((option) => {
-                        const isSelected = value === option.value;
-                        return (
-                          <Button
-                            key={String(option.value)}
-                            type="button"
-                            variant="ghost"
-                            disabled={option.disabled}
-                            onClick={() => handleSelect(option.value)}
-                            className={cn(
-                              "w-full justify-between font-normal text-xs px-3 py-2 h-auto text-left rounded-md transition-colors",
-                              isSelected
-                                ? "bg-primary/10 text-primary font-medium hover:bg-primary/20"
-                                : "hover:bg-accent hover:text-accent-foreground text-foreground",
-                            )}>
-                            <span>{option.label}</span>
-                            {isSelected && (
-                              <CheckIcon className="w-3.5 h-3.5 text-primary shrink-0 ml-2" />
-                            )}
-                          </Button>
-                        );
-                      })
-                    )}
-
-                    {belowList && (
-                      <div className="border-t border-border pt-1 mt-1">
-                        {belowList}
-                      </div>
-                    )}
-                  </motion.div>
-                </div>
-              </FloatingFocusManager>
-            )}
-          </AnimatePresence>
+          {/* Reusable SelectMenu */}
+          <SelectMenu
+            isOpen={isOpen}
+            context={context}
+            floatingStyles={floatingStyles}
+            getFloatingProps={getFloatingProps}
+            setFloatingRef={refs.setFloating}
+            options={options}
+            selectedValues={selectedValues}
+            onSelectOption={handleSelectOption}
+            isSearch={isSearch}
+            searchPlaceholder={searchPlaceholder}
+            searchInputName={searchInputName}
+            searchQuery={searchQuery}
+            onSearchChange={setSearchQuery}
+            belowList={belowList}
+            dropdownClassName={dropdownClassName}
+            variant={resolvedMenuVariant}
+            color={resolvedMenuColor}
+            radius={resolvedMenuRadius}
+            size={resolvedMenuSize}
+            animation={
+              animation ??
+              (sectionConfig?.animation as AnimationProp | undefined)
+            }
+          />
         </div>
       </FieldShell>
     );

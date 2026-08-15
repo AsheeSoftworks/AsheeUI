@@ -1,5 +1,6 @@
 import type { Radius, ResponsiveValue } from "@ashee/theme";
-import type { AnimationProp } from "../../../motion/types";
+import type { Color, Variant } from "../../../shared/variant";
+import type { ButtonSizeKey } from "../../primitive/button/button-config";
 import type {
   FieldConfig,
   FieldSizeKey,
@@ -27,7 +28,17 @@ export interface MultiSelectSizeScale {
 
 export interface MultiSelectConfig extends Omit<FieldConfig, "size"> {
   size?: MultiSelectSizeScale;
-  radius?: keyof Radius;
-  animation?: AnimationProp;
   className?: string;
+
+  // Menu / Popover Overrides
+  menuVariant?: Variant;
+  menuColor?: Color;
+  menuRadius?: keyof Radius;
+  menuSize?: ButtonSizeKey;
+
+  // Chip Overrides
+  chipVariant?: Variant;
+  chipColor?: Color;
+  chipRadius?: keyof Radius;
+  chipSize?: ButtonSizeKey;
 }

@@ -24,7 +24,6 @@ export const defaultAccordionSizeScale: AccordionSizeScale = {
 export const defaultAccordionConfig: AccordionConfig = {
   variant: "separated",
   size: defaultAccordionSizeScale,
-  radius: "lg",
   animation: "none",
   allowMultiple: false,
 };

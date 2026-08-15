@@ -28,5 +28,6 @@ export const defaultMultiSelectConfig: MultiSelectConfig = {
   size: defaultMultiSelectSizeScale,
   radius: "md",
   labelAlign: "left",
-  animation: "scale",
+  animation: "none",
+  chipSize: "sm",
 };

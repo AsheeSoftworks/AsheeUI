@@ -1,9 +1,7 @@
 "use client";
 
-import { useSettings } from "@ashee/settings";
 import { type Radius, useResponsiveVars } from "@ashee/theme";
 import { cn } from "@ashee/utils";
-import { AnimatePresence, type HTMLMotionProps, motion } from "framer-motion";
 import {
   type HTMLAttributes,
   type ReactNode,
@@ -11,8 +9,7 @@ import {
   useMemo,
 } from "react";
 import { useAsheeConfig } from "../../../context";
-import { resolveAnimation } from "../../../motion/resolve-animation";
-import type { AnimationProp } from "../../../motion/types";
+import type { Color } from "../../../shared/variant";
 import { resolveScale, resolveValue } from "../../../utils/resolve-token";
 import { defaultTableSizeScale } from "./default-table-config";
 import { flattenTableSizeScale } from "./flatten-table-size-scale";
@@ -23,6 +20,61 @@ import type {
   TableSizeScale,
   TableVariant,
 } from "./table-config";
+
+// ─── Color Token Utility Maps ─────────────────────────────────────────────────
+
+const TABLE_COLOR_STYLES: Record<
+  Color,
+  { selected: string; hover: string; focus: string }
+> = {
+  primary: {
+    selected:
+      "bg-primary text-secondary font-medium hover:bg-primary/90 hover:text-secondary",
+    hover: "hover:bg-primary/10 hover:text-foreground",
+    focus:
+      "focus-visible:bg-primary/15 focus-visible:ring-1 focus-visible:ring-primary focus-visible:ring-inset",
+  },
+  secondary: {
+    selected:
+      "bg-secondary text-foreground font-medium hover:bg-secondary/90 hover:text-foreground",
+    hover: "hover:bg-secondary/10 hover:text-foreground",
+    focus:
+      "focus-visible:bg-secondary/15 focus-visible:ring-1 focus-visible:ring-secondary focus-visible:ring-inset",
+  },
+  danger: {
+    selected:
+      "bg-danger text-secondary font-medium hover:bg-danger/90 hover:text-secondary",
+    hover: "hover:bg-danger/10 hover:text-foreground",
+    focus:
+      "focus-visible:bg-danger/15 focus-visible:ring-1 focus-visible:ring-danger focus-visible:ring-inset",
+  },
+  warning: {
+    selected:
+      "bg-warning text-secondary font-medium hover:bg-warning/90 hover:text-secondary",
+    hover: "hover:bg-warning/10 hover:text-foreground",
+    focus:
+      "focus-visible:bg-warning/15 focus-visible:ring-1 focus-visible:ring-warning focus-visible:ring-inset",
+  },
+  success: {
+    selected:
+      "bg-success text-secondary font-medium hover:bg-success/90 hover:text-secondary",
+    hover: "hover:bg-success/10 hover:text-foreground",
+    focus:
+      "focus-visible:bg-success/15 focus-visible:ring-1 focus-visible:ring-success focus-visible:ring-inset",
+  },
+  default: {
+    selected: "bg-secondary text-foreground font-medium hover:bg-secondary/80",
+    hover: "hover:bg-foreground/10 hover:text-foreground",
+    focus:
+      "focus-visible:bg-foreground/10 focus-visible:ring-1 focus-visible:ring-border focus-visible:ring-inset",
+  },
+  none: {
+    selected: "bg-muted text-foreground font-medium hover:bg-muted/80",
+    hover: "hover:bg-muted/40 hover:text-foreground",
+    focus:
+      "focus-visible:bg-muted/50 focus-visible:ring-1 focus-visible:ring-ring focus-visible:ring-inset",
+  },
+};
 
 // ─── Props Interface ──────────────────────────────────────────────────────────
 
@@ -58,14 +110,14 @@ export interface TableProps<TData>
   /** Visual table style variant. */
   variant?: TableVariant;
 
+  /** Color token for row selections, hover states, and keyboard focus rings. */
+  color?: Color;
+
   /** Density/size scale key. */
   size?: TableSizeKey;
 
   /** Border radius token key. */
   radius?: keyof Radius;
-
-  /** Animation preset for row presence. */
-  animation?: AnimationProp;
 
   /** Custom class for header container. */
   headerClassName?: string;
@@ -90,9 +142,9 @@ export function Table<TData>({
   emptyMessage = "No items available",
   isNotClickable = false,
   variant: variantProp,
+  color: colorProp,
   size,
   radius,
-  animation,
   headerClassName,
   rowClassName,
   cellClassName,
@@ -101,7 +153,6 @@ export function Table<TData>({
   ...props
 }: TableProps<TData>) {
   const config = useAsheeConfig();
-  const { settings } = useSettings();
   const sectionConfig = config.components?.table as TableConfig | undefined;
 
   // Design Token Resolvers
@@ -118,7 +169,20 @@ export function Table<TData>({
     config.theme.breakpoints,
   );
 
-  const variant = resolveValue(variantProp, sectionConfig?.variant, "default");
+  const variant = resolveValue<TableVariant>(
+    variantProp,
+    sectionConfig?.variant,
+    "default",
+  );
+
+  const resolvedColor = resolveValue<Color>(
+    colorProp,
+    sectionConfig?.color,
+    config.theme.defaultColor ?? "primary",
+  );
+
+  const activeColorStyles =
+    TABLE_COLOR_STYLES[resolvedColor] ?? TABLE_COLOR_STYLES.primary;
 
   const resolvedRadiusKey = typeof radius === "string" ? radius : undefined;
   const resolvedSectionRadiusKey =
@@ -130,11 +194,6 @@ export function Table<TData>({
     resolvedSectionRadiusKey,
     config.theme.radius.default,
     config.theme.radius.values,
-  );
-
-  const motionProps = resolveAnimation(
-    animation ?? (sectionConfig?.animation as AnimationProp | undefined),
-    settings.enableAnimations,
   );
 
   const getRowKey = useCallback(
@@ -158,12 +217,15 @@ export function Table<TData>({
   return (
     <div
       className={cn(
-        "w-full h-full overflow-auto scrollable border border-border bg-background",
-        variant === "flush" && "border-none",
+        "w-full h-full overflow-auto scrollable bg-background",
+        variant === "flush" ? "border-0 shadow-none" : "border border-border",
         sectionConfig?.className,
         className,
       )}
-      style={{ borderRadius: resolvedRadius, ...style }}
+      style={{
+        borderRadius: variant === "flush" ? 0 : resolvedRadius,
+        ...style,
+      }}
       {...props}>
       <table className="w-full border-collapse text-left caption-bottom">
         {/* Table Header */}
@@ -187,6 +249,9 @@ export function Table<TData>({
                   scope="col"
                   className={cn(
                     "font-medium uppercase tracking-wider text-left align-middle truncate min-w-0",
+                    variant === "bordered" &&
+                      colIdx < columns.length - 1 &&
+                      "border-r border-border",
                     sectionConfig?.cellClassName,
                     cellClassName,
                   )}
@@ -213,80 +278,78 @@ export function Table<TData>({
               </td>
             </tr>
           ) : (
-            <AnimatePresence initial={false}>
-              {data.map((row, rowIndex) => {
-                const rowKey = getRowKey(row, rowIndex);
-                const isSelected = rowKey === selectedRowKey;
-                const isStriped = variant === "striped" && rowIndex % 2 === 1;
+            data.map((row, rowIndex) => {
+              const rowKey = getRowKey(row, rowIndex);
+              const isSelected = rowKey === selectedRowKey;
+              const isStriped = variant === "striped" && rowIndex % 2 === 1;
 
-                return (
-                  <motion.tr
-                    key={String(rowKey)}
-                    tabIndex={isInteractive ? 0 : -1}
-                    aria-selected={isSelected}
-                    onClick={
-                      isInteractive && handleClick
-                        ? () => handleClick(row, rowKey)
-                        : undefined
+              return (
+                <tr
+                  key={String(rowKey)}
+                  tabIndex={isInteractive ? 0 : -1}
+                  aria-selected={isSelected}
+                  onClick={
+                    isInteractive && handleClick
+                      ? () => handleClick(row, rowKey)
+                      : undefined
+                  }
+                  onDoubleClick={
+                    isInteractive && handleDoubleClick
+                      ? () => handleDoubleClick(row, rowKey)
+                      : undefined
+                  }
+                  onKeyDown={(e) => {
+                    if (isInteractive && (e.key === "Enter" || e.key === " ")) {
+                      e.preventDefault();
+                      handleClick?.(row, rowKey);
                     }
-                    onDoubleClick={
-                      isInteractive && handleDoubleClick
-                        ? () => handleDoubleClick(row, rowKey)
-                        : undefined
-                    }
-                    onKeyDown={(e) => {
-                      if (
-                        isInteractive &&
-                        (e.key === "Enter" || e.key === " ")
-                      ) {
-                        e.preventDefault();
-                        handleClick?.(row, rowKey);
-                      }
-                    }}
-                    className={cn(
-                      "border-b border-border/60 transition-colors outline-none align-middle",
-                      isStriped && "bg-muted/20",
-                      isInteractive &&
-                        "cursor-pointer hover:bg-primary/10 hover:text-foreground focus-visible:bg-primary/15 focus-visible:ring-1 focus-visible:ring-primary focus-visible:ring-inset",
-                      isSelected &&
-                        "bg-primary text-primary-foreground font-medium hover:bg-primary/90 hover:text-primary-foreground",
-                      sectionConfig?.rowClassName,
-                      rowClassName,
-                    )}
-                    style={{
-                      fontSize: `var(--ashee-table-${resolvedSizeKey}-font-s)`,
-                    }}
-                    {...(motionProps as HTMLMotionProps<"tr">)}>
-                    {columns.map((column, colIdx) => {
-                      const colKey =
-                        column.id ??
-                        (typeof column.header === "string"
-                          ? column.header
-                          : String(colIdx));
+                  }}
+                  className={cn(
+                    "border-b border-border/60 transition-colors outline-none align-middle",
+                    variant === "flush" && "last:border-b-0",
+                    isStriped && "bg-secondary",
+                    isInteractive &&
+                      cn(
+                        "cursor-pointer",
+                        activeColorStyles.hover,
+                        activeColorStyles.focus,
+                      ),
+                    isSelected && activeColorStyles.selected,
+                    sectionConfig?.rowClassName,
+                    rowClassName,
+                  )}
+                  style={{
+                    fontSize: `var(--ashee-table-${resolvedSizeKey}-font-s)`,
+                  }}>
+                  {columns.map((column, colIdx) => {
+                    const colKey =
+                      column.id ??
+                      (typeof column.header === "string"
+                        ? column.header
+                        : String(colIdx));
 
-                      return (
-                        <td
-                          key={colKey}
-                          className={cn(
-                            "truncate min-w-0 align-middle",
-                            variant === "bordered" &&
-                              colIdx < columns.length - 1 &&
-                              "border-r border-border",
-                            sectionConfig?.cellClassName,
-                            cellClassName,
-                          )}
-                          style={{
-                            paddingBlock: `var(--ashee-table-${resolvedSizeKey}-py)`,
-                            paddingInline: `var(--ashee-table-${resolvedSizeKey}-px)`,
-                          }}>
-                          {column.cell(row)}
-                        </td>
-                      );
-                    })}
-                  </motion.tr>
-                );
-              })}
-            </AnimatePresence>
+                    return (
+                      <td
+                        key={colKey}
+                        className={cn(
+                          "truncate min-w-0 align-middle",
+                          variant === "bordered" &&
+                            colIdx < columns.length - 1 &&
+                            "border-r border-border",
+                          sectionConfig?.cellClassName,
+                          cellClassName,
+                        )}
+                        style={{
+                          paddingBlock: `var(--ashee-table-${resolvedSizeKey}-py)`,
+                          paddingInline: `var(--ashee-table-${resolvedSizeKey}-px)`,
+                        }}>
+                        {column.cell(row)}
+                      </td>
+                    );
+                  })}
+                </tr>
+              );
+            })
           )}
         </tbody>
       </table>

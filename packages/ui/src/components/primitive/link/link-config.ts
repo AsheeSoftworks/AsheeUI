@@ -1,7 +1,7 @@
 import type { FontWeight, LineHeight, ResponsiveValue } from "@ashee/theme";
-import type { AnimationProp } from "../../../motion/types";
+import type { Color } from "../../../shared/variant";
 
-export type LinkVariant = "default" | "primary" | "muted" | "subtle" | "danger";
+export type LinkVariant = "default" | "muted" | "subtle";
 export type LinkUnderline = "always" | "hover" | "never";
 export type LinkSizeKey = "sm" | "md" | "lg";
 
@@ -18,11 +18,11 @@ export interface LinkSizeScale {
 
 export interface LinkConfig {
   variant?: LinkVariant;
+  color?: Color;
   size?: LinkSizeScale;
   underline?: LinkUnderline;
   weight?: keyof FontWeight;
   lineHeight?: keyof LineHeight;
-  animation?: AnimationProp;
   isExternal?: boolean;
   className?: string;
 }

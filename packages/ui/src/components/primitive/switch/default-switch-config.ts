@@ -29,8 +29,7 @@ export const defaultSwitchSizeScale: SwitchSizeScale = {
 
 export const defaultSwitchConfig: SwitchConfig = {
   size: defaultSwitchSizeScale,
-  color: "primary",
   radius: "full",
   labelAlign: "left",
-  animation: "scale",
+  animation: "none",
 };
