@@ -1,3 +1,4 @@
+"use client";
 import { useLayoutEffect } from "react";
 import type { BreakpointConfig } from "./breakpoint-config";
 import { defaultBreakpointConfig } from "./default-breakpoint-config";

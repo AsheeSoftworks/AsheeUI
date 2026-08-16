@@ -1,3 +1,4 @@
+"use client";
 import { useResponsiveVars } from "@ashee/theme";
 import { cn } from "@ashee/utils";
 import type { ReactNode } from "react";

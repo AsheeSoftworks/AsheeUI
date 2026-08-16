@@ -1,3 +1,4 @@
+"use client";
 import { useSyncExternalStore } from "react";
 import type { ThemeName } from "../theme/color/color-config";
 import { type ThemeSelection, themeController } from "./controller";

@@ -1,14 +1,18 @@
 {
-  "name": "ashee-ecosystem",
+  "name": "asheeui-ecosystem",
   "private": true,
   "scripts": {
     "build": "turbo run build",
     "dev": "turbo run dev",
     "lint": "turbo run lint",
-    "check": "pnpx @biomejs/biome check --write"
+    "check": "pnpx @biomejs/biome check --write",
+    "changeset": "changeset",
+    "version-packages": "changeset version",
+    "release": "turbo run build && changeset publish"
   },
   "devDependencies": {
     "@biomejs/biome": "latest",
+    "@changesets/cli": "^3.0.0",
     "@types/node": "^22.15.3",
     "turbo": "latest",
     "typescript": "^5.5.0"

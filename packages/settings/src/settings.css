@@ -15,9 +15,9 @@
   .ashee-no-animations *,
   .ashee-no-animations *::before,
   .ashee-no-animations *::after {
-    animation-duration: 0.01ms !important;
-    transition-duration: 0.01ms !important;
-    scroll-behavior: auto !important;
+    animation-duration: 0.01ms;
+    transition-duration: 0.01ms;
+    scroll-behavior: auto;
   }
 
   /* High Contrast Mode */

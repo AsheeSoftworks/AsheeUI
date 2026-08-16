@@ -30,7 +30,7 @@ import type { SwitchConfig } from "./components/primitive/switch/switch-config";
 import type { TextConfig } from "./components/primitive/text/text-config";
 import type { TextAreaConfig } from "./components/primitive/textarea/textarea-config";
 
-export interface ComponentConfigRegistry {
+export type ComponentConfigRegistry = {
   // Promitive
   container: ContainerConfig;
   flex: FlexConfig;
@@ -65,4 +65,4 @@ export interface ComponentConfigRegistry {
   card: CardConfig;
   chip: ChipConfig;
   autocomplete: AutocompleteConfig;
-}
+};

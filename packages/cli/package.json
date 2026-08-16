@@ -1,7 +1,22 @@
 {
   "name": "@ashee/cli",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "bin": {
-    "ashee": "./bin/index.js"
+    "asheeui": "./dist/index.mjs"
+  },
+  "type": "module",
+  "scripts": {
+    "dev": "tsx src/index.ts",
+    "build": "tsdown src/index.ts --format esm --clean",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "@clack/prompts": "^1.7.0",
+    "commander": "^15.0.0"
+  },
+  "devDependencies": {
+    "tsdown": "^0.22.14",
+    "vitest": "^3.2.7"
   }
 }
