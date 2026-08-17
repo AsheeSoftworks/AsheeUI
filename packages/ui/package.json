@@ -18,7 +18,6 @@
     "src"
   ],
   "dependencies": {
-    "@ashee/settings": "workspace:*",
     "@ashee/theme": "workspace:*",
     "@ashee/utils": "workspace:*"
   },
