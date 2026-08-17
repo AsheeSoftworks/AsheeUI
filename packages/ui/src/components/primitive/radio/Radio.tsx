@@ -1,6 +1,5 @@
 "use client";
 
-import { useSettings } from "@ashee/settings";
 import { type Radius, useResponsiveVars } from "@ashee/theme";
 import { cn } from "@ashee/utils";
 import { type HTMLMotionProps, motion } from "framer-motion";
@@ -114,7 +113,6 @@ export const Radio = forwardRef<HTMLInputElement, RadioProps>(
     ref,
   ) => {
     const config = useAsheeConfig();
-    const { settings } = useSettings();
     const group = useRadioGroupContext();
     const sectionConfig = config.components?.radio as RadioConfig | undefined;
 
@@ -191,7 +189,6 @@ export const Radio = forwardRef<HTMLInputElement, RadioProps>(
       RADIO_COLOR_CLASS[resolvedColor] ?? RADIO_COLOR_CLASS.primary;
     const motionProps = resolveAnimation(
       animation ?? (sectionConfig?.animation as AnimationProp | undefined),
-      settings.enableAnimations,
     );
 
     const handleChange = (e: ChangeEvent<HTMLInputElement>) => {

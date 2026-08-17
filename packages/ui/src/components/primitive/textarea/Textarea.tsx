@@ -1,6 +1,5 @@
 "use client";
 
-import { useSettings } from "@ashee/settings";
 import { type Radius, useResponsiveVars } from "@ashee/theme";
 import { cn } from "@ashee/utils";
 import { type HTMLMotionProps, motion } from "framer-motion";
@@ -85,7 +84,6 @@ export const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
     ref,
   ) => {
     const config = useAsheeConfig();
-    const { settings } = useSettings();
     const sectionConfig = config.components?.textarea;
     const generatedId = useId();
     const fieldId = id ?? generatedId;
@@ -138,7 +136,6 @@ export const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
 
     const motionProps = resolveAnimation(
       animation ?? (sectionConfig?.animation as AnimationProp | undefined),
-      settings.enableAnimations,
     );
 
     // Apply global variant/color styling & active status override

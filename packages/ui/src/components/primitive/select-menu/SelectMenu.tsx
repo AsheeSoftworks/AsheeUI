@@ -1,6 +1,5 @@
 "use client";
 
-import { useSettings } from "@ashee/settings";
 import { cn } from "@ashee/utils";
 import { type FloatingContext, FloatingFocusManager } from "@floating-ui/react";
 import { AnimatePresence, type HTMLMotionProps, motion } from "framer-motion";
@@ -79,7 +78,6 @@ export const SelectMenu = ({
   initialFocus,
   returnFocus,
 }: SelectMenuProps) => {
-  const { settings } = useSettings();
   const [internalQuery, setInternalQuery] = useState("");
 
   const activeQuery = searchQuery ?? internalQuery;
@@ -91,7 +89,7 @@ export const SelectMenu = ({
     }
   };
 
-  const motionProps = resolveAnimation(animation, settings.enableAnimations);
+  const motionProps = resolveAnimation(animation);
 
   const filteredOptions = useMemo(() => {
     if (!isSearch || !activeQuery.trim()) return options;

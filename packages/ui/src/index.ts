@@ -176,7 +176,7 @@ export {
   TextArea,
   type TextAreaProps,
 } from "./components/primitive/textarea/Textarea";
-export type { Config, ExternalConfig } from "./libs/config";
+export type { Config, ExternalConfig } from "./config/config";
+export { defineConfig } from "./config/define-config";
 export { useAsheeConfig } from "./libs/context";
-export { defineConfig } from "./libs/define-config";
 export { resolveRadius } from "./utils/resolve-token";

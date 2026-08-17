@@ -1,6 +1,5 @@
 "use client";
 
-import { useSettings } from "@ashee/settings";
 import { type Radius, useResponsiveVars } from "@ashee/theme";
 import { cn } from "@ashee/utils";
 import { AnimatePresence, type HTMLMotionProps, motion } from "framer-motion";
@@ -80,7 +79,6 @@ export function Drawer({
   ...props
 }: DrawerProps) {
   const config = useAsheeConfig();
-  const { settings } = useSettings();
   const sectionConfig = config.components?.drawer as DrawerConfig | undefined;
 
   // Resolve Design Tokens
@@ -125,9 +123,8 @@ export function Drawer({
       resolveDrawerAnimation(
         animation ?? sectionConfig?.animation,
         placement,
-        settings.enableAnimations,
       ) as unknown as Partial<HTMLMotionProps<"div">>,
-    [animation, sectionConfig?.animation, placement, settings.enableAnimations],
+    [animation, sectionConfig?.animation, placement],
   );
 
   const handleKeyDown = useCallback(
@@ -168,7 +165,7 @@ export function Drawer({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{
-              duration: settings.enableAnimations ? 0.2 : 0,
+              duration: 0.2,
             }}
             onClick={shouldCloseOnOverlay ? onClose : undefined}
             className={cn(

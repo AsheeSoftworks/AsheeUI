@@ -9,14 +9,12 @@ export type FontWeight = {
 };
 export type LineHeight = { short: string; base: string; tall: string };
 export type LetterSpacing = { tight: string; normal: string; wide: string };
-export type FontFamily = { sans: string; serif: string; mono: string };
 export type FontSizeKey = "xs" | "sm" | "md" | "lg" | "xl";
 export type FontSizeScale = Record<FontSizeKey, ResponsiveValue<string>>;
 
 export interface TypographyConfig {
-  size: FontSizeScale; // was Size
+  size: FontSizeScale;
   weight: FontWeight;
   lineHeight: LineHeight;
   letterSpacing: LetterSpacing;
-  family: FontFamily;
 }

@@ -1,5 +1,5 @@
-export { defaultScrollbarConfig } from "../src/theme/scrollbar/default-scrollbar-config";
-export type { ScrollbarConfig } from "../src/theme/scrollbar/scrollbar-config";
+export { defaultThemeConfig } from "./config/default-theme-config";
+export type { ThemeConfig } from "./config/theme-config";
 export type { ThemeSelection } from "./libs/controller";
 export { themeController } from "./libs/controller";
 export { applyThemeConfig } from "./libs/css-vars";
@@ -37,7 +37,6 @@ export type {
 export type { Size } from "./theme/token/token";
 export { defaultTypographyConfig } from "./theme/typography/default-typography-config";
 export type {
-  FontFamily,
   FontSizeKey,
   FontSizeScale,
   FontWeight,

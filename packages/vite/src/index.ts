@@ -1,5 +1,5 @@
-import { CANDIDATES, discoverConfig } from "@ashee/utils/node";
 import { resolve } from "node:path";
+import { CANDIDATES, discoverConfig } from "@ashee/utils/node";
 import type { Plugin, ViteDevServer } from "vite";
 
 const VIRTUAL_ID = "virtual:ashee-config";

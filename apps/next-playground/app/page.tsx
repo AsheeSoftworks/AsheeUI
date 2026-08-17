@@ -10,7 +10,7 @@ const Page = () => {
       <Heading level={1}>HI</Heading>
       <Button
         onClick={() => {
-          setTheme("black");
+          setTheme("light");
           // alert(theme);
         }}>
         Click

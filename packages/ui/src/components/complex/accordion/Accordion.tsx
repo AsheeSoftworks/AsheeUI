@@ -1,6 +1,5 @@
 "use client";
 
-import { useSettings } from "@ashee/settings";
 import { type Radius, useResponsiveVars } from "@ashee/theme";
 import { cn } from "@ashee/utils";
 import { AnimatePresence, type HTMLMotionProps, motion } from "framer-motion";
@@ -84,7 +83,6 @@ export const Accordion = forwardRef<HTMLDivElement, AccordionProps>(
     ref,
   ) => {
     const config = useAsheeConfig();
-    const { settings } = useSettings();
     const sectionConfig = config.components?.accordion as
       | AccordionConfig
       | undefined;
@@ -129,7 +127,6 @@ export const Accordion = forwardRef<HTMLDivElement, AccordionProps>(
 
     const motionProps = resolveAnimation(
       animation ?? (sectionConfig?.animation as AnimationProp | undefined),
-      settings.enableAnimations,
     );
 
     // Controlled vs Uncontrolled State

@@ -45,9 +45,6 @@ export function buildDesignTokensCss({
     ...Object.entries(typography.letterSpacing).map(
       ([k, v]) => `--ashee-tracking-${k}: ${v};`,
     ),
-    ...Object.entries(typography.family).map(
-      ([k, v]) => `--ashee-font-${k}: ${v};`,
-    ),
   ];
 
   const responsiveVars: Record<string, ResponsiveValue<string>> = {};

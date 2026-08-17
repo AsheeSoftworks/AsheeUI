@@ -1,6 +1,5 @@
 "use client";
 
-import { useSettings } from "@ashee/settings";
 import { type Radius, useResponsiveVars } from "@ashee/theme";
 import { cn } from "@ashee/utils";
 import { AnimatePresence, motion, type PanInfo } from "framer-motion";
@@ -117,7 +116,6 @@ export const Carousel = forwardRef<HTMLButtonElement, CarouselProps>(
     ref,
   ) => {
     const config = useAsheeConfig();
-    const { settings } = useSettings();
     const sectionConfig = config.components?.carousel;
 
     const generatedId = useId();
@@ -166,7 +164,7 @@ export const Carousel = forwardRef<HTMLButtonElement, CarouselProps>(
       config.theme.radius.values,
     );
 
-    const isAnimationDisabled = disableAnimation || !settings.enableAnimations;
+    const isAnimationDisabled = disableAnimation;
 
     // Item normalizer (supports items prop or children fallback)
     const slides: CarouselItem[] = useMemo(() => {

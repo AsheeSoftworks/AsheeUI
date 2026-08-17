@@ -1,6 +1,5 @@
 "use client";
 
-import { useSettings } from "@ashee/settings";
 import { type Radius, useResponsiveVars } from "@ashee/theme";
 import { cn } from "@ashee/utils";
 import { type HTMLMotionProps, motion } from "framer-motion";
@@ -129,7 +128,6 @@ export function Sidebar<T = string>({
   ...props
 }: SidebarProps<T>) {
   const config = useAsheeConfig();
-  const { settings } = useSettings();
   const sectionConfig = config.components?.sidebar as SidebarConfig | undefined;
 
   // Design Token Resolvers
@@ -205,7 +203,6 @@ export function Sidebar<T = string>({
 
   const motionProps = resolveAnimation(
     animation ?? (sectionConfig?.animation as AnimationProp | undefined),
-    settings.enableAnimations,
   );
 
   // Role Filtering

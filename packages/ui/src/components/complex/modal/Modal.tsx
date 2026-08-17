@@ -1,6 +1,5 @@
 "use client";
 
-import { useSettings } from "@ashee/settings";
 import { type Radius, useResponsiveVars } from "@ashee/theme";
 import { cn } from "@ashee/utils";
 import { AnimatePresence, type HTMLMotionProps, motion } from "framer-motion";
@@ -83,7 +82,6 @@ export function Modal({
   ...props
 }: ModalProps) {
   const config = useAsheeConfig();
-  const { settings } = useSettings();
   const sectionConfig = config.components?.modal as ModalConfig | undefined;
 
   // Design Token Resolvers
@@ -125,7 +123,6 @@ export function Modal({
   const motionProps = resolveModalAnimation(
     animation ?? sectionConfig?.animation,
     position,
-    settings.enableAnimations,
   ) as unknown as Partial<HTMLMotionProps<"div">>;
 
   // Keyboard Escape Handler

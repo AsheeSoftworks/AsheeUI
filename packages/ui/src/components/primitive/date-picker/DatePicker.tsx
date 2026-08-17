@@ -1,6 +1,5 @@
 "use client";
 
-import { useSettings } from "@ashee/settings";
 import { type Radius, useResponsiveVars } from "@ashee/theme";
 import { cn } from "@ashee/utils";
 import {
@@ -540,7 +539,6 @@ export const DatePicker = forwardRef<HTMLDivElement, DatePickerProps>(
     ref,
   ) => {
     const config = useAsheeConfig();
-    const { settings } = useSettings();
     const sectionConfig = config.components?.datePicker as
       | DatePickerConfig
       | undefined;
@@ -613,7 +611,6 @@ export const DatePicker = forwardRef<HTMLDivElement, DatePickerProps>(
     );
     const motionProps = resolveAnimation(
       animation ?? (sectionConfig?.animation as AnimationProp | undefined),
-      settings.enableAnimations,
     );
 
     const variantClass = resolveVariantClass(resolvedVariant, resolvedColor);

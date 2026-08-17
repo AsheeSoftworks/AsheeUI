@@ -2,30 +2,6 @@ import type { DefaultColorConfig } from "./color-config";
 
 export const defaultColorConfig: DefaultColorConfig = {
   light: {
-    background: "#f0f7ff",
-    foreground: "#1e3a8a",
-    primary: "#2563eb",
-    secondary: "#ffffff",
-    border: "#cbd5e1",
-    danger: "#dc2626",
-    warning: "#d97706",
-    success: "#16a34a",
-    scrollbarThumb: "#3b82f6",
-    scrollbarTrack: "transparent",
-  },
-  dark: {
-    background: "#0f172a",
-    foreground: "#f1f5f9",
-    primary: "#3b82f6",
-    secondary: "#1d3145",
-    border: "#374e65",
-    danger: "#ef4444",
-    warning: "#f59e0b",
-    success: "#22c55e",
-    scrollbarThumb: "#1e40af",
-    scrollbarTrack: "#1f2937",
-  },
-  white: {
     background: "#ffffff",
     foreground: "#000000",
     primary: "#2563eb",
@@ -37,7 +13,7 @@ export const defaultColorConfig: DefaultColorConfig = {
     scrollbarThumb: "#3b82f6",
     scrollbarTrack: "transparent",
   },
-  black: {
+  dark: {
     background: "#111111",
     foreground: "#ffffff",
     primary: "#005bc4",

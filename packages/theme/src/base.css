@@ -12,11 +12,6 @@
   --scrollbar-thumb: var(--ashee-scrollbar-thumb);
   --scrollbar-track: var(--ashee-scrollbar-track);
 
-  /* Typography: Family */
-  --font-sans: var(--ashee-font-sans);
-  --font-serif: var(--ashee-font-serif);
-  --font-mono: var(--ashee-font-mono);
-
   /* Typography: Size */
   --text-xs: var(--ashee-text-xs);
   --text-sm: var(--ashee-text-sm);
@@ -42,6 +37,7 @@
   --tracking-wide: var(--ashee-tracking-wide);
 
   --radius: var(--ashee-radius);
+  --radius: var(--ashee-radius-none);
   --radius-xs: var(--ashee-radius-xs);
   --radius-sm: var(--ashee-radius-sm);
   --radius-md: var(--ashee-radius-md);
@@ -49,6 +45,7 @@
   --radius-full: var(--ashee-radius-full);
 
   --shadow: var(--ashee-shadow);
+  --shadow-none: var(--ashee-shadow-none);
   --shadow-xs: var(--ashee-shadow-xs);
   --shadow-sm: var(--ashee-shadow-sm);
   --shadow-md: var(--ashee-shadow-md);
@@ -58,20 +55,17 @@
 
 /* 2. CSS Variables (Design Tokens) */
 :root {
-  --ashee-background: #f0f7ff;
-  --ashee-foreground: #1e3a8a;
+  --ashee-background: #ffffff;
+  --ashee-foreground: #000000;
   --ashee-primary: #2563eb;
   --ashee-secondary: #ffffff;
-  --ashee-border: #cbd5e1;
+  --ashee-border: #d5d5d5;
   --ashee-danger: #dc2626;
   --ashee-warning: #d97706;
-  --ashee-success: #16a34a;
 
   /* Scrollbar Variables */
   --ashee-scrollbar-thumb: #3b82f6;
   --ashee-scrollbar-track: transparent;
-  --ashee-scrollbar-width: 3px;
-  --ashee-scrollbar-radius: 9999px;
 
   /* Typography Default Values */
   --ashee-font-sans: Inter, ui-sans-serif, system-ui, sans-serif;
@@ -119,32 +113,6 @@
 }
 
 .theme-dark {
-  --ashee-background: #0f172a;
-  --ashee-foreground: #f1f5f9;
-  --ashee-primary: #3b82f6;
-  --ashee-secondary: #1d3145;
-  --ashee-border: #374e65;
-  --ashee-danger: #ef4444;
-  --ashee-warning: #f59e0b;
-  --ashee-success: #22c55e;
-  --ashee-scrollbar-thumb: #1e40af;
-  --ashee-scrollbar-track: #1f2937;
-}
-
-.theme-white {
-  --ashee-background: #ffffff;
-  --ashee-foreground: #000000;
-  --ashee-primary: #2563eb;
-  --ashee-secondary: #ffffff;
-  --ashee-border: #d5d5d5;
-  --ashee-danger: #dc2626;
-  --ashee-warning: #d97706;
-  --ashee-success: #16a34a;
-  --ashee-scrollbar-thumb: #3b82f6;
-  --ashee-scrollbar-track: transparent;
-}
-
-.theme-black {
   --ashee-background: #111111;
   --ashee-foreground: #ffffff;
   --ashee-primary: #005bc4;
@@ -163,30 +131,13 @@
   body {
     background-color: var(--ashee-background);
     color: var(--ashee-foreground);
-    font-size: calc(100% * var(--ashee-font-scale));
   }
 
   /* Apply scrollbar styles to EVERYTHING globally */
   html,
   body,
   * {
-    scrollbar-width: thin; /* Firefox */
     scrollbar-color: var(--ashee-scrollbar-thumb) var(--ashee-scrollbar-track);
-  }
-
-  /* Webkit Scrollbars (Chrome, Safari, Edge) */
-  *::-webkit-scrollbar {
-    width: var(--ashee-scrollbar-width);
-    height: var(--ashee-scrollbar-width);
-  }
-
-  *::-webkit-scrollbar-track {
-    background: var(--ashee-scrollbar-track);
-  }
-
-  *::-webkit-scrollbar-thumb {
-    background: var(--ashee-scrollbar-thumb);
-    border-radius: var(--ashee-scrollbar-radius);
   }
 
   /* Form Input Resets */
@@ -212,14 +163,5 @@
     animation-duration: 0.01ms;
     transition-duration: 0.01ms;
     scroll-behavior: auto;
-  }
-
-  .scrollbar-hide {
-    -ms-overflow-style: none; /* IE and Edge */
-    scrollbar-width: none; /* Firefox */
-  }
-
-  .scrollbar-hide::-webkit-scrollbar {
-    display: none; /* Chrome, Safari and Opera */
   }
 }

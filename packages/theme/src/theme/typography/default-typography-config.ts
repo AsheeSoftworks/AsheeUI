@@ -26,9 +26,4 @@ export const defaultTypographyConfig: TypographyConfig = {
     normal: "0em",
     wide: "0.025em",
   },
-  family: {
-    sans: "Inter, ui-sans-serif, system-ui, sans-serif",
-    serif: "ui-serif, Georgia, serif",
-    mono: "ui-monospace, SFMono-Regular, monospace",
-  },
 } as const;

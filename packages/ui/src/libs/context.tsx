@@ -1,7 +1,7 @@
 "use client";
 
 import { createContext, useContext } from "react";
-import type { Config } from "./config";
+import type { Config } from "../config/config";
 
 export const AsheeConfigContext = createContext<Config | null>(null);
 

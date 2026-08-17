@@ -1,12 +1,4 @@
-import {
-  defaultBreakpointConfig,
-  defaultColorConfig,
-  defaultRadiusConfig,
-  defaultScrollbarConfig,
-  defaultShadowConfig,
-  defaultSpacingConfig,
-  defaultTypographyConfig,
-} from "@ashee/theme";
+import { defaultThemeConfig } from "@ashee/theme";
 import { defaultAccordionConfig } from "../components/complex/accordion/default-accordion-config";
 import { defaultAutocompleteConfig } from "../components/complex/autocomplete/default-autocomplete-config";
 import { defaultCardConfig } from "../components/complex/card/default-card-config";
@@ -78,16 +70,10 @@ export const defaultComponentConfig: ComponentConfigRegistry = {
 
 export const defaultConfig: Config = {
   theme: {
-    color: defaultColorConfig,
-    radius: defaultRadiusConfig,
-    typography: defaultTypographyConfig,
-    shadow: defaultShadowConfig,
-    breakpoints: defaultBreakpointConfig,
+    ...defaultThemeConfig,
     defaultTheme: "system",
     defaultVariant: "solid",
-    defaultColor: "danger",
-    scrollbar: defaultScrollbarConfig,
-    spacing: defaultSpacingConfig,
+    defaultColor: "primary",
   },
   components: defaultComponentConfig,
 };

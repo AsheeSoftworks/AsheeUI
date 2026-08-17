@@ -1,14 +1,4 @@
-import type {
-  BreakpointConfig,
-  ColorConfig,
-  ColorVariant,
-  RadiusConfig,
-  ScrollbarConfig,
-  ShadowConfig,
-  SpacingConfig,
-  ThemeName,
-  TypographyConfig,
-} from "@ashee/theme";
+import type { ThemeConfig, ThemeName } from "@ashee/theme";
 import type { DeepPartial } from "@ashee/utils";
 import type { ComponentConfigRegistry } from "../registry";
 import type { Color, Variant } from "../shared/variant";
@@ -29,17 +19,10 @@ export type ComponentsConfig = {
 };
 
 export type Config = {
-  theme: {
-    color: ColorConfig;
-    radius: RadiusConfig;
-    typography: TypographyConfig;
-    shadow: ShadowConfig;
-    spacing: SpacingConfig;
-    breakpoints?: BreakpointConfig;
+  theme: ThemeConfig & {
     defaultTheme?: ThemeName | "system";
     defaultVariant?: Variant;
     defaultColor?: Color;
-    scrollbar: ScrollbarConfig;
   };
   components?: ComponentsConfig;
 };

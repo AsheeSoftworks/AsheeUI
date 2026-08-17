@@ -1,6 +1,5 @@
 "use client";
 
-import { useSettings } from "@ashee/settings";
 import { type Radius, useResponsiveVars } from "@ashee/theme";
 import { cn } from "@ashee/utils";
 import { AnimatePresence, type HTMLMotionProps, motion } from "framer-motion";
@@ -136,7 +135,6 @@ export const Tabs = forwardRef<HTMLDivElement, TabsProps>(
     ref,
   ) => {
     const config = useAsheeConfig();
-    const { settings } = useSettings();
     const sectionConfig = config.components?.tabs as TabsConfig | undefined;
 
     const baseId = useId();
@@ -209,7 +207,6 @@ export const Tabs = forwardRef<HTMLDivElement, TabsProps>(
 
     const motionProps = resolveAnimation(
       animation ?? (sectionConfig?.animation as AnimationProp | undefined),
-      settings.enableAnimations,
     );
 
     const handleTabChange = useCallback(

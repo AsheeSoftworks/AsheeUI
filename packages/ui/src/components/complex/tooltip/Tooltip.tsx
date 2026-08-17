@@ -1,6 +1,5 @@
 "use client";
 
-import { useSettings } from "@ashee/settings";
 import {
   type Radius,
   type ShadowConfig,
@@ -83,7 +82,6 @@ export function Tooltip({
   className,
 }: TooltipProps) {
   const config = useAsheeConfig();
-  const { settings } = useSettings();
   const sectionConfig = config.components?.tooltip as TooltipConfig | undefined;
   const arrowRef = useRef<SVGSVGElement>(null);
 
@@ -147,8 +145,7 @@ export function Tooltip({
   );
 
   const motionProps = resolveAnimation(
-    animation ?? sectionConfig?.animation ?? "scale",
-    settings.enableAnimations,
+    animation ?? sectionConfig?.animation ?? "none",
   );
 
   const middleware = [

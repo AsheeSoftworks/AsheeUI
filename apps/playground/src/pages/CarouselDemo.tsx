@@ -7,7 +7,6 @@ import type {
   CarouselSizeKey,
   CarouselVariant,
 } from "@ashee/ui/src/components/complex/carousel/carousel-config.js";
-import { cn } from "@ashee/utils";
 import { useState } from "react";
 
 // ─── Mock Data ────────────────────────────────────────────────────────────────
@@ -232,12 +231,14 @@ export default function CarouselDemoPage() {
                     type="button"
                     key={s}
                     onClick={() => setSize(s)}
-                    className={cn(
-                      "py-1 text-xs rounded uppercase font-medium transition-colors",
-                      size === s
-                        ? "bg-background text-foreground shadow-xs"
-                        : "text-muted-foreground hover:text-foreground",
-                    )}>
+                    className={`
+                      py-1 text-xs rounded uppercase font-medium transition-colors
+                      ${
+                        size === s
+                          ? "bg-background text-foreground shadow-xs"
+                          : "text-muted-foreground hover:text-foreground"
+                      }
+                    `}>
                     {s}
                   </button>
                 ))}
@@ -359,12 +360,14 @@ export default function CarouselDemoPage() {
                 type="button"
                 key={a.content?.toString()}
                 onClick={() => setControlledIndex(idx)}
-                className={cn(
+                className={`
                   "px-4 py-2 rounded-lg text-xs font-semibold border transition-all",
-                  controlledIndex === idx
-                    ? "bg-primary text-primary-foreground border-primary shadow-sm"
-                    : "bg-card text-muted-foreground border-border hover:border-foreground/30",
-                )}>
+                  ${
+                    controlledIndex === idx
+                      ? "bg-primary text-primary-foreground border-primary shadow-sm"
+                      : "bg-card text-muted-foreground border-border hover:border-foreground/30"
+                  }
+                `}>
                 Jump to Slide {idx + 1}
               </button>
             ))}

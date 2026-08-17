@@ -1,6 +1,5 @@
 "use client";
 
-import { useSettings } from "@ashee/settings";
 import { cn } from "@ashee/utils";
 import {
   forwardRef,
@@ -60,7 +59,6 @@ export const Marquee = forwardRef<HTMLDivElement, MarqueeProps>(
     ref,
   ) => {
     const config = useAsheeConfig();
-    const { settings } = useSettings();
     const sectionConfig = config.components?.marquee as
       | MarqueeConfig
       | undefined;
@@ -87,10 +85,7 @@ export const Marquee = forwardRef<HTMLDivElement, MarqueeProps>(
       true,
     );
 
-    const motionConfig = resolveMarqueeMotion(
-      speed ?? sectionConfig?.speed,
-      settings.enableAnimations,
-    );
+    const motionConfig = resolveMarqueeMotion(speed ?? sectionConfig?.speed);
 
     const animationName = useId().replace(/[:]/g, "");
     const isVertical = resolvedAxis === "y";

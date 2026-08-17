@@ -1,6 +1,5 @@
 "use client";
 
-import { useSettings } from "@ashee/settings";
 import { type Radius, useResponsiveVars } from "@ashee/theme";
 import { cn } from "@ashee/utils";
 import { type HTMLMotionProps, motion } from "framer-motion";
@@ -61,7 +60,6 @@ export const Chip = forwardRef<HTMLDivElement, ChipProps>(
     ref,
   ) => {
     const config = useAsheeConfig();
-    const { settings } = useSettings();
     const sectionConfig = config.components?.chip as ChipConfig | undefined;
 
     // Design Token Resolvers
@@ -108,7 +106,6 @@ export const Chip = forwardRef<HTMLDivElement, ChipProps>(
 
     const motionProps = resolveAnimation(
       animation ?? (sectionConfig?.animation as AnimationProp | undefined),
-      settings.enableAnimations,
     );
 
     const handleClose = (e: React.MouseEvent<HTMLButtonElement>) => {

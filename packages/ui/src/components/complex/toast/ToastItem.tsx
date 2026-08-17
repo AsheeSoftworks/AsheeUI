@@ -1,6 +1,5 @@
 "use client";
 
-import { useSettings } from "@ashee/settings";
 import { cn } from "@ashee/utils";
 import { type HTMLMotionProps, motion } from "framer-motion";
 import { useMemo } from "react";
@@ -93,8 +92,6 @@ export function ToastItem({
   radiusStyle,
   className,
 }: ToastItemProps) {
-  const { settings } = useSettings();
-
   const { pause, resume } = usePausableTimeout(() => onDismiss(id), timeout);
 
   // Map state type to Button color token unless explicitly overridden
@@ -106,16 +103,10 @@ export function ToastItem({
     [placement],
   );
 
-  const motionProps = (
-    settings.enableAnimations
-      ? motionVariants
-      : { initial: false, animate: false, exit: false }
-  ) as HTMLMotionProps<"div">;
-
   return (
     <motion.div
       layout
-      {...motionProps}
+      {...(motionVariants as HTMLMotionProps<"div">)}
       transition={{ type: "spring", stiffness: 400, damping: 30 }}
       onMouseEnter={pause}
       onMouseLeave={resume}

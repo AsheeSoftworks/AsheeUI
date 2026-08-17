@@ -4,8 +4,9 @@
   "scripts": {
     "build": "turbo run build",
     "dev": "turbo run dev",
-    "lint": "turbo run lint",
+    "lint": "pnpx @biomejs/biome lint --write",
     "check": "pnpx @biomejs/biome check --write",
+    "format": "pnpx @biomejs/biome format --write",
     "changeset": "changeset",
     "version-packages": "changeset version",
     "release": "turbo run build && changeset publish"

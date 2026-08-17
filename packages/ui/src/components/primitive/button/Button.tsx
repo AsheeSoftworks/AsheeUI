@@ -1,6 +1,5 @@
 "use client";
 
-import { useSettings } from "@ashee/settings";
 import { type Radius, useResponsiveVars } from "@ashee/theme";
 import { cn } from "@ashee/utils";
 import { type HTMLMotionProps, type MotionProps, motion } from "framer-motion";
@@ -77,7 +76,6 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     } = props;
 
     const config = useAsheeConfig();
-    const { settings } = useSettings();
     const sectionConfig = config.components?.button as ButtonConfig | undefined;
 
     const resolvedVariant = resolveValue(
@@ -101,10 +99,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       config.theme.radius.default,
       config.theme.radius.values,
     );
-    const motionProps = resolveAnimation(
-      animation ?? sectionConfig?.animation,
-      settings.enableAnimations,
-    );
+    const motionProps = resolveAnimation(animation ?? sectionConfig?.animation);
     const isInteractionDisabled = isDisabled || isLoading;
 
     const sizeScale = sectionConfig?.size ?? defaultButtonSizeScale;

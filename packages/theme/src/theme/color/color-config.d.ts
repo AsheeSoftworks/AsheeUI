@@ -1,12 +1,8 @@
-// packages/theme/src/theme/color/color-config.ts
-
-export type KnownThemeName = "light" | "dark" | "white" | "black";
+export type KnownThemeName = "light" | "dark";
 
 export interface AsheeThemeRegistry {
   light: true;
   dark: true;
-  white: true;
-  black: true;
 }
 
 export type ThemeName = keyof AsheeThemeRegistry;
