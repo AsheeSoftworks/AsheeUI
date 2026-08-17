@@ -1,7 +1,10 @@
+// next.config.ts
+
+import { withAsheeUI } from "@ashee/next";
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  /* your existing config */
 };
 
-export default nextConfig;
+export default withAsheeUI(nextConfig);

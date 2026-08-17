@@ -1,14 +1,17 @@
 "use client";
 
+import { useTheme } from "@ashee/theme";
 import { Button, Container, Heading } from "@ashee/ui";
 
-const page = () => {
+const Page = () => {
+  const { setTheme } = useTheme();
   return (
     <Container>
       <Heading level={1}>HI</Heading>
       <Button
         onClick={() => {
-          alert("Clicked");
+          setTheme("black");
+          // alert(theme);
         }}>
         Click
       </Button>
@@ -16,4 +19,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default Page;
