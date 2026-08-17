@@ -27,7 +27,7 @@ export const defaultToastSizeScale: ToastSizeScale = {
 export const defaultToastConfig: ToastConfig = {
   size: defaultToastSizeScale,
   placement: "top-right",
-  variant: "flat",
+  variant: "solid",
   radius: "md",
   animation: "slide",
   defaultTimeout: 3500,

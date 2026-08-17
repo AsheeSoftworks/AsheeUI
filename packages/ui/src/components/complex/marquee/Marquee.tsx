@@ -9,7 +9,7 @@ import {
   useId,
   useMemo,
 } from "react";
-import { useAsheeConfig } from "../../../context";
+import { useAsheeConfig } from "../../../libs/context";
 import { resolveValue } from "../../../utils/resolve-token";
 import type {
   MarqueeAxis,

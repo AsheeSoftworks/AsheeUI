@@ -1,36 +1,23 @@
+/// <reference path="./virtual-config.d.ts" />
 "use client";
 
-import { settingsController } from "@ashee/settings";
-import { applyDesignTokens } from "@ashee/theme";
-import { mergeObject } from "@ashee/utils";
+import externalConfig from "virtual:ashee-config";
+import { applyDesignTokens, themeController } from "@ashee/theme";
 import { MotionConfig } from "framer-motion";
-import { type ReactNode, useLayoutEffect, useMemo } from "react";
-import type { ExternalConfig } from "./config";
-import { AsheeConfigContext } from "./context";
-import { defaultComponentConfig } from "./default-config";
-import { defineConfig } from "./define-config";
+import { type ReactNode, useEffect, useMemo } from "react";
+import { AsheeConfigContext } from "./libs/context";
+import { resolveConfig } from "./libs/resolve-config";
 
 export interface AsheeUIProviderProps {
-  config?: ExternalConfig;
   children: ReactNode;
 }
 
-export function AsheeUIProvider({
-  config: externalConfig,
-  children,
-}: AsheeUIProviderProps) {
-  const config = useMemo(() => {
-    const themeConfig = defineConfig(externalConfig ?? {});
-    const components = mergeObject(
-      defaultComponentConfig,
-      externalConfig?.components ?? {},
-    );
-    return { ...themeConfig, components };
-  }, [externalConfig]);
+export function AsheeUIProvider({ children }: AsheeUIProviderProps) {
+  const config = useMemo(() => resolveConfig(externalConfig ?? {}), []);
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     applyDesignTokens(config.theme);
-    settingsController.init(config.theme);
+    themeController.mount(); // Safe: runs post-hydration
   }, [config]);
 
   return (

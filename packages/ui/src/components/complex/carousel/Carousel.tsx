@@ -12,7 +12,7 @@ import {
   useMemo,
   useState,
 } from "react";
-import { useAsheeConfig } from "../../../context";
+import { useAsheeConfig } from "../../../libs/context";
 import { resolveScale, resolveValue } from "../../../utils/resolve-token";
 import { ChevronLeftIcon } from "../../icons/ChevronLeftIcon";
 import { ChevronRightIcon } from "../../icons/ChevronRightIcon";

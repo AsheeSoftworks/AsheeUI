@@ -1,5 +1,5 @@
 import type { Radius, Size } from "@ashee/theme";
-import type { AnimationProp } from "../../../motion/types";
+import type { AnimationProp } from "../../../libs/motion/types";
 
 export type ImageFit = "cover" | "contain" | "fill" | "none" | "scale-down";
 export type ImageRatioKey = "auto" | "square" | "video" | "portrait";

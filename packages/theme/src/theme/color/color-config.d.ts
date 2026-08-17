@@ -1,3 +1,7 @@
+// packages/theme/src/theme/color/color-config.ts
+
+export type KnownThemeName = "light" | "dark" | "white" | "black";
+
 export interface AsheeThemeRegistry {
   light: true;
   dark: true;
@@ -20,4 +24,13 @@ export interface ColorVariant {
   scrollbarTrack: string;
 }
 
-export type ColorConfig = Record<ThemeName, ColorVariant>;
+/** Built-in colors map required by the core library */
+export type DefaultColorConfig = Record<KnownThemeName, ColorVariant>;
+
+/**
+ * Full color configuration.
+ * Built-in themes are strictly required. Custom augmented themes are optional
+ * on default/unmerged configs, but enforced via ExternalColorConfig.
+ */
+export type ColorConfig = Record<KnownThemeName, ColorVariant> &
+  Partial<Record<Exclude<ThemeName, KnownThemeName>, ColorVariant>>;

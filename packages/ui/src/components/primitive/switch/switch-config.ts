@@ -1,5 +1,5 @@
 import type { Radius, ResponsiveValue } from "@ashee/theme";
-import type { AnimationProp } from "../../../motion/types";
+import type { AnimationProp } from "../../../libs/motion/types";
 import type {
   FieldConfig,
   FieldSizeKey,

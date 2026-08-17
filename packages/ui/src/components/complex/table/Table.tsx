@@ -8,7 +8,7 @@ import {
   useCallback,
   useMemo,
 } from "react";
-import { useAsheeConfig } from "../../../context";
+import { useAsheeConfig } from "../../../libs/context";
 import type { Color } from "../../../shared/variant";
 import { resolveScale, resolveValue } from "../../../utils/resolve-token";
 import { defaultTableSizeScale } from "./default-table-config";

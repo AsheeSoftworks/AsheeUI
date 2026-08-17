@@ -1,6 +1,6 @@
-import type { ColorConfig } from "./color-config";
+import type { DefaultColorConfig } from "./color-config";
 
-export const defaultColorConfig: ColorConfig = {
+export const defaultColorConfig: DefaultColorConfig = {
   light: {
     background: "#f0f7ff",
     foreground: "#1e3a8a",

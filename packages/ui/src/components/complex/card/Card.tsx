@@ -5,9 +5,9 @@ import { type Radius, type Size, useResponsiveVars } from "@ashee/theme";
 import { cn } from "@ashee/utils";
 import { type HTMLMotionProps, motion } from "framer-motion";
 import { createContext, forwardRef, useContext, useId, useMemo } from "react";
-import { useAsheeConfig } from "../../../context";
-import { resolveAnimation } from "../../../motion/resolve-animation";
-import type { AnimationProp } from "../../../motion/types";
+import { useAsheeConfig } from "../../../libs/context";
+import { resolveAnimation } from "../../../libs/motion/resolve-animation";
+import type { AnimationProp } from "../../../libs/motion/types";
 import { resolveScale, resolveValue } from "../../../utils/resolve-token";
 import { Image } from "../../primitive/image/Image";
 import type {

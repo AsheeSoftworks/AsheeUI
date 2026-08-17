@@ -11,7 +11,7 @@ import {
   useEffect,
   useMemo,
 } from "react";
-import { useAsheeConfig } from "../../../context";
+import { useAsheeConfig } from "../../../libs/context";
 import { resolveScale, resolveValue } from "../../../utils/resolve-token";
 import { defaultDrawerSizeScale } from "./default-drawer-config";
 import type {

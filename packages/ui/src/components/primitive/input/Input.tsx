@@ -11,9 +11,9 @@ import {
   useId,
   useMemo,
 } from "react";
-import { useAsheeConfig } from "../../../context";
-import { resolveAnimation } from "../../../motion/resolve-animation";
-import type { AnimationProp } from "../../../motion/types";
+import { useAsheeConfig } from "../../../libs/context";
+import { resolveAnimation } from "../../../libs/motion/resolve-animation";
+import type { AnimationProp } from "../../../libs/motion/types";
 import {
   type Color,
   resolveVariantClass,

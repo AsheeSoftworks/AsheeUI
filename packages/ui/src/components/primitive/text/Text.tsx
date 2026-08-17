@@ -8,7 +8,7 @@ import {
   type HTMLAttributes,
   type ReactNode,
 } from "react";
-import { useAsheeConfig } from "../../../context";
+import { useAsheeConfig } from "../../../libs/context";
 import { resolveValue } from "../../../utils/resolve-token";
 import { defaultTextConfig } from "./default-text-config";
 import type { TextAs, TextConfig } from "./text-config";

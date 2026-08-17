@@ -11,7 +11,7 @@ import {
   useMemo,
   useState,
 } from "react";
-import { useAsheeConfig } from "../../../context";
+import { useAsheeConfig } from "../../../libs/context";
 import type { Variant } from "../../../shared/variant";
 import { resolveScale, resolveValue } from "../../../utils/resolve-token";
 import {

@@ -1,11 +1,13 @@
 import { cn } from "@ashee/utils";
-import { useAsheeConfig } from "../../../context";
+import { useAsheeConfig } from "../../../libs/context";
 import type { Color } from "../../../shared/variant";
 import { resolveComponentScale } from "../../../utils/resolve-token";
 import { defaultSpinnerSizeScale } from "./default-spinner-config";
 import type { SpinnerConfig, SpinnerSizeKey } from "./spinner-config";
 
 const COLOR_CLASS: Record<Color, string> = {
+  none: "text-background",
+  default: "text-secondary",
   primary: "text-primary",
   secondary: "text-secondary",
   danger: "text-danger",

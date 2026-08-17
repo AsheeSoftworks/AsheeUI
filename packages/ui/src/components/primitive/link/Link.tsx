@@ -12,7 +12,7 @@ import {
   type ReactNode,
   useMemo,
 } from "react";
-import { useAsheeConfig } from "../../../context";
+import { useAsheeConfig } from "../../../libs/context";
 import type { Color } from "../../../shared/variant";
 import { resolveValue } from "../../../utils/resolve-token";
 import { ExternalLinkIcon } from "../../icons/ExternalLinkIcon";

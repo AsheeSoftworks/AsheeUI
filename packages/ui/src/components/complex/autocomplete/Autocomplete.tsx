@@ -19,8 +19,8 @@ import {
   useMemo,
   useState,
 } from "react";
-import { useAsheeConfig } from "../../../context";
-import type { AnimationProp } from "../../../motion/types";
+import { useAsheeConfig } from "../../../libs/context";
+import type { AnimationProp } from "../../../libs/motion/types";
 import type { Color, Variant } from "../../../shared/variant";
 import { resolveScale, resolveValue } from "../../../utils/resolve-token";
 import type { ButtonSizeKey } from "../../primitive/button/button-config";

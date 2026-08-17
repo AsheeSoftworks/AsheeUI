@@ -3,7 +3,7 @@ import { useResponsiveVars } from "@ashee/theme";
 import { cn } from "@ashee/utils";
 import type { ReactNode } from "react";
 import { useMemo } from "react";
-import { useAsheeConfig } from "../../../context";
+import { useAsheeConfig } from "../../../libs/context";
 import { defaultHeadingConfig } from "./default-heading-config";
 import { flattenHeadingSizeScale } from "./flatten-heading-size-scale";
 import type {

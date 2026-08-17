@@ -10,8 +10,8 @@ import type {
   TypographyConfig,
 } from "@ashee/theme";
 import type { DeepPartial } from "@ashee/utils";
-import type { ComponentConfigRegistry } from "./registry";
-import type { Color, Variant } from "./shared/variant";
+import type { ComponentConfigRegistry } from "../registry";
+import type { Color, Variant } from "../shared/variant";
 
 export type { DeepPartial } from "@ashee/utils";
 

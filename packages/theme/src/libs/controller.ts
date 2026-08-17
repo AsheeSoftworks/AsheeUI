@@ -24,6 +24,10 @@ class ThemeController {
       STORAGE_KEY,
     ) as ThemeSelection | null;
     this.selection = stored ?? "light";
+  }
+
+  public mount(): void {
+    if (typeof window === "undefined") return;
     this.applySelection();
   }
 

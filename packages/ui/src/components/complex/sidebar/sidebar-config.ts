@@ -1,6 +1,6 @@
 import type { Radius, ResponsiveValue } from "@ashee/theme";
 import type { ReactNode } from "react";
-import type { AnimationProp } from "../../../motion/types";
+import type { AnimationProp } from "../../../libs/motion/types";
 import type { Color, Variant } from "../../../shared/variant";
 import type { TooltipPlacement } from "../tooltip/tooltip-config";
 

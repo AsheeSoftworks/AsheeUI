@@ -1,6 +1,6 @@
-import type { ExternalConfig } from "@ashee/ui";
+import { defineConfig, type ExternalConfig } from "@ashee/ui";
 
-export const config: ExternalConfig = {
+const config: ExternalConfig = {
   theme: {
     defaultTheme: "company-red",
     defaultVariant: "solid",
@@ -152,3 +152,5 @@ export const config: ExternalConfig = {
     },
   },
 };
+
+export default defineConfig(config);

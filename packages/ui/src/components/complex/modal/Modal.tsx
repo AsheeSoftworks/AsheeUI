@@ -5,7 +5,7 @@ import { type Radius, useResponsiveVars } from "@ashee/theme";
 import { cn } from "@ashee/utils";
 import { AnimatePresence, type HTMLMotionProps, motion } from "framer-motion";
 import { type ReactNode, useEffect, useMemo } from "react";
-import { useAsheeConfig } from "../../../context";
+import { useAsheeConfig } from "../../../libs/context";
 import { resolveScale, resolveValue } from "../../../utils/resolve-token";
 import { defaultModalSizeScale } from "./default-modal-config";
 import { flattenModalSizeScale } from "./flatten-modal-size-scale";

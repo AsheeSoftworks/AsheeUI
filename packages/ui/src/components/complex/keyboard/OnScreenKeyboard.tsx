@@ -5,7 +5,7 @@ import { cn } from "@ashee/utils";
 import { FloatingPortal } from "@floating-ui/react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { useAsheeConfig } from "../../../context";
+import { useAsheeConfig } from "../../../libs/context";
 import type { Color, Variant } from "../../../shared/variant";
 import { Button } from "../../primitive/button/Button";
 import type { LayoutName } from "./keyboard-config";

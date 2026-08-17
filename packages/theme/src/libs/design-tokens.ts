@@ -13,14 +13,20 @@ type DesignTokens = {
   breakpoints?: BreakpointConfig;
 };
 
-export function applyDesignTokens({
+export const DESIGN_TOKENS_STYLE_ID = "ashee-design-tokens";
+
+/**
+ * Builds the full CSS string for the given design tokens.
+ *
+ * Pure and side-effect free — usable both on the server (to emit identical
+ * markup into SSR HTML) and on the client (to hydrate/refresh the tokens).
+ */
+export function buildDesignTokensCss({
   radius,
   typography,
   shadow,
   breakpoints = defaultBreakpointConfig,
-}: DesignTokens): void {
-  if (typeof document === "undefined") return;
-
+}: DesignTokens): string {
   const flatDecls = [
     `--ashee-radius: ${radius.values[radius.default]};`,
     ...Object.entries(radius.values).map(
@@ -48,14 +54,20 @@ export function applyDesignTokens({
   for (const [key, value] of Object.entries(typography.size))
     responsiveVars[`--ashee-text-${key}`] = value;
 
-  const css = `:root {\n  ${flatDecls.join("\n  ")}\n}\n\n${buildResponsiveCss(responsiveVars, breakpoints)}`;
+  return `:root {\n  ${flatDecls.join("\n  ")}\n}\n\n${buildResponsiveCss(responsiveVars, breakpoints)}`;
+}
+
+export function applyDesignTokens(tokens: DesignTokens): void {
+  if (typeof document === "undefined") return;
+
+  const css = buildDesignTokensCss(tokens);
 
   let el = document.getElementById(
-    "ashee-design-tokens",
+    DESIGN_TOKENS_STYLE_ID,
   ) as HTMLStyleElement | null;
   if (!el) {
     el = document.createElement("style");
-    el.id = "ashee-design-tokens";
+    el.id = DESIGN_TOKENS_STYLE_ID;
     document.head.appendChild(el);
   }
   el.textContent = css;

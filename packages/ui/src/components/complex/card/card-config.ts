@@ -1,5 +1,5 @@
 import type { Radius, ResponsiveValue, Shadow } from "@ashee/theme";
-import type { AnimationProp } from "../../../motion/types";
+import type { AnimationProp } from "../../../libs/motion/types";
 import type {
   ImageFit,
   ImageRatioKey,

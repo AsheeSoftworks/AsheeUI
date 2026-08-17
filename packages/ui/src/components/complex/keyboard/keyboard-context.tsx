@@ -10,7 +10,7 @@ import {
   useRef,
   useState,
 } from "react";
-import { useAsheeConfig } from "../../../context";
+import { useAsheeConfig } from "../../../libs/context";
 import type { Color, Variant } from "../../../shared/variant";
 import { defaultKeyboardConfig } from "./default-keyboard-config";
 import type {

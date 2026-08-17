@@ -5,9 +5,9 @@ import { type Radius, useResponsiveVars } from "@ashee/theme";
 import { cn } from "@ashee/utils";
 import { AnimatePresence, type HTMLMotionProps, motion } from "framer-motion";
 import { forwardRef, useId, useMemo, useState } from "react";
-import { useAsheeConfig } from "../../../context";
-import { resolveAnimation } from "../../../motion/resolve-animation";
-import type { AnimationProp } from "../../../motion/types";
+import { useAsheeConfig } from "../../../libs/context";
+import { resolveAnimation } from "../../../libs/motion/resolve-animation";
+import type { AnimationProp } from "../../../libs/motion/types";
 import { resolveScale, resolveValue } from "../../../utils/resolve-token";
 import { ChevronDownIcon } from "../../icons/ChevronDownIcon";
 import type {

@@ -1,7 +1,7 @@
 import type { Spacing } from "@ashee/theme";
 import { cn } from "@ashee/utils";
 import type { ReactNode } from "react";
-import { useAsheeConfig } from "../../../context";
+import { useAsheeConfig } from "../../../libs/context";
 import { resolveScale, resolveValue } from "../../../utils/resolve-token";
 import type {
   FlexAlign,

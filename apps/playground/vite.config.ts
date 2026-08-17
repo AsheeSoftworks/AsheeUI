@@ -1,16 +1,12 @@
 // apps/playground/vite.config.ts
-import babel from "@rolldown/plugin-babel";
+import { asheeui } from "@ashee/vite";
 import tailwindcss from "@tailwindcss/vite";
-import react, { reactCompilerPreset } from "@vitejs/plugin-react";
+import react from "@vitejs/plugin-react";
 import { defineConfig } from "vite";
 
 export default defineConfig({
-  plugins: [
-    react(),
-    tailwindcss(),
-    babel({ presets: [reactCompilerPreset()] }),
-  ],
+  plugins: [react(), tailwindcss(), asheeui()],
   optimizeDeps: {
-    exclude: ["@ashee/ui", "@ashee/theme", "@ashee/settings"],
+    exclude: ["@ashee/ui", "@ashee/theme"],
   },
 });

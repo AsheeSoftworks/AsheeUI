@@ -3,12 +3,17 @@ export type { ScrollbarConfig } from "../src/theme/scrollbar/scrollbar-config";
 export type { ThemeSelection } from "./libs/controller";
 export { themeController } from "./libs/controller";
 export { applyThemeConfig } from "./libs/css-vars";
-export { applyDesignTokens } from "./libs/design-tokens";
+export {
+  applyDesignTokens,
+  buildDesignTokensCss,
+  DESIGN_TOKENS_STYLE_ID,
+} from "./libs/design-tokens";
 export { useTheme } from "./libs/useTheme";
 export type {
   AsheeThemeRegistry,
   ColorConfig,
   ColorVariant,
+  DefaultColorConfig,
   ThemeName,
 } from "./theme/color/color-config";
 export { defaultColorConfig } from "./theme/color/default-color-config";
