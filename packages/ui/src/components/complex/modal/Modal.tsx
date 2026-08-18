@@ -1,10 +1,10 @@
 "use client";
-
-import { type Radius, useResponsiveVars } from "@ashee/theme";
-import { cn } from "@ashee/utils";
+import { cn } from "@asheeui/utils";
 import { AnimatePresence, type HTMLMotionProps, motion } from "framer-motion";
 import { type ReactNode, useEffect, useMemo } from "react";
 import { useAsheeConfig } from "../../../libs/context";
+import type { Radius } from "../../../theme/token/radius/radius-config";
+import { useResponsiveVars } from "../../../theme/token/responsive/use-responsive-vars";
 import { resolveScale, resolveValue } from "../../../utils/resolve-token";
 import { defaultModalSizeScale } from "./default-modal-config";
 import { flattenModalSizeScale } from "./flatten-modal-size-scale";

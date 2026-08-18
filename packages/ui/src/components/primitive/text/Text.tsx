@@ -1,7 +1,5 @@
 "use client";
-
-import type { FontSizeKey, FontWeight, LineHeight, Size } from "@ashee/theme";
-import { cn } from "@ashee/utils";
+import { cn } from "@asheeui/utils";
 import {
   createElement,
   forwardRef,
@@ -9,6 +7,12 @@ import {
   type ReactNode,
 } from "react";
 import { useAsheeConfig } from "../../../libs/context";
+import type { Size } from "../../../theme/token/token";
+import type {
+  FontSizeKey,
+  FontWeight,
+  LineHeight,
+} from "../../../theme/typography/typography-config";
 import { resolveValue } from "../../../utils/resolve-token";
 import { defaultTextConfig } from "./default-text-config";
 import type { TextAs, TextConfig } from "./text-config";

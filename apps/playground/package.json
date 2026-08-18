@@ -10,10 +10,9 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@ashee/cli": "workspace:*",
-    "@ashee/theme": "workspace:*",
-    "@ashee/ui": "workspace:*",
-    "@ashee/vite": "workspace:*",
+    "@asheeui/cli": "workspace:*",
+    "asheeui": "workspace:*",
+    "@asheeui/vite": "workspace:*",
     "@tailwindcss/vite": "^4.3.3",
     "react": "^19.2.8",
     "react-compiler-runtime": "^1.0.0",

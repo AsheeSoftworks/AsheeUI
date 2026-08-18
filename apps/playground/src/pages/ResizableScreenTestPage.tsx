@@ -1,6 +1,6 @@
 "use client";
 
-import { type ResizableOrientation, ResizableScreen } from "@ashee/ui";
+import { type ResizableOrientation, ResizableScreen } from "asheeui";
 import { useState } from "react";
 
 export default function ResizableScreenTestPage() {

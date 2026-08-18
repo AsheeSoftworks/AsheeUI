@@ -1,6 +1,6 @@
 "use client";
 
-import { cn } from "@ashee/utils";
+import { cn } from "@asheeui/utils";
 import { type HTMLMotionProps, motion } from "framer-motion";
 import { useMemo } from "react";
 import {

@@ -1,4 +1,4 @@
-import type { Spacing } from "@ashee/theme";
+import type { Spacing } from "../../../theme/token/spacing/spacing-config";
 
 export interface GridConfig {
   columns?: number;

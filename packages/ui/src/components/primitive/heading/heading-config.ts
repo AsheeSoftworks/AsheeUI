@@ -1,9 +1,9 @@
+import type { ResponsiveValue } from "../../../theme/token/responsive/responsive";
 import type {
   FontWeight,
   LetterSpacing,
   LineHeight,
-  ResponsiveValue,
-} from "@ashee/theme";
+} from "../../../theme/typography/typography-config";
 
 export type HeadingLevel = 1 | 2 | 3 | 4 | 5 | 6;
 

@@ -1,5 +1,6 @@
-import type { Radius, ResponsiveValue } from "@ashee/theme";
 import type { Transition, Variants } from "framer-motion";
+import type { Radius } from "../../../theme/token/radius/radius-config";
+import type { ResponsiveValue } from "../../../theme/token/responsive/responsive";
 
 export type DrawerAnimationPreset = "slide" | "zoom" | "fade";
 

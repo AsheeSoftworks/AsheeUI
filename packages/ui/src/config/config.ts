@@ -1,9 +1,18 @@
-import type { ThemeConfig, ThemeName } from "@ashee/theme";
-import type { DeepPartial } from "@ashee/utils";
+import type { DeepPartial } from "@asheeui/utils";
 import type { ComponentConfigRegistry } from "../registry";
 import type { Color, Variant } from "../shared/variant";
+import type {
+  ColorConfig,
+  ColorVariant,
+  ThemeName,
+} from "../theme/color/color-config";
+import type { ShadowConfig } from "../theme/shadow/shadow-config";
+import type { RadiusConfig } from "../theme/token/radius/radius-config";
+import type { BreakpointConfig } from "../theme/token/responsive/breakpoint-config";
+import type { SpacingConfig } from "../theme/token/spacing/spacing-config";
+import type { TypographyConfig } from "../theme/typography/typography-config";
 
-export type { DeepPartial } from "@ashee/utils";
+export type { DeepPartial } from "@asheeui/utils";
 
 type KnownThemeName = "light" | "dark" | "white" | "black";
 type CustomThemeName = Exclude<ThemeName, KnownThemeName>;
@@ -19,7 +28,13 @@ export type ComponentsConfig = {
 };
 
 export type Config = {
-  theme: ThemeConfig & {
+  theme: {
+    color: ColorConfig;
+    radius: RadiusConfig;
+    typography: TypographyConfig;
+    shadow: ShadowConfig;
+    spacing: SpacingConfig;
+    breakpoints?: BreakpointConfig;
     defaultTheme?: ThemeName | "system";
     defaultVariant?: Variant;
     defaultColor?: Color;

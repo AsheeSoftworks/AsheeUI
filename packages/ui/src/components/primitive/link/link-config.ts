@@ -1,5 +1,9 @@
-import type { FontWeight, LineHeight, ResponsiveValue } from "@ashee/theme";
 import type { Color } from "../../../shared/variant";
+import type { ResponsiveValue } from "../../../theme/token/responsive/responsive";
+import type {
+  FontWeight,
+  LineHeight,
+} from "../../../theme/typography/typography-config";
 
 export type LinkVariant = "default" | "muted" | "subtle";
 export type LinkUnderline = "always" | "hover" | "never";

@@ -1,12 +1,13 @@
 "use client";
-
-import { type Radius, type Size, useResponsiveVars } from "@ashee/theme";
-import { cn } from "@ashee/utils";
+import { cn } from "@asheeui/utils";
 import { type HTMLMotionProps, motion } from "framer-motion";
 import { createContext, forwardRef, useContext, useId, useMemo } from "react";
 import { useAsheeConfig } from "../../../libs/context";
-import { resolveAnimation } from "../../../libs/motion/resolve-animation";
-import type { AnimationProp } from "../../../libs/motion/types";
+import { resolveAnimation } from "../../../motion/resolve-animation";
+import type { AnimationProp } from "../../../motion/types";
+import type { Radius } from "../../../theme/token/radius/radius-config";
+import { useResponsiveVars } from "../../../theme/token/responsive/use-responsive-vars";
+import type { Size } from "../../../theme/token/token";
 import { resolveScale, resolveValue } from "../../../utils/resolve-token";
 import { Image } from "../../primitive/image/Image";
 import type {

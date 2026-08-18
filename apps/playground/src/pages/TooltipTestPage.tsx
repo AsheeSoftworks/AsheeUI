@@ -1,6 +1,6 @@
 "use client";
 
-import { Button, Tooltip } from "@ashee/ui";
+import { Button, Tooltip } from "asheeui";
 
 export default function TooltipTestPage() {
   return (

@@ -1,3 +1,51 @@
+export { applyThemeConfig } from "../../ui/src/libs/css-vars";
+export {
+  applyDesignTokens,
+  buildDesignTokensCss,
+  DESIGN_TOKENS_STYLE_ID,
+} from "../../ui/src/libs/design-tokens";
+export { useTheme } from "../../ui/src/libs/useTheme";
+export type {
+  AsheeThemeRegistry,
+  ColorConfig,
+  ColorVariant,
+  DefaultColorConfig,
+  ThemeName,
+} from "../../ui/src/theme/color/color-config";
+export { defaultColorConfig } from "../../ui/src/theme/color/default-color-config";
+export { defaultShadowConfig } from "../../ui/src/theme/shadow/default-shadow-config";
+export type {
+  Shadow,
+  ShadowConfig,
+} from "../../ui/src/theme/shadow/shadow-config";
+export { defaultRadiusConfig } from "../../ui/src/theme/token/radius/default-radius-config";
+export type {
+  Radius,
+  RadiusConfig,
+} from "../../ui/src/theme/token/radius/radius-config";
+export type { BreakpointConfig } from "../../ui/src/theme/token/responsive/breakpoint-config";
+export { defaultBreakpointConfig } from "../../ui/src/theme/token/responsive/default-breakpoint-config";
+export { injectResponsiveVars } from "../../ui/src/theme/token/responsive/inject-responsive-vars";
+export type {
+  BreakpointKey,
+  ResponsiveValue,
+} from "../../ui/src/theme/token/responsive/responsive";
+export { useResponsiveVars } from "../../ui/src/theme/token/responsive/use-responsive-vars";
+export { defaultSpacingConfig } from "../../ui/src/theme/token/spacing/default-spacing-config";
+export type {
+  Spacing,
+  SpacingConfig,
+} from "../../ui/src/theme/token/spacing/spacing-config";
+export type { Size } from "../../ui/src/theme/token/token";
+export { defaultTypographyConfig } from "../../ui/src/theme/typography/default-typography-config";
+export type {
+  FontSizeKey,
+  FontSizeScale,
+  FontWeight,
+  LetterSpacing,
+  LineHeight,
+  TypographyConfig,
+} from "../../ui/src/theme/typography/typography-config";
 export type { AsheeUIProviderProps } from "./AsheeUIProvider";
 export { AsheeUIProvider } from "./AsheeUIProvider";
 export {
@@ -18,6 +66,11 @@ export {
   Carousel,
   type CarouselProps,
 } from "./components/complex/carousel/Carousel";
+export type {
+  CarouselItem,
+  CarouselSizeKey,
+  CarouselVariant,
+} from "./components/complex/carousel/carousel-config";
 export {
   Chip,
   type ChipProps,
@@ -57,6 +110,7 @@ export type {
 } from "./components/complex/marquee/marquee-config";
 export { Modal, type ModalProps } from "./components/complex/modal/Modal";
 export type {
+  ModalAnimationPreset,
   ModalConfig,
   ModalPosition,
   ModalSizeKey,
@@ -69,6 +123,8 @@ export type {
   MultiSelectConfig,
   MultiSelectOption,
   MultiSelectSizeKey,
+  MultiSelectSizeScale,
+  MultiSelectSizeValue,
 } from "./components/complex/multi-select/multi-select-config";
 export {
   ResizableScreen,
@@ -138,6 +194,10 @@ export type {
   DatePickerSizeKey,
   PickerMode,
 } from "./components/primitive/date-picker/date-picker-config";
+export type {
+  FieldSizeKey,
+  FieldStatus,
+} from "./components/primitive/field/field-config";
 export { Flex, type FlexProps } from "./components/primitive/flex/Flex";
 export { Grid, type GridProps } from "./components/primitive/grid/Grid";
 export {
@@ -179,4 +239,5 @@ export {
 export type { Config, ExternalConfig } from "./config/config";
 export { defineConfig } from "./config/define-config";
 export { useAsheeConfig } from "./libs/context";
+export { themeController } from "./libs/controller";
 export { resolveRadius } from "./utils/resolve-token";

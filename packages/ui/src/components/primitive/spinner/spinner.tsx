@@ -1,4 +1,4 @@
-import { cn } from "@ashee/utils";
+import { cn } from "@asheeui/utils";
 import { useAsheeConfig } from "../../../libs/context";
 import type { Color } from "../../../shared/variant";
 import { resolveComponentScale } from "../../../utils/resolve-token";

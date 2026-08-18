@@ -1,11 +1,5 @@
 "use client";
-
-import {
-  type Radius,
-  type ShadowConfig,
-  useResponsiveVars,
-} from "@ashee/theme";
-import { cn } from "@ashee/utils";
+import { cn } from "@asheeui/utils";
 import {
   arrow,
   autoUpdate,
@@ -32,13 +26,16 @@ import {
   useState,
 } from "react";
 import { useAsheeConfig } from "../../../libs/context";
-import { resolveAnimation } from "../../../libs/motion/resolve-animation";
-import type { AnimationProp } from "../../../libs/motion/types";
+import { resolveAnimation } from "../../../motion/resolve-animation";
+import type { AnimationProp } from "../../../motion/types";
 import {
   type Color,
   resolveVariantClass,
   type Variant,
 } from "../../../shared/variant";
+import type { ShadowConfig } from "../../../theme/shadow/shadow-config";
+import type { Radius } from "../../../theme/token/radius/radius-config";
+import { useResponsiveVars } from "../../../theme/token/responsive/use-responsive-vars";
 import { resolveScale, resolveValue } from "../../../utils/resolve-token";
 import { defaultTooltipSizeScale } from "./default-tooltip-config";
 import { flattenTooltipSizeScale } from "./flatten-tooltip-size-scale";

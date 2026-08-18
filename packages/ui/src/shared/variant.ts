@@ -1,4 +1,4 @@
-import { cn } from "@ashee/utils";
+import { cn } from "@asheeui/utils";
 
 export type Variant = "solid" | "ghost" | "bordered" | "faded" | "underlined";
 export type Color =

@@ -1,7 +1,5 @@
 "use client";
-
-import { useResponsiveVars } from "@ashee/theme";
-import { cn } from "@ashee/utils";
+import { cn } from "@asheeui/utils";
 import { AnimatePresence } from "framer-motion";
 import {
   createContext,
@@ -13,6 +11,7 @@ import {
 } from "react";
 import { useAsheeConfig } from "../../../libs/context";
 import type { Variant } from "../../../shared/variant";
+import { useResponsiveVars } from "../../../theme/token/responsive/use-responsive-vars";
 import { resolveScale, resolveValue } from "../../../utils/resolve-token";
 import {
   defaultToastConfig,

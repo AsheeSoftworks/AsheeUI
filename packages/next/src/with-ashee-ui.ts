@@ -20,11 +20,7 @@ import { createWebpackHook } from "./webpack";
  * `transpilePackages` takes npm package names, deduped against any the
  * consumer provides.
  */
-const ASHEE_TRANSPILE_PACKAGES = [
-  "@ashee/ui",
-  "@ashee/theme",
-  "@ashee/settings",
-];
+const ASHEE_TRANSPILE_PACKAGES = ["asheeui", "asheeui", "@asheeui/settings"];
 
 type NextWebpack = NonNullable<NextConfig["webpack"]>;
 
@@ -45,7 +41,7 @@ type LegacyNextConfig = NextConfig & {
  * Wrap a `next.config.mjs`/`next.config.ts` object with AsheeUI integration.
  *
  * 1. Generates a config shim at `.ashee/generated-config.mjs` (same
- *    resolution as @ashee/vite's `virtual:ashee-config`).
+ *    resolution as @asheeui/vite's `virtual:ashee-config`).
  * 2. Adds a `virtual:ashee-config` alias for Webpack and Turbopack so app
  *    code uses the identical import specifier in both bundlers — webpack
  *    gets an absolute path (it resolves against its own context, not the

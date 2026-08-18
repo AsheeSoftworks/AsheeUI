@@ -1,6 +1,6 @@
-import "@ashee/theme";
+import "asheeui";
 
-declare module "@ashee/theme" {
+declare module "asheeui" {
   interface AsheeThemeRegistry {
     "company-red": true;
   }

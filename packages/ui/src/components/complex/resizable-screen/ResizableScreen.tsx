@@ -1,7 +1,5 @@
 "use client";
-
-import type { Radius } from "@ashee/theme";
-import { cn } from "@ashee/utils";
+import { cn } from "@asheeui/utils";
 import {
   forwardRef,
   type ReactNode,
@@ -15,6 +13,7 @@ import {
   resolveVariantClass,
   type Variant,
 } from "../../../shared/variant";
+import type { Radius } from "../../../theme/token/radius/radius-config";
 import { resolveScale, resolveValue } from "../../../utils/resolve-token";
 import { defaultResizableScreenConfig } from "./default-resizable-screen-config";
 import type {

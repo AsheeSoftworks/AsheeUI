@@ -1,6 +1,6 @@
 "use client";
 
-import { type ColumnDef, Table, type TableVariant } from "@ashee/ui";
+import { type ColumnDef, Table, type TableVariant } from "asheeui";
 import { useMemo, useState } from "react";
 
 // ─── Type Definitions ─────────────────────────────────────────────────────────

@@ -1,4 +1,7 @@
-@source "@ashee/ui/src/index.ts";
+@layer base, utilities;
+
+/* Tell Tailwind v4 to scan asheeui components for utility classes */
+@source "./**/*.{ts,tsx}";
 
 @theme inline {
   --color-background: var(--ashee-background);
@@ -36,10 +39,10 @@
   --tracking-normal: var(--ashee-tracking-normal);
   --tracking-wide: var(--ashee-tracking-wide);
 
-  --radius: var(--ashee-radius);
-  --radius: var(--ashee-radius-none);
+  --radius-none: var(--ashee-radius-none);
   --radius-xs: var(--ashee-radius-xs);
   --radius-sm: var(--ashee-radius-sm);
+  --radius: var(--ashee-radius);
   --radius-md: var(--ashee-radius-md);
   --radius-lg: var(--ashee-radius-lg);
   --radius-full: var(--ashee-radius-full);
@@ -125,7 +128,7 @@
   --ashee-scrollbar-track: transparent;
 }
 
-/* 3. Base Styles (Global defaults that utilities can override) */
+/* 3. Base Styles */
 @layer base {
   html,
   body {
@@ -133,14 +136,12 @@
     color: var(--ashee-foreground);
   }
 
-  /* Apply scrollbar styles to EVERYTHING globally */
   html,
   body,
   * {
     scrollbar-color: var(--ashee-scrollbar-thumb) var(--ashee-scrollbar-track);
   }
 
-  /* Form Input Resets */
   input[type="number"]::-webkit-outer-spin-button,
   input[type="number"]::-webkit-inner-spin-button {
     -webkit-appearance: none;

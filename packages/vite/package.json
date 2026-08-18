@@ -1,5 +1,5 @@
 {
-  "name": "@ashee/vite",
+  "name": "@asheeui/vite",
   "version": "0.1.0",
   "type": "module",
   "main": "./src/index.ts",
@@ -17,7 +17,7 @@
   ],
   "peerDependencies": {
     "vite": "^8.2.1",
-    "@ashee/utils": "workspace:*"
+    "@asheeui/utils": "workspace:*"
   },
   "devDependencies": {
     "vite": "^8.2.1"

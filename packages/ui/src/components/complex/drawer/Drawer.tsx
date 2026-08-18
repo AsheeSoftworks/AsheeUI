@@ -1,7 +1,5 @@
 "use client";
-
-import { type Radius, useResponsiveVars } from "@ashee/theme";
-import { cn } from "@ashee/utils";
+import { cn } from "@asheeui/utils";
 import { AnimatePresence, type HTMLMotionProps, motion } from "framer-motion";
 import {
   type HTMLAttributes,
@@ -11,6 +9,8 @@ import {
   useMemo,
 } from "react";
 import { useAsheeConfig } from "../../../libs/context";
+import type { Radius } from "../../../theme/token/radius/radius-config";
+import { useResponsiveVars } from "../../../theme/token/responsive/use-responsive-vars";
 import { resolveScale, resolveValue } from "../../../utils/resolve-token";
 import { defaultDrawerSizeScale } from "./default-drawer-config";
 import type {
@@ -117,7 +117,7 @@ export function Drawer({
     config.theme.radius.values,
   );
 
-  // Motion resolution via @ashee/motion
+  // Motion resolution via @asheeui/motion
   const drawerMotion = useMemo(
     () =>
       resolveDrawerAnimation(

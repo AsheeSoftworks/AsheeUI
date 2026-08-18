@@ -1,4 +1,4 @@
-import type { Spacing } from "@ashee/theme";
+import type { Spacing } from "../../../theme/token/spacing/spacing-config";
 
 export type FlexDirection = "row" | "row-reverse" | "col" | "col-reverse";
 export type FlexAlign = "start" | "center" | "end" | "stretch" | "baseline";

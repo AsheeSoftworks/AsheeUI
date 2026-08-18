@@ -1,7 +1,7 @@
-import type { Spacing } from "@ashee/theme";
-import { cn } from "@ashee/utils";
+import { cn } from "@asheeui/utils";
 import type { ReactNode } from "react";
 import { useAsheeConfig } from "../../../libs/context";
+import type { Spacing } from "../../../theme/token/spacing/spacing-config";
 import { resolveScale, resolveValue } from "../../../utils/resolve-token";
 import { Container } from "../container/Container";
 import type { GridConfig } from "./grid-config";

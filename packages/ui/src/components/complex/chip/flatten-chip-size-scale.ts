@@ -1,4 +1,4 @@
-import type { ResponsiveValue } from "@ashee/theme";
+import type { ResponsiveValue } from "../../../theme/token/responsive/responsive";
 import type { ChipSizeScale } from "./chip-config";
 
 export function flattenChipSizeScale(

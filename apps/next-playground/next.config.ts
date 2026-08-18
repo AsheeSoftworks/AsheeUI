@@ -1,6 +1,6 @@
 // next.config.ts
 
-import { withAsheeUI } from "@ashee/next";
+import { withAsheeUI } from "@asheeui/next";
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {

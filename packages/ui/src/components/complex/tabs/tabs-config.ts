@@ -1,7 +1,8 @@
-import type { Radius, ResponsiveValue } from "@ashee/theme";
 import type { ReactNode } from "react";
-import type { AnimationProp } from "../../../libs/motion/types";
+import type { AnimationProp } from "../../../motion/types";
 import type { Color, Variant } from "../../../shared/variant";
+import type { Radius } from "../../../theme/token/radius/radius-config";
+import type { ResponsiveValue } from "../../../theme/token/responsive/responsive";
 
 export type TabsVariant = "underline" | "pills" | "bordered" | "ghost";
 export type TabsSizeKey = "sm" | "md" | "lg";

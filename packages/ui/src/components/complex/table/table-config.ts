@@ -1,6 +1,7 @@
-import type { Radius, ResponsiveValue } from "@ashee/theme";
 import type { ReactNode } from "react";
 import type { Color } from "../../../shared/variant";
+import type { Radius } from "../../../theme/token/radius/radius-config";
+import type { ResponsiveValue } from "../../../theme/token/responsive/responsive";
 
 export type TableSizeKey = "sm" | "md" | "lg";
 export type TableVariant = "default" | "striped" | "bordered" | "flush";

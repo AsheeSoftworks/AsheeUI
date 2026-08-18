@@ -1,4 +1,4 @@
-import { defineConfig, type ExternalConfig } from "@ashee/ui";
+import { defineConfig, type ExternalConfig } from "asheeui";
 
 const config: ExternalConfig = {
   theme: {
@@ -61,13 +61,7 @@ const config: ExternalConfig = {
       },
       lineHeight: { short: "1.15", base: "1.6", tall: "1.9" },
       letterSpacing: { tight: "-0.03em", normal: "0em", wide: "0.05em" },
-      family: {
-        sans: "'Space Grotesk', ui-sans-serif, system-ui, sans-serif",
-        serif: "'Fraunces', ui-serif, Georgia, serif",
-        mono: "'JetBrains Mono', ui-monospace, monospace",
-      },
     },
-    scrollbar: { width: "6px", radius: "4px" },
   },
   components: {
     toast: {

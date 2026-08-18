@@ -1,9 +1,9 @@
 "use client";
-import { useResponsiveVars } from "@ashee/theme";
-import { cn } from "@ashee/utils";
+import { cn } from "@asheeui/utils";
 import type { ReactNode } from "react";
 import { useMemo } from "react";
 import { useAsheeConfig } from "../../../libs/context";
+import { useResponsiveVars } from "../../../theme/token/responsive/use-responsive-vars";
 import { defaultHeadingConfig } from "./default-heading-config";
 import { flattenHeadingSizeScale } from "./flatten-heading-size-scale";
 import type {

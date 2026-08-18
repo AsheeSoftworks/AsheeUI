@@ -1,4 +1,4 @@
-import type { Radius, RadiusConfig } from "@ashee/theme";
+import type { Radius, RadiusConfig } from "../theme/token/radius/radius-config";
 
 export function resolveRadius(
   instanceProp: keyof Radius | undefined,

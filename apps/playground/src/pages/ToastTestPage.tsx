@@ -1,6 +1,6 @@
 "use client";
 
-import { Button, ToastProvider, useToast } from "@ashee/ui";
+import { Button, ToastProvider, useToast } from "asheeui";
 
 function ToastTestControls() {
   const { success, error, info, warning, toast, clearToasts, toasts } =

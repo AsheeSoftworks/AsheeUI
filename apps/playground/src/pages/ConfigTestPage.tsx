@@ -23,7 +23,7 @@ import {
   Switch,
   Text,
   TextArea,
-} from "@ashee/ui";
+} from "asheeui";
 import { useState } from "react";
 
 export default function ConfigTestPage() {
@@ -661,8 +661,8 @@ export default function ConfigTestPage() {
           {/* Drawer Body */}
           <Container className="flex-1 overflow-y-auto p-4 space-y-4">
             <Text className="text-sm text-foreground/80 leading-relaxed">
-              This surface rendered smoothly using Framer Motion and
-              `@ashee/theme` responsive CSS variables.
+              This surface rendered smoothly using Framer Motion and `asheeui`
+              responsive CSS variables.
             </Text>
 
             <Container>

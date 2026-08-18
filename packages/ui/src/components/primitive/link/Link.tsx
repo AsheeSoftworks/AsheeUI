@@ -1,11 +1,5 @@
 "use client";
-
-import {
-  type FontWeight,
-  type LineHeight,
-  useResponsiveVars,
-} from "@ashee/theme";
-import { cn } from "@ashee/utils";
+import { cn } from "@asheeui/utils";
 import {
   type AnchorHTMLAttributes,
   forwardRef,
@@ -14,6 +8,11 @@ import {
 } from "react";
 import { useAsheeConfig } from "../../../libs/context";
 import type { Color } from "../../../shared/variant";
+import { useResponsiveVars } from "../../../theme/token/responsive/use-responsive-vars";
+import type {
+  FontWeight,
+  LineHeight,
+} from "../../../theme/typography/typography-config";
 import { resolveValue } from "../../../utils/resolve-token";
 import { ExternalLinkIcon } from "../../icons/ExternalLinkIcon";
 import { defaultLinkSizeScale } from "./default-link-config";

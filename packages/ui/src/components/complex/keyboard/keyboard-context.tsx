@@ -1,6 +1,4 @@
 "use client";
-
-import type { Radius } from "@ashee/theme";
 import {
   createContext,
   type ReactNode,
@@ -12,6 +10,7 @@ import {
 } from "react";
 import { useAsheeConfig } from "../../../libs/context";
 import type { Color, Variant } from "../../../shared/variant";
+import type { Radius } from "../../../theme/token/radius/radius-config";
 import { defaultKeyboardConfig } from "./default-keyboard-config";
 import type {
   KeyboardConfig,

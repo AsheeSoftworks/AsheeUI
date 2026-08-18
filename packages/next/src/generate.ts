@@ -1,6 +1,6 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, relative, resolve } from "node:path";
-import { CANDIDATES, discoverConfig } from "@ashee/utils/node";
+import { CANDIDATES, discoverConfig } from "@asheeui/utils/node";
 
 /** The import specifier used across AsheeUI for the config module. */
 export const VIRTUAL_ID = "virtual:ashee-config";
@@ -40,7 +40,7 @@ function toRelativeSpecifier(fromFile: string, toFile: string): string {
 }
 
 /**
- * Regenerate the config shim, mirroring @ashee/vite's virtual module: if a
+ * Regenerate the config shim, mirroring @asheeui/vite's virtual module: if a
  * config file exists we re-export its default export, otherwise we export
  * `undefined`. Returns the shim's absolute path.
  *

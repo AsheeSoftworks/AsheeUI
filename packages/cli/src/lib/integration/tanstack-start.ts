@@ -35,7 +35,7 @@ export function buildTanStackStartIntegration(ctx: IntegrationContext): {
     path: routerFile,
     search: `import { createRootRoute } from "@tanstack/react-router"`,
     replace: `import { createRootRoute } from "@tanstack/react-router"
-import { ${providerName} } from "@ashee/ui"
+import { ${providerName} } from "asheeui"
 import { config } from "${configImport}"`,
     notFoundMessage: `Could not find createRootRoute import in ${routerRelative}`,
   });
@@ -51,10 +51,10 @@ import { config } from "${configImport}"`,
     fileEdits,
     integrityChecks,
     dependenciesToInstall: [
-      "@ashee/ui",
-      "@ashee/theme",
-      "@ashee/settings",
-      "@ashee/utils",
+      "asheeui",
+      "asheeui",
+      "@asheeui/settings",
+      "@asheeui/utils",
     ],
     summary: [
       "created asheeui-config.ts",

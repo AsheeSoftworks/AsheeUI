@@ -24,3 +24,5 @@ dist-ssr
 *.sw?
 .clineignore
 .clinerules
+next-hero-template
+commit.sh

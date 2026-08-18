@@ -5,7 +5,7 @@ import {
   type MarqueeAxis,
   type MarqueeDirection,
   type MarqueeSpeedPreset,
-} from "@ashee/ui";
+} from "asheeui";
 import { useState } from "react";
 
 // ─── Dummy Data ───────────────────────────────────────────────────────────────

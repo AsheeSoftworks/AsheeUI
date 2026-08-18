@@ -1,5 +1,5 @@
 {
-  "name": "@ashee/cli",
+  "name": "@asheeui/cli",
   "version": "0.1.0",
   "bin": {
     "asheeui": "./dist/index.mjs"

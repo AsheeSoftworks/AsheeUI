@@ -1,5 +1,5 @@
 {
-  "name": "@ashee/next",
+  "name": "@asheeui/next",
   "version": "0.1.0",
   "type": "module",
   "main": "./src/index.ts",
@@ -16,7 +16,7 @@
     "src"
   ],
   "dependencies": {
-    "@ashee/utils": "workspace:*"
+    "@asheeui/utils": "workspace:*"
   },
   "peerDependencies": {
     "next": "^16.0.0"

@@ -1,4 +1,4 @@
-import { cn } from "@ashee/utils";
+import { cn } from "@asheeui/utils";
 import type { IconProps } from "./types";
 
 export function ClearIcon({ className, ...props }: IconProps) {

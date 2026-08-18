@@ -28,7 +28,7 @@ export function buildViteIntegration(ctx: IntegrationContext): {
       path: entry,
       search: `import { StrictMode } from "react";`,
       replace: `import { StrictMode } from "react";
-import { ${providerName} } from "@ashee/ui";
+import { ${providerName} } from "asheeui";
 import { config } from "${configImport}";`,
     },
     {
@@ -61,10 +61,10 @@ import { config } from "${configImport}";`,
     fileEdits,
     integrityChecks,
     dependenciesToInstall: [
-      "@ashee/ui",
-      "@ashee/theme",
-      "@ashee/settings",
-      "@ashee/utils",
+      "asheeui",
+      "asheeui",
+      "@asheeui/settings",
+      "@asheeui/utils",
     ],
     summary: [
       "created asheeui-config.ts",

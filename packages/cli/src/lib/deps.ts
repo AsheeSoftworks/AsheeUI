@@ -9,10 +9,10 @@ export interface DependencyInfo {
 }
 
 const ASHEE_PACKAGES = [
-  "@ashee/ui",
-  "@ashee/theme",
-  "@ashee/settings",
-  "@ashee/utils",
+  "asheeui",
+  "asheeui",
+  "@asheeui/settings",
+  "@asheeui/utils",
 ];
 
 export async function inspectDependencies(

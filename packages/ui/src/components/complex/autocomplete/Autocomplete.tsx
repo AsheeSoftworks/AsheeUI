@@ -1,6 +1,4 @@
 "use client";
-
-import type { Radius } from "@ashee/theme";
 import {
   autoUpdate,
   flip,
@@ -20,8 +18,9 @@ import {
   useState,
 } from "react";
 import { useAsheeConfig } from "../../../libs/context";
-import type { AnimationProp } from "../../../libs/motion/types";
+import type { AnimationProp } from "../../../motion/types";
 import type { Color, Variant } from "../../../shared/variant";
+import type { Radius } from "../../../theme/token/radius/radius-config";
 import { resolveScale, resolveValue } from "../../../utils/resolve-token";
 import type { ButtonSizeKey } from "../../primitive/button/button-config";
 import { Input, type InputProps } from "../../primitive/input/Input";

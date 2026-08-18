@@ -1,4 +1,4 @@
-import type { ResponsiveValue } from "@ashee/theme";
+import type { ResponsiveValue } from "../../../theme/token/responsive/responsive";
 import type { SwitchSizeScale } from "./switch-config";
 
 export function flattenSwitchSizeScale(

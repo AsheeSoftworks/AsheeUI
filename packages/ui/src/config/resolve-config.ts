@@ -1,4 +1,4 @@
-import { mergeObject } from "@ashee/utils";
+import { mergeObject } from "@asheeui/utils";
 import type { Config, ExternalConfig } from "./config";
 import { defaultConfig } from "./default-config";
 

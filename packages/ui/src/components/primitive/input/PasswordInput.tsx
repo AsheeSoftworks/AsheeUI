@@ -1,6 +1,6 @@
 "use client";
 
-import { cn } from "@ashee/utils";
+import { cn } from "@asheeui/utils";
 import { forwardRef, useState } from "react";
 import { EyeIcon } from "../../icons/EyeIcon";
 import { EyeOffIcon } from "../../icons/EyeOffIcon";

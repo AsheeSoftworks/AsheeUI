@@ -1,13 +1,13 @@
 "use client";
 
-import type { Radius } from "@ashee/theme";
+import type { Radius } from "asheeui";
 import {
   type TabItem,
   Tabs,
   type TabsSizeKey,
   type TabsVariant,
   Text,
-} from "@ashee/ui";
+} from "asheeui";
 import { useState } from "react";
 
 // ─── Test Tab Data ────────────────────────────────────────────────────────────

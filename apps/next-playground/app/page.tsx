@@ -1,7 +1,6 @@
 "use client";
 
-import { useTheme } from "@ashee/theme";
-import { Button, Container, Heading } from "@ashee/ui";
+import { Button, Container, Heading, useTheme } from "asheeui";
 
 const Page = () => {
   const { setTheme } = useTheme();

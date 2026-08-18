@@ -1,4 +1,8 @@
-import type { FontWeight, LineHeight, Size } from "@ashee/theme";
+import type { Size } from "../../../theme/token/token";
+import type {
+  FontWeight,
+  LineHeight,
+} from "../../../theme/typography/typography-config";
 
 export type TextAs =
   | "p"

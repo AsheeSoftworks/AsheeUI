@@ -1,3 +1,10 @@
+import type {
+  FieldSizeKey,
+  FieldStatus,
+  ModalAnimationPreset,
+  ModalPosition,
+  ModalSizeKey,
+} from "asheeui";
 import {
   Accordion,
   Autocomplete,
@@ -12,16 +19,7 @@ import {
   MultiSelect,
   type MultiSelectOption,
   Text,
-} from "@ashee/ui";
-import type {
-  ModalAnimationPreset,
-  ModalPosition,
-  ModalSizeKey,
-} from "@ashee/ui/src/components/complex/modal/modal-config.js";
-import type {
-  FieldSizeKey,
-  FieldStatus,
-} from "@ashee/ui/src/components/primitive/field/field-config.js";
+} from "asheeui";
 import { useState } from "react";
 
 export default function LocalPropsTestPage() {
@@ -475,7 +473,7 @@ export default function LocalPropsTestPage() {
               <Text as={"label"}>Framework Workspace</Text>
               <input
                 type="text"
-                defaultValue="@ashee/ui"
+                defaultValue="asheeui"
                 className="w-full px-3 py-2  rounded-md border border-border bg-background focus:outline-none focus:ring-2 focus:ring-primary font-mono text-xs"
               />
             </div>

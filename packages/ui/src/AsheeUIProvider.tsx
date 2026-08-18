@@ -2,11 +2,12 @@
 "use client";
 
 import externalConfig from "virtual:ashee-config";
-import { applyDesignTokens, themeController } from "@ashee/theme";
 import { MotionConfig } from "framer-motion";
 import { type ReactNode, useEffect, useMemo } from "react";
 import { resolveConfig } from "./config/resolve-config";
 import { AsheeConfigContext } from "./libs/context";
+import { themeController } from "./libs/controller";
+import { applyDesignTokens } from "./libs/design-tokens";
 
 export interface AsheeUIProviderProps {
   children: ReactNode;
@@ -17,7 +18,7 @@ export function AsheeUIProvider({ children }: AsheeUIProviderProps) {
 
   useEffect(() => {
     applyDesignTokens(config.theme);
-    themeController.mount(); // Safe: runs post-hydration
+    themeController.mount();
   }, [config]);
 
   return (
