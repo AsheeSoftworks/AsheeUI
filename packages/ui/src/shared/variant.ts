@@ -31,27 +31,27 @@ const GHOST_CLASS: Record<Color, string> = {
 };
 
 const BORDERED_CLASS: Record<Color, string> = {
-  none: cn(GHOST_CLASS.primary, "border border-background"),
-  default: cn(GHOST_CLASS.primary, "border border-secondary"),
-  primary: cn(GHOST_CLASS.primary, "border border-primary"),
-  secondary: cn(GHOST_CLASS.secondary, "border border-border"),
-  danger: cn(GHOST_CLASS.danger, "border border-danger"),
-  warning: cn(GHOST_CLASS.warning, "border border-warning"),
-  success: cn(GHOST_CLASS.success, "border border-success"),
+  none: cn(GHOST_CLASS.primary, "border-2 border-background"),
+  default: cn(GHOST_CLASS.primary, "border-2 border-secondary"),
+  primary: cn(GHOST_CLASS.primary, "border-2 border-primary"),
+  secondary: cn(GHOST_CLASS.secondary, "border-2 border-border"),
+  danger: cn(GHOST_CLASS.danger, "border-2 border-danger"),
+  warning: cn(GHOST_CLASS.warning, "border-2 border-warning"),
+  success: cn(GHOST_CLASS.success, "border-2 border-success"),
 };
 
 const FADED_CLASS: Record<Color, string> = {
-  none: "bg-muted/40 text-foreground border border-transparent",
-  default: "bg-muted/40 text-foreground border border-border",
-  primary: "bg-primary/10 text-primary border border-primary/20",
-  secondary: "bg-secondary/15 text-foreground border border-secondary/30",
-  danger: "bg-danger/10 text-danger border border-danger/20",
-  warning: "bg-warning/10 text-warning border border-warning/20",
-  success: "bg-success/10 text-success border border-success/20",
+  none: "bg-muted/40 text-foreground border-2 border-transparent",
+  default: "bg-muted/40 text-foreground border-2 border-border",
+  primary: "bg-primary/10 text-primary border-2 border-primary/20",
+  secondary: "bg-secondary/15 text-foreground border-2 border-secondary/30",
+  danger: "bg-danger/10 text-danger border-2 border-danger/20",
+  warning: "bg-warning/10 text-warning border-2 border-warning/20",
+  success: "bg-success/10 text-success border-2 border-success/20",
 };
 
 const BASE_UNDERLINED =
-  "border-b border-t-0 border-x-0 rounded-none bg-transparent px-0 shadow-none";
+  "border-b-2 border-t-0 border-x-0 rounded-none bg-transparent px-0 shadow-none";
 
 const UNDERLINED_CLASS: Record<Color, string> = {
   none: cn(BASE_UNDERLINED, "border-background text-foreground"),

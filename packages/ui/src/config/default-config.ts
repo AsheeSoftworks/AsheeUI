@@ -1,39 +1,38 @@
-import { defaultAccordionConfig } from "../components/complex/accordion/default-accordion-config";
-import { defaultAutocompleteConfig } from "../components/complex/autocomplete/default-autocomplete-config";
-import { defaultCardConfig } from "../components/complex/card/default-card-config";
-import { defaultCarouselConfig } from "../components/complex/carousel/default-carousel-config";
-import { defaultChipConfig } from "../components/complex/chip/default-chip-config";
-import { defaultDrawerConfig } from "../components/complex/drawer/default-drawer-config";
+import { defaultAccordionConfig } from "../components/complex/accordion/accordion-config";
+import { defaultAutocompleteConfig } from "../components/complex/autocomplete/autocomplete-config";
+import { defaultCardConfig } from "../components/complex/card/card-config";
+import { defaultCarouselConfig } from "../components/complex/carousel/carousel-config";
+import { defaultChipConfig } from "../components/complex/chip/chip-config";
+import { defaultDrawerConfig } from "../components/complex/drawer/drawer-config";
 import { defaultKeyboardConfig } from "../components/complex/keyboard/default-keyboard-config";
-import { defaultMarqueeConfig } from "../components/complex/marquee/default-marquee-config";
-import { defaultModalConfig } from "../components/complex/modal/default-modal-config";
-import { defaultMultiSelectConfig } from "../components/complex/multi-select/default-multi-select-config";
-import { defaultResizableScreenConfig } from "../components/complex/resizable-screen/default-resizable-screen-config";
-import { defaultSidebarConfig } from "../components/complex/sidebar/default-sidebar-config";
-import { defaultTableConfig } from "../components/complex/table/default-table-config";
-import { defaultTabsConfig } from "../components/complex/tabs/default-tabs-config";
-import { defaultToastConfig } from "../components/complex/toast/default-toast-config";
-import { defaultTooltipConfig } from "../components/complex/tooltip/default-tooltip-config";
-import { defaultButtonConfig } from "../components/primitive/button/default-button-config";
-import { defaultContainerConfig } from "../components/primitive/container/default-container-config";
-import { defaultDatePickerConfig } from "../components/primitive/date-picker/default-date-picker-config";
-import { defaultFlexConfig } from "../components/primitive/flex/default-flex-config";
-import { defaultGridConfig } from "../components/primitive/grid/default-grid-config";
-import { defaultHeadingConfig } from "../components/primitive/heading/default-heading-config";
-import { defaultImageConfig } from "../components/primitive/image/default-image-config";
-import { defaultInputConfig } from "../components/primitive/input/default-input-config";
-import { defaultLinkConfig } from "../components/primitive/link/default-link-config";
-import { defaultRadioConfig } from "../components/primitive/radio/default-radio-config";
-import { defaultSelectConfig } from "../components/primitive/select/default-select-config";
-import { defaultSpinnerConfig } from "../components/primitive/spinner/default-spinner-config";
-import { defaultSwitchConfig } from "../components/primitive/switch/default-switch-config";
-import { defaultTextConfig } from "../components/primitive/text/default-text-config";
-import { defaultTextAreaConfig } from "../components/primitive/textarea/default-textarea-config";
+import { defaultMarqueeConfig } from "../components/complex/marquee/marquee-config";
+import { defaultModalConfig } from "../components/complex/modal/modal-config";
+import { defaultMultiSelectConfig } from "../components/complex/multi-select/multi-select-config";
+import { defaultResizableScreenConfig } from "../components/complex/resizable-screen/resizable-screen-config";
+import { defaultSidebarConfig } from "../components/complex/sidebar/sidebar-config";
+import { defaultTableConfig } from "../components/complex/table/table-config";
+import { defaultTabsConfig } from "../components/complex/tabs/tabs-config";
+import { defaultToastConfig } from "../components/complex/toast/toast-config";
+import { defaultTooltipConfig } from "../components/complex/tooltip/tooltip-config";
+import { defaultButtonConfig } from "../components/primitive/button/button-config";
+import { defaultContainerConfig } from "../components/primitive/container/container-config";
+import { defaultDatePickerConfig } from "../components/primitive/date-picker/date-picker-config";
+import { defaultFlexConfig } from "../components/primitive/flex/flex-config";
+import { defaultGridConfig } from "../components/primitive/grid/grid-config";
+import { defaultHeadingConfig } from "../components/primitive/heading/heading-config";
+import { defaultImageConfig } from "../components/primitive/image/image-config";
+import { defaultInputConfig } from "../components/primitive/input/input-config";
+import { defaultLinkConfig } from "../components/primitive/link/link-config";
+import { defaultRadioConfig } from "../components/primitive/radio/radio-config";
+import { defaultSelectConfig } from "../components/primitive/select/select-config";
+import { defaultSpinnerConfig } from "../components/primitive/spinner/spinner-config";
+import { defaultSwitchConfig } from "../components/primitive/switch/switch-config";
+import { defaultTextConfig } from "../components/primitive/text/text-config";
+import { defaultTextAreaConfig } from "../components/primitive/textarea/textarea-config";
 import type { ComponentConfigRegistry } from "../registry";
 import { defaultColorConfig } from "../theme/color/default-color-config";
 import { defaultShadowConfig } from "../theme/shadow/default-shadow-config";
 import { defaultRadiusConfig } from "../theme/token/radius/default-radius-config";
-import { defaultBreakpointConfig } from "../theme/token/responsive/default-breakpoint-config";
 import { defaultSpacingConfig } from "../theme/token/spacing/default-spacing-config";
 import { defaultTypographyConfig } from "../theme/typography/default-typography-config";
 import type { Config } from "./config";
@@ -79,7 +78,6 @@ export const defaultConfig: Config = {
     radius: defaultRadiusConfig,
     typography: defaultTypographyConfig,
     shadow: defaultShadowConfig,
-    breakpoints: defaultBreakpointConfig,
     spacing: defaultSpacingConfig,
     defaultTheme: "system",
     defaultVariant: "solid",

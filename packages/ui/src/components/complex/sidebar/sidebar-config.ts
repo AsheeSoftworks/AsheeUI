@@ -1,8 +1,6 @@
-import type { ReactNode } from "react";
 import type { AnimationProp } from "../../../motion/types";
 import type { Color, Variant } from "../../../shared/variant";
 import type { Radius } from "../../../theme/token/radius/radius-config";
-import type { ResponsiveValue } from "../../../theme/token/responsive/responsive";
 import type { TooltipPlacement } from "../tooltip/tooltip-config";
 
 export type SidebarSizeKey = "sm" | "md" | "lg";
@@ -12,43 +10,29 @@ export interface SidebarItem<T = string> {
   /** Unique item identifier. */
   id: T;
   /** Display label or title. */
-  label: ReactNode;
+  label: React.ReactNode;
   /** Leading icon element. */
-  icon?: ReactNode;
+  icon?: React.ReactNode;
   /** Optional trailing badge element or count. */
-  badge?: ReactNode;
+  badge?: React.ReactNode;
   /** Role string list for optional visibility filtering. */
   roles?: string[];
   /** Disables click interaction. */
   disabled?: boolean;
 }
 
-export interface SidebarSizeValue {
-  expandedWidth: ResponsiveValue<string>;
-  collapsedWidth: ResponsiveValue<string>;
-  headerHeight: ResponsiveValue<string>;
-  itemHeight: ResponsiveValue<string>;
-  paddingInline: ResponsiveValue<string>;
-  fontSize: ResponsiveValue<string>;
-}
-
-export interface SidebarSizeScale {
-  default: SidebarSizeKey;
-  values: Record<SidebarSizeKey, SidebarSizeValue>;
-}
-
 export interface SidebarConfig {
-  size?: SidebarSizeScale;
+  size?: SidebarSizeKey;
   variant?: SidebarVariant;
   radius?: keyof Radius;
   itemRadius?: keyof Radius;
   animation?: AnimationProp;
 
-  // Item Button Styling Tokens
+  // Item Styling Tokens
   activeItemVariant?: Variant;
   activeItemColor?: Color;
 
-  // Header Back Button Styling Tokens
+  // Header Back Button Tokens
   backButtonVariant?: Variant;
   backButtonColor?: Color;
 
@@ -57,10 +41,25 @@ export interface SidebarConfig {
   tooltipPlacement?: TooltipPlacement;
   tooltipVariant?: Variant;
   tooltipColor?: Color;
-
-  // Class Overrides
-  className?: string;
-  headerClassName?: string;
-  bodyClassName?: string;
-  itemClassName?: string;
 }
+
+export const defaultSidebarConfig: SidebarConfig = {
+  size: "md",
+  showTooltips: true,
+  tooltipPlacement: "right",
+};
+
+export const FALLBACK_SIDEBAR_CONFIG = {
+  size: "md",
+  variant: "default",
+  radius: "none",
+  itemRadius: "md",
+  activeItemVariant: "solid",
+  activeItemColor: "primary",
+  backButtonVariant: "ghost",
+  backButtonColor: "secondary",
+  showTooltips: true,
+  tooltipPlacement: "right",
+  tooltipVariant: "solid",
+  tooltipColor: "secondary",
+} as const;

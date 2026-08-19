@@ -15,6 +15,9 @@
   "files": [
     "src"
   ],
+  "dependencies": {
+    "asheeui": "workspace:*"
+  },
   "peerDependencies": {
     "vite": "^8.2.1",
     "@asheeui/utils": "workspace:*"

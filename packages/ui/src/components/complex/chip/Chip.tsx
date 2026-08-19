@@ -1,26 +1,41 @@
 "use client";
+
 import { cn } from "@asheeui/utils";
 import { type HTMLMotionProps, motion } from "framer-motion";
-import { forwardRef, type ReactNode, useMemo } from "react";
+import {
+  forwardRef,
+  type HTMLAttributes,
+  type MouseEvent,
+  type ReactNode,
+} from "react";
 import { useAsheeConfig } from "../../../libs/context";
 import { resolveAnimation } from "../../../motion/resolve-animation";
 import type { AnimationProp } from "../../../motion/types";
 import { type Color, resolveVariantClass } from "../../../shared/variant";
 import type { Radius } from "../../../theme/token/radius/radius-config";
-import { useResponsiveVars } from "../../../theme/token/responsive/use-responsive-vars";
-import { resolveScale, resolveValue } from "../../../utils/resolve-token";
+import {
+  resolveCascade,
+  resolveClassKey,
+  resolveRadiusKey,
+} from "../../../utils/resolve-token";
 import { CloseIcon } from "../../icons/CloseIcon";
-import type {
-  ChipConfig,
-  ChipSizeKey,
-  ChipSizeScale,
-  ChipVariant,
+import {
+  FALLBACK_CHIP_CONFIG,
+  type ChipConfig,
+  type ChipSizeKey,
+  type ChipVariant,
 } from "./chip-config";
-import { defaultChipSizeScale } from "./default-chip-config";
-import { flattenChipSizeScale } from "./flatten-chip-size-scale";
+import {
+  CHIP_FONT_CLASS,
+  CHIP_GAP_CLASS,
+  CHIP_HEIGHT_CLASS,
+  CHIP_ICON_SIZE_CLASS,
+  CHIP_PADDING_CLASS,
+  CHIP_RADIUS_CLASS,
+} from "./chip-styles";
 
 export interface ChipProps
-  extends Omit<React.SelectHTMLAttributes<HTMLDivElement>, "color" | "size"> {
+  extends Omit<HTMLAttributes<HTMLDivElement>, "color" | "size"> {
   variant?: ChipVariant;
   color?: Color;
   size?: ChipSizeKey;
@@ -31,7 +46,7 @@ export interface ChipProps
   endIcon?: ReactNode;
   avatar?: ReactNode;
   dot?: boolean | string;
-  onClose?: (e: React.MouseEvent<HTMLButtonElement>) => void;
+  onClose?: (e: MouseEvent<HTMLButtonElement>) => void;
   closeIcon?: ReactNode;
   children?: ReactNode;
 }
@@ -62,53 +77,83 @@ export const Chip = forwardRef<HTMLDivElement, ChipProps>(
     const config = useAsheeConfig();
     const sectionConfig = config.components?.chip as ChipConfig | undefined;
 
-    // Design Token Resolvers
-    const rawVariant = resolveValue(
+    // ─── 1. Token Resolvers (4-Tier Cascade) ──────────────────────────────────
+
+    const rawVariant = resolveCascade<string>(
       variant,
       sectionConfig?.variant,
-      config.theme.defaultVariant ?? "bordered",
+      config.theme.defaultVariant,
+      FALLBACK_CHIP_CONFIG.variant,
     );
 
-    // Fallback 'underlined' (e.g. from global theme) to 'bordered'
+    // Fallback 'underlined' to 'bordered'
     const resolvedVariant: ChipVariant =
       rawVariant === "underlined" ? "bordered" : (rawVariant as ChipVariant);
 
-    const resolvedColor = resolveValue(
+    const resolvedColor = resolveCascade<Color>(
       color,
       sectionConfig?.color,
-      config.theme.defaultColor ?? "primary",
+      config.theme.defaultColor as Color | undefined,
+      FALLBACK_CHIP_CONFIG.color,
     );
-    const resolvedRadiusKey = typeof radius === "string" ? radius : undefined;
-    const resolvedSectionRadiusKey =
-      typeof sectionConfig?.radius === "string"
-        ? sectionConfig.radius
-        : undefined;
-    const resolvedRadius = resolveScale(
+
+    const resolvedSizeKey = resolveCascade<ChipSizeKey>(
+      size,
+      sectionConfig?.size,
+      undefined,
+      FALLBACK_CHIP_CONFIG.size,
+    );
+
+    const resolvedRadiusKey = resolveRadiusKey(
+      typeof radius === "string" ? radius : undefined,
+      typeof sectionConfig?.radius === "string" ? sectionConfig : undefined,
+      config.theme.radius?.default,
+      FALLBACK_CHIP_CONFIG.radius,
+    );
+
+    // ─── 2. Class Maps ────────────────────────────────────────────────────────
+
+    const heightClass = resolveClassKey(
+      resolvedSizeKey,
+      CHIP_HEIGHT_CLASS,
+      FALLBACK_CHIP_CONFIG.size,
+    );
+
+    const paddingClass = resolveClassKey(
+      resolvedSizeKey,
+      CHIP_PADDING_CLASS,
+      FALLBACK_CHIP_CONFIG.size,
+    );
+
+    const fontClass = resolveClassKey(
+      resolvedSizeKey,
+      CHIP_FONT_CLASS,
+      FALLBACK_CHIP_CONFIG.size,
+    );
+
+    const gapClass = resolveClassKey(
+      resolvedSizeKey,
+      CHIP_GAP_CLASS,
+      FALLBACK_CHIP_CONFIG.size,
+    );
+
+    const iconSizeClass = resolveClassKey(
+      resolvedSizeKey,
+      CHIP_ICON_SIZE_CLASS,
+      FALLBACK_CHIP_CONFIG.size,
+    );
+
+    const radiusClass = resolveClassKey(
       resolvedRadiusKey,
-      resolvedSectionRadiusKey,
-      config.theme.radius.default,
-      config.theme.radius.values,
-    );
-
-    const sizeScale = (sectionConfig?.size ??
-      defaultChipSizeScale) as ChipSizeScale;
-    const resolvedSizeKey = size ?? sizeScale.default;
-
-    const responsiveVars = useMemo(
-      () => flattenChipSizeScale(sizeScale),
-      [sizeScale],
-    );
-    useResponsiveVars(
-      "ashee-chip-tokens",
-      responsiveVars,
-      config.theme.breakpoints,
+      CHIP_RADIUS_CLASS,
+      FALLBACK_CHIP_CONFIG.radius,
     );
 
     const motionProps = resolveAnimation(
       animation ?? (sectionConfig?.animation as AnimationProp | undefined),
     );
 
-    const handleClose = (e: React.MouseEvent<HTMLButtonElement>) => {
+    const handleClose = (e: MouseEvent<HTMLButtonElement>) => {
       e.stopPropagation();
       if (isDisabled) return;
       onClose?.(e);
@@ -123,6 +168,11 @@ export const Chip = forwardRef<HTMLDivElement, ChipProps>(
           "inline-flex items-center font-medium transition-colors select-none shrink-0",
           "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2",
           resolveVariantClass(resolvedVariant, resolvedColor),
+          heightClass,
+          paddingClass,
+          fontClass,
+          gapClass,
+          radiusClass,
           isDisabled && "opacity-50 pointer-events-none cursor-not-allowed",
           onClick &&
             !isDisabled &&
@@ -130,14 +180,7 @@ export const Chip = forwardRef<HTMLDivElement, ChipProps>(
           sectionConfig?.className,
           className,
         )}
-        style={{
-          height: `var(--ashee-chip-${resolvedSizeKey}-h)`,
-          paddingInline: `var(--ashee-chip-${resolvedSizeKey}-px)`,
-          fontSize: `var(--ashee-chip-${resolvedSizeKey}-font-s)`,
-          gap: `var(--ashee-chip-${resolvedSizeKey}-gap)`,
-          borderRadius: resolvedRadius,
-          ...style,
-        }}
+        style={style}
         {...(motionProps as HTMLMotionProps<"div">)}
         {...(props as HTMLMotionProps<"div">)}>
         {/* Status Dot */}
@@ -155,11 +198,10 @@ export const Chip = forwardRef<HTMLDivElement, ChipProps>(
         {/* Avatar */}
         {avatar && (
           <span
-            className="inline-flex items-center justify-center shrink-0 overflow-hidden rounded-full"
-            style={{
-              width: `var(--ashee-chip-${resolvedSizeKey}-icon-s)`,
-              height: `var(--ashee-chip-${resolvedSizeKey}-icon-s)`,
-            }}>
+            className={cn(
+              "inline-flex items-center justify-center shrink-0 overflow-hidden rounded-full",
+              iconSizeClass,
+            )}>
             {avatar}
           </span>
         )}
@@ -167,11 +209,10 @@ export const Chip = forwardRef<HTMLDivElement, ChipProps>(
         {/* Start Icon */}
         {startIcon && !avatar && (
           <span
-            className="inline-flex items-center justify-center shrink-0"
-            style={{
-              width: `var(--ashee-chip-${resolvedSizeKey}-icon-s)`,
-              height: `var(--ashee-chip-${resolvedSizeKey}-icon-s)`,
-            }}>
+            className={cn(
+              "inline-flex items-center justify-center shrink-0",
+              iconSizeClass,
+            )}>
             {startIcon}
           </span>
         )}
@@ -182,11 +223,10 @@ export const Chip = forwardRef<HTMLDivElement, ChipProps>(
         {/* End Icon */}
         {endIcon && !onClose && (
           <span
-            className="inline-flex items-center justify-center shrink-0"
-            style={{
-              width: `var(--ashee-chip-${resolvedSizeKey}-icon-s)`,
-              height: `var(--ashee-chip-${resolvedSizeKey}-icon-s)`,
-            }}>
+            className={cn(
+              "inline-flex items-center justify-center shrink-0",
+              iconSizeClass,
+            )}>
             {endIcon}
           </span>
         )}
@@ -202,19 +242,9 @@ export const Chip = forwardRef<HTMLDivElement, ChipProps>(
               "inline-flex items-center justify-center shrink-0 rounded-full transition-opacity",
               "hover:opacity-70 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-current",
               "opacity-80 -mr-1",
-            )}
-            style={{
-              width: `var(--ashee-chip-${resolvedSizeKey}-icon-s)`,
-              height: `var(--ashee-chip-${resolvedSizeKey}-icon-s)`,
-            }}>
-            {closeIcon ?? (
-              <CloseIcon
-                style={{
-                  width: "100%",
-                  height: "100%",
-                }}
-              />
-            )}
+              iconSizeClass,
+            )}>
+            {closeIcon ?? <CloseIcon className="w-full h-full" />}
           </button>
         )}
       </motion.div>

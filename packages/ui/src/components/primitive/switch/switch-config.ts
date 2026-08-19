@@ -1,6 +1,6 @@
 import type { AnimationProp } from "../../../motion/types";
+import type { Color } from "../../../shared/variant";
 import type { Radius } from "../../../theme/token/radius/radius-config";
-import type { ResponsiveValue } from "../../../theme/token/responsive/responsive";
 import type {
   FieldConfig,
   FieldSizeKey,
@@ -9,22 +9,25 @@ import type {
 
 export type SwitchSizeKey = FieldSizeKey;
 
-export interface SwitchSizeValue {
-  trackWidth: ResponsiveValue<string>;
-  trackHeight: ResponsiveValue<string>;
-  thumbSize: ResponsiveValue<string>;
-  thumbTranslate: ResponsiveValue<string>;
-  fontSize: ResponsiveValue<string>;
-}
-
-export interface SwitchSizeScale {
-  default: SwitchSizeKey;
-  values: Record<SwitchSizeKey, SwitchSizeValue>;
-}
-
 export interface SwitchConfig extends Omit<FieldConfig, "size" | "variant"> {
-  size?: SwitchSizeScale;
+  size?: SwitchSizeKey;
+  color?: Color;
   radius?: keyof Radius;
   animation?: AnimationProp<InputAnimationPreset>;
   className?: string;
 }
+
+export const defaultSwitchConfig: SwitchConfig = {
+  size: "md",
+  labelAlign: "left",
+  animation: "none",
+  radius: "full",
+};
+
+export const FALLBACK_SWITCH_CONFIG = {
+  size: "md",
+  radius: "full",
+  color: "primary",
+  status: "default",
+  labelAlign: "left",
+} as const;

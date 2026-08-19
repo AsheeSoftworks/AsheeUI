@@ -1,82 +1,30 @@
 "use client";
+
 import { cn } from "@asheeui/utils";
-import {
-  type HTMLAttributes,
-  type ReactNode,
-  useCallback,
-  useMemo,
-} from "react";
+import { type HTMLAttributes, type ReactNode, useCallback } from "react";
 import { useAsheeConfig } from "../../../libs/context";
 import type { Color } from "../../../shared/variant";
 import type { Radius } from "../../../theme/token/radius/radius-config";
-import { useResponsiveVars } from "../../../theme/token/responsive/use-responsive-vars";
-import { resolveScale, resolveValue } from "../../../utils/resolve-token";
-import { defaultTableSizeScale } from "./default-table-config";
-import { flattenTableSizeScale } from "./flatten-table-size-scale";
-import type {
-  ColumnDef,
-  TableConfig,
-  TableSizeKey,
-  TableSizeScale,
-  TableVariant,
+import {
+  resolveCascade,
+  resolveClassKey,
+  resolveRadiusKey,
+} from "../../../utils/resolve-token";
+import {
+  FALLBACK_TABLE_CONFIG,
+  type ColumnDef,
+  type TableConfig,
+  type TableSizeKey,
+  type TableVariant,
 } from "./table-config";
-
-// ─── Color Token Utility Maps ─────────────────────────────────────────────────
-
-const TABLE_COLOR_STYLES: Record<
-  Color,
-  { selected: string; hover: string; focus: string }
-> = {
-  primary: {
-    selected:
-      "bg-primary text-secondary font-medium hover:bg-primary/90 hover:text-secondary",
-    hover: "hover:bg-primary/10 hover:text-foreground",
-    focus:
-      "focus-visible:bg-primary/15 focus-visible:ring-1 focus-visible:ring-primary focus-visible:ring-inset",
-  },
-  secondary: {
-    selected:
-      "bg-secondary text-foreground font-medium hover:bg-secondary/90 hover:text-foreground",
-    hover: "hover:bg-secondary/10 hover:text-foreground",
-    focus:
-      "focus-visible:bg-secondary/15 focus-visible:ring-1 focus-visible:ring-secondary focus-visible:ring-inset",
-  },
-  danger: {
-    selected:
-      "bg-danger text-secondary font-medium hover:bg-danger/90 hover:text-secondary",
-    hover: "hover:bg-danger/10 hover:text-foreground",
-    focus:
-      "focus-visible:bg-danger/15 focus-visible:ring-1 focus-visible:ring-danger focus-visible:ring-inset",
-  },
-  warning: {
-    selected:
-      "bg-warning text-secondary font-medium hover:bg-warning/90 hover:text-secondary",
-    hover: "hover:bg-warning/10 hover:text-foreground",
-    focus:
-      "focus-visible:bg-warning/15 focus-visible:ring-1 focus-visible:ring-warning focus-visible:ring-inset",
-  },
-  success: {
-    selected:
-      "bg-success text-secondary font-medium hover:bg-success/90 hover:text-secondary",
-    hover: "hover:bg-success/10 hover:text-foreground",
-    focus:
-      "focus-visible:bg-success/15 focus-visible:ring-1 focus-visible:ring-success focus-visible:ring-inset",
-  },
-  default: {
-    selected: "bg-secondary text-foreground font-medium hover:bg-secondary/80",
-    hover: "hover:bg-foreground/10 hover:text-foreground",
-    focus:
-      "focus-visible:bg-foreground/10 focus-visible:ring-1 focus-visible:ring-border focus-visible:ring-inset",
-  },
-  none: {
-    selected: "bg-muted text-foreground font-medium hover:bg-muted/80",
-    hover: "hover:bg-muted/40 hover:text-foreground",
-    focus:
-      "focus-visible:bg-muted/50 focus-visible:ring-1 focus-visible:ring-ring focus-visible:ring-inset",
-  },
-};
-
-// ─── Props Interface ──────────────────────────────────────────────────────────
+import {
+  TABLE_CELL_PADDING_X_CLASS,
+  TABLE_CELL_PADDING_Y_CLASS,
+  TABLE_COLOR_STYLES,
+  TABLE_FONT_CLASS,
+  TABLE_HEADER_FONT_CLASS,
+  TABLE_RADIUS_CLASS,
+} from "./table-styles";
 
 export interface TableProps<TData>
   extends Omit<HTMLAttributes<HTMLDivElement>, "onClick"> {
@@ -129,8 +77,6 @@ export interface TableProps<TData>
   cellClassName?: string;
 }
 
-// ─── Component Implementation ─────────────────────────────────────────────────
-
 export function Table<TData>({
   data = [],
   columns = [],
@@ -155,46 +101,70 @@ export function Table<TData>({
   const config = useAsheeConfig();
   const sectionConfig = config.components?.table as TableConfig | undefined;
 
-  // Design Token Resolvers
-  const sizeScale = (sectionConfig?.size ??
-    defaultTableSizeScale) as TableSizeScale;
-  const resolvedSizeKey = size ?? sizeScale.default;
-  const responsiveVars = useMemo(
-    () => flattenTableSizeScale(sizeScale),
-    [sizeScale],
-  );
-  useResponsiveVars(
-    "ashee-table-tokens",
-    responsiveVars,
-    config.theme.breakpoints,
+  // ─── 1. Token Resolvers (4-Tier Cascade) ──────────────────────────────────
+
+  const resolvedSizeKey = resolveCascade<TableSizeKey>(
+    size,
+    sectionConfig?.size,
+    undefined,
+    FALLBACK_TABLE_CONFIG.size,
   );
 
-  const variant = resolveValue<TableVariant>(
+  const resolvedVariant = resolveCascade<TableVariant>(
     variantProp,
     sectionConfig?.variant,
-    "default",
+    undefined,
+    FALLBACK_TABLE_CONFIG.variant,
   );
 
-  const resolvedColor = resolveValue<Color>(
+  const resolvedColor = resolveCascade<Color>(
     colorProp,
     sectionConfig?.color,
-    config.theme.defaultColor ?? "primary",
+    config.theme.defaultColor as Color | undefined,
+    FALLBACK_TABLE_CONFIG.color,
+  );
+
+  const resolvedRadiusKey = resolveRadiusKey(
+    radius,
+    sectionConfig,
+    config.theme.radius?.default,
+    FALLBACK_TABLE_CONFIG.radius,
+  );
+
+  // ─── 2. Class Maps ────────────────────────────────────────────────────────
+
+  const paddingYClass = resolveClassKey(
+    resolvedSizeKey,
+    TABLE_CELL_PADDING_Y_CLASS,
+    FALLBACK_TABLE_CONFIG.size,
+  );
+
+  const paddingXClass = resolveClassKey(
+    resolvedSizeKey,
+    TABLE_CELL_PADDING_X_CLASS,
+    FALLBACK_TABLE_CONFIG.size,
+  );
+
+  const fontClass = resolveClassKey(
+    resolvedSizeKey,
+    TABLE_FONT_CLASS,
+    FALLBACK_TABLE_CONFIG.size,
+  );
+
+  const headerFontClass = resolveClassKey(
+    resolvedSizeKey,
+    TABLE_HEADER_FONT_CLASS,
+    FALLBACK_TABLE_CONFIG.size,
+  );
+
+  const radiusClass = resolveClassKey(
+    resolvedRadiusKey,
+    TABLE_RADIUS_CLASS,
+    FALLBACK_TABLE_CONFIG.radius,
   );
 
   const activeColorStyles =
     TABLE_COLOR_STYLES[resolvedColor] ?? TABLE_COLOR_STYLES.primary;
-
-  const resolvedRadiusKey = typeof radius === "string" ? radius : undefined;
-  const resolvedSectionRadiusKey =
-    typeof sectionConfig?.radius === "string"
-      ? sectionConfig.radius
-      : undefined;
-  const resolvedRadius = resolveScale(
-    resolvedRadiusKey,
-    resolvedSectionRadiusKey,
-    config.theme.radius.default,
-    config.theme.radius.values,
-  );
 
   const getRowKey = useCallback(
     (row: TData, index: number): string | number => {
@@ -218,14 +188,13 @@ export function Table<TData>({
     <div
       className={cn(
         "w-full h-full overflow-auto scrollable bg-background",
-        variant === "flush" ? "border-0 shadow-none" : "border border-border",
+        resolvedVariant === "flush"
+          ? "border-0 shadow-none rounded-none"
+          : cn("border border-border", radiusClass),
         sectionConfig?.className,
         className,
       )}
-      style={{
-        borderRadius: variant === "flush" ? 0 : resolvedRadius,
-        ...style,
-      }}
+      style={style}
       {...props}>
       <table className="w-full border-collapse text-left caption-bottom">
         {/* Table Header */}
@@ -249,17 +218,15 @@ export function Table<TData>({
                   scope="col"
                   className={cn(
                     "font-medium uppercase tracking-wider text-left align-middle truncate min-w-0",
-                    variant === "bordered" &&
+                    paddingYClass,
+                    paddingXClass,
+                    headerFontClass,
+                    resolvedVariant === "bordered" &&
                       colIdx < columns.length - 1 &&
                       "border-r border-border",
                     sectionConfig?.cellClassName,
                     cellClassName,
-                  )}
-                  style={{
-                    paddingBlock: `var(--ashee-table-${resolvedSizeKey}-py)`,
-                    paddingInline: `var(--ashee-table-${resolvedSizeKey}-px)`,
-                    fontSize: `var(--ashee-table-${resolvedSizeKey}-header-font-s)`,
-                  }}>
+                  )}>
                   {column.header}
                 </th>
               );
@@ -281,7 +248,8 @@ export function Table<TData>({
             data.map((row, rowIndex) => {
               const rowKey = getRowKey(row, rowIndex);
               const isSelected = rowKey === selectedRowKey;
-              const isStriped = variant === "striped" && rowIndex % 2 === 1;
+              const isStriped =
+                resolvedVariant === "striped" && rowIndex % 2 === 1;
 
               return (
                 <tr
@@ -306,7 +274,8 @@ export function Table<TData>({
                   }}
                   className={cn(
                     "border-b border-border/60 transition-colors outline-none align-middle",
-                    variant === "flush" && "last:border-b-0",
+                    fontClass,
+                    resolvedVariant === "flush" && "last:border-b-0",
                     isStriped && "bg-secondary",
                     isInteractive &&
                       cn(
@@ -317,10 +286,7 @@ export function Table<TData>({
                     isSelected && activeColorStyles.selected,
                     sectionConfig?.rowClassName,
                     rowClassName,
-                  )}
-                  style={{
-                    fontSize: `var(--ashee-table-${resolvedSizeKey}-font-s)`,
-                  }}>
+                  )}>
                   {columns.map((column, colIdx) => {
                     const colKey =
                       column.id ??
@@ -333,16 +299,14 @@ export function Table<TData>({
                         key={colKey}
                         className={cn(
                           "truncate min-w-0 align-middle",
-                          variant === "bordered" &&
+                          paddingYClass,
+                          paddingXClass,
+                          resolvedVariant === "bordered" &&
                             colIdx < columns.length - 1 &&
                             "border-r border-border",
                           sectionConfig?.cellClassName,
                           cellClassName,
-                        )}
-                        style={{
-                          paddingBlock: `var(--ashee-table-${resolvedSizeKey}-py)`,
-                          paddingInline: `var(--ashee-table-${resolvedSizeKey}-px)`,
-                        }}>
+                        )}>
                         {column.cell(row)}
                       </td>
                     );

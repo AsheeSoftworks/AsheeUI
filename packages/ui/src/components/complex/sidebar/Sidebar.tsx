@@ -1,4 +1,5 @@
 "use client";
+
 import { cn } from "@asheeui/utils";
 import { type HTMLMotionProps, motion } from "framer-motion";
 import { type ReactNode, useCallback, useMemo } from "react";
@@ -7,21 +8,30 @@ import { resolveAnimation } from "../../../motion/resolve-animation";
 import type { AnimationProp } from "../../../motion/types";
 import type { Color, Variant } from "../../../shared/variant";
 import type { Radius } from "../../../theme/token/radius/radius-config";
-import { useResponsiveVars } from "../../../theme/token/responsive/use-responsive-vars";
-import { resolveScale, resolveValue } from "../../../utils/resolve-token";
+import {
+  resolveCascade,
+  resolveClassKey,
+  resolveRadiusKey,
+} from "../../../utils/resolve-token";
 import { ArrowLeftIcon } from "../../icons/ArrowLeftIcon";
 import { Button } from "../../primitive/button/Button";
 import { Tooltip } from "../tooltip/Tooltip";
 import type { TooltipPlacement } from "../tooltip/tooltip-config";
-import { defaultSidebarSizeScale } from "./default-sidebar-config";
-import { flattenSidebarSizeScale } from "./flatten-sidebar-size-scale";
+import { FALLBACK_SIDEBAR_CONFIG } from "./sidebar-config";
 import type {
   SidebarConfig,
   SidebarItem,
   SidebarSizeKey,
-  SidebarSizeScale,
   SidebarVariant,
 } from "./sidebar-config";
+import {
+  SIDEBAR_COLLAPSED_WIDTH_CLASS,
+  SIDEBAR_EXPANDED_WIDTH_CLASS,
+  SIDEBAR_HEADER_CLASS,
+  SIDEBAR_ITEM_CLASS,
+  SIDEBAR_RADIUS_CLASS,
+  SIDEBAR_VARIANT_CLASS,
+} from "./sidebar-styles";
 
 // ─── Props Interface ──────────────────────────────────────────────────────────
 
@@ -130,80 +140,81 @@ export function Sidebar<T = string>({
   const config = useAsheeConfig();
   const sectionConfig = config.components?.sidebar as SidebarConfig | undefined;
 
-  // Design Token Resolvers
-  const sizeScale = (sectionConfig?.size ??
-    defaultSidebarSizeScale) as SidebarSizeScale;
-  const resolvedSizeKey = size ?? sizeScale.default;
-  const responsiveVars = useMemo(
-    () => flattenSidebarSizeScale(sizeScale),
-    [sizeScale],
-  );
-  useResponsiveVars(
-    "ashee-sidebar-tokens",
-    responsiveVars,
-    config.theme.breakpoints,
+  // 1. Size & Variant Cascading
+  const resolvedSizeKey = resolveCascade<SidebarSizeKey>(
+    size,
+    sectionConfig?.size,
+    undefined,
+    FALLBACK_SIDEBAR_CONFIG.size,
   );
 
-  const variant = resolveValue<SidebarVariant>(
+  const resolvedVariant = resolveCascade<SidebarVariant>(
     variantProp,
     sectionConfig?.variant,
-    "default",
+    undefined,
+    FALLBACK_SIDEBAR_CONFIG.variant,
   );
 
-  // Radius Resolvers
-  const resolvedRadiusKey = typeof radius === "string" ? radius : undefined;
-  const resolvedSectionRadiusKey =
-    typeof sectionConfig?.radius === "string"
-      ? sectionConfig.radius
-      : undefined;
-  const resolvedRadius = resolveScale(
-    resolvedRadiusKey,
-    resolvedSectionRadiusKey,
-    config.theme.radius.default,
-    config.theme.radius.values,
+  // 2. Radius Cascading
+  const resolvedRadiusKey = resolveRadiusKey(
+    typeof radius === "string" ? radius : undefined,
+    typeof sectionConfig?.radius === "string" ? sectionConfig : undefined,
+    config.theme.radius?.default,
+    FALLBACK_SIDEBAR_CONFIG.radius,
   );
 
-  const resolvedItemRadiusKey = (itemRadius ??
-    sectionConfig?.itemRadius ??
-    "md") as keyof Radius;
+  const resolvedItemRadiusKey = resolveRadiusKey(
+    typeof itemRadius === "string" ? itemRadius : undefined,
+    typeof sectionConfig?.itemRadius === "string" ? sectionConfig : undefined,
+    config.theme.radius?.default,
+    FALLBACK_SIDEBAR_CONFIG.itemRadius,
+  );
 
-  const resolvedActiveItemVariant = resolveValue<Variant>(
+  // 3. Item & Button Tokens
+  const resolvedActiveItemVariant = resolveCascade<Variant>(
     activeItemVariant,
     sectionConfig?.activeItemVariant,
-    config.theme.defaultVariant ?? "solid",
+    config.theme.defaultVariant,
+    FALLBACK_SIDEBAR_CONFIG.activeItemVariant,
   );
-  const resolvedActiveItemColor = resolveValue<Color>(
+
+  const resolvedActiveItemColor = resolveCascade<Color>(
     activeItemColor,
     sectionConfig?.activeItemColor,
-    config.theme.defaultColor ?? "primary",
+    config.theme.defaultColor,
+    FALLBACK_SIDEBAR_CONFIG.activeItemColor,
   );
 
-  const resolvedBackButtonVariant = resolveValue<Variant>(
+  const resolvedBackButtonVariant = resolveCascade<Variant>(
     backButtonVariant,
     sectionConfig?.backButtonVariant,
-    "ghost",
+    undefined,
+    FALLBACK_SIDEBAR_CONFIG.backButtonVariant,
   );
-  const resolvedBackButtonColor = resolveValue<Color>(
+
+  const resolvedBackButtonColor = resolveCascade<Color>(
     backButtonColor,
     sectionConfig?.backButtonColor,
-    "secondary",
+    undefined,
+    FALLBACK_SIDEBAR_CONFIG.backButtonColor,
   );
 
-  // Tooltip Resolvers
-  const resolvedShowTooltips = resolveValue<boolean>(
+  // 4. Tooltip Resolvers
+  const resolvedShowTooltips = resolveCascade<boolean>(
     showTooltips,
     sectionConfig?.showTooltips,
-    true,
-  );
-  const resolvedTooltipPlacement = resolveValue<TooltipPlacement>(
-    tooltipPlacement,
-    sectionConfig?.tooltipPlacement,
-    "top",
+    undefined,
+    FALLBACK_SIDEBAR_CONFIG.showTooltips,
   );
 
-  const motionProps = resolveAnimation(
-    animation ?? (sectionConfig?.animation as AnimationProp | undefined),
+  const resolvedTooltipPlacement = resolveCascade<TooltipPlacement>(
+    tooltipPlacement,
+    sectionConfig?.tooltipPlacement,
+    undefined,
+    FALLBACK_SIDEBAR_CONFIG.tooltipPlacement,
   );
+
+  const motionProps = resolveAnimation(animation ?? sectionConfig?.animation);
 
   // Role Filtering
   const filteredItems = useMemo(() => {
@@ -222,38 +233,36 @@ export function Sidebar<T = string>({
     [onSelect],
   );
 
+  // Layout Class Lookup
+  const widthClass = isCollapsed
+    ? SIDEBAR_COLLAPSED_WIDTH_CLASS[resolvedSizeKey]
+    : SIDEBAR_EXPANDED_WIDTH_CLASS[resolvedSizeKey];
+
   return (
     <motion.aside
       role="navigation"
       aria-expanded={!isCollapsed}
       className={cn(
-        "h-full flex flex-col bg-background/80 backdrop-blur-xs border-r border-border transition-all duration-200 select-none overflow-hidden",
-        variant === "bordered" && "border-2 border-border",
-        variant === "floating" &&
-          "m-2 rounded-xl border border-border shadow-md",
-        variant === "flush" && "border-none",
-        sectionConfig?.className,
+        "h-full flex flex-col transition-all duration-200 select-none shrink-0",
+        widthClass,
+        SIDEBAR_VARIANT_CLASS[resolvedVariant],
+        resolveClassKey(
+          resolvedRadiusKey,
+          SIDEBAR_RADIUS_CLASS,
+          FALLBACK_SIDEBAR_CONFIG.radius,
+        ),
         className,
       )}
-      style={{
-        width: isCollapsed
-          ? `var(--ashee-sidebar-${resolvedSizeKey}-collapsed-w)`
-          : `var(--ashee-sidebar-${resolvedSizeKey}-expanded-w)`,
-        borderRadius: resolvedRadius,
-        ...style,
-      }}
+      style={style}
       {...props}>
       {/* Sidebar Header */}
       {(onBack || title) && (
         <div
           className={cn(
-            "flex items-center gap-3 border-b border-border border-dashed px-3 shrink-0",
-            sectionConfig?.headerClassName,
+            "flex items-center gap-3 border-b border-border border-dashed shrink-0",
+            SIDEBAR_HEADER_CLASS[resolvedSizeKey],
             headerClassName,
-          )}
-          style={{
-            height: `var(--ashee-sidebar-${resolvedSizeKey}-header-h)`,
-          }}>
+          )}>
           {onBack && (
             <Button
               icon
@@ -264,17 +273,14 @@ export function Sidebar<T = string>({
               radius={resolvedItemRadiusKey}
               onClick={onBack}
               className="shrink-0">
-              {backIcon ?? <ArrowLeftIcon className="w-5 h-5" />}
+              {backIcon ?? <ArrowLeftIcon className="size-4" />}
             </Button>
           )}
 
           {!isCollapsed && title && (
             <motion.span
               {...(motionProps as HTMLMotionProps<"span">)}
-              className="font-semibold text-foreground truncate tracking-tight"
-              style={{
-                fontSize: `var(--ashee-sidebar-${resolvedSizeKey}-font-s)`,
-              }}>
+              className="font-semibold text-foreground truncate tracking-tight">
               {title}
             </motion.span>
           )}
@@ -284,13 +290,9 @@ export function Sidebar<T = string>({
       {/* Navigation Body */}
       <nav
         className={cn(
-          "flex-1 overflow-y-auto py-3 flex flex-col gap-1 scrollable",
-          sectionConfig?.bodyClassName,
+          "flex-1 overflow-y-auto py-3 px-2 flex flex-col gap-1",
           bodyClassName,
-        )}
-        style={{
-          paddingInline: `var(--ashee-sidebar-${resolvedSizeKey}-px)`,
-        }}>
+        )}>
         {filteredItems.map((item) => {
           const isActive = item.id === activeKey;
 
@@ -306,17 +308,10 @@ export function Sidebar<T = string>({
               radius={resolvedItemRadiusKey}
               className={cn(
                 "w-full flex items-center gap-3 transition-all truncate",
+                SIDEBAR_ITEM_CLASS[resolvedSizeKey],
                 isCollapsed ? "justify-center px-0" : "justify-start",
-                sectionConfig?.itemClassName,
                 itemClassName,
-              )}
-              style={{
-                height: `var(--ashee-sidebar-${resolvedSizeKey}-item-h)`,
-                fontSize: `var(--ashee-sidebar-${resolvedSizeKey}-font-s)`,
-                paddingInline: isCollapsed
-                  ? "0"
-                  : `var(--ashee-sidebar-${resolvedSizeKey}-px)`,
-              }}>
+              )}>
               {item.icon && (
                 <span className="shrink-0 flex items-center justify-center">
                   {item.icon}
@@ -339,8 +334,14 @@ export function Sidebar<T = string>({
                 key={String(item.id)}
                 content={item.label}
                 placement={resolvedTooltipPlacement}
-                variant={sectionConfig?.tooltipVariant ?? "solid"}
-                color={sectionConfig?.tooltipColor ?? "secondary"}
+                variant={
+                  sectionConfig?.tooltipVariant ??
+                  FALLBACK_SIDEBAR_CONFIG.tooltipVariant
+                }
+                color={
+                  sectionConfig?.tooltipColor ??
+                  FALLBACK_SIDEBAR_CONFIG.tooltipColor
+                }
                 radius={resolvedItemRadiusKey}>
                 {itemButton}
               </Tooltip>

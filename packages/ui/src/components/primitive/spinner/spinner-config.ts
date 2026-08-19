@@ -2,14 +2,19 @@ import type { Color } from "../../../shared/variant";
 
 export type SpinnerSizeKey = "sm" | "md" | "lg";
 
-export interface SpinnerSizeScale {
-  default: SpinnerSizeKey;
-  values: Record<SpinnerSizeKey, string>; // raw CSS dimension, e.g. "1rem"
-}
-
 export interface SpinnerConfig {
-  size?: SpinnerSizeScale;
-  color?: Color; // undefined = inherit currentColor from context
-  speed?: string; // animation-duration, e.g. "0.75s"
+  size?: SpinnerSizeKey;
+  color?: Color;
+  speed?: string;
   className?: string;
 }
+
+export const defaultSpinnerConfig: SpinnerConfig = {
+  size: "md",
+  speed: "0.75s",
+};
+
+export const FALLBACK_SPINNER_CONFIG = {
+  size: "md" as SpinnerSizeKey,
+  speed: "0.75s",
+} as const;

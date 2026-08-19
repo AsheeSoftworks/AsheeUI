@@ -1,10 +1,3 @@
-export { applyThemeConfig } from "../../ui/src/libs/css-vars";
-export {
-  applyDesignTokens,
-  buildDesignTokensCss,
-  DESIGN_TOKENS_STYLE_ID,
-} from "../../ui/src/libs/design-tokens";
-export { useTheme } from "../../ui/src/libs/useTheme";
 export type {
   AsheeThemeRegistry,
   ColorConfig,
@@ -23,14 +16,6 @@ export type {
   Radius,
   RadiusConfig,
 } from "../../ui/src/theme/token/radius/radius-config";
-export type { BreakpointConfig } from "../../ui/src/theme/token/responsive/breakpoint-config";
-export { defaultBreakpointConfig } from "../../ui/src/theme/token/responsive/default-breakpoint-config";
-export { injectResponsiveVars } from "../../ui/src/theme/token/responsive/inject-responsive-vars";
-export type {
-  BreakpointKey,
-  ResponsiveValue,
-} from "../../ui/src/theme/token/responsive/responsive";
-export { useResponsiveVars } from "../../ui/src/theme/token/responsive/use-responsive-vars";
 export { defaultSpacingConfig } from "../../ui/src/theme/token/spacing/default-spacing-config";
 export type {
   Spacing,
@@ -80,7 +65,6 @@ export type {
   DrawerConfig,
   DrawerPlacement,
   DrawerSizeKey,
-  DrawerSizeScale,
 } from "./components/complex/drawer/drawer-config";
 export {
   defaultKeyboardLayouts,
@@ -123,8 +107,6 @@ export type {
   MultiSelectConfig,
   MultiSelectOption,
   MultiSelectSizeKey,
-  MultiSelectSizeScale,
-  MultiSelectSizeValue,
 } from "./components/complex/multi-select/multi-select-config";
 export {
   ResizableScreen,
@@ -163,7 +145,6 @@ export type {
   ToastItemData,
   ToastPlacement,
   ToastType,
-  ToastVariant,
 } from "./components/complex/toast/toast-config";
 export {
   type ToastContextType,
@@ -236,8 +217,8 @@ export {
   TextArea,
   type TextAreaProps,
 } from "./components/primitive/textarea/Textarea";
-export type { Config, ExternalConfig } from "./config/config";
-export { defineConfig } from "./config/define-config";
-export { useAsheeConfig } from "./libs/context";
-export { themeController } from "./libs/controller";
-export { resolveRadius } from "./utils/resolve-token";
+export {
+  THEME_STORAGE_KEY,
+  themeController,
+} from "./theme/controller/controller";
+export { useTheme } from "./theme/controller/useTheme";

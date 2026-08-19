@@ -3,30 +3,43 @@
 import { cn } from "@asheeui/utils";
 import { type HTMLMotionProps, motion } from "framer-motion";
 import { useMemo } from "react";
+import { useAsheeConfig } from "../../../libs/context";
 import {
   type Color,
   resolveVariantClass,
   type Variant,
 } from "../../../shared/variant";
+import type { Radius } from "../../../theme/token/radius/radius-config";
+import {
+  resolveCascade,
+  resolveClassKey,
+  resolveRadiusKey,
+} from "../../../utils/resolve-token";
 import { CheckIcon } from "../../icons/CheckIcon";
 import { CloseIcon } from "../../icons/CloseIcon";
 import { ErrorIcon } from "../../icons/ErrorIcon";
 import { InfoIcon } from "../../icons/InfoIcon";
 import { WarningIcon } from "../../icons/WarningIcon";
-import type {
-  ToastItemData,
-  ToastPlacement,
-  ToastSizeKey,
-  ToastType,
+import {
+  FALLBACK_TOAST_CONFIG,
+  type ToastConfig,
+  type ToastItemData,
+  type ToastPlacement,
+  type ToastSizeKey,
+  type ToastType,
 } from "./toast-config";
 import { getToastMotionVariants } from "./toast-motion";
+import {
+  TOAST_FONT_CLASS,
+  TOAST_PADDING_CLASS,
+  TOAST_RADIUS_CLASS,
+  TOAST_TITLE_FONT_CLASS,
+  TOAST_WIDTH_CLASS,
+} from "./toast-styles";
 import { usePausableTimeout } from "./use-pausable-timeout";
 
 // ─── Color Resolver ─────────────────────────────────────────────────────────
 
-/**
- * Maps toast status state to design system Color tokens used by Button.
- */
 function mapTypeToColor(type: ToastType = "info"): Color {
   switch (type) {
     case "success":
@@ -67,11 +80,12 @@ function getDefaultIcon(type: ToastType = "info", isSolid = false) {
 
 export interface ToastItemProps extends ToastItemData {
   onDismiss: (id: string) => void;
-  placement: ToastPlacement;
-  sizeKey: ToastSizeKey;
+  placement?: ToastPlacement;
+  sizeKey?: ToastSizeKey;
+  size?: ToastSizeKey;
   variant?: Variant;
   color?: Color;
-  radiusStyle?: string;
+  radius?: keyof Radius;
   className?: string;
 }
 
@@ -87,20 +101,84 @@ export function ToastItem({
   onDismiss,
   placement,
   sizeKey,
-  variant = "solid",
+  size,
+  variant,
   color,
-  radiusStyle,
+  radius,
   className,
 }: ToastItemProps) {
+  const config = useAsheeConfig();
+  const sectionConfig = config.components?.toast as ToastConfig | undefined;
   const { pause, resume } = usePausableTimeout(() => onDismiss(id), timeout);
 
-  // Map state type to Button color token unless explicitly overridden
+  // ─── 1. Token Resolvers (4-Tier Cascade) ──────────────────────────────────
+
+  const resolvedSizeKey = resolveCascade<ToastSizeKey>(
+    sizeKey ?? size,
+    sectionConfig?.size,
+    undefined,
+    FALLBACK_TOAST_CONFIG.size,
+  );
+
+  const resolvedPlacement = resolveCascade<ToastPlacement>(
+    placement,
+    sectionConfig?.placement,
+    undefined,
+    FALLBACK_TOAST_CONFIG.placement,
+  );
+
+  const resolvedVariant = resolveCascade<Variant>(
+    variant,
+    sectionConfig?.variant,
+    config.theme.defaultVariant,
+    FALLBACK_TOAST_CONFIG.variant,
+  );
+
+  const resolvedRadiusKey = resolveRadiusKey(
+    radius,
+    sectionConfig,
+    config.theme.radius?.default,
+    FALLBACK_TOAST_CONFIG.radius,
+  );
+
   const resolvedColor = color ?? mapTypeToColor(type);
-  const isSolid = variant === "solid";
+  const isSolid = resolvedVariant === "solid";
+
+  // ─── 2. Class Maps ────────────────────────────────────────────────────────
+
+  const widthClass = resolveClassKey(
+    resolvedSizeKey,
+    TOAST_WIDTH_CLASS,
+    FALLBACK_TOAST_CONFIG.size,
+  );
+
+  const paddingClass = resolveClassKey(
+    resolvedSizeKey,
+    TOAST_PADDING_CLASS,
+    FALLBACK_TOAST_CONFIG.size,
+  );
+
+  const fontClass = resolveClassKey(
+    resolvedSizeKey,
+    TOAST_FONT_CLASS,
+    FALLBACK_TOAST_CONFIG.size,
+  );
+
+  const titleFontClass = resolveClassKey(
+    resolvedSizeKey,
+    TOAST_TITLE_FONT_CLASS,
+    FALLBACK_TOAST_CONFIG.size,
+  );
+
+  const radiusClass = resolveClassKey(
+    resolvedRadiusKey,
+    TOAST_RADIUS_CLASS,
+    FALLBACK_TOAST_CONFIG.radius,
+  );
 
   const motionVariants = useMemo(
-    () => getToastMotionVariants(placement),
-    [placement],
+    () => getToastMotionVariants(resolvedPlacement),
+    [resolvedPlacement],
   );
 
   return (
@@ -110,14 +188,13 @@ export function ToastItem({
       transition={{ type: "spring", stiffness: 400, damping: 30 }}
       onMouseEnter={pause}
       onMouseLeave={resume}
-      style={{
-        width: `var(--ashee-toast-${sizeKey}-width, 24rem)`,
-        padding: `var(--ashee-toast-${sizeKey}-padding, 1rem)`,
-        borderRadius: radiusStyle,
-      }}
       className={cn(
         "pointer-events-auto relative flex gap-3 items-start shadow-lg border backdrop-blur-md select-none overflow-hidden transition-colors",
-        resolveVariantClass(variant, resolvedColor),
+        widthClass,
+        paddingClass,
+        radiusClass,
+        resolveVariantClass(resolvedVariant, resolvedColor),
+        sectionConfig?.itemClassName,
         className,
       )}>
       {/* Toast Icon */}
@@ -129,14 +206,18 @@ export function ToastItem({
       <div className="flex-1 min-w-0 flex flex-col gap-0.5">
         {title && (
           <span
-            className="font-semibold leading-tight truncate text-current"
-            style={{ fontSize: `var(--ashee-toast-${sizeKey}-title-font-s)` }}>
+            className={cn(
+              "leading-tight truncate text-current",
+              titleFontClass,
+            )}>
             {title}
           </span>
         )}
         <div
-          className="leading-snug wrap-break-word opacity-90 text-current"
-          style={{ fontSize: `var(--ashee-toast-${sizeKey}-font-s)` }}>
+          className={cn(
+            "leading-snug wrap-break-word opacity-90 text-current",
+            fontClass,
+          )}>
           {message}
         </div>
         {action && <div className="mt-2 flex items-center gap-2">{action}</div>}
@@ -155,3 +236,5 @@ export function ToastItem({
     </motion.div>
   );
 }
+
+ToastItem.displayName = "ToastItem";

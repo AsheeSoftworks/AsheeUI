@@ -1,4 +1,5 @@
 "use client";
+
 import { cn } from "@asheeui/utils";
 import {
   arrow,
@@ -21,7 +22,6 @@ import {
   isValidElement,
   type ReactElement,
   type ReactNode,
-  useMemo,
   useRef,
   useState,
 } from "react";
@@ -35,15 +35,24 @@ import {
 } from "../../../shared/variant";
 import type { ShadowConfig } from "../../../theme/shadow/shadow-config";
 import type { Radius } from "../../../theme/token/radius/radius-config";
-import { useResponsiveVars } from "../../../theme/token/responsive/use-responsive-vars";
-import { resolveScale, resolveValue } from "../../../utils/resolve-token";
-import { defaultTooltipSizeScale } from "./default-tooltip-config";
-import { flattenTooltipSizeScale } from "./flatten-tooltip-size-scale";
-import type {
-  TooltipConfig,
-  TooltipPlacement,
-  TooltipSizeKey,
+import {
+  resolveCascade,
+  resolveClassKey,
+  resolveRadiusKey,
+} from "../../../utils/resolve-token";
+import {
+  FALLBACK_TOOLTIP_CONFIG,
+  type TooltipConfig,
+  type TooltipPlacement,
+  type TooltipSizeKey,
 } from "./tooltip-config";
+import {
+  TOOLTIP_FONT_CLASS,
+  TOOLTIP_PADDING_X_CLASS,
+  TOOLTIP_PADDING_Y_CLASS,
+  TOOLTIP_RADIUS_CLASS,
+  TOOLTIP_SHADOW_CLASS,
+} from "./tooltip-styles";
 
 export interface TooltipProps {
   content: ReactNode;
@@ -84,66 +93,110 @@ export function Tooltip({
 
   const [isOpen, setIsOpen] = useState(false);
 
-  // Responsive Size Scale Engine
-  const sizeScale = sectionConfig?.size ?? defaultTooltipSizeScale;
-  const resolvedSizeKey = size ?? sizeScale.default;
-  const responsiveVars = useMemo(
-    () => flattenTooltipSizeScale(sizeScale),
-    [sizeScale],
-  );
-  useResponsiveVars(
-    "ashee-tooltip-tokens",
-    responsiveVars,
-    config.theme.breakpoints,
+  // ─── 1. Token Resolvers (4-Tier Cascade) ──────────────────────────────────
+
+  const resolvedSizeKey = resolveCascade<TooltipSizeKey>(
+    size,
+    sectionConfig?.size,
+    undefined,
+    FALLBACK_TOOLTIP_CONFIG.size,
   );
 
-  // Resolvers
-  const resolvedPlacement = resolveValue(
+  const resolvedPlacement = resolveCascade<TooltipPlacement>(
     placement,
     sectionConfig?.placement,
-    "top",
+    undefined,
+    FALLBACK_TOOLTIP_CONFIG.placement,
   );
-  const resolvedVariant = resolveValue(
+
+  const resolvedVariant = resolveCascade<Variant>(
     variant,
     sectionConfig?.variant,
-    config.theme.defaultVariant ?? "solid",
+    config.theme.defaultVariant,
+    FALLBACK_TOOLTIP_CONFIG.variant,
   );
-  const resolvedColor = resolveValue(color, sectionConfig?.color, "secondary");
-  const resolvedDelay = resolveValue(delay, sectionConfig?.delay, 200);
-  const resolvedOffset = resolveValue(offsetProp, sectionConfig?.offset, 8);
-  const resolvedShowArrow = resolveValue(
+
+  const resolvedColor = resolveCascade<Color>(
+    color,
+    sectionConfig?.color,
+    config.theme.defaultColor as Color | undefined,
+    FALLBACK_TOOLTIP_CONFIG.color,
+  );
+
+  const resolvedDelay = resolveCascade<
+    number | { open?: number; close?: number }
+  >(delay, sectionConfig?.delay, undefined, FALLBACK_TOOLTIP_CONFIG.delay);
+
+  const resolvedOffset = resolveCascade<number>(
+    offsetProp,
+    sectionConfig?.offset,
+    undefined,
+    FALLBACK_TOOLTIP_CONFIG.offset,
+  );
+
+  const resolvedShowArrow = resolveCascade<boolean>(
     showArrow,
     sectionConfig?.showArrow,
-    false,
+    undefined,
+    FALLBACK_TOOLTIP_CONFIG.showArrow,
   );
 
-  const resolvedRadiusKey = typeof radius === "string" ? radius : undefined;
-  const resolvedSectionRadiusKey =
-    typeof sectionConfig?.radius === "string"
-      ? sectionConfig.radius
-      : undefined;
-  const resolvedRadius = resolveScale(
+  const resolvedAnimation = resolveCascade<AnimationProp>(
+    animation,
+    sectionConfig?.animation,
+    undefined,
+    FALLBACK_TOOLTIP_CONFIG.animation,
+  );
+
+  const resolvedRadiusKey = resolveRadiusKey(
+    radius,
+    sectionConfig,
+    config.theme.radius?.default,
+    FALLBACK_TOOLTIP_CONFIG.radius,
+  );
+
+  const resolvedShadowKey = resolveCascade<keyof ShadowConfig["values"]>(
+    shadow,
+    sectionConfig?.shadow,
+    undefined,
+    FALLBACK_TOOLTIP_CONFIG.shadow,
+  );
+
+  // ─── 2. Class Maps ────────────────────────────────────────────────────────
+
+  const paddingXClass = resolveClassKey(
+    resolvedSizeKey,
+    TOOLTIP_PADDING_X_CLASS,
+    FALLBACK_TOOLTIP_CONFIG.size,
+  );
+
+  const paddingYClass = resolveClassKey(
+    resolvedSizeKey,
+    TOOLTIP_PADDING_Y_CLASS,
+    FALLBACK_TOOLTIP_CONFIG.size,
+  );
+
+  const fontClass = resolveClassKey(
+    resolvedSizeKey,
+    TOOLTIP_FONT_CLASS,
+    FALLBACK_TOOLTIP_CONFIG.size,
+  );
+
+  const radiusClass = resolveClassKey(
     resolvedRadiusKey,
-    resolvedSectionRadiusKey,
-    config.theme.radius.default,
-    config.theme.radius.values,
+    TOOLTIP_RADIUS_CLASS,
+    FALLBACK_TOOLTIP_CONFIG.radius,
   );
 
-  const resolvedShadowKey = typeof shadow === "string" ? shadow : undefined;
-  const resolvedSectionShadowKey =
-    typeof sectionConfig?.shadow === "string"
-      ? sectionConfig.shadow
-      : undefined;
-  const resolvedShadow = resolveScale(
+  const shadowClass = resolveClassKey(
     resolvedShadowKey,
-    resolvedSectionShadowKey,
-    "md",
-    config.theme.shadow.values,
+    TOOLTIP_SHADOW_CLASS,
+    FALLBACK_TOOLTIP_CONFIG.shadow,
   );
 
-  const motionProps = resolveAnimation(
-    animation ?? sectionConfig?.animation ?? "none",
-  );
+  const motionProps = resolveAnimation(resolvedAnimation);
+
+  // ─── Floating UI Setup ───────────────────────────────────────────────────
 
   const middleware = [
     floatingOffset(resolvedOffset),
@@ -216,18 +269,16 @@ export function Tooltip({
                 exit={{ opacity: 0, scale: 0.94 }}
                 transition={{ duration: 0.1, ease: "easeOut" }}
                 className={cn(
-                  "font-medium border whitespace-nowrap select-none",
+                  "font-medium border whitespace-nowrap select-none bg-background",
+                  paddingXClass,
+                  paddingYClass,
+                  fontClass,
+                  radiusClass,
+                  shadowClass,
                   resolveVariantClass(resolvedVariant, resolvedColor),
                   sectionConfig?.className,
                   className,
                 )}
-                style={{
-                  borderRadius: resolvedRadius,
-                  boxShadow: resolvedShadow,
-                  paddingInline: `var(--ashee-tooltip-${resolvedSizeKey}-padding-x)`,
-                  paddingBlock: `var(--ashee-tooltip-${resolvedSizeKey}-padding-y)`,
-                  fontSize: `var(--ashee-tooltip-${resolvedSizeKey}-font-size)`,
-                }}
                 {...(motionProps as HTMLMotionProps<"div">)}>
                 {content}
                 {resolvedShowArrow && (
@@ -245,4 +296,5 @@ export function Tooltip({
     </>
   );
 }
+
 Tooltip.displayName = "Tooltip";

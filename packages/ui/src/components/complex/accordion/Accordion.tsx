@@ -1,40 +1,40 @@
 "use client";
+
 import { cn } from "@asheeui/utils";
 import { AnimatePresence, type HTMLMotionProps, motion } from "framer-motion";
-import { forwardRef, useId, useMemo, useState } from "react";
+import {
+  forwardRef,
+  type ReactNode,
+  useCallback,
+  useId,
+  useState,
+} from "react";
 import { useAsheeConfig } from "../../../libs/context";
 import { resolveAnimation } from "../../../motion/resolve-animation";
 import type { AnimationProp } from "../../../motion/types";
 import type { Radius } from "../../../theme/token/radius/radius-config";
-import { useResponsiveVars } from "../../../theme/token/responsive/use-responsive-vars";
-import { resolveScale, resolveValue } from "../../../utils/resolve-token";
+import {
+  resolveCascade,
+  resolveClassKey,
+  resolveRadiusKey,
+} from "../../../utils/resolve-token";
 import { ChevronDownIcon } from "../../icons/ChevronDownIcon";
-import type {
-  AccordionConfig,
-  AccordionItem,
-  AccordionSizeKey,
-  AccordionSizeScale,
-  AccordionVariant,
+import {
+  FALLBACK_ACCORDION_CONFIG,
+  type AccordionConfig,
+  type AccordionItem,
+  type AccordionSizeKey,
+  type AccordionVariant,
 } from "./accordion-config";
-import { defaultAccordionSizeScale } from "./default-accordion-config";
-import { flattenAccordionSizeScale } from "./flatten-accordion-size-scale";
+import {
+  ACCORDION_CONTENT_SIZE_CLASS,
+  ACCORDION_HEADER_SIZE_CLASS,
+  ACCORDION_RADIUS_CLASS,
+  ACCORDION_VARIANT_CONTAINER_CLASS,
+  ACCORDION_VARIANT_ITEM_CLASS,
+} from "./accordion-styles";
 
-const VARIANT_CONTAINER_CLASS: Record<AccordionVariant, string> = {
-  bordered: "border border-border divide-y divide-border overflow-hidden",
-  separated: "space-y-3",
-  flush: "divide-y divide-border border-y border-border",
-  ghost: "space-y-1",
-};
-
-const VARIANT_ITEM_CLASS: Record<AccordionVariant, string> = {
-  bordered: "bg-card transition-colors hover:bg-muted/30",
-  separated:
-    "border border-border bg-card transition-colors hover:bg-muted/30 shadow-xs",
-  flush: "bg-transparent transition-colors hover:bg-muted/20",
-  ghost: "bg-transparent hover:bg-muted/50 transition-colors",
-};
-
-// ─── Props Interface ──────────────────────────────────────────────────────────
+// ─── Component Interface ──────────────────────────────────────────────────────
 
 export interface AccordionProps
   extends Omit<
@@ -50,7 +50,7 @@ export interface AccordionProps
   defaultValue?: string | string[];
   value?: string | string[];
   onValueChange?: (value: string[]) => void;
-  expandIcon?: React.ReactNode;
+  expandIcon?: ReactNode;
   disableAnimation?: boolean;
   itemClassName?: string;
   headerClassName?: string;
@@ -77,6 +77,7 @@ export const Accordion = forwardRef<HTMLDivElement, AccordionProps>(
       headerClassName,
       contentClassName,
       className,
+      style,
       id,
       ...props
     },
@@ -90,52 +91,78 @@ export const Accordion = forwardRef<HTMLDivElement, AccordionProps>(
     const generatedId = useId();
     const accordionId = id ?? generatedId;
 
-    // Design Token Resolvers
-    const sizeScale = (sectionConfig?.size ??
-      defaultAccordionSizeScale) as AccordionSizeScale;
-    const resolvedSizeKey = size ?? sizeScale.default;
-    const responsiveVars = useMemo(
-      () => flattenAccordionSizeScale(sizeScale),
-      [sizeScale],
-    );
-    useResponsiveVars(
-      "ashee-accordion-tokens",
-      responsiveVars,
-      config.theme.breakpoints,
+    // ─── 1. Token Resolvers (4-Tier Cascade) ──────────────────────────────────
+
+    const resolvedSizeKey = resolveCascade<AccordionSizeKey>(
+      size,
+      sectionConfig?.size,
+      undefined,
+      FALLBACK_ACCORDION_CONFIG.size,
     );
 
-    const resolvedVariant = resolveValue<AccordionVariant>(
+    const resolvedVariant = resolveCascade<AccordionVariant>(
       variant,
       sectionConfig?.variant,
-      "separated",
+      config.theme.defaultVariant as AccordionVariant | undefined,
+      FALLBACK_ACCORDION_CONFIG.variant,
     );
 
-    const resolvedAllowMultiple =
-      allowMultiple ?? sectionConfig?.allowMultiple ?? false;
+    const resolvedAllowMultiple = resolveCascade<boolean>(
+      allowMultiple,
+      sectionConfig?.allowMultiple,
+      undefined,
+      FALLBACK_ACCORDION_CONFIG.allowMultiple,
+    );
 
-    const resolvedRadiusKey = typeof radius === "string" ? radius : undefined;
-    const resolvedSectionRadiusKey =
-      typeof sectionConfig?.radius === "string"
-        ? sectionConfig.radius
-        : undefined;
-    const resolvedRadius = resolveScale(
-      resolvedRadiusKey,
-      resolvedSectionRadiusKey,
-      config.theme.radius.default,
-      config.theme.radius.values,
+    const resolvedRadiusKey = resolveRadiusKey(
+      typeof radius === "string" ? radius : undefined,
+      typeof sectionConfig?.radius === "string" ? sectionConfig : undefined,
+      config.theme.radius?.default,
+      FALLBACK_ACCORDION_CONFIG.radius,
     );
 
     const motionProps = resolveAnimation(
       animation ?? (sectionConfig?.animation as AnimationProp | undefined),
     );
 
+    // ─── 2. Class Maps ────────────────────────────────────────────────────────
+
+    const containerVariantClass =
+      ACCORDION_VARIANT_CONTAINER_CLASS[resolvedVariant] ??
+      ACCORDION_VARIANT_CONTAINER_CLASS.separated;
+
+    const itemVariantClass =
+      ACCORDION_VARIANT_ITEM_CLASS[resolvedVariant] ??
+      ACCORDION_VARIANT_ITEM_CLASS.separated;
+
+    const headerSizeClass = resolveClassKey(
+      resolvedSizeKey,
+      ACCORDION_HEADER_SIZE_CLASS,
+      FALLBACK_ACCORDION_CONFIG.size,
+    );
+
+    const contentSizeClass = resolveClassKey(
+      resolvedSizeKey,
+      ACCORDION_CONTENT_SIZE_CLASS,
+      FALLBACK_ACCORDION_CONFIG.size,
+    );
+
+    const radiusClass = resolveClassKey(
+      resolvedRadiusKey,
+      ACCORDION_RADIUS_CLASS,
+      FALLBACK_ACCORDION_CONFIG.radius,
+    );
+
     // Controlled vs Uncontrolled State
     const isControlled = controlledValue !== undefined;
 
-    const normalizeValue = (val: string | string[] | undefined): string[] => {
-      if (val === undefined) return [];
-      return Array.isArray(val) ? val : [val];
-    };
+    const normalizeValue = useCallback(
+      (val: string | string[] | undefined): string[] => {
+        if (val === undefined) return [];
+        return Array.isArray(val) ? val : [val];
+      },
+      [],
+    );
 
     const [internalValue, setInternalValue] = useState<string[]>(() =>
       normalizeValue(defaultValue),
@@ -145,23 +172,26 @@ export const Accordion = forwardRef<HTMLDivElement, AccordionProps>(
       ? normalizeValue(controlledValue)
       : internalValue;
 
-    const handleToggle = (key: string, disabled?: boolean) => {
-      if (disabled) return;
+    const handleToggle = useCallback(
+      (key: string, disabled?: boolean) => {
+        if (disabled) return;
 
-      let nextKeys: string[];
-      const isOpen = activeKeys.includes(key);
+        let nextKeys: string[];
+        const isOpen = activeKeys.includes(key);
 
-      if (isOpen) {
-        nextKeys = activeKeys.filter((k) => k !== key);
-      } else {
-        nextKeys = resolvedAllowMultiple ? [...activeKeys, key] : [key];
-      }
+        if (isOpen) {
+          nextKeys = activeKeys.filter((k) => k !== key);
+        } else {
+          nextKeys = resolvedAllowMultiple ? [...activeKeys, key] : [key];
+        }
 
-      if (!isControlled) {
-        setInternalValue(nextKeys);
-      }
-      onValueChange?.(nextKeys);
-    };
+        if (!isControlled) {
+          setInternalValue(nextKeys);
+        }
+        onValueChange?.(nextKeys);
+      },
+      [activeKeys, isControlled, onValueChange, resolvedAllowMultiple],
+    );
 
     return (
       <div
@@ -169,16 +199,14 @@ export const Accordion = forwardRef<HTMLDivElement, AccordionProps>(
         id={accordionId}
         className={cn(
           "w-full",
-          VARIANT_CONTAINER_CLASS[resolvedVariant],
+          containerVariantClass,
+          resolvedVariant !== "flush" &&
+            resolvedVariant !== "ghost" &&
+            radiusClass,
           sectionConfig?.className,
           className,
         )}
-        style={{
-          borderRadius:
-            resolvedVariant !== "flush" && resolvedVariant !== "ghost"
-              ? resolvedRadius
-              : undefined,
-        }}
+        style={style}
         {...props}>
         {items.map((item, index) => {
           const itemKey = item.id || `item-${index}`;
@@ -191,15 +219,12 @@ export const Accordion = forwardRef<HTMLDivElement, AccordionProps>(
               key={itemKey}
               className={cn(
                 "overflow-hidden transition-colors",
-                VARIANT_ITEM_CLASS[resolvedVariant],
+                itemVariantClass,
+                (resolvedVariant === "separated" ||
+                  resolvedVariant === "ghost") &&
+                  radiusClass,
                 itemClassName,
-              )}
-              style={{
-                borderRadius:
-                  resolvedVariant === "separated" || resolvedVariant === "ghost"
-                    ? resolvedRadius
-                    : undefined,
-              }}>
+              )}>
               {/* Trigger Button */}
               <button
                 id={headerId}
@@ -210,13 +235,9 @@ export const Accordion = forwardRef<HTMLDivElement, AccordionProps>(
                 onClick={() => handleToggle(itemKey, item.disabled)}
                 className={cn(
                   "w-full text-left flex items-center justify-between gap-3 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-inset text-foreground transition-colors disabled:opacity-50 disabled:cursor-not-allowed select-none",
+                  headerSizeClass,
                   headerClassName,
-                )}
-                style={{
-                  paddingInline: `var(--ashee-accordion-${resolvedSizeKey}-padding-x)`,
-                  paddingBlock: `var(--ashee-accordion-${resolvedSizeKey}-padding-y)`,
-                  fontSize: `var(--ashee-accordion-${resolvedSizeKey}-font-s)`,
-                }}>
+                )}>
                 <div className="flex items-center gap-3 min-w-0 flex-1">
                   {item.icon && (
                     <span className="shrink-0 text-muted-foreground">
@@ -268,7 +289,10 @@ export const Accordion = forwardRef<HTMLDivElement, AccordionProps>(
                       disableAnimation
                         ? { duration: 0 }
                         : {
-                            height: { duration: 0.25, ease: [0.16, 1, 0.3, 1] },
+                            height: {
+                              duration: 0.25,
+                              ease: [0.16, 1, 0.3, 1],
+                            },
                             opacity: { duration: 0.2 },
                           }
                     }
@@ -277,13 +301,9 @@ export const Accordion = forwardRef<HTMLDivElement, AccordionProps>(
                     <div
                       className={cn(
                         "text-muted-foreground leading-relaxed pt-0",
+                        contentSizeClass,
                         contentClassName,
-                      )}
-                      style={{
-                        paddingInline: `var(--ashee-accordion-${resolvedSizeKey}-padding-x)`,
-                        paddingBottom: `var(--ashee-accordion-${resolvedSizeKey}-padding-y)`,
-                        fontSize: `var(--ashee-accordion-${resolvedSizeKey}-font-s)`,
-                      }}>
+                      )}>
                       {item.content}
                     </div>
                   </motion.div>

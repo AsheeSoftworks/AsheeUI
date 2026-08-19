@@ -1,24 +1,32 @@
 "use client";
+
 import { cn } from "@asheeui/utils";
 import { AnimatePresence, type HTMLMotionProps, motion } from "framer-motion";
-import { type ReactNode, useEffect, useMemo } from "react";
+import { type HTMLAttributes, type ReactNode, useEffect } from "react";
 import { useAsheeConfig } from "../../../libs/context";
 import type { Radius } from "../../../theme/token/radius/radius-config";
-import { useResponsiveVars } from "../../../theme/token/responsive/use-responsive-vars";
-import { resolveScale, resolveValue } from "../../../utils/resolve-token";
-import { defaultModalSizeScale } from "./default-modal-config";
-import { flattenModalSizeScale } from "./flatten-modal-size-scale";
-import type {
-  ModalAnimationPreset,
-  ModalConfig,
-  ModalPosition,
-  ModalSizeKey,
-  ModalSizeScale,
+import {
+  resolveCascade,
+  resolveClassKey,
+  resolveRadiusKey,
+} from "../../../utils/resolve-token";
+import {
+  FALLBACK_MODAL_CONFIG,
+  type ModalAnimationPreset,
+  type ModalConfig,
+  type ModalPosition,
+  type ModalSizeKey,
 } from "./modal-config";
 import { resolveModalAnimation } from "./modal-motion";
+import {
+  MODAL_MAX_WIDTH_CLASS,
+  MODAL_PADDING_CLASS,
+  MODAL_POSITION_CLASS,
+  MODAL_RADIUS_CLASS,
+} from "./modal-styles";
 
 export interface ModalProps
-  extends Omit<React.SelectHTMLAttributes<HTMLDivElement>, "ref" | "size"> {
+  extends Omit<HTMLAttributes<HTMLDivElement>, "ref" | "size"> {
   /** Controls open visibility state. */
   isOpen: boolean;
 
@@ -84,44 +92,75 @@ export function Modal({
   const config = useAsheeConfig();
   const sectionConfig = config.components?.modal as ModalConfig | undefined;
 
-  // Design Token Resolvers
-  const sizeScale = (sectionConfig?.size ??
-    defaultModalSizeScale) as ModalSizeScale;
-  const resolvedSizeKey = size ?? sizeScale.default;
-  const responsiveVars = useMemo(
-    () => flattenModalSizeScale(sizeScale),
-    [sizeScale],
-  );
-  useResponsiveVars(
-    "ashee-modal-tokens",
-    responsiveVars,
-    config.theme.breakpoints,
+  // ─── 1. Token Resolvers (4-Tier Cascade) ──────────────────────────────────
+
+  const resolvedSizeKey = resolveCascade<ModalSizeKey>(
+    size,
+    sectionConfig?.size,
+    undefined,
+    FALLBACK_MODAL_CONFIG.size,
   );
 
-  const position = resolveValue<ModalPosition>(
+  const position = resolveCascade<ModalPosition>(
     positionProp,
     sectionConfig?.position,
-    "center",
+    undefined,
+    FALLBACK_MODAL_CONFIG.position,
   );
-  const closeOnBackdropClick =
-    closeOnBackdropClickProp ?? sectionConfig?.closeOnBackdropClick ?? true;
-  const closeOnEscape =
-    closeOnEscapeProp ?? sectionConfig?.closeOnEscape ?? true;
 
-  const resolvedRadiusKey = typeof radius === "string" ? radius : undefined;
-  const resolvedSectionRadiusKey =
-    typeof sectionConfig?.radius === "string"
-      ? sectionConfig.radius
-      : undefined;
-  const resolvedRadius = resolveScale(
-    resolvedRadiusKey,
-    resolvedSectionRadiusKey,
-    config.theme.radius.default,
-    config.theme.radius.values,
+  const closeOnBackdropClick = resolveCascade<boolean>(
+    closeOnBackdropClickProp,
+    sectionConfig?.closeOnBackdropClick,
+    undefined,
+    FALLBACK_MODAL_CONFIG.closeOnBackdropClick,
   );
+
+  const closeOnEscape = resolveCascade<boolean>(
+    closeOnEscapeProp,
+    sectionConfig?.closeOnEscape,
+    undefined,
+    FALLBACK_MODAL_CONFIG.closeOnEscape,
+  );
+
+  const resolvedRadiusKey = resolveRadiusKey(
+    typeof radius === "string" ? radius : undefined,
+    typeof sectionConfig?.radius === "string" ? sectionConfig : undefined,
+    config.theme.radius?.default,
+    FALLBACK_MODAL_CONFIG.radius,
+  );
+
+  const resolvedAnimation =
+    animation ?? sectionConfig?.animation ?? FALLBACK_MODAL_CONFIG.animation;
+
+  // ─── 2. Class Maps ────────────────────────────────────────────────────────
+
+  const maxWidthClass = width
+    ? ""
+    : resolveClassKey(
+        resolvedSizeKey,
+        MODAL_MAX_WIDTH_CLASS,
+        FALLBACK_MODAL_CONFIG.size,
+      );
+
+  const paddingClass = padding
+    ? ""
+    : resolveClassKey(
+        resolvedSizeKey,
+        MODAL_PADDING_CLASS,
+        FALLBACK_MODAL_CONFIG.size,
+      );
+
+  const radiusClass = resolveClassKey(
+    resolvedRadiusKey,
+    MODAL_RADIUS_CLASS,
+    FALLBACK_MODAL_CONFIG.radius,
+  );
+
+  const positionClass =
+    MODAL_POSITION_CLASS[position] ?? MODAL_POSITION_CLASS.center;
 
   const motionProps = resolveModalAnimation(
-    animation ?? sectionConfig?.animation,
+    resolvedAnimation,
     position,
   ) as unknown as Partial<HTMLMotionProps<"div">>;
 
@@ -173,17 +212,18 @@ export function Modal({
             {...motionProps}
             className={cn(
               "relative z-10 w-full bg-background text-foreground overflow-y-auto scrollbar-hide max-h-[90vh]",
-              position === "top" && "self-start mt-12",
-              position === "bottom" && "self-end mb-12",
+              positionClass,
+              maxWidthClass,
+              paddingClass,
+              radiusClass,
               sectionConfig?.contentClassName,
               contentClassName,
               className,
             )}
             style={{
-              maxWidth: width ?? `var(--ashee-modal-${resolvedSizeKey}-max-w)`,
-              padding: padding ?? `var(--ashee-modal-${resolvedSizeKey}-p)`,
-              borderRadius: resolvedRadius,
+              width,
               height,
+              ...(padding ? { padding } : {}),
               ...style,
             }}
             {...(props as HTMLMotionProps<"div">)}>

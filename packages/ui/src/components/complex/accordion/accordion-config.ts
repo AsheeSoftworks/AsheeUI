@@ -1,35 +1,37 @@
+import type { ReactNode } from "react";
 import type { AnimationProp } from "../../../motion/types";
 import type { Radius } from "../../../theme/token/radius/radius-config";
-import type { ResponsiveValue } from "../../../theme/token/responsive/responsive";
 
 export type AccordionVariant = "bordered" | "separated" | "flush" | "ghost";
 export type AccordionSizeKey = "sm" | "md" | "lg";
 
-export interface AccordionSizeValue {
-  paddingX: ResponsiveValue<string>;
-  paddingY: ResponsiveValue<string>;
-  fontSize: ResponsiveValue<string>;
-}
-
-export interface AccordionSizeScale {
-  default: AccordionSizeKey;
-  values: Record<AccordionSizeKey, AccordionSizeValue>;
-}
-
 export interface AccordionItem {
   id?: string;
-  title: React.ReactNode;
-  content: React.ReactNode;
-  subtitle?: React.ReactNode;
-  icon?: React.ReactNode;
+  title: ReactNode;
+  content: ReactNode;
+  subtitle?: ReactNode;
+  icon?: ReactNode;
   disabled?: boolean;
 }
 
 export interface AccordionConfig {
   variant?: AccordionVariant;
-  size?: AccordionSizeScale;
+  size?: AccordionSizeKey;
   radius?: keyof Radius;
   animation?: AnimationProp;
   allowMultiple?: boolean;
   className?: string;
 }
+
+export const defaultAccordionConfig: AccordionConfig = {
+  size: "md",
+  animation: "none",
+  allowMultiple: false,
+};
+
+export const FALLBACK_ACCORDION_CONFIG = {
+  size: "md",
+  variant: "separated",
+  radius: "md",
+  allowMultiple: false,
+} as const;

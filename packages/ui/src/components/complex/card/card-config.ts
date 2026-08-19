@@ -1,7 +1,6 @@
 import type { AnimationProp } from "../../../motion/types";
 import type { Shadow } from "../../../theme/shadow/shadow-config";
 import type { Radius } from "../../../theme/token/radius/radius-config";
-import type { ResponsiveValue } from "../../../theme/token/responsive/responsive";
 import type {
   ImageFit,
   ImageRatioKey,
@@ -16,20 +15,9 @@ export type CardImagePosition =
   | "right"
   | "background";
 
-export interface CardSizeValue {
-  paddingX: ResponsiveValue<string>;
-  paddingY: ResponsiveValue<string>;
-  gap: ResponsiveValue<string>;
-}
-
-export interface CardSizeScale {
-  default: CardSizeKey;
-  values: Record<CardSizeKey, CardSizeValue>;
-}
-
 export interface CardConfig {
   variant?: CardVariant;
-  size?: CardSizeScale;
+  size?: CardSizeKey;
   radius?: keyof Radius;
   shadow?: keyof Shadow;
   animation?: AnimationProp;
@@ -39,3 +27,24 @@ export interface CardConfig {
   isClickable?: boolean;
   className?: string;
 }
+
+export const defaultCardConfig: CardConfig = {
+  size: "md",
+  animation: "none",
+  imagePosition: "top",
+  imageRatio: "video",
+  imageFit: "cover",
+  isClickable: false,
+};
+
+export const FALLBACK_CARD_CONFIG = {
+  size: "md",
+  variant: "bordered",
+  radius: "md",
+  shadow: "none",
+  animation: "none",
+  imagePosition: "top",
+  imageRatio: "video",
+  imageFit: "cover",
+  isClickable: false,
+} as const;

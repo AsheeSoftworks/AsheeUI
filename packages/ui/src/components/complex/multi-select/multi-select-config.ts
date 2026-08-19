@@ -1,6 +1,5 @@
 import type { Color, Variant } from "../../../shared/variant";
 import type { Radius } from "../../../theme/token/radius/radius-config";
-import type { ResponsiveValue } from "../../../theme/token/responsive/responsive";
 import type { ButtonSizeKey } from "../../primitive/button/button-config";
 import type {
   FieldConfig,
@@ -16,19 +15,9 @@ export interface MultiSelectOption {
   [key: string]: unknown;
 }
 
-export interface MultiSelectSizeValue {
-  height: ResponsiveValue<string>;
-  paddingX: ResponsiveValue<string>;
-  fontSize: ResponsiveValue<string>;
-}
-
-export interface MultiSelectSizeScale {
-  default: MultiSelectSizeKey;
-  values: Record<MultiSelectSizeKey, MultiSelectSizeValue>;
-}
-
 export interface MultiSelectConfig extends Omit<FieldConfig, "size"> {
-  size?: MultiSelectSizeScale;
+  size?: MultiSelectSizeKey;
+  radius?: keyof Radius;
   className?: string;
 
   // Menu / Popover Overrides
@@ -43,3 +32,22 @@ export interface MultiSelectConfig extends Omit<FieldConfig, "size"> {
   chipRadius?: keyof Radius;
   chipSize?: ButtonSizeKey;
 }
+
+export const defaultMultiSelectConfig: MultiSelectConfig = {
+  size: "md",
+  labelAlign: "left",
+  animation: "none",
+  chipSize: "sm",
+  menuSize: "sm",
+};
+
+export const FALLBACK_MULTI_SELECT_CONFIG = {
+  size: "md",
+  variant: "bordered",
+  color: "primary",
+  radius: "md",
+  labelAlign: "left",
+  animation: "none",
+  chipSize: "sm",
+  menuSize: "sm",
+} as const;

@@ -10,8 +10,7 @@ export interface ScrollbarOverride {
 }
 
 export interface ContainerConfig {
-  defaultMaxWidth?: ContainerMaxWidth;
-  maxWidth?: Record<ContainerMaxWidth, string>;
+  maxWidth?: ContainerMaxWidth;
   padding?: keyof Spacing;
   margin?: keyof Spacing;
   center?: boolean;
@@ -19,3 +18,18 @@ export interface ContainerConfig {
   scrollable?: boolean;
   scrollbar?: ScrollbarOverride;
 }
+
+export const defaultContainerConfig: ContainerConfig = {
+  maxWidth: "lg",
+  padding: "md",
+  center: true,
+  scrollable: false,
+};
+
+export const FALLBACK_CONTAINER_CONFIG = {
+  maxWidth: "lg" as ContainerMaxWidth,
+  padding: "md" as keyof Spacing,
+  margin: "none" as keyof Spacing,
+  center: true,
+  scrollable: false,
+} as const;

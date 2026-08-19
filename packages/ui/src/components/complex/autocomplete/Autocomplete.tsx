@@ -1,4 +1,5 @@
 "use client";
+
 import {
   autoUpdate,
   flip,
@@ -14,6 +15,7 @@ import {
   forwardRef,
   type ReactNode,
   useCallback,
+  useEffect,
   useMemo,
   useState,
 } from "react";
@@ -21,14 +23,21 @@ import { useAsheeConfig } from "../../../libs/context";
 import type { AnimationProp } from "../../../motion/types";
 import type { Color, Variant } from "../../../shared/variant";
 import type { Radius } from "../../../theme/token/radius/radius-config";
-import { resolveScale, resolveValue } from "../../../utils/resolve-token";
+import {
+  resolveCascade,
+  resolveClassKey,
+  resolveRadiusKey,
+} from "../../../utils/resolve-token";
 import type { ButtonSizeKey } from "../../primitive/button/button-config";
+import type { FieldSizeKey } from "../../primitive/field/field-config";
 import { Input, type InputProps } from "../../primitive/input/Input";
 import { SelectMenu } from "../../primitive/select-menu/SelectMenu";
-import type {
-  AutocompleteConfig,
-  AutocompleteOption,
+import {
+  FALLBACK_AUTOCOMPLETE_CONFIG,
+  type AutocompleteConfig,
+  type AutocompleteOption,
 } from "./autocomplete-config";
+import { AUTOCOMPLETE_RADIUS_CLASS } from "./autocomplete-styles";
 
 // ─── Component Interface ──────────────────────────────────────────────────────
 
@@ -70,7 +79,7 @@ export const Autocomplete = forwardRef<HTMLInputElement, AutocompleteProps>(
       disabled,
       placeholder = "Type to search...",
       className,
-      size, // Extracted here so it isn't bundled into inputProps
+      size,
       ...inputProps
     },
     ref,
@@ -87,16 +96,18 @@ export const Autocomplete = forwardRef<HTMLInputElement, AutocompleteProps>(
     );
 
     const [isOpen, setIsOpen] = useState(false);
-    const [inputValue, setInputValue] = useState(
+    const [inputValue, setInputValue] = useState(() =>
       selectedOption ? selectedOption.label : String(value ?? ""),
     );
 
     // Sync input text when value prop changes externally
-    useMemo(() => {
+    useEffect(() => {
       if (selectedOption) {
         setInputValue(selectedOption.label);
+      } else if (value !== undefined && value !== null) {
+        setInputValue(String(value));
       }
-    }, [selectedOption]);
+    }, [selectedOption, value]);
 
     // Floating UI context
     const { refs, floatingStyles, context } = useFloating<HTMLInputElement>({
@@ -116,30 +127,53 @@ export const Autocomplete = forwardRef<HTMLInputElement, AutocompleteProps>(
       role,
     ]);
 
-    // Menu Token Resolvers
-    const resolvedMenuVariant = resolveValue<Variant>(
+    // ─── 1. Token Resolvers (4-Tier Cascade) ──────────────────────────────────
+
+    const resolvedSizeKey = resolveCascade<FieldSizeKey>(
+      size,
+      sectionConfig?.size,
+      undefined,
+      FALLBACK_AUTOCOMPLETE_CONFIG.size,
+    );
+
+    const resolvedMenuVariant = resolveCascade<Variant>(
       menuVariant,
       sectionConfig?.menuVariant,
-      config.theme.defaultVariant as Variant,
+      config.theme.defaultVariant as Variant | undefined,
+      FALLBACK_AUTOCOMPLETE_CONFIG.variant,
     );
 
-    const resolvedMenuColor = resolveValue<Color>(
+    const resolvedMenuColor = resolveCascade<Color>(
       menuColor,
       sectionConfig?.menuColor,
-      config.theme.defaultColor ?? "primary",
+      config.theme.defaultColor as Color | undefined,
+      FALLBACK_AUTOCOMPLETE_CONFIG.color,
     );
 
-    const resolvedMenuRadius = resolveScale(
-      menuRadius,
-      sectionConfig?.menuRadius,
-      inputProps.radius ?? sectionConfig?.radius ?? config.theme.radius.default,
-      config.theme.radius.values,
+    const resolvedMenuRadiusKey = resolveRadiusKey(
+      typeof menuRadius === "string" ? menuRadius : undefined,
+      typeof sectionConfig?.menuRadius === "string"
+        ? { radius: sectionConfig.menuRadius }
+        : undefined,
+      typeof inputProps.radius === "string"
+        ? inputProps.radius
+        : config.theme.radius?.default,
+      FALLBACK_AUTOCOMPLETE_CONFIG.radius,
     );
 
-    const resolvedMenuSize = resolveValue<ButtonSizeKey>(
+    const resolvedMenuSize = resolveCascade<ButtonSizeKey>(
       menuSize,
       sectionConfig?.menuSize,
-      "sm",
+      undefined,
+      FALLBACK_AUTOCOMPLETE_CONFIG.menuSize,
+    );
+
+    // ─── 2. Class Maps ────────────────────────────────────────────────────────
+
+    const menuRadiusClass = resolveClassKey(
+      resolvedMenuRadiusKey,
+      AUTOCOMPLETE_RADIUS_CLASS,
+      FALLBACK_AUTOCOMPLETE_CONFIG.radius,
     );
 
     // Filter options dynamically as user types
@@ -151,16 +185,19 @@ export const Autocomplete = forwardRef<HTMLInputElement, AutocompleteProps>(
     }, [options, inputValue]);
 
     // Handle Input Changes
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-      const text = e.target.value;
-      setInputValue(text);
-      onInputChange?.(text);
-      setIsOpen(true);
+    const handleInputChange = useCallback(
+      (e: React.ChangeEvent<HTMLInputElement>) => {
+        const text = e.target.value;
+        setInputValue(text);
+        onInputChange?.(text);
+        setIsOpen(true);
 
-      if (allowCustomValue) {
-        onValueChange?.(text);
-      }
-    };
+        if (allowCustomValue) {
+          onValueChange?.(text);
+        }
+      },
+      [allowCustomValue, onInputChange, onValueChange],
+    );
 
     // Handle Option Selection
     const handleSelectOption = useCallback(
@@ -187,7 +224,7 @@ export const Autocomplete = forwardRef<HTMLInputElement, AutocompleteProps>(
             else if (ref)
               (ref as React.RefObject<HTMLInputElement | null>).current = node;
           }}
-          size={size}
+          size={resolvedSizeKey}
           disabled={disabled}
           placeholder={placeholder}
           value={inputValue}
@@ -213,12 +250,12 @@ export const Autocomplete = forwardRef<HTMLInputElement, AutocompleteProps>(
           options={filteredOptions}
           selectedValues={selectedValues}
           onSelectOption={handleSelectOption}
-          isSearch={false} // Handled directly by the Input component
+          isSearch={false}
           belowList={belowList}
           dropdownClassName={dropdownClassName}
           variant={resolvedMenuVariant}
           color={resolvedMenuColor}
-          radius={resolvedMenuRadius}
+          radius={menuRadiusClass}
           size={resolvedMenuSize}
           initialFocus={-1}
           returnFocus={false}

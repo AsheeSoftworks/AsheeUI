@@ -1,9 +1,9 @@
 "use client";
+
 import { cn } from "@asheeui/utils";
 import { type HTMLMotionProps, type MotionProps, motion } from "framer-motion";
-import { type CSSProperties, forwardRef, type ReactNode, useMemo } from "react";
+import { forwardRef, type ReactNode } from "react";
 import { useAsheeConfig } from "../../../libs/context";
-import { resolveAnimation } from "../../../motion/resolve-animation";
 import type { AnimationProp } from "../../../motion/types";
 import {
   type Color,
@@ -11,18 +11,24 @@ import {
   type Variant,
 } from "../../../shared/variant";
 import type { Radius } from "../../../theme/token/radius/radius-config";
-import { useResponsiveVars } from "../../../theme/token/responsive/use-responsive-vars";
-import { resolveScale, resolveValue } from "../../../utils/resolve-token";
+import {
+  resolveCascade,
+  resolveClassKey,
+  resolveRadiusKey,
+} from "../../../utils/resolve-token";
 import { Spinner } from "../spinner/spinner";
 import type {
   ButtonAnimationPreset,
   ButtonConfig,
   ButtonSizeKey,
 } from "./button-config";
-import { defaultButtonSizeScale } from "./default-button-config";
-import { flattenButtonSizeScale } from "./flatten-button-size-scale";
+import {
+  BUTTON_ICON_SIZE_CLASS,
+  BUTTON_RADIUS_CLASS,
+  BUTTON_SIZE_CLASS,
+} from "./button-styles";
 
-// ─── Base Props & Cleaned Types ──────────────────────────────────────────────
+// ─── Base Props ───────────────────────────────────────────────────────────────
 
 export interface ButtonCommonProps {
   variant?: Variant;
@@ -33,12 +39,11 @@ export interface ButtonCommonProps {
   isDisabled?: boolean;
   isLoading?: boolean;
   className?: string;
-  style?: CSSProperties;
 }
 
 type CleanMotionButtonProps = Omit<
   HTMLMotionProps<"button">,
-  keyof MotionProps | "children" | "color" | "disabled" | "style" | "className"
+  keyof MotionProps | "children" | "color" | "disabled" | "className"
 >;
 
 type BaseButtonProps = ButtonCommonProps &
@@ -69,71 +74,63 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       icon,
       className,
       children,
-      style,
       type = "button",
       onClick,
       ...rest
     } = props;
 
+    // Inside Button.tsx component body
     const config = useAsheeConfig();
     const sectionConfig = config.components?.button as ButtonConfig | undefined;
 
-    const resolvedVariant = resolveValue(
+    // 1. Variant (Instance -> Section -> Theme Global -> Hard Fallback)
+    const resolvedVariant = resolveCascade(
       variant,
       sectionConfig?.variant,
-      config.theme.defaultVariant ?? "bordered",
+      config.theme.defaultVariant,
+      "bordered",
     );
-    const resolvedColor = resolveValue(
+
+    // 2. Color (Instance -> Section -> Theme Global -> Hard Fallback)
+    const resolvedColor = resolveCascade(
       color,
       sectionConfig?.color,
-      config.theme.defaultColor ?? "primary",
+      config.theme.defaultColor,
+      "primary",
     );
-    const resolvedRadiusKey = typeof radius === "string" ? radius : undefined;
-    const resolvedSectionRadiusKey =
-      typeof sectionConfig?.radius === "string"
-        ? sectionConfig.radius
-        : undefined;
-    const resolvedRadius = resolveScale(
-      resolvedRadiusKey,
-      resolvedSectionRadiusKey,
-      config.theme.radius.default,
-      config.theme.radius.values,
-    );
-    const motionProps = resolveAnimation(animation ?? sectionConfig?.animation);
-    const isInteractionDisabled = isDisabled || isLoading;
 
-    const sizeScale = sectionConfig?.size ?? defaultButtonSizeScale;
-    const resolvedSizeKey = size ?? sizeScale.default;
-    const responsiveVars = useMemo(
-      () => flattenButtonSizeScale(sizeScale),
-      [sizeScale],
+    // 3. Size (Instance -> Section -> Hard Fallback)
+    const resolvedSizeKey = resolveCascade<ButtonSizeKey>(
+      size,
+      sectionConfig?.size,
+      undefined,
+      "md",
     );
-    useResponsiveVars(
-      "ashee-button-tokens",
-      responsiveVars,
-      config.theme.breakpoints,
+
+    // 4. Radius Key (Instance -> Section -> Theme Global -> Hard Fallback)
+    const resolvedRadiusKey = resolveRadiusKey(
+      typeof radius === "string" ? radius : undefined,
+      typeof sectionConfig?.radius === "string" ? sectionConfig : undefined,
+      config.theme.radius?.default,
+      "md",
     );
+
+    const sizeClasses = icon
+      ? BUTTON_ICON_SIZE_CLASS[resolvedSizeKey]
+      : BUTTON_SIZE_CLASS[resolvedSizeKey];
 
     const sharedClassName = cn(
-      "inline-flex items-center justify-center font-medium transition-colors select-none",
+      "inline-flex items-center justify-center font-medium transition-colors select-none shrink-0",
       "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2",
       "disabled:pointer-events-none disabled:opacity-50",
       "aria-disabled:pointer-events-none aria-disabled:opacity-50",
       resolveVariantClass(resolvedVariant, resolvedColor),
-      sectionConfig?.className,
+      sizeClasses,
+      resolveClassKey(resolvedRadiusKey, BUTTON_RADIUS_CLASS, "md"),
       className,
     );
 
-    const sharedStyle = {
-      borderRadius: resolvedRadius,
-      paddingInline: icon
-        ? `var(--ashee-button-${resolvedSizeKey}-padding-y)`
-        : `var(--ashee-button-${resolvedSizeKey}-padding-x)`,
-      paddingBlock: `var(--ashee-button-${resolvedSizeKey}-padding-y)`,
-      fontSize: `var(--ashee-button-${resolvedSizeKey}-font-size)`,
-      gap: `var(--ashee-button-${resolvedSizeKey}-gap)`,
-      ...style,
-    };
+    const isInteractionDisabled = isDisabled || isLoading;
 
     const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
       if (isInteractionDisabled) {
@@ -152,8 +149,6 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         aria-busy={isLoading}
         onClick={handleClick}
         className={sharedClassName}
-        style={sharedStyle}
-        {...(motionProps as HTMLMotionProps<"button">)}
         {...rest}>
         {isLoading && <Spinner className={resolvedSizeKey} />}
         {isLoading && <span className="sr-only">Loading</span>}

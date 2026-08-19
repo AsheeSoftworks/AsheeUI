@@ -1,10 +1,10 @@
-import { defineConfig, type ExternalConfig } from "asheeui";
+import { defineConfig, type ExternalConfig } from "asheeui/config";
 
 const config: ExternalConfig = {
   theme: {
     defaultTheme: "company-red",
     defaultVariant: "solid",
-    defaultColor: "success",
+    defaultColor: "danger",
     color: {
       dark: { primary: "#38bdf8", success: "#4ade80" },
       "company-red": {
@@ -68,82 +68,13 @@ const config: ExternalConfig = {
       variant: "underlined",
     },
     container: {
-      defaultMaxWidth: "xl",
+      maxWidth: "xl",
       padding: "lg",
       margin: "md",
       center: true,
     },
     flex: { gap: "lg" },
     grid: { columns: 4, gap: "lg" },
-    heading: {
-      levels: {
-        1: {
-          fontWeight: "bold",
-          lineHeight: "short",
-          letterSpacing: "tight",
-        },
-        2: {
-          fontWeight: "bold",
-          lineHeight: "short",
-          letterSpacing: "tight",
-        },
-        3: {
-          fontWeight: "semibold",
-          lineHeight: "short",
-          letterSpacing: "normal",
-        },
-        4: {
-          fontWeight: "semibold",
-          lineHeight: "base",
-          letterSpacing: "normal",
-        },
-        5: {
-          fontWeight: "medium",
-          lineHeight: "base",
-          letterSpacing: "normal",
-        },
-        6: {
-          fontWeight: "medium",
-          lineHeight: "base",
-          letterSpacing: "normal",
-        },
-      },
-    },
-    button: {
-      // variant: "bordered",
-      // color: "success",
-      // animation: "bounce",
-      size: {
-        default: "lg",
-        values: {
-          sm: {
-            paddingX: { base: "0.75rem" },
-            paddingY: { base: "0.375rem" },
-            fontSize: { base: "0.875rem" },
-            gap: { base: "0.375rem" },
-          },
-          md: {
-            paddingX: { base: "1rem" },
-            paddingY: { base: "0.5rem" },
-            fontSize: { base: "1rem" },
-            gap: { base: "0.5rem" },
-          },
-          lg: {
-            paddingX: { base: "1.25rem", md: "1.5rem" },
-            paddingY: { base: "0.625rem", md: "0.75rem" },
-            fontSize: { base: "1rem", md: "1.125rem" },
-            gap: { base: "0.5rem", md: "0.625rem" },
-          },
-        },
-      },
-    },
-    spinner: {
-      speed: "1.4s",
-      size: {
-        default: "md",
-        values: { sm: "1rem", md: "1.35rem", lg: "1.75rem" },
-      },
-    },
   },
 };
 

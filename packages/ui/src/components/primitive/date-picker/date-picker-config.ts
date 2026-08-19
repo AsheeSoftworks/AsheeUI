@@ -1,7 +1,4 @@
 import type { AnimationProp } from "../../../motion/types";
-import type { Color, Variant } from "../../../shared/variant";
-import type { Radius } from "../../../theme/token/radius/radius-config";
-import type { ResponsiveValue } from "../../../theme/token/responsive/responsive";
 import type {
   FieldConfig,
   FieldSizeKey,
@@ -11,23 +8,23 @@ import type {
 export type PickerMode = "date" | "time" | "datetime";
 export type DatePickerSizeKey = FieldSizeKey;
 
-export interface DatePickerSizeValue {
-  height: ResponsiveValue<string>;
-  paddingX: ResponsiveValue<string>;
-  fontSize: ResponsiveValue<string>;
-  cellSize: ResponsiveValue<string>;
-}
-
-export interface DatePickerSizeScale {
-  default: DatePickerSizeKey;
-  values: Record<DatePickerSizeKey, DatePickerSizeValue>;
-}
-
-export interface DatePickerConfig extends Omit<FieldConfig, "size"> {
-  size?: DatePickerSizeScale;
-  radius?: keyof Radius;
-  variant?: Variant;
-  color?: Color;
+export interface DatePickerConfig extends FieldConfig {
+  mode?: PickerMode;
   animation?: AnimationProp<InputAnimationPreset>;
-  className?: string;
 }
+
+export const defaultDatePickerConfig: DatePickerConfig = {
+  size: "md",
+  labelAlign: "left",
+  mode: "date",
+};
+
+export const FALLBACK_DATE_PICKER_CONFIG = {
+  size: "md",
+  radius: "md",
+  variant: "bordered",
+  color: "primary",
+  status: "default",
+  labelAlign: "left",
+  mode: "date",
+} as const;

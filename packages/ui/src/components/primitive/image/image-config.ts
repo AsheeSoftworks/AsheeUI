@@ -15,3 +15,21 @@ export interface ImageConfig {
   showSkeleton?: boolean;
   className?: string;
 }
+
+export const defaultImageConfig: ImageConfig = {
+  fit: "cover",
+  ratio: "auto",
+  loading: "lazy",
+  showSkeleton: true,
+  animation: "none",
+};
+
+export const FALLBACK_IMAGE_CONFIG = {
+  fit: "cover" as ImageFit,
+  ratio: "auto" as ImageRatioKey,
+  radius: "md" as keyof Radius,
+  shadow: "none" as keyof Size,
+  loading: "lazy" as const,
+  showSkeleton: true,
+  animation: "none" as AnimationProp,
+} as const;

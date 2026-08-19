@@ -1,6 +1,5 @@
 import type { Transition, Variants } from "framer-motion";
 import type { Radius } from "../../../theme/token/radius/radius-config";
-import type { ResponsiveValue } from "../../../theme/token/responsive/responsive";
 
 export type DrawerAnimationPreset = "slide" | "zoom" | "fade";
 
@@ -15,18 +14,8 @@ export type DrawerAnimation =
 export type DrawerPlacement = "right" | "left" | "top" | "bottom";
 export type DrawerSizeKey = "sm" | "md" | "lg" | "xl" | "full";
 
-export interface DrawerSizeValue {
-  width?: ResponsiveValue<string>;
-  height?: ResponsiveValue<string>;
-}
-
-export interface DrawerSizeScale {
-  default: DrawerSizeKey;
-  values: Record<DrawerSizeKey, DrawerSizeValue>;
-}
-
 export interface DrawerConfig {
-  size?: DrawerSizeScale;
+  size?: DrawerSizeKey;
   placement?: DrawerPlacement;
   radius?: keyof Radius;
   animation?: DrawerAnimation;
@@ -36,3 +25,20 @@ export interface DrawerConfig {
   overlayClassName?: string;
   contentClassName?: string;
 }
+
+export const defaultDrawerConfig: DrawerConfig = {
+  size: "md",
+  placement: "right",
+  animation: "slide",
+  closeOnOverlayClick: true,
+  closeOnEsc: true,
+};
+
+export const FALLBACK_DRAWER_CONFIG = {
+  size: "md",
+  placement: "right",
+  radius: "none",
+  animation: "slide",
+  closeOnOverlayClick: true,
+  closeOnEsc: true,
+} as const;

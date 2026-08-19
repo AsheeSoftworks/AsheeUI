@@ -1,29 +1,31 @@
 "use client";
+
 import { cn } from "@asheeui/utils";
 import { type HTMLMotionProps, motion } from "framer-motion";
-import { forwardRef, useState } from "react";
+import { forwardRef, useEffect, useState } from "react";
 import { useAsheeConfig } from "../../../libs/context";
 import { resolveAnimation } from "../../../motion/resolve-animation";
 import type { AnimationProp } from "../../../motion/types";
 import type { Radius } from "../../../theme/token/radius/radius-config";
 import type { Size } from "../../../theme/token/token";
-import { resolveScale, resolveValue } from "../../../utils/resolve-token";
-import type { ImageFit, ImageRatioKey } from "./image-config";
-
-const FIT_CLASS: Record<ImageFit, string> = {
-  cover: "object-cover",
-  contain: "object-contain",
-  fill: "object-fill",
-  none: "object-none",
-  "scale-down": "object-scale-down",
-};
-
-const RATIO_CLASS: Record<ImageRatioKey, string> = {
-  auto: "",
-  square: "aspect-square",
-  video: "aspect-video",
-  portrait: "aspect-[3/4]",
-};
+import {
+  resolveCascade,
+  resolveClassKey,
+  resolveRadiusKey,
+} from "../../../utils/resolve-token";
+import {
+  FALLBACK_IMAGE_CONFIG,
+  type ImageConfig,
+  type ImageFit,
+  type ImageRatioKey,
+} from "./image-config";
+import {
+  IMAGE_FIT_CLASS,
+  IMAGE_RADIUS_CLASS,
+  IMAGE_RATIO_CLASS,
+  IMAGE_SHADOW_CLASS,
+} from "./image-styles";
+import type { Shadow } from "../../../theme/shadow/shadow-config";
 
 export interface ImageProps
   extends Omit<HTMLMotionProps<"img">, "children" | "alt"> {
@@ -59,43 +61,103 @@ export const Image = forwardRef<HTMLImageElement, ImageProps>(
     ref,
   ) => {
     const config = useAsheeConfig();
-    const sectionConfig = config.components?.image;
+    const sectionConfig = config.components?.image as ImageConfig | undefined;
+
     const [isLoaded, setIsLoaded] = useState(false);
     const [currentSrc, setCurrentSrc] = useState(src);
 
-    const resolvedFit = resolveValue(fit, sectionConfig?.fit, "cover");
-    const resolvedRatio = resolveValue(ratio, sectionConfig?.ratio, "auto");
-    const resolvedRadius = resolveScale(
-      radius,
-      sectionConfig?.radius,
-      config.theme.radius.default,
-      config.theme.radius.values,
+    useEffect(() => {
+      setCurrentSrc(src);
+      setIsLoaded(false);
+    }, [src]);
+
+    // ─── 1. Token Resolvers (4-Tier Cascade) ──────────────────────────────────
+
+    const resolvedFit = resolveCascade<ImageFit>(
+      fit,
+      sectionConfig?.fit,
+      undefined,
+      FALLBACK_IMAGE_CONFIG.fit,
     );
-    const resolvedShadow = resolveScale(
+
+    const resolvedRatio = resolveCascade<ImageRatioKey>(
+      ratio,
+      sectionConfig?.ratio,
+      undefined,
+      FALLBACK_IMAGE_CONFIG.ratio,
+    );
+
+    const resolvedRadiusKey = resolveRadiusKey(
+      radius,
+      sectionConfig,
+      config.theme.radius?.default,
+      FALLBACK_IMAGE_CONFIG.radius,
+    );
+
+    const resolvedShadowKey = resolveCascade<keyof Shadow>(
       shadow,
       sectionConfig?.shadow,
-      config.theme.shadow.default,
-      config.theme.shadow.values,
+      config.theme.shadow?.default,
+      FALLBACK_IMAGE_CONFIG.shadow,
     );
-    const resolvedLoading = loading ?? sectionConfig?.loading ?? "lazy";
-    const resolvedShowSkeleton = resolveValue(
+
+    const resolvedLoading = resolveCascade<"lazy" | "eager">(
+      loading,
+      sectionConfig?.loading,
+      undefined,
+      FALLBACK_IMAGE_CONFIG.loading,
+    );
+
+    const resolvedShowSkeleton = resolveCascade<boolean>(
       showSkeleton,
       sectionConfig?.showSkeleton,
-      true,
+      undefined,
+      FALLBACK_IMAGE_CONFIG.showSkeleton,
     );
-    const motionProps = resolveAnimation(
-      animation ?? (sectionConfig?.animation as AnimationProp | undefined),
-      true,
-      "none",
+
+    const resolvedAnimation = resolveCascade<AnimationProp>(
+      animation,
+      sectionConfig?.animation,
+      undefined,
+      FALLBACK_IMAGE_CONFIG.animation,
     );
+
+    // ─── 2. Class Maps ────────────────────────────────────────────────────────
+
+    const fitClass = resolveClassKey(
+      resolvedFit,
+      IMAGE_FIT_CLASS,
+      FALLBACK_IMAGE_CONFIG.fit,
+    );
+
+    const ratioClass = resolveClassKey(
+      resolvedRatio,
+      IMAGE_RATIO_CLASS,
+      FALLBACK_IMAGE_CONFIG.ratio,
+    );
+
+    const radiusClass = resolveClassKey(
+      resolvedRadiusKey,
+      IMAGE_RADIUS_CLASS,
+      FALLBACK_IMAGE_CONFIG.radius,
+    );
+
+    const shadowClass = resolveClassKey(
+      resolvedShadowKey,
+      IMAGE_SHADOW_CLASS,
+      FALLBACK_IMAGE_CONFIG.shadow,
+    );
+
+    const motionProps = resolveAnimation(resolvedAnimation, true, "none");
 
     return (
       <span
         className={cn(
-          "relative block overflow-hidden",
-          RATIO_CLASS[resolvedRatio],
-        )}
-        style={{ borderRadius: resolvedRadius, boxShadow: resolvedShadow }}>
+          "relative block overflow-hidden shrink-0",
+          ratioClass,
+          radiusClass,
+          shadowClass,
+        )}>
         {resolvedShowSkeleton && !isLoaded && (
           <span
             aria-hidden="true"
@@ -112,13 +174,14 @@ export const Image = forwardRef<HTMLImageElement, ImageProps>(
             onLoad?.(e);
           }}
           onError={(e) => {
-            if (fallbackSrc && currentSrc !== fallbackSrc)
+            if (fallbackSrc && currentSrc !== fallbackSrc) {
               setCurrentSrc(fallbackSrc);
+            }
             onError?.(e);
           }}
           className={cn(
             "h-full w-full transition-opacity duration-300",
-            FIT_CLASS[resolvedFit],
+            fitClass,
             isLoaded ? "opacity-100" : "opacity-0",
             sectionConfig?.className,
             className,
@@ -130,4 +193,5 @@ export const Image = forwardRef<HTMLImageElement, ImageProps>(
     );
   },
 );
+
 Image.displayName = "Image";

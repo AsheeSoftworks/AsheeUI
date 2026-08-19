@@ -1,5 +1,2 @@
 @import "tailwindcss";
-@import "@asheeui/styles";
-@source "../../../packages/ui/src";
-@source "../../../packages/theme/src";
-@source "../../../packages/settings/src";
+@import "asheeui/styles";

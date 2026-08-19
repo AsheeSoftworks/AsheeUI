@@ -1,4 +1,5 @@
 "use client";
+
 import { cn } from "@asheeui/utils";
 import { AnimatePresence, type HTMLMotionProps, motion } from "framer-motion";
 import {
@@ -10,18 +11,26 @@ import {
 } from "react";
 import { useAsheeConfig } from "../../../libs/context";
 import type { Radius } from "../../../theme/token/radius/radius-config";
-import { useResponsiveVars } from "../../../theme/token/responsive/use-responsive-vars";
-import { resolveScale, resolveValue } from "../../../utils/resolve-token";
-import { defaultDrawerSizeScale } from "./default-drawer-config";
-import type {
-  DrawerAnimation,
-  DrawerConfig,
-  DrawerPlacement,
-  DrawerSizeKey,
-  DrawerSizeScale,
+import {
+  resolveCascade,
+  resolveClassKey,
+  resolveRadiusKey,
+} from "../../../utils/resolve-token";
+import {
+  FALLBACK_DRAWER_CONFIG,
+  type DrawerAnimation,
+  type DrawerConfig,
+  type DrawerPlacement,
+  type DrawerSizeKey,
 } from "./drawer-config";
 import { resolveDrawerAnimation } from "./drawer-motion";
-import { flattenDrawerSizeScale } from "./flatten-drawer-size-scale";
+import {
+  DRAWER_BORDER_PLACEMENT_CLASS,
+  DRAWER_CONTAINER_PLACEMENT_CLASS,
+  DRAWER_HEIGHT_CLASS,
+  DRAWER_RADIUS_CLASS,
+  DRAWER_WIDTH_CLASS,
+} from "./drawer-styles";
 
 // ─── Props Interface ──────────────────────────────────────────────────────────
 
@@ -81,50 +90,88 @@ export function Drawer({
   const config = useAsheeConfig();
   const sectionConfig = config.components?.drawer as DrawerConfig | undefined;
 
-  // Resolve Design Tokens
-  const sizeScale = (sectionConfig?.size ??
-    defaultDrawerSizeScale) as DrawerSizeScale;
-  const resolvedSizeKey = size ?? sizeScale.default;
-  const responsiveVars = useMemo(
-    () => flattenDrawerSizeScale(sizeScale),
-    [sizeScale],
-  );
-  useResponsiveVars(
-    "ashee-drawer-tokens",
-    responsiveVars,
-    config.theme.breakpoints,
+  // ─── 1. Token Resolvers (4-Tier Cascade) ──────────────────────────────────
+
+  const resolvedSizeKey = resolveCascade<DrawerSizeKey>(
+    size,
+    sectionConfig?.size,
+    undefined,
+    FALLBACK_DRAWER_CONFIG.size,
   );
 
-  const placement = resolveValue<DrawerPlacement>(
+  const placement = resolveCascade<DrawerPlacement>(
     placementProp,
     sectionConfig?.placement,
-    "right",
+    undefined,
+    FALLBACK_DRAWER_CONFIG.placement,
   );
 
-  const shouldCloseOnOverlay =
-    closeOnOverlayClick ?? sectionConfig?.closeOnOverlayClick ?? true;
-  const shouldCloseOnEsc = closeOnEsc ?? sectionConfig?.closeOnEsc ?? true;
+  const shouldCloseOnOverlay = resolveCascade<boolean>(
+    closeOnOverlayClick,
+    sectionConfig?.closeOnOverlayClick,
+    undefined,
+    FALLBACK_DRAWER_CONFIG.closeOnOverlayClick,
+  );
 
-  const resolvedRadiusKey = typeof radius === "string" ? radius : undefined;
-  const resolvedSectionRadiusKey =
-    typeof sectionConfig?.radius === "string"
-      ? sectionConfig.radius
-      : undefined;
-  const resolvedRadius = resolveScale(
+  const shouldCloseOnEsc = resolveCascade<boolean>(
+    closeOnEsc,
+    sectionConfig?.closeOnEsc,
+    undefined,
+    FALLBACK_DRAWER_CONFIG.closeOnEsc,
+  );
+
+  const resolvedRadiusKey = resolveRadiusKey(
+    typeof radius === "string" ? radius : undefined,
+    typeof sectionConfig?.radius === "string" ? sectionConfig : undefined,
+    config.theme.radius?.default,
+    FALLBACK_DRAWER_CONFIG.radius,
+  );
+
+  const resolvedAnimation =
+    animation ?? sectionConfig?.animation ?? FALLBACK_DRAWER_CONFIG.animation;
+
+  // ─── 2. Class Maps ────────────────────────────────────────────────────────
+
+  const isHorizontal = placement === "left" || placement === "right";
+
+  const widthClass = isHorizontal
+    ? resolveClassKey(
+        resolvedSizeKey,
+        DRAWER_WIDTH_CLASS,
+        FALLBACK_DRAWER_CONFIG.size,
+      )
+    : "w-full";
+
+  const heightClass = !isHorizontal
+    ? resolveClassKey(
+        resolvedSizeKey,
+        DRAWER_HEIGHT_CLASS,
+        FALLBACK_DRAWER_CONFIG.size,
+      )
+    : "h-full";
+
+  const radiusClass = resolveClassKey(
     resolvedRadiusKey,
-    resolvedSectionRadiusKey,
-    config.theme.radius.default,
-    config.theme.radius.values,
+    DRAWER_RADIUS_CLASS,
+    FALLBACK_DRAWER_CONFIG.radius,
   );
 
-  // Motion resolution via @asheeui/motion
+  const containerPlacementClass =
+    DRAWER_CONTAINER_PLACEMENT_CLASS[placement] ??
+    DRAWER_CONTAINER_PLACEMENT_CLASS.right;
+
+  const borderPlacementClass =
+    DRAWER_BORDER_PLACEMENT_CLASS[placement] ??
+    DRAWER_BORDER_PLACEMENT_CLASS.right;
+
+  // Motion resolution
   const drawerMotion = useMemo(
     () =>
       resolveDrawerAnimation(
-        animation ?? sectionConfig?.animation,
+        resolvedAnimation,
         placement,
       ) as unknown as Partial<HTMLMotionProps<"div">>,
-    [animation, sectionConfig?.animation, placement],
+    [resolvedAnimation, placement],
   );
 
   const handleKeyDown = useCallback(
@@ -142,8 +189,6 @@ export function Drawer({
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [isOpen, handleKeyDown]);
 
-  const isHorizontal = placement === "left" || placement === "right";
-
   return (
     <AnimatePresence>
       {isOpen && (
@@ -152,10 +197,7 @@ export function Drawer({
           aria-modal="true"
           className={cn(
             "fixed inset-0 z-50 flex w-full h-full",
-            placement === "right" && "justify-end items-stretch",
-            placement === "left" && "justify-start items-stretch",
-            placement === "top" && "flex-col justify-start items-stretch",
-            placement === "bottom" && "flex-col justify-end items-stretch",
+            containerPlacementClass,
             className,
           )}
           {...props}>
@@ -178,22 +220,13 @@ export function Drawer({
           {/* Drawer Surface */}
           <motion.div
             {...drawerMotion}
-            style={{
-              borderRadius: resolvedRadius,
-              width: isHorizontal
-                ? `var(--ashee-drawer-${resolvedSizeKey}-width)`
-                : "100%",
-              height: !isHorizontal
-                ? `var(--ashee-drawer-${resolvedSizeKey}-height)`
-                : "100%",
-              ...style,
-            }}
+            style={style}
             className={cn(
               "relative z-10 flex flex-col bg-background text-foreground shadow-2xl border-border overflow-hidden",
-              placement === "right" && "border-l",
-              placement === "left" && "border-r",
-              placement === "top" && "border-b",
-              placement === "bottom" && "border-t",
+              borderPlacementClass,
+              widthClass,
+              heightClass,
+              radiusClass,
               sectionConfig?.contentClassName,
               contentClassName,
             )}>

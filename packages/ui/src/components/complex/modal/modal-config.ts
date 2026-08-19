@@ -1,6 +1,5 @@
 import type { Transition, Variants } from "framer-motion";
 import type { Radius } from "../../../theme/token/radius/radius-config";
-import type { ResponsiveValue } from "../../../theme/token/responsive/responsive";
 
 export type ModalAnimationPreset =
   | "scale"
@@ -23,19 +22,8 @@ export type ModalAnimation =
 export type ModalSizeKey = "sm" | "md" | "lg" | "xl" | "full";
 export type ModalPosition = "center" | "top" | "bottom";
 
-export interface ModalSizeValue {
-  maxWidth: ResponsiveValue<string>;
-  padding: ResponsiveValue<string>;
-  radius: ResponsiveValue<string>;
-}
-
-export interface ModalSizeScale {
-  default: ModalSizeKey;
-  values: Record<ModalSizeKey, ModalSizeValue>;
-}
-
 export interface ModalConfig {
-  size?: ModalSizeScale;
+  size?: ModalSizeKey;
   position?: ModalPosition;
   radius?: keyof Radius;
   animation?: ModalAnimationPreset;
@@ -45,3 +33,20 @@ export interface ModalConfig {
   overlayClassName?: string;
   contentClassName?: string;
 }
+
+export const defaultModalConfig: ModalConfig = {
+  size: "md",
+  position: "center",
+  animation: "pop",
+  closeOnBackdropClick: true,
+  closeOnEscape: true,
+};
+
+export const FALLBACK_MODAL_CONFIG = {
+  size: "md",
+  position: "center",
+  radius: "lg",
+  animation: "pop",
+  closeOnBackdropClick: true,
+  closeOnEscape: true,
+} as const;

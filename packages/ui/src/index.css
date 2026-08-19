@@ -1,3 +1,4 @@
+@import "tailwindcss";
 @layer base, utilities;
 
 /* Tell Tailwind v4 to scan asheeui components for utility classes */
@@ -6,35 +7,30 @@
 @theme inline {
   --color-background: var(--ashee-background);
   --color-foreground: var(--ashee-foreground);
+
   --color-primary: var(--ashee-primary);
   --color-secondary: var(--ashee-secondary);
   --color-border: var(--ashee-border);
   --color-danger: var(--ashee-danger);
   --color-warning: var(--ashee-warning);
   --color-success: var(--ashee-success);
-  --scrollbar-thumb: var(--ashee-scrollbar-thumb);
-  --scrollbar-track: var(--ashee-scrollbar-track);
 
-  /* Typography: Size */
   --text-xs: var(--ashee-text-xs);
   --text-sm: var(--ashee-text-sm);
   --text-md: var(--ashee-text-md);
   --text-lg: var(--ashee-text-lg);
   --text-xl: var(--ashee-text-xl);
 
-  /* Typography: Weight */
   --font-weight-light: var(--ashee-font-weight-light);
   --font-weight-normal: var(--ashee-font-weight-normal);
   --font-weight-medium: var(--ashee-font-weight-medium);
   --font-weight-semibold: var(--ashee-font-weight-semibold);
   --font-weight-bold: var(--ashee-font-weight-bold);
 
-  /* Typography: Line Height */
   --leading-short: var(--ashee-leading-short);
   --leading-base: var(--ashee-leading-base);
   --leading-tall: var(--ashee-leading-tall);
 
-  /* Typography: Letter Spacing */
   --tracking-tight: var(--ashee-tracking-tight);
   --tracking-normal: var(--ashee-tracking-normal);
   --tracking-wide: var(--ashee-tracking-wide);
@@ -56,84 +52,12 @@
   --shadow-xl: var(--ashee-shadow-xl);
 }
 
-/* 2. CSS Variables (Design Tokens) */
-:root {
-  --ashee-background: #ffffff;
-  --ashee-foreground: #000000;
-  --ashee-primary: #2563eb;
-  --ashee-secondary: #ffffff;
-  --ashee-border: #d5d5d5;
-  --ashee-danger: #dc2626;
-  --ashee-warning: #d97706;
-
-  /* Scrollbar Variables */
-  --ashee-scrollbar-thumb: #3b82f6;
-  --ashee-scrollbar-track: transparent;
-
-  /* Typography Default Values */
-  --ashee-font-sans: Inter, ui-sans-serif, system-ui, sans-serif;
-  --ashee-font-serif: ui-serif, Georgia, serif;
-  --ashee-font-mono: ui-monospace, SFMono-Regular, monospace;
-
-  --ashee-text-xs: 0.75rem;
-  --ashee-text-sm: 0.875rem;
-  --ashee-text-md: 1rem;
-  --ashee-text-lg: 1.125rem;
-  --ashee-text-xl: 1.25rem;
-
-  --ashee-font-weight-light: 300;
-  --ashee-font-weight-normal: 400;
-  --ashee-font-weight-medium: 500;
-  --ashee-font-weight-semibold: 600;
-  --ashee-font-weight-bold: 700;
-
-  --ashee-leading-short: 1.25;
-  --ashee-leading-base: 1.5;
-  --ashee-leading-tall: 1.75;
-
-  --ashee-tracking-tight: -0.025em;
-  --ashee-tracking-normal: 0em;
-  --ashee-tracking-wide: 0.025em;
-
-  --ashee-radius: 0.375rem;
-  --ashee-radius-xs: 0.125rem;
-  --ashee-radius-sm: 0.25rem;
-  --ashee-radius-md: 0.375rem;
-  --ashee-radius-lg: 0.5rem;
-  --ashee-radius-full: 9999px;
-
-  --ashee-shadow:
-    0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-  --ashee-shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-  --ashee-shadow-sm:
-    0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
-  --ashee-shadow-md:
-    0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-  --ashee-shadow-lg:
-    0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
-  --ashee-shadow-xl:
-    0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
-}
-
-.theme-dark {
-  --ashee-background: #111111;
-  --ashee-foreground: #ffffff;
-  --ashee-primary: #005bc4;
-  --ashee-secondary: #1a1a1a;
-  --ashee-border: #2a2a2a;
-  --ashee-danger: #ef4444;
-  --ashee-warning: #f59e0b;
-  --ashee-success: #22c55e;
-  --ashee-scrollbar-thumb: #1e40af;
-  --ashee-scrollbar-track: transparent;
-}
-
-/* 3. Base Styles */
 @layer base {
   html,
   body {
     background-color: var(--ashee-background);
     color: var(--ashee-foreground);
+    overflow-x: hidden;
   }
 
   html,

@@ -1,7 +1,8 @@
 "use client";
+
 import { cn } from "@asheeui/utils";
 import { type HTMLMotionProps, motion } from "framer-motion";
-import { forwardRef, type TextareaHTMLAttributes, useId, useMemo } from "react";
+import { forwardRef, type TextareaHTMLAttributes, useId } from "react";
 import { useAsheeConfig } from "../../../libs/context";
 import { resolveAnimation } from "../../../motion/resolve-animation";
 import type { AnimationProp } from "../../../motion/types";
@@ -11,36 +12,33 @@ import {
   type Variant,
 } from "../../../shared/variant";
 import type { Radius } from "../../../theme/token/radius/radius-config";
-import { useResponsiveVars } from "../../../theme/token/responsive/use-responsive-vars";
-import { resolveScale, resolveValue } from "../../../utils/resolve-token";
-import { defaultFieldSizeScale } from "../field/default-field-size-scale";
+import {
+  resolveCascade,
+  resolveClassKey,
+  resolveRadiusKey,
+} from "../../../utils/resolve-token";
 import { FieldShell } from "../field/FieldShell";
 import type {
   FieldSizeKey,
-  FieldSizeScale,
   FieldStatus,
   InputAnimationPreset,
   LabelAlign,
 } from "../field/field-config";
-import { flattenFieldSizeScale } from "../field/flatten-field-size-scale";
-
-// ─── Status Class Override ───────────────────────────────────────────────────
-
-const STATUS_BORDER_CLASS: Record<FieldStatus, string> = {
-  default: "",
-  error:
-    "border-danger focus-visible:border-danger focus-visible:ring-danger/20",
-  warning:
-    "border-warning focus-visible:border-warning focus-visible:ring-warning/20",
-  success:
-    "border-success focus-visible:border-success focus-visible:ring-success/20",
-};
+import {
+  FALLBACK_TEXTAREA_CONFIG,
+  type TextAreaConfig,
+} from "./textarea-config";
+import {
+  TEXTAREA_RADIUS_CLASS,
+  TEXTAREA_SIZE_CLASS,
+  TEXTAREA_STATUS_BORDER_CLASS,
+} from "./textarea-styles";
 
 // ─── Component Interface ──────────────────────────────────────────────────────
 
 export interface TextAreaProps
   extends Omit<
-    TextareaHTMLAttributes<HTMLInputElement>,
+    TextareaHTMLAttributes<HTMLTextAreaElement>,
     "size" | "color" | "children"
   > {
   size?: FieldSizeKey;
@@ -79,12 +77,16 @@ export const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
       id,
       className,
       disabled,
+      style,
       ...rest
     },
     ref,
   ) => {
     const config = useAsheeConfig();
-    const sectionConfig = config.components?.textarea;
+    const sectionConfig = config.components?.textarea as
+      | TextAreaConfig
+      | undefined;
+
     const generatedId = useId();
     const fieldId = id ?? generatedId;
     const descriptionId = description ? `${fieldId}-description` : undefined;
@@ -92,56 +94,69 @@ export const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
     const describedBy =
       [descriptionId, messageId].filter(Boolean).join(" ") || undefined;
 
-    // ─── Token Resolvers ──────────────────────────────────────────────────────
+    // ─── 1. Token Resolvers (4-Tier Cascade) ──────────────────────────────────
 
-    const sizeScale = (sectionConfig?.size ??
-      defaultFieldSizeScale) as FieldSizeScale;
-    const resolvedSizeKey = size ?? sizeScale.default;
-    const responsiveVars = useMemo(
-      () => flattenFieldSizeScale("textarea", sizeScale),
-      [sizeScale],
-    );
-    useResponsiveVars(
-      "ashee-textarea-tokens",
-      responsiveVars,
-      config.theme.breakpoints,
+    const resolvedSizeKey = resolveCascade<FieldSizeKey>(
+      size,
+      sectionConfig?.size,
+      undefined,
+      FALLBACK_TEXTAREA_CONFIG.size,
     );
 
-    const resolvedRadius = resolveScale(
-      radius,
-      sectionConfig?.radius,
-      config.theme.radius.default,
-      config.theme.radius.values,
-    );
-
-    const resolvedVariant = resolveValue<Variant>(
+    const resolvedVariant = resolveCascade<Variant>(
       variant,
       sectionConfig?.variant,
-      (config.theme.defaultVariant as Variant) ?? "bordered",
+      config.theme.defaultVariant,
+      FALLBACK_TEXTAREA_CONFIG.variant,
     );
 
-    const resolvedColor = resolveValue<Color>(
+    const resolvedColor = resolveCascade<Color>(
       color,
       sectionConfig?.color,
-      (config.theme.defaultColor as Color) ?? "primary",
+      config.theme.defaultColor,
+      FALLBACK_TEXTAREA_CONFIG.color,
     );
 
-    const resolvedStatus = status ?? "default";
-    const resolvedLabelAlign = resolveValue(
+    const resolvedRadiusKey = resolveRadiusKey(
+      typeof radius === "string" ? radius : undefined,
+      typeof sectionConfig?.radius === "string" ? sectionConfig : undefined,
+      config.theme.radius?.default,
+      FALLBACK_TEXTAREA_CONFIG.radius,
+    );
+
+    const resolvedStatus = status ?? FALLBACK_TEXTAREA_CONFIG.status;
+
+    const resolvedLabelAlign = resolveCascade<LabelAlign>(
       labelAlign,
       sectionConfig?.labelAlign,
-      "left",
-    );
-    const resolvedRows = resolveValue(rows, sectionConfig?.rows, 4);
-
-    const motionProps = resolveAnimation(
-      animation ?? (sectionConfig?.animation as AnimationProp | undefined),
+      undefined,
+      FALLBACK_TEXTAREA_CONFIG.labelAlign,
     );
 
-    // Apply global variant/color styling & active status override
+    const resolvedRows = resolveCascade<number>(
+      rows,
+      sectionConfig?.rows,
+      undefined,
+      FALLBACK_TEXTAREA_CONFIG.rows,
+    );
+
+    const motionProps = resolveAnimation(animation ?? sectionConfig?.animation);
+
+    // ─── 2. Class Maps ────────────────────────────────────────────────────────
+
     const variantClass = resolveVariantClass(resolvedVariant, resolvedColor);
     const statusClass =
-      resolvedStatus !== "default" ? STATUS_BORDER_CLASS[resolvedStatus] : "";
+      resolvedStatus !== "default"
+        ? TEXTAREA_STATUS_BORDER_CLASS[resolvedStatus]
+        : "";
+    const radiusClass =
+      resolvedVariant === "underlined"
+        ? "rounded-none"
+        : resolveClassKey(
+            resolvedRadiusKey,
+            TEXTAREA_RADIUS_CLASS,
+            FALLBACK_TEXTAREA_CONFIG.radius,
+          );
 
     return (
       <FieldShell
@@ -168,21 +183,17 @@ export const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
           aria-invalid={resolvedStatus === "error"}
           aria-describedby={describedBy}
           className={cn(
-            "resize-y w-full text-foreground outline-none transition-colors",
+            "resize-y w-full text-foreground outline-none transition-colors shrink-0",
             "focus-visible:ring-2 focus-visible:ring-offset-2",
             "disabled:pointer-events-none disabled:opacity-50",
+            TEXTAREA_SIZE_CLASS[resolvedSizeKey],
             variantClass,
             statusClass,
+            radiusClass,
             sectionConfig?.className,
             className,
           )}
-          style={{
-            borderRadius:
-              resolvedVariant === "underlined" ? "0px" : resolvedRadius,
-            paddingInline: `var(--ashee-textarea-${resolvedSizeKey}-padding-x)`,
-            paddingBlock: `var(--ashee-textarea-${resolvedSizeKey}-padding-y)`,
-            fontSize: `var(--ashee-textarea-${resolvedSizeKey}-font-size)`,
-          }}
+          style={style}
           {...(motionProps as HTMLMotionProps<"textarea">)}
           {...(rest as HTMLMotionProps<"textarea">)}
         />

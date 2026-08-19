@@ -1,65 +1,98 @@
 import { cn } from "@asheeui/utils";
+import { forwardRef } from "react";
 import { useAsheeConfig } from "../../../libs/context";
 import type { Color } from "../../../shared/variant";
-import { resolveComponentScale } from "../../../utils/resolve-token";
-import { defaultSpinnerSizeScale } from "./default-spinner-config";
-import type { SpinnerConfig, SpinnerSizeKey } from "./spinner-config";
+import { resolveCascade, resolveClassKey } from "../../../utils/resolve-token";
+import {
+  FALLBACK_SPINNER_CONFIG,
+  type SpinnerConfig,
+  type SpinnerSizeKey,
+} from "./spinner-config";
+import { SPINNER_COLOR_CLASS, SPINNER_SIZE_CLASS } from "./spinner-styles";
 
-const COLOR_CLASS: Record<Color, string> = {
-  none: "text-background",
-  default: "text-secondary",
-  primary: "text-primary",
-  secondary: "text-secondary",
-  danger: "text-danger",
-  warning: "text-warning",
-  success: "text-success",
-};
-
-export interface SpinnerProps {
+export interface SpinnerProps extends React.SVGAttributes<SVGSVGElement> {
   size?: SpinnerSizeKey;
   color?: Color;
   speed?: string;
   className?: string;
 }
 
-export function Spinner({ size, color, speed, className }: SpinnerProps) {
-  const config = useAsheeConfig();
-  const sectionConfig = config.components?.spinner as SpinnerConfig;
+export const Spinner = forwardRef<SVGSVGElement, SpinnerProps>(
+  ({ size, color, speed, className, style, ...props }, ref) => {
+    const config = useAsheeConfig();
+    const sectionConfig = config.components?.spinner as
+      | SpinnerConfig
+      | undefined;
 
-  const sizeScale = sectionConfig?.size ?? defaultSpinnerSizeScale;
-  const dimension = resolveComponentScale(size, sizeScale);
-  const resolvedColor = color ?? sectionConfig?.color;
-  const resolvedSpeed = speed ?? sectionConfig?.speed ?? "0.75s";
+    // ─── 1. Token Resolvers (4-Tier Cascade) ──────────────────────────────────
 
-  return (
-    <svg
-      aria-hidden="true"
-      className={cn(
-        "animate-spin",
-        resolvedColor && COLOR_CLASS[resolvedColor],
-        sectionConfig?.className,
-        className,
-      )}
-      style={{
-        width: dimension,
-        height: dimension,
-        animationDuration: resolvedSpeed,
-      }}
-      viewBox="0 0 24 24"
-      fill="none">
-      <circle
-        className="opacity-25"
-        cx="12"
-        cy="12"
-        r="10"
-        stroke="currentColor"
-        strokeWidth="4"
-      />
-      <path
-        className="opacity-75"
-        fill="currentColor"
-        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
-      />
-    </svg>
-  );
-}
+    const resolvedSizeKey = resolveCascade<SpinnerSizeKey>(
+      size,
+      sectionConfig?.size,
+      undefined,
+      FALLBACK_SPINNER_CONFIG.size,
+    );
+
+    const resolvedColor = resolveCascade<Color | undefined>(
+      color,
+      sectionConfig?.color,
+      config.theme.defaultColor as Color | undefined,
+      undefined,
+    );
+
+    const resolvedSpeed = resolveCascade<string>(
+      speed,
+      sectionConfig?.speed,
+      undefined,
+      FALLBACK_SPINNER_CONFIG.speed,
+    );
+
+    // ─── 2. Class Maps ────────────────────────────────────────────────────────
+
+    const sizeClass = resolveClassKey(
+      resolvedSizeKey,
+      SPINNER_SIZE_CLASS,
+      FALLBACK_SPINNER_CONFIG.size,
+    );
+
+    const colorClass = resolvedColor
+      ? resolveClassKey(resolvedColor, SPINNER_COLOR_CLASS, "secondary")
+      : undefined;
+
+    return (
+      <svg
+        ref={ref}
+        aria-hidden="true"
+        className={cn(
+          "animate-spin shrink-0",
+          sizeClass,
+          colorClass,
+          sectionConfig?.className,
+          className,
+        )}
+        style={{
+          animationDuration: resolvedSpeed,
+          ...style,
+        }}
+        viewBox="0 0 24 24"
+        fill="none"
+        {...props}>
+        <circle
+          className="opacity-25"
+          cx="12"
+          cy="12"
+          r="10"
+          stroke="currentColor"
+          strokeWidth="4"
+        />
+        <path
+          className="opacity-75"
+          fill="currentColor"
+          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+        />
+      </svg>
+    );
+  },
+);
+
+Spinner.displayName = "Spinner";

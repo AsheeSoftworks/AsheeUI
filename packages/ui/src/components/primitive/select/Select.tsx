@@ -1,4 +1,5 @@
 "use client";
+
 import { cn } from "@asheeui/utils";
 import {
   autoUpdate,
@@ -27,8 +28,11 @@ import {
   type Variant,
 } from "../../../shared/variant";
 import type { Radius } from "../../../theme/token/radius/radius-config";
-import { useResponsiveVars } from "../../../theme/token/responsive/use-responsive-vars";
-import { resolveScale, resolveValue } from "../../../utils/resolve-token";
+import {
+  resolveCascade,
+  resolveClassKey,
+  resolveRadiusKey,
+} from "../../../utils/resolve-token";
 import { ChevronDownIcon } from "../../icons/ChevronDownIcon";
 import type { ButtonSizeKey } from "../../primitive/button/button-config";
 import { FieldShell } from "../field/FieldShell";
@@ -39,25 +43,16 @@ import type {
   LabelAlign,
 } from "../field/field-config";
 import { SelectMenu } from "../select-menu/SelectMenu";
-import { defaultSelectSizeScale } from "./default-select-config";
-import { flattenSelectSizeScale } from "./flatten-select-size-scale";
-import type {
-  SelectConfig,
-  SelectOption,
-  SelectSizeScale,
+import {
+  FALLBACK_SELECT_CONFIG,
+  type SelectConfig,
+  type SelectOption,
 } from "./select-config";
-
-// ─── Status Class Override ───────────────────────────────────────────────────
-
-const STATUS_BORDER_CLASS: Record<FieldStatus, string> = {
-  default: "",
-  error:
-    "border-danger focus-visible:border-danger focus-visible:ring-danger/20",
-  warning:
-    "border-warning focus-visible:border-warning focus-visible:ring-warning/20",
-  success:
-    "border-success focus-visible:border-success focus-visible:ring-success/20",
-};
+import {
+  SELECT_RADIUS_CLASS,
+  SELECT_SIZE_CLASS,
+  SELECT_STATUS_BORDER_CLASS,
+} from "./select-styles";
 
 // ─── Component Interface ──────────────────────────────────────────────────────
 
@@ -138,6 +133,7 @@ export const Select = forwardRef<HTMLButtonElement, SelectProps>(
       menuColor,
       menuRadius,
       menuSize,
+      style,
     },
     ref,
   ) => {
@@ -167,78 +163,97 @@ export const Select = forwardRef<HTMLButtonElement, SelectProps>(
       role,
     ]);
 
-    // ─── Token Resolvers ──────────────────────────────────────────────────────
+    // ─── 1. Token Resolvers (4-Tier Cascade) ──────────────────────────────────
 
-    const sizeScale = (sectionConfig?.size ??
-      defaultSelectSizeScale) as SelectSizeScale;
-    const resolvedSizeKey = size ?? sizeScale.default;
-    const responsiveVars = useMemo(
-      () => flattenSelectSizeScale(sizeScale),
-      [sizeScale],
-    );
-    useResponsiveVars(
-      "ashee-select-tokens",
-      responsiveVars,
-      config.theme.breakpoints,
+    const resolvedSizeKey = resolveCascade<FieldSizeKey>(
+      size,
+      sectionConfig?.size,
+      undefined,
+      FALLBACK_SELECT_CONFIG.size,
     );
 
-    const resolvedRadius = resolveScale(
-      radius,
-      sectionConfig?.radius,
-      config.theme.radius.default,
-      config.theme.radius.values,
-    );
-
-    const resolvedVariant = resolveValue<Variant>(
+    const resolvedVariant = resolveCascade<Variant>(
       variant,
       sectionConfig?.variant,
-      (config.theme.defaultVariant as Variant) ?? "bordered",
+      config.theme.defaultVariant,
+      FALLBACK_SELECT_CONFIG.variant,
     );
 
-    const resolvedColor = resolveValue<Color>(
+    const resolvedColor = resolveCascade<Color>(
       color,
       sectionConfig?.color,
-      (config.theme.defaultColor as Color) ?? "primary",
+      config.theme.defaultColor,
+      FALLBACK_SELECT_CONFIG.color,
     );
 
-    const resolvedStatus = status ?? "default";
-    const resolvedLabelAlign = resolveValue(
+    const resolvedRadiusKey = resolveRadiusKey(
+      typeof radius === "string" ? radius : undefined,
+      typeof sectionConfig?.radius === "string" ? sectionConfig : undefined,
+      config.theme.radius?.default,
+      FALLBACK_SELECT_CONFIG.radius,
+    );
+
+    const resolvedStatus = status ?? FALLBACK_SELECT_CONFIG.status;
+
+    const resolvedLabelAlign = resolveCascade<LabelAlign>(
       labelAlign,
       sectionConfig?.labelAlign,
-      "left",
+      undefined,
+      FALLBACK_SELECT_CONFIG.labelAlign,
     );
 
-    // ─── Menu Token Resolvers ─────────────────────────────────────────────────
-
-    const resolvedMenuVariant = resolveValue<Variant>(
+    // Menu Token Resolvers
+    const resolvedMenuVariant = resolveCascade<Variant>(
       menuVariant,
       sectionConfig?.menuVariant,
-      (config.theme.defaultVariant as Variant) ?? "bordered",
+      undefined,
+      resolvedVariant,
     );
 
-    const resolvedMenuColor = resolveValue<Color>(
+    const resolvedMenuColor = resolveCascade<Color>(
       menuColor,
       sectionConfig?.menuColor,
+      undefined,
       resolvedColor,
     );
 
-    const resolvedMenuRadius = resolveScale(
-      menuRadius,
-      sectionConfig?.menuRadius,
-      resolvedRadius,
-      config.theme.radius.values,
+    const resolvedMenuRadiusKey = resolveRadiusKey(
+      typeof menuRadius === "string" ? menuRadius : undefined,
+      typeof sectionConfig?.menuRadius === "string"
+        ? { radius: sectionConfig.menuRadius }
+        : undefined,
+      resolvedRadiusKey,
+      FALLBACK_SELECT_CONFIG.radius,
     );
 
-    const resolvedMenuSize = resolveValue<ButtonSizeKey>(
+    const resolvedMenuSize = resolveCascade<ButtonSizeKey>(
       menuSize,
       sectionConfig?.menuSize,
-      "sm",
+      undefined,
+      FALLBACK_SELECT_CONFIG.menuSize,
     );
 
-    // Apply global variant/color styling & status overrides
+    // ─── 2. Class Maps ────────────────────────────────────────────────────────
+
     const variantClass = resolveVariantClass(resolvedVariant, resolvedColor);
     const statusClass =
-      resolvedStatus !== "default" ? STATUS_BORDER_CLASS[resolvedStatus] : "";
+      resolvedStatus !== "default"
+        ? SELECT_STATUS_BORDER_CLASS[resolvedStatus]
+        : "";
+    const radiusClass =
+      resolvedVariant === "underlined"
+        ? "rounded-none"
+        : resolveClassKey(
+            resolvedRadiusKey,
+            SELECT_RADIUS_CLASS,
+            FALLBACK_SELECT_CONFIG.radius,
+          );
+
+    const menuRadiusClass = resolveClassKey(
+      resolvedMenuRadiusKey,
+      SELECT_RADIUS_CLASS,
+      FALLBACK_SELECT_CONFIG.radius,
+    );
 
     const selectedOption = useMemo(
       () => options.find((opt) => opt.value === value),
@@ -300,25 +315,18 @@ export const Select = forwardRef<HTMLButtonElement, SelectProps>(
             aria-haspopup="listbox"
             aria-invalid={resolvedStatus === "error"}
             className={cn(
-              "w-full flex items-center justify-between font-normal text-left text-foreground transition-colors outline-none select-none cursor-pointer",
+              "w-full flex items-center justify-between font-normal text-left text-foreground transition-colors outline-none select-none cursor-pointer shrink-0",
               "focus-visible:ring-2 focus-visible:ring-offset-2",
-              "disabled:pointer-events-none disabled:opacity-50",
+              "disabled:pointer-events-none disabled:opacity-50 disabled:cursor-not-allowed",
+              SELECT_SIZE_CLASS[resolvedSizeKey],
               variantClass,
               statusClass,
+              radiusClass,
               buttonColor && `bg-[${buttonColor}]`,
               sectionConfig?.className,
               className,
             )}
-            style={{
-              borderRadius:
-                resolvedVariant === "underlined" ? "0px" : resolvedRadius,
-              height: `var(--ashee-select-${resolvedSizeKey}-height)`,
-              paddingInline:
-                resolvedVariant === "underlined"
-                  ? "0px"
-                  : `var(--ashee-select-${resolvedSizeKey}-padding-x)`,
-              fontSize: `var(--ashee-select-${resolvedSizeKey}-font-s)`,
-            }}
+            style={style}
             {...getReferenceProps()}>
             <span
               className={
@@ -355,7 +363,7 @@ export const Select = forwardRef<HTMLButtonElement, SelectProps>(
             dropdownClassName={dropdownClassName}
             variant={resolvedMenuVariant}
             color={resolvedMenuColor}
-            radius={resolvedMenuRadius}
+            radius={menuRadiusClass}
             size={resolvedMenuSize}
             animation={
               animation ??
@@ -370,6 +378,6 @@ export const Select = forwardRef<HTMLButtonElement, SelectProps>(
 
 Select.displayName = "Select";
 
-// Backward Compatibility Alias
+// Backward Compatibility Aliases
 export const Dropdown = Select;
 export type DropdownProps = SelectProps;

@@ -1,6 +1,6 @@
 "use client";
 
-import { Sidebar, type SidebarItem, ToastProvider } from "asheeui";
+import { Sidebar, type SidebarItem, ToastProvider, useTheme } from "asheeui";
 import { useState } from "react";
 
 // Test Pages
@@ -248,6 +248,7 @@ const navItems: SidebarItem<PageKey>[] = [
 export function AppContent() {
   const [page, setPage] = useState<PageKey>("toast");
   const [isCollapsed, setIsCollapsed] = useState(false);
+  const { setTheme } = useTheme();
 
   function renderPage() {
     switch (page) {
@@ -290,7 +291,8 @@ export function AppContent() {
         footer={
           <button
             type="button"
-            onClick={() => setIsCollapsed((prev) => !prev)}
+            // onClick={() => setIsCollapsed((prev) => !prev)}
+            onClick={() => setTheme("company-red")}
             className="w-full flex items-center justify-center p-2 text-xs font-medium text-muted-foreground hover:text-foreground bg-muted/40 hover:bg-muted rounded-md transition-colors">
             {isCollapsed ? "Expand" : "Collapse Sidebar"}
           </button>

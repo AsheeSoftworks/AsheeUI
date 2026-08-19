@@ -1,8 +1,11 @@
 "use client";
+
 import { cn } from "@asheeui/utils";
 import { AnimatePresence, motion, type PanInfo } from "framer-motion";
 import {
   forwardRef,
+  type HTMLAttributes,
+  type ReactNode,
   useCallback,
   useEffect,
   useId,
@@ -11,25 +14,26 @@ import {
 } from "react";
 import { useAsheeConfig } from "../../../libs/context";
 import type { Radius } from "../../../theme/token/radius/radius-config";
-import { useResponsiveVars } from "../../../theme/token/responsive/use-responsive-vars";
-import { resolveScale, resolveValue } from "../../../utils/resolve-token";
+import {
+  resolveCascade,
+  resolveClassKey,
+  resolveRadiusKey,
+} from "../../../utils/resolve-token";
 import { ChevronLeftIcon } from "../../icons/ChevronLeftIcon";
 import { ChevronRightIcon } from "../../icons/ChevronRightIcon";
-import type {
-  CarouselItem,
-  CarouselSizeKey,
-  CarouselSizeScale,
-  CarouselVariant,
+import {
+  FALLBACK_CAROUSEL_CONFIG,
+  type CarouselConfig,
+  type CarouselItem,
+  type CarouselSizeKey,
+  type CarouselVariant,
 } from "./carousel-config";
-import { defaultCarouselSizeScale } from "./default-carousel-config";
-import { flattenCarouselSizeScale } from "./flatten-carousel-size-scale";
-
-const VARIANT_CLASSES: Record<CarouselVariant, string> = {
-  default: "bg-card border border-border shadow-xs",
-  cards: "bg-card border border-border/60 shadow-lg",
-  bordered: "bg-background border-2 border-border",
-  ghost: "bg-transparent",
-};
+import {
+  CAROUSEL_HEIGHT_CLASS,
+  CAROUSEL_PADDING_CLASS,
+  CAROUSEL_RADIUS_CLASS,
+  CAROUSEL_VARIANT_CLASS,
+} from "./carousel-styles";
 
 const slideVariants = {
   enter: (direction: number) => ({
@@ -56,7 +60,7 @@ const swipePower = (offset: number, velocity: number) => {
 // ─── Props Interface ──────────────────────────────────────────────────────────
 
 export interface CarouselProps
-  extends Omit<React.HTMLAttributes<HTMLButtonElement>, "onChange"> {
+  extends Omit<HTMLAttributes<HTMLDivElement>, "onChange"> {
   items?: CarouselItem[];
   variant?: CarouselVariant;
   size?: CarouselSizeKey;
@@ -74,11 +78,11 @@ export interface CarouselProps
   renderPrevControl?: (props: {
     onClick: () => void;
     disabled: boolean;
-  }) => React.ReactNode;
+  }) => ReactNode;
   renderNextControl?: (props: {
     onClick: () => void;
     disabled: boolean;
-  }) => React.ReactNode;
+  }) => ReactNode;
   itemClassName?: string;
   controlClassName?: string;
   indicatorClassName?: string;
@@ -86,7 +90,7 @@ export interface CarouselProps
 
 // ─── Component Implementation ─────────────────────────────────────────────────
 
-export const Carousel = forwardRef<HTMLButtonElement, CarouselProps>(
+export const Carousel = forwardRef<HTMLDivElement, CarouselProps>(
   (
     {
       items = [],
@@ -109,6 +113,7 @@ export const Carousel = forwardRef<HTMLButtonElement, CarouselProps>(
       controlClassName,
       indicatorClassName,
       className,
+      style,
       children,
       id,
       ...props
@@ -116,55 +121,100 @@ export const Carousel = forwardRef<HTMLButtonElement, CarouselProps>(
     ref,
   ) => {
     const config = useAsheeConfig();
-    const sectionConfig = config.components?.carousel;
+    const sectionConfig = config.components?.carousel as
+      | CarouselConfig
+      | undefined;
 
     const generatedId = useId();
     const carouselId = id ?? generatedId;
 
-    // Design Token Resolvers
-    const sizeScale = (sectionConfig?.size ??
-      defaultCarouselSizeScale) as CarouselSizeScale;
-    const resolvedSizeKey = size ?? sizeScale.default;
-    const responsiveVars = useMemo(
-      () => flattenCarouselSizeScale(sizeScale),
-      [sizeScale],
-    );
-    useResponsiveVars(
-      "ashee-carousel-tokens",
-      responsiveVars,
-      config.theme.breakpoints,
+    // ─── 1. Token Resolvers (4-Tier Cascade) ──────────────────────────────────
+
+    const resolvedSizeKey = resolveCascade<CarouselSizeKey>(
+      size,
+      sectionConfig?.size,
+      undefined,
+      FALLBACK_CAROUSEL_CONFIG.size,
     );
 
-    const resolvedVariant = resolveValue<CarouselVariant>(
+    const resolvedVariant = resolveCascade<CarouselVariant>(
       variant,
       sectionConfig?.variant,
-      "default",
+      config.theme.defaultVariant as CarouselVariant | undefined,
+      FALLBACK_CAROUSEL_CONFIG.variant,
     );
 
-    const resolvedAutoPlay = autoPlay ?? sectionConfig?.autoPlay ?? false;
-    const resolvedAutoPlayInterval =
-      autoPlayInterval ?? sectionConfig?.autoPlayInterval ?? 5000;
-    const resolvedLoop = loop ?? sectionConfig?.loop ?? true;
-    const resolvedShowControls =
-      showControls ?? sectionConfig?.showControls ?? true;
-    const resolvedShowIndicators =
-      showIndicators ?? sectionConfig?.showIndicators ?? true;
-    const resolvedPauseOnHover =
-      pauseOnHover ?? sectionConfig?.pauseOnHover ?? true;
+    const resolvedRadiusKey = resolveRadiusKey(
+      typeof radius === "string" ? radius : undefined,
+      typeof sectionConfig?.radius === "string" ? sectionConfig : undefined,
+      config.theme.radius?.default,
+      FALLBACK_CAROUSEL_CONFIG.radius,
+    );
 
-    const resolvedRadiusKey = typeof radius === "string" ? radius : undefined;
-    const resolvedSectionRadiusKey =
-      typeof sectionConfig?.radius === "string"
-        ? sectionConfig.radius
-        : undefined;
-    const resolvedRadius = resolveScale(
+    const resolvedAutoPlay = resolveCascade<boolean>(
+      autoPlay,
+      sectionConfig?.autoPlay,
+      undefined,
+      FALLBACK_CAROUSEL_CONFIG.autoPlay,
+    );
+
+    const resolvedAutoPlayInterval = resolveCascade<number>(
+      autoPlayInterval,
+      sectionConfig?.autoPlayInterval,
+      undefined,
+      FALLBACK_CAROUSEL_CONFIG.autoPlayInterval,
+    );
+
+    const resolvedLoop = resolveCascade<boolean>(
+      loop,
+      sectionConfig?.loop,
+      undefined,
+      FALLBACK_CAROUSEL_CONFIG.loop,
+    );
+
+    const resolvedShowControls = resolveCascade<boolean>(
+      showControls,
+      sectionConfig?.showControls,
+      undefined,
+      FALLBACK_CAROUSEL_CONFIG.showControls,
+    );
+
+    const resolvedShowIndicators = resolveCascade<boolean>(
+      showIndicators,
+      sectionConfig?.showIndicators,
+      undefined,
+      FALLBACK_CAROUSEL_CONFIG.showIndicators,
+    );
+
+    const resolvedPauseOnHover = resolveCascade<boolean>(
+      pauseOnHover,
+      sectionConfig?.pauseOnHover,
+      undefined,
+      FALLBACK_CAROUSEL_CONFIG.pauseOnHover,
+    );
+
+    // ─── 2. Class Maps ────────────────────────────────────────────────────────
+
+    const heightClass = resolveClassKey(
+      resolvedSizeKey,
+      CAROUSEL_HEIGHT_CLASS,
+      FALLBACK_CAROUSEL_CONFIG.size,
+    );
+
+    const paddingClass = resolveClassKey(
+      resolvedSizeKey,
+      CAROUSEL_PADDING_CLASS,
+      FALLBACK_CAROUSEL_CONFIG.size,
+    );
+
+    const radiusClass = resolveClassKey(
       resolvedRadiusKey,
-      resolvedSectionRadiusKey,
-      config.theme.radius.default,
-      config.theme.radius.values,
+      CAROUSEL_RADIUS_CLASS,
+      FALLBACK_CAROUSEL_CONFIG.radius,
     );
 
-    const isAnimationDisabled = disableAnimation;
+    const variantClass =
+      CAROUSEL_VARIANT_CLASS[resolvedVariant] ?? CAROUSEL_VARIANT_CLASS.default;
 
     // Item normalizer (supports items prop or children fallback)
     const slides: CarouselItem[] = useMemo(() => {
@@ -267,21 +317,23 @@ export const Carousel = forwardRef<HTMLButtonElement, CarouselProps>(
     const isNextDisabled = !resolvedLoop && activeIndex === slides.length - 1;
 
     return (
-      <button
+      // biome-ignore lint/a11y/noStaticElementInteractions: Required for stoping the slide from switch when hovering
+      <div
         ref={ref}
         id={carouselId}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
+        onFocus={() => setIsHovered(true)}
+        onBlur={() => setIsHovered(false)}
         className={cn(
           "relative overflow-hidden w-full select-none flex flex-col group",
-          VARIANT_CLASSES[resolvedVariant],
+          variantClass,
+          radiusClass,
+          heightClass,
           sectionConfig?.className,
           className,
         )}
-        style={{
-          borderRadius: resolvedRadius,
-          height: `var(--ashee-carousel-${resolvedSizeKey}-height)`,
-        }}
+        style={style}
         {...props}>
         {/* Slides Track */}
         <div className="relative w-full h-full overflow-hidden flex-1">
@@ -290,7 +342,7 @@ export const Carousel = forwardRef<HTMLButtonElement, CarouselProps>(
               <motion.div
                 key={slides[activeIndex]?.id || activeIndex}
                 custom={direction}
-                variants={isAnimationDisabled ? undefined : slideVariants}
+                variants={disableAnimation ? undefined : slideVariants}
                 initial="enter"
                 animate="center"
                 exit="exit"
@@ -304,12 +356,9 @@ export const Carousel = forwardRef<HTMLButtonElement, CarouselProps>(
                 onDragEnd={handleDragEnd}
                 className={cn(
                   "absolute inset-0 w-full h-full flex items-center justify-center",
+                  paddingClass,
                   itemClassName,
-                )}
-                style={{
-                  paddingInline: `var(--ashee-carousel-${resolvedSizeKey}-padding-x)`,
-                  paddingBlock: `var(--ashee-carousel-${resolvedSizeKey}-padding-y)`,
-                }}>
+                )}>
                 {slides[activeIndex]?.content}
               </motion.div>
             )}
@@ -381,7 +430,7 @@ export const Carousel = forwardRef<HTMLButtonElement, CarouselProps>(
             </div>
           </div>
         )}
-      </button>
+      </div>
     );
   },
 );

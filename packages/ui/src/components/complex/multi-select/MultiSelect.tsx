@@ -1,4 +1,5 @@
 "use client";
+
 import { cn } from "@asheeui/utils";
 import {
   autoUpdate,
@@ -13,6 +14,7 @@ import {
 } from "@floating-ui/react";
 import {
   forwardRef,
+  type HTMLAttributes,
   type ReactNode,
   useCallback,
   useId,
@@ -23,8 +25,11 @@ import { useAsheeConfig } from "../../../libs/context";
 import type { AnimationProp } from "../../../motion/types";
 import type { Color, Variant } from "../../../shared/variant";
 import type { Radius } from "../../../theme/token/radius/radius-config";
-import { useResponsiveVars } from "../../../theme/token/responsive/use-responsive-vars";
-import { resolveScale, resolveValue } from "../../../utils/resolve-token";
+import {
+  resolveCascade,
+  resolveClassKey,
+  resolveRadiusKey,
+} from "../../../utils/resolve-token";
 import { ChevronDownIcon } from "../../icons/ChevronDownIcon";
 import { CloseIcon } from "../../icons/CloseIcon";
 import { Button } from "../../primitive/button/Button";
@@ -36,25 +41,24 @@ import type {
   LabelAlign,
 } from "../../primitive/field/field-config";
 import { SelectMenu } from "../../primitive/select-menu/SelectMenu";
-import { defaultMultiSelectSizeScale } from "./default-multi-select-config";
-import { flattenMultiSelectSizeScale } from "./flatten-multi-select-size-scale";
-import type {
-  MultiSelectConfig,
-  MultiSelectOption,
-  MultiSelectSizeScale,
+import {
+  FALLBACK_MULTI_SELECT_CONFIG,
+  type MultiSelectConfig,
+  type MultiSelectOption,
 } from "./multi-select-config";
-
-const STATUS_BORDER_CLASS: Record<FieldStatus, string> = {
-  default: "border-border focus:border-primary",
-  error: "border-danger focus:border-danger",
-  warning: "border-warning focus:border-warning",
-  success: "border-success focus:border-success",
-};
+import {
+  MULTI_SELECT_FONT_CLASS,
+  MULTI_SELECT_HEIGHT_CLASS,
+  MULTI_SELECT_PADDING_CLASS,
+  MULTI_SELECT_RADIUS_CLASS,
+  STATUS_BORDER_CLASS,
+} from "./multi-select-styles";
+import { Chip } from "../chip/Chip";
 
 // ─── Props Interface ──────────────────────────────────────────────────────────
 
 export interface MultiSelectProps
-  extends Omit<React.HTMLAttributes<HTMLDivElement>, "onChange"> {
+  extends Omit<HTMLAttributes<HTMLDivElement>, "onChange"> {
   options: MultiSelectOption[];
   value?: (string | number)[];
   onChange?: (values: (string | number)[]) => void;
@@ -144,6 +148,7 @@ export const MultiSelect = forwardRef<HTMLButtonElement, MultiSelectProps>(
       dropdownClassName,
       id,
       className,
+      style,
       ...props
     },
     ref,
@@ -176,114 +181,132 @@ export const MultiSelect = forwardRef<HTMLButtonElement, MultiSelectProps>(
       role,
     ]);
 
-    // Design Token Resolvers
-    const sizeScale = (sectionConfig?.size ??
-      defaultMultiSelectSizeScale) as MultiSelectSizeScale;
-    const resolvedSizeKey = size ?? sizeScale.default;
-    const responsiveVars = useMemo(
-      () => flattenMultiSelectSizeScale(sizeScale),
-      [sizeScale],
-    );
-    useResponsiveVars(
-      "ashee-multi-select-tokens",
-      responsiveVars,
-      config.theme.breakpoints,
+    // ─── 1. Token Resolvers (4-Tier Cascade) ──────────────────────────────────
+
+    const resolvedSizeKey = resolveCascade<FieldSizeKey>(
+      size,
+      sectionConfig?.size,
+      undefined,
+      FALLBACK_MULTI_SELECT_CONFIG.size,
     );
 
-    // Variant & Color Tokens
-    const resolvedVariant = resolveValue(
+    const resolvedVariant = resolveCascade<Variant>(
       variant,
       sectionConfig?.variant,
-      config.theme.defaultVariant ?? "bordered",
+      config.theme.defaultVariant,
+      FALLBACK_MULTI_SELECT_CONFIG.variant,
     );
 
-    const resolvedColor = resolveValue(
+    const resolvedColor = resolveCascade<Color>(
       color,
       sectionConfig?.color,
-      config.theme.defaultColor ?? "primary",
+      config.theme.defaultColor as Color | undefined,
+      FALLBACK_MULTI_SELECT_CONFIG.color,
     );
 
-    const resolvedRadiusKey = typeof radius === "string" ? radius : undefined;
-    const resolvedSectionRadiusKey =
-      typeof sectionConfig?.radius === "string"
-        ? sectionConfig.radius
-        : undefined;
-    const resolvedRadius = resolveScale(
-      resolvedRadiusKey,
-      resolvedSectionRadiusKey,
-      config.theme.radius.default,
-      config.theme.radius.values,
+    const resolvedRadiusKey = resolveRadiusKey(
+      typeof radius === "string" ? radius : undefined,
+      typeof sectionConfig?.radius === "string" ? sectionConfig : undefined,
+      config.theme.radius?.default,
+      FALLBACK_MULTI_SELECT_CONFIG.radius,
     );
 
     // Menu Token Resolvers
-    const resolvedMenuVariant = resolveValue(
+    const resolvedMenuVariant = resolveCascade<Variant>(
       menuVariant,
       sectionConfig?.menuVariant,
       resolvedVariant,
+      FALLBACK_MULTI_SELECT_CONFIG.variant,
     );
 
-    const resolvedMenuColor = resolveValue(
+    const resolvedMenuColor = resolveCascade<Color>(
       menuColor,
       sectionConfig?.menuColor,
       resolvedColor,
+      FALLBACK_MULTI_SELECT_CONFIG.color,
     );
 
-    const resolvedMenuSize = resolveValue(
+    const resolvedMenuSize = resolveCascade<ButtonSizeKey>(
       menuSize,
       sectionConfig?.menuSize,
-      "sm",
+      undefined,
+      FALLBACK_MULTI_SELECT_CONFIG.menuSize,
     );
 
-    const resolvedMenuRadiusKey =
-      typeof menuRadius === "string" ? menuRadius : undefined;
-    const resolvedSectionMenuRadiusKey =
-      typeof sectionConfig?.menuRadius === "string"
-        ? sectionConfig.menuRadius
-        : undefined;
-    const resolvedMenuRadius = resolveScale(
-      resolvedMenuRadiusKey,
-      resolvedSectionMenuRadiusKey,
-      resolvedRadius,
-      config.theme.radius.values,
+    const resolvedMenuRadiusKey = resolveRadiusKey(
+      typeof menuRadius === "string" ? menuRadius : undefined,
+      typeof sectionConfig?.menuRadius === "string" ? sectionConfig : undefined,
+      resolvedRadiusKey,
+      FALLBACK_MULTI_SELECT_CONFIG.radius,
     );
 
-    // Chip Styling Resolvers
-    const resolvedChipVariant = resolveValue(
+    // Chip Token Resolvers
+    const resolvedChipVariant = resolveCascade<Variant>(
       chipVariant,
       sectionConfig?.chipVariant,
       resolvedVariant,
+      FALLBACK_MULTI_SELECT_CONFIG.variant,
     );
 
-    const resolvedChipColor = resolveValue(
+    const resolvedChipColor = resolveCascade<Color>(
       chipColor,
       sectionConfig?.chipColor,
       resolvedColor,
+      FALLBACK_MULTI_SELECT_CONFIG.color,
     );
 
-    const resolvedChipSize = resolveValue(
+    const resolvedChipSize = resolveCascade<ButtonSizeKey>(
       chipSize,
       sectionConfig?.chipSize,
-      "sm",
+      undefined,
+      FALLBACK_MULTI_SELECT_CONFIG.chipSize,
     );
 
-    const resolvedChipRadiusKey =
-      typeof chipRadius === "string" ? chipRadius : undefined;
-    const resolvedSectionChipRadiusKey =
-      typeof sectionConfig?.chipRadius === "string"
-        ? sectionConfig.chipRadius
-        : undefined;
-    const resolvedChipRadius = resolveScale(
-      resolvedChipRadiusKey,
-      resolvedSectionChipRadiusKey,
-      resolvedRadius,
-      config.theme.radius.values,
+    const resolvedChipRadiusKey = resolveRadiusKey(
+      typeof chipRadius === "string" ? chipRadius : undefined,
+      typeof sectionConfig?.chipRadius === "string" ? sectionConfig : undefined,
+      resolvedRadiusKey,
+      FALLBACK_MULTI_SELECT_CONFIG.radius,
     );
 
     const resolvedStatus = status ?? "default";
-    const resolvedLabelAlign = resolveValue(
+    const resolvedLabelAlign = resolveCascade<LabelAlign>(
       labelAlign,
       sectionConfig?.labelAlign,
-      "left",
+      undefined,
+      FALLBACK_MULTI_SELECT_CONFIG.labelAlign,
+    );
+
+    // ─── 2. Class Maps ────────────────────────────────────────────────────────
+
+    const heightClass = resolveClassKey(
+      resolvedSizeKey,
+      MULTI_SELECT_HEIGHT_CLASS,
+      FALLBACK_MULTI_SELECT_CONFIG.size,
+    );
+
+    const paddingClass = resolveClassKey(
+      resolvedSizeKey,
+      MULTI_SELECT_PADDING_CLASS,
+      FALLBACK_MULTI_SELECT_CONFIG.size,
+    );
+
+    const fontClass = resolveClassKey(
+      resolvedSizeKey,
+      MULTI_SELECT_FONT_CLASS,
+      FALLBACK_MULTI_SELECT_CONFIG.size,
+    );
+
+    const radiusClass = resolveClassKey(
+      resolvedRadiusKey,
+      MULTI_SELECT_RADIUS_CLASS,
+      FALLBACK_MULTI_SELECT_CONFIG.radius,
+    );
+
+    const chipRadiusClass = resolveClassKey(
+      resolvedChipRadiusKey,
+      MULTI_SELECT_RADIUS_CLASS,
+      FALLBACK_MULTI_SELECT_CONFIG.radius,
     );
 
     // Controlled or Custom Chip Selection Determination
@@ -351,6 +374,7 @@ export const MultiSelect = forwardRef<HTMLButtonElement, MultiSelectProps>(
         messageClassName={sectionConfig?.messageClassName}>
         <div
           className={cn("w-full flex flex-col gap-3", containerClassName)}
+          style={style}
           {...props}>
           <div className="relative w-full">
             {/* Trigger Button built on Button Primitive */}
@@ -372,15 +396,13 @@ export const MultiSelect = forwardRef<HTMLButtonElement, MultiSelectProps>(
               className={cn(
                 "w-full flex items-center justify-between font-normal text-left transition-all duration-200 outline-none select-none",
                 STATUS_BORDER_CLASS[resolvedStatus],
+                heightClass,
+                paddingClass,
+                fontClass,
+                radiusClass,
                 sectionConfig?.className,
                 className,
               )}
-              style={{
-                borderRadius: resolvedRadius,
-                height: `var(--ashee-multi-select-${resolvedSizeKey}-height)`,
-                paddingInline: `var(--ashee-multi-select-${resolvedSizeKey}-padding-x)`,
-                fontSize: `var(--ashee-multi-select-${resolvedSizeKey}-font-s)`,
-              }}
               {...getReferenceProps()}>
               <span>
                 {activeChips.length > 0
@@ -415,7 +437,7 @@ export const MultiSelect = forwardRef<HTMLButtonElement, MultiSelectProps>(
               variant={resolvedMenuVariant}
               color={resolvedMenuColor}
               size={resolvedMenuSize}
-              radius={resolvedMenuRadius}
+              radius={resolvedMenuRadiusKey}
               animation={
                 animation ??
                 (sectionConfig?.animation as AnimationProp | undefined)
@@ -438,15 +460,20 @@ export const MultiSelect = forwardRef<HTMLButtonElement, MultiSelectProps>(
                   </span>
                 ) : (
                   activeChips.map((chip) => (
-                    <Button
+                    <Chip
                       key={String(chip.value)}
-                      type="button"
-                      variant={resolvedChipVariant}
+                      variant={
+                        resolvedChipVariant === "underlined"
+                          ? "bordered"
+                          : "bordered"
+                      }
                       color={resolvedChipColor}
                       size={resolvedChipSize}
                       isDisabled={disabled}
-                      className="inline-flex items-center gap-1.5 font-medium shadow-xs"
-                      style={{ borderRadius: resolvedChipRadius }}>
+                      className={cn(
+                        "inline-flex items-center gap-1.5 font-medium shadow-xs",
+                        chipRadiusClass,
+                      )}>
                       <span>{chip.label}</span>
                       <button
                         type="button"
@@ -468,7 +495,7 @@ export const MultiSelect = forwardRef<HTMLButtonElement, MultiSelectProps>(
                         className="inline-flex items-center justify-center h-3.5 w-3.5 rounded-full hover:bg-black/20 dark:hover:bg-white/20 transition-colors cursor-pointer shrink-0">
                         <CloseIcon className="w-3 h-3" />
                       </button>
-                    </Button>
+                    </Chip>
                   ))
                 )}
               </div>

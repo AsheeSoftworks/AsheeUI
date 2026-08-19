@@ -1,7 +1,11 @@
 "use client";
+
 import { cn } from "@asheeui/utils";
 import {
   forwardRef,
+  type HTMLAttributes,
+  type KeyboardEvent,
+  type PointerEvent as ReactPointerEvent,
   type ReactNode,
   useCallback,
   useRef,
@@ -14,15 +18,20 @@ import {
   type Variant,
 } from "../../../shared/variant";
 import type { Radius } from "../../../theme/token/radius/radius-config";
-import { resolveScale, resolveValue } from "../../../utils/resolve-token";
-import { defaultResizableScreenConfig } from "./default-resizable-screen-config";
-import type {
-  ResizableOrientation,
-  ResizableScreenConfig,
+import {
+  resolveCascade,
+  resolveClassKey,
+  resolveRadiusKey,
+} from "../../../utils/resolve-token";
+import {
+  FALLBACK_RESIZABLE_SCREEN_CONFIG,
+  type ResizableOrientation,
+  type ResizableScreenConfig,
 } from "./resizable-screen-config";
+import { RESIZABLE_SCREEN_RADIUS_CLASS } from "./resizable-screen-styles";
 
 export interface ResizableScreenProps
-  extends Omit<React.HTMLAttributes<HTMLDivElement>, "children"> {
+  extends Omit<HTMLAttributes<HTMLDivElement>, "children"> {
   /**
    * Exactly two child nodes representing the primary and secondary panels.
    */
@@ -128,48 +137,72 @@ export const ResizableScreen = forwardRef<HTMLDivElement, ResizableScreenProps>(
       | ResizableScreenConfig
       | undefined;
 
-    const minSize =
-      minSizeProp ??
-      sectionConfig?.minSize ??
-      (defaultResizableScreenConfig.minSize as number);
-    const maxSize =
-      maxSizeProp ??
-      sectionConfig?.maxSize ??
-      (defaultResizableScreenConfig.maxSize as number);
-    const step =
-      stepProp ??
-      sectionConfig?.step ??
-      (defaultResizableScreenConfig.step as number);
-    const orientation =
-      orientationProp ??
-      sectionConfig?.orientation ??
-      (defaultResizableScreenConfig.orientation as number | undefined);
+    // ─── 1. Token Resolvers (4-Tier Cascade) ──────────────────────────────────
 
-    const hideHandle = hideHandleProp ?? sectionConfig?.hideHandle ?? false;
+    const minSize = resolveCascade<number>(
+      minSizeProp,
+      sectionConfig?.minSize,
+      undefined,
+      FALLBACK_RESIZABLE_SCREEN_CONFIG.minSize,
+    );
 
-    // Notch styling resolution matching Button standard
-    const resolvedHandleVariant = resolveValue(
+    const maxSize = resolveCascade<number>(
+      maxSizeProp,
+      sectionConfig?.maxSize,
+      undefined,
+      FALLBACK_RESIZABLE_SCREEN_CONFIG.maxSize,
+    );
+
+    const step = resolveCascade<number>(
+      stepProp,
+      sectionConfig?.step,
+      undefined,
+      FALLBACK_RESIZABLE_SCREEN_CONFIG.step,
+    );
+
+    const orientation = resolveCascade<ResizableOrientation>(
+      orientationProp,
+      sectionConfig?.orientation,
+      undefined,
+      FALLBACK_RESIZABLE_SCREEN_CONFIG.orientation,
+    );
+
+    const hideHandle = resolveCascade<boolean>(
+      hideHandleProp,
+      sectionConfig?.hideHandle,
+      undefined,
+      FALLBACK_RESIZABLE_SCREEN_CONFIG.hideHandle,
+    );
+
+    const resolvedHandleVariant = resolveCascade<Variant>(
       handleVariantProp,
       sectionConfig?.handleVariant,
-      config.theme.defaultVariant ?? "bordered",
-    );
-    const resolvedHandleColor = resolveValue(
-      handleColorProp,
-      sectionConfig?.handleColor,
-      config.theme.defaultColor ?? "primary",
+      config.theme.defaultVariant,
+      FALLBACK_RESIZABLE_SCREEN_CONFIG.handleVariant,
     );
 
-    const resolvedHandleRadiusKey =
-      typeof handleRadiusProp === "string" ? handleRadiusProp : undefined;
-    const resolvedSectionHandleRadiusKey =
-      typeof sectionConfig?.handleRadius === "string"
-        ? sectionConfig.handleRadius
-        : undefined;
-    const resolvedHandleRadius = resolveScale(
+    const resolvedHandleColor = resolveCascade<Color>(
+      handleColorProp,
+      sectionConfig?.handleColor,
+      config.theme.defaultColor as Color | undefined,
+      FALLBACK_RESIZABLE_SCREEN_CONFIG.handleColor,
+    );
+
+    const resolvedHandleRadiusKey = resolveRadiusKey(
+      handleRadiusProp,
+      sectionConfig?.handleRadius
+        ? { radius: sectionConfig.handleRadius }
+        : undefined,
+      config.theme.radius?.default,
+      FALLBACK_RESIZABLE_SCREEN_CONFIG.handleRadius,
+    );
+
+    // ─── 2. Class Maps ────────────────────────────────────────────────────────
+
+    const handleRadiusClass = resolveClassKey(
       resolvedHandleRadiusKey,
-      resolvedSectionHandleRadiusKey,
-      config.theme.radius.default,
-      config.theme.radius.values,
+      RESIZABLE_SCREEN_RADIUS_CLASS,
+      FALLBACK_RESIZABLE_SCREEN_CONFIG.handleRadius,
     );
 
     const initialSize =
@@ -177,7 +210,7 @@ export const ResizableScreen = forwardRef<HTMLDivElement, ResizableScreenProps>(
       left ??
       defaultSize ??
       sectionConfig?.defaultSize ??
-      (defaultResizableScreenConfig.defaultSize as number);
+      FALLBACK_RESIZABLE_SCREEN_CONFIG.defaultSize;
 
     const [internalSize, setInternalSize] = useState<number>(initialSize);
     const [isDragging, setIsDragging] = useState<boolean>(false);
@@ -204,13 +237,13 @@ export const ResizableScreen = forwardRef<HTMLDivElement, ResizableScreenProps>(
 
     // ─── Pointer Drag Management ──────────────────────────────────────────────
 
-    const handlePointerDown = (e: React.PointerEvent<HTMLElement>) => {
+    const handlePointerDown = (e: ReactPointerEvent<HTMLElement>) => {
       e.preventDefault();
       e.currentTarget.setPointerCapture(e.pointerId);
       setIsDragging(true);
     };
 
-    const handlePointerMove = (e: React.PointerEvent<HTMLElement>) => {
+    const handlePointerMove = (e: ReactPointerEvent<HTMLElement>) => {
       if (!isDragging || !containerRef.current) return;
 
       const rect = containerRef.current.getBoundingClientRect();
@@ -227,7 +260,7 @@ export const ResizableScreen = forwardRef<HTMLDivElement, ResizableScreenProps>(
       }
     };
 
-    const handlePointerUp = (e: React.PointerEvent<HTMLElement>) => {
+    const handlePointerUp = (e: ReactPointerEvent<HTMLElement>) => {
       if (isDragging) {
         e.currentTarget.releasePointerCapture(e.pointerId);
         setIsDragging(false);
@@ -236,7 +269,7 @@ export const ResizableScreen = forwardRef<HTMLDivElement, ResizableScreenProps>(
 
     // ─── Keyboard Accessibility ───────────────────────────────────────────────
 
-    const handleKeyDown = (e: React.KeyboardEvent<HTMLElement>) => {
+    const handleKeyDown = (e: KeyboardEvent<HTMLElement>) => {
       const isHorizontal = orientation === "horizontal";
       const shrinkKey = isHorizontal ? "ArrowLeft" : "ArrowUp";
       const expandKey = isHorizontal ? "ArrowRight" : "ArrowDown";
@@ -320,14 +353,12 @@ export const ResizableScreen = forwardRef<HTMLDivElement, ResizableScreenProps>(
             {/* Visual Divider Notch styled like Button */}
             <div
               className={cn(
-                "transition-all duration-200 rounded-full",
+                "transition-all duration-200",
                 isHorizontal ? "w-1 h-10" : "h-1 w-10",
                 resolveVariantClass(resolvedHandleVariant, resolvedHandleColor),
+                handleRadiusClass,
                 isDragging && "scale-110",
               )}
-              style={{
-                borderRadius: resolvedHandleRadius,
-              }}
             />
           </div>
         )}

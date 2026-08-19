@@ -15,9 +15,21 @@
       "style": "./src/index.css",
       "default": "./src/index.css"
     },
+    "./config": {
+      "types": "./src/config/index.ts",
+      "import": "./src/config/index.ts",
+      "default": "./src/config/index.ts"
+    },
+    "./libs": {
+      "types": "./src/libs/index.ts",
+      "import": "./src/libs/index.ts",
+      "default": "./src/libs/index.ts"
+    },
     "./styles.css": "./src/index.css",
     "./src": "./src",
     "./src/index.ts": "./src/index.ts",
+    "./src/config/index.ts": "./src/config/index.ts",
+    "./src/libs/index.ts": "./src/libs/index.ts",
     "./src/*": "./src/*"
   },
   "sideEffects": [

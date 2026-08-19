@@ -1,6 +1,4 @@
 declare module "virtual:ashee-config" {
-  import type { ExternalConfig } from "./config";
-
-  const config: ExternalConfig | undefined;
+  const config: import("./config/config").ExternalConfig | undefined;
   export default config;
 }

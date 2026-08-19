@@ -1,4 +1,5 @@
 "use client";
+
 import { cn } from "@asheeui/utils";
 import { AnimatePresence } from "framer-motion";
 import {
@@ -11,21 +12,16 @@ import {
 } from "react";
 import { useAsheeConfig } from "../../../libs/context";
 import type { Variant } from "../../../shared/variant";
-import { useResponsiveVars } from "../../../theme/token/responsive/use-responsive-vars";
-import { resolveScale, resolveValue } from "../../../utils/resolve-token";
+import type { Radius } from "../../../theme/token/radius/radius-config";
+import { resolveCascade, resolveRadiusKey } from "../../../utils/resolve-token";
 import {
-  defaultToastConfig,
-  defaultToastSizeScale,
-} from "./default-toast-config";
-import { flattenToastSizeScale } from "./flatten-toast-size-scale";
-import { ToastItem } from "./ToastItem";
-import type {
-  ToastConfig,
-  ToastItemData,
-  ToastPlacement,
-  ToastSizeKey,
-  ToastSizeScale,
+  FALLBACK_TOAST_CONFIG,
+  type ToastConfig,
+  type ToastItemData,
+  type ToastPlacement,
+  type ToastSizeKey,
 } from "./toast-config";
+import { ToastItem } from "./ToastItem";
 
 // ─── Context Interface ────────────────────────────────────────────────────────
 
@@ -46,56 +42,80 @@ export interface ToastContextType {
 
 const ToastContext = createContext<ToastContextType | null>(null);
 
+// ─── Component Props ──────────────────────────────────────────────────────────
+
+export interface ToastProviderProps {
+  children: ReactNode;
+  size?: ToastSizeKey;
+  placement?: ToastPlacement;
+  variant?: Variant;
+  radius?: keyof Radius;
+  defaultTimeout?: number;
+  maxToasts?: number;
+  className?: string;
+}
+
 // ─── Provider Component ───────────────────────────────────────────────────────
 
-export function ToastProvider({ children }: { children: ReactNode }) {
+export function ToastProvider({
+  children,
+  size,
+  placement,
+  variant,
+  radius,
+  defaultTimeout,
+  maxToasts,
+  className,
+}: ToastProviderProps) {
   const [toasts, setToasts] = useState<ToastItemData[]>([]);
   const config = useAsheeConfig();
   const sectionConfig = config.components?.toast as ToastConfig | undefined;
 
-  // Resolve Design Tokens
-  const sizeScale = (sectionConfig?.size ??
-    defaultToastSizeScale) as ToastSizeScale;
-  const resolvedSizeKey = (sectionConfig?.size?.default ??
-    "md") as ToastSizeKey;
+  // ─── 1. Token Resolvers (4-Tier Cascade) ──────────────────────────────────
 
-  const responsiveVars = useMemo(
-    () => flattenToastSizeScale(sizeScale),
-    [sizeScale],
-  );
-  useResponsiveVars(
-    "ashee-toast-tokens",
-    responsiveVars,
-    config.theme.breakpoints,
+  const resolvedSizeKey = resolveCascade<ToastSizeKey>(
+    size,
+    sectionConfig?.size,
+    undefined,
+    FALLBACK_TOAST_CONFIG.size,
   );
 
-  const placement = resolveValue<ToastPlacement>(
+  const resolvedPlacement = resolveCascade<ToastPlacement>(
+    placement,
     sectionConfig?.placement,
-    defaultToastConfig.placement,
-    "top-right",
+    undefined,
+    FALLBACK_TOAST_CONFIG.placement,
   );
 
-  const variant = resolveValue<Variant>(
+  const resolvedVariant = resolveCascade<Variant>(
+    variant,
     sectionConfig?.variant,
-    defaultToastConfig.variant,
-    config.theme.defaultVariant ?? "solid",
+    config.theme.defaultVariant,
+    FALLBACK_TOAST_CONFIG.variant,
   );
 
-  const maxToasts =
-    sectionConfig?.maxToasts ?? defaultToastConfig.maxToasts ?? 5;
-  const defaultTimeout =
-    sectionConfig?.defaultTimeout ?? defaultToastConfig.defaultTimeout ?? 3500;
-
-  const resolvedRadiusKey =
-    typeof sectionConfig?.radius === "string"
-      ? sectionConfig.radius
-      : undefined;
-  const resolvedRadius = resolveScale(
-    resolvedRadiusKey,
-    "md",
-    config.theme.radius.values.md,
-    config.theme.radius.values,
+  const resolvedRadiusKey = resolveRadiusKey(
+    radius,
+    sectionConfig,
+    config.theme.radius?.default,
+    FALLBACK_TOAST_CONFIG.radius,
   );
+
+  const resolvedMaxToasts = resolveCascade<number>(
+    maxToasts,
+    sectionConfig?.maxToasts,
+    undefined,
+    FALLBACK_TOAST_CONFIG.maxToasts,
+  );
+
+  const resolvedDefaultTimeout = resolveCascade<number>(
+    defaultTimeout,
+    sectionConfig?.defaultTimeout,
+    undefined,
+    FALLBACK_TOAST_CONFIG.defaultTimeout,
+  );
+
+  // ─── 2. Toast State Handlers ──────────────────────────────────────────────
 
   const removeToast = useCallback((id: string) => {
     setToasts((prev) => prev.filter((t) => t.id !== id));
@@ -116,22 +136,27 @@ export function ToastProvider({ children }: { children: ReactNode }) {
 
       const newItem: ToastItemData =
         typeof options === "string"
-          ? { id, message: options, timeout: defaultTimeout, type: "info" }
+          ? {
+              id,
+              message: options,
+              timeout: resolvedDefaultTimeout,
+              type: "info",
+            }
           : {
               ...options,
               id,
-              timeout: options.timeout ?? defaultTimeout,
+              timeout: options.timeout ?? resolvedDefaultTimeout,
               type: options.type ?? "info",
             };
 
       setToasts((prev) => {
         const filtered = prev.filter((t) => t.id !== id);
-        return [newItem, ...filtered].slice(0, maxToasts);
+        return [newItem, ...filtered].slice(0, resolvedMaxToasts);
       });
 
       return id;
     },
-    [defaultTimeout, maxToasts],
+    [resolvedDefaultTimeout, resolvedMaxToasts],
   );
 
   const success = useCallback(
@@ -181,25 +206,26 @@ export function ToastProvider({ children }: { children: ReactNode }) {
         aria-label="Notifications"
         className={cn(
           "fixed z-50 flex flex-col gap-3 pointer-events-none p-4 max-h-screen overflow-hidden",
-          placement === "top-right" && "top-0 right-0 items-end",
-          placement === "top-left" && "top-0 left-0 items-start",
-          placement === "bottom-right" && "bottom-0 right-0 items-end",
-          placement === "bottom-left" && "bottom-0 left-0 items-start",
-          placement === "top-center" &&
+          resolvedPlacement === "top-right" && "top-0 right-0 items-end",
+          resolvedPlacement === "top-left" && "top-0 left-0 items-start",
+          resolvedPlacement === "bottom-right" && "bottom-0 right-0 items-end",
+          resolvedPlacement === "bottom-left" && "bottom-0 left-0 items-start",
+          resolvedPlacement === "top-center" &&
             "top-0 left-1/2 -translate-x-1/2 items-center",
-          placement === "bottom-center" &&
+          resolvedPlacement === "bottom-center" &&
             "bottom-0 left-1/2 -translate-x-1/2 items-center",
           sectionConfig?.className,
+          className,
         )}>
         <AnimatePresence mode="popLayout">
           {toasts.map((toastItem) => (
             <ToastItem
               key={toastItem.id}
               {...toastItem}
-              placement={placement}
+              placement={resolvedPlacement}
               sizeKey={resolvedSizeKey}
-              variant={variant}
-              radiusStyle={resolvedRadius}
+              variant={resolvedVariant}
+              radius={resolvedRadiusKey}
               onDismiss={removeToast}
               className={sectionConfig?.itemClassName}
             />

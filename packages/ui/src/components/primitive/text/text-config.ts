@@ -27,3 +27,17 @@ export interface TextConfig {
   lineHeight?: keyof LineHeight;
   className?: string;
 }
+
+export const defaultTextConfig: TextConfig = {
+  as: "p",
+  size: "md",
+  weight: "normal",
+  lineHeight: "base",
+};
+
+export const FALLBACK_TEXT_CONFIG = {
+  as: "p",
+  size: "md",
+  weight: "normal",
+  lineHeight: "base",
+} as const;

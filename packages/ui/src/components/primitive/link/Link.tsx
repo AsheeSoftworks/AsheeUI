@@ -1,55 +1,33 @@
 "use client";
+
 import { cn } from "@asheeui/utils";
-import {
-  type AnchorHTMLAttributes,
-  forwardRef,
-  type ReactNode,
-  useMemo,
-} from "react";
+import { forwardRef, type AnchorHTMLAttributes, type ReactNode } from "react";
 import { useAsheeConfig } from "../../../libs/context";
 import type { Color } from "../../../shared/variant";
-import { useResponsiveVars } from "../../../theme/token/responsive/use-responsive-vars";
 import type {
   FontWeight,
   LineHeight,
 } from "../../../theme/typography/typography-config";
-import { resolveValue } from "../../../utils/resolve-token";
+import { resolveCascade, resolveClassKey } from "../../../utils/resolve-token";
 import { ExternalLinkIcon } from "../../icons/ExternalLinkIcon";
-import { defaultLinkSizeScale } from "./default-link-config";
-import { flattenLinkSizeScale } from "./flatten-link-size-scale";
-import type {
-  LinkConfig,
-  LinkSizeKey,
-  LinkSizeScale,
-  LinkUnderline,
-  LinkVariant,
+import {
+  FALLBACK_LINK_CONFIG,
+  type LinkConfig,
+  type LinkSizeKey,
+  type LinkUnderline,
+  type LinkVariant,
 } from "./link-config";
+import {
+  LINK_COLOR_CLASS,
+  LINK_ICON_SIZE_CLASS,
+  LINK_LINE_HEIGHT_CLASS,
+  LINK_SIZE_CLASS,
+  LINK_UNDERLINE_CLASS,
+  LINK_VARIANT_CLASS,
+  LINK_WEIGHT_CLASS,
+} from "./link-styles";
 
-// ─── Style Mappings ──────────────────────────────────────────────────────────
-
-const COLOR_CLASS: Record<Color, string> = {
-  none: "text-foreground hover:text-foreground/80",
-  default: "text-foreground hover:text-foreground/80",
-  primary: "text-primary hover:text-primary/80",
-  secondary: "text-secondary hover:text-secondary/80",
-  success: "text-success hover:text-success/80",
-  warning: "text-warning hover:text-warning/80",
-  danger: "text-danger hover:text-danger/80",
-};
-
-const VARIANT_CLASS: Record<LinkVariant, string> = {
-  default: "",
-  muted: "text-muted-foreground hover:text-foreground",
-  subtle: "opacity-80 hover:opacity-100",
-};
-
-const UNDERLINE_CLASS: Record<LinkUnderline, string> = {
-  always: "underline underline-offset-4 decoration-current",
-  hover: "no-underline hover:underline underline-offset-4 decoration-current",
-  never: "no-underline",
-};
-
-// ─── Props Interface ──────────────────────────────────────────────────────────
+// ─── Component Interface ──────────────────────────────────────────────────────
 
 export interface LinkProps
   extends Omit<AnchorHTMLAttributes<HTMLAnchorElement>, "size"> {
@@ -96,47 +74,104 @@ export const Link = forwardRef<HTMLAnchorElement, LinkProps>(
     const config = useAsheeConfig();
     const sectionConfig = config.components?.link as LinkConfig | undefined;
 
-    // Design Token Resolvers
-    const sizeScale = (sectionConfig?.size ??
-      defaultLinkSizeScale) as LinkSizeScale;
-    const resolvedSizeKey = size ?? sizeScale.default;
-    const responsiveVars = useMemo(
-      () => flattenLinkSizeScale(sizeScale),
-      [sizeScale],
-    );
-    useResponsiveVars(
-      "ashee-link-tokens",
-      responsiveVars,
-      config.theme.breakpoints,
+    // ─── 1. Token Resolvers (4-Tier Cascade) ──────────────────────────────────
+
+    const resolvedSizeKey = resolveCascade<LinkSizeKey>(
+      size,
+      sectionConfig?.size,
+      undefined,
+      FALLBACK_LINK_CONFIG.size,
     );
 
-    const resolvedColor = resolveValue(
-      color,
-      sectionConfig?.color,
-      config.theme.defaultColor ?? "primary",
-    );
-    const resolvedVariant = resolveValue(
+    const resolvedVariant = resolveCascade<LinkVariant>(
       variant,
       sectionConfig?.variant,
-      "default" as LinkVariant,
+      undefined,
+      FALLBACK_LINK_CONFIG.variant,
     );
-    const resolvedUnderline = resolveValue(
+
+    const resolvedColor = resolveCascade<Color>(
+      color,
+      sectionConfig?.color,
+      config.theme.defaultColor,
+      FALLBACK_LINK_CONFIG.color,
+    );
+
+    const resolvedUnderline = resolveCascade<LinkUnderline>(
       underline,
       sectionConfig?.underline,
-      "hover" as LinkUnderline,
+      undefined,
+      FALLBACK_LINK_CONFIG.underline,
     );
-    const resolvedWeight = resolveValue(
+
+    const resolvedWeight = resolveCascade<keyof FontWeight>(
       weight,
       sectionConfig?.weight,
-      "medium" as keyof FontWeight,
+      undefined,
+      FALLBACK_LINK_CONFIG.weight,
     );
-    const resolvedLineHeight = resolveValue(
+
+    const resolvedLineHeight = resolveCascade<keyof LineHeight>(
       lineHeight,
       sectionConfig?.lineHeight,
-      "normal" as keyof LineHeight,
+      undefined,
+      FALLBACK_LINK_CONFIG.lineHeight,
     );
-    const resolvedIsExternal = isExternal ?? sectionConfig?.isExternal ?? false;
 
+    const resolvedIsExternal =
+      isExternal ??
+      sectionConfig?.isExternal ??
+      FALLBACK_LINK_CONFIG.isExternal;
+
+    // ─── 2. Class Maps ────────────────────────────────────────────────────────
+
+    const colorClass =
+      resolvedVariant === "muted"
+        ? LINK_VARIANT_CLASS.muted
+        : cn(
+            resolveClassKey(
+              resolvedColor,
+              LINK_COLOR_CLASS,
+              FALLBACK_LINK_CONFIG.color,
+            ),
+            resolveClassKey(
+              resolvedVariant,
+              LINK_VARIANT_CLASS,
+              FALLBACK_LINK_CONFIG.variant,
+            ),
+          );
+
+    const sizeClass = resolveClassKey(
+      resolvedSizeKey,
+      LINK_SIZE_CLASS,
+      FALLBACK_LINK_CONFIG.size,
+    );
+
+    const iconSizeClass = resolveClassKey(
+      resolvedSizeKey,
+      LINK_ICON_SIZE_CLASS,
+      FALLBACK_LINK_CONFIG.size,
+    );
+
+    const underlineClass = resolveClassKey(
+      resolvedUnderline,
+      LINK_UNDERLINE_CLASS,
+      FALLBACK_LINK_CONFIG.underline,
+    );
+
+    const weightClass = resolveClassKey(
+      resolvedWeight,
+      LINK_WEIGHT_CLASS,
+      FALLBACK_LINK_CONFIG.weight,
+    );
+
+    const lineHeightClass = resolveClassKey(
+      resolvedLineHeight,
+      LINK_LINE_HEIGHT_CLASS,
+      FALLBACK_LINK_CONFIG.lineHeight,
+    );
+
+    // Attributes for external anchors
     const targetAttr = target ?? (resolvedIsExternal ? "_blank" : undefined);
     const relAttr =
       rel ??
@@ -152,11 +187,6 @@ export const Link = forwardRef<HTMLAnchorElement, LinkProps>(
       onClick?.(e);
     };
 
-    const colorClass =
-      resolvedVariant === "muted"
-        ? VARIANT_CLASS.muted
-        : cn(COLOR_CLASS[resolvedColor], VARIANT_CLASS[resolvedVariant]);
-
     return (
       <a
         ref={ref}
@@ -166,29 +196,25 @@ export const Link = forwardRef<HTMLAnchorElement, LinkProps>(
         aria-disabled={disabled}
         onClick={handleClick}
         className={cn(
-          "inline-flex items-center transition-colors duration-200 outline-none select-none",
+          "inline-flex items-center transition-colors duration-200 outline-none select-none shrink-0",
           "focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 rounded-xs",
+          sizeClass,
           colorClass,
-          UNDERLINE_CLASS[resolvedUnderline],
+          underlineClass,
+          weightClass,
+          lineHeightClass,
           disabled && "opacity-50 pointer-events-none cursor-not-allowed",
           sectionConfig?.className,
           className,
         )}
-        style={{
-          fontSize: `var(--ashee-link-${resolvedSizeKey}-font-s)`,
-          gap: `var(--ashee-link-${resolvedSizeKey}-gap)`,
-          fontWeight: config.theme.typography.weight[resolvedWeight],
-          lineHeight: config.theme.typography.lineHeight[resolvedLineHeight],
-          ...style,
-        }}
+        style={style}
         {...props}>
         {startIcon && (
           <span
-            className="inline-flex items-center justify-center shrink-0"
-            style={{
-              width: `var(--ashee-link-${resolvedSizeKey}-icon-s)`,
-              height: `var(--ashee-link-${resolvedSizeKey}-icon-s)`,
-            }}>
+            className={cn(
+              "inline-flex items-center justify-center shrink-0",
+              iconSizeClass,
+            )}>
             {startIcon}
           </span>
         )}
@@ -197,21 +223,16 @@ export const Link = forwardRef<HTMLAnchorElement, LinkProps>(
 
         {endIcon ? (
           <span
-            className="inline-flex items-center justify-center shrink-0"
-            style={{
-              width: `var(--ashee-link-${resolvedSizeKey}-icon-s)`,
-              height: `var(--ashee-link-${resolvedSizeKey}-icon-s)`,
-            }}>
+            className={cn(
+              "inline-flex items-center justify-center shrink-0",
+              iconSizeClass,
+            )}>
             {endIcon}
           </span>
         ) : (
           resolvedIsExternal && (
             <ExternalLinkIcon
-              className="inline-block shrink-0"
-              style={{
-                width: `var(--ashee-link-${resolvedSizeKey}-icon-s)`,
-                height: `var(--ashee-link-${resolvedSizeKey}-icon-s)`,
-              }}
+              className={cn("inline-block shrink-0", iconSizeClass)}
             />
           )
         )}

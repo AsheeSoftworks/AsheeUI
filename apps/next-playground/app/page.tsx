@@ -1,21 +1,7 @@
-"use client";
-
-import { Button, Container, Heading, useTheme } from "asheeui";
+import SideBar from "@/components/Sidebar";
 
 const Page = () => {
-  const { setTheme } = useTheme();
-  return (
-    <Container>
-      <Heading level={1}>HI</Heading>
-      <Button
-        onClick={() => {
-          setTheme("light");
-          // alert(theme);
-        }}>
-        Click
-      </Button>
-    </Container>
-  );
+  return <SideBar />;
 };
 
 export default Page;

@@ -1,96 +1,127 @@
+"use client";
+
 import { cn } from "@asheeui/utils";
-import type { ReactNode } from "react";
+import { forwardRef, type ReactNode } from "react";
 import { useAsheeConfig } from "../../../libs/context";
 import type { Spacing } from "../../../theme/token/spacing/spacing-config";
-import { resolveScale, resolveValue } from "../../../utils/resolve-token";
-import type {
-  FlexAlign,
-  FlexConfig,
-  FlexDirection,
-  FlexJustify,
+import {
+  resolveCascade,
+  resolveClassKey,
+  resolveSpacingKey,
+} from "../../../utils/resolve-token";
+import {
+  FALLBACK_FLEX_CONFIG,
+  type FlexAlign,
+  type FlexConfig,
+  type FlexDirection,
+  type FlexJustify,
 } from "./flex-config";
+import {
+  FLEX_ALIGN_CLASS,
+  FLEX_DIRECTION_CLASS,
+  FLEX_GAP_CLASS,
+  FLEX_JUSTIFY_CLASS,
+} from "./flex-styles";
 
-// Literal maps — never template-string these, Tailwind's scanner won't see them.
-const DIRECTION_CLASS: Record<FlexDirection, string> = {
-  row: "flex-row",
-  "row-reverse": "flex-row-reverse",
-  col: "flex-col",
-  "col-reverse": "flex-col-reverse",
-};
-const ALIGN_CLASS: Record<FlexAlign, string> = {
-  start: "items-start",
-  center: "items-center",
-  end: "items-end",
-  stretch: "items-stretch",
-  baseline: "items-baseline",
-};
-const JUSTIFY_CLASS: Record<FlexJustify, string> = {
-  start: "justify-start",
-  center: "justify-center",
-  end: "justify-end",
-  between: "justify-between",
-  around: "justify-around",
-  evenly: "justify-evenly",
-};
-
-export interface FlexProps {
+export interface FlexProps extends React.HTMLAttributes<HTMLDivElement> {
   direction?: FlexDirection;
   align?: FlexAlign;
   justify?: FlexJustify;
   gap?: keyof Spacing;
   wrap?: boolean;
   className?: string;
-  children: ReactNode;
+  children?: ReactNode;
 }
 
-export function Flex({
-  direction,
-  align,
-  justify,
-  gap,
-  wrap,
-  className,
-  children,
-}: FlexProps) {
-  const config = useAsheeConfig();
-  const sectionConfig = config.components?.flex as FlexConfig | undefined;
+export const Flex = forwardRef<HTMLDivElement, FlexProps>(
+  (
+    { direction, align, justify, gap, wrap, className, children, ...props },
+    ref,
+  ) => {
+    const config = useAsheeConfig();
+    const sectionConfig = config.components?.flex as FlexConfig | undefined;
 
-  const resolvedDirection: FlexDirection = resolveValue(
-    direction,
-    sectionConfig?.direction,
-    "row",
-  );
-  const resolvedAlign: FlexAlign = resolveValue(
-    align,
-    sectionConfig?.align,
-    "stretch",
-  );
-  const resolvedJustify: FlexJustify = resolveValue(
-    justify,
-    sectionConfig?.justify,
-    "start",
-  );
-  const resolvedWrap = resolveValue(wrap, sectionConfig?.wrap, false);
-  const resolvedGap = resolveScale(
-    gap,
-    sectionConfig?.gap,
-    config.theme.spacing.default,
-    config.theme.spacing.values,
-  );
+    // ─── 1. Token Resolvers (4-Tier Cascade) ──────────────────────────────────
 
-  return (
-    <div
-      className={cn(
-        "flex",
-        DIRECTION_CLASS[resolvedDirection],
-        ALIGN_CLASS[resolvedAlign],
-        JUSTIFY_CLASS[resolvedJustify],
-        resolvedWrap && "flex-wrap",
-        sectionConfig?.className,
-        className,
-      )}
-      style={{ gap: resolvedGap }}>
-      {children}
-    </div>
-  );
-}
+    const resolvedDirection = resolveCascade<FlexDirection>(
+      direction,
+      sectionConfig?.direction,
+      undefined,
+      FALLBACK_FLEX_CONFIG.direction,
+    );
+
+    const resolvedAlign = resolveCascade<FlexAlign>(
+      align,
+      sectionConfig?.align,
+      undefined,
+      FALLBACK_FLEX_CONFIG.align,
+    );
+
+    const resolvedJustify = resolveCascade<FlexJustify>(
+      justify,
+      sectionConfig?.justify,
+      undefined,
+      FALLBACK_FLEX_CONFIG.justify,
+    );
+
+    const resolvedGapKey = resolveSpacingKey(
+      gap,
+      sectionConfig?.gap,
+      config.theme.spacing?.default,
+      FALLBACK_FLEX_CONFIG.gap,
+    );
+
+    const isWrapped = resolveCascade<boolean>(
+      wrap,
+      sectionConfig?.wrap,
+      undefined,
+      FALLBACK_FLEX_CONFIG.wrap,
+    );
+
+    // ─── 2. Class Maps ────────────────────────────────────────────────────────
+
+    const directionClass = resolveClassKey(
+      resolvedDirection,
+      FLEX_DIRECTION_CLASS,
+      FALLBACK_FLEX_CONFIG.direction,
+    );
+
+    const alignClass = resolveClassKey(
+      resolvedAlign,
+      FLEX_ALIGN_CLASS,
+      FALLBACK_FLEX_CONFIG.align,
+    );
+
+    const justifyClass = resolveClassKey(
+      resolvedJustify,
+      FLEX_JUSTIFY_CLASS,
+      FALLBACK_FLEX_CONFIG.justify,
+    );
+
+    const gapClass = resolveClassKey(
+      resolvedGapKey,
+      FLEX_GAP_CLASS,
+      FALLBACK_FLEX_CONFIG.gap,
+    );
+
+    return (
+      <div
+        ref={ref}
+        className={cn(
+          "flex",
+          directionClass,
+          alignClass,
+          justifyClass,
+          gapClass,
+          isWrapped && "flex-wrap",
+          sectionConfig?.className,
+          className,
+        )}
+        {...props}>
+        {children}
+      </div>
+    );
+  },
+);
+
+Flex.displayName = "Flex";

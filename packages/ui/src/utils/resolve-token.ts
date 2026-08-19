@@ -1,36 +1,69 @@
-import type { Radius, RadiusConfig } from "../theme/token/radius/radius-config";
-
-export function resolveRadius(
-  instanceProp: keyof Radius | undefined,
-  sectionConfig: { radius?: keyof Radius } | undefined,
-  globalRadius: RadiusConfig,
-): string {
-  const key = instanceProp ?? sectionConfig?.radius ?? globalRadius.default;
-  return globalRadius.values[key];
-}
-
-/** 2-tier: instance prop wins, else the component config section's value, else a built-in fallback. */
-export function resolveValue<T>(
+/**
+ * 4-Tier Cascade Resolver:
+ * 1. Component instance prop (<Button variant="solid" />)
+ * 2. Component section config from provider (config.components.button.variant)
+ * 3. Global theme default from provider (config.theme.defaultVariant)
+ * 4. Hardcoded library fallback ("bordered")
+ */
+export function resolveCascade<T>(
   instance: T | undefined,
   section: T | undefined,
-  fallback: T,
+  globalDefault: T | undefined,
+  hardFallback: T,
 ): T {
-  return instance ?? section ?? fallback;
+  return instance ?? section ?? globalDefault ?? hardFallback;
 }
 
-/** 3-tier: instance prop, else component config key, else the global theme's default key — resolved against a shared value scale. */
-export function resolveScale<TKey extends PropertyKey, TValue = string>(
-  instance: TKey | undefined,
-  section: TKey | undefined,
-  globalDefault: TKey,
-  values: Record<TKey, TValue>,
-): TValue {
-  return values[instance ?? section ?? globalDefault];
+/**
+ * Resolves a radius token KEY (e.g., "md") rather than a raw CSS value string.
+ */
+export function resolveRadiusKey<TKey extends string = string>(
+  instanceProp: TKey | undefined,
+  sectionConfig: { radius?: TKey } | undefined,
+  globalDefaultRadius: TKey | undefined,
+  hardFallback: TKey = "md" as TKey,
+): TKey {
+  return (
+    instanceProp ?? sectionConfig?.radius ?? globalDefaultRadius ?? hardFallback
+  );
 }
 
-export function resolveComponentScale<TKey extends PropertyKey, TValue>(
-  instance: TKey | undefined,
-  scale: { default: TKey; values: Record<TKey, TValue> },
-): TValue {
-  return scale.values[instance ?? scale.default];
+/**
+ * Safely looks up a class from a class map with a guaranteed fallback key.
+ */
+export function resolveClassKey<TKey extends PropertyKey>(
+  key: TKey,
+  classMap: Record<TKey, string>,
+  fallbackKey: TKey,
+): string {
+  return classMap[key] ?? classMap[fallbackKey] ?? "";
+}
+
+/**
+ * Resolves a spacing token KEY (e.g., "md") rather than a raw CSS value string.
+ * Accepts section config objects (with `gap`, `spacing`, `padding`, or `margin`) or direct token values.
+ */
+export function resolveSpacingKey<TKey extends string = string>(
+  instanceProp: TKey | undefined,
+  sectionConfig: Record<string, unknown> | TKey | undefined,
+  globalDefaultSpacing: TKey | undefined,
+  hardFallback: TKey = "md" as TKey,
+): TKey {
+  let sectionValue: TKey | undefined;
+
+  if (typeof sectionConfig === "object" && sectionConfig !== null) {
+    const candidate =
+      sectionConfig.gap ??
+      sectionConfig.spacing ??
+      sectionConfig.padding ??
+      sectionConfig.margin;
+
+    if (typeof candidate === "string") {
+      sectionValue = candidate as TKey;
+    }
+  } else if (typeof sectionConfig === "string") {
+    sectionValue = sectionConfig;
+  }
+
+  return instanceProp ?? sectionValue ?? globalDefaultSpacing ?? hardFallback;
 }

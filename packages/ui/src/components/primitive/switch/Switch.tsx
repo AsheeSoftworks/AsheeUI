@@ -1,12 +1,13 @@
 "use client";
+
 import { cn } from "@asheeui/utils";
 import { type HTMLMotionProps, motion } from "framer-motion";
 import {
   type ChangeEvent,
   forwardRef,
   type InputHTMLAttributes,
+  useCallback,
   useId,
-  useMemo,
   useState,
 } from "react";
 import { useAsheeConfig } from "../../../libs/context";
@@ -14,32 +15,35 @@ import { resolveAnimation } from "../../../motion/resolve-animation";
 import type { AnimationProp } from "../../../motion/types";
 import { type Color, resolveVariantClass } from "../../../shared/variant";
 import type { Radius } from "../../../theme/token/radius/radius-config";
-import { useResponsiveVars } from "../../../theme/token/responsive/use-responsive-vars";
-import { resolveScale, resolveValue } from "../../../utils/resolve-token";
+import {
+  resolveCascade,
+  resolveClassKey,
+  resolveRadiusKey,
+} from "../../../utils/resolve-token";
 import { FieldShell } from "../field/FieldShell";
 import type {
   FieldSizeKey,
   FieldStatus,
   LabelAlign,
 } from "../field/field-config";
-import { defaultSwitchSizeScale } from "./default-switch-config";
-import { flattenSwitchSizeScale } from "./flatten-switch-size-scale";
-import type { SwitchConfig, SwitchSizeScale } from "./switch-config";
+import { FALLBACK_SWITCH_CONFIG, type SwitchConfig } from "./switch-config";
+import {
+  SWITCH_RADIUS_CLASS,
+  SWITCH_STATUS_BORDER_CLASS,
+  SWITCH_THUMB_SIZE_CLASS,
+  SWITCH_THUMB_TRANSLATE_X,
+  SWITCH_TRACK_SIZE_CLASS,
+} from "./switch-styles";
 
-const STATUS_BORDER_CLASS: Record<FieldStatus, string> = {
-  default: "border-border",
-  error: "border-danger",
-  warning: "border-warning",
-  success: "border-success",
-};
+// ─── Component Interface ──────────────────────────────────────────────────────
 
 export interface SwitchProps
   extends Omit<
-    React.SelectHTMLAttributes<HTMLInputElement>,
-    "size" | "onChange" | "children"
+    InputHTMLAttributes<HTMLInputElement>,
+    "size" | "onChange" | "children" | "color"
   > {
   size?: FieldSizeKey;
-  color?: string;
+  color?: Color;
   radius?: keyof Radius;
   animation?: AnimationProp;
   status?: FieldStatus;
@@ -53,6 +57,8 @@ export interface SwitchProps
   defaultChecked?: boolean;
   onChange?: (checked: boolean, event: ChangeEvent<HTMLInputElement>) => void;
 }
+
+// ─── Component Implementation ─────────────────────────────────────────────────
 
 export const Switch = forwardRef<HTMLInputElement, SwitchProps>(
   (
@@ -70,6 +76,7 @@ export const Switch = forwardRef<HTMLInputElement, SwitchProps>(
       isLoading,
       id,
       className,
+      style,
       disabled,
       checked: controlledChecked,
       defaultChecked = false,
@@ -83,65 +90,87 @@ export const Switch = forwardRef<HTMLInputElement, SwitchProps>(
 
     const generatedId = useId();
     const fieldId = id ?? generatedId;
-    const descriptionId = description ? `${fieldId}-description` : undefined;
-    const messageId = message ? `${fieldId}-message` : undefined;
 
-    // Controlled / Uncontrolled state handling
+    // Controlled / Uncontrolled State Handling
     const [uncontrolledChecked, setUncontrolledChecked] =
       useState(defaultChecked);
     const isChecked = controlledChecked ?? uncontrolledChecked;
 
-    // Responsive Size Scale Engine
-    const sizeScale = (sectionConfig?.size ??
-      defaultSwitchSizeScale) as SwitchSizeScale;
-    const resolvedSizeKey = size ?? sizeScale.default;
-    const responsiveVars = useMemo(
-      () => flattenSwitchSizeScale(sizeScale),
-      [sizeScale],
-    );
-    useResponsiveVars(
-      "ashee-switch-tokens",
-      responsiveVars,
-      config.theme.breakpoints,
+    // ─── 1. Token Resolvers (4-Tier Cascade) ──────────────────────────────────
+
+    const resolvedSizeKey = resolveCascade<FieldSizeKey>(
+      size,
+      sectionConfig?.size,
+      undefined,
+      FALLBACK_SWITCH_CONFIG.size,
     );
 
-    // Token Resolvers
-    const resolvedColor = resolveValue(
+    const resolvedColor = resolveCascade<Color>(
       color,
       sectionConfig?.color,
-      config.theme.defaultColor ?? "primary",
+      config.theme.defaultColor,
+      FALLBACK_SWITCH_CONFIG.color,
     );
-    const resolvedRadiusKey = typeof radius === "string" ? radius : undefined;
-    const resolvedSectionRadiusKey =
-      typeof sectionConfig?.radius === "string"
-        ? sectionConfig.radius
-        : undefined;
-    const resolvedRadius = resolveScale(
-      resolvedRadiusKey,
-      resolvedSectionRadiusKey,
-      config.theme.radius.default,
-      config.theme.radius.values,
+
+    const resolvedRadiusKey = resolveRadiusKey(
+      typeof radius === "string" ? radius : undefined,
+      typeof sectionConfig?.radius === "string" ? sectionConfig : undefined,
+      config.theme.radius?.default,
+      FALLBACK_SWITCH_CONFIG.radius,
     );
-    const resolvedStatus = status ?? "default";
-    const resolvedLabelAlign = resolveValue(
+
+    const resolvedStatus = status ?? FALLBACK_SWITCH_CONFIG.status;
+
+    const resolvedLabelAlign = resolveCascade<LabelAlign>(
       labelAlign,
       sectionConfig?.labelAlign,
-      "left",
+      undefined,
+      FALLBACK_SWITCH_CONFIG.labelAlign,
     );
+
     const motionProps = resolveAnimation(
       animation ?? (sectionConfig?.animation as AnimationProp | undefined),
     );
 
+    // ─── 2. Class Maps ────────────────────────────────────────────────────────
+
+    const trackSizeClass = resolveClassKey(
+      resolvedSizeKey,
+      SWITCH_TRACK_SIZE_CLASS,
+      FALLBACK_SWITCH_CONFIG.size,
+    );
+
+    const thumbSizeClass = resolveClassKey(
+      resolvedSizeKey,
+      SWITCH_THUMB_SIZE_CLASS,
+      FALLBACK_SWITCH_CONFIG.size,
+    );
+
+    const radiusClass = resolveClassKey(
+      resolvedRadiusKey,
+      SWITCH_RADIUS_CLASS,
+      FALLBACK_SWITCH_CONFIG.radius,
+    );
+
+    const statusBorderClass =
+      SWITCH_STATUS_BORDER_CLASS[resolvedStatus] ??
+      SWITCH_STATUS_BORDER_CLASS.default;
+
+    const checkedColorClass = resolveVariantClass("solid", resolvedColor);
+    const translateX = SWITCH_THUMB_TRANSLATE_X[resolvedSizeKey] ?? 20;
     const isInteractionDisabled = disabled || isLoading;
 
-    const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-      if (isInteractionDisabled) return;
-      const nextChecked = e.target.checked;
-      if (controlledChecked === undefined) {
-        setUncontrolledChecked(nextChecked);
-      }
-      onChange?.(nextChecked, e);
-    };
+    const handleChange = useCallback(
+      (e: ChangeEvent<HTMLInputElement>) => {
+        if (isInteractionDisabled) return;
+        const nextChecked = e.target.checked;
+        if (controlledChecked === undefined) {
+          setUncontrolledChecked(nextChecked);
+        }
+        onChange?.(nextChecked, e);
+      },
+      [controlledChecked, isInteractionDisabled, onChange],
+    );
 
     return (
       <FieldShell
@@ -149,9 +178,7 @@ export const Switch = forwardRef<HTMLInputElement, SwitchProps>(
         label={label}
         labelAlign={resolvedLabelAlign}
         description={description}
-        descriptionId={descriptionId}
         message={message}
-        messageId={messageId}
         status={resolvedStatus}
         required={required}
         isLoading={isLoading}
@@ -161,16 +188,15 @@ export const Switch = forwardRef<HTMLInputElement, SwitchProps>(
         <label
           htmlFor={fieldId}
           className={cn(
-            "inline-flex items-center gap-3 select-none cursor-pointer",
+            "inline-flex items-center gap-3 select-none cursor-pointer shrink-0",
             isInteractionDisabled &&
               "opacity-50 pointer-events-none cursor-not-allowed",
           )}>
           <div
-            className="relative shrink-0 inline-flex items-center"
-            style={{
-              width: `var(--ashee-switch-${resolvedSizeKey}-track-w)`,
-              height: `var(--ashee-switch-${resolvedSizeKey}-track-h)`,
-            }}>
+            className={cn(
+              "relative shrink-0 inline-flex items-center",
+              trackSizeClass,
+            )}>
             {/* Native Accessible Input */}
             <input
               ref={ref}
@@ -185,35 +211,31 @@ export const Switch = forwardRef<HTMLInputElement, SwitchProps>(
               aria-busy={isLoading}
               onChange={handleChange}
               className="sr-only peer"
-              {...(rest as unknown as InputHTMLAttributes<HTMLInputElement>)}
+              {...rest}
             />
 
             {/* Track Background */}
             <div
               className={cn(
-                "absolute inset-0 border transition-colors duration-200",
+                "absolute inset-0 border transition-colors duration-200 shrink-0",
                 "peer-focus-visible:ring-2 peer-focus-visible:ring-primary peer-focus-visible:ring-offset-2",
-                STATUS_BORDER_CLASS[resolvedStatus],
-                isChecked
-                  ? resolveVariantClass("solid", resolvedColor as Color)
-                  : "bg-border/60",
+                statusBorderClass,
+                radiusClass,
+                isChecked ? checkedColorClass : "bg-muted/60",
                 sectionConfig?.className,
                 className,
               )}
-              style={{ borderRadius: resolvedRadius }}
+              style={style}
             />
 
             {/* Framer Motion Animated Thumb */}
             <motion.span
-              className="absolute left-1 bg-white shadow-sm rounded-full pointer-events-none"
-              style={{
-                width: `var(--ashee-switch-${resolvedSizeKey}-thumb-s)`,
-                height: `var(--ashee-switch-${resolvedSizeKey}-thumb-s)`,
-              }}
+              className={cn(
+                "relative z-10 bg-background shadow-sm rounded-full pointer-events-none shrink-0",
+                thumbSizeClass,
+              )}
               animate={{
-                x: isChecked
-                  ? `var(--ashee-switch-${resolvedSizeKey}-thumb-t)`
-                  : "0px",
+                x: isChecked ? translateX : 0,
               }}
               transition={{
                 type: "spring",
@@ -228,4 +250,5 @@ export const Switch = forwardRef<HTMLInputElement, SwitchProps>(
     );
   },
 );
+
 Switch.displayName = "Switch";

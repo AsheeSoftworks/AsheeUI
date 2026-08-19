@@ -13,17 +13,33 @@
     "./src/*": "./src/*"
   },
   "files": [
+    "dist",
     "src"
   ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json"
+  },
   "dependencies": {
-    "@asheeui/utils": "workspace:*"
+    "@asheeui/utils": "workspace:*",
+    "jiti": "^2.4.0"
   },
   "peerDependencies": {
-    "next": "^16.0.0"
+    "asheeui": "workspace:*",
+    "next": "^16.0.0",
+    "postcss": "^8.4.0"
+  },
+  "peerDependenciesMeta": {
+    "asheeui": {
+      "optional": true
+    },
+    "postcss": {
+      "optional": true
+    }
   },
   "devDependencies": {
     "@types/node": "^26.1.2",
     "next": "16.3.1",
+    "postcss": "^8.4.0",
     "typescript": "^5.0.0"
   }
 }

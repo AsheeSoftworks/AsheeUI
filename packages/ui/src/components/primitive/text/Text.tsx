@@ -1,4 +1,5 @@
 "use client";
+
 import { cn } from "@asheeui/utils";
 import {
   createElement,
@@ -9,13 +10,22 @@ import {
 import { useAsheeConfig } from "../../../libs/context";
 import type { Size } from "../../../theme/token/token";
 import type {
-  FontSizeKey,
   FontWeight,
   LineHeight,
 } from "../../../theme/typography/typography-config";
-import { resolveValue } from "../../../utils/resolve-token";
-import { defaultTextConfig } from "./default-text-config";
-import type { TextAs, TextConfig } from "./text-config";
+import { resolveCascade, resolveClassKey } from "../../../utils/resolve-token";
+import {
+  FALLBACK_TEXT_CONFIG,
+  type TextAs,
+  type TextConfig,
+} from "./text-config";
+import {
+  TEXT_LINE_HEIGHT_CLASS,
+  TEXT_SIZE_CLASS,
+  TEXT_WEIGHT_CLASS,
+} from "./text-styles";
+
+// ─── Component Interface ──────────────────────────────────────────────────────
 
 export interface TextProps extends HTMLAttributes<HTMLElement> {
   as?: TextAs;
@@ -26,13 +36,7 @@ export interface TextProps extends HTMLAttributes<HTMLElement> {
   children?: ReactNode;
 }
 
-const SIZE_CLASS: Record<FontSizeKey, string> = {
-  xs: "text-xs",
-  sm: "text-sm",
-  md: "text-base",
-  lg: "text-lg",
-  xl: "text-xl",
-};
+// ─── Component Implementation ─────────────────────────────────────────────────
 
 export const Text = forwardRef<HTMLElement, TextProps>(
   (
@@ -42,24 +46,54 @@ export const Text = forwardRef<HTMLElement, TextProps>(
     const config = useAsheeConfig();
     const sectionConfig = config.components?.text as TextConfig | undefined;
 
-    const tag = (as ?? sectionConfig?.as ?? defaultTextConfig.as) as TextAs;
+    // ─── 1. Token Resolvers (4-Tier Cascade) ──────────────────────────────────
 
-    const resolvedSize = resolveValue(
-      size,
-      sectionConfig?.size,
-      defaultTextConfig.size as keyof Size,
-    ) as FontSizeKey;
-
-    const resolvedWeight = resolveValue(
-      weight,
-      sectionConfig?.weight,
-      defaultTextConfig.weight as keyof FontWeight,
+    const tag = resolveCascade<TextAs>(
+      as,
+      sectionConfig?.as,
+      undefined,
+      FALLBACK_TEXT_CONFIG.as,
     );
 
-    const resolvedLineHeight = resolveValue(
+    const resolvedSize = resolveCascade<keyof Size>(
+      size,
+      sectionConfig?.size,
+      undefined,
+      FALLBACK_TEXT_CONFIG.size,
+    );
+
+    const resolvedWeight = resolveCascade<keyof FontWeight>(
+      weight,
+      sectionConfig?.weight,
+      undefined,
+      FALLBACK_TEXT_CONFIG.weight,
+    );
+
+    const resolvedLineHeight = resolveCascade<keyof LineHeight>(
       lineHeight,
       sectionConfig?.lineHeight,
-      defaultTextConfig.lineHeight as keyof LineHeight,
+      undefined,
+      FALLBACK_TEXT_CONFIG.lineHeight,
+    );
+
+    // ─── 2. Class Maps ────────────────────────────────────────────────────────
+
+    const sizeClass = resolveClassKey(
+      resolvedSize,
+      TEXT_SIZE_CLASS,
+      FALLBACK_TEXT_CONFIG.size,
+    );
+
+    const weightClass = resolveClassKey(
+      resolvedWeight,
+      TEXT_WEIGHT_CLASS,
+      FALLBACK_TEXT_CONFIG.weight,
+    );
+
+    const lineHeightClass = resolveClassKey(
+      resolvedLineHeight,
+      TEXT_LINE_HEIGHT_CLASS,
+      FALLBACK_TEXT_CONFIG.lineHeight,
     );
 
     return createElement(
@@ -67,16 +101,13 @@ export const Text = forwardRef<HTMLElement, TextProps>(
       {
         ref,
         className: cn(
-          SIZE_CLASS[resolvedSize] ?? "text-base",
+          sizeClass,
+          weightClass,
+          lineHeightClass,
           sectionConfig?.className,
           className,
         ),
-        style: {
-          fontWeight: config.theme?.typography?.weight?.[resolvedWeight],
-          lineHeight:
-            config.theme?.typography?.lineHeight?.[resolvedLineHeight],
-          ...style,
-        },
+        style,
         ...props,
       },
       children,

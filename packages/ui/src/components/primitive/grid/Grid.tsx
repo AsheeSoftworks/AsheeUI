@@ -1,38 +1,74 @@
+"use client";
+
 import { cn } from "@asheeui/utils";
-import type { ReactNode } from "react";
+import { forwardRef, type ReactNode } from "react";
 import { useAsheeConfig } from "../../../libs/context";
 import type { Spacing } from "../../../theme/token/spacing/spacing-config";
-import { resolveScale, resolveValue } from "../../../utils/resolve-token";
-import { Container } from "../container/Container";
-import type { GridConfig } from "./grid-config";
+import {
+  resolveCascade,
+  resolveClassKey,
+  resolveSpacingKey,
+} from "../../../utils/resolve-token";
+import { FALLBACK_GRID_CONFIG, type GridConfig } from "./grid-config";
+import { GRID_COLS_CLASS, GRID_GAP_CLASS } from "./grid-styles";
 
-export interface GridProps {
+export interface GridProps extends React.HTMLAttributes<HTMLDivElement> {
   columns?: number;
   gap?: keyof Spacing;
   className?: string;
-  children: ReactNode;
+  children?: ReactNode;
 }
 
-export function Grid({ columns, gap, className, children }: GridProps) {
-  const config = useAsheeConfig();
-  const sectionConfig = config.components?.grid as GridConfig | undefined;
+export const Grid = forwardRef<HTMLDivElement, GridProps>(
+  ({ columns, gap, className, children, ...props }, ref) => {
+    const config = useAsheeConfig();
+    const sectionConfig = config.components?.grid as GridConfig | undefined;
 
-  const resolvedColumns = resolveValue(columns, sectionConfig?.columns, 12);
-  const resolvedGap = resolveScale(
-    gap,
-    sectionConfig?.gap,
-    config.theme.spacing.default,
-    config.theme.spacing.values,
-  );
+    // ─── 1. Token Resolvers (4-Tier Cascade) ──────────────────────────────────
 
-  return (
-    <Container
-      className={cn("grid", sectionConfig?.className, className)}
-      style={{
-        gridTemplateColumns: `repeat(${resolvedColumns}, minmax(0, 1fr))`,
-        gap: resolvedGap,
-      }}>
-      {children}
-    </Container>
-  );
-}
+    const resolvedColumns = resolveCascade<number>(
+      columns,
+      sectionConfig?.columns,
+      undefined,
+      FALLBACK_GRID_CONFIG.columns,
+    );
+
+    const resolvedGapKey = resolveSpacingKey(
+      gap,
+      sectionConfig?.gap,
+      config.theme.spacing?.default,
+      FALLBACK_GRID_CONFIG.gap,
+    );
+
+    // ─── 2. Class Maps ────────────────────────────────────────────────────────
+
+    const colsClass = resolveClassKey(
+      resolvedColumns,
+      GRID_COLS_CLASS,
+      FALLBACK_GRID_CONFIG.columns,
+    );
+
+    const gapClass = resolveClassKey(
+      resolvedGapKey,
+      GRID_GAP_CLASS,
+      FALLBACK_GRID_CONFIG.gap,
+    );
+
+    return (
+      <div
+        ref={ref}
+        className={cn(
+          "grid",
+          colsClass,
+          gapClass,
+          sectionConfig?.className,
+          className,
+        )}
+        {...props}>
+        {children}
+      </div>
+    );
+  },
+);
+
+Grid.displayName = "Grid";

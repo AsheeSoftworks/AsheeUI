@@ -2,7 +2,6 @@ import type { ReactNode } from "react";
 import type { AnimationProp } from "../../../motion/types";
 import type { Variant } from "../../../shared/variant";
 import type { Radius } from "../../../theme/token/radius/radius-config";
-import type { ResponsiveValue } from "../../../theme/token/responsive/responsive";
 
 export type ToastType = "success" | "error" | "info" | "warning" | "default";
 export type ToastPlacement =
@@ -13,7 +12,6 @@ export type ToastPlacement =
   | "top-center"
   | "bottom-center";
 export type ToastSizeKey = "sm" | "md" | "lg";
-export type ToastVariant = "solid" | "flat" | "bordered";
 
 export interface ToastItemData {
   id: string;
@@ -26,20 +24,8 @@ export interface ToastItemData {
   dismissible?: boolean;
 }
 
-export interface ToastSizeValue {
-  width: ResponsiveValue<string>;
-  padding: ResponsiveValue<string>;
-  fontSize: ResponsiveValue<string>;
-  titleFontSize: ResponsiveValue<string>;
-}
-
-export interface ToastSizeScale {
-  default: ToastSizeKey;
-  values: Record<ToastSizeKey, ToastSizeValue>;
-}
-
 export interface ToastConfig {
-  size?: ToastSizeScale;
+  size?: ToastSizeKey;
   placement?: ToastPlacement;
   variant?: Variant;
   radius?: keyof Radius;
@@ -49,3 +35,23 @@ export interface ToastConfig {
   className?: string;
   itemClassName?: string;
 }
+
+export const defaultToastConfig: ToastConfig = {
+  size: "md",
+  placement: "top-right",
+  variant: "solid",
+  radius: "md",
+  animation: "slide",
+  defaultTimeout: 3500,
+  maxToasts: 5,
+};
+
+export const FALLBACK_TOAST_CONFIG = {
+  size: "md" as ToastSizeKey,
+  placement: "top-right" as ToastPlacement,
+  variant: "solid" as Variant,
+  radius: "md" as keyof Radius,
+  animation: "slide" as AnimationProp,
+  defaultTimeout: 3500,
+  maxToasts: 5,
+} as const;

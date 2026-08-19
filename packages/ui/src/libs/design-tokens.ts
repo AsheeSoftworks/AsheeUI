@@ -1,57 +1,99 @@
+import type { ColorConfig } from "../theme/color/color-config";
 import type { ShadowConfig } from "../theme/shadow/shadow-config";
 import type { RadiusConfig } from "../theme/token/radius/radius-config";
-import type { BreakpointConfig } from "../theme/token/responsive/breakpoint-config";
-import { defaultBreakpointConfig } from "../theme/token/responsive/default-breakpoint-config";
-import type { ResponsiveValue } from "../theme/token/responsive/responsive";
-import { buildResponsiveCss } from "../theme/token/responsive/responsive-css";
 import type { TypographyConfig } from "../theme/typography/typography-config";
 
 type DesignTokens = {
+  color?: ColorConfig;
   radius: RadiusConfig;
   typography: TypographyConfig;
   shadow: ShadowConfig;
-  breakpoints?: BreakpointConfig;
+  defaultTheme?: string;
 };
 
 export const DESIGN_TOKENS_STYLE_ID = "ashee-design-tokens";
 
 /**
- * Builds the full CSS string for the given design tokens.
- *
- * Pure and side-effect free — usable both on the server (to emit identical
- * markup into SSR HTML) and on the client (to hydrate/refresh the tokens).
+ * Converts camelCase keys (e.g. `scrollbarThumb`, `scrollbarTrack`)
+ * to kebab-case CSS variable suffixes (`scrollbar-thumb`, `scrollbar-track`).
  */
+function toKebabCase(str: string): string {
+  return str.replace(/([a-z0-9])([A-Z])/g, "$1-$2").toLowerCase();
+}
+
 export function buildDesignTokensCss({
+  color,
   radius,
   typography,
   shadow,
-  breakpoints = defaultBreakpointConfig,
+  defaultTheme = "light",
 }: DesignTokens): string {
+  // 1. Generate color theme CSS blocks
+  const themeColorBlocks: string[] = [];
+
+  if (color) {
+    // Cast color to a string-indexed Record for safe lookup with string variables
+    const colorRecord = color as Record<
+      string,
+      (typeof color)[keyof typeof color] | undefined
+    >;
+
+    for (const [themeName, colorMap] of Object.entries(color)) {
+      if (!colorMap) continue;
+
+      const declarations = Object.entries(colorMap).map(([key, val]) => {
+        return `    --ashee-${toKebabCase(key)}: ${val};`;
+      });
+
+      // Safe lookup using colorRecord[defaultTheme]
+      const isDefault =
+        themeName === defaultTheme ||
+        (themeName === "light" && !colorRecord[defaultTheme]);
+
+      const selector = isDefault
+        ? `:root, .theme-${themeName}`
+        : `.theme-${themeName}`;
+
+      themeColorBlocks.push(`${selector} {\n${declarations.join("\n")}\n}`);
+    }
+  }
+
+  // 2. Safe lookups for radius and shadow defaults (prevents `undefined` in CSS)
+  const defaultRadiusVal =
+    radius?.values?.[radius?.default] ?? radius?.values?.md ?? "0.375rem";
+
+  const defaultShadowVal =
+    shadow?.values?.[shadow?.default] ??
+    shadow?.values?.md ??
+    "0 4px 6px -1px rgb(0 0 0 / 0.1)";
+
+  // 3. Generate flat token declarations
   const flatDecls = [
-    `--ashee-radius: ${radius.values[radius.default]};`,
-    ...Object.entries(radius.values).map(
+    `--ashee-radius: ${defaultRadiusVal};`,
+    ...Object.entries(radius?.values ?? {}).map(
       ([k, v]) => `--ashee-radius-${k}: ${v};`,
     ),
-    `--ashee-shadow: ${shadow.values[shadow.default]};`,
-    ...Object.entries(shadow.values).map(
+    `--ashee-shadow: ${defaultShadowVal};`,
+    ...Object.entries(shadow?.values ?? {}).map(
       ([k, v]) => `--ashee-shadow-${k}: ${v};`,
     ),
-    ...Object.entries(typography.weight).map(
+    ...Object.entries(typography?.weight ?? {}).map(
       ([k, v]) => `--ashee-font-weight-${k}: ${v};`,
     ),
-    ...Object.entries(typography.lineHeight).map(
+    ...Object.entries(typography?.lineHeight ?? {}).map(
       ([k, v]) => `--ashee-leading-${k}: ${v};`,
     ),
-    ...Object.entries(typography.letterSpacing).map(
+    ...Object.entries(typography?.letterSpacing ?? {}).map(
       ([k, v]) => `--ashee-tracking-${k}: ${v};`,
     ),
   ];
 
-  const responsiveVars: Record<string, ResponsiveValue<string>> = {};
-  for (const [key, value] of Object.entries(typography.size))
-    responsiveVars[`--ashee-text-${key}`] = value;
+  return `
+${themeColorBlocks.join("\n\n")}
 
-  return `:root {\n  ${flatDecls.join("\n  ")}\n}\n\n${buildResponsiveCss(responsiveVars, breakpoints)}`;
+:root {
+  ${flatDecls.join("\n  ")}
+}`;
 }
 
 export function applyDesignTokens(tokens: DesignTokens): void {
@@ -62,10 +104,12 @@ export function applyDesignTokens(tokens: DesignTokens): void {
   let el = document.getElementById(
     DESIGN_TOKENS_STYLE_ID,
   ) as HTMLStyleElement | null;
+
   if (!el) {
     el = document.createElement("style");
     el.id = DESIGN_TOKENS_STYLE_ID;
     document.head.appendChild(el);
   }
+
   el.textContent = css;
 }

@@ -20,7 +20,7 @@ import { createWebpackHook } from "./webpack";
  * `transpilePackages` takes npm package names, deduped against any the
  * consumer provides.
  */
-const ASHEE_TRANSPILE_PACKAGES = ["asheeui", "asheeui", "@asheeui/settings"];
+const ASHEE_TRANSPILE_PACKAGES = ["asheeui"];
 
 type NextWebpack = NonNullable<NextConfig["webpack"]>;
 

@@ -5,3 +5,13 @@ export interface GridConfig {
   gap?: keyof Spacing;
   className?: string;
 }
+
+export const defaultGridConfig: GridConfig = {
+  columns: 12,
+  gap: "md",
+};
+
+export const FALLBACK_GRID_CONFIG = {
+  columns: 12,
+  gap: "md" as keyof Spacing,
+} as const;

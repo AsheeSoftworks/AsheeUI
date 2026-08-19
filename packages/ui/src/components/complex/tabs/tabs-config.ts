@@ -2,7 +2,6 @@ import type { ReactNode } from "react";
 import type { AnimationProp } from "../../../motion/types";
 import type { Color, Variant } from "../../../shared/variant";
 import type { Radius } from "../../../theme/token/radius/radius-config";
-import type { ResponsiveValue } from "../../../theme/token/responsive/responsive";
 
 export type TabsVariant = "underline" | "pills" | "bordered" | "ghost";
 export type TabsSizeKey = "sm" | "md" | "lg";
@@ -26,19 +25,8 @@ export interface TabItem {
   [key: string]: unknown;
 }
 
-export interface TabsSizeValue {
-  height: ResponsiveValue<string>;
-  paddingX: ResponsiveValue<string>;
-  fontSize: ResponsiveValue<string>;
-}
-
-export interface TabsSizeScale {
-  default: TabsSizeKey;
-  values: Record<TabsSizeKey, TabsSizeValue>;
-}
-
 export interface TabsConfig {
-  size?: TabsSizeScale;
+  size?: TabsSizeKey;
   variant?: TabsVariant;
   radius?: keyof Radius;
 
@@ -52,3 +40,21 @@ export interface TabsConfig {
   tabClassName?: string;
   tabPanelClassName?: string;
 }
+
+export const defaultTabsConfig: TabsConfig = {
+  size: "md",
+  variant: "underline",
+  radius: "md",
+  activeRadius: "md",
+  animation: "fade",
+};
+
+export const FALLBACK_TABS_CONFIG = {
+  size: "md" as TabsSizeKey,
+  variant: "underline" as TabsVariant,
+  radius: "md" as keyof Radius,
+  activeRadius: "md" as keyof Radius,
+  activeVariant: "solid" as Variant,
+  activeColor: "primary" as Color,
+  animation: "fade" as AnimationProp,
+} as const;

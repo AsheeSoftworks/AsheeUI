@@ -2,7 +2,6 @@ import type { AnimationProp } from "../../../motion/types";
 import type { Color, Variant } from "../../../shared/variant";
 import type { ShadowConfig } from "../../../theme/shadow/shadow-config";
 import type { Radius } from "../../../theme/token/radius/radius-config";
-import type { ResponsiveValue } from "../../../theme/token/responsive/responsive";
 
 export type TooltipPlacement =
   | "top"
@@ -20,21 +19,10 @@ export type TooltipPlacement =
 
 export type TooltipSizeKey = "sm" | "md" | "lg";
 
-export interface TooltipSizeValue {
-  paddingX: ResponsiveValue<string>;
-  paddingY: ResponsiveValue<string>;
-  fontSize: ResponsiveValue<string>;
-}
-
-export interface TooltipSizeScale {
-  default: TooltipSizeKey;
-  values: Record<TooltipSizeKey, TooltipSizeValue>;
-}
-
 export interface TooltipConfig {
   variant?: Variant;
   color?: Color;
-  size?: TooltipSizeScale;
+  size?: TooltipSizeKey;
   placement?: TooltipPlacement;
   delay?: number | { open?: number; close?: number };
   offset?: number;
@@ -44,3 +32,25 @@ export interface TooltipConfig {
   showArrow?: boolean;
   className?: string;
 }
+
+export const defaultTooltipConfig: TooltipConfig = {
+  size: "md",
+  placement: "top",
+  delay: 200,
+  offset: 8,
+  animation: "scale",
+  showArrow: false,
+};
+
+export const FALLBACK_TOOLTIP_CONFIG = {
+  size: "md" as TooltipSizeKey,
+  placement: "top" as TooltipPlacement,
+  variant: "solid" as Variant,
+  color: "secondary" as Color,
+  delay: 200,
+  offset: 8,
+  radius: "md" as keyof Radius,
+  shadow: "md" as keyof ShadowConfig["values"],
+  animation: "scale" as AnimationProp,
+  showArrow: false,
+} as const;

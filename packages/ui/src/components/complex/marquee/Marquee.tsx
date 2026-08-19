@@ -9,14 +9,19 @@ import {
   useMemo,
 } from "react";
 import { useAsheeConfig } from "../../../libs/context";
-import { resolveValue } from "../../../utils/resolve-token";
-import type {
-  MarqueeAxis,
-  MarqueeConfig,
-  MarqueeDirection,
-  MarqueeSpeedPreset,
+import { resolveCascade } from "../../../utils/resolve-token";
+import {
+  FALLBACK_MARQUEE_CONFIG,
+  type MarqueeAxis,
+  type MarqueeConfig,
+  type MarqueeDirection,
+  type MarqueeSpeedPreset,
 } from "./marquee-config";
 import { resolveMarqueeMotion } from "./marquee-motion";
+import {
+  MARQUEE_FADE_END_CLASS,
+  MARQUEE_FADE_START_CLASS,
+} from "./marquee-styles";
 
 export interface MarqueeProps
   extends Omit<React.HTMLAttributes<HTMLDivElement>, "children"> {
@@ -31,17 +36,6 @@ export interface MarqueeProps
   itemClassName?: string;
 }
 
-/**
- * Infinite looping marquee for images, cards, logos, etc. Supports both
- * horizontal and vertical scroll axes.
- *
- * Implementation note: the track renders `children` twice back-to-back and
- * animates a translate from 0% to -50% (or the reverse). Because the two
- * sets are identical, -50% always lands exactly on the seam between them,
- * giving a seamless loop with no width/height math required — unlike the
- * `items.length * 320` pixel calculation this replaces, this works
- * regardless of tile size or count.
- */
 export const Marquee = forwardRef<HTMLDivElement, MarqueeProps>(
   (
     {
@@ -63,30 +57,53 @@ export const Marquee = forwardRef<HTMLDivElement, MarqueeProps>(
       | MarqueeConfig
       | undefined;
 
-    const resolvedAxis = resolveValue<MarqueeAxis>(
+    // ─── 1. Token Resolvers (4-Tier Cascade) ──────────────────────────────────
+
+    const resolvedAxis = resolveCascade<MarqueeAxis>(
       axis,
       sectionConfig?.axis,
-      "x",
+      undefined,
+      FALLBACK_MARQUEE_CONFIG.axis,
     );
-    const resolvedDirection = resolveValue<MarqueeDirection>(
+
+    const resolvedDirection = resolveCascade<MarqueeDirection>(
       direction,
       sectionConfig?.direction,
-      "forward",
+      undefined,
+      FALLBACK_MARQUEE_CONFIG.direction,
     );
-    const resolvedGap = resolveValue<string>(gap, sectionConfig?.gap, "1.5rem");
-    const resolvedPauseOnHover = resolveValue<boolean>(
+
+    const resolvedSpeed = resolveCascade<MarqueeSpeedPreset | number>(
+      speed,
+      sectionConfig?.speed,
+      undefined,
+      FALLBACK_MARQUEE_CONFIG.speed,
+    );
+
+    const resolvedGap = resolveCascade<string>(
+      gap,
+      sectionConfig?.gap,
+      undefined,
+      FALLBACK_MARQUEE_CONFIG.gap,
+    );
+
+    const resolvedPauseOnHover = resolveCascade<boolean>(
       pauseOnHover,
       sectionConfig?.pauseOnHover,
-      true,
+      undefined,
+      FALLBACK_MARQUEE_CONFIG.pauseOnHover,
     );
-    const resolvedFadeEdges = resolveValue<boolean>(
+
+    const resolvedFadeEdges = resolveCascade<boolean>(
       fadeEdges,
       sectionConfig?.fadeEdges,
-      true,
+      undefined,
+      FALLBACK_MARQUEE_CONFIG.fadeEdges,
     );
 
-    const motionConfig = resolveMarqueeMotion(speed ?? sectionConfig?.speed);
+    // ─── 2. Motion & Keyframe Resolution ─────────────────────────────────────
 
+    const motionConfig = resolveMarqueeMotion(resolvedSpeed);
     const animationName = useId().replace(/[:]/g, "");
     const isVertical = resolvedAxis === "y";
 
@@ -154,7 +171,6 @@ export const Marquee = forwardRef<HTMLDivElement, MarqueeProps>(
             animation: motionConfig.isDisabled
               ? undefined
               : `${animationName} ${motionConfig.durationSeconds}s linear infinite`,
-            animationPlayState: resolvedPauseOnHover ? undefined : undefined,
           }}>
           {renderedSets}
         </div>
@@ -173,18 +189,14 @@ export const Marquee = forwardRef<HTMLDivElement, MarqueeProps>(
           <>
             <div
               className={cn(
-                "absolute z-10 pointer-events-none bg-linear-to-r from-background to-transparent",
-                isVertical
-                  ? "top-0 left-0 w-full h-24 bg-linear-to-b"
-                  : "top-0 left-0 h-full w-24",
+                "absolute z-10 pointer-events-none",
+                MARQUEE_FADE_START_CLASS[resolvedAxis],
               )}
             />
             <div
               className={cn(
-                "absolute z-10 pointer-events-none bg-linear-to-l from-background to-transparent",
-                isVertical
-                  ? "bottom-0 left-0 w-full h-24 bg-linear-to-t"
-                  : "top-0 right-0 h-full w-24",
+                "absolute z-10 pointer-events-none",
+                MARQUEE_FADE_END_CLASS[resolvedAxis],
               )}
             />
           </>

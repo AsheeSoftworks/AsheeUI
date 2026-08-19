@@ -1,7 +1,6 @@
 import type { AnimationProp } from "../../../motion/types";
 import type { Color } from "../../../shared/variant";
 import type { Radius } from "../../../theme/token/radius/radius-config";
-import type { ResponsiveValue } from "../../../theme/token/responsive/responsive";
 import type {
   FieldConfig,
   FieldSizeKey,
@@ -11,23 +10,27 @@ import type {
 export type RadioSizeKey = FieldSizeKey;
 export type RadioVariant = "default" | "card";
 
-export interface RadioSizeValue {
-  outerSize: ResponsiveValue<string>;
-  innerSize: ResponsiveValue<string>;
-  fontSize: ResponsiveValue<string>;
-  gap: ResponsiveValue<string>;
-}
-
-export interface RadioSizeScale {
-  default: RadioSizeKey;
-  values: Record<RadioSizeKey, RadioSizeValue>;
-}
-
 export interface RadioConfig extends Omit<FieldConfig, "size" | "variant"> {
-  size?: RadioSizeScale;
+  size?: RadioSizeKey;
   color?: Color;
   radius?: keyof Radius;
   variant?: RadioVariant;
   animation?: AnimationProp<InputAnimationPreset>;
   className?: string;
 }
+
+export const defaultRadioConfig: RadioConfig = {
+  size: "md",
+  radius: "full",
+  variant: "default",
+  animation: "none",
+};
+
+export const FALLBACK_RADIO_CONFIG = {
+  size: "md",
+  radius: "full",
+  variant: "default",
+  color: "primary",
+  status: "default",
+  labelAlign: "left",
+} as const;

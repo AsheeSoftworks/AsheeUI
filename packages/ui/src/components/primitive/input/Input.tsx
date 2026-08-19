@@ -1,4 +1,5 @@
 "use client";
+
 import { cn } from "@asheeui/utils";
 import { type HTMLMotionProps, motion } from "framer-motion";
 import {
@@ -6,7 +7,6 @@ import {
   type InputHTMLAttributes,
   type ReactNode,
   useId,
-  useMemo,
 } from "react";
 import { useAsheeConfig } from "../../../libs/context";
 import { resolveAnimation } from "../../../motion/resolve-animation";
@@ -17,30 +17,25 @@ import {
   type Variant,
 } from "../../../shared/variant";
 import type { Radius } from "../../../theme/token/radius/radius-config";
-import { useResponsiveVars } from "../../../theme/token/responsive/use-responsive-vars";
-import { resolveScale, resolveValue } from "../../../utils/resolve-token";
-import { defaultFieldSizeScale } from "../field/default-field-size-scale";
+import {
+  resolveCascade,
+  resolveClassKey,
+  resolveRadiusKey,
+} from "../../../utils/resolve-token";
 import { FieldShell } from "../field/FieldShell";
-import type {
-  FieldSizeKey,
-  FieldSizeScale,
-  FieldStatus,
-  InputAnimationPreset,
-  LabelAlign,
+import {
+  FALLBACK_FIELD_CONFIG,
+  type FieldSizeKey,
+  type FieldStatus,
+  type InputAnimationPreset,
+  type LabelAlign,
 } from "../field/field-config";
-import { flattenFieldSizeScale } from "../field/flatten-field-size-scale";
-
-// ─── Status Class Override ───────────────────────────────────────────────────
-
-const STATUS_BORDER_CLASS: Record<FieldStatus, string> = {
-  default: "",
-  error:
-    "border-danger focus-visible:border-danger focus-visible:ring-danger/20",
-  warning:
-    "border-warning focus-visible:border-warning focus-visible:ring-warning/20",
-  success:
-    "border-success focus-visible:border-success focus-visible:ring-success/20",
-};
+import type { InputConfig } from "./input-config";
+import {
+  INPUT_RADIUS_CLASS,
+  INPUT_SIZE_CLASS,
+  INPUT_STATUS_BORDER_CLASS,
+} from "./input-styles";
 
 // ─── Component Interface ──────────────────────────────────────────────────────
 
@@ -93,7 +88,8 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
     ref,
   ) => {
     const config = useAsheeConfig();
-    const sectionConfig = config.components?.input;
+    const sectionConfig = config.components?.input as InputConfig | undefined;
+
     const generatedId = useId();
     const fieldId = id ?? generatedId;
     const descriptionId = description ? `${fieldId}-description` : undefined;
@@ -101,55 +97,62 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
     const describedBy =
       [descriptionId, messageId].filter(Boolean).join(" ") || undefined;
 
-    // ─── Token Resolvers ──────────────────────────────────────────────────────
+    // ─── 1. Token Resolvers (4-Tier Cascade) ──────────────────────────────────
 
-    const sizeScale = (sectionConfig?.size ??
-      defaultFieldSizeScale) as FieldSizeScale;
-    const resolvedSizeKey = size ?? sizeScale.default;
-    const responsiveVars = useMemo(
-      () => flattenFieldSizeScale("input", sizeScale),
-      [sizeScale],
-    );
-    useResponsiveVars(
-      "ashee-input-tokens",
-      responsiveVars,
-      config.theme.breakpoints,
+    const resolvedSizeKey = resolveCascade<FieldSizeKey>(
+      size,
+      sectionConfig?.size,
+      undefined,
+      FALLBACK_FIELD_CONFIG.size,
     );
 
-    const resolvedRadius = resolveScale(
-      radius,
-      sectionConfig?.radius,
-      config.theme.radius.default,
-      config.theme.radius.values,
-    );
-
-    const resolvedVariant = resolveValue<Variant>(
+    const resolvedVariant = resolveCascade<Variant>(
       variant,
       sectionConfig?.variant,
-      (config.theme.defaultVariant as Variant) ?? "bordered",
+      config.theme.defaultVariant,
+      FALLBACK_FIELD_CONFIG.variant,
     );
 
-    const resolvedColor = resolveValue<Color>(
+    const resolvedColor = resolveCascade<Color>(
       color,
       sectionConfig?.color,
-      (config.theme.defaultColor as Color) ?? "primary",
+      config.theme.defaultColor,
+      FALLBACK_FIELD_CONFIG.color,
     );
 
-    const resolvedStatus = status ?? "default";
-    const resolvedLabelAlign = resolveValue(
+    const resolvedRadiusKey = resolveRadiusKey(
+      typeof radius === "string" ? radius : undefined,
+      typeof sectionConfig?.radius === "string" ? sectionConfig : undefined,
+      config.theme.radius?.default,
+      FALLBACK_FIELD_CONFIG.radius,
+    );
+
+    const resolvedStatus = status ?? FALLBACK_FIELD_CONFIG.status;
+
+    const resolvedLabelAlign = resolveCascade<LabelAlign>(
       labelAlign,
       sectionConfig?.labelAlign,
-      "left",
+      undefined,
+      FALLBACK_FIELD_CONFIG.labelAlign,
     );
 
-    const motionProps = resolveAnimation(
-      animation ?? (sectionConfig?.animation as AnimationProp | undefined),
-    );
+    const motionProps = resolveAnimation(animation ?? sectionConfig?.animation);
 
-    // Apply global variant/color styling & active status override
+    // ─── 2. Class Maps ────────────────────────────────────────────────────────
+
     const variantClass = resolveVariantClass(resolvedVariant, resolvedColor);
     const statusClass =
-      resolvedStatus !== "default" ? STATUS_BORDER_CLASS[resolvedStatus] : "";
+      resolvedStatus !== "default"
+        ? INPUT_STATUS_BORDER_CLASS[resolvedStatus]
+        : "";
+    const radiusClass =
+      resolvedVariant === "underlined"
+        ? "rounded-none"
+        : resolveClassKey(
+            resolvedRadiusKey,
+            INPUT_RADIUS_CLASS,
+            FALLBACK_FIELD_CONFIG.radius,
+          );
 
     return (
       <FieldShell
@@ -167,7 +170,12 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
         descriptionClassName={sectionConfig?.descriptionClassName}
         messageClassName={sectionConfig?.messageClassName}>
         <div className="relative flex items-center w-full">
-          {startContent}
+          {startContent && (
+            <span className="absolute left-3 z-10 flex items-center pointer-events-none text-foreground/50">
+              {startContent}
+            </span>
+          )}
+
           <motion.input
             ref={ref}
             id={fieldId}
@@ -178,26 +186,28 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
             aria-describedby={describedBy}
             aria-busy={isLoading}
             className={cn(
-              "w-full text-foreground outline-none transition-colors",
+              "w-full text-foreground outline-none transition-colors shrink-0",
               "focus-visible:ring-2 focus-visible:ring-offset-2",
               "disabled:pointer-events-none disabled:opacity-50",
+              INPUT_SIZE_CLASS[resolvedSizeKey],
               variantClass,
               statusClass,
+              radiusClass,
+              startContent && "pl-9",
+              endContent && "pr-9",
               sectionConfig?.className,
               className,
             )}
-            style={{
-              borderRadius:
-                resolvedVariant === "underlined" ? "0px" : resolvedRadius,
-              paddingInline: `var(--ashee-input-${resolvedSizeKey}-padding-x)`,
-              paddingBlock: `var(--ashee-input-${resolvedSizeKey}-padding-y)`,
-              fontSize: `var(--ashee-input-${resolvedSizeKey}-font-size)`,
-              ...style,
-            }}
+            style={style}
             {...(motionProps as HTMLMotionProps<"input">)}
             {...(rest as HTMLMotionProps<"input">)}
           />
-          {endContent}
+
+          {endContent && (
+            <span className="absolute right-3 z-10 flex items-center pointer-events-none text-foreground/50">
+              {endContent}
+            </span>
+          )}
         </div>
       </FieldShell>
     );

@@ -1,4 +1,5 @@
 "use client";
+
 import { cn } from "@asheeui/utils";
 import {
   autoUpdate,
@@ -30,8 +31,11 @@ import {
   type Variant,
 } from "../../../shared/variant";
 import type { Radius } from "../../../theme/token/radius/radius-config";
-import { useResponsiveVars } from "../../../theme/token/responsive/use-responsive-vars";
-import { resolveScale, resolveValue } from "../../../utils/resolve-token";
+import {
+  resolveCascade,
+  resolveClassKey,
+  resolveRadiusKey,
+} from "../../../utils/resolve-token";
 import { CalendarIcon } from "../../icons/CalendarIcon";
 import { ChevronLeftIcon } from "../../icons/ChevronLeftIcon";
 import { ChevronRightIcon } from "../../icons/ChevronRightIcon";
@@ -43,13 +47,18 @@ import type {
   FieldStatus,
   LabelAlign,
 } from "../field/field-config";
-import type {
-  DatePickerConfig,
-  DatePickerSizeScale,
-  PickerMode,
+import {
+  FALLBACK_DATE_PICKER_CONFIG,
+  type DatePickerConfig,
+  type PickerMode,
 } from "./date-picker-config";
-import { defaultDatePickerSizeScale } from "./default-date-picker-config";
-import { flattenDatePickerSizeScale } from "./flatten-date-picker-size-scale";
+import {
+  CALENDAR_COLOR_CLASSES,
+  DATE_PICKER_CELL_SIZE_CLASS,
+  DATE_PICKER_RADIUS_CLASS,
+  DATE_PICKER_SIZE_CLASS,
+  DATE_PICKER_STATUS_BORDER_CLASS,
+} from "./date-picker-styles";
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
@@ -112,65 +121,7 @@ function buildDayCells(year: number, month: number): (number | null)[] {
   return cells;
 }
 
-// ─── Status Class Override ───────────────────────────────────────────────────
-
-const STATUS_BORDER_CLASS: Record<FieldStatus, string> = {
-  default: "",
-  error:
-    "border-danger focus-visible:border-danger focus-visible:ring-danger/20",
-  warning:
-    "border-warning focus-visible:border-warning focus-visible:ring-warning/20",
-  success:
-    "border-success focus-visible:border-success focus-visible:ring-success/20",
-};
-
-// ─── TimeSpinner ─────────────────────────────────────────────────────────────
-
-// ─── Color Helper Classes for Calendar Sub-elements ──────────────────────────
-
-const CALENDAR_COLOR_CLASSES: Record<
-  Color | string,
-  { bg: string; text: string; border: string; hover: string }
-> = {
-  default: {
-    bg: "bg-foreground text-background",
-    text: "text-foreground",
-    border: "border-foreground",
-    hover: "hover:text-foreground hover:bg-muted",
-  },
-  primary: {
-    bg: "bg-primary text-primary-foreground",
-    text: "text-primary",
-    border: "border-primary",
-    hover: "hover:text-primary hover:bg-primary/10",
-  },
-  secondary: {
-    bg: "bg-secondary text-secondary-foreground",
-    text: "text-secondary",
-    border: "border-secondary",
-    hover: "hover:text-secondary hover:bg-secondary/10",
-  },
-  success: {
-    bg: "bg-success text-success-foreground",
-    text: "text-success",
-    border: "border-success",
-    hover: "hover:text-success hover:bg-success/10",
-  },
-  warning: {
-    bg: "bg-warning text-warning-foreground",
-    text: "text-warning",
-    border: "border-warning",
-    hover: "hover:text-warning hover:bg-warning/10",
-  },
-  danger: {
-    bg: "bg-danger text-danger-foreground",
-    text: "text-danger",
-    border: "border-danger",
-    hover: "hover:text-danger hover:bg-danger/10",
-  },
-};
-
-// ─── TimeSpinner ─────────────────────────────────────────────────────────────
+// ─── TimeSpinner Sub-Component ──────────────────────────────────────────────
 
 interface TimeSpinnerProps {
   value: number;
@@ -178,7 +129,7 @@ interface TimeSpinnerProps {
   label: string;
   onChange: (v: number) => void;
   resolvedColor: Color;
-  resolvedRadius: string;
+  radiusClass: string;
 }
 
 function TimeSpinner({
@@ -187,7 +138,7 @@ function TimeSpinner({
   label,
   onChange,
   resolvedColor,
-  resolvedRadius,
+  radiusClass,
 }: TimeSpinnerProps) {
   const inc = () => onChange(value >= max ? 0 : value + 1);
   const dec = () => onChange(value <= 0 ? max : value - 1);
@@ -203,25 +154,27 @@ function TimeSpinner({
         type="button"
         className={cn(
           "w-10 h-7 flex items-center justify-center text-xs text-muted-foreground transition-colors",
+          radiusClass,
           colorStyles.hover,
         )}
-        style={{ borderRadius: resolvedRadius }}
         onClick={inc}
         aria-label={`Increment ${label}`}>
         ▲
       </button>
       <div
-        className="w-10 h-10 flex items-center justify-center text-base font-mono font-bold text-foreground bg-background border border-border select-none"
-        style={{ borderRadius: resolvedRadius }}>
+        className={cn(
+          "w-10 h-10 flex items-center justify-center text-base font-mono font-bold text-foreground bg-background border border-border select-none",
+          radiusClass,
+        )}>
         {pad2(value)}
       </div>
       <button
         type="button"
         className={cn(
           "w-10 h-7 flex items-center justify-center text-xs text-muted-foreground transition-colors",
+          radiusClass,
           colorStyles.hover,
         )}
-        style={{ borderRadius: resolvedRadius }}
         onClick={dec}
         aria-label={`Decrement ${label}`}>
         ▼
@@ -230,7 +183,7 @@ function TimeSpinner({
   );
 }
 
-// ─── Calendar Panel ──────────────────────────────────────────────────────────
+// ─── Calendar Panel Sub-Component ───────────────────────────────────────────
 
 interface CalendarProps {
   selected: Date | null | undefined;
@@ -238,7 +191,7 @@ interface CalendarProps {
   isClearable: boolean;
   resolvedSizeKey: FieldSizeKey;
   resolvedColor: Color;
-  resolvedRadius: string;
+  radiusClass: string;
   onSelect: (date: Date | null) => void;
   onClose: () => void;
   disableFuture?: boolean;
@@ -250,7 +203,7 @@ function Calendar({
   isClearable,
   resolvedSizeKey,
   resolvedColor,
-  resolvedRadius,
+  radiusClass,
   onSelect,
   onClose,
   disableFuture = false,
@@ -352,8 +305,10 @@ function Calendar({
 
   return (
     <div
-      className="bg-background border border-border shadow-xl select-none p-3 min-w-70"
-      style={{ borderRadius: resolvedRadius }}>
+      className={cn(
+        "bg-background border border-border shadow-xl select-none p-3 min-w-70",
+        radiusClass,
+      )}>
       {showCalendar && (
         <>
           {/* Month/Year Header */}
@@ -362,9 +317,9 @@ function Calendar({
               type="button"
               onClick={prevMonth}
               aria-label="Previous month"
-              style={{ borderRadius: resolvedRadius }}
               className={cn(
                 "p-1 text-foreground transition-colors",
+                radiusClass,
                 colorStyles.hover,
               )}>
               <ChevronLeftIcon />
@@ -377,9 +332,9 @@ function Calendar({
               onClick={nextMonth}
               disabled={!canGoNext}
               aria-label="Next month"
-              style={{ borderRadius: resolvedRadius }}
               className={cn(
                 "p-1 text-foreground transition-colors disabled:opacity-30 disabled:cursor-not-allowed",
+                radiusClass,
                 colorStyles.hover,
               )}>
               <ChevronRightIcon />
@@ -404,12 +359,10 @@ function Calendar({
                   type="button"
                   onClick={() => handleDayClick(day)}
                   disabled={isDisabled(day)}
-                  style={{
-                    height: `var(--ashee-date-picker-${resolvedSizeKey}-cell-s)`,
-                    borderRadius: resolvedRadius,
-                  }}
                   className={cn(
-                    "w-full flex items-center justify-center text-xs font-medium transition-colors",
+                    "w-full flex items-center justify-center font-medium transition-colors",
+                    DATE_PICKER_CELL_SIZE_CLASS[resolvedSizeKey],
+                    radiusClass,
                     isDisabled(day)
                       ? "opacity-30 cursor-not-allowed text-muted-foreground"
                       : isSelected(day)
@@ -435,7 +388,7 @@ function Calendar({
             label="HH"
             onChange={handleHoursChange}
             resolvedColor={resolvedColor}
-            resolvedRadius={resolvedRadius}
+            radiusClass={radiusClass}
           />
           <span className="text-xl font-bold text-muted-foreground select-none pt-3">
             :
@@ -446,7 +399,7 @@ function Calendar({
             label="MM"
             onChange={handleMinutesChange}
             resolvedColor={resolvedColor}
-            resolvedRadius={resolvedRadius}
+            radiusClass={radiusClass}
           />
         </div>
       )}
@@ -469,9 +422,9 @@ function Calendar({
             <button
               type="button"
               onClick={onClose}
-              style={{ borderRadius: resolvedRadius }}
               className={cn(
                 "ml-auto text-xs font-medium px-3 py-1.5 hover:opacity-90 transition-opacity",
+                radiusClass,
                 colorStyles.bg,
               )}>
               Done
@@ -483,7 +436,7 @@ function Calendar({
   );
 }
 
-// ─── Main DatePicker Component ───────────────────────────────────────────────
+// ─── Component Interface ──────────────────────────────────────────────────────
 
 export interface DatePickerProps {
   selected?: Date | null;
@@ -510,12 +463,14 @@ export interface DatePickerProps {
   style?: CSSProperties;
 }
 
+// ─── Main DatePicker Component ───────────────────────────────────────────────
+
 export const DatePicker = forwardRef<HTMLDivElement, DatePickerProps>(
   (
     {
       selected,
       onChange,
-      mode = "date",
+      mode,
       size,
       radius,
       variant,
@@ -565,57 +520,65 @@ export const DatePicker = forwardRef<HTMLDivElement, DatePickerProps>(
       role,
     ]);
 
-    // Token Scale Resolvers
-    const sizeScale = (sectionConfig?.size ??
-      defaultDatePickerSizeScale) as DatePickerSizeScale;
-    const resolvedSizeKey = size ?? sizeScale.default;
-    const responsiveVars = useMemo(
-      () => flattenDatePickerSizeScale(sizeScale),
-      [sizeScale],
-    );
-    useResponsiveVars(
-      "ashee-date-picker-tokens",
-      responsiveVars,
-      config.theme.breakpoints,
+    // ─── 1. Token Resolvers (4-Tier Cascade) ──────────────────────────────────
+
+    const resolvedSizeKey = resolveCascade<FieldSizeKey>(
+      size,
+      sectionConfig?.size,
+      undefined,
+      FALLBACK_DATE_PICKER_CONFIG.size,
     );
 
-    const resolvedRadiusKey = typeof radius === "string" ? radius : undefined;
-    const resolvedSectionRadiusKey =
-      typeof sectionConfig?.radius === "string"
-        ? sectionConfig.radius
-        : undefined;
-    const resolvedRadius = resolveScale(
-      resolvedRadiusKey,
-      resolvedSectionRadiusKey,
-      config.theme.radius.default,
-      config.theme.radius.values,
-    );
-
-    const resolvedVariant = resolveValue<Variant>(
+    const resolvedVariant = resolveCascade<Variant>(
       variant,
       sectionConfig?.variant,
-      (config.theme.defaultVariant as Variant) ?? "bordered",
+      config.theme.defaultVariant,
+      FALLBACK_DATE_PICKER_CONFIG.variant,
     );
 
-    const resolvedColor = resolveValue<Color>(
+    const resolvedColor = resolveCascade<Color>(
       color,
       sectionConfig?.color,
-      (config.theme.defaultColor as Color) ?? "primary",
+      config.theme.defaultColor,
+      FALLBACK_DATE_PICKER_CONFIG.color,
     );
 
-    const resolvedStatus = status ?? "default";
-    const resolvedLabelAlign = resolveValue(
+    const resolvedRadiusKey = resolveRadiusKey(
+      typeof radius === "string" ? radius : undefined,
+      typeof sectionConfig?.radius === "string" ? sectionConfig : undefined,
+      config.theme.radius?.default,
+      FALLBACK_DATE_PICKER_CONFIG.radius,
+    );
+
+    const resolvedStatus = status ?? FALLBACK_DATE_PICKER_CONFIG.status;
+
+    const resolvedLabelAlign = resolveCascade<LabelAlign>(
       labelAlign,
       sectionConfig?.labelAlign,
-      "left",
+      undefined,
+      FALLBACK_DATE_PICKER_CONFIG.labelAlign,
     );
-    const motionProps = resolveAnimation(
-      animation ?? (sectionConfig?.animation as AnimationProp | undefined),
-    );
+
+    const resolvedMode =
+      mode ?? sectionConfig?.mode ?? FALLBACK_DATE_PICKER_CONFIG.mode;
+
+    const motionProps = resolveAnimation(animation ?? sectionConfig?.animation);
+
+    // ─── 2. Class Maps ────────────────────────────────────────────────────────
 
     const variantClass = resolveVariantClass(resolvedVariant, resolvedColor);
     const statusClass =
-      resolvedStatus !== "default" ? STATUS_BORDER_CLASS[resolvedStatus] : "";
+      resolvedStatus !== "default"
+        ? DATE_PICKER_STATUS_BORDER_CLASS[resolvedStatus]
+        : "";
+    const radiusClass =
+      resolvedVariant === "underlined"
+        ? "rounded-none"
+        : resolveClassKey(
+            resolvedRadiusKey,
+            DATE_PICKER_RADIUS_CLASS,
+            FALLBACK_DATE_PICKER_CONFIG.radius,
+          );
 
     const handleSelect = useCallback(
       (date: Date | null) => onChange?.(date),
@@ -632,8 +595,11 @@ export const DatePicker = forwardRef<HTMLDivElement, DatePickerProps>(
       [onChange],
     );
 
-    const displayPlaceholder = placeholder ?? getDefaultPlaceholder(mode);
-    const displayValue = selected ? formatDisplay(selected, mode) : null;
+    const displayPlaceholder =
+      placeholder ?? getDefaultPlaceholder(resolvedMode);
+    const displayValue = selected
+      ? formatDisplay(selected, resolvedMode)
+      : null;
 
     return (
       <FieldShell
@@ -664,22 +630,17 @@ export const DatePicker = forwardRef<HTMLDivElement, DatePickerProps>(
             aria-invalid={resolvedStatus === "error"}
             aria-disabled={disabled}
             className={cn(
-              "w-full flex items-center justify-between cursor-pointer text-foreground outline-none transition-colors select-none",
+              "w-full flex items-center justify-between cursor-pointer text-foreground outline-none transition-colors select-none shrink-0",
               "focus-visible:ring-2 focus-visible:ring-offset-2",
               disabled && "pointer-events-none opacity-50 cursor-not-allowed",
+              DATE_PICKER_SIZE_CLASS[resolvedSizeKey],
               variantClass,
               statusClass,
+              radiusClass,
               sectionConfig?.className,
               className,
             )}
-            style={{
-              borderRadius:
-                resolvedVariant === "underlined" ? "0px" : resolvedRadius,
-              height: `var(--ashee-date-picker-${resolvedSizeKey}-height)`,
-              paddingInline: `var(--ashee-date-picker-${resolvedSizeKey}-padding-x)`,
-              fontSize: `var(--ashee-date-picker-${resolvedSizeKey}-font-s)`,
-              ...style,
-            }}
+            style={style}
             {...getReferenceProps()}>
             <span
               className={
@@ -695,11 +656,11 @@ export const DatePicker = forwardRef<HTMLDivElement, DatePickerProps>(
                   onClick={handleClear}
                   aria-label="Clear selection"
                   className="p-0.5 rounded text-muted-foreground hover:text-foreground transition-colors">
-                  <ClearIcon className="w-3.5 h-3.5" />
+                  <ClearIcon className="size-3.5" />
                 </button>
               )}
               <span className="text-muted-foreground pointer-events-none">
-                {mode === "time" ? <ClockIcon /> : <CalendarIcon />}
+                {resolvedMode === "time" ? <ClockIcon /> : <CalendarIcon />}
               </span>
             </div>
           </div>
@@ -721,18 +682,14 @@ export const DatePicker = forwardRef<HTMLDivElement, DatePickerProps>(
                     {...(motionProps as HTMLMotionProps<"div">)}>
                     <Calendar
                       selected={selected}
-                      mode={mode}
+                      mode={resolvedMode}
                       isClearable={isClearable}
                       resolvedSizeKey={resolvedSizeKey}
                       onSelect={handleSelect}
                       onClose={handleClose}
                       disableFuture={disableFuture}
                       resolvedColor={resolvedColor}
-                      resolvedRadius={
-                        resolvedVariant === "underlined"
-                          ? "0px"
-                          : resolvedRadius
-                      }
+                      radiusClass={radiusClass}
                     />
                   </motion.div>
                 </div>
@@ -744,4 +701,5 @@ export const DatePicker = forwardRef<HTMLDivElement, DatePickerProps>(
     );
   },
 );
+
 DatePicker.displayName = "DatePicker";

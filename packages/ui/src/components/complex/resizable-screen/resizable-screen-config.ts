@@ -18,3 +18,26 @@ export interface ResizableScreenConfig {
   className?: string;
   handleClassName?: string;
 }
+
+export const defaultResizableScreenConfig: ResizableScreenConfig = {
+  defaultSize: 50,
+  minSize: 20,
+  maxSize: 80,
+  step: 2,
+  orientation: "horizontal",
+  animation: "fade",
+  handleRadius: "full",
+};
+
+export const FALLBACK_RESIZABLE_SCREEN_CONFIG = {
+  defaultSize: 50,
+  minSize: 20,
+  maxSize: 80,
+  step: 2,
+  orientation: "horizontal" as ResizableOrientation,
+  handleVariant: "bordered" as Variant,
+  handleColor: "primary" as Color,
+  handleRadius: "full",
+  hideHandle: false,
+  animation: "fade",
+} as const;

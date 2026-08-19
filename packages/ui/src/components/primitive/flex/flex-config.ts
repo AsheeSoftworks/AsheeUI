@@ -18,3 +18,19 @@ export interface FlexConfig {
   wrap?: boolean;
   className?: string;
 }
+
+export const defaultFlexConfig: FlexConfig = {
+  direction: "row",
+  align: "stretch",
+  justify: "start",
+  gap: "md",
+  wrap: false,
+};
+
+export const FALLBACK_FLEX_CONFIG = {
+  direction: "row" as FlexDirection,
+  align: "stretch" as FlexAlign,
+  justify: "start" as FlexJustify,
+  gap: "md" as keyof Spacing,
+  wrap: false,
+} as const;

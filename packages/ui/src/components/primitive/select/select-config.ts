@@ -1,6 +1,5 @@
 import type { Color, Variant } from "../../../shared/variant";
 import type { Radius } from "../../../theme/token/radius/radius-config";
-import type { ResponsiveValue } from "../../../theme/token/responsive/responsive";
 import type { ButtonSizeKey } from "../../primitive/button/button-config";
 import type { FieldConfig, FieldSizeKey } from "../field/field-config";
 
@@ -13,19 +12,8 @@ export interface SelectOption {
   [key: string]: unknown;
 }
 
-export interface SelectSizeValue {
-  height: ResponsiveValue<string>;
-  paddingX: ResponsiveValue<string>;
-  fontSize: ResponsiveValue<string>;
-}
-
-export interface SelectSizeScale {
-  default: SelectSizeKey;
-  values: Record<SelectSizeKey, SelectSizeValue>;
-}
-
 export interface SelectConfig extends Omit<FieldConfig, "size"> {
-  size?: SelectSizeScale;
+  size?: SelectSizeKey;
   radius?: keyof Radius;
   className?: string;
 
@@ -35,3 +23,19 @@ export interface SelectConfig extends Omit<FieldConfig, "size"> {
   menuRadius?: keyof Radius;
   menuSize?: ButtonSizeKey;
 }
+
+export const defaultSelectConfig: SelectConfig = {
+  size: "md",
+  labelAlign: "left",
+  animation: "none",
+};
+
+export const FALLBACK_SELECT_CONFIG = {
+  size: "md",
+  radius: "md",
+  variant: "bordered",
+  color: "primary",
+  status: "default",
+  labelAlign: "left",
+  menuSize: "sm",
+} as const;

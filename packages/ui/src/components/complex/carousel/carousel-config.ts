@@ -1,29 +1,18 @@
+import type { ReactNode } from "react";
 import type { AnimationProp } from "../../../motion/types";
 import type { Radius } from "../../../theme/token/radius/radius-config";
-import type { ResponsiveValue } from "../../../theme/token/responsive/responsive";
 
 export type CarouselVariant = "default" | "cards" | "bordered" | "ghost";
 export type CarouselSizeKey = "sm" | "md" | "lg";
 
-export interface CarouselSizeValue {
-  height: ResponsiveValue<string>;
-  paddingX: ResponsiveValue<string>;
-  paddingY: ResponsiveValue<string>;
-}
-
-export interface CarouselSizeScale {
-  default: CarouselSizeKey;
-  values: Record<CarouselSizeKey, CarouselSizeValue>;
-}
-
 export interface CarouselItem {
   id?: string;
-  content: React.ReactNode;
+  content: ReactNode;
 }
 
 export interface CarouselConfig {
   variant?: CarouselVariant;
-  size?: CarouselSizeScale;
+  size?: CarouselSizeKey;
   radius?: keyof Radius;
   animation?: AnimationProp;
   autoPlay?: boolean;
@@ -34,3 +23,26 @@ export interface CarouselConfig {
   pauseOnHover?: boolean;
   className?: string;
 }
+
+export const defaultCarouselConfig: CarouselConfig = {
+  size: "md",
+  animation: "none",
+  autoPlay: false,
+  autoPlayInterval: 5000,
+  loop: true,
+  showControls: true,
+  showIndicators: true,
+  pauseOnHover: true,
+};
+
+export const FALLBACK_CAROUSEL_CONFIG = {
+  size: "md",
+  variant: "default",
+  radius: "lg",
+  autoPlay: false,
+  autoPlayInterval: 5000,
+  loop: true,
+  showControls: true,
+  showIndicators: true,
+  pauseOnHover: true,
+} as const;
