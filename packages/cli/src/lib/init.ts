@@ -43,104 +43,182 @@ export async function runInit(
     p.intro("Ashee UI — init");
   }
 
+  // 1. Framework Resolution & Structure
   const framework = await resolveFramework(cwd);
   const detection = await detectFramework({ cwd });
-
   const structure = await detectProjectStructure({ cwd, framework });
-  const deps = await inspectDependencies(cwd);
 
-  const integration = buildIntegration({
+  if (!opts.yes) {
+    p.log.info(
+      `Framework detected: ${frameworkLabel(framework)} (confidence: ${detection.confidence})`,
+    );
+  }
+
+  // 2. Build Integration & Inspect Dependencies
+  const integration = await buildIntegration({
     directory: cwd,
     framework,
     structure,
   });
 
-  const _plan = buildPlan(
-    integration.summary,
-    deps.missingDependencies,
-    structure,
+  const deps = await inspectDependencies(
+    cwd,
+    integration.dependenciesToInstall,
+    opts.yes,
   );
 
+  buildPlan(integration.summary, deps.missingDependencies, structure);
+
+  // 3. Execution Preview & Confirmation
   if (!opts.yes) {
+    const planLines = [
+      ...integration.summary.map((item) => `• ${item}`),
+      ...(deps.missingDependencies.length > 0
+        ? [`• Install missing packages: ${deps.missingDependencies.join(", ")}`]
+        : ["• All required dependencies are installed"]),
+    ].join("\n");
+
+    p.note(planLines, "Execution Plan");
+
     const confirmed = await p.confirm({
       message: "Apply these changes?",
       initialValue: true,
     });
+
     if (p.isCancel(confirmed) || !confirmed) {
       p.cancel("Cancelled.");
       process.exit(0);
     }
   }
 
-  // Apply edits to existing files (preserves user code)
-  for (const edit of integration.fileEdits) {
-    await applyEdit(edit);
-  }
+  const failures: string[] = [];
 
-  // Write new files (config, provider wrapper, etc.)
+  // 4. File Writes (visual step reporting)
+  p.log.step("Creating config and provider files");
+  const createdFiles: string[] = [];
   for (const write of integration.fileWrites) {
-    await applyWrite(write);
+    const result = await applyWrite(write);
+    reportResult(result, failures, createdFiles, cwd);
   }
 
-  // Verify critical integrations landed
+  // 5. File Edits (visual step reporting)
+  p.log.step("Applying integrations to project files");
+  const modifiedFiles: string[] = [];
+  for (const edit of integration.fileEdits) {
+    const result = await applyEdit(edit);
+    reportResult(result, failures, modifiedFiles, cwd);
+  }
+
+  // 6. Integrity Verification
+  p.log.step("Checking file integrity");
+  const integrityFailures: string[] = [];
   for (const check of integration.integrityChecks) {
-    await verifyEdits(check);
+    const ok = await verifyEdits(check);
+    if (!ok) {
+      integrityFailures.push(
+        `• ${check.projectRelativeFile}: ${check.message}`,
+      );
+    } else if (!opts.yes) {
+      p.log.success(`✓ Verified ${check.projectRelativeFile}`);
+    }
   }
 
-  const filesCreated: string[] = [];
-  const filesModified: string[] = [];
-
-  for (const write of integration.fileWrites) {
-    filesCreated.push(write.path);
+  // 7. Report failures explicitly instead of letting them escape to clack
+  if (failures.length > 0) {
+    p.log.warn(
+      `${failures.length} step(s) could not be applied automatically:`,
+    );
+    p.note(failures.join("\n"), "Manual action required");
   }
 
-  for (const edit of integration.fileEdits) {
-    filesModified.push(edit.path);
+  if (integrityFailures.length > 0) {
+    p.log.warn("Some integrity checks did not pass:");
+    p.note(integrityFailures.join("\n"), "Integrity warnings");
   }
 
-  // Install missing Ashee packages
+  // 8. Dependency Installation
   if (deps.missingDependencies.length > 0) {
     const installCmd = buildInstallCommand(
       deps.packageManager,
       deps.missingDependencies,
+      opts.local,
     );
+
+    p.log.step(`Installing missing dependencies with ${deps.packageManager}`);
     try {
       execSync(installCmd, { cwd, stdio: "inherit" });
+      p.log.success("Dependencies installed successfully.");
     } catch {
+      p.log.warn("Failed to install dependencies automatically.");
       p.note(
-        `Failed to run: ${installCmd}\nRun it manually after init.`,
-        "Install",
+        `Failed to execute: ${installCmd}\nPlease run it manually after setup.`,
+        "Installation Error",
       );
     }
   }
 
-  const filesCreatedRelative = filesCreated.map((f) =>
-    f.replace(`${cwd}/`, ""),
-  );
-  const filesModifiedRelative = filesModified.map((f) =>
-    f.replace(`${cwd}/`, ""),
-  );
-
   if (!opts.yes) {
     p.log.success(
-      `Ashee UI initialized for ${frameworkLabel(framework)}. ` +
-        `Detection confidence: ${detection.confidence}`,
+      `Ashee UI successfully configured for ${frameworkLabel(framework)}!`,
     );
-    p.outro("Done. Check the summary above for next steps.");
+    p.outro("Done! Check your project files and happy hacking.");
   }
 
   return {
     framework,
-    filesCreated: filesCreatedRelative,
-    filesModified: filesModifiedRelative,
+    filesCreated: createdFiles,
+    filesModified: modifiedFiles,
     dependenciesInstalled: deps.missingDependencies,
   };
+}
+
+/**
+ * Report a single write/edit result in the CLI output and collect failures.
+ * Successful file paths are recorded for the final `InitResult`.
+ */
+function reportResult(
+  result: {
+    success: boolean;
+    path: string;
+    actionDescription: string;
+    error?: string;
+  },
+  failures: string[],
+  successfulFiles: string[],
+  cwd: string,
+): void {
+  const relativePath = result.path.replace(`${cwd}/`, "");
+
+  if (result.success) {
+    successfulFiles.push(relativePath);
+    console.log(`  ✓ ${result.actionDescription}`);
+  } else {
+    const reason = result.error ?? "Unknown error";
+    failures.push(`• ${relativePath}: ${reason}`);
+    console.log(`  ▲ ${result.actionDescription} — ${relativePath}`);
+    console.log(`    ${reason}`);
+  }
 }
 
 function buildInstallCommand(
   packageManager: "pnpm" | "yarn" | "npm" | "bun",
   packages: string[],
+  isLocal = false,
 ): string {
+  if (isLocal) {
+    switch (packageManager) {
+      case "pnpm":
+        return `pnpm add ${packages.map((p) => `${p}@workspace:*`).join(" ")}`;
+      case "yarn":
+        return `yarn add ${packages.map((p) => `${p}@portal:`).join(" ")}`;
+      case "npm":
+      case "bun":
+        // Resolves packages to relative monorepo folders
+        return `npm install ${packages.map((p) => `file:../../packages/${p.replace("@asheeui/", "")}`).join(" ")}`;
+    }
+  }
+
+  // Non-local fallback
   switch (packageManager) {
     case "pnpm":
       return `pnpm add ${packages.join(" ")}`;

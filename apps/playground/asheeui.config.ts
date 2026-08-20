@@ -3,8 +3,8 @@ import { defineConfig, type ExternalConfig } from "asheeui/config";
 const config: ExternalConfig = {
   theme: {
     defaultTheme: "company-red",
-    defaultVariant: "solid",
-    defaultColor: "danger",
+    defaultVariant: "ghost",
+    defaultColor: "success",
     color: {
       dark: { primary: "#38bdf8", success: "#4ade80" },
       "company-red": {

@@ -3,7 +3,7 @@ export type SupportedFramework = Exclude<Framework, "unknown">;
 export type FrameworkConfidence = "high" | "medium" | "low";
 export type Language = "typescript" | "javascript";
 export type NextRouter = "app" | "pages";
-export type PackageManager = "pnpm" | "yarn" | "npm";
+export type PackageManager = "pnpm" | "yarn" | "npm" | "bun";
 
 export interface FrameworkDetection {
   framework: Framework;
@@ -34,6 +34,7 @@ export interface IntegrationContext {
 export interface InitOptions {
   template: string;
   yes: boolean;
+  local?: boolean;
 }
 
 export interface InitResult {
@@ -52,6 +53,7 @@ export interface IntegrityCheck {
 export interface FileWrite {
   path: string;
   content: string;
+  description?: string;
 }
 
 export interface FileEdit {
@@ -60,6 +62,7 @@ export interface FileEdit {
   replace: string;
   all?: boolean;
   notFoundMessage?: string;
+  description?: string;
 }
 
 export interface IntegrationResult {

@@ -3,7 +3,9 @@ import { buildNextIntegration } from "./next";
 import { buildTanStackStartIntegration } from "./tanstack-start";
 import { buildViteIntegration } from "./vite";
 
-export function buildIntegration(ctx: IntegrationContext): IntegrationResult {
+export async function buildIntegration(
+  ctx: IntegrationContext,
+): Promise<IntegrationResult> {
   switch (ctx.framework) {
     case "next":
       return buildNextIntegration(ctx);
@@ -13,6 +15,12 @@ export function buildIntegration(ctx: IntegrationContext): IntegrationResult {
       return buildTanStackStartIntegration(ctx);
   }
 }
+
+export {
+  resolveGlobalCss,
+  resolveRouterOrEntryPoint,
+  resolveViteOrAppConfig,
+} from "./resolvers";
 
 export type {
   FileEdit,

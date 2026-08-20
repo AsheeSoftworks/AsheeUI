@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
+import { AsheeUIProvider } from "asheeui";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { AsheeUIProvider } from "asheeui";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -20,13 +20,10 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html
-      suppressHydrationWarning
+    <html suppressHydrationWarning
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}>
-      <body className="min-h-full flex flex-col">
-        <AsheeUIProvider>{children}</AsheeUIProvider>
-      </body>
+      <body className="min-h-full flex flex-col"><AsheeUIProvider>{children}</AsheeUIProvider></body>
     </html>
   );
 }

@@ -7,6 +7,7 @@ export function registerInitCommand(program: Command) {
     .description("Scaffold a new Ashee UI project")
     .option("-t, --template <name>", "template to use", "default")
     .option("--yes", "skip prompts, use defaults", false)
+    .option("-l, --local", "use local monorepo workspace dependencies", false)
     .action(async (opts) => {
       await runInit(opts);
     });

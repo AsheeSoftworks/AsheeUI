@@ -30,7 +30,7 @@ export function defaultConfigContent(
   language: "typescript" | "javascript",
 ): string {
   if (language === "typescript") {
-    return `import type { ExternalConfig } from "asheeui";
+    return `import type { ExternalConfig } from "asheeui/config";
 
 export const config: ExternalConfig = {
   theme: {
