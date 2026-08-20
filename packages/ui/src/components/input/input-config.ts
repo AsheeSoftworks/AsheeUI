@@ -1,0 +1,17 @@
+import type { FieldConfig } from "../field/field-config";
+import { registerComponentDefaults } from "../../libs/registry";
+export interface InputConfig extends FieldConfig {}
+
+export const defaultInputConfig: InputConfig = {
+  size: "md",
+  labelAlign: "left",
+  animation: "none",
+};
+
+declare module "../../libs/registry" {
+  interface ComponentTypeConfigRegistry {
+    input: InputConfig;
+  }
+}
+
+registerComponentDefaults("input", defaultInputConfig);

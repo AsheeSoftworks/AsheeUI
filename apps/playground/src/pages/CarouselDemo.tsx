@@ -1,12 +1,13 @@
 "use client";
 
-import type {
-  CarouselItem,
-  CarouselSizeKey,
-  CarouselVariant,
-  Radius,
-} from "asheeui";
-import { Carousel, Text } from "asheeui";
+import type { Radius } from "asheeui";
+import {
+  Carousel,
+  type CarouselItem,
+  type CarouselSizeKey,
+  type CarouselVariant,
+} from "asheeui/carousel";
+import { Text } from "asheeui/text";
 import { useState } from "react";
 
 // ─── Mock Data ────────────────────────────────────────────────────────────────

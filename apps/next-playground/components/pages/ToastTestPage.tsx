@@ -1,6 +1,7 @@
 "use client";
 
-import { Button, ToastProvider, useToast } from "asheeui";
+import { Button } from "asheeui/button";
+import { ToastProvider, useToast } from "asheeui/toast";
 
 function ToastTestControls() {
   const { success, error, info, warning, toast, clearToasts, toasts } =
@@ -36,11 +37,10 @@ function ToastTestControls() {
               error("Could not connect to the database.", {
                 title: "Connection Error",
               })
-            }>
+            }
+            className="px-4 py-2 bg-destructive text-destructive-foreground rounded-md text-sm font-medium hover:opacity-90 transition">
             Trigger Error
           </Button>
-
-          <Button>Normal test Error</Button>
 
           <Button
             onClick={() =>

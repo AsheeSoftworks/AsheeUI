@@ -1,6 +1,8 @@
 "use client";
 
-import { Sidebar, type SidebarItem, ToastProvider, useTheme } from "asheeui";
+import { useTheme } from "asheeui";
+import { ToastProvider } from "asheeui/toast";
+import { Sidebar, type SidebarItem } from "asheeui/sidebar";
 import { useState } from "react";
 
 // Test Pages

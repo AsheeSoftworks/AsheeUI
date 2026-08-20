@@ -1,5 +1,5 @@
 import type { DeepPartial } from "@asheeui/utils";
-import type { ComponentConfigRegistry } from "../registry";
+import type { ComponentConfigRegistry } from "../libs/registry";
 import type { Color, Variant } from "../shared/variant";
 import type {
   ColorConfig,

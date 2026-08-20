@@ -6,8 +6,8 @@ import {
   Tabs,
   type TabsSizeKey,
   type TabsVariant,
-  Text,
-} from "asheeui";
+} from "asheeui/tabs";
+import { Text } from "asheeui/text";
 import { useState } from "react";
 
 // ─── Test Tab Data ────────────────────────────────────────────────────────────
@@ -229,7 +229,7 @@ export default function TabsTestPage() {
               disabled={t.disabled}
               onClick={() => handleTabChange(t.id)}
               className="px-2 py-1 text-xs font-mono rounded bg-muted hover:bg-muted/80 disabled:opacity-40">
-              Force {t.id}
+              Force "{t.id}"
             </button>
           ))}
         </div>

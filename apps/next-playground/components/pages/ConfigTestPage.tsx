@@ -1,29 +1,28 @@
+"use client";
+
+import { Accordion } from "asheeui/accordion";
+import { Button } from "asheeui/button";
+import { Card } from "asheeui/card";
+import { Carousel } from "asheeui/carousel";
+import { Chip } from "asheeui/chip";
+import { Container } from "asheeui/container";
+import { DatePicker } from "asheeui/date-picker";
 import {
-  Accordion,
-  Button,
-  Card,
-  Carousel,
-  Chip,
-  Container,
-  DatePicker,
   Drawer,
   type DrawerPlacement,
   type DrawerSizeKey,
-  Flex,
-  Grid,
-  Heading,
-  Image,
-  Input,
-  Link,
-  PasswordInput,
-  Radio,
-  RadioGroup,
-  Select,
-  type SelectOption,
-  Switch,
-  Text,
-  TextArea,
-} from "asheeui";
+} from "asheeui/drawer";
+import { Flex } from "asheeui/flex";
+import { Grid } from "asheeui/grid";
+import { Heading } from "asheeui/heading";
+import { Image } from "asheeui/image";
+import { Input, PasswordInput } from "asheeui/input";
+import { Link } from "asheeui/link";
+import { Radio, RadioGroup } from "asheeui/radio";
+import { Select, type SelectOption } from "asheeui/select";
+import { Switch } from "asheeui/switch";
+import { Text } from "asheeui/text";
+import { TextArea } from "asheeui/textarea";
 import { useState } from "react";
 
 export default function ConfigTestPage() {

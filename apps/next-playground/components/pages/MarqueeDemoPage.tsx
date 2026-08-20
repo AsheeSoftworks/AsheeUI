@@ -5,7 +5,7 @@ import {
   type MarqueeAxis,
   type MarqueeDirection,
   type MarqueeSpeedPreset,
-} from "asheeui";
+} from "asheeui/marquee";
 import { useState } from "react";
 
 // ─── Dummy Data ───────────────────────────────────────────────────────────────
@@ -316,7 +316,7 @@ export default function MarqueeDemoPage() {
               key={t.name}
               className="w-75 p-4 rounded-xl border bg-background shadow-xs space-y-2 flex flex-col justify-between">
               <p className="text-xs text-muted-foreground leading-relaxed italic">
-                {t.text}
+                "{t.text}"
               </p>
               <div className="pt-2 border-t">
                 <p className="text-xs font-bold text-foreground">{t.name}</p>

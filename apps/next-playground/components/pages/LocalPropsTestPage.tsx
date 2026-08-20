@@ -1,25 +1,20 @@
-import type {
-  FieldSizeKey,
-  FieldStatus,
-  ModalAnimationPreset,
-  ModalPosition,
-  ModalSizeKey,
-} from "asheeui";
+import { Accordion } from "asheeui/accordion";
+import { Autocomplete, type AutocompleteOption } from "asheeui/autocomplete";
+import { Button } from "asheeui/button";
+import { Card } from "asheeui/card";
+import { Carousel } from "asheeui/carousel";
+import { Chip } from "asheeui/chip";
+import type { FieldSizeKey, FieldStatus } from "asheeui/field";
+import { Image } from "asheeui/image";
+import { Link } from "asheeui/link";
 import {
-  Accordion,
-  Autocomplete,
-  type AutocompleteOption,
-  Button,
-  Card,
-  Carousel,
-  Chip,
-  Image,
-  Link,
   Modal,
-  MultiSelect,
-  type MultiSelectOption,
-  Text,
-} from "asheeui";
+  type ModalAnimationPreset,
+  type ModalPosition,
+  type ModalSizeKey,
+} from "asheeui/modal";
+import { MultiSelect, type MultiSelectOption } from "asheeui/multi-select";
+import { Text } from "asheeui/text";
 import { useState } from "react";
 
 export default function LocalPropsTestPage() {

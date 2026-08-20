@@ -6,8 +6,8 @@ import {
   Tabs,
   type TabsSizeKey,
   type TabsVariant,
-  Text,
-} from "asheeui";
+} from "asheeui/tabs";
+import { Text } from "asheeui/text";
 import { useState } from "react";
 
 // ─── Test Tab Data ────────────────────────────────────────────────────────────

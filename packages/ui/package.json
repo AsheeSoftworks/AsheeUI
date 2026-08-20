@@ -2,6 +2,13 @@
   "name": "asheeui",
   "version": "0.1.0",
   "type": "module",
+  "scripts": {
+    "prebuild": "pnpm run build:registry",
+    "build": "pnpm run build:registry",
+    "build:registry": "tsx src/scripts/build-registry.ts",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
   "main": "./src/index.ts",
   "types": "./src/index.ts",
   "style": "./src/index.css",
@@ -25,11 +32,172 @@
       "import": "./src/libs/index.ts",
       "default": "./src/libs/index.ts"
     },
+    "./accordion": {
+      "types": "./src/components/accordion/index.ts",
+      "import": "./src/components/accordion/index.ts",
+      "default": "./src/components/accordion/index.ts"
+    },
+    "./autocomplete": {
+      "types": "./src/components/autocomplete/index.ts",
+      "import": "./src/components/autocomplete/index.ts",
+      "default": "./src/components/autocomplete/index.ts"
+    },
+    "./button": {
+      "types": "./src/components/button/index.ts",
+      "import": "./src/components/button/index.ts",
+      "default": "./src/components/button/index.ts"
+    },
+    "./card": {
+      "types": "./src/components/card/index.ts",
+      "import": "./src/components/card/index.ts",
+      "default": "./src/components/card/index.ts"
+    },
+    "./carousel": {
+      "types": "./src/components/carousel/index.ts",
+      "import": "./src/components/carousel/index.ts",
+      "default": "./src/components/carousel/index.ts"
+    },
+    "./chip": {
+      "types": "./src/components/chip/index.ts",
+      "import": "./src/components/chip/index.ts",
+      "default": "./src/components/chip/index.ts"
+    },
+    "./container": {
+      "types": "./src/components/container/index.ts",
+      "import": "./src/components/container/index.ts",
+      "default": "./src/components/container/index.ts"
+    },
+    "./date-picker": {
+      "types": "./src/components/date-picker/index.ts",
+      "import": "./src/components/date-picker/index.ts",
+      "default": "./src/components/date-picker/index.ts"
+    },
+    "./drawer": {
+      "types": "./src/components/drawer/index.ts",
+      "import": "./src/components/drawer/index.ts",
+      "default": "./src/components/drawer/index.ts"
+    },
+    "./field": {
+      "types": "./src/components/field/index.ts",
+      "import": "./src/components/field/index.ts",
+      "default": "./src/components/field/index.ts"
+    },
+    "./flex": {
+      "types": "./src/components/flex/index.ts",
+      "import": "./src/components/flex/index.ts",
+      "default": "./src/components/flex/index.ts"
+    },
+    "./grid": {
+      "types": "./src/components/grid/index.ts",
+      "import": "./src/components/grid/index.ts",
+      "default": "./src/components/grid/index.ts"
+    },
+    "./heading": {
+      "types": "./src/components/heading/index.ts",
+      "import": "./src/components/heading/index.ts",
+      "default": "./src/components/heading/index.ts"
+    },
+    "./image": {
+      "types": "./src/components/image/index.ts",
+      "import": "./src/components/image/index.ts",
+      "default": "./src/components/image/index.ts"
+    },
+    "./input": {
+      "types": "./src/components/input/index.ts",
+      "import": "./src/components/input/index.ts",
+      "default": "./src/components/input/index.ts"
+    },
+    "./keyboard": {
+      "types": "./src/components/keyboard/index.ts",
+      "import": "./src/components/keyboard/index.ts",
+      "default": "./src/components/keyboard/index.ts"
+    },
+    "./link": {
+      "types": "./src/components/link/index.ts",
+      "import": "./src/components/link/index.ts",
+      "default": "./src/components/link/index.ts"
+    },
+    "./marquee": {
+      "types": "./src/components/marquee/index.ts",
+      "import": "./src/components/marquee/index.ts",
+      "default": "./src/components/marquee/index.ts"
+    },
+    "./modal": {
+      "types": "./src/components/modal/index.ts",
+      "import": "./src/components/modal/index.ts",
+      "default": "./src/components/modal/index.ts"
+    },
+    "./multi-select": {
+      "types": "./src/components/multi-select/index.ts",
+      "import": "./src/components/multi-select/index.ts",
+      "default": "./src/components/multi-select/index.ts"
+    },
+    "./radio": {
+      "types": "./src/components/radio/index.ts",
+      "import": "./src/components/radio/index.ts",
+      "default": "./src/components/radio/index.ts"
+    },
+    "./resizable-screen": {
+      "types": "./src/components/resizable-screen/index.ts",
+      "import": "./src/components/resizable-screen/index.ts",
+      "default": "./src/components/resizable-screen/index.ts"
+    },
+    "./select": {
+      "types": "./src/components/select/index.ts",
+      "import": "./src/components/select/index.ts",
+      "default": "./src/components/select/index.ts"
+    },
+    "./select-menu": {
+      "types": "./src/components/select-menu/index.ts",
+      "import": "./src/components/select-menu/index.ts",
+      "default": "./src/components/select-menu/index.ts"
+    },
+    "./sidebar": {
+      "types": "./src/components/sidebar/index.ts",
+      "import": "./src/components/sidebar/index.ts",
+      "default": "./src/components/sidebar/index.ts"
+    },
+    "./spinner": {
+      "types": "./src/components/spinner/index.ts",
+      "import": "./src/components/spinner/index.ts",
+      "default": "./src/components/spinner/index.ts"
+    },
+    "./switch": {
+      "types": "./src/components/switch/index.ts",
+      "import": "./src/components/switch/index.ts",
+      "default": "./src/components/switch/index.ts"
+    },
+    "./table": {
+      "types": "./src/components/table/index.ts",
+      "import": "./src/components/table/index.ts",
+      "default": "./src/components/table/index.ts"
+    },
+    "./tabs": {
+      "types": "./src/components/tabs/index.ts",
+      "import": "./src/components/tabs/index.ts",
+      "default": "./src/components/tabs/index.ts"
+    },
+    "./text": {
+      "types": "./src/components/text/index.ts",
+      "import": "./src/components/text/index.ts",
+      "default": "./src/components/text/index.ts"
+    },
+    "./textarea": {
+      "types": "./src/components/textarea/index.ts",
+      "import": "./src/components/textarea/index.ts",
+      "default": "./src/components/textarea/index.ts"
+    },
+    "./toast": {
+      "types": "./src/components/toast/index.ts",
+      "import": "./src/components/toast/index.ts",
+      "default": "./src/components/toast/index.ts"
+    },
+    "./tooltip": {
+      "types": "./src/components/tooltip/index.ts",
+      "import": "./src/components/tooltip/index.ts",
+      "default": "./src/components/tooltip/index.ts"
+    },
     "./styles.css": "./src/index.css",
-    "./src": "./src",
-    "./src/index.ts": "./src/index.ts",
-    "./src/config/index.ts": "./src/config/index.ts",
-    "./src/libs/index.ts": "./src/libs/index.ts",
     "./src/*": "./src/*"
   },
   "sideEffects": [
@@ -58,16 +226,21 @@
   },
   "devDependencies": {
     "@floating-ui/react": "^0.27.20",
+    "@testing-library/jest-dom": "^7.0.1",
+    "@testing-library/react": "^16.3.2",
     "@types/node": "^26.1.2",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
     "@vitejs/plugin-react": "^4.0.0",
     "framer-motion": "^11.18.2",
+    "happy-dom": "^20.11.2",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "ts-node": "^10.9.2",
+    "tsx": "^4.23.12",
     "typescript": "^5.0.0",
     "vite": "^6.0.0",
-    "vite-plugin-dts": "^4.0.0"
+    "vite-plugin-dts": "^4.0.0",
+    "vitest": "^3.2.7"
   }
 }
