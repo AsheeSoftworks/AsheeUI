@@ -3,6 +3,7 @@
 import { cn } from "@asheeui/utils";
 import { type HTMLMotionProps, motion } from "framer-motion";
 import { type ReactNode, useCallback, useMemo } from "react";
+import { ArrowLeftIcon } from "../../icons/ArrowLeftIcon";
 import { useAsheeConfig } from "../../libs/context";
 import { resolveAnimation } from "../../motion/resolve-animation";
 import type { AnimationProp } from "../../motion/types";
@@ -13,17 +14,16 @@ import {
   resolveClassKey,
   resolveRadiusKey,
 } from "../../utils/resolve-token";
-import { ArrowLeftIcon } from "../../icons/ArrowLeftIcon";
 import { Button } from "../button/Button";
 import { Tooltip } from "../tooltip/Tooltip";
 import type { TooltipPlacement } from "../tooltip/tooltip-config";
-import { FALLBACK_SIDEBAR_CONFIG } from "./sidebar-config";
 import type {
   SidebarConfig,
   SidebarItem,
   SidebarSizeKey,
   SidebarVariant,
 } from "./sidebar-config";
+import { FALLBACK_SIDEBAR_CONFIG } from "./sidebar-config";
 import {
   SIDEBAR_COLLAPSED_WIDTH_CLASS,
   SIDEBAR_EXPANDED_WIDTH_CLASS,

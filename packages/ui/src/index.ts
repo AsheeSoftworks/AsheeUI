@@ -1,3 +1,5 @@
+export type { AsheeUIProviderProps } from "./AsheeUIProvider";
+export { AsheeUIProvider } from "./AsheeUIProvider";
 export type {
   AsheeThemeRegistry,
   ColorConfig,
@@ -6,6 +8,11 @@ export type {
   ThemeName,
 } from "./theme/color/color-config";
 export { defaultColorConfig } from "./theme/color/default-color-config";
+export {
+  THEME_STORAGE_KEY,
+  themeController,
+} from "./theme/controller/controller";
+export { useTheme } from "./theme/controller/useTheme";
 export { defaultShadowConfig } from "./theme/shadow/default-shadow-config";
 export type {
   Shadow,
@@ -31,10 +38,3 @@ export type {
   LineHeight,
   TypographyConfig,
 } from "./theme/typography/typography-config";
-export type { AsheeUIProviderProps } from "./AsheeUIProvider";
-export { AsheeUIProvider } from "./AsheeUIProvider";
-export {
-  THEME_STORAGE_KEY,
-  themeController,
-} from "./theme/controller/controller";
-export { useTheme } from "./theme/controller/useTheme";

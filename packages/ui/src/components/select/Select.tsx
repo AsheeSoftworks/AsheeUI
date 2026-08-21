@@ -20,6 +20,7 @@ import {
   useMemo,
   useState,
 } from "react";
+import { ChevronDownIcon } from "../../icons/ChevronDownIcon";
 import { useAsheeConfig } from "../../libs/context";
 import type { AnimationProp } from "../../motion/types";
 import {
@@ -33,7 +34,6 @@ import {
   resolveClassKey,
   resolveRadiusKey,
 } from "../../utils/resolve-token";
-import { ChevronDownIcon } from "../../icons/ChevronDownIcon";
 import type { ButtonSizeKey } from "../button/button-config";
 import { FieldShell } from "../field/FieldShell";
 import type {

@@ -21,6 +21,8 @@ import {
   useMemo,
   useState,
 } from "react";
+import { ChevronDownIcon } from "../../icons/ChevronDownIcon";
+import { CloseIcon } from "../../icons/CloseIcon";
 import { useAsheeConfig } from "../../libs/context";
 import type { AnimationProp } from "../../motion/types";
 import type { Color, Variant } from "../../shared/variant";
@@ -30,10 +32,9 @@ import {
   resolveClassKey,
   resolveRadiusKey,
 } from "../../utils/resolve-token";
-import { ChevronDownIcon } from "../../icons/ChevronDownIcon";
-import { CloseIcon } from "../../icons/CloseIcon";
 import { Button } from "../button/Button";
 import type { ButtonSizeKey } from "../button/button-config";
+import { Chip } from "../chip/Chip";
 import { FieldShell } from "../field/FieldShell";
 import type {
   FieldSizeKey,
@@ -53,7 +54,6 @@ import {
   MULTI_SELECT_RADIUS_CLASS,
   STATUS_BORDER_CLASS,
 } from "./multi-select-styles";
-import { Chip } from "../chip/Chip";
 
 // ─── Props Interface ──────────────────────────────────────────────────────────
 

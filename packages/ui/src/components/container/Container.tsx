@@ -10,9 +10,9 @@ import {
   resolveSpacingKey,
 } from "../../utils/resolve-token";
 import {
-  FALLBACK_CONTAINER_CONFIG,
   type ContainerConfig,
   type ContainerMaxWidth,
+  FALLBACK_CONTAINER_CONFIG,
   type ScrollbarOverride,
 } from "./container-config";
 import {

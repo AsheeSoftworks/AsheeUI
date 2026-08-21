@@ -1,5 +1,5 @@
 import type { Command } from "commander";
-import { runInit } from "../lib/init.js";
+import { runInit } from "../lib/init/init";
 
 export function registerInitCommand(program: Command) {
   program

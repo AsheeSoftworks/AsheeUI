@@ -1,6 +1,6 @@
 import { join } from "node:path";
-import { pathExists } from "../file-utils";
-import type { SupportedFramework } from "../types";
+import { pathExists } from "../common/file-utils";
+import type { SupportedFramework } from "../common/types";
 
 const GLOBAL_CSS_CANDIDATES = [
   "src/styles.css",

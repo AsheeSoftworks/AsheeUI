@@ -11,8 +11,8 @@ import {
   resolveRadiusKey,
 } from "../../utils/resolve-token";
 import {
-  FALLBACK_TABLE_CONFIG,
   type ColumnDef,
+  FALLBACK_TABLE_CONFIG,
   type TableConfig,
   type TableSizeKey,
   type TableVariant,

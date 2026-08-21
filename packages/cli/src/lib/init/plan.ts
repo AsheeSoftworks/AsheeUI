@@ -1,4 +1,4 @@
-import type { ProjectStructure } from "./types";
+import type { ProjectStructure } from "../common/types";
 
 export interface PlannedAction {
   type: "write" | "edit" | "install";

@@ -1,4 +1,4 @@
-import type { IntegrityCheck } from "./types";
+import type { IntegrityCheck } from "../common/types";
 
 export function providerWrapperContent(opts: {
   componentName: string;

@@ -1,5 +1,5 @@
-import type { Spacing } from "../../theme/token/spacing/spacing-config";
 import { registerComponentDefaults } from "../../libs/registry";
+import type { Spacing } from "../../theme/token/spacing/spacing-config";
 
 export type FlexDirection = "row" | "row-reverse" | "col" | "col-reverse";
 export type FlexAlign = "start" | "center" | "end" | "stretch" | "baseline";

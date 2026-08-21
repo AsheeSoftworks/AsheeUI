@@ -12,6 +12,8 @@ import {
   useMemo,
   useState,
 } from "react";
+import { ChevronLeftIcon } from "../../icons/ChevronLeftIcon";
+import { ChevronRightIcon } from "../../icons/ChevronRightIcon";
 import { useAsheeConfig } from "../../libs/context";
 import type { Radius } from "../../theme/token/radius/radius-config";
 import {
@@ -19,14 +21,12 @@ import {
   resolveClassKey,
   resolveRadiusKey,
 } from "../../utils/resolve-token";
-import { ChevronLeftIcon } from "../../icons/ChevronLeftIcon";
-import { ChevronRightIcon } from "../../icons/ChevronRightIcon";
 import {
-  FALLBACK_CAROUSEL_CONFIG,
   type CarouselConfig,
   type CarouselItem,
   type CarouselSizeKey,
   type CarouselVariant,
+  FALLBACK_CAROUSEL_CONFIG,
 } from "./carousel-config";
 import {
   CAROUSEL_HEIGHT_CLASS,

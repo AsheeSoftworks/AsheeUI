@@ -1,5 +1,5 @@
-import type { AnimationProp } from "../../motion/types";
 import { registerComponentDefaults } from "../../libs/registry";
+import type { AnimationProp } from "../../motion/types";
 import type { Radius } from "../../theme/token/radius/radius-config";
 import type { Size } from "../../theme/token/token";
 

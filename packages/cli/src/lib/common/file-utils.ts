@@ -73,6 +73,20 @@ export async function readTextFile(p: string): Promise<string | null> {
   }
 }
 
+/**
+ * Returns the first candidate path (relative to `directory`) that exists on
+ * disk, or `null` if none do.
+ */
+export async function firstExisting(
+  directory: string,
+  candidates: string[],
+): Promise<string | null> {
+  for (const candidate of candidates) {
+    if (await pathExists(join(directory, candidate))) return candidate;
+  }
+  return null;
+}
+
 export async function tryImport<T>(p: string): Promise<T | null> {
   try {
     const url = pathToFileURL(p).href;

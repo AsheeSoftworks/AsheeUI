@@ -17,11 +17,11 @@ import {
   resolveRadiusKey,
 } from "../../utils/resolve-token";
 import {
-  FALLBACK_DRAWER_CONFIG,
   type DrawerAnimation,
   type DrawerConfig,
   type DrawerPlacement,
   type DrawerSizeKey,
+  FALLBACK_DRAWER_CONFIG,
 } from "./drawer-config";
 import { resolveDrawerAnimation } from "./drawer-motion";
 import {

@@ -1,5 +1,5 @@
-import type { Spacing } from "../../theme/token/spacing/spacing-config";
 import { registerComponentDefaults } from "../../libs/registry";
+import type { Spacing } from "../../theme/token/spacing/spacing-config";
 
 export interface GridConfig {
   columns?: number;

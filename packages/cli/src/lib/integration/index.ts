@@ -1,4 +1,4 @@
-import type { IntegrationContext, IntegrationResult } from "../types";
+import type { IntegrationContext, IntegrationResult } from "../common/types";
 import { buildNextIntegration } from "./next";
 import { buildTanStackStartIntegration } from "./tanstack-start";
 import { buildViteIntegration } from "./vite";
@@ -16,14 +16,13 @@ export async function buildIntegration(
   }
 }
 
+export type {
+  FileEdit,
+  FileWrite,
+  IntegrityCheck,
+} from "../common/types";
 export {
   resolveGlobalCss,
   resolveRouterOrEntryPoint,
   resolveViteOrAppConfig,
 } from "./resolvers";
-
-export type {
-  FileEdit,
-  FileWrite,
-  IntegrityCheck,
-} from "../types";

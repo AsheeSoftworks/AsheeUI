@@ -8,6 +8,7 @@ import {
   type MouseEvent,
   type ReactNode,
 } from "react";
+import { CloseIcon } from "../../icons/CloseIcon";
 import { useAsheeConfig } from "../../libs/context";
 import { resolveAnimation } from "../../motion/resolve-animation";
 import type { AnimationProp } from "../../motion/types";
@@ -18,12 +19,11 @@ import {
   resolveClassKey,
   resolveRadiusKey,
 } from "../../utils/resolve-token";
-import { CloseIcon } from "../../icons/CloseIcon";
 import {
-  FALLBACK_CHIP_CONFIG,
   type ChipConfig,
   type ChipSizeKey,
   type ChipVariant,
+  FALLBACK_CHIP_CONFIG,
 } from "./chip-config";
 import {
   CHIP_FONT_CLASS,

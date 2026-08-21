@@ -1,7 +1,8 @@
 "use client";
 
 import { cn } from "@asheeui/utils";
-import { forwardRef, type AnchorHTMLAttributes, type ReactNode } from "react";
+import { type AnchorHTMLAttributes, forwardRef, type ReactNode } from "react";
+import { ExternalLinkIcon } from "../../icons/ExternalLinkIcon";
 import { useAsheeConfig } from "../../libs/context";
 import type { Color } from "../../shared/variant";
 import type {
@@ -9,7 +10,6 @@ import type {
   LineHeight,
 } from "../../theme/typography/typography-config";
 import { resolveCascade, resolveClassKey } from "../../utils/resolve-token";
-import { ExternalLinkIcon } from "../../icons/ExternalLinkIcon";
 import {
   FALLBACK_LINK_CONFIG,
   type LinkConfig,

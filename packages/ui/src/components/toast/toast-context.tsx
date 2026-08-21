@@ -14,6 +14,7 @@ import { useAsheeConfig } from "../../libs/context";
 import type { Variant } from "../../shared/variant";
 import type { Radius } from "../../theme/token/radius/radius-config";
 import { resolveCascade, resolveRadiusKey } from "../../utils/resolve-token";
+import { ToastItem } from "./ToastItem";
 import {
   FALLBACK_TOAST_CONFIG,
   type ToastConfig,
@@ -21,7 +22,6 @@ import {
   type ToastPlacement,
   type ToastSizeKey,
 } from "./toast-config";
-import { ToastItem } from "./ToastItem";
 
 // ─── Context Interface ────────────────────────────────────────────────────────
 

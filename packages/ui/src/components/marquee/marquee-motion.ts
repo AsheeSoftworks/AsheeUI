@@ -1,5 +1,5 @@
-import { MARQUEE_SPEED_PRESETS } from "./marquee-styles";
 import type { MarqueeSpeedPreset } from "./marquee-config";
+import { MARQUEE_SPEED_PRESETS } from "./marquee-styles";
 
 export interface ResolvedMarqueeMotion {
   durationSeconds: number;

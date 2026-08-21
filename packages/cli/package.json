@@ -1,6 +1,6 @@
 {
   "name": "@asheeui/cli",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "bin": {
     "asheeui": "./dist/index.mjs"
   },
@@ -14,7 +14,8 @@
   "dependencies": {
     "@clack/prompts": "^1.7.0",
     "commander": "^15.0.0",
-    "tsx": "^4.23.12"
+    "tsx": "^4.23.12",
+    "@asheeui/utils": "workspace:*"
   },
   "devDependencies": {
     "tsdown": "^0.22.14",

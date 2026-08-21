@@ -1,7 +1,7 @@
 import { join } from "node:path";
 import * as p from "@clack/prompts";
-import { detectPackageManager, readJson } from "./file-utils.js";
-import type { PackageManager } from "./types.js";
+import { detectPackageManager, readJson } from "./file-utils";
+import type { PackageManager } from "./types";
 
 export interface DependencyInfo {
   packageManager: PackageManager;

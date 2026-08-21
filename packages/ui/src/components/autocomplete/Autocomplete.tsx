@@ -33,9 +33,9 @@ import type { FieldSizeKey } from "../field/field-config";
 import { Input, type InputProps } from "../input/Input";
 import { SelectMenu } from "../select-menu/SelectMenu";
 import {
-  FALLBACK_AUTOCOMPLETE_CONFIG,
   type AutocompleteConfig,
   type AutocompleteOption,
+  FALLBACK_AUTOCOMPLETE_CONFIG,
 } from "./autocomplete-config";
 import { AUTOCOMPLETE_RADIUS_CLASS } from "./autocomplete-styles";
 

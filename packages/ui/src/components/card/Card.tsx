@@ -24,11 +24,11 @@ import {
 import { Image } from "../image/Image";
 import type { ImageFit, ImageRatioKey } from "../image/image-config";
 import {
-  FALLBACK_CARD_CONFIG,
   type CardConfig,
   type CardImagePosition,
   type CardSizeKey,
   type CardVariant,
+  FALLBACK_CARD_CONFIG,
 } from "./card-config";
 import {
   CARD_GAP_CLASS,

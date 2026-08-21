@@ -1,5 +1,5 @@
-import type { AnimationProp } from "../../motion/types";
 import { registerComponentDefaults } from "../../libs/registry";
+import type { AnimationProp } from "../../motion/types";
 import type { Shadow } from "../../theme/shadow/shadow-config";
 import type { Radius } from "../../theme/token/radius/radius-config";
 import type { ImageFit, ImageRatioKey } from "../image/image-config";

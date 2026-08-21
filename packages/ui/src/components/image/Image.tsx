@@ -6,6 +6,7 @@ import { forwardRef, useEffect, useState } from "react";
 import { useAsheeConfig } from "../../libs/context";
 import { resolveAnimation } from "../../motion/resolve-animation";
 import type { AnimationProp } from "../../motion/types";
+import type { Shadow } from "../../theme/shadow/shadow-config";
 import type { Radius } from "../../theme/token/radius/radius-config";
 import type { Size } from "../../theme/token/token";
 import {
@@ -25,7 +26,6 @@ import {
   IMAGE_RATIO_CLASS,
   IMAGE_SHADOW_CLASS,
 } from "./image-styles";
-import type { Shadow } from "../../theme/shadow/shadow-config";
 
 export interface ImageProps
   extends Omit<HTMLMotionProps<"img">, "children" | "alt"> {

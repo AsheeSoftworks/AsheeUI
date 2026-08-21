@@ -1,5 +1,5 @@
-import type { Color } from "../../shared/variant";
 import { registerComponentDefaults } from "../../libs/registry";
+import type { Color } from "../../shared/variant";
 
 export type SpinnerSizeKey = "sm" | "md" | "lg";
 

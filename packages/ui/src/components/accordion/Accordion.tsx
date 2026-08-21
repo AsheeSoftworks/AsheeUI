@@ -9,6 +9,7 @@ import {
   useId,
   useState,
 } from "react";
+import { ChevronDownIcon } from "../../icons/ChevronDownIcon";
 import { useAsheeConfig } from "../../libs/context";
 import { resolveAnimation } from "../../motion/resolve-animation";
 import type { AnimationProp } from "../../motion/types";
@@ -18,13 +19,12 @@ import {
   resolveClassKey,
   resolveRadiusKey,
 } from "../../utils/resolve-token";
-import { ChevronDownIcon } from "../../icons/ChevronDownIcon";
 import {
-  FALLBACK_ACCORDION_CONFIG,
   type AccordionConfig,
   type AccordionItem,
   type AccordionSizeKey,
   type AccordionVariant,
+  FALLBACK_ACCORDION_CONFIG,
 } from "./accordion-config";
 import {
   ACCORDION_CONTENT_SIZE_CLASS,

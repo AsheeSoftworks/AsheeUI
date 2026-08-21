@@ -1,17 +1,17 @@
 import { join } from "node:path";
-import { defaultConfigContent } from "../templates";
+import { pathExists } from "../common/file-utils";
 import type {
   FileEdit,
   IntegrationContext,
   IntegrationResult,
   IntegrityCheck,
-} from "../types";
+} from "../common/types";
+import { defaultConfigContent } from "../init/templates";
 import {
   resolveGlobalCss,
   resolveRouterOrEntryPoint,
   resolveViteOrAppConfig,
 } from "./resolvers";
-import { pathExists } from "../file-utils";
 
 export async function buildTanStackStartIntegration(
   ctx: IntegrationContext,

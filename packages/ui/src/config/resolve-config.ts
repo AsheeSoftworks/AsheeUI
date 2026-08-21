@@ -1,7 +1,7 @@
 import { mergeObject } from "@asheeui/utils";
+import { getAllComponentDefaults } from "../libs/registry";
 import type { Config, ExternalConfig } from "./config";
 import { defaultConfig } from "./default-config";
-import { getAllComponentDefaults } from "../libs/registry";
 
 export function resolveConfig(externalConfig: ExternalConfig): Config {
   const registeredDefaults = getAllComponentDefaults() as Config["components"];

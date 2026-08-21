@@ -1,5 +1,5 @@
-import type { Color, Variant } from "../../shared/variant";
 import { registerComponentDefaults } from "../../libs/registry";
+import type { Color, Variant } from "../../shared/variant";
 import type { Radius } from "../../theme/token/radius/radius-config";
 import type { ButtonSizeKey } from "../button/button-config";
 import type { FieldConfig, FieldSizeKey } from "../field/field-config";

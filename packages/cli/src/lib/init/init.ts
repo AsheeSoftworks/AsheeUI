@@ -1,39 +1,15 @@
 import { execSync } from "node:child_process";
 import * as p from "@clack/prompts";
-import { inspectDependencies } from "./deps.js";
-import { detectFramework, frameworkLabel } from "./detect.js";
-import { applyEdit, applyWrite, verifyEdits } from "./file-utils.js";
-import { buildIntegration } from "./integration/index.js";
-import { buildPlan } from "./plan.js";
-import { detectProjectStructure } from "./structure.js";
-import type { InitOptions, InitResult, SupportedFramework } from "./types.js";
-
-const FRAMEWORK_OPTIONS: { value: SupportedFramework; label: string }[] = [
-  { value: "next", label: "Next.js" },
-  { value: "vite-react", label: "Vite + React" },
-  { value: "tanstack-start", label: "TanStack Start" },
-];
-
-async function resolveFramework(cwd: string): Promise<SupportedFramework> {
-  const detection = await detectFramework({ cwd });
-
-  if (detection.framework !== "unknown") {
-    return detection.framework;
-  }
-
-  const answer = await p.select({
-    message:
-      "We couldn't determine your framework. Which framework are you using?",
-    options: FRAMEWORK_OPTIONS,
-  });
-
-  if (p.isCancel(answer)) {
-    p.cancel("Cancelled.");
-    process.exit(0);
-  }
-
-  return answer as SupportedFramework;
-}
+import { inspectDependencies } from "../common/deps";
+import { detectFramework, frameworkLabel } from "../common/detect";
+import { applyEdit, applyWrite, verifyEdits } from "../common/file-utils";
+import { detectProjectStructure } from "../common/structure";
+import type { InitOptions, InitResult } from "../common/types";
+import { buildIntegration } from "../integration/index";
+import { buildInstallCommand } from "./install-command";
+import { buildPlan } from "./plan";
+import { reportResult } from "./report";
+import { resolveFramework } from "./resolve-framework";
 
 export async function runInit(
   opts: InitOptions,
@@ -43,7 +19,7 @@ export async function runInit(
     p.intro("Ashee UI — init");
   }
 
-  // 1. Framework Resolution & Structure
+  // Framework Resolution & Structure
   const framework = await resolveFramework(cwd);
   const detection = await detectFramework({ cwd });
   const structure = await detectProjectStructure({ cwd, framework });
@@ -54,7 +30,7 @@ export async function runInit(
     );
   }
 
-  // 2. Build Integration & Inspect Dependencies
+  // Build Integration & Inspect Dependencies
   const integration = await buildIntegration({
     directory: cwd,
     framework,
@@ -69,7 +45,7 @@ export async function runInit(
 
   buildPlan(integration.summary, deps.missingDependencies, structure);
 
-  // 3. Execution Preview & Confirmation
+  // Execution Preview & Confirmation
   if (!opts.yes) {
     const planLines = [
       ...integration.summary.map((item) => `• ${item}`),
@@ -93,7 +69,7 @@ export async function runInit(
 
   const failures: string[] = [];
 
-  // 4. File Writes (visual step reporting)
+  // File Writes (visual step reporting)
   p.log.step("Creating config and provider files");
   const createdFiles: string[] = [];
   for (const write of integration.fileWrites) {
@@ -101,7 +77,7 @@ export async function runInit(
     reportResult(result, failures, createdFiles, cwd);
   }
 
-  // 5. File Edits (visual step reporting)
+  // File Edits (visual step reporting)
   p.log.step("Applying integrations to project files");
   const modifiedFiles: string[] = [];
   for (const edit of integration.fileEdits) {
@@ -109,7 +85,7 @@ export async function runInit(
     reportResult(result, failures, modifiedFiles, cwd);
   }
 
-  // 6. Integrity Verification
+  // Integrity Verification
   p.log.step("Checking file integrity");
   const integrityFailures: string[] = [];
   for (const check of integration.integrityChecks) {
@@ -123,7 +99,7 @@ export async function runInit(
     }
   }
 
-  // 7. Report failures explicitly instead of letting them escape to clack
+  // Report failures explicitly instead of letting them escape to clack
   if (failures.length > 0) {
     p.log.warn(
       `${failures.length} step(s) could not be applied automatically:`,
@@ -136,7 +112,7 @@ export async function runInit(
     p.note(integrityFailures.join("\n"), "Integrity warnings");
   }
 
-  // 8. Dependency Installation
+  // Dependency Installation
   if (deps.missingDependencies.length > 0) {
     const installCmd = buildInstallCommand(
       deps.packageManager,
@@ -170,63 +146,4 @@ export async function runInit(
     filesModified: modifiedFiles,
     dependenciesInstalled: deps.missingDependencies,
   };
-}
-
-/**
- * Report a single write/edit result in the CLI output and collect failures.
- * Successful file paths are recorded for the final `InitResult`.
- */
-function reportResult(
-  result: {
-    success: boolean;
-    path: string;
-    actionDescription: string;
-    error?: string;
-  },
-  failures: string[],
-  successfulFiles: string[],
-  cwd: string,
-): void {
-  const relativePath = result.path.replace(`${cwd}/`, "");
-
-  if (result.success) {
-    successfulFiles.push(relativePath);
-    console.log(`  ✓ ${result.actionDescription}`);
-  } else {
-    const reason = result.error ?? "Unknown error";
-    failures.push(`• ${relativePath}: ${reason}`);
-    console.log(`  ▲ ${result.actionDescription} — ${relativePath}`);
-    console.log(`    ${reason}`);
-  }
-}
-
-function buildInstallCommand(
-  packageManager: "pnpm" | "yarn" | "npm" | "bun",
-  packages: string[],
-  isLocal = false,
-): string {
-  if (isLocal) {
-    switch (packageManager) {
-      case "pnpm":
-        return `pnpm add ${packages.map((p) => `${p}@workspace:*`).join(" ")}`;
-      case "yarn":
-        return `yarn add ${packages.map((p) => `${p}@portal:`).join(" ")}`;
-      case "npm":
-      case "bun":
-        // Resolves packages to relative monorepo folders
-        return `npm install ${packages.map((p) => `file:../../packages/${p.replace("@asheeui/", "")}`).join(" ")}`;
-    }
-  }
-
-  // Non-local fallback
-  switch (packageManager) {
-    case "pnpm":
-      return `pnpm add ${packages.join(" ")}`;
-    case "yarn":
-      return `yarn add ${packages.join(" ")}`;
-    case "npm":
-      return `npm install ${packages.join(" ")}`;
-    case "bun":
-      return `bun add ${packages.join(" ")}`;
-  }
 }
