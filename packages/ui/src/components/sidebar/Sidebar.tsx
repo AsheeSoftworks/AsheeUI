@@ -290,7 +290,7 @@ export function Sidebar<T = string>({
       {/* Navigation Body */}
       <nav
         className={cn(
-          "flex-1 overflow-y-auto py-3 px-2 flex flex-col gap-1",
+          "flex-1 overflow-y-auto py-3 px-2 flex flex-col gap-1 scrollbar-hide",
           bodyClassName,
         )}>
         {filteredItems.map((item) => {

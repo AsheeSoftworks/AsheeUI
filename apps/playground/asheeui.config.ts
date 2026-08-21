@@ -8,6 +8,7 @@ const config: ExternalConfig = {
     color: {
       dark: { primary: "#38bdf8", success: "#4ade80" },
       "company-red": {
+        extends: "dark",
         background: "#1a0505",
         foreground: "#fef2f2",
         primary: "#dc2626",

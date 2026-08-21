@@ -1,4 +1,5 @@
 import type { ColorConfig } from "../theme/color/color-config";
+import type { ScrollbarConfig } from "../theme/scrollbar/scrollbar-config";
 import type { ShadowConfig } from "../theme/shadow/shadow-config";
 import type { RadiusConfig } from "../theme/token/radius/radius-config";
 import type { TypographyConfig } from "../theme/typography/typography-config";
@@ -9,6 +10,7 @@ type DesignTokens = {
   typography: TypographyConfig;
   shadow: ShadowConfig;
   defaultTheme?: string;
+  scrollbar: ScrollbarConfig;
 };
 
 export const DESIGN_TOKENS_STYLE_ID = "ashee-design-tokens";
@@ -26,6 +28,7 @@ export function buildDesignTokensCss({
   radius,
   typography,
   shadow,
+  scrollbar,
   defaultTheme = "light",
 }: DesignTokens): string {
   // 1. Generate color theme CSS blocks
@@ -85,6 +88,9 @@ export function buildDesignTokensCss({
     ),
     ...Object.entries(typography?.letterSpacing ?? {}).map(
       ([k, v]) => `--ashee-tracking-${k}: ${v};`,
+    ),
+    ...Object.entries(scrollbar ?? {}).map(
+      ([k, v]) => `--ashee-scrollbar-${toKebabCase(k)}: ${v};`,
     ),
   ];
 

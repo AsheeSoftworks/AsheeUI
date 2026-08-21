@@ -30,3 +30,13 @@ export type DefaultColorConfig = Record<KnownThemeName, ColorVariant>;
  */
 export type ColorConfig = Record<KnownThemeName, ColorVariant> &
   Partial<Record<Exclude<ThemeName, KnownThemeName>, ColorVariant>>;
+
+export type ExternalColorVariant = Partial<ColorVariant> & {
+  extends?: KnownThemeName;
+};
+
+type CustomThemeName = Exclude<ThemeName, KnownThemeName>;
+export type ExternalColorConfig = Partial<
+  Record<KnownThemeName, Partial<ColorVariant>>
+> &
+  Record<CustomThemeName, ExternalColorVariant>;

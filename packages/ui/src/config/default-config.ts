@@ -1,4 +1,5 @@
 import { defaultColorConfig } from "../theme/color/default-color-config";
+import { defaultScrollbarConfig } from "../theme/scrollbar/default-scrollbar-config";
 import { defaultShadowConfig } from "../theme/shadow/default-shadow-config";
 import { defaultRadiusConfig } from "../theme/token/radius/default-radius-config";
 import { defaultSpacingConfig } from "../theme/token/spacing/default-spacing-config";
@@ -12,6 +13,7 @@ export const defaultConfig: Config = {
     typography: defaultTypographyConfig,
     shadow: defaultShadowConfig,
     spacing: defaultSpacingConfig,
+    scrollbar: defaultScrollbarConfig,
     defaultTheme: "system",
     defaultVariant: "solid",
     defaultColor: "primary",
