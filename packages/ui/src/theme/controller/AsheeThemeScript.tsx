@@ -7,16 +7,10 @@ import {
 } from "../../libs/design-tokens";
 import { THEME_STORAGE_KEY } from "./controller";
 
-const isServer = typeof window === "undefined";
-
 export function AsheeThemeScript() {
-  // 1. Skip client-side rendering entirely so React 19 never attempts
-  //    to reconcile a <script> element on the client.
-  if (!isServer) return null;
-
   const config = resolveConfig(externalConfig ?? {});
   const tokensCss = buildDesignTokensCss(config.theme);
-  const themes = Object.keys(config.theme.color);
+  const themes = Object.keys(config.theme.color ?? {});
   const defaultTheme = config.theme.defaultTheme ?? "system";
   const storageKey = THEME_STORAGE_KEY;
 
@@ -36,7 +30,6 @@ export function AsheeThemeScript() {
       var selection = stored || defaultTheme;
       var resolved = selection === 'system' ? (systemDark ? 'dark' : 'light') : selection;
       
-      // Apply theme class
       var prefix = 'theme-';
       for (var i = el.classList.length - 1; i >= 0; i--) {
         if (el.classList[i].startsWith(prefix)) {
@@ -46,7 +39,6 @@ export function AsheeThemeScript() {
       el.classList.add(prefix + resolved);
       el.style.colorScheme = resolved;
       
-      // Apply design tokens
       var styleEl = document.getElementById(${JSON.stringify(DESIGN_TOKENS_STYLE_ID)});
       if (!styleEl) {
         styleEl = document.createElement('style');

@@ -1,5 +1,12 @@
 # @asheeui/next
 
+## 0.2.11
+
+### Patch Changes
+
+- Updated dependencies
+  - asheeui@0.3.11
+
 ## 0.2.10
 
 ### Patch Changes

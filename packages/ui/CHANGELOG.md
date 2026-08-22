@@ -1,5 +1,11 @@
 # asheeui
 
+## 0.3.11
+
+### Patch Changes
+
+- Fix theme not switching bug
+
 ## 0.3.10
 
 ### Patch Changes

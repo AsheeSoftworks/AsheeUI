@@ -29,35 +29,21 @@ export function buildDesignTokensCss({
   typography,
   shadow,
   scrollbar,
-  defaultTheme = "light",
 }: DesignTokens): string {
   // 1. Generate color theme CSS blocks
   const themeColorBlocks: string[] = [];
 
   if (color) {
-    // Cast color to a string-indexed Record for safe lookup with string variables
-    const colorRecord = color as Record<
-      string,
-      (typeof color)[keyof typeof color] | undefined
-    >;
-
     for (const [themeName, colorMap] of Object.entries(color)) {
       if (!colorMap) continue;
 
-      const declarations = Object.entries(colorMap).map(([key, val]) => {
-        return `    --ashee-${toKebabCase(key)}: ${val};`;
-      });
+      const declarations = Object.entries(colorMap).map(
+        ([key, val]) => `    --ashee-${toKebabCase(key)}: ${val};`,
+      );
 
-      // Safe lookup using colorRecord[defaultTheme]
-      const isDefault =
-        themeName === defaultTheme ||
-        (themeName === "light" && !colorRecord[defaultTheme]);
-
-      const selector = isDefault
-        ? `:root, .theme-${themeName}`
-        : `.theme-${themeName}`;
-
-      themeColorBlocks.push(`${selector} {\n${declarations.join("\n")}\n}`);
+      themeColorBlocks.push(
+        `.theme-${themeName} {\n${declarations.join("\n")}\n}`,
+      );
     }
   }
 

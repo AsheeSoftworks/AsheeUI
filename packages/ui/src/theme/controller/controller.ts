@@ -37,24 +37,43 @@ class ThemeController {
    * - Never writes to storage (only `setTheme` persists user intent).
    */
   configure({ defaultTheme, themes }: ThemeConfigInput): void {
+    console.log("[Theme] configure called with:", { defaultTheme, themes });
     this.defaultTheme = defaultTheme;
     this.availableThemes = themes;
 
-    if (typeof window === "undefined") return;
+    if (typeof window === "undefined") {
+      console.log(
+        "[Theme] Running in non-browser environment, skipping localStorage operations.",
+      );
+      return;
+    }
 
     const stored = window.localStorage.getItem(THEME_STORAGE_KEY);
+    console.log("[Theme] Retrieved from localStorage:", stored);
+
     const hasValidStored =
       stored !== null && this.isValid(stored as ThemeSelection);
+    console.log("[Theme] Is stored theme valid?", hasValidStored);
 
     if (!hasValidStored) {
-      if (stored !== null) window.localStorage.removeItem(THEME_STORAGE_KEY);
+      if (stored !== null) {
+        console.log(
+          "[Theme] Invalid stored theme, removing from localStorage.",
+        );
+        window.localStorage.removeItem(THEME_STORAGE_KEY);
+      }
     }
 
     this.selection = hasValidStored ? (stored as ThemeSelection) : defaultTheme;
+    console.log("[Theme] Final selection:", this.selection);
+
     this.applySelection();
+    console.log("[Theme] Applied selection.");
+
     this.listeners.forEach((l) => {
       l();
     });
+    console.log("[Theme] Notified all listeners.");
   }
 
   /**
@@ -91,25 +110,17 @@ class ThemeController {
    * Cycles to the next theme in sequence (including "system" mode by default).
    * Loops back to the start when reaching the end of the available themes list.
    */
-  toggleTheme = (options?: { includeSystem?: boolean }): void => {
-    const includeSystem = options?.includeSystem ?? true;
-
+  toggleTheme = (): void => {
     // Deduplicate and filter available themes
     const uniqueThemes = Array.from(new Set(this.availableThemes)).filter(
       (t) => t !== "system",
     ) as ThemeSelection[];
 
-    const cycleList: ThemeSelection[] = includeSystem
-      ? ["system", ...uniqueThemes]
-      : uniqueThemes.length > 0
-        ? uniqueThemes
-        : ["light", "dark"];
-
-    const currentIndex = cycleList.indexOf(this.selection);
+    const currentIndex = uniqueThemes.indexOf(this.selection);
     const nextIndex =
-      currentIndex === -1 ? 0 : (currentIndex + 1) % cycleList.length;
+      currentIndex === -1 ? 0 : (currentIndex + 1) % uniqueThemes.length;
 
-    this.setTheme(cycleList[nextIndex]);
+    this.setTheme(uniqueThemes[nextIndex]);
   };
 
   private handleSystemChange = (): void => {

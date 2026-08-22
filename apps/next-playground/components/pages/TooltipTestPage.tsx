@@ -2,8 +2,10 @@
 
 import { Button } from "asheeui/button";
 import { Tooltip } from "asheeui/tooltip";
+import { Container, useTheme } from "asheeui";
 
 export default function TooltipTestPage() {
+  const { theme, resolvedTheme, toggleTheme } = useTheme();
   return (
     <div className="p-12 max-w-5xl mx-auto space-y-12 bg-background text-foreground min-h-screen">
       <div>
@@ -155,6 +157,12 @@ export default function TooltipTestPage() {
           </Tooltip>
         </div>
       </section>
+
+      <Container>
+        <Button onClick={() => toggleTheme()}>
+          Current: {theme} (Active: {resolvedTheme})
+        </Button>
+      </Container>
     </div>
   );
 }
