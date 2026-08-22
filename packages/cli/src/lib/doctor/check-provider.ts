@@ -1,6 +1,6 @@
 import { join } from "node:path";
-import { firstExisting, readTextFile } from "../common/file-utils.js";
-import type { DoctorCheckResult, DoctorOptions } from "./types.js";
+import { firstExisting, readTextFile } from "../common/file-utils";
+import type { DoctorCheckResult, DoctorOptions } from "./types";
 
 export const ENTRYPOINT_CANDIDATES = [
   "src/main.tsx",

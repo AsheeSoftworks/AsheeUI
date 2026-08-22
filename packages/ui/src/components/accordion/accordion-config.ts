@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import { registerComponentDefaults } from "../../libs/registry";
 import type { AnimationProp } from "../../motion/types";
-import type { Radius } from "../../theme/token/radius/radius-config";
+import type { Radius } from "../../theme/radius/radius-config";
 
 export type AccordionVariant = "bordered" | "separated" | "flush" | "ghost";
 export type AccordionSizeKey = "sm" | "md" | "lg";

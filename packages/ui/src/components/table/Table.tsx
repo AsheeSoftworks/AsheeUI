@@ -4,7 +4,7 @@ import { cn } from "@asheeui/utils";
 import { type HTMLAttributes, type ReactNode, useCallback } from "react";
 import { useAsheeConfig } from "../../libs/context";
 import type { Color } from "../../shared/variant";
-import type { Radius } from "../../theme/token/radius/radius-config";
+import type { Radius } from "../../theme/radius/radius-config";
 import {
   resolveCascade,
   resolveClassKey,

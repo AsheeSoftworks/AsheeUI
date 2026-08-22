@@ -10,7 +10,7 @@ import {
   useMemo,
 } from "react";
 import { useAsheeConfig } from "../../libs/context";
-import type { Radius } from "../../theme/token/radius/radius-config";
+import type { Radius } from "../../theme/radius/radius-config";
 import {
   resolveCascade,
   resolveClassKey,

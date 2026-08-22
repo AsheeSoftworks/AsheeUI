@@ -1,4 +1,4 @@
-import type { ExternalConfig } from "asheeui";
+import type { ExternalConfig } from "asheeui/config";
 
 export const config: ExternalConfig = {
   theme: {

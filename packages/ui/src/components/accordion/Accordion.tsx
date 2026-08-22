@@ -13,7 +13,7 @@ import { ChevronDownIcon } from "../../icons/ChevronDownIcon";
 import { useAsheeConfig } from "../../libs/context";
 import { resolveAnimation } from "../../motion/resolve-animation";
 import type { AnimationProp } from "../../motion/types";
-import type { Radius } from "../../theme/token/radius/radius-config";
+import type { Radius } from "../../theme/radius/radius-config";
 import {
   resolveCascade,
   resolveClassKey,

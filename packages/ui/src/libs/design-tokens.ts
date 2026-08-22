@@ -1,7 +1,7 @@
 import type { ColorConfig } from "../theme/color/color-config";
+import type { RadiusConfig } from "../theme/radius/radius-config";
 import type { ScrollbarConfig } from "../theme/scrollbar/scrollbar-config";
 import type { ShadowConfig } from "../theme/shadow/shadow-config";
-import type { RadiusConfig } from "../theme/token/radius/radius-config";
 import type { TypographyConfig } from "../theme/typography/typography-config";
 
 type DesignTokens = {

@@ -45,9 +45,16 @@ export function asheeui(options: AsheeConfigPluginOptions = {}): Plugin {
       if (id !== RESOLVED_VIRTUAL_ID) return;
 
       const match = discoverConfig(root);
-      if (!match) return "export default undefined;";
+      if (!match) {
+        return "const config = undefined;\nexport default config;";
+      }
 
-      return `export { default } from ${JSON.stringify(match)};`;
+      return [
+        `import * as mod from ${JSON.stringify(match)};`,
+        `const exports = { ...mod };`,
+        `const config = exports.default ?? exports.config ?? exports;`,
+        `export default config;`,
+      ].join("\n");
     },
     handleHotUpdate({ file, server }) {
       if (!isConfigFile(file)) return;

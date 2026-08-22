@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import { registerComponentDefaults } from "../../libs/registry";
 import type { Color } from "../../shared/variant";
-import type { Radius } from "../../theme/token/radius/radius-config";
+import type { Radius } from "../../theme/radius/radius-config";
 
 export type TableSizeKey = "sm" | "md" | "lg";
 export type TableVariant = "default" | "striped" | "bordered" | "flush";

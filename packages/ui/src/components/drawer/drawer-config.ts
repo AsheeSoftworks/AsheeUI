@@ -1,6 +1,6 @@
 import type { Transition, Variants } from "framer-motion";
 import { registerComponentDefaults } from "../../libs/registry";
-import type { Radius } from "../../theme/token/radius/radius-config";
+import type { Radius } from "../../theme/radius/radius-config";
 
 export type DrawerAnimationPreset = "slide" | "zoom" | "fade";
 

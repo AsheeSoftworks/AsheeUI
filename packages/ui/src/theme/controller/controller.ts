@@ -85,6 +85,33 @@ class ThemeController {
     return () => this.listeners.delete(listener);
   };
 
+  getAvailableThemes = (): readonly string[] => this.availableThemes;
+
+  /**
+   * Cycles to the next theme in sequence (including "system" mode by default).
+   * Loops back to the start when reaching the end of the available themes list.
+   */
+  toggleTheme = (options?: { includeSystem?: boolean }): void => {
+    const includeSystem = options?.includeSystem ?? true;
+
+    // Deduplicate and filter available themes
+    const uniqueThemes = Array.from(new Set(this.availableThemes)).filter(
+      (t) => t !== "system",
+    ) as ThemeSelection[];
+
+    const cycleList: ThemeSelection[] = includeSystem
+      ? ["system", ...uniqueThemes]
+      : uniqueThemes.length > 0
+        ? uniqueThemes
+        : ["light", "dark"];
+
+    const currentIndex = cycleList.indexOf(this.selection);
+    const nextIndex =
+      currentIndex === -1 ? 0 : (currentIndex + 1) % cycleList.length;
+
+    this.setTheme(cycleList[nextIndex]);
+  };
+
   private handleSystemChange = (): void => {
     if (this.selection !== "system") return;
     this.applySelection();

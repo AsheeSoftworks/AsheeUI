@@ -2,20 +2,12 @@
 
 import { cn } from "@asheeui/utils";
 import { type HTMLMotionProps, motion } from "framer-motion";
-import {
-  createContext,
-  forwardRef,
-  type HTMLAttributes,
-  type ReactNode,
-  useContext,
-  useId,
-  useMemo,
-} from "react";
+import { forwardRef, type HTMLAttributes, type ReactNode, useId } from "react";
 import { useAsheeConfig } from "../../libs/context";
 import { resolveAnimation } from "../../motion/resolve-animation";
 import type { AnimationProp } from "../../motion/types";
+import type { Radius } from "../../theme/radius/radius-config";
 import type { Shadow } from "../../theme/shadow/shadow-config";
-import type { Radius } from "../../theme/token/radius/radius-config";
 import {
   resolveCascade,
   resolveClassKey,
@@ -39,143 +31,6 @@ import {
   CARD_VARIANT_CLASS,
 } from "./card-styles";
 
-// ─── Context ──────────────────────────────────────────────────────────────────
-
-interface CardContextValue {
-  sizeKey: CardSizeKey;
-  variant: CardVariant;
-  isClickable: boolean;
-  isDisabled: boolean;
-}
-
-const CardContext = createContext<CardContextValue>({
-  sizeKey: FALLBACK_CARD_CONFIG.size,
-  variant: FALLBACK_CARD_CONFIG.variant,
-  isClickable: FALLBACK_CARD_CONFIG.isClickable,
-  isDisabled: false,
-});
-
-const useCardContext = () => useContext(CardContext);
-
-// ─── Compound Sub-Components ──────────────────────────────────────────────────
-
-export interface CardImageProps
-  extends React.ComponentPropsWithoutRef<typeof Image> {
-  position?: CardImagePosition;
-}
-
-export const CardImage = forwardRef<HTMLImageElement, CardImageProps>(
-  ({ className, ratio, fit, position = "top", ...props }, ref) => {
-    const positionStyles = {
-      top: "w-full shrink-0",
-      bottom: "w-full shrink-0 order-last",
-      left: "w-1/3 shrink-0 rounded-l-[inherit]",
-      right: "w-1/3 shrink-0 order-last rounded-r-[inherit]",
-      background:
-        "absolute inset-0 z-0 w-full h-full opacity-40 pointer-events-none",
-    }[position];
-
-    return (
-      <Image
-        ref={ref}
-        ratio={
-          ratio ??
-          (position === "left" || position === "right" ? "auto" : "video")
-        }
-        fit={fit ?? "cover"}
-        className={cn(positionStyles, className)}
-        {...props}
-      />
-    );
-  },
-);
-CardImage.displayName = "CardImage";
-
-export const CardHeader = forwardRef<
-  HTMLDivElement,
-  HTMLAttributes<HTMLDivElement>
->(({ className, ...props }, ref) => {
-  const { sizeKey } = useCardContext();
-  const headerGapClass = resolveClassKey(
-    sizeKey,
-    CARD_HEADER_GAP_CLASS,
-    FALLBACK_CARD_CONFIG.size,
-  );
-
-  return (
-    <div
-      ref={ref}
-      className={cn("flex flex-col z-10", headerGapClass, className)}
-      {...props}
-    />
-  );
-});
-CardHeader.displayName = "CardHeader";
-
-export const CardTitle = forwardRef<
-  HTMLHeadingElement,
-  HTMLAttributes<HTMLHeadingElement>
->(({ className, ...props }, ref) => (
-  <h3
-    ref={ref}
-    className={cn(
-      "font-semibold leading-tight tracking-tight text-foreground text-lg md:text-xl",
-      className,
-    )}
-    {...props}
-  />
-));
-CardTitle.displayName = "CardTitle";
-
-export const CardDescription = forwardRef<
-  HTMLParagraphElement,
-  HTMLAttributes<HTMLParagraphElement>
->(({ className, ...props }, ref) => (
-  <p
-    ref={ref}
-    className={cn("text-sm text-muted-foreground leading-relaxed", className)}
-    {...props}
-  />
-));
-CardDescription.displayName = "CardDescription";
-
-export const CardBody = forwardRef<
-  HTMLDivElement,
-  HTMLAttributes<HTMLDivElement>
->(({ className, ...props }, ref) => (
-  <div
-    ref={ref}
-    className={cn("flex-1 z-10 text-sm leading-relaxed", className)}
-    {...props}
-  />
-));
-CardBody.displayName = "CardBody";
-
-export const CardFooter = forwardRef<
-  HTMLDivElement,
-  HTMLAttributes<HTMLDivElement>
->(({ className, ...props }, ref) => {
-  const { sizeKey } = useCardContext();
-  const gapClass = resolveClassKey(
-    sizeKey,
-    CARD_GAP_CLASS,
-    FALLBACK_CARD_CONFIG.size,
-  );
-
-  return (
-    <div
-      ref={ref}
-      className={cn(
-        "flex items-center justify-between z-10 mt-auto pt-2",
-        gapClass,
-        className,
-      )}
-      {...props}
-    />
-  );
-});
-CardFooter.displayName = "CardFooter";
-
 // ─── Main Card Component ──────────────────────────────────────────────────────
 
 export interface CardProps
@@ -188,10 +43,11 @@ export interface CardProps
   isClickable?: boolean;
   isDisabled?: boolean;
   href?: string;
-  // Shorthand Content Props
+  // Content Props
   title?: ReactNode;
   description?: ReactNode;
   header?: ReactNode;
+  body?: ReactNode;
   footer?: ReactNode;
   imageSrc?: string;
   imageAlt?: string;
@@ -215,6 +71,7 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(
       title,
       description,
       header,
+      body,
       footer,
       imageSrc,
       imageAlt = "",
@@ -236,7 +93,7 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(
     const generatedId = useId();
     const cardId = id ?? generatedId;
 
-    // ─── 1. Token Resolvers (4-Tier Cascade) ──────────────────────────────────
+    // ─── 1. Token Resolvers ───────────────────────────────────────────────────
 
     const resolvedSizeKey = resolveCascade<CardSizeKey>(
       size,
@@ -293,6 +150,12 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(
       FALLBACK_CARD_CONFIG.size,
     );
 
+    const headerGapClass = resolveClassKey(
+      resolvedSizeKey,
+      CARD_HEADER_GAP_CLASS,
+      FALLBACK_CARD_CONFIG.size,
+    );
+
     const radiusClass = resolveClassKey(
       resolvedRadiusKey,
       CARD_RADIUS_CLASS,
@@ -312,139 +175,115 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(
       animation ?? (sectionConfig?.animation as AnimationProp | undefined),
     );
 
-    const contextValue = useMemo(
-      () => ({
-        sizeKey: resolvedSizeKey,
-        variant: resolvedVariant,
-        isClickable: resolvedClickable,
-        isDisabled,
-      }),
-      [resolvedSizeKey, resolvedVariant, resolvedClickable, isDisabled],
-    );
-
     const isSideLayout =
       resolvedImagePos === "left" || resolvedImagePos === "right";
 
     const isHorizontalImage = Boolean(imageSrc && isSideLayout);
 
+    const renderImage = (position: CardImagePosition) => {
+      if (!imageSrc || resolvedImagePos !== position) return null;
+
+      const positionStyles = {
+        top: "w-full shrink-0",
+        bottom: "w-full shrink-0 order-last",
+        left: "w-1/3 shrink-0 rounded-l-[inherit]",
+        right: "w-1/3 shrink-0 order-last rounded-r-[inherit]",
+        background:
+          "absolute inset-0 z-0 w-full h-full opacity-40 pointer-events-none",
+      }[position];
+
+      return (
+        <Image
+          src={imageSrc}
+          alt={imageAlt}
+          ratio={
+            imageRatio ??
+            (position === "left" || position === "right" ? "auto" : "video")
+          }
+          fit={imageFit ?? "cover"}
+          className={cn(positionStyles)}
+        />
+      );
+    };
+
+    const bodyContent = body ?? children;
+
     return (
-      <CardContext.Provider value={contextValue}>
-        <motion.div
-          ref={ref}
-          id={cardId}
-          tabIndex={resolvedClickable && !isDisabled ? 0 : undefined}
-          role={resolvedClickable ? (href ? "link" : "button") : undefined}
-          aria-disabled={isDisabled}
-          onClick={isDisabled ? undefined : onClick}
+      <motion.div
+        ref={ref}
+        id={cardId}
+        tabIndex={resolvedClickable && !isDisabled ? 0 : undefined}
+        role={resolvedClickable ? (href ? "link" : "button") : undefined}
+        aria-disabled={isDisabled}
+        onClick={isDisabled ? undefined : onClick}
+        className={cn(
+          "relative flex flex-col overflow-hidden transition-all duration-200 text-left",
+          variantClass,
+          radiusClass,
+          shadowClass,
+          isHorizontalImage && "flex-row items-stretch",
+          resolvedClickable &&
+            !isDisabled &&
+            "cursor-pointer hover:shadow-lg hover:border-primary/40 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2",
+          isDisabled && "opacity-50 pointer-events-none select-none",
+          sectionConfig?.className,
+          className,
+        )}
+        style={style}
+        {...(motionProps as HTMLMotionProps<"div">)}
+        {...(rest as HTMLMotionProps<"div">)}>
+        {renderImage("top")}
+        {renderImage("background")}
+        {renderImage("left")}
+
+        {/* Main Content Slot Wrapper */}
+        <div
           className={cn(
-            "relative flex flex-col overflow-hidden transition-all duration-200 text-left",
-            variantClass,
-            radiusClass,
-            shadowClass,
-            isHorizontalImage && "flex-row items-stretch",
-            resolvedClickable &&
-              !isDisabled &&
-              "cursor-pointer hover:shadow-lg hover:border-primary/40 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2",
-            isDisabled && "opacity-50 pointer-events-none select-none",
-            sectionConfig?.className,
-            className,
-          )}
-          style={style}
-          {...(motionProps as HTMLMotionProps<"div">)}
-          {...(rest as HTMLMotionProps<"div">)}>
-          {/* Shorthand Top Image */}
-          {imageSrc && resolvedImagePos === "top" && (
-            <CardImage
-              src={imageSrc}
-              alt={imageAlt}
-              position="top"
-              ratio={imageRatio}
-              fit={imageFit}
-            />
+            "flex flex-col flex-1 z-10 w-full min-w-0",
+            paddingClass,
+            gapClass,
+          )}>
+          {/* Header Slot or Title/Description Props */}
+          {(header || title || description) && (
+            <div className={cn("flex flex-col z-10", headerGapClass)}>
+              {header}
+              {title && (
+                <h3 className="font-semibold leading-tight tracking-tight text-foreground text-lg md:text-xl">
+                  {title}
+                </h3>
+              )}
+              {description && (
+                <p className="text-sm text-muted-foreground leading-relaxed">
+                  {description}
+                </p>
+              )}
+            </div>
           )}
 
-          {/* Shorthand Background Image */}
-          {imageSrc && resolvedImagePos === "background" && (
-            <CardImage
-              src={imageSrc}
-              alt={imageAlt}
-              position="background"
-              ratio={imageRatio}
-              fit={imageFit}
-            />
+          {/* Body Slot */}
+          {bodyContent && (
+            <div className="flex-1 z-10 text-sm leading-relaxed">
+              {bodyContent}
+            </div>
           )}
 
-          {/* Shorthand Left Image */}
-          {imageSrc && resolvedImagePos === "left" && (
-            <CardImage
-              src={imageSrc}
-              alt={imageAlt}
-              position="left"
-              ratio={imageRatio}
-              fit={imageFit}
-            />
+          {/* Footer Slot */}
+          {footer && (
+            <div
+              className={cn(
+                "flex items-center justify-between z-10 mt-auto pt-2",
+                gapClass,
+              )}>
+              {footer}
+            </div>
           )}
+        </div>
 
-          {/* Main Card Content Slot Wrapper */}
-          <div
-            className={cn(
-              "flex flex-col flex-1 z-10 w-full min-w-0",
-              paddingClass,
-              gapClass,
-            )}>
-            {/* Header Slot or Title/Description Props */}
-            {(header || title || description) && (
-              <CardHeader>
-                {header}
-                {title && <CardTitle>{title}</CardTitle>}
-                {description && (
-                  <CardDescription>{description}</CardDescription>
-                )}
-              </CardHeader>
-            )}
-
-            {/* Default Children Body Slot */}
-            {children && <CardBody>{children}</CardBody>}
-
-            {/* Footer Slot Prop */}
-            {footer && <CardFooter>{footer}</CardFooter>}
-          </div>
-
-          {/* Shorthand Right Image */}
-          {imageSrc && resolvedImagePos === "right" && (
-            <CardImage
-              src={imageSrc}
-              alt={imageAlt}
-              position="right"
-              ratio={imageRatio}
-              fit={imageFit}
-            />
-          )}
-
-          {/* Shorthand Bottom Image */}
-          {imageSrc && resolvedImagePos === "bottom" && (
-            <CardImage
-              src={imageSrc}
-              alt={imageAlt}
-              position="bottom"
-              ratio={imageRatio}
-              fit={imageFit}
-            />
-          )}
-        </motion.div>
-      </CardContext.Provider>
+        {renderImage("right")}
+        {renderImage("bottom")}
+      </motion.div>
     );
   },
 );
 
 Card.displayName = "Card";
-
-// Attach Compound Sub-components
-export const AsheeCard = Object.assign(Card, {
-  Header: CardHeader,
-  Title: CardTitle,
-  Description: CardDescription,
-  Body: CardBody,
-  Footer: CardFooter,
-  Image: CardImage,
-});

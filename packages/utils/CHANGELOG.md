@@ -1,22 +1,18 @@
-# @asheeui/cli
+# @asheeui/utils
 
-## 0.3.7
+## 0.2.7
 
 ### Patch Changes
 
 - Fix Card component prop
-- Updated dependencies
-  - @asheeui/utils@0.2.7
 
-## 0.3.6
+## 0.2.6
 
 ### Patch Changes
 
 - Fix npm package export issues
-- Updated dependencies
-  - @asheeui/utils@0.2.6
 
-## 0.3.5
+## 0.2.5
 
 ### Patch Changes
 
@@ -25,10 +21,8 @@
   - Configure `vite.config.ts` to output single ESM target format (`formats: ["es"]`) with `preserveModules: true` and `preserveModulesRoot: "src"`.
   - Implement automated barrel generation plugin (`generateBarrels`) to restore per-directory `index.js` re-exports in `dist/`.
   - Export all 33 component modules from `src/index.ts`.
-- Updated dependencies
-  - @asheeui/utils@0.2.5
 
-## 0.3.4
+## 0.2.4
 
 ### Patch Changes
 
@@ -41,52 +35,27 @@
   - Set packages/ui/tsconfig.json rootDir to ./src to output per-component .d.ts declarations directly under dist/
   - Add copyStyles plugin and entryRoot configuration to packages/ui/vite.config.ts to emit dist/index.css and dist/index.js
   - Update build-registry.ts to generate publishConfig.exports matching actual emitted module and type files
-- Updated dependencies
-  - @asheeui/utils@0.2.4
 
-## 0.3.3
+## 0.2.3
 
 ### Patch Changes
 
 - Update package.json types export
-- Updated dependencies
-  - @asheeui/utils@0.2.3
 
-## 0.3.2
+## 0.2.2
 
 ### Patch Changes
 
 - Update package.json exports
-- Updated dependencies
-  - @asheeui/utils@0.2.2
-
-## 0.3.1
-
-### Patch Changes
-
-- Fix build with utils package
-- Updated dependencies
-  - @asheeui/utils@0.2.1
-
-## 0.3.0
-
-### Minor Changes
-
-- Fix build configs
-
-### Patch Changes
-
-- Updated dependencies
-  - @asheeui/utils@0.2.0
 
 ## 0.2.1
 
 ### Patch Changes
 
-- Fix tsdown buld for npm publish
+- Fix build with utils package
 
 ## 0.2.0
 
 ### Minor Changes
 
-- Improved integration with multiple react frameworks and Add cli
+- Fix build configs

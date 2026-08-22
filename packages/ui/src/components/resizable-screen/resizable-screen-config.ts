@@ -1,7 +1,7 @@
 import { registerComponentDefaults } from "../../libs/registry";
 import type { AnimationProp } from "../../motion/types";
 import type { Color, Variant } from "../../shared/variant";
-import type { Radius } from "../../theme/token/radius/radius-config";
+import type { Radius } from "../../theme/radius/radius-config";
 
 export type ResizableOrientation = "horizontal" | "vertical";
 

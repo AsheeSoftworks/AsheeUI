@@ -8,7 +8,7 @@ import {
   type ReactNode,
 } from "react";
 import { useAsheeConfig } from "../../libs/context";
-import type { Size } from "../../theme/token/token";
+import type { Size } from "../../theme/size/size";
 import type {
   FontWeight,
   LineHeight,

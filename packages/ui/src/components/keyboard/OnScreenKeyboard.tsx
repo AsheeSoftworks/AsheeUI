@@ -5,7 +5,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useAsheeConfig } from "../../libs/context";
 import type { Color, Variant } from "../../shared/variant";
-import type { Radius } from "../../theme/token/radius/radius-config";
+import type { Radius } from "../../theme/radius/radius-config";
 import { Button } from "../button/Button";
 import type { LayoutName } from "./keyboard-config";
 import { type KeyboardElement, useKeyboard } from "./keyboard-context";

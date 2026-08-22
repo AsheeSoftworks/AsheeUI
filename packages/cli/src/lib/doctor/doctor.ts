@@ -1,10 +1,10 @@
-import { checkConfigFile } from "./check-config.js";
-import { checkCssImport } from "./check-css.js";
-import { checkPeerDependencies } from "./check-deps.js";
-import { checkRootProvider } from "./check-provider.js";
-import { checkThemeAugmentation } from "./check-theme.js";
+import { checkConfigFile } from "./check-config";
+import { checkCssImport } from "./check-css";
+import { checkPeerDependencies } from "./check-deps";
+import { checkRootProvider } from "./check-provider";
+import { checkThemeAugmentation } from "./check-theme";
 
-import type { DoctorCheckResult, DoctorOptions } from "./types.js";
+import type { DoctorCheckResult, DoctorOptions } from "./types";
 
 export async function runDoctorChecks(
   options: DoctorOptions,

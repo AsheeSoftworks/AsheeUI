@@ -1,7 +1,7 @@
 import { registerComponentDefaults } from "../../libs/registry";
 import type { AnimationProp } from "../../motion/types";
-import type { Radius } from "../../theme/token/radius/radius-config";
-import type { Size } from "../../theme/token/token";
+import type { Radius } from "../../theme/radius/radius-config";
+import type { Size } from "../../theme/size/size";
 
 export type ImageFit = "cover" | "contain" | "fill" | "none" | "scale-down";
 export type ImageRatioKey = "auto" | "square" | "video" | "portrait";

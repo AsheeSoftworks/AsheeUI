@@ -32,25 +32,25 @@ export function defaultConfigContent(
   if (language === "typescript") {
     return `import type { ExternalConfig } from "asheeui/config";
 
-export const config: ExternalConfig = {
+export default defineConfig({
   theme: {
     defaultTheme: "light",
     defaultVariant: "solid",
     defaultColor: "primary",
   },
   components: {},
-};
+  });
 `;
   }
   return `/** @type {import("asheeui").ExternalConfig} */
-export const config = {
+export default defineConfig({
   theme: {
     defaultTheme: "light",
     defaultVariant: "solid",
     defaultColor: "primary",
   },
   components: {},
-};
+});
 `;
 }
 

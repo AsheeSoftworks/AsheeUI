@@ -1,11 +1,7 @@
 import type { Dirent } from "node:fs";
 import { readdir } from "node:fs/promises";
 import { join } from "node:path";
-import {
-  pathExists,
-  readTextFile,
-  toRelativePath,
-} from "../common/file-utils.js";
+import { pathExists, readTextFile, toRelativePath } from "../common/file-utils";
 
 /**
  * Detects an optional custom theme registry (.d.ts files declaring the

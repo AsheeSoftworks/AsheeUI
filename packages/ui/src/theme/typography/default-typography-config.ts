@@ -3,11 +3,11 @@ import type { TypographyConfig } from "./typography-config";
 // Default Typography Configuration
 export const defaultTypographyConfig: TypographyConfig = {
   size: {
-    xs: { base: "0.75rem" },
-    sm: { base: "0.875rem" },
-    md: { base: "1rem", lg: "1.0625rem" },
-    lg: { base: "1.125rem", md: "1.25rem", lg: "1.375rem" },
-    xl: { base: "1.25rem", md: "1.5rem", lg: "1.75rem" },
+    xs: "0.75rem",
+    sm: "0.875rem",
+    md: "1rem",
+    lg: "1.125rem",
+    xl: "1.25rem",
   },
   weight: {
     light: "300",

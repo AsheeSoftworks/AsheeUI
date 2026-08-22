@@ -6,9 +6,9 @@ import { forwardRef, useEffect, useState } from "react";
 import { useAsheeConfig } from "../../libs/context";
 import { resolveAnimation } from "../../motion/resolve-animation";
 import type { AnimationProp } from "../../motion/types";
+import type { Radius } from "../../theme/radius/radius-config";
 import type { Shadow } from "../../theme/shadow/shadow-config";
-import type { Radius } from "../../theme/token/radius/radius-config";
-import type { Size } from "../../theme/token/token";
+import type { Size } from "../../theme/size/size";
 import {
   resolveCascade,
   resolveClassKey,

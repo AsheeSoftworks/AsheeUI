@@ -1,5 +1,5 @@
 import { registerComponentDefaults } from "../../libs/registry";
-import type { Size } from "../../theme/token/token";
+import type { Size } from "../../theme/size/size";
 import type {
   FontWeight,
   LineHeight,

@@ -2,12 +2,12 @@ import { mkdir, mkdtemp, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { runDoctorChecks } from "../src/lib/doctor/doctor";
 import {
   formatInstallCommand,
   lowerBoundOf,
   satisfiesRange,
 } from "../src/lib/doctor/check-deps";
+import { runDoctorChecks } from "../src/lib/doctor/doctor";
 
 let dir: string;
 

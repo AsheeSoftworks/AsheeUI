@@ -1,5 +1,5 @@
+import type { Radius } from "../../theme/radius/radius-config";
 import type { Shadow } from "../../theme/shadow/shadow-config";
-import type { Radius } from "../../theme/token/radius/radius-config";
 import type { ImageFit, ImageRatioKey } from "./image-config";
 
 export const IMAGE_FIT_CLASS: Record<ImageFit, string> = {

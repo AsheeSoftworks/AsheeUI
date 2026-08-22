@@ -1,5 +1,5 @@
 import { registerComponentDefaults } from "../../libs/registry";
-import type { Spacing } from "../../theme/token/spacing/spacing-config";
+import type { Spacing } from "../../theme/spacing/spacing-config";
 
 export type ContainerMaxWidth = "sm" | "md" | "lg" | "xl" | "full";
 

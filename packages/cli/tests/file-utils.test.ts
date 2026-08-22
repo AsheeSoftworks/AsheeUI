@@ -2,7 +2,7 @@ import { mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { applyEdit, applyWrite } from "../src/lib/common/file-utils.js";
+import { applyEdit, applyWrite } from "../src/lib/common/file-utils";
 
 let dir: string;
 

@@ -3,7 +3,7 @@
 import { cn } from "@asheeui/utils";
 import { forwardRef, type ReactNode } from "react";
 import { useAsheeConfig } from "../../libs/context";
-import type { Spacing } from "../../theme/token/spacing/spacing-config";
+import type { Spacing } from "../../theme/spacing/spacing-config";
 import {
   resolveCascade,
   resolveClassKey,
