@@ -1,4 +1,4 @@
-import type { ThemeName } from "../color/color-config";
+import type { ThemeName } from "./color";
 
 export type ThemeSelection = ThemeName | "system";
 

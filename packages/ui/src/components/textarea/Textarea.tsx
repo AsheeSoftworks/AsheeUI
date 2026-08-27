@@ -1,17 +1,14 @@
 "use client";
 
 import { cn } from "@asheeui/utils";
-import { type HTMLMotionProps, motion } from "framer-motion";
 import { forwardRef, type TextareaHTMLAttributes, useId } from "react";
 import { useAsheeConfig } from "../../libs/context";
-import { resolveAnimation } from "../../motion/resolve-animation";
-import type { AnimationProp } from "../../motion/types";
+import { RADIUS_CLASS, type Radius } from "../../shared/radius";
 import {
   type Color,
   resolveVariantClass,
   type Variant,
 } from "../../shared/variant";
-import type { Radius } from "../../theme/radius/radius-config";
 import {
   resolveCascade,
   resolveClassKey,
@@ -21,7 +18,6 @@ import { FieldShell } from "../field/FieldShell";
 import type {
   FieldSizeKey,
   FieldStatus,
-  InputAnimationPreset,
   LabelAlign,
 } from "../field/field-config";
 import {
@@ -29,7 +25,6 @@ import {
   type TextAreaConfig,
 } from "./textarea-config";
 import {
-  TEXTAREA_RADIUS_CLASS,
   TEXTAREA_SIZE_CLASS,
   TEXTAREA_STATUS_BORDER_CLASS,
 } from "./textarea-styles";
@@ -42,10 +37,9 @@ export interface TextAreaProps
     "size" | "color" | "children"
   > {
   size?: FieldSizeKey;
-  radius?: keyof Radius;
+  radius?: Radius;
   variant?: Variant;
   color?: Color;
-  animation?: AnimationProp<InputAnimationPreset>;
   status?: FieldStatus;
   label?: string;
   isLoading?: boolean;
@@ -65,7 +59,6 @@ export const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
       radius,
       variant,
       color,
-      animation,
       status,
       label,
       labelAlign,
@@ -78,7 +71,6 @@ export const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
       className,
       disabled,
       style,
-      ...rest
     },
     ref,
   ) => {
@@ -106,21 +98,21 @@ export const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
     const resolvedVariant = resolveCascade<Variant>(
       variant,
       sectionConfig?.variant,
-      config.theme.defaultVariant,
+      config.defaultVariant,
       FALLBACK_TEXTAREA_CONFIG.variant,
     );
 
     const resolvedColor = resolveCascade<Color>(
       color,
       sectionConfig?.color,
-      config.theme.defaultColor,
+      config.defaultColor,
       FALLBACK_TEXTAREA_CONFIG.color,
     );
 
     const resolvedRadiusKey = resolveRadiusKey(
-      typeof radius === "string" ? radius : undefined,
-      typeof sectionConfig?.radius === "string" ? sectionConfig : undefined,
-      config.theme.radius?.default,
+      radius,
+      sectionConfig?.radius,
+      config.defaultRadius,
       FALLBACK_TEXTAREA_CONFIG.radius,
     );
 
@@ -140,8 +132,6 @@ export const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
       FALLBACK_TEXTAREA_CONFIG.rows,
     );
 
-    const motionProps = resolveAnimation(animation ?? sectionConfig?.animation);
-
     // ─── 2. Class Maps ────────────────────────────────────────────────────────
 
     const variantClass = resolveVariantClass(resolvedVariant, resolvedColor);
@@ -154,7 +144,7 @@ export const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
         ? "rounded-none"
         : resolveClassKey(
             resolvedRadiusKey,
-            TEXTAREA_RADIUS_CLASS,
+            RADIUS_CLASS,
             FALLBACK_TEXTAREA_CONFIG.radius,
           );
 
@@ -173,7 +163,7 @@ export const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
         labelClassName={sectionConfig?.labelClassName}
         descriptionClassName={sectionConfig?.descriptionClassName}
         messageClassName={sectionConfig?.messageClassName}>
-        <motion.textarea
+        <TextArea
           ref={ref}
           id={fieldId}
           disabled={disabled}
@@ -194,8 +184,6 @@ export const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
             className,
           )}
           style={style}
-          {...(motionProps as HTMLMotionProps<"textarea">)}
-          {...(rest as HTMLMotionProps<"textarea">)}
         />
       </FieldShell>
     );

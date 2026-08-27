@@ -1,8 +1,12 @@
 import { registerComponentDefaults } from "../../libs/registry";
+import type { Radius } from "../../shared/radius";
+import type { Size } from "../../shared/size";
 import type { Color, Variant } from "../../shared/variant";
-import type { Radius } from "../../theme/radius/radius-config";
-import type { ButtonSizeKey } from "../button/button-config";
-import type { FieldConfig, FieldSizeKey } from "../field/field-config";
+import {
+  FALLBACK_FIELD_CONFIG,
+  type FieldConfig,
+  type FieldSizeKey,
+} from "../field/field-config";
 
 export type MultiSelectSizeKey = FieldSizeKey;
 
@@ -15,40 +19,47 @@ export interface MultiSelectOption {
 
 export interface MultiSelectConfig extends Omit<FieldConfig, "size"> {
   size?: MultiSelectSizeKey;
-  radius?: keyof Radius;
+  radius?: Radius;
   className?: string;
 
   // Menu / Popover Overrides
   menuVariant?: Variant;
   menuColor?: Color;
-  menuRadius?: keyof Radius;
-  menuSize?: ButtonSizeKey;
+  menuRadius?: Radius;
+  menuSize?: Size;
 
   // Chip Overrides
   chipVariant?: Variant;
   chipColor?: Color;
-  chipRadius?: keyof Radius;
-  chipSize?: ButtonSizeKey;
+  chipRadius?: Radius;
+  chipSize?: Size;
 }
 
 export const defaultMultiSelectConfig: MultiSelectConfig = {
   size: "md",
   labelAlign: "left",
-  animation: "none",
   chipSize: "sm",
   menuSize: "sm",
 };
 
-export const FALLBACK_MULTI_SELECT_CONFIG = {
+export const FALLBACK_MULTI_SELECT_CONFIG: Required<MultiSelectConfig> = {
+  ...FALLBACK_FIELD_CONFIG,
   size: "md",
+  radius: "md",
+  className: "",
   variant: "bordered",
   color: "primary",
-  radius: "md",
+  status: "default",
   labelAlign: "left",
-  animation: "none",
-  chipSize: "sm",
+  menuVariant: "solid",
+  menuColor: "default",
+  menuRadius: "md",
   menuSize: "sm",
-} as const;
+  chipVariant: "solid",
+  chipColor: "primary",
+  chipRadius: "sm",
+  chipSize: "sm",
+};
 
 declare module "../../libs/registry" {
   interface ComponentTypeConfigRegistry {

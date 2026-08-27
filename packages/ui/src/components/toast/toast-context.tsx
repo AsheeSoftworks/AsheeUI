@@ -1,7 +1,6 @@
 "use client";
 
 import { cn } from "@asheeui/utils";
-import { AnimatePresence } from "framer-motion";
 import {
   createContext,
   type ReactNode,
@@ -11,8 +10,8 @@ import {
   useState,
 } from "react";
 import { useAsheeConfig } from "../../libs/context";
+import type { Radius } from "../../shared/radius";
 import type { Variant } from "../../shared/variant";
-import type { Radius } from "../../theme/radius/radius-config";
 import { resolveCascade, resolveRadiusKey } from "../../utils/resolve-token";
 import { ToastItem } from "./ToastItem";
 import {
@@ -49,7 +48,7 @@ export interface ToastProviderProps {
   size?: ToastSizeKey;
   placement?: ToastPlacement;
   variant?: Variant;
-  radius?: keyof Radius;
+  radius?: Radius;
   defaultTimeout?: number;
   maxToasts?: number;
   className?: string;
@@ -90,14 +89,14 @@ export function ToastProvider({
   const resolvedVariant = resolveCascade<Variant>(
     variant,
     sectionConfig?.variant,
-    config.theme.defaultVariant,
+    config.defaultVariant,
     FALLBACK_TOAST_CONFIG.variant,
   );
 
   const resolvedRadiusKey = resolveRadiusKey(
     radius,
-    sectionConfig,
-    config.theme.radius?.default,
+    sectionConfig?.radius,
+    config.defaultRadius,
     FALLBACK_TOAST_CONFIG.radius,
   );
 
@@ -217,20 +216,18 @@ export function ToastProvider({
           sectionConfig?.className,
           className,
         )}>
-        <AnimatePresence mode="popLayout">
-          {toasts.map((toastItem) => (
-            <ToastItem
-              key={toastItem.id}
-              {...toastItem}
-              placement={resolvedPlacement}
-              sizeKey={resolvedSizeKey}
-              variant={resolvedVariant}
-              radius={resolvedRadiusKey}
-              onDismiss={removeToast}
-              className={sectionConfig?.itemClassName}
-            />
-          ))}
-        </AnimatePresence>
+        {toasts.map((toastItem) => (
+          <ToastItem
+            key={toastItem.id}
+            {...toastItem}
+            placement={resolvedPlacement}
+            sizeKey={resolvedSizeKey}
+            variant={resolvedVariant}
+            radius={resolvedRadiusKey}
+            onDismiss={removeToast}
+            className={sectionConfig?.itemClassName}
+          />
+        ))}
       </section>
     </ToastContext.Provider>
   );

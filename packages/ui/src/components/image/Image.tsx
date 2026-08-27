@@ -1,14 +1,9 @@
 "use client";
 
 import { cn } from "@asheeui/utils";
-import { type HTMLMotionProps, motion } from "framer-motion";
-import { forwardRef, useEffect, useState } from "react";
+import { forwardRef, type ImgHTMLAttributes, useEffect, useState } from "react";
 import { useAsheeConfig } from "../../libs/context";
-import { resolveAnimation } from "../../motion/resolve-animation";
-import type { AnimationProp } from "../../motion/types";
-import type { Radius } from "../../theme/radius/radius-config";
-import type { Shadow } from "../../theme/shadow/shadow-config";
-import type { Size } from "../../theme/size/size";
+import type { Radius } from "../../shared/radius";
 import {
   resolveCascade,
   resolveClassKey,
@@ -24,17 +19,14 @@ import {
   IMAGE_FIT_CLASS,
   IMAGE_RADIUS_CLASS,
   IMAGE_RATIO_CLASS,
-  IMAGE_SHADOW_CLASS,
 } from "./image-styles";
 
 export interface ImageProps
-  extends Omit<HTMLMotionProps<"img">, "children" | "alt"> {
+  extends Omit<ImgHTMLAttributes<HTMLImageElement>, "children" | "alt"> {
   alt: string;
   fit?: ImageFit;
   ratio?: ImageRatioKey;
-  radius?: keyof Radius;
-  shadow?: keyof Size;
-  animation?: AnimationProp;
+  radius?: Radius;
   fallbackSrc?: string;
   showSkeleton?: boolean;
   className?: string;
@@ -47,8 +39,6 @@ export const Image = forwardRef<HTMLImageElement, ImageProps>(
       fit,
       ratio,
       radius,
-      shadow,
-      animation,
       fallbackSrc,
       showSkeleton,
       loading,
@@ -71,7 +61,7 @@ export const Image = forwardRef<HTMLImageElement, ImageProps>(
       setIsLoaded(false);
     }, [src]);
 
-    // ─── 1. Token Resolvers (4-Tier Cascade) ──────────────────────────────────
+    // ─── 1. Token Resolvers ──────────────────────────────────────────────────
 
     const resolvedFit = resolveCascade<ImageFit>(
       fit,
@@ -89,16 +79,9 @@ export const Image = forwardRef<HTMLImageElement, ImageProps>(
 
     const resolvedRadiusKey = resolveRadiusKey(
       radius,
-      sectionConfig,
-      config.theme.radius?.default,
+      sectionConfig?.radius,
+      config.defaultRadius as Radius,
       FALLBACK_IMAGE_CONFIG.radius,
-    );
-
-    const resolvedShadowKey = resolveCascade<keyof Shadow>(
-      shadow,
-      sectionConfig?.shadow,
-      config.theme.shadow?.default,
-      FALLBACK_IMAGE_CONFIG.shadow,
     );
 
     const resolvedLoading = resolveCascade<"lazy" | "eager">(
@@ -113,13 +96,6 @@ export const Image = forwardRef<HTMLImageElement, ImageProps>(
       sectionConfig?.showSkeleton,
       undefined,
       FALLBACK_IMAGE_CONFIG.showSkeleton,
-    );
-
-    const resolvedAnimation = resolveCascade<AnimationProp>(
-      animation,
-      sectionConfig?.animation,
-      undefined,
-      FALLBACK_IMAGE_CONFIG.animation,
     );
 
     // ─── 2. Class Maps ────────────────────────────────────────────────────────
@@ -137,18 +113,10 @@ export const Image = forwardRef<HTMLImageElement, ImageProps>(
     );
 
     const radiusClass = resolveClassKey(
-      resolvedRadiusKey,
+      resolvedRadiusKey as Radius,
       IMAGE_RADIUS_CLASS,
       FALLBACK_IMAGE_CONFIG.radius,
     );
-
-    const shadowClass = resolveClassKey(
-      resolvedShadowKey,
-      IMAGE_SHADOW_CLASS,
-      FALLBACK_IMAGE_CONFIG.shadow,
-    );
-
-    const motionProps = resolveAnimation(resolvedAnimation, true, "none");
 
     return (
       <span
@@ -156,7 +124,6 @@ export const Image = forwardRef<HTMLImageElement, ImageProps>(
           "relative block overflow-hidden shrink-0",
           ratioClass,
           radiusClass,
-          shadowClass,
         )}>
         {resolvedShowSkeleton && !isLoaded && (
           <span
@@ -164,7 +131,7 @@ export const Image = forwardRef<HTMLImageElement, ImageProps>(
             className="absolute inset-0 animate-pulse bg-border/40"
           />
         )}
-        <motion.img
+        <img
           ref={ref}
           src={currentSrc}
           alt={alt}
@@ -186,7 +153,6 @@ export const Image = forwardRef<HTMLImageElement, ImageProps>(
             sectionConfig?.className,
             className,
           )}
-          {...(motionProps as HTMLMotionProps<"img">)}
           {...rest}
         />
       </span>

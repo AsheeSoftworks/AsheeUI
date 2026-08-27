@@ -20,15 +20,14 @@ import {
   useState,
 } from "react";
 import { useAsheeConfig } from "../../libs/context";
-import type { AnimationProp } from "../../motion/types";
+import { RADIUS_CLASS, type Radius } from "../../shared/radius";
+import type { Size } from "../../shared/size";
 import type { Color, Variant } from "../../shared/variant";
-import type { Radius } from "../../theme/radius/radius-config";
 import {
   resolveCascade,
   resolveClassKey,
   resolveRadiusKey,
 } from "../../utils/resolve-token";
-import type { ButtonSizeKey } from "../button/button-config";
 import type { FieldSizeKey } from "../field/field-config";
 import { Input, type InputProps } from "../input/Input";
 import { SelectMenu } from "../select-menu/SelectMenu";
@@ -37,7 +36,6 @@ import {
   type AutocompleteOption,
   FALLBACK_AUTOCOMPLETE_CONFIG,
 } from "./autocomplete-config";
-import { AUTOCOMPLETE_RADIUS_CLASS } from "./autocomplete-styles";
 
 // ─── Component Interface ──────────────────────────────────────────────────────
 
@@ -54,8 +52,8 @@ export interface AutocompleteProps
   // Menu / Popover Overrides
   menuVariant?: Variant;
   menuColor?: Color;
-  menuRadius?: keyof Radius;
-  menuSize?: ButtonSizeKey;
+  menuRadius?: Radius;
+  menuSize?: Size;
 }
 
 // ─── Component Implementation ─────────────────────────────────────────────────
@@ -139,29 +137,25 @@ export const Autocomplete = forwardRef<HTMLInputElement, AutocompleteProps>(
     const resolvedMenuVariant = resolveCascade<Variant>(
       menuVariant,
       sectionConfig?.menuVariant,
-      config.theme.defaultVariant as Variant | undefined,
+      config.defaultVariant as Variant | undefined,
       FALLBACK_AUTOCOMPLETE_CONFIG.variant,
     );
 
     const resolvedMenuColor = resolveCascade<Color>(
       menuColor,
       sectionConfig?.menuColor,
-      config.theme.defaultColor as Color | undefined,
+      config.defaultColor as Color | undefined,
       FALLBACK_AUTOCOMPLETE_CONFIG.color,
     );
 
     const resolvedMenuRadiusKey = resolveRadiusKey(
-      typeof menuRadius === "string" ? menuRadius : undefined,
-      typeof sectionConfig?.menuRadius === "string"
-        ? { radius: sectionConfig.menuRadius }
-        : undefined,
-      typeof inputProps.radius === "string"
-        ? inputProps.radius
-        : config.theme.radius?.default,
+      menuRadius,
+      sectionConfig?.menuRadius,
+      config.defaultRadius,
       FALLBACK_AUTOCOMPLETE_CONFIG.radius,
     );
 
-    const resolvedMenuSize = resolveCascade<ButtonSizeKey>(
+    const resolvedMenuSize = resolveCascade<Size>(
       menuSize,
       sectionConfig?.menuSize,
       undefined,
@@ -172,7 +166,7 @@ export const Autocomplete = forwardRef<HTMLInputElement, AutocompleteProps>(
 
     const menuRadiusClass = resolveClassKey(
       resolvedMenuRadiusKey,
-      AUTOCOMPLETE_RADIUS_CLASS,
+      RADIUS_CLASS,
       FALLBACK_AUTOCOMPLETE_CONFIG.radius,
     );
 
@@ -259,10 +253,6 @@ export const Autocomplete = forwardRef<HTMLInputElement, AutocompleteProps>(
           size={resolvedMenuSize}
           initialFocus={-1}
           returnFocus={false}
-          animation={
-            inputProps.animation ??
-            (sectionConfig?.animation as AnimationProp | undefined)
-          }
         />
       </div>
     );

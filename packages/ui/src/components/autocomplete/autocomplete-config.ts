@@ -1,12 +1,11 @@
 import { registerComponentDefaults } from "../../libs/registry";
-import type { AnimationProp } from "../../motion/types";
+import type { Radius } from "../../shared/radius";
+import type { Size } from "../../shared/size";
 import type { Color, Variant } from "../../shared/variant";
-import type { Radius } from "../../theme/radius/radius-config";
-import type { ButtonSizeKey } from "../button/button-config";
-import type {
-  FieldConfig,
-  FieldSizeKey,
-  InputAnimationPreset,
+import {
+  FALLBACK_FIELD_CONFIG,
+  type FieldConfig,
+  type FieldSizeKey,
 } from "../field/field-config";
 
 export type AutocompleteSizeKey = FieldSizeKey;
@@ -18,10 +17,9 @@ export interface AutocompleteOption {
   [key: string]: unknown;
 }
 
-export interface AutocompleteConfig extends Omit<FieldConfig, "size"> {
+export interface AutocompleteConfig extends FieldConfig {
   size?: AutocompleteSizeKey;
-  radius?: keyof Radius;
-  animation?: AnimationProp<InputAnimationPreset>;
+  radius?: Radius;
   className?: string;
 
   // Trigger Overrides
@@ -31,24 +29,28 @@ export interface AutocompleteConfig extends Omit<FieldConfig, "size"> {
   // Menu Overrides
   menuVariant?: Variant;
   menuColor?: Color;
-  menuRadius?: keyof Radius;
-  menuSize?: ButtonSizeKey;
+  menuRadius?: Radius;
+  menuSize?: Size;
 }
 
 export const defaultAutocompleteConfig: AutocompleteConfig = {
   size: "md",
   labelAlign: "left",
-  animation: "none",
 };
 
-export const FALLBACK_AUTOCOMPLETE_CONFIG = {
+export const FALLBACK_AUTOCOMPLETE_CONFIG: Required<AutocompleteConfig> = {
+  ...FALLBACK_FIELD_CONFIG,
   size: "md",
   radius: "md",
+  className: "",
   variant: "bordered",
   color: "primary",
   labelAlign: "left",
+  menuVariant: "solid",
+  menuColor: "default",
+  menuRadius: "md",
   menuSize: "sm",
-} as const;
+};
 
 declare module "../../libs/registry" {
   interface ComponentTypeConfigRegistry {

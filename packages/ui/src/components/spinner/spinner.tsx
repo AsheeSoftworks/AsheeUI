@@ -1,5 +1,7 @@
+"use client";
+
 import { cn } from "@asheeui/utils";
-import { forwardRef } from "react";
+import { forwardRef, type SVGAttributes } from "react";
 import { useAsheeConfig } from "../../libs/context";
 import type { Color } from "../../shared/variant";
 import { resolveCascade, resolveClassKey } from "../../utils/resolve-token";
@@ -10,7 +12,7 @@ import {
 } from "./spinner-config";
 import { SPINNER_COLOR_CLASS, SPINNER_SIZE_CLASS } from "./spinner-styles";
 
-export interface SpinnerProps extends React.SVGAttributes<SVGSVGElement> {
+export interface SpinnerProps extends SVGAttributes<SVGSVGElement> {
   size?: SpinnerSizeKey;
   color?: Color;
   speed?: string;
@@ -33,11 +35,11 @@ export const Spinner = forwardRef<SVGSVGElement, SpinnerProps>(
       FALLBACK_SPINNER_CONFIG.size,
     );
 
-    const resolvedColor = resolveCascade<Color | undefined>(
+    const resolvedColor = resolveCascade<Color>(
       color,
       sectionConfig?.color,
-      config.theme.defaultColor as Color | undefined,
-      undefined,
+      config.defaultColor as Color,
+      FALLBACK_SPINNER_CONFIG.color,
     );
 
     const resolvedSpeed = resolveCascade<string>(
@@ -55,9 +57,11 @@ export const Spinner = forwardRef<SVGSVGElement, SpinnerProps>(
       FALLBACK_SPINNER_CONFIG.size,
     );
 
-    const colorClass = resolvedColor
-      ? resolveClassKey(resolvedColor, SPINNER_COLOR_CLASS, "secondary")
-      : undefined;
+    const colorClass = resolveClassKey(
+      resolvedColor,
+      SPINNER_COLOR_CLASS,
+      FALLBACK_SPINNER_CONFIG.color,
+    );
 
     return (
       <svg

@@ -1,12 +1,7 @@
 import { registerComponentDefaults } from "../../libs/registry";
-import type { AnimationProp } from "../../motion/types";
+import type { Radius } from "../../shared/radius";
 import type { Color } from "../../shared/variant";
-import type { Radius } from "../../theme/radius/radius-config";
-import type {
-  FieldConfig,
-  FieldSizeKey,
-  InputAnimationPreset,
-} from "../field/field-config";
+import type { FieldConfig, FieldSizeKey } from "../field/field-config";
 
 export type RadioSizeKey = FieldSizeKey;
 export type RadioVariant = "default" | "card";
@@ -14,9 +9,8 @@ export type RadioVariant = "default" | "card";
 export interface RadioConfig extends Omit<FieldConfig, "size" | "variant"> {
   size?: RadioSizeKey;
   color?: Color;
-  radius?: keyof Radius;
+  radius?: Radius;
   variant?: RadioVariant;
-  animation?: AnimationProp<InputAnimationPreset>;
   className?: string;
 }
 
@@ -24,7 +18,6 @@ export const defaultRadioConfig: RadioConfig = {
   size: "md",
   radius: "full",
   variant: "default",
-  animation: "none",
 };
 
 export const FALLBACK_RADIO_CONFIG = {

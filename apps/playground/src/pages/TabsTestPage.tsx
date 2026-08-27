@@ -6,8 +6,7 @@ import {
   Tabs,
   type TabsSizeKey,
   type TabsVariant,
-} from "asheeui/tabs";
-import { Text } from "asheeui/text";
+} from "asheeui";
 import { useState } from "react";
 
 // ─── Test Tab Data ────────────────────────────────────────────────────────────
@@ -74,26 +73,22 @@ const defaultTabs: TabItem[] = [
           Configure how you receive activity updates and digest emails.
         </p>
         <div className="space-y-2 pt-2">
-          <Text
-            as="label"
-            className="flex items-center gap-2 text-xs cursor-pointer">
+          <p className="flex items-center gap-2 text-xs cursor-pointer">
             <input
               type="checkbox"
               defaultChecked
               className="rounded text-primary"
             />
             Email Activity Digest
-          </Text>
-          <Text
-            as="label"
-            className="flex items-center gap-2 text-xs cursor-pointer">
+          </p>
+          <p className="flex items-center gap-2 text-xs cursor-pointer">
             <input
               type="checkbox"
               defaultChecked
               className="rounded text-primary"
             />
             Push Notifications
-          </Text>
+          </p>
         </div>
       </div>
     ),
@@ -170,7 +165,7 @@ export default function TabsTestPage() {
   // Tab Config Controls
   const [variant, setVariant] = useState<TabsVariant>("underline");
   const [size, setSize] = useState<TabsSizeKey>("md");
-  const [radius, setRadius] = useState<keyof Radius>("md");
+  const [radius, setRadius] = useState<Radius>("md");
   const [fullWidth, setFullWidth] = useState(false);
   const [hasIcons, setHasIcons] = useState(true);
   const [hasBadges, setHasBadges] = useState(true);
@@ -229,7 +224,7 @@ export default function TabsTestPage() {
               disabled={t.disabled}
               onClick={() => handleTabChange(t.id)}
               className="px-2 py-1 text-xs font-mono rounded bg-muted hover:bg-muted/80 disabled:opacity-40">
-              Force "{t.id}"
+              Force &quot;{t.id}&quot;
             </button>
           ))}
         </div>
@@ -238,11 +233,9 @@ export default function TabsTestPage() {
       {/* Controls Panel */}
       <div className="p-5 rounded-xl bg-card border border-border shadow-xs grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="space-y-1">
-          <Text
-            as="label"
-            className="text-xs font-medium text-muted-foreground">
+          <p className="text-xs font-medium text-muted-foreground">
             State Mode
-          </Text>
+          </p>
           <select
             value={isControlled ? "controlled" : "uncontrolled"}
             onChange={(e) => setIsControlled(e.target.value === "controlled")}
@@ -253,11 +246,7 @@ export default function TabsTestPage() {
         </div>
 
         <div className="space-y-1">
-          <Text
-            as="label"
-            className="text-xs font-medium text-muted-foreground">
-            Variant
-          </Text>
+          <p className="text-xs font-medium text-muted-foreground">Variant</p>
           <select
             value={variant}
             onChange={(e) => setVariant(e.target.value as TabsVariant)}
@@ -270,11 +259,7 @@ export default function TabsTestPage() {
         </div>
 
         <div className="space-y-1">
-          <Text
-            as="label"
-            className="text-xs font-medium text-muted-foreground">
-            Size
-          </Text>
+          <p className="text-xs font-medium text-muted-foreground">Size</p>
           <select
             value={size}
             onChange={(e) => setSize(e.target.value as TabsSizeKey)}
@@ -286,14 +271,10 @@ export default function TabsTestPage() {
         </div>
 
         <div className="space-y-1">
-          <Text
-            as="label"
-            className="text-xs font-medium text-muted-foreground">
-            Radius
-          </Text>
+          <p className="text-xs font-medium text-muted-foreground">Radius</p>
           <select
             value={radius}
-            onChange={(e) => setRadius(e.target.value as keyof Radius)}
+            onChange={(e) => setRadius(e.target.value as Radius)}
             className="w-full p-2 text-xs rounded border border-input bg-background">
             <option value="none">none</option>
             <option value="sm">sm</option>
@@ -305,9 +286,7 @@ export default function TabsTestPage() {
         </div>
 
         <div className="flex items-center gap-4 pt-2 col-span-full">
-          <Text
-            as="label"
-            className="flex items-center gap-2 text-xs font-medium cursor-pointer">
+          <p className="flex items-center gap-2 text-xs font-medium cursor-pointer">
             <input
               type="checkbox"
               checked={fullWidth}
@@ -315,11 +294,9 @@ export default function TabsTestPage() {
               className="rounded text-primary"
             />
             Full Width Stretch
-          </Text>
+          </p>
 
-          <Text
-            as="label"
-            className="flex items-center gap-2 text-xs font-medium cursor-pointer">
+          <p className="flex items-center gap-2 text-xs font-medium cursor-pointer">
             <input
               type="checkbox"
               checked={hasIcons}
@@ -327,11 +304,9 @@ export default function TabsTestPage() {
               className="rounded text-primary"
             />
             Show Tab Icons
-          </Text>
+          </p>
 
-          <Text
-            as="label"
-            className="flex items-center gap-2 text-xs font-medium cursor-pointer">
+          <p className="flex items-center gap-2 text-xs font-medium cursor-pointer">
             <input
               type="checkbox"
               checked={hasBadges}
@@ -339,7 +314,7 @@ export default function TabsTestPage() {
               className="rounded text-primary"
             />
             Show Tab Badges
-          </Text>
+          </p>
         </div>
       </div>
 

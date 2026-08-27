@@ -1,11 +1,11 @@
 "use client";
+
 import { cn } from "@asheeui/utils";
 import { FloatingPortal } from "@floating-ui/react";
-import { AnimatePresence, motion } from "framer-motion";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useAsheeConfig } from "../../libs/context";
+import type { Radius } from "../../shared/radius";
 import type { Color, Variant } from "../../shared/variant";
-import type { Radius } from "../../theme/radius/radius-config";
 import { Button } from "../button/Button";
 import type { LayoutName } from "./keyboard-config";
 import { type KeyboardElement, useKeyboard } from "./keyboard-context";
@@ -59,7 +59,7 @@ export interface OnScreenKeyboardProps {
   initialLayout?: LayoutName;
   variant?: Variant;
   color?: Color;
-  radius?: keyof Radius;
+  radius?: Radius;
   keyClassName?: string;
 }
 
@@ -89,12 +89,9 @@ export function OnScreenKeyboard({
 
   // Configuration token resolutions
   const resolvedVariant =
-    variantProp ??
-    config.variant ??
-    globalConfig.theme.defaultVariant ??
-    "solid";
+    variantProp ?? config.variant ?? globalConfig.defaultVariant ?? "solid";
   const resolvedColor =
-    colorProp ?? config.color ?? globalConfig.theme.defaultColor ?? "primary";
+    colorProp ?? config.color ?? globalConfig.defaultColor ?? "primary";
   const resolvedRadius = radiusProp ?? config.radius;
 
   const [layout, setLayout] = useState<LayoutName>(
@@ -244,63 +241,56 @@ export function OnScreenKeyboard({
     ],
   );
 
+  if (!isOpen) return null;
+
   return (
     <FloatingPortal>
-      <AnimatePresence>
-        {isOpen && (
-          <section
-            aria-label="Virtual Keyboard"
-            className="fixed inset-x-0 bottom-0 z-9999 pointer-events-auto"
-            onMouseDown={(e) => e.preventDefault()}>
-            <motion.div
-              initial={{ y: "100%" }}
-              animate={{ y: 0 }}
-              exit={{ y: "100%" }}
-              transition={{ type: "spring", stiffness: 350, damping: 30 }}
-              className={cn(
-                "w-full bg-background border-t border-border shadow-2xl flex flex-col select-none",
-                effectiveHeightClass,
-                className,
-              )}>
-              <div className="flex flex-col gap-1.5 p-2 flex-1 min-h-0">
-                {parsedRows.map((row) => (
-                  <div key={row.id} className="flex gap-1.5 flex-1">
-                    {row.keys.map(({ id, token }) => {
-                      const isPressed = pressedKeys.has(token);
-                      const isHovered = hoveredToken === token;
-                      const isKeyActive = isPressed || isHovered;
-                      const keyLabel = activeDisplay[token] ?? token;
+      <section
+        aria-label="Virtual Keyboard"
+        className="fixed inset-x-0 bottom-0 z-9999 pointer-events-auto"
+        onMouseDown={(e) => e.preventDefault()}>
+        <div
+          className={cn(
+            "w-full bg-background border-t border-border shadow-2xl flex flex-col select-none",
+            effectiveHeightClass,
+            className,
+          )}>
+          <div className="flex flex-col gap-1.5 p-2 flex-1 min-h-0">
+            {parsedRows.map((row) => (
+              <div key={row.id} className="flex gap-1.5 flex-1">
+                {row.keys.map(({ id, token }) => {
+                  const isPressed = pressedKeys.has(token);
+                  const isHovered = hoveredToken === token;
+                  const isKeyActive = isPressed || isHovered;
+                  const keyLabel = activeDisplay[token] ?? token;
 
-                      // Use "secondary" for resting state, resolved color when hovered or pressed
-                      const currentKeyColor: Color = isKeyActive
-                        ? resolvedColor
-                        : "secondary";
+                  const currentKeyColor: Color = isKeyActive
+                    ? resolvedColor
+                    : "secondary";
 
-                      return (
-                        <Button
-                          key={id}
-                          variant={resolvedVariant}
-                          color={currentKeyColor}
-                          radius={resolvedRadius}
-                          onClick={() => handleKeyPress(token)}
-                          onMouseEnter={() => setHoveredToken(token)}
-                          onMouseLeave={() => setHoveredToken(null)}
-                          className={cn(
-                            "h-full text-lg font-medium p-0 flex items-center justify-center",
-                            getKeyWidthClass(token),
-                            keyClassName,
-                          )}>
-                          {keyLabel}
-                        </Button>
-                      );
-                    })}
-                  </div>
-                ))}
+                  return (
+                    <Button
+                      key={id}
+                      variant={resolvedVariant}
+                      color={currentKeyColor}
+                      radius={resolvedRadius}
+                      onClick={() => handleKeyPress(token)}
+                      onMouseEnter={() => setHoveredToken(token)}
+                      onMouseLeave={() => setHoveredToken(null)}
+                      className={cn(
+                        "h-full text-lg font-medium p-0 flex items-center justify-center",
+                        getKeyWidthClass(token),
+                        keyClassName,
+                      )}>
+                      {keyLabel}
+                    </Button>
+                  );
+                })}
               </div>
-            </motion.div>
-          </section>
-        )}
-      </AnimatePresence>
+            ))}
+          </div>
+        </div>
+      </section>
     </FloatingPortal>
   );
 }

@@ -1,5 +1,5 @@
 import { registerComponentDefaults } from "../../libs/registry";
-import type { FieldConfig } from "../field/field-config";
+import { FALLBACK_FIELD_CONFIG, type FieldConfig } from "../field/field-config";
 
 export interface TextAreaConfig extends FieldConfig {
   rows?: number;
@@ -9,10 +9,10 @@ export const defaultTextAreaConfig: TextAreaConfig = {
   size: "md",
   labelAlign: "left",
   rows: 4,
-  animation: "none",
 };
 
-export const FALLBACK_TEXTAREA_CONFIG = {
+export const FALLBACK_TEXTAREA_CONFIG: Required<TextAreaConfig> = {
+  ...FALLBACK_FIELD_CONFIG,
   size: "md",
   radius: "md",
   variant: "bordered",

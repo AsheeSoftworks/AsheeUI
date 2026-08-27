@@ -1,7 +1,6 @@
 "use client";
 
 import { cn } from "@asheeui/utils";
-import { type HTMLMotionProps, motion } from "framer-motion";
 import {
   type ChangeEvent,
   forwardRef,
@@ -11,10 +10,8 @@ import {
   useState,
 } from "react";
 import { useAsheeConfig } from "../../libs/context";
-import { resolveAnimation } from "../../motion/resolve-animation";
-import type { AnimationProp } from "../../motion/types";
+import { RADIUS_CLASS, type Radius } from "../../shared/radius";
 import { type Color, resolveVariantClass } from "../../shared/variant";
-import type { Radius } from "../../theme/radius/radius-config";
 import {
   resolveCascade,
   resolveClassKey,
@@ -28,10 +25,9 @@ import type {
 } from "../field/field-config";
 import { FALLBACK_SWITCH_CONFIG, type SwitchConfig } from "./switch-config";
 import {
-  SWITCH_RADIUS_CLASS,
   SWITCH_STATUS_BORDER_CLASS,
   SWITCH_THUMB_SIZE_CLASS,
-  SWITCH_THUMB_TRANSLATE_X,
+  SWITCH_THUMB_TRANSLATE_CLASS,
   SWITCH_TRACK_SIZE_CLASS,
 } from "./switch-styles";
 
@@ -44,8 +40,7 @@ export interface SwitchProps
   > {
   size?: FieldSizeKey;
   color?: Color;
-  radius?: keyof Radius;
-  animation?: AnimationProp;
+  radius?: Radius;
   status?: FieldStatus;
   label?: string;
   labelAlign?: LabelAlign;
@@ -66,7 +61,6 @@ export const Switch = forwardRef<HTMLInputElement, SwitchProps>(
       size,
       color,
       radius,
-      animation,
       status,
       label,
       labelAlign,
@@ -108,14 +102,14 @@ export const Switch = forwardRef<HTMLInputElement, SwitchProps>(
     const resolvedColor = resolveCascade<Color>(
       color,
       sectionConfig?.color,
-      config.theme.defaultColor,
+      config.defaultColor,
       FALLBACK_SWITCH_CONFIG.color,
     );
 
     const resolvedRadiusKey = resolveRadiusKey(
-      typeof radius === "string" ? radius : undefined,
-      typeof sectionConfig?.radius === "string" ? sectionConfig : undefined,
-      config.theme.radius?.default,
+      radius,
+      sectionConfig?.radius,
+      config.defaultRadius,
       FALLBACK_SWITCH_CONFIG.radius,
     );
 
@@ -127,12 +121,6 @@ export const Switch = forwardRef<HTMLInputElement, SwitchProps>(
       undefined,
       FALLBACK_SWITCH_CONFIG.labelAlign,
     );
-
-    const motionProps = resolveAnimation(
-      animation ?? (sectionConfig?.animation as AnimationProp | undefined),
-    );
-
-    // ─── 2. Class Maps ────────────────────────────────────────────────────────
 
     const trackSizeClass = resolveClassKey(
       resolvedSizeKey,
@@ -146,9 +134,15 @@ export const Switch = forwardRef<HTMLInputElement, SwitchProps>(
       FALLBACK_SWITCH_CONFIG.size,
     );
 
+    const translateClass = resolveClassKey(
+      resolvedSizeKey,
+      SWITCH_THUMB_TRANSLATE_CLASS,
+      FALLBACK_SWITCH_CONFIG.size,
+    );
+
     const radiusClass = resolveClassKey(
       resolvedRadiusKey,
-      SWITCH_RADIUS_CLASS,
+      RADIUS_CLASS,
       FALLBACK_SWITCH_CONFIG.radius,
     );
 
@@ -157,7 +151,6 @@ export const Switch = forwardRef<HTMLInputElement, SwitchProps>(
       SWITCH_STATUS_BORDER_CLASS.default;
 
     const checkedColorClass = resolveVariantClass("solid", resolvedColor);
-    const translateX = SWITCH_THUMB_TRANSLATE_X[resolvedSizeKey] ?? 20;
     const isInteractionDisabled = disabled || isLoading;
 
     const handleChange = useCallback(
@@ -228,21 +221,14 @@ export const Switch = forwardRef<HTMLInputElement, SwitchProps>(
               style={style}
             />
 
-            {/* Framer Motion Animated Thumb */}
-            <motion.span
+            {/* Thumb */}
+            <span
               className={cn(
                 "relative z-10 bg-background shadow-sm rounded-full pointer-events-none shrink-0",
+                "transition-transform duration-200 ease-in-out transform-gpu",
                 thumbSizeClass,
+                isChecked ? translateClass : "translate-x-0",
               )}
-              animate={{
-                x: isChecked ? translateX : 0,
-              }}
-              transition={{
-                type: "spring",
-                stiffness: 500,
-                damping: 30,
-              }}
-              {...(motionProps as HTMLMotionProps<"span">)}
             />
           </div>
         </label>

@@ -22,24 +22,22 @@ import {
 } from "react";
 import { ChevronDownIcon } from "../../icons/ChevronDownIcon";
 import { useAsheeConfig } from "../../libs/context";
-import type { AnimationProp } from "../../motion/types";
+import { RADIUS_CLASS, type Radius } from "../../shared/radius";
+import type { Size } from "../../shared/size";
 import {
   type Color,
   resolveVariantClass,
   type Variant,
 } from "../../shared/variant";
-import type { Radius } from "../../theme/radius/radius-config";
 import {
   resolveCascade,
   resolveClassKey,
   resolveRadiusKey,
 } from "../../utils/resolve-token";
-import type { ButtonSizeKey } from "../button/button-config";
 import { FieldShell } from "../field/FieldShell";
 import type {
   FieldSizeKey,
   FieldStatus,
-  InputAnimationPreset,
   LabelAlign,
 } from "../field/field-config";
 import { SelectMenu } from "../select-menu/SelectMenu";
@@ -48,11 +46,7 @@ import {
   type SelectConfig,
   type SelectOption,
 } from "./select-config";
-import {
-  SELECT_RADIUS_CLASS,
-  SELECT_SIZE_CLASS,
-  SELECT_STATUS_BORDER_CLASS,
-} from "./select-styles";
+import { SELECT_SIZE_CLASS, SELECT_STATUS_BORDER_CLASS } from "./select-styles";
 
 // ─── Component Interface ──────────────────────────────────────────────────────
 
@@ -66,10 +60,9 @@ export interface SelectProps
   onChange?: (e: React.ChangeEvent<HTMLSelectElement>) => void;
   onValueChange?: (value: string | number) => void;
   size?: FieldSizeKey;
-  radius?: keyof Radius;
+  radius?: Radius;
   variant?: Variant;
   color?: Color;
-  animation?: AnimationProp<InputAnimationPreset>;
   status?: FieldStatus;
   label?: string;
   labelAlign?: LabelAlign;
@@ -92,8 +85,8 @@ export interface SelectProps
   // Menu / Popover Overrides
   menuVariant?: Variant;
   menuColor?: Color;
-  menuRadius?: keyof Radius;
-  menuSize?: ButtonSizeKey;
+  menuRadius?: Radius;
+  menuSize?: Size;
 }
 
 // ─── Component Implementation ─────────────────────────────────────────────────
@@ -109,7 +102,6 @@ export const Select = forwardRef<HTMLButtonElement, SelectProps>(
       radius,
       variant,
       color,
-      animation,
       status,
       label,
       labelAlign,
@@ -175,21 +167,21 @@ export const Select = forwardRef<HTMLButtonElement, SelectProps>(
     const resolvedVariant = resolveCascade<Variant>(
       variant,
       sectionConfig?.variant,
-      config.theme.defaultVariant,
+      config.defaultVariant,
       FALLBACK_SELECT_CONFIG.variant,
     );
 
     const resolvedColor = resolveCascade<Color>(
       color,
       sectionConfig?.color,
-      config.theme.defaultColor,
+      config.defaultColor,
       FALLBACK_SELECT_CONFIG.color,
     );
 
     const resolvedRadiusKey = resolveRadiusKey(
-      typeof radius === "string" ? radius : undefined,
-      typeof sectionConfig?.radius === "string" ? sectionConfig : undefined,
-      config.theme.radius?.default,
+      radius,
+      sectionConfig?.radius,
+      config.defaultRadius,
       FALLBACK_SELECT_CONFIG.radius,
     );
 
@@ -218,15 +210,13 @@ export const Select = forwardRef<HTMLButtonElement, SelectProps>(
     );
 
     const resolvedMenuRadiusKey = resolveRadiusKey(
-      typeof menuRadius === "string" ? menuRadius : undefined,
-      typeof sectionConfig?.menuRadius === "string"
-        ? { radius: sectionConfig.menuRadius }
-        : undefined,
+      menuRadius,
+      sectionConfig?.menuRadius,
       resolvedRadiusKey,
       FALLBACK_SELECT_CONFIG.radius,
     );
 
-    const resolvedMenuSize = resolveCascade<ButtonSizeKey>(
+    const resolvedMenuSize = resolveCascade<Size>(
       menuSize,
       sectionConfig?.menuSize,
       undefined,
@@ -245,13 +235,13 @@ export const Select = forwardRef<HTMLButtonElement, SelectProps>(
         ? "rounded-none"
         : resolveClassKey(
             resolvedRadiusKey,
-            SELECT_RADIUS_CLASS,
+            RADIUS_CLASS,
             FALLBACK_SELECT_CONFIG.radius,
           );
 
     const menuRadiusClass = resolveClassKey(
       resolvedMenuRadiusKey,
-      SELECT_RADIUS_CLASS,
+      RADIUS_CLASS,
       FALLBACK_SELECT_CONFIG.radius,
     );
 
@@ -365,10 +355,6 @@ export const Select = forwardRef<HTMLButtonElement, SelectProps>(
             color={resolvedMenuColor}
             radius={menuRadiusClass}
             size={resolvedMenuSize}
-            animation={
-              animation ??
-              (sectionConfig?.animation as AnimationProp | undefined)
-            }
           />
         </div>
       </FieldShell>

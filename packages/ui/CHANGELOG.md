@@ -1,5 +1,28 @@
 # asheeui
 
+## 0.4.0
+
+### Minor Changes
+
+- - Remove all tokens including typogarphy, spacing, size and shadow
+  - Remove container, flex, grid, heading and text components
+  - Restructure config
+  - Update all components with the changes
+  - Remove framer motion
+
+## 0.3.13
+
+### Patch Changes
+
+- Remove defaults from container component
+
+## 0.3.12
+
+### Patch Changes
+
+- - Add height to container
+  - Remove unnessesary defaults from components
+
 ## 0.3.11
 
 ### Patch Changes

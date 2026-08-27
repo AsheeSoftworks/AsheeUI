@@ -1,20 +1,22 @@
-import { Accordion } from "asheeui/accordion";
-import { Autocomplete, type AutocompleteOption } from "asheeui/autocomplete";
-import { Button } from "asheeui/button";
-import { Card } from "asheeui/card";
-import { Carousel } from "asheeui/carousel";
-import { Chip } from "asheeui/chip";
-import type { FieldSizeKey, FieldStatus } from "asheeui/field";
-import { Image } from "asheeui/image";
-import { Link } from "asheeui/link";
 import {
+  Accordion,
+  Button,
+  Card,
+  Carousel,
+  Chip,
+  type Size,
+  Image,
+  Link,
   Modal,
   type ModalAnimationPreset,
   type ModalPosition,
-  type ModalSizeKey,
-} from "asheeui/modal";
-import { MultiSelect, type MultiSelectOption } from "asheeui/multi-select";
-import { Text } from "asheeui/text";
+  MultiSelect,
+  type MultiSelectOption,
+  type AutocompleteOption,
+  Autocomplete,
+  type FieldStatus,
+  type FieldSizeKey,
+} from "asheeui";
 import { useState } from "react";
 
 export default function LocalPropsTestPage() {
@@ -52,7 +54,7 @@ export default function LocalPropsTestPage() {
 
   // Configurable Parameters for Live Testing
   const [position, setPosition] = useState<ModalPosition>("center");
-  const [size, setSize] = useState<ModalSizeKey>("md");
+  const [size, setSize] = useState<Size>("md");
   const [animation, setAnimation] = useState<ModalAnimationPreset>("scale");
   const [closeOnBackdropClick, setCloseOnBackdropClick] = useState(true);
   const [closeOnEscape, setCloseOnEscape] = useState(true);
@@ -99,7 +101,7 @@ export default function LocalPropsTestPage() {
   const handleOpenPreset = (
     pos: ModalPosition,
     anim: ModalAnimationPreset,
-    sz: ModalSizeKey = "md",
+    sz: Size = "md",
   ) => {
     setPosition(pos);
     setAnimation(anim);
@@ -147,7 +149,6 @@ export default function LocalPropsTestPage() {
           variant="elevated"
           size="lg"
           radius="xl"
-          shadow="lg"
           isClickable
           title="Customized Card Title"
           description="Overridden with local prop settings and shorthand image"
@@ -171,7 +172,6 @@ export default function LocalPropsTestPage() {
           fit="cover"
           ratio="portrait"
           radius="lg"
-          shadow="md"
           showSkeleton
         />
       </section>
@@ -308,7 +308,7 @@ export default function LocalPropsTestPage() {
 
         {/* Animation Selection */}
         <div className="space-y-1.5">
-          <Text as="label">Animation Preset</Text>
+          <p>Animation Preset</p>
           <div className="flex flex-wrap gap-2">
             {(
               [
@@ -338,7 +338,7 @@ export default function LocalPropsTestPage() {
 
         {/* Position Selection */}
         <div className="space-y-1.5">
-          <Text as="label">Position</Text>
+          <p>Position</p>
           <div className="flex flex-wrap gap-2">
             {(["center", "top", "bottom"] as ModalPosition[]).map((p) => (
               <button
@@ -358,9 +358,9 @@ export default function LocalPropsTestPage() {
 
         {/* Size Selection */}
         <div className="space-y-1.5">
-          <Text as="label">Size Token</Text>
+          <p>Size Token</p>
           <div className="flex flex-wrap gap-2">
-            {(["sm", "md", "lg", "xl", "full"] as ModalSizeKey[]).map((s) => (
+            {(["sm", "md", "lg", "xl", "full"] as Size[]).map((s) => (
               <button
                 key={s}
                 type="button"
@@ -456,7 +456,7 @@ export default function LocalPropsTestPage() {
           {/* Body */}
           <div className="space-y-4 text-sm text-foreground/80">
             <div className="space-y-1.5">
-              <Text as={"label"}>Display Name</Text>
+              <p>Display Name</p>
               <input
                 type="text"
                 defaultValue="Ashee Softworks"
@@ -465,7 +465,7 @@ export default function LocalPropsTestPage() {
             </div>
 
             <div className="space-y-1.5">
-              <Text as={"label"}>Framework Workspace</Text>
+              <p>Framework Workspace</p>
               <input
                 type="text"
                 defaultValue="asheeui"
@@ -587,7 +587,7 @@ export default function LocalPropsTestPage() {
             <div className="space-y-4 md:col-span-1 border-r border-border/60 pr-4">
               {/* Status Selection */}
               <div className="space-y-1.5">
-                <Text as="label">Field Status</Text>
+                <p>Field Status</p>
                 <div className="flex flex-wrap gap-1.5">
                   {(
                     ["default", "error", "warning", "success"] as FieldStatus[]
@@ -609,7 +609,7 @@ export default function LocalPropsTestPage() {
 
               {/* Size Tokens */}
               <div className="space-y-1.5">
-                <Text as="label">Size Token</Text>
+                <p>Size Token</p>
                 <div className="flex gap-1.5">
                   {(["sm", "md", "lg"] as FieldSizeKey[]).map((sz) => (
                     <button

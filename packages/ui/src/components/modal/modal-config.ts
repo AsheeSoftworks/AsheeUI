@@ -1,6 +1,5 @@
-import type { Transition, Variants } from "framer-motion";
 import { registerComponentDefaults } from "../../libs/registry";
-import type { Radius } from "../../theme/radius/radius-config";
+import type { Radius } from "../../shared/radius";
 
 export type ModalAnimationPreset =
   | "scale"
@@ -10,15 +9,8 @@ export type ModalAnimationPreset =
   | "fade"
   | "drop"
   | "flip"
-  | "pop";
-
-export type ModalAnimation =
-  | boolean
-  | ModalAnimationPreset
-  | {
-      variants?: Variants;
-      transition?: Transition;
-    };
+  | "pop"
+  | "none";
 
 export type ModalSizeKey = "sm" | "md" | "lg" | "xl" | "full";
 export type ModalPosition = "center" | "top" | "bottom";
@@ -26,7 +18,7 @@ export type ModalPosition = "center" | "top" | "bottom";
 export interface ModalConfig {
   size?: ModalSizeKey;
   position?: ModalPosition;
-  radius?: keyof Radius;
+  radius?: Radius;
   animation?: ModalAnimationPreset;
   closeOnBackdropClick?: boolean;
   closeOnEscape?: boolean;
@@ -43,13 +35,16 @@ export const defaultModalConfig: ModalConfig = {
   closeOnEscape: true,
 };
 
-export const FALLBACK_MODAL_CONFIG = {
+export const FALLBACK_MODAL_CONFIG: Required<ModalConfig> = {
   size: "md",
   position: "center",
   radius: "lg",
   animation: "pop",
   closeOnBackdropClick: true,
   closeOnEscape: true,
+  className: "",
+  overlayClassName: "",
+  contentClassName: "",
 } as const;
 
 declare module "../../libs/registry" {

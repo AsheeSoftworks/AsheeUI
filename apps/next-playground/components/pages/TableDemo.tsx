@@ -1,6 +1,6 @@
 "use client";
 
-import { type ColumnDef, Table, type TableVariant } from "asheeui/table";
+import { type ColumnDef, Table, type TableVariant } from "asheeui";
 import { useMemo, useState } from "react";
 
 // ─── Type Definitions ─────────────────────────────────────────────────────────
@@ -217,7 +217,7 @@ export default function TableDemo() {
               <p className="text-xs text-muted-foreground">
                 Try clearing your search term{" "}
                 <code className="bg-muted px-1.5 py-0.5 rounded">
-                  "{searchQuery}"
+                  &quot;{searchQuery}&quot;
                 </code>
               </p>
             </div>

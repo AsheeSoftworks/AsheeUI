@@ -1,53 +1,43 @@
 "use client";
 
 import { cn } from "@asheeui/utils";
-import { type HTMLMotionProps, type MotionProps, motion } from "framer-motion";
-import { forwardRef, type ReactNode } from "react";
+import { forwardRef, type MouseEvent, type ReactNode } from "react";
 import { useAsheeConfig } from "../../libs/context";
-import type { AnimationProp } from "../../motion/types";
+import { RADIUS_CLASS, type Radius } from "../../shared/radius";
+import type { Size } from "../../shared/size";
 import {
   type Color,
   resolveVariantClass,
   type Variant,
 } from "../../shared/variant";
-import type { Radius } from "../../theme/radius/radius-config";
 import {
   resolveCascade,
   resolveClassKey,
   resolveRadiusKey,
 } from "../../utils/resolve-token";
 import { Spinner } from "../spinner/spinner";
-import type {
-  ButtonAnimationPreset,
-  ButtonConfig,
-  ButtonSizeKey,
-} from "./button-config";
-import {
-  BUTTON_ICON_SIZE_CLASS,
-  BUTTON_RADIUS_CLASS,
-  BUTTON_SIZE_CLASS,
-} from "./button-styles";
-
-// ─── Base Props ───────────────────────────────────────────────────────────────
+import { type ButtonConfig, FALLBACK_BUTTON_CONFIG } from "./button-config";
+import { BUTTON_ICON_SIZE_CLASS, BUTTON_SIZE_CLASS } from "./button-styles";
 
 export interface ButtonCommonProps {
   variant?: Variant;
   color?: Color;
-  size?: ButtonSizeKey;
-  radius?: keyof Radius;
-  animation?: AnimationProp<ButtonAnimationPreset>;
+  size?: Size;
+  radius?: Radius;
+  animate?: boolean;
+  fullWidth?: boolean;
   isDisabled?: boolean;
   isLoading?: boolean;
   className?: string;
 }
 
-type CleanMotionButtonProps = Omit<
-  HTMLMotionProps<"button">,
-  keyof MotionProps | "children" | "color" | "disabled" | "className"
+type CleanButtonProps = Omit<
+  React.ButtonHTMLAttributes<HTMLButtonElement>,
+  "color" | "disabled" | "className" | "children"
 >;
 
 type BaseButtonProps = ButtonCommonProps &
-  CleanMotionButtonProps & {
+  CleanButtonProps & {
     type?: "button" | "submit" | "reset";
   };
 
@@ -56,10 +46,8 @@ export type ButtonProps =
   | (BaseButtonProps & {
       icon: true;
       "aria-label": string;
-      children: ReactNode;
+      children?: ReactNode;
     });
-
-// ─── Component Implementation ─────────────────────────────────────────────────
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
   (props, ref) => {
@@ -68,7 +56,8 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       color,
       size,
       radius,
-      animation,
+      animate,
+      fullWidth,
       isDisabled,
       isLoading,
       icon,
@@ -79,60 +68,58 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       ...rest
     } = props;
 
-    // Inside Button.tsx component body
     const config = useAsheeConfig();
     const sectionConfig = config.components?.button as ButtonConfig | undefined;
 
-    // 1. Variant (Instance -> Section -> Theme Global -> Hard Fallback)
-    const resolvedVariant = resolveCascade(
+    const resolvedVariant = resolveCascade<Variant>(
       variant,
       sectionConfig?.variant,
-      config.theme.defaultVariant,
-      "bordered",
+      config.defaultVariant,
+      FALLBACK_BUTTON_CONFIG.variant,
     );
 
-    // 2. Color (Instance -> Section -> Theme Global -> Hard Fallback)
-    const resolvedColor = resolveCascade(
+    const resolvedColor = resolveCascade<Color>(
       color,
       sectionConfig?.color,
-      config.theme.defaultColor,
-      "primary",
+      config.defaultColor,
+      FALLBACK_BUTTON_CONFIG.color,
     );
 
-    // 3. Size (Instance -> Section -> Hard Fallback)
-    const resolvedSizeKey = resolveCascade<ButtonSizeKey>(
+    const resolvedSizeKey = resolveCascade<Size>(
       size,
       sectionConfig?.size,
       undefined,
-      "md",
+      FALLBACK_BUTTON_CONFIG.size,
     );
 
-    // 4. Radius Key (Instance -> Section -> Theme Global -> Hard Fallback)
     const resolvedRadiusKey = resolveRadiusKey(
-      typeof radius === "string" ? radius : undefined,
-      typeof sectionConfig?.radius === "string" ? sectionConfig : undefined,
-      config.theme.radius?.default,
-      "md",
+      radius,
+      sectionConfig?.radius,
+      config.defaultRadius as Radius,
+      FALLBACK_BUTTON_CONFIG.radius,
+    );
+
+    const resolvedAnimate = resolveCascade<boolean>(
+      animate,
+      sectionConfig?.animate,
+      FALLBACK_BUTTON_CONFIG.animate,
+      FALLBACK_BUTTON_CONFIG.animate,
+    );
+
+    const resolvedFullWidth = resolveCascade<boolean>(
+      fullWidth,
+      sectionConfig?.fullWidth,
+      undefined,
+      FALLBACK_BUTTON_CONFIG.fullWidth,
     );
 
     const sizeClasses = icon
       ? BUTTON_ICON_SIZE_CLASS[resolvedSizeKey]
       : BUTTON_SIZE_CLASS[resolvedSizeKey];
 
-    const sharedClassName = cn(
-      "inline-flex items-center justify-center font-medium transition-colors select-none shrink-0",
-      "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2",
-      "disabled:pointer-events-none disabled:opacity-50",
-      "aria-disabled:pointer-events-none aria-disabled:opacity-50",
-      resolveVariantClass(resolvedVariant, resolvedColor),
-      sizeClasses,
-      resolveClassKey(resolvedRadiusKey, BUTTON_RADIUS_CLASS, "md"),
-      className,
-    );
-
     const isInteractionDisabled = isDisabled || isLoading;
 
-    const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    const handleClick = (e: MouseEvent<HTMLButtonElement>) => {
       if (isInteractionDisabled) {
         e.preventDefault();
         return;
@@ -140,8 +127,22 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       onClick?.(e);
     };
 
+    const sharedClassName = cn(
+      "inline-flex items-center justify-center font-medium transition-colors select-none shrink-0",
+      "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2",
+      "disabled:pointer-events-none disabled:opacity-50",
+      "aria-disabled:pointer-events-none aria-disabled:opacity-50",
+      resolvedFullWidth && "w-full",
+      resolvedAnimate &&
+        "motion-safe:transition-transform motion-safe:duration-100 motion-safe:active:scale-[0.99]",
+      resolveVariantClass(resolvedVariant, resolvedColor),
+      sizeClasses,
+      resolveClassKey(resolvedRadiusKey as Radius, RADIUS_CLASS, "md"),
+      className,
+    );
+
     return (
-      <motion.button
+      <button
         ref={ref}
         type={type}
         disabled={isInteractionDisabled}
@@ -153,7 +154,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         {isLoading && <Spinner className={resolvedSizeKey} />}
         {isLoading && <span className="sr-only">Loading</span>}
         {isLoading && icon ? null : children}
-      </motion.button>
+      </button>
     );
   },
 );

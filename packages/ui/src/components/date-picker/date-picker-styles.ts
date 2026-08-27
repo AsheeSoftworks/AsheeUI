@@ -5,21 +5,14 @@ export const DATE_PICKER_SIZE_CLASS: Record<FieldSizeKey, string> = {
   sm: "h-8 px-2.5 text-xs",
   md: "h-10 px-3 text-sm",
   lg: "h-12 px-4 text-base",
+  xl: "h-14 px-4.5 text-lg",
 };
 
 export const DATE_PICKER_CELL_SIZE_CLASS: Record<FieldSizeKey, string> = {
   sm: "size-7 text-xs",
   md: "size-8 text-xs",
   lg: "size-9 text-sm",
-};
-
-export const DATE_PICKER_RADIUS_CLASS: Record<string, string> = {
-  none: "rounded-none",
-  sm: "rounded-sm",
-  md: "rounded-md",
-  lg: "rounded-lg",
-  xl: "rounded-xl",
-  full: "rounded-full",
+  xl: "size-10 text-base",
 };
 
 export const DATE_PICKER_STATUS_BORDER_CLASS: Record<FieldStatus, string> = {

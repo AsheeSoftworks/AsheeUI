@@ -4,15 +4,7 @@ export const SELECT_SIZE_CLASS: Record<FieldSizeKey, string> = {
   sm: "h-8 px-2.5 text-xs",
   md: "h-10 px-3 text-sm",
   lg: "h-12 px-4 text-base",
-};
-
-export const SELECT_RADIUS_CLASS: Record<string, string> = {
-  none: "rounded-none",
-  sm: "rounded-sm",
-  md: "rounded-md",
-  lg: "rounded-lg",
-  xl: "rounded-xl",
-  full: "rounded-full",
+  xl: "h-12 px-4 text-md",
 };
 
 export const SELECT_STATUS_BORDER_CLASS: Record<FieldStatus, string> = {

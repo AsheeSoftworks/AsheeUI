@@ -31,12 +31,3 @@ export const SIDEBAR_VARIANT_CLASS: Record<SidebarVariant, string> = {
     "m-2 rounded-xl border border-border shadow-md bg-background/80 backdrop-blur-xs",
   flush: "border-none bg-background/80 backdrop-blur-xs",
 };
-
-export const SIDEBAR_RADIUS_CLASS: Record<string, string> = {
-  none: "rounded-none",
-  sm: "rounded-sm",
-  md: "rounded-md",
-  lg: "rounded-lg",
-  xl: "rounded-xl",
-  full: "rounded-full",
-};

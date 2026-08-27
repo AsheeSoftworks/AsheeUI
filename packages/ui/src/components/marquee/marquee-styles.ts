@@ -12,6 +12,6 @@ export const MARQUEE_FADE_START_CLASS: Record<MarqueeAxis, string> = {
 };
 
 export const MARQUEE_FADE_END_CLASS: Record<MarqueeAxis, string> = {
-  x: "top-0 right-0 h-full w-24 bg-linear-to-l from-background to-transparent",
+  x: "top-0 -right-5 h-full w-24 bg-linear-to-l from-background to-transparent",
   y: "bottom-0 left-0 w-full h-24 bg-linear-to-t from-background to-transparent",
 };

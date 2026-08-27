@@ -1,14 +1,16 @@
 "use client";
 
 import { cn } from "@asheeui/utils";
-import { type HTMLMotionProps, motion } from "framer-motion";
-import { type ReactNode, useCallback, useMemo } from "react";
+import {
+  type HTMLAttributes,
+  type ReactNode,
+  useCallback,
+  useMemo,
+} from "react";
 import { ArrowLeftIcon } from "../../icons/ArrowLeftIcon";
 import { useAsheeConfig } from "../../libs/context";
-import { resolveAnimation } from "../../motion/resolve-animation";
-import type { AnimationProp } from "../../motion/types";
+import { RADIUS_CLASS, type Radius } from "../../shared/radius";
 import type { Color, Variant } from "../../shared/variant";
-import type { Radius } from "../../theme/radius/radius-config";
 import {
   resolveCascade,
   resolveClassKey,
@@ -29,14 +31,11 @@ import {
   SIDEBAR_EXPANDED_WIDTH_CLASS,
   SIDEBAR_HEADER_CLASS,
   SIDEBAR_ITEM_CLASS,
-  SIDEBAR_RADIUS_CLASS,
   SIDEBAR_VARIANT_CLASS,
 } from "./sidebar-styles";
 
-// ─── Props Interface ──────────────────────────────────────────────────────────
-
 export interface SidebarProps<T = string>
-  extends Omit<HTMLMotionProps<"aside">, "onSelect" | "title"> {
+  extends Omit<HTMLAttributes<HTMLElement>, "onSelect" | "title"> {
   /** List of navigation items. */
   items: SidebarItem<T>[];
 
@@ -71,13 +70,10 @@ export interface SidebarProps<T = string>
   size?: SidebarSizeKey;
 
   /** Radius scale token for sidebar container. */
-  radius?: keyof Radius;
+  radius?: Radius;
 
   /** Radius scale token for individual items. */
-  itemRadius?: keyof Radius;
-
-  /** Animation configuration preset. */
-  animation?: AnimationProp;
+  itemRadius?: Radius;
 
   /** Active item variant. */
   activeItemVariant?: Variant;
@@ -107,8 +103,6 @@ export interface SidebarProps<T = string>
   itemClassName?: string;
 }
 
-// ─── Component Implementation ─────────────────────────────────────────────────
-
 export function Sidebar<T = string>({
   items = [],
   activeKey,
@@ -123,7 +117,6 @@ export function Sidebar<T = string>({
   size,
   radius,
   itemRadius,
-  animation,
   activeItemVariant,
   activeItemColor,
   backButtonVariant,
@@ -157,16 +150,16 @@ export function Sidebar<T = string>({
 
   // 2. Radius Cascading
   const resolvedRadiusKey = resolveRadiusKey(
-    typeof radius === "string" ? radius : undefined,
-    typeof sectionConfig?.radius === "string" ? sectionConfig : undefined,
-    config.theme.radius?.default,
+    radius,
+    sectionConfig?.radius,
+    config.defaultRadius as Radius,
     FALLBACK_SIDEBAR_CONFIG.radius,
   );
 
   const resolvedItemRadiusKey = resolveRadiusKey(
-    typeof itemRadius === "string" ? itemRadius : undefined,
-    typeof sectionConfig?.itemRadius === "string" ? sectionConfig : undefined,
-    config.theme.radius?.default,
+    itemRadius,
+    sectionConfig?.itemRadius,
+    config.defaultRadius as Radius,
     FALLBACK_SIDEBAR_CONFIG.itemRadius,
   );
 
@@ -174,14 +167,14 @@ export function Sidebar<T = string>({
   const resolvedActiveItemVariant = resolveCascade<Variant>(
     activeItemVariant,
     sectionConfig?.activeItemVariant,
-    config.theme.defaultVariant,
+    config.defaultVariant as Variant,
     FALLBACK_SIDEBAR_CONFIG.activeItemVariant,
   );
 
   const resolvedActiveItemColor = resolveCascade<Color>(
     activeItemColor,
     sectionConfig?.activeItemColor,
-    config.theme.defaultColor,
+    config.defaultColor as Color,
     FALLBACK_SIDEBAR_CONFIG.activeItemColor,
   );
 
@@ -214,8 +207,6 @@ export function Sidebar<T = string>({
     FALLBACK_SIDEBAR_CONFIG.tooltipPlacement,
   );
 
-  const motionProps = resolveAnimation(animation ?? sectionConfig?.animation);
-
   // Role Filtering
   const filteredItems = useMemo(() => {
     return items.filter((item) => {
@@ -233,22 +224,19 @@ export function Sidebar<T = string>({
     [onSelect],
   );
 
-  // Layout Class Lookup
   const widthClass = isCollapsed
     ? SIDEBAR_COLLAPSED_WIDTH_CLASS[resolvedSizeKey]
     : SIDEBAR_EXPANDED_WIDTH_CLASS[resolvedSizeKey];
 
   return (
-    <motion.aside
-      role="navigation"
-      aria-expanded={!isCollapsed}
+    <aside
       className={cn(
         "h-full flex flex-col transition-all duration-200 select-none shrink-0",
         widthClass,
         SIDEBAR_VARIANT_CLASS[resolvedVariant],
         resolveClassKey(
           resolvedRadiusKey,
-          SIDEBAR_RADIUS_CLASS,
+          RADIUS_CLASS,
           FALLBACK_SIDEBAR_CONFIG.radius,
         ),
         className,
@@ -261,28 +249,33 @@ export function Sidebar<T = string>({
           className={cn(
             "flex items-center gap-3 border-b border-border border-dashed shrink-0",
             SIDEBAR_HEADER_CLASS[resolvedSizeKey],
+            isCollapsed && "justify-center px-0",
             headerClassName,
           )}>
           {onBack && (
             <Button
               icon
-              aria-label="Navigate back"
+              aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
               variant={resolvedBackButtonVariant}
               color={resolvedBackButtonColor}
               size={resolvedSizeKey}
               radius={resolvedItemRadiusKey}
               onClick={onBack}
               className="shrink-0">
-              {backIcon ?? <ArrowLeftIcon className="size-4" />}
+              <span
+                className={cn(
+                  "flex items-center justify-center transition-transform duration-200",
+                  isCollapsed && "rotate-180",
+                )}>
+                {backIcon ?? <ArrowLeftIcon className="size-4" />}
+              </span>
             </Button>
           )}
 
           {!isCollapsed && title && (
-            <motion.span
-              {...(motionProps as HTMLMotionProps<"span">)}
-              className="font-semibold text-foreground truncate tracking-tight">
+            <span className="font-semibold text-foreground truncate tracking-tight transition-opacity duration-200">
               {title}
-            </motion.span>
+            </span>
           )}
         </div>
       )}
@@ -356,7 +349,7 @@ export function Sidebar<T = string>({
       {!isCollapsed && footer && (
         <div className="p-3 border-t border-border shrink-0">{footer}</div>
       )}
-    </motion.aside>
+    </aside>
   );
 }
 

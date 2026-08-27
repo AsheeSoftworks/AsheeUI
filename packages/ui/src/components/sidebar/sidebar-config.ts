@@ -1,7 +1,6 @@
 import { registerComponentDefaults } from "../../libs/registry";
-import type { AnimationProp } from "../../motion/types";
+import type { Radius } from "../../shared/radius";
 import type { Color, Variant } from "../../shared/variant";
-import type { Radius } from "../../theme/radius/radius-config";
 import type { TooltipPlacement } from "../tooltip/tooltip-config";
 
 export type SidebarSizeKey = "sm" | "md" | "lg";
@@ -25,9 +24,8 @@ export interface SidebarItem<T = string> {
 export interface SidebarConfig {
   size?: SidebarSizeKey;
   variant?: SidebarVariant;
-  radius?: keyof Radius;
-  itemRadius?: keyof Radius;
-  animation?: AnimationProp;
+  radius?: Radius;
+  itemRadius?: Radius;
 
   // Item Styling Tokens
   activeItemVariant?: Variant;
@@ -42,6 +40,9 @@ export interface SidebarConfig {
   tooltipPlacement?: TooltipPlacement;
   tooltipVariant?: Variant;
   tooltipColor?: Color;
+
+  // Animation configuration
+  animation?: unknown;
 }
 
 export const defaultSidebarConfig: SidebarConfig = {
@@ -50,7 +51,7 @@ export const defaultSidebarConfig: SidebarConfig = {
   tooltipPlacement: "right",
 };
 
-export const FALLBACK_SIDEBAR_CONFIG = {
+export const FALLBACK_SIDEBAR_CONFIG: Required<SidebarConfig> = {
   size: "md",
   variant: "default",
   radius: "none",
@@ -63,6 +64,7 @@ export const FALLBACK_SIDEBAR_CONFIG = {
   tooltipPlacement: "right",
   tooltipVariant: "solid",
   tooltipColor: "secondary",
+  animation: undefined,
 } as const;
 
 declare module "../../libs/registry" {

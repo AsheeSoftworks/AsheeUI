@@ -1,8 +1,6 @@
 import { registerComponentDefaults } from "../../libs/registry";
-import type { AnimationProp } from "../../motion/types";
+import type { Radius } from "../../shared/radius";
 import type { Color, Variant } from "../../shared/variant";
-import type { Radius } from "../../theme/radius/radius-config";
-import type { ShadowConfig } from "../../theme/shadow/shadow-config";
 
 export type TooltipPlacement =
   | "top"
@@ -18,7 +16,7 @@ export type TooltipPlacement =
   | "right-start"
   | "right-end";
 
-export type TooltipSizeKey = "sm" | "md" | "lg";
+export type TooltipSizeKey = "sm" | "md" | "lg" | "xl";
 
 export interface TooltipConfig {
   variant?: Variant;
@@ -27,9 +25,7 @@ export interface TooltipConfig {
   placement?: TooltipPlacement;
   delay?: number | { open?: number; close?: number };
   offset?: number;
-  radius?: keyof Radius;
-  shadow?: keyof ShadowConfig["values"];
-  animation?: AnimationProp;
+  radius?: Radius;
   showArrow?: boolean;
   className?: string;
 }
@@ -39,21 +35,19 @@ export const defaultTooltipConfig: TooltipConfig = {
   placement: "top",
   delay: 200,
   offset: 8,
-  animation: "scale",
   showArrow: false,
 };
 
-export const FALLBACK_TOOLTIP_CONFIG = {
+export const FALLBACK_TOOLTIP_CONFIG: Required<TooltipConfig> = {
   size: "md" as TooltipSizeKey,
   placement: "top" as TooltipPlacement,
   variant: "solid" as Variant,
   color: "secondary" as Color,
   delay: 200,
   offset: 8,
-  radius: "md" as keyof Radius,
-  shadow: "md" as keyof ShadowConfig["values"],
-  animation: "scale" as AnimationProp,
+  radius: "md" as Radius,
   showArrow: false,
+  className: "",
 } as const;
 
 declare module "../../libs/registry" {

@@ -1,8 +1,6 @@
 "use client";
 
-import { Button } from "asheeui/button";
-import { Tooltip } from "asheeui/tooltip";
-import { Container, useTheme } from "asheeui";
+import { useTheme, Button, Tooltip } from "asheeui";
 
 export default function TooltipTestPage() {
   const { theme, resolvedTheme, toggleTheme } = useTheme();
@@ -158,11 +156,11 @@ export default function TooltipTestPage() {
         </div>
       </section>
 
-      <Container>
+      <section>
         <Button onClick={() => toggleTheme()}>
           Current: {theme} (Active: {resolvedTheme})
         </Button>
-      </Container>
+      </section>
     </div>
   );
 }

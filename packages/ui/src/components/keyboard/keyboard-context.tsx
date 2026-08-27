@@ -9,8 +9,8 @@ import {
   useState,
 } from "react";
 import { useAsheeConfig } from "../../libs/context";
+import type { Radius } from "../../shared/radius";
 import type { Color, Variant } from "../../shared/variant";
-import type { Radius } from "../../theme/radius/radius-config";
 import { defaultKeyboardConfig } from "./default-keyboard-config";
 import type {
   KeyboardConfig,
@@ -49,7 +49,7 @@ export interface KeyboardProviderProps {
   closeDelay?: number;
   variant?: Variant;
   color?: Color;
-  radius?: keyof Radius;
+  radius?: Radius;
 }
 
 export function KeyboardProvider({

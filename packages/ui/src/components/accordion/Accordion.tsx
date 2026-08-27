@@ -1,7 +1,6 @@
 "use client";
 
 import { cn } from "@asheeui/utils";
-import { AnimatePresence, type HTMLMotionProps, motion } from "framer-motion";
 import {
   forwardRef,
   type ReactNode,
@@ -11,9 +10,7 @@ import {
 } from "react";
 import { ChevronDownIcon } from "../../icons/ChevronDownIcon";
 import { useAsheeConfig } from "../../libs/context";
-import { resolveAnimation } from "../../motion/resolve-animation";
-import type { AnimationProp } from "../../motion/types";
-import type { Radius } from "../../theme/radius/radius-config";
+import { RADIUS_CLASS, type Radius } from "../../shared/radius";
 import {
   resolveCascade,
   resolveClassKey,
@@ -29,7 +26,6 @@ import {
 import {
   ACCORDION_CONTENT_SIZE_CLASS,
   ACCORDION_HEADER_SIZE_CLASS,
-  ACCORDION_RADIUS_CLASS,
   ACCORDION_VARIANT_CONTAINER_CLASS,
   ACCORDION_VARIANT_ITEM_CLASS,
 } from "./accordion-styles";
@@ -44,8 +40,7 @@ export interface AccordionProps
   items: AccordionItem[];
   variant?: AccordionVariant;
   size?: AccordionSizeKey;
-  radius?: keyof Radius;
-  animation?: AnimationProp;
+  radius?: Radius;
   allowMultiple?: boolean;
   defaultValue?: string | string[];
   value?: string | string[];
@@ -66,7 +61,6 @@ export const Accordion = forwardRef<HTMLDivElement, AccordionProps>(
       variant,
       size,
       radius,
-      animation,
       allowMultiple,
       defaultValue,
       value: controlledValue,
@@ -103,7 +97,7 @@ export const Accordion = forwardRef<HTMLDivElement, AccordionProps>(
     const resolvedVariant = resolveCascade<AccordionVariant>(
       variant,
       sectionConfig?.variant,
-      config.theme.defaultVariant as AccordionVariant | undefined,
+      config.defaultVariant as AccordionVariant | undefined,
       FALLBACK_ACCORDION_CONFIG.variant,
     );
 
@@ -115,14 +109,10 @@ export const Accordion = forwardRef<HTMLDivElement, AccordionProps>(
     );
 
     const resolvedRadiusKey = resolveRadiusKey(
-      typeof radius === "string" ? radius : undefined,
-      typeof sectionConfig?.radius === "string" ? sectionConfig : undefined,
-      config.theme.radius?.default,
+      radius,
+      sectionConfig?.radius,
+      config.defaultRadius,
       FALLBACK_ACCORDION_CONFIG.radius,
-    );
-
-    const motionProps = resolveAnimation(
-      animation ?? (sectionConfig?.animation as AnimationProp | undefined),
     );
 
     // ─── 2. Class Maps ────────────────────────────────────────────────────────
@@ -149,7 +139,7 @@ export const Accordion = forwardRef<HTMLDivElement, AccordionProps>(
 
     const radiusClass = resolveClassKey(
       resolvedRadiusKey,
-      ACCORDION_RADIUS_CLASS,
+      RADIUS_CLASS,
       FALLBACK_ACCORDION_CONFIG.radius,
     );
 
@@ -255,60 +245,39 @@ export const Accordion = forwardRef<HTMLDivElement, AccordionProps>(
                 </div>
 
                 {/* Rotating Expand Indicator */}
-                <motion.div
-                  animate={{ rotate: isOpen ? 180 : 0 }}
-                  transition={
-                    disableAnimation
-                      ? { duration: 0 }
-                      : { duration: 0.2, ease: "easeInOut" }
-                  }
-                  className="text-muted-foreground shrink-0 ml-2">
+                <div
+                  className={cn(
+                    "text-muted-foreground shrink-0 ml-2 transition-transform duration-200 ease-in-out",
+                    disableAnimation ? "transition-none" : "",
+                    isOpen && "rotate-180",
+                  )}>
                   {expandIcon || <ChevronDownIcon className="w-4 h-4" />}
-                </motion.div>
+                </div>
               </button>
 
-              {/* Expandable Content Panel */}
-              <AnimatePresence initial={false}>
-                {isOpen && (
-                  <motion.div
-                    id={contentId}
-                    role="region"
-                    aria-labelledby={headerId}
-                    initial={
-                      disableAnimation
-                        ? { height: "auto" }
-                        : { height: 0, opacity: 0 }
-                    }
-                    animate={{ height: "auto", opacity: 1 }}
-                    exit={
-                      disableAnimation
-                        ? { height: 0 }
-                        : { height: 0, opacity: 0 }
-                    }
-                    transition={
-                      disableAnimation
-                        ? { duration: 0 }
-                        : {
-                            height: {
-                              duration: 0.25,
-                              ease: [0.16, 1, 0.3, 1],
-                            },
-                            opacity: { duration: 0.2 },
-                          }
-                    }
-                    className="overflow-hidden"
-                    {...(motionProps as HTMLMotionProps<"div">)}>
-                    <div
-                      className={cn(
-                        "text-muted-foreground leading-relaxed pt-0",
-                        contentSizeClass,
-                        contentClassName,
-                      )}>
-                      {item.content}
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
+              {/* Expandable Content Panel (CSS Grid Auto-Height Trick) */}
+              <section
+                id={contentId}
+                aria-labelledby={headerId}
+                data-state={isOpen ? "open" : "closed"}
+                className={cn(
+                  "grid transition-[grid-template-rows,opacity] duration-250 ease-[cubic-bezier(0.16,1,0.3,1)]",
+                  disableAnimation ? "transition-none" : "",
+                  isOpen
+                    ? "grid-rows-[1fr] opacity-100"
+                    : "grid-rows-[0fr] opacity-0 pointer-events-none",
+                )}>
+                <div className="overflow-hidden">
+                  <div
+                    className={cn(
+                      "text-muted-foreground leading-relaxed pt-0",
+                      contentSizeClass,
+                      contentClassName,
+                    )}>
+                    {item.content}
+                  </div>
+                </div>
+              </section>
             </div>
           );
         })}

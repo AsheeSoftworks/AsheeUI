@@ -5,33 +5,28 @@ export const TABLE_CELL_PADDING_Y_CLASS: Record<TableSizeKey, string> = {
   sm: "py-1.5",
   md: "py-2.5",
   lg: "py-3.5",
+  xl: "py-4,5",
 };
 
 export const TABLE_CELL_PADDING_X_CLASS: Record<TableSizeKey, string> = {
   sm: "px-2",
   md: "px-3",
   lg: "px-4",
+  xl: "px-5",
 };
 
 export const TABLE_FONT_CLASS: Record<TableSizeKey, string> = {
   sm: "text-[0.8125rem]",
   md: "text-sm",
   lg: "text-base",
+  xl: "text-md",
 };
 
 export const TABLE_HEADER_FONT_CLASS: Record<TableSizeKey, string> = {
   sm: "text-xs",
   md: "text-[0.8125rem]",
   lg: "text-sm",
-};
-
-export const TABLE_RADIUS_CLASS: Record<string, string> = {
-  none: "rounded-none",
-  sm: "rounded-sm",
-  md: "rounded-md",
-  lg: "rounded-lg",
-  xl: "rounded-xl",
-  full: "rounded-full",
+  xl: "text-base",
 };
 
 export const TABLE_COLOR_STYLES: Record<

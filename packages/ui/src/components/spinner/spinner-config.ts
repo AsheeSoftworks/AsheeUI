@@ -1,7 +1,8 @@
 import { registerComponentDefaults } from "../../libs/registry";
+import type { Size } from "../../shared/size";
 import type { Color } from "../../shared/variant";
 
-export type SpinnerSizeKey = "sm" | "md" | "lg";
+export type SpinnerSizeKey = Size;
 
 export interface SpinnerConfig {
   size?: SpinnerSizeKey;
@@ -15,9 +16,11 @@ export const defaultSpinnerConfig: SpinnerConfig = {
   speed: "0.75s",
 };
 
-export const FALLBACK_SPINNER_CONFIG = {
-  size: "md" as SpinnerSizeKey,
+export const FALLBACK_SPINNER_CONFIG: Required<SpinnerConfig> = {
+  size: "md",
+  color: "primary",
   speed: "0.75s",
+  className: "",
 } as const;
 
 declare module "../../libs/registry" {

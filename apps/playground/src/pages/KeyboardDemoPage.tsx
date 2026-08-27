@@ -5,7 +5,7 @@ import {
   KeyboardProvider,
   OnScreenKeyboard,
   useKeyboard,
-} from "asheeui/keyboard";
+} from "asheeui";
 
 // import { useState } from "react";
 

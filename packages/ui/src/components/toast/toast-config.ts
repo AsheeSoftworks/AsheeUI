@@ -1,8 +1,7 @@
 import type { ReactNode } from "react";
 import { registerComponentDefaults } from "../../libs/registry";
-import type { AnimationProp } from "../../motion/types";
+import type { Radius } from "../../shared/radius";
 import type { Variant } from "../../shared/variant";
-import type { Radius } from "../../theme/radius/radius-config";
 
 export type ToastType = "success" | "error" | "info" | "warning" | "default";
 export type ToastPlacement =
@@ -12,7 +11,7 @@ export type ToastPlacement =
   | "bottom-left"
   | "top-center"
   | "bottom-center";
-export type ToastSizeKey = "sm" | "md" | "lg";
+export type ToastSizeKey = "sm" | "md" | "lg" | "xl";
 
 export interface ToastItemData {
   id: string;
@@ -29,8 +28,7 @@ export interface ToastConfig {
   size?: ToastSizeKey;
   placement?: ToastPlacement;
   variant?: Variant;
-  radius?: keyof Radius;
-  animation?: AnimationProp;
+  radius?: Radius;
   defaultTimeout?: number;
   maxToasts?: number;
   className?: string;
@@ -40,9 +38,7 @@ export interface ToastConfig {
 export const defaultToastConfig: ToastConfig = {
   size: "md",
   placement: "top-right",
-  variant: "solid",
-  radius: "md",
-  animation: "slide",
+  variant: "ghost",
   defaultTimeout: 3500,
   maxToasts: 5,
 };
@@ -51,10 +47,11 @@ export const FALLBACK_TOAST_CONFIG = {
   size: "md" as ToastSizeKey,
   placement: "top-right" as ToastPlacement,
   variant: "solid" as Variant,
-  radius: "md" as keyof Radius,
-  animation: "slide" as AnimationProp,
+  radius: "md" as Radius,
   defaultTimeout: 3500,
   maxToasts: 5,
+  className: "",
+  itemClassName: "",
 } as const;
 
 declare module "../../libs/registry" {

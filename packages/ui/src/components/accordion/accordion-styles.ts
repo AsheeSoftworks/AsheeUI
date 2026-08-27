@@ -12,15 +12,6 @@ export const ACCORDION_CONTENT_SIZE_CLASS: Record<AccordionSizeKey, string> = {
   lg: "px-6 pb-4 text-base",
 };
 
-export const ACCORDION_RADIUS_CLASS: Record<string, string> = {
-  none: "rounded-none",
-  sm: "rounded-sm",
-  md: "rounded-md",
-  lg: "rounded-lg",
-  xl: "rounded-xl",
-  full: "rounded-full",
-};
-
 export const ACCORDION_VARIANT_CONTAINER_CLASS: Record<
   AccordionVariant,
   string

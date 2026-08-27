@@ -1,3 +1,5 @@
+import { registerComponentDefaults } from "../../libs/registry";
+
 /**
  * Structural (non-color) scrollbar theming.
  * Thumb/track colors already live in ColorVariant (scrollbarThumb/scrollbarTrack)
@@ -26,3 +28,19 @@ export interface ScrollbarConfig {
    */
   fallbackWidth: "auto" | "thin" | "none";
 }
+
+export const defaultScrollbarConfig: ScrollbarConfig = {
+  width: "10px",
+  radius: "9999px",
+  thumbBorder: "3px",
+  gutter: "stable",
+  fallbackWidth: "thin",
+};
+
+declare module "../../libs/registry" {
+  interface ComponentTypeConfigRegistry {
+    scrollbar: ScrollbarConfig;
+  }
+}
+
+registerComponentDefaults("scrollbar", defaultScrollbarConfig);

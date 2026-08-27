@@ -13,7 +13,6 @@ import {
   useInteractions,
   useRole,
 } from "@floating-ui/react";
-import { AnimatePresence, type HTMLMotionProps, motion } from "framer-motion";
 import {
   type CSSProperties,
   forwardRef,
@@ -28,14 +27,12 @@ import { ChevronRightIcon } from "../../icons/ChevronRightIcon";
 import { ClearIcon } from "../../icons/ClearIcon";
 import { ClockIcon } from "../../icons/ClockIcon";
 import { useAsheeConfig } from "../../libs/context";
-import { resolveAnimation } from "../../motion/resolve-animation";
-import type { AnimationProp } from "../../motion/types";
+import { RADIUS_CLASS, type Radius } from "../../shared/radius";
 import {
   type Color,
   resolveVariantClass,
   type Variant,
 } from "../../shared/variant";
-import type { Radius } from "../../theme/radius/radius-config";
 import {
   resolveCascade,
   resolveClassKey,
@@ -55,7 +52,6 @@ import {
 import {
   CALENDAR_COLOR_CLASSES,
   DATE_PICKER_CELL_SIZE_CLASS,
-  DATE_PICKER_RADIUS_CLASS,
   DATE_PICKER_SIZE_CLASS,
   DATE_PICKER_STATUS_BORDER_CLASS,
 } from "./date-picker-styles";
@@ -443,10 +439,9 @@ export interface DatePickerProps {
   onChange?: (date: Date | null) => void;
   mode?: PickerMode;
   size?: FieldSizeKey;
-  radius?: keyof Radius;
+  radius?: Radius;
   variant?: Variant;
   color?: Color;
-  animation?: AnimationProp;
   status?: FieldStatus;
   label?: string;
   labelAlign?: LabelAlign;
@@ -475,7 +470,6 @@ export const DatePicker = forwardRef<HTMLDivElement, DatePickerProps>(
       radius,
       variant,
       color,
-      animation,
       status,
       label,
       labelAlign,
@@ -532,21 +526,23 @@ export const DatePicker = forwardRef<HTMLDivElement, DatePickerProps>(
     const resolvedVariant = resolveCascade<Variant>(
       variant,
       sectionConfig?.variant,
-      config.theme.defaultVariant,
+      config.defaultVariant,
       FALLBACK_DATE_PICKER_CONFIG.variant,
     );
 
     const resolvedColor = resolveCascade<Color>(
       color,
       sectionConfig?.color,
-      config.theme.defaultColor,
+      config.defaultColor,
       FALLBACK_DATE_PICKER_CONFIG.color,
     );
 
     const resolvedRadiusKey = resolveRadiusKey(
       typeof radius === "string" ? radius : undefined,
-      typeof sectionConfig?.radius === "string" ? sectionConfig : undefined,
-      config.theme.radius?.default,
+      typeof sectionConfig?.radius === "string"
+        ? sectionConfig.radius
+        : undefined,
+      config.defaultRadius,
       FALLBACK_DATE_PICKER_CONFIG.radius,
     );
 
@@ -562,8 +558,6 @@ export const DatePicker = forwardRef<HTMLDivElement, DatePickerProps>(
     const resolvedMode =
       mode ?? sectionConfig?.mode ?? FALLBACK_DATE_PICKER_CONFIG.mode;
 
-    const motionProps = resolveAnimation(animation ?? sectionConfig?.animation);
-
     // ─── 2. Class Maps ────────────────────────────────────────────────────────
 
     const variantClass = resolveVariantClass(resolvedVariant, resolvedColor);
@@ -576,7 +570,7 @@ export const DatePicker = forwardRef<HTMLDivElement, DatePickerProps>(
         ? "rounded-none"
         : resolveClassKey(
             resolvedRadiusKey,
-            DATE_PICKER_RADIUS_CLASS,
+            RADIUS_CLASS,
             FALLBACK_DATE_PICKER_CONFIG.radius,
           );
 
@@ -665,37 +659,30 @@ export const DatePicker = forwardRef<HTMLDivElement, DatePickerProps>(
             </div>
           </div>
 
-          {/* Floating Animated Popover */}
-          <AnimatePresence>
-            {isOpen && (
-              <FloatingFocusManager context={context} modal={false}>
-                <div
-                  ref={refs.setFloating}
-                  style={{ ...floatingStyles, zIndex: 99999 }}
-                  className="outline-none"
-                  {...getFloatingProps()}>
-                  <motion.div
-                    initial={{ opacity: 0, y: -6, scale: 0.96 }}
-                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                    exit={{ opacity: 0, y: -6, scale: 0.96 }}
-                    transition={{ duration: 0.15, ease: "easeOut" }}
-                    {...(motionProps as HTMLMotionProps<"div">)}>
-                    <Calendar
-                      selected={selected}
-                      mode={resolvedMode}
-                      isClearable={isClearable}
-                      resolvedSizeKey={resolvedSizeKey}
-                      onSelect={handleSelect}
-                      onClose={handleClose}
-                      disableFuture={disableFuture}
-                      resolvedColor={resolvedColor}
-                      radiusClass={radiusClass}
-                    />
-                  </motion.div>
+          {/* Popover */}
+          {isOpen && (
+            <FloatingFocusManager context={context} modal={false}>
+              <div
+                ref={refs.setFloating}
+                style={{ ...floatingStyles, zIndex: 99999 }}
+                className="outline-none"
+                {...getFloatingProps()}>
+                <div className="animate-in fade-in-0 zoom-in-95 duration-150 ease-out">
+                  <Calendar
+                    selected={selected}
+                    mode={resolvedMode}
+                    isClearable={isClearable}
+                    resolvedSizeKey={resolvedSizeKey}
+                    onSelect={handleSelect}
+                    onClose={handleClose}
+                    disableFuture={disableFuture}
+                    resolvedColor={resolvedColor}
+                    radiusClass={radiusClass}
+                  />
                 </div>
-              </FloatingFocusManager>
-            )}
-          </AnimatePresence>
+              </div>
+            </FloatingFocusManager>
+          )}
         </div>
       </FieldShell>
     );

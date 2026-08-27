@@ -1,13 +1,12 @@
 "use client";
 
-import type { Radius } from "asheeui";
 import {
+  type Radius,
   Carousel,
   type CarouselItem,
-  type CarouselSizeKey,
+  type Size,
   type CarouselVariant,
-} from "asheeui/carousel";
-import { Text } from "asheeui/text";
+} from "asheeui";
 import { useState } from "react";
 
 // ─── Mock Data ────────────────────────────────────────────────────────────────
@@ -142,8 +141,8 @@ const PRODUCT_ITEMS: CarouselItem[] = [
 export default function CarouselDemoPage() {
   // Playground State Knobs
   const [variant, setVariant] = useState<CarouselVariant>("default");
-  const [size, setSize] = useState<CarouselSizeKey>("md");
-  const [radius, setRadius] = useState<keyof Radius>("lg");
+  const [size, setSize] = useState<Size>("md");
+  const [radius, setRadius] = useState<Radius>("lg");
   const [autoPlay, setAutoPlay] = useState<boolean>(true);
   const [autoPlayInterval, setAutoPlayInterval] = useState<number>(4000);
   const [loop, setLoop] = useState<boolean>(true);
@@ -203,11 +202,9 @@ export default function CarouselDemoPage() {
 
             {/* Variant */}
             <div className="space-y-1.5">
-              <Text
-                as="label"
-                className="text-xs font-medium text-muted-foreground">
+              <p className="text-xs font-medium text-muted-foreground">
                 Variant
-              </Text>
+              </p>
               <select
                 value={variant}
                 onChange={(e) => setVariant(e.target.value as CarouselVariant)}
@@ -221,13 +218,9 @@ export default function CarouselDemoPage() {
 
             {/* Size */}
             <div className="space-y-1.5">
-              <Text
-                as="label"
-                className="text-xs font-medium text-muted-foreground">
-                Size
-              </Text>
+              <p className="text-xs font-medium text-muted-foreground">Size</p>
               <div className="grid grid-cols-3 gap-1 bg-muted p-1 rounded-md">
-                {(["sm", "md", "lg"] as CarouselSizeKey[]).map((s) => (
+                {(["sm", "md", "lg"] as Size[]).map((s) => (
                   <button
                     type="button"
                     key={s}
@@ -248,14 +241,12 @@ export default function CarouselDemoPage() {
 
             {/* Radius */}
             <div className="space-y-1.5">
-              <Text
-                as="label"
-                className="text-xs font-medium text-muted-foreground">
+              <p className="text-xs font-medium text-muted-foreground">
                 Radius Key
-              </Text>
+              </p>
               <select
                 value={radius as string}
-                onChange={(e) => setRadius(e.target.value as keyof Radius)}
+                onChange={(e) => setRadius(e.target.value as Radius)}
                 className="w-full bg-background border border-border rounded-md px-3 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-primary">
                 <option value="none">none</option>
                 <option value="sm">sm</option>
@@ -311,8 +302,7 @@ export default function CarouselDemoPage() {
                   setter: setDisableAnimation,
                 },
               ].map((toggle) => (
-                <Text
-                  as="label"
+                <p
                   key={toggle.label}
                   className="flex items-center justify-between cursor-pointer py-1">
                   <span className="text-xs text-muted-foreground">
@@ -324,7 +314,7 @@ export default function CarouselDemoPage() {
                     onChange={(e) => toggle.setter(e.target.checked)}
                     className="rounded border-border accent-primary focus:ring-primary h-4 w-4"
                   />
-                </Text>
+                </p>
               ))}
             </div>
           </div>

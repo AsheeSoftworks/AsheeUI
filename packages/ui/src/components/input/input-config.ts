@@ -5,7 +5,6 @@ export interface InputConfig extends FieldConfig {}
 export const defaultInputConfig: InputConfig = {
   size: "md",
   labelAlign: "left",
-  animation: "none",
 };
 
 declare module "../../libs/registry" {

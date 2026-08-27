@@ -5,7 +5,7 @@ import type {
   ExternalColorConfig,
   ExternalColorVariant,
   ThemeName,
-} from "../theme/color/color-config";
+} from "../theme/color";
 
 export function resolveColorConfig(
   defaults: DefaultColorConfig,

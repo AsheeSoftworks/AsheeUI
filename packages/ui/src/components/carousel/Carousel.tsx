@@ -1,21 +1,23 @@
 "use client";
 
 import { cn } from "@asheeui/utils";
-import { AnimatePresence, motion, type PanInfo } from "framer-motion";
 import {
   forwardRef,
   type HTMLAttributes,
+  type PointerEvent,
   type ReactNode,
   useCallback,
   useEffect,
   useId,
   useMemo,
+  useRef,
   useState,
 } from "react";
 import { ChevronLeftIcon } from "../../icons/ChevronLeftIcon";
 import { ChevronRightIcon } from "../../icons/ChevronRightIcon";
 import { useAsheeConfig } from "../../libs/context";
-import type { Radius } from "../../theme/radius/radius-config";
+import { RADIUS_CLASS, type Radius } from "../../shared/radius";
+import type { Size } from "../../shared/size";
 import {
   resolveCascade,
   resolveClassKey,
@@ -24,47 +26,23 @@ import {
 import {
   type CarouselConfig,
   type CarouselItem,
-  type CarouselSizeKey,
   type CarouselVariant,
   FALLBACK_CAROUSEL_CONFIG,
 } from "./carousel-config";
 import {
   CAROUSEL_HEIGHT_CLASS,
   CAROUSEL_PADDING_CLASS,
-  CAROUSEL_RADIUS_CLASS,
   CAROUSEL_VARIANT_CLASS,
 } from "./carousel-styles";
 
-const slideVariants = {
-  enter: (direction: number) => ({
-    x: direction > 0 ? "100%" : "-100%",
-    opacity: 0,
-  }),
-  center: {
-    zIndex: 1,
-    x: 0,
-    opacity: 1,
-  },
-  exit: (direction: number) => ({
-    zIndex: 0,
-    x: direction < 0 ? "100%" : "-100%",
-    opacity: 0,
-  }),
-};
-
-const SWIPE_THRESHOLD = 10000;
-const swipePower = (offset: number, velocity: number) => {
-  return Math.abs(offset) * velocity;
-};
-
-// ─── Props Interface ──────────────────────────────────────────────────────────
+const SWIPE_THRESHOLD = 50;
 
 export interface CarouselProps
   extends Omit<HTMLAttributes<HTMLDivElement>, "onChange"> {
   items?: CarouselItem[];
   variant?: CarouselVariant;
-  size?: CarouselSizeKey;
-  radius?: keyof Radius;
+  size?: Size;
+  radius?: Radius;
   autoPlay?: boolean;
   autoPlayInterval?: number;
   loop?: boolean;
@@ -87,8 +65,6 @@ export interface CarouselProps
   controlClassName?: string;
   indicatorClassName?: string;
 }
-
-// ─── Component Implementation ─────────────────────────────────────────────────
 
 export const Carousel = forwardRef<HTMLDivElement, CarouselProps>(
   (
@@ -128,9 +104,7 @@ export const Carousel = forwardRef<HTMLDivElement, CarouselProps>(
     const generatedId = useId();
     const carouselId = id ?? generatedId;
 
-    // ─── 1. Token Resolvers (4-Tier Cascade) ──────────────────────────────────
-
-    const resolvedSizeKey = resolveCascade<CarouselSizeKey>(
+    const resolvedSizeKey = resolveCascade<Size>(
       size,
       sectionConfig?.size,
       undefined,
@@ -140,14 +114,14 @@ export const Carousel = forwardRef<HTMLDivElement, CarouselProps>(
     const resolvedVariant = resolveCascade<CarouselVariant>(
       variant,
       sectionConfig?.variant,
-      config.theme.defaultVariant as CarouselVariant | undefined,
+      config.defaultVariant as CarouselVariant | undefined,
       FALLBACK_CAROUSEL_CONFIG.variant,
     );
 
     const resolvedRadiusKey = resolveRadiusKey(
-      typeof radius === "string" ? radius : undefined,
-      typeof sectionConfig?.radius === "string" ? sectionConfig : undefined,
-      config.theme.radius?.default,
+      radius,
+      sectionConfig?.radius,
+      config.defaultRadius as Radius,
       FALLBACK_CAROUSEL_CONFIG.radius,
     );
 
@@ -193,8 +167,6 @@ export const Carousel = forwardRef<HTMLDivElement, CarouselProps>(
       FALLBACK_CAROUSEL_CONFIG.pauseOnHover,
     );
 
-    // ─── 2. Class Maps ────────────────────────────────────────────────────────
-
     const heightClass = resolveClassKey(
       resolvedSizeKey,
       CAROUSEL_HEIGHT_CLASS,
@@ -208,15 +180,14 @@ export const Carousel = forwardRef<HTMLDivElement, CarouselProps>(
     );
 
     const radiusClass = resolveClassKey(
-      resolvedRadiusKey,
-      CAROUSEL_RADIUS_CLASS,
+      resolvedRadiusKey as Radius,
+      RADIUS_CLASS,
       FALLBACK_CAROUSEL_CONFIG.radius,
     );
 
     const variantClass =
       CAROUSEL_VARIANT_CLASS[resolvedVariant] ?? CAROUSEL_VARIANT_CLASS.default;
 
-    // Item normalizer (supports items prop or children fallback)
     const slides: CarouselItem[] = useMemo(() => {
       if (items.length > 0) return items;
       if (children) {
@@ -230,13 +201,14 @@ export const Carousel = forwardRef<HTMLDivElement, CarouselProps>(
     }, [items, children]);
 
     const isControlled = controlledIndex !== undefined;
-    const [[currentIndex, direction], setPage] = useState<[number, number]>([
-      defaultIndex,
-      0,
-    ]);
-
+    const [currentIndex, setCurrentIndex] = useState(defaultIndex);
     const activeIndex = isControlled ? controlledIndex : currentIndex;
+
     const [isHovered, setIsHovered] = useState(false);
+    const [isDragging, setIsDragging] = useState(false);
+    const [dragOffset, setDragOffset] = useState(0);
+
+    const startXRef = useRef<number>(0);
 
     const paginate = useCallback(
       (newDirection: number) => {
@@ -253,7 +225,7 @@ export const Carousel = forwardRef<HTMLDivElement, CarouselProps>(
         if (nextIdx === activeIndex) return;
 
         if (!isControlled) {
-          setPage([nextIdx, newDirection]);
+          setCurrentIndex(nextIdx);
         }
         onIndexChange?.(nextIdx);
       },
@@ -268,20 +240,19 @@ export const Carousel = forwardRef<HTMLDivElement, CarouselProps>(
           targetIndex >= slides.length
         )
           return;
-        const newDirection = targetIndex > activeIndex ? 1 : -1;
         if (!isControlled) {
-          setPage([targetIndex, newDirection]);
+          setCurrentIndex(targetIndex);
         }
         onIndexChange?.(targetIndex);
       },
       [activeIndex, slides.length, isControlled, onIndexChange],
     );
 
-    // Auto Play Timer
     useEffect(() => {
       if (
         !resolvedAutoPlay ||
         (resolvedPauseOnHover && isHovered) ||
+        isDragging ||
         slides.length <= 1
       )
         return;
@@ -296,28 +267,40 @@ export const Carousel = forwardRef<HTMLDivElement, CarouselProps>(
       resolvedAutoPlayInterval,
       resolvedPauseOnHover,
       isHovered,
+      isDragging,
       slides.length,
       paginate,
     ]);
 
-    // Drag / Swipe handling
-    const handleDragEnd = (
-      _e: MouseEvent | TouchEvent | PointerEvent,
-      { offset, velocity }: PanInfo,
-    ) => {
-      const swipe = swipePower(offset.x, velocity.x);
-      if (swipe < -SWIPE_THRESHOLD) {
+    const handlePointerDown = (e: PointerEvent<HTMLDivElement>) => {
+      if ((e.target as HTMLElement).closest("button")) return;
+      setIsDragging(true);
+      startXRef.current = e.clientX;
+      setDragOffset(0);
+      (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
+    };
+
+    const handlePointerMove = (e: PointerEvent<HTMLDivElement>) => {
+      if (!isDragging) return;
+      const diff = e.clientX - startXRef.current;
+      setDragOffset(diff);
+    };
+
+    const handlePointerUp = () => {
+      if (!isDragging) return;
+      setIsDragging(false);
+      if (dragOffset < -SWIPE_THRESHOLD) {
         paginate(1);
-      } else if (swipe > SWIPE_THRESHOLD) {
+      } else if (dragOffset > SWIPE_THRESHOLD) {
         paginate(-1);
       }
+      setDragOffset(0);
     };
 
     const isPrevDisabled = !resolvedLoop && activeIndex === 0;
     const isNextDisabled = !resolvedLoop && activeIndex === slides.length - 1;
 
     return (
-      // biome-ignore lint/a11y/noStaticElementInteractions: Required for stoping the slide from switch when hovering
       <div
         ref={ref}
         id={carouselId}
@@ -335,37 +318,36 @@ export const Carousel = forwardRef<HTMLDivElement, CarouselProps>(
         )}
         style={style}
         {...props}>
-        {/* Slides Track */}
-        <div className="relative w-full h-full overflow-hidden flex-1">
-          <AnimatePresence initial={false} custom={direction}>
-            {slides.length > 0 && (
-              <motion.div
-                key={slides[activeIndex]?.id || activeIndex}
-                custom={direction}
-                variants={disableAnimation ? undefined : slideVariants}
-                initial="enter"
-                animate="center"
-                exit="exit"
-                transition={{
-                  x: { type: "spring", stiffness: 300, damping: 30 },
-                  opacity: { duration: 0.2 },
-                }}
-                drag="x"
-                dragConstraints={{ left: 0, right: 0 }}
-                dragElastic={1}
-                onDragEnd={handleDragEnd}
+        <div
+          onPointerDown={handlePointerDown}
+          onPointerMove={handlePointerMove}
+          onPointerUp={handlePointerUp}
+          onPointerCancel={handlePointerUp}
+          className="relative w-full h-full overflow-hidden flex-1 touch-pan-y cursor-grab active:cursor-grabbing">
+          <div
+            className={cn(
+              "flex w-full h-full",
+              !isDragging &&
+                !disableAnimation &&
+                "transition-transform duration-300 ease-out",
+            )}
+            style={{
+              transform: `translate3d(calc(${-activeIndex * 100}% + ${dragOffset}px), 0, 0)`,
+            }}>
+            {slides.map((slide, idx) => (
+              <div
+                key={slide.id || idx}
                 className={cn(
-                  "absolute inset-0 w-full h-full flex items-center justify-center",
+                  "w-full h-full shrink-0 flex items-center justify-center overflow-hidden",
                   paddingClass,
                   itemClassName,
                 )}>
-                {slides[activeIndex]?.content}
-              </motion.div>
-            )}
-          </AnimatePresence>
+                {slide.content}
+              </div>
+            ))}
+          </div>
         </div>
 
-        {/* Navigation Controls */}
         {resolvedShowControls && slides.length > 1 && (
           <>
             {renderPrevControl ? (
@@ -408,7 +390,6 @@ export const Carousel = forwardRef<HTMLDivElement, CarouselProps>(
           </>
         )}
 
-        {/* Slide Indicators / Dots */}
         {resolvedShowIndicators && slides.length > 1 && (
           <div className="absolute bottom-3 inset-x-0 z-20 flex justify-center items-center gap-1.5 pointer-events-none">
             <div className="flex items-center gap-1.5 p-1.5 rounded-full bg-background/40 backdrop-blur-md pointer-events-auto border border-white/10">

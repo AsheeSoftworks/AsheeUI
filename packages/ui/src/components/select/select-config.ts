@@ -1,8 +1,12 @@
 import { registerComponentDefaults } from "../../libs/registry";
+import type { Radius } from "../../shared/radius";
+import type { Size } from "../../shared/size";
 import type { Color, Variant } from "../../shared/variant";
-import type { Radius } from "../../theme/radius/radius-config";
-import type { ButtonSizeKey } from "../button/button-config";
-import type { FieldConfig, FieldSizeKey } from "../field/field-config";
+import {
+  FALLBACK_FIELD_CONFIG,
+  type FieldConfig,
+  type FieldSizeKey,
+} from "../field/field-config";
 
 export type SelectSizeKey = FieldSizeKey;
 
@@ -15,31 +19,35 @@ export interface SelectOption {
 
 export interface SelectConfig extends Omit<FieldConfig, "size"> {
   size?: SelectSizeKey;
-  radius?: keyof Radius;
+  radius?: Radius;
   className?: string;
 
   // Menu / Popover Overrides
   menuVariant?: Variant;
   menuColor?: Color;
-  menuRadius?: keyof Radius;
-  menuSize?: ButtonSizeKey;
+  menuRadius?: Radius;
+  menuSize?: Size;
 }
 
 export const defaultSelectConfig: SelectConfig = {
   size: "md",
   labelAlign: "left",
-  animation: "none",
 };
 
-export const FALLBACK_SELECT_CONFIG = {
+export const FALLBACK_SELECT_CONFIG: Required<SelectConfig> = {
+  ...FALLBACK_FIELD_CONFIG,
   size: "md",
   radius: "md",
+  className: "",
   variant: "bordered",
   color: "primary",
   status: "default",
   labelAlign: "left",
-  menuSize: "sm",
-} as const;
+  menuVariant: "solid",
+  menuColor: "default",
+  menuRadius: "md",
+  menuSize: "lg",
+};
 
 declare module "../../libs/registry" {
   interface ComponentTypeConfigRegistry {

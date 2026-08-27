@@ -1,38 +1,44 @@
 import { registerComponentDefaults } from "../../libs/registry";
-import type { AnimationProp } from "../../motion/types";
+import type { Radius } from "../../shared/radius";
+import type { Size } from "../../shared/size";
 import type { Color, Variant } from "../../shared/variant";
-import type { Radius } from "../../theme/radius/radius-config";
 
-export type FieldSizeKey = "sm" | "md" | "lg";
+export type FieldSizeKey = Size;
 export type FieldStatus = "default" | "error" | "warning" | "success";
 export type LabelAlign = "left" | "center" | "right";
-export type InputAnimationPreset = "none" | "scale" | "lift" | "bounce";
 
 export interface FieldConfig {
   size?: FieldSizeKey;
-  radius?: keyof Radius;
+  radius?: Radius;
   variant?: Variant;
   color?: Color;
-  animation?: AnimationProp<InputAnimationPreset>;
   labelAlign?: LabelAlign;
   className?: string;
   labelClassName?: string;
+  fullWidth?: boolean;
   descriptionClassName?: string;
   messageClassName?: string;
+  status?: FieldStatus;
 }
 
 export const defaultFieldConfig: FieldConfig = {
   size: "md",
   labelAlign: "left",
+  fullWidth: false,
 };
 
-export const FALLBACK_FIELD_CONFIG = {
-  size: "md",
-  radius: "md",
-  variant: "bordered",
-  color: "primary",
-  labelAlign: "left",
+export const FALLBACK_FIELD_CONFIG: Required<FieldConfig> = {
+  size: "md" as FieldSizeKey,
+  radius: "md" as Radius,
+  variant: "bordered" as Variant,
+  color: "primary" as Color,
+  labelAlign: "left" as LabelAlign,
+  fullWidth: false,
   status: "default",
+  className: "",
+  labelClassName: "",
+  descriptionClassName: "",
+  messageClassName: "",
 } as const;
 
 declare module "../../libs/registry" {

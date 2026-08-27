@@ -24,16 +24,15 @@ import {
 import { ChevronDownIcon } from "../../icons/ChevronDownIcon";
 import { CloseIcon } from "../../icons/CloseIcon";
 import { useAsheeConfig } from "../../libs/context";
-import type { AnimationProp } from "../../motion/types";
+import { RADIUS_CLASS, type Radius } from "../../shared/radius";
+import type { Size } from "../../shared/size";
 import type { Color, Variant } from "../../shared/variant";
-import type { Radius } from "../../theme/radius/radius-config";
 import {
   resolveCascade,
   resolveClassKey,
   resolveRadiusKey,
 } from "../../utils/resolve-token";
 import { Button } from "../button/Button";
-import type { ButtonSizeKey } from "../button/button-config";
 import { Chip } from "../chip/Chip";
 import { FieldShell } from "../field/FieldShell";
 import type {
@@ -51,7 +50,6 @@ import {
   MULTI_SELECT_FONT_CLASS,
   MULTI_SELECT_HEIGHT_CLASS,
   MULTI_SELECT_PADDING_CLASS,
-  MULTI_SELECT_RADIUS_CLASS,
   STATUS_BORDER_CLASS,
 } from "./multi-select-styles";
 
@@ -78,21 +76,20 @@ export interface MultiSelectProps
   // Chip Specific Overrides
   chipVariant?: Variant;
   chipColor?: Color;
-  chipRadius?: keyof Radius;
-  chipSize?: ButtonSizeKey;
+  chipRadius?: Radius;
+  chipSize?: Size;
 
   // Menu Overrides
   menuVariant?: Variant;
   menuColor?: Color;
-  menuRadius?: keyof Radius;
-  menuSize?: ButtonSizeKey;
+  menuRadius?: Radius;
+  menuSize?: Size;
 
   // Styling & Tokens
   variant?: Variant;
   color?: Color;
   size?: FieldSizeKey;
-  radius?: keyof Radius;
-  animation?: AnimationProp;
+  radius?: Radius;
   status?: FieldStatus;
   label?: string;
   labelAlign?: LabelAlign;
@@ -135,7 +132,6 @@ export const MultiSelect = forwardRef<HTMLButtonElement, MultiSelectProps>(
       color,
       size,
       radius,
-      animation,
       status,
       label,
       labelAlign,
@@ -193,21 +189,21 @@ export const MultiSelect = forwardRef<HTMLButtonElement, MultiSelectProps>(
     const resolvedVariant = resolveCascade<Variant>(
       variant,
       sectionConfig?.variant,
-      config.theme.defaultVariant,
+      config.defaultVariant,
       FALLBACK_MULTI_SELECT_CONFIG.variant,
     );
 
     const resolvedColor = resolveCascade<Color>(
       color,
       sectionConfig?.color,
-      config.theme.defaultColor as Color | undefined,
+      config.defaultColor as Color | undefined,
       FALLBACK_MULTI_SELECT_CONFIG.color,
     );
 
     const resolvedRadiusKey = resolveRadiusKey(
-      typeof radius === "string" ? radius : undefined,
-      typeof sectionConfig?.radius === "string" ? sectionConfig : undefined,
-      config.theme.radius?.default,
+      radius,
+      sectionConfig?.radius,
+      config.defaultRadius,
       FALLBACK_MULTI_SELECT_CONFIG.radius,
     );
 
@@ -226,7 +222,7 @@ export const MultiSelect = forwardRef<HTMLButtonElement, MultiSelectProps>(
       FALLBACK_MULTI_SELECT_CONFIG.color,
     );
 
-    const resolvedMenuSize = resolveCascade<ButtonSizeKey>(
+    const resolvedMenuSize = resolveCascade<Size>(
       menuSize,
       sectionConfig?.menuSize,
       undefined,
@@ -234,8 +230,8 @@ export const MultiSelect = forwardRef<HTMLButtonElement, MultiSelectProps>(
     );
 
     const resolvedMenuRadiusKey = resolveRadiusKey(
-      typeof menuRadius === "string" ? menuRadius : undefined,
-      typeof sectionConfig?.menuRadius === "string" ? sectionConfig : undefined,
+      menuRadius,
+      sectionConfig?.menuRadius,
       resolvedRadiusKey,
       FALLBACK_MULTI_SELECT_CONFIG.radius,
     );
@@ -255,7 +251,7 @@ export const MultiSelect = forwardRef<HTMLButtonElement, MultiSelectProps>(
       FALLBACK_MULTI_SELECT_CONFIG.color,
     );
 
-    const resolvedChipSize = resolveCascade<ButtonSizeKey>(
+    const resolvedChipSize = resolveCascade<Size>(
       chipSize,
       sectionConfig?.chipSize,
       undefined,
@@ -263,8 +259,8 @@ export const MultiSelect = forwardRef<HTMLButtonElement, MultiSelectProps>(
     );
 
     const resolvedChipRadiusKey = resolveRadiusKey(
-      typeof chipRadius === "string" ? chipRadius : undefined,
-      typeof sectionConfig?.chipRadius === "string" ? sectionConfig : undefined,
+      chipRadius,
+      sectionConfig?.chipRadius,
       resolvedRadiusKey,
       FALLBACK_MULTI_SELECT_CONFIG.radius,
     );
@@ -299,13 +295,13 @@ export const MultiSelect = forwardRef<HTMLButtonElement, MultiSelectProps>(
 
     const radiusClass = resolveClassKey(
       resolvedRadiusKey,
-      MULTI_SELECT_RADIUS_CLASS,
+      RADIUS_CLASS,
       FALLBACK_MULTI_SELECT_CONFIG.radius,
     );
 
     const chipRadiusClass = resolveClassKey(
       resolvedChipRadiusKey,
-      MULTI_SELECT_RADIUS_CLASS,
+      RADIUS_CLASS,
       FALLBACK_MULTI_SELECT_CONFIG.radius,
     );
 
@@ -438,10 +434,6 @@ export const MultiSelect = forwardRef<HTMLButtonElement, MultiSelectProps>(
               color={resolvedMenuColor}
               size={resolvedMenuSize}
               radius={resolvedMenuRadiusKey}
-              animation={
-                animation ??
-                (sectionConfig?.animation as AnimationProp | undefined)
-              }
             />
           </div>
 

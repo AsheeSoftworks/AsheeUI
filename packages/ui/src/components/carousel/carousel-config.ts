@@ -1,10 +1,9 @@
 import type { ReactNode } from "react";
 import { registerComponentDefaults } from "../../libs/registry";
-import type { AnimationProp } from "../../motion/types";
-import type { Radius } from "../../theme/radius/radius-config";
+import type { Radius } from "../../shared/radius";
+import type { Size } from "../../shared/size";
 
 export type CarouselVariant = "default" | "cards" | "bordered" | "ghost";
-export type CarouselSizeKey = "sm" | "md" | "lg";
 
 export interface CarouselItem {
   id?: string;
@@ -13,9 +12,8 @@ export interface CarouselItem {
 
 export interface CarouselConfig {
   variant?: CarouselVariant;
-  size?: CarouselSizeKey;
-  radius?: keyof Radius;
-  animation?: AnimationProp;
+  size?: Size;
+  radius?: Radius;
   autoPlay?: boolean;
   autoPlayInterval?: number;
   loop?: boolean;
@@ -27,7 +25,6 @@ export interface CarouselConfig {
 
 export const defaultCarouselConfig: CarouselConfig = {
   size: "md",
-  animation: "none",
   autoPlay: false,
   autoPlayInterval: 5000,
   loop: true,
@@ -35,6 +32,14 @@ export const defaultCarouselConfig: CarouselConfig = {
   showIndicators: true,
   pauseOnHover: true,
 };
+
+declare module "../../libs/registry" {
+  interface ComponentTypeConfigRegistry {
+    carousel: CarouselConfig;
+  }
+}
+
+registerComponentDefaults("carousel", defaultCarouselConfig);
 
 export const FALLBACK_CAROUSEL_CONFIG = {
   size: "md",
@@ -47,11 +52,3 @@ export const FALLBACK_CAROUSEL_CONFIG = {
   showIndicators: true,
   pauseOnHover: true,
 } as const;
-
-declare module "../../libs/registry" {
-  interface ComponentTypeConfigRegistry {
-    carousel: CarouselConfig;
-  }
-}
-
-registerComponentDefaults("carousel", defaultCarouselConfig);

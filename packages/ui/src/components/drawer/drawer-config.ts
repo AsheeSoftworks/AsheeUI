@@ -1,24 +1,15 @@
-import type { Transition, Variants } from "framer-motion";
 import { registerComponentDefaults } from "../../libs/registry";
-import type { Radius } from "../../theme/radius/radius-config";
-
-export type DrawerAnimationPreset = "slide" | "zoom" | "fade";
-
-export type DrawerAnimation =
-  | boolean
-  | DrawerAnimationPreset
-  | {
-      variants?: Variants;
-      transition?: Transition;
-    };
+import type { Radius } from "../../shared/radius";
+import type { Size } from "../../shared/size";
 
 export type DrawerPlacement = "right" | "left" | "top" | "bottom";
-export type DrawerSizeKey = "sm" | "md" | "lg" | "xl" | "full";
+export type DrawerSize = Size | "full";
+export type DrawerAnimation = "slide" | "zoom" | "fade" | boolean;
 
 export interface DrawerConfig {
-  size?: DrawerSizeKey;
+  size?: DrawerSize;
   placement?: DrawerPlacement;
-  radius?: keyof Radius;
+  radius?: Radius;
   animation?: DrawerAnimation;
   closeOnOverlayClick?: boolean;
   closeOnEsc?: boolean;
@@ -30,18 +21,22 @@ export interface DrawerConfig {
 export const defaultDrawerConfig: DrawerConfig = {
   size: "md",
   placement: "right",
+  radius: "none",
   animation: "slide",
   closeOnOverlayClick: true,
   closeOnEsc: true,
 };
 
-export const FALLBACK_DRAWER_CONFIG = {
+export const FALLBACK_DRAWER_CONFIG: Required<DrawerConfig> = {
   size: "md",
   placement: "right",
   radius: "none",
   animation: "slide",
   closeOnOverlayClick: true,
   closeOnEsc: true,
+  className: "",
+  overlayClassName: "",
+  contentClassName: "",
 } as const;
 
 declare module "../../libs/registry" {

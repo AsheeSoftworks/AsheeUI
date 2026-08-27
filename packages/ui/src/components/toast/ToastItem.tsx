@@ -1,20 +1,18 @@
 "use client";
 
 import { cn } from "@asheeui/utils";
-import { type HTMLMotionProps, motion } from "framer-motion";
-import { useMemo } from "react";
 import { CheckIcon } from "../../icons/CheckIcon";
 import { CloseIcon } from "../../icons/CloseIcon";
 import { ErrorIcon } from "../../icons/ErrorIcon";
 import { InfoIcon } from "../../icons/InfoIcon";
 import { WarningIcon } from "../../icons/WarningIcon";
 import { useAsheeConfig } from "../../libs/context";
+import { RADIUS_CLASS, type Radius } from "../../shared/radius";
 import {
   type Color,
   resolveVariantClass,
   type Variant,
 } from "../../shared/variant";
-import type { Radius } from "../../theme/radius/radius-config";
 import {
   resolveCascade,
   resolveClassKey,
@@ -28,11 +26,10 @@ import {
   type ToastSizeKey,
   type ToastType,
 } from "./toast-config";
-import { getToastMotionVariants } from "./toast-motion";
 import {
+  TOAST_ANIMATION_CLASS,
   TOAST_FONT_CLASS,
   TOAST_PADDING_CLASS,
-  TOAST_RADIUS_CLASS,
   TOAST_TITLE_FONT_CLASS,
   TOAST_WIDTH_CLASS,
 } from "./toast-styles";
@@ -85,7 +82,7 @@ export interface ToastItemProps extends ToastItemData {
   size?: ToastSizeKey;
   variant?: Variant;
   color?: Color;
-  radius?: keyof Radius;
+  radius?: Radius;
   className?: string;
 }
 
@@ -130,14 +127,14 @@ export function ToastItem({
   const resolvedVariant = resolveCascade<Variant>(
     variant,
     sectionConfig?.variant,
-    config.theme.defaultVariant,
+    config.defaultVariant as Variant | undefined,
     FALLBACK_TOAST_CONFIG.variant,
   );
 
   const resolvedRadiusKey = resolveRadiusKey(
     radius,
-    sectionConfig,
-    config.theme.radius?.default,
+    sectionConfig?.radius,
+    config.defaultRadius as Radius,
     FALLBACK_TOAST_CONFIG.radius,
   );
 
@@ -172,27 +169,26 @@ export function ToastItem({
 
   const radiusClass = resolveClassKey(
     resolvedRadiusKey,
-    TOAST_RADIUS_CLASS,
+    RADIUS_CLASS,
     FALLBACK_TOAST_CONFIG.radius,
   );
 
-  const motionVariants = useMemo(
-    () => getToastMotionVariants(resolvedPlacement),
-    [resolvedPlacement],
+  const animationClass = resolveClassKey(
+    resolvedPlacement,
+    TOAST_ANIMATION_CLASS,
+    FALLBACK_TOAST_CONFIG.placement,
   );
 
   return (
-    <motion.div
-      layout
-      {...(motionVariants as HTMLMotionProps<"div">)}
-      transition={{ type: "spring", stiffness: 400, damping: 30 }}
+    <div
       onMouseEnter={pause}
       onMouseLeave={resume}
       className={cn(
-        "pointer-events-auto relative flex gap-3 items-start shadow-lg border backdrop-blur-md select-none overflow-hidden transition-colors",
+        "pointer-events-auto relative flex gap-3 items-start shadow-lg border backdrop-blur-md select-none overflow-hidden transition-all duration-200 active:scale-[0.99]",
         widthClass,
         paddingClass,
         radiusClass,
+        animationClass,
         resolveVariantClass(resolvedVariant, resolvedColor),
         sectionConfig?.itemClassName,
         className,
@@ -233,7 +229,7 @@ export function ToastItem({
           <CloseIcon className="w-4 h-4" />
         </button>
       )}
-    </motion.div>
+    </div>
   );
 }
 

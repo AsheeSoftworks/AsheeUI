@@ -1,13 +1,7 @@
 "use client";
 
 import { cn } from "@asheeui/utils";
-import {
-  forwardRef,
-  isValidElement,
-  type ReactNode,
-  useId,
-  useMemo,
-} from "react";
+import { forwardRef, isValidElement, type ReactNode, useMemo } from "react";
 import { useAsheeConfig } from "../../libs/context";
 import { resolveCascade } from "../../utils/resolve-token";
 import {
@@ -17,15 +11,14 @@ import {
   type MarqueeDirection,
   type MarqueeSpeedPreset,
 } from "./marquee-config";
-import { resolveMarqueeMotion } from "./marquee-motion";
 import {
   MARQUEE_FADE_END_CLASS,
   MARQUEE_FADE_START_CLASS,
+  MARQUEE_SPEED_PRESETS,
 } from "./marquee-styles";
 
 export interface MarqueeProps
   extends Omit<React.HTMLAttributes<HTMLDivElement>, "children"> {
-  /** Items to loop — each is rendered as one tile in the track. */
   children: ReactNode[];
   axis?: MarqueeAxis;
   direction?: MarqueeDirection;
@@ -57,7 +50,7 @@ export const Marquee = forwardRef<HTMLDivElement, MarqueeProps>(
       | MarqueeConfig
       | undefined;
 
-    // ─── 1. Token Resolvers (4-Tier Cascade) ──────────────────────────────────
+    // ─── 1. Token Resolvers ──────────────────────────────────────────────────
 
     const resolvedAxis = resolveCascade<MarqueeAxis>(
       axis,
@@ -101,15 +94,15 @@ export const Marquee = forwardRef<HTMLDivElement, MarqueeProps>(
       FALLBACK_MARQUEE_CONFIG.fadeEdges,
     );
 
-    // ─── 2. Motion & Keyframe Resolution ─────────────────────────────────────
+    // ─── 2. Speed & Track Setup ──────────────────────────────────────────────
 
-    const motionConfig = resolveMarqueeMotion(resolvedSpeed);
-    const animationName = useId().replace(/[:]/g, "");
+    const durationSeconds =
+      typeof resolvedSpeed === "number"
+        ? resolvedSpeed
+        : (MARQUEE_SPEED_PRESETS[resolvedSpeed] ??
+          MARQUEE_SPEED_PRESETS.normal);
+
     const isVertical = resolvedAxis === "y";
-
-    // forward: scrolls up/left (0% -> -50%). reverse: scrolls down/right.
-    const fromPct = resolvedDirection === "forward" ? "0%" : "-50%";
-    const toPct = resolvedDirection === "forward" ? "-50%" : "0%";
 
     const renderedSets = useMemo(
       () =>
@@ -123,7 +116,9 @@ export const Marquee = forwardRef<HTMLDivElement, MarqueeProps>(
                 "flex shrink-0",
                 isVertical ? "flex-col" : "flex-row",
               )}
-              style={{ gap: resolvedGap }}
+              style={{
+                gap: resolvedGap,
+              }}
               aria-hidden={setIndex === 1}>
               {set.map((item, itemIndex) => {
                 const itemKey =
@@ -149,41 +144,37 @@ export const Marquee = forwardRef<HTMLDivElement, MarqueeProps>(
         className={cn(
           "group relative overflow-hidden",
           isVertical ? "h-full" : "w-full",
-          sectionConfig?.className,
           className,
         )}
         {...props}>
-        {!motionConfig.isDisabled && (
-          <style>
-            {`
-              @keyframes ${animationName} {
-                from { transform: translate${isVertical ? "Y" : "X"}(${fromPct}); }
-                to { transform: translate${isVertical ? "Y" : "X"}(${toPct}); }
-              }
-            `}
-          </style>
-        )}
+        <style>{`
+          @keyframes marquee-x {
+            from { transform: translateX(0%); }
+            to { transform: translateX(-50%); }
+          }
+          @keyframes marquee-y {
+            from { transform: translateY(0%); }
+            to { transform: translateY(-50%); }
+          }
+        `}</style>
 
         <div
-          className={cn("flex", isVertical ? "flex-col" : "flex-row w-max")}
+          className={cn(
+            "flex",
+            isVertical ? "flex-col" : "flex-row w-max",
+            resolvedPauseOnHover && "group-hover:[animation-play-state:paused]",
+          )}
           style={{
             gap: resolvedGap,
-            animation: motionConfig.isDisabled
-              ? undefined
-              : `${animationName} ${motionConfig.durationSeconds}s linear infinite`,
+            animationName: isVertical ? "marquee-y" : "marquee-x",
+            animationDuration: `${durationSeconds}s`,
+            animationTimingFunction: "linear",
+            animationIterationCount: "infinite",
+            animationDirection:
+              resolvedDirection === "reverse" ? "reverse" : "normal",
           }}>
           {renderedSets}
         </div>
-
-        {resolvedPauseOnHover && !motionConfig.isDisabled && (
-          <style>
-            {`
-              .group:hover [style*="${animationName}"] {
-                animation-play-state: paused;
-              }
-            `}
-          </style>
-        )}
 
         {resolvedFadeEdges && (
           <>

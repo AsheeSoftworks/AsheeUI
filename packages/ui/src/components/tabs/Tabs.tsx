@@ -1,7 +1,6 @@
 "use client";
 
 import { cn } from "@asheeui/utils";
-import { AnimatePresence, type HTMLMotionProps, motion } from "framer-motion";
 import {
   forwardRef,
   useCallback,
@@ -11,10 +10,8 @@ import {
   useState,
 } from "react";
 import { useAsheeConfig } from "../../libs/context";
-import { resolveAnimation } from "../../motion/resolve-animation";
-import type { AnimationProp } from "../../motion/types";
+import { RADIUS_CLASS, type Radius } from "../../shared/radius";
 import type { Color, Variant } from "../../shared/variant";
-import type { Radius } from "../../theme/radius/radius-config";
 import {
   resolveCascade,
   resolveClassKey,
@@ -32,7 +29,6 @@ import {
   TABS_FONT_CLASS,
   TABS_HEIGHT_CLASS,
   TABS_PADDING_X_CLASS,
-  TABS_RADIUS_CLASS,
 } from "./tabs-styles";
 
 // ─── Props Interface ──────────────────────────────────────────────────────────
@@ -71,12 +67,12 @@ export interface TabsProps
   /**
    * Border radius for the tablist container.
    */
-  radius?: keyof Radius;
+  radius?: Radius;
 
   /**
    * Border radius for only the active tab button.
    */
-  activeRadius?: keyof Radius;
+  activeRadius?: Radius;
 
   /**
    * Button variant for only the active tab button.
@@ -88,11 +84,6 @@ export interface TabsProps
    * @default "primary"
    */
   activeColor?: Color;
-
-  /**
-   * Motion animation preset for panel transitions.
-   */
-  animation?: AnimationProp;
 
   /**
    * Full width stretch tabs inside container.
@@ -131,7 +122,6 @@ export const Tabs = forwardRef<HTMLDivElement, TabsProps>(
       activeRadius: activeRadiusProp,
       activeVariant: activeVariantProp,
       activeColor: activeColorProp,
-      animation,
       fullWidth = false,
       tabListClassName,
       tabClassName,
@@ -184,30 +174,21 @@ export const Tabs = forwardRef<HTMLDivElement, TabsProps>(
     const resolvedActiveColor = resolveCascade<Color>(
       activeColorProp,
       sectionConfig?.activeColor,
-      config.theme.defaultColor as Color | undefined,
+      config.defaultColor as Color | undefined,
       FALLBACK_TABS_CONFIG.activeColor,
-    );
-
-    const resolvedAnimation = resolveCascade<AnimationProp>(
-      animation,
-      sectionConfig?.animation as AnimationProp | undefined,
-      undefined,
-      FALLBACK_TABS_CONFIG.animation,
     );
 
     const resolvedRadiusKey = resolveRadiusKey(
       radius,
-      sectionConfig,
-      config.theme.radius?.default,
+      sectionConfig?.radius,
+      config.defaultRadius as Radius,
       FALLBACK_TABS_CONFIG.radius,
     );
 
     const resolvedActiveRadiusKey = resolveRadiusKey(
       activeRadiusProp,
-      sectionConfig?.activeRadius
-        ? { radius: sectionConfig.activeRadius }
-        : undefined,
-      config.theme.radius?.default,
+      sectionConfig?.activeRadius,
+      config.defaultRadius as Radius,
       FALLBACK_TABS_CONFIG.activeRadius,
     );
 
@@ -233,17 +214,15 @@ export const Tabs = forwardRef<HTMLDivElement, TabsProps>(
 
     const radiusClass = resolveClassKey(
       resolvedRadiusKey,
-      TABS_RADIUS_CLASS,
+      RADIUS_CLASS,
       FALLBACK_TABS_CONFIG.radius,
     );
 
     const activeRadiusClass = resolveClassKey(
       resolvedActiveRadiusKey,
-      TABS_RADIUS_CLASS,
+      RADIUS_CLASS,
       FALLBACK_TABS_CONFIG.activeRadius,
     );
-
-    const motionProps = resolveAnimation(resolvedAnimation);
 
     const handleTabChange = useCallback(
       (id: string | number) => {
@@ -331,7 +310,7 @@ export const Tabs = forwardRef<HTMLDivElement, TabsProps>(
           role="tablist"
           aria-orientation="horizontal"
           className={cn(
-            "flex flex-row w-full items-center overflow-x-auto scrollable shrink-0",
+            "flex flex-row w-full items-center overflow-x-auto scrollbar-hide shrink-0",
             listVariantClasses,
             resolvedVariant !== "underline" && radiusClass,
             sectionConfig?.tabListClassName,
@@ -374,7 +353,7 @@ export const Tabs = forwardRef<HTMLDivElement, TabsProps>(
                 onClick={() => handleTabChange(tab.id)}
                 onKeyDown={(e) => handleKeyDown(e, index)}
                 className={cn(
-                  "relative flex items-center justify-center gap-2 font-medium transition-all select-none outline-none",
+                  "relative flex items-center justify-center gap-2 font-medium transition-all duration-200 select-none outline-none active:scale-[0.98]",
                   heightClass,
                   paddingXClass,
                   fontClass,
@@ -392,15 +371,6 @@ export const Tabs = forwardRef<HTMLDivElement, TabsProps>(
                     {tab.badge}
                   </span>
                 )}
-
-                {/* Optional Animated Indicator for "pills" Variant */}
-                {resolvedVariant === "pills" && isActive && (
-                  <motion.div
-                    layoutId={`${baseId}-active-pill`}
-                    className="absolute inset-0 z-[-1] bg-primary rounded-[inherit]"
-                    transition={{ type: "spring", stiffness: 400, damping: 30 }}
-                  />
-                )}
               </Button>
             );
           })}
@@ -409,22 +379,16 @@ export const Tabs = forwardRef<HTMLDivElement, TabsProps>(
         {/* Tab Panel Content */}
         {activeTab && (
           <div
+            key={String(activeTab.id)}
             id={`${baseId}-panel-${activeTab.id}`}
             role="tabpanel"
             aria-labelledby={`${baseId}-tab-${activeTab.id}`}
             className={cn(
-              "w-full h-full flex-1 outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 rounded-md",
+              "w-full h-full flex-1 outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 rounded-md transition-all duration-200 animate-in fade-in-50",
               sectionConfig?.tabPanelClassName,
               tabPanelClassName,
             )}>
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={String(activeTab.id)}
-                className="w-full h-full"
-                {...(motionProps as HTMLMotionProps<"div">)}>
-                {activeTab.content}
-              </motion.div>
-            </AnimatePresence>
+            {activeTab.content}
           </div>
         )}
       </div>

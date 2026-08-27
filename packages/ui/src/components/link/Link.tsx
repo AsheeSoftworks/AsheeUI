@@ -5,10 +5,6 @@ import { type AnchorHTMLAttributes, forwardRef, type ReactNode } from "react";
 import { ExternalLinkIcon } from "../../icons/ExternalLinkIcon";
 import { useAsheeConfig } from "../../libs/context";
 import type { Color } from "../../shared/variant";
-import type {
-  FontWeight,
-  LineHeight,
-} from "../../theme/typography/typography-config";
 import { resolveCascade, resolveClassKey } from "../../utils/resolve-token";
 import {
   FALLBACK_LINK_CONFIG,
@@ -20,14 +16,10 @@ import {
 import {
   LINK_COLOR_CLASS,
   LINK_ICON_SIZE_CLASS,
-  LINK_LINE_HEIGHT_CLASS,
   LINK_SIZE_CLASS,
   LINK_UNDERLINE_CLASS,
   LINK_VARIANT_CLASS,
-  LINK_WEIGHT_CLASS,
 } from "./link-styles";
-
-// ─── Component Interface ──────────────────────────────────────────────────────
 
 export interface LinkProps
   extends Omit<AnchorHTMLAttributes<HTMLAnchorElement>, "size"> {
@@ -36,16 +28,12 @@ export interface LinkProps
   color?: Color;
   size?: LinkSizeKey;
   underline?: LinkUnderline;
-  weight?: keyof FontWeight;
-  lineHeight?: keyof LineHeight;
   isExternal?: boolean;
   disabled?: boolean;
   startIcon?: ReactNode;
   endIcon?: ReactNode;
   children?: ReactNode;
 }
-
-// ─── Component Implementation ─────────────────────────────────────────────────
 
 export const Link = forwardRef<HTMLAnchorElement, LinkProps>(
   (
@@ -55,8 +43,6 @@ export const Link = forwardRef<HTMLAnchorElement, LinkProps>(
       color,
       size,
       underline,
-      weight,
-      lineHeight,
       isExternal,
       disabled = false,
       startIcon,
@@ -74,7 +60,7 @@ export const Link = forwardRef<HTMLAnchorElement, LinkProps>(
     const config = useAsheeConfig();
     const sectionConfig = config.components?.link as LinkConfig | undefined;
 
-    // ─── 1. Token Resolvers (4-Tier Cascade) ──────────────────────────────────
+    // ─── 1. Token Resolvers ──────────────────────────────────────────────────
 
     const resolvedSizeKey = resolveCascade<LinkSizeKey>(
       size,
@@ -93,7 +79,7 @@ export const Link = forwardRef<HTMLAnchorElement, LinkProps>(
     const resolvedColor = resolveCascade<Color>(
       color,
       sectionConfig?.color,
-      config.theme.defaultColor,
+      config.defaultColor,
       FALLBACK_LINK_CONFIG.color,
     );
 
@@ -102,20 +88,6 @@ export const Link = forwardRef<HTMLAnchorElement, LinkProps>(
       sectionConfig?.underline,
       undefined,
       FALLBACK_LINK_CONFIG.underline,
-    );
-
-    const resolvedWeight = resolveCascade<keyof FontWeight>(
-      weight,
-      sectionConfig?.weight,
-      undefined,
-      FALLBACK_LINK_CONFIG.weight,
-    );
-
-    const resolvedLineHeight = resolveCascade<keyof LineHeight>(
-      lineHeight,
-      sectionConfig?.lineHeight,
-      undefined,
-      FALLBACK_LINK_CONFIG.lineHeight,
     );
 
     const resolvedIsExternal =
@@ -159,19 +131,6 @@ export const Link = forwardRef<HTMLAnchorElement, LinkProps>(
       FALLBACK_LINK_CONFIG.underline,
     );
 
-    const weightClass = resolveClassKey(
-      resolvedWeight,
-      LINK_WEIGHT_CLASS,
-      FALLBACK_LINK_CONFIG.weight,
-    );
-
-    const lineHeightClass = resolveClassKey(
-      resolvedLineHeight,
-      LINK_LINE_HEIGHT_CLASS,
-      FALLBACK_LINK_CONFIG.lineHeight,
-    );
-
-    // Attributes for external anchors
     const targetAttr = target ?? (resolvedIsExternal ? "_blank" : undefined);
     const relAttr =
       rel ??
@@ -201,8 +160,6 @@ export const Link = forwardRef<HTMLAnchorElement, LinkProps>(
           sizeClass,
           colorClass,
           underlineClass,
-          weightClass,
-          lineHeightClass,
           disabled && "opacity-50 pointer-events-none cursor-not-allowed",
           sectionConfig?.className,
           className,
@@ -219,7 +176,7 @@ export const Link = forwardRef<HTMLAnchorElement, LinkProps>(
           </span>
         )}
 
-        <span>{children}</span>
+        {children}
 
         {endIcon ? (
           <span

@@ -1,6 +1,6 @@
 import { mergeObject } from "@asheeui/utils";
 import { getAllComponentDefaults } from "../libs/registry";
-import { defaultColorConfig } from "../theme/color/default-color-config";
+import { defaultColorConfig } from "../theme";
 import type { Config, ExternalConfig } from "./config";
 import { defaultConfig } from "./default-config";
 import { resolveColorConfig } from "./resolve-color";
@@ -14,10 +14,7 @@ export function resolveConfig(externalConfig: ExternalConfig): Config {
 
   // generic mergeObject can't fall back keys it has no default for (custom themes) —
   // re-resolve color specifically so unfilled fields inherit from `light` or `dark`
-  merged.theme.color = resolveColorConfig(
-    defaultColorConfig,
-    externalConfig.theme?.color,
-  );
+  merged.color = resolveColorConfig(defaultColorConfig, externalConfig.color);
 
   return merged;
 }

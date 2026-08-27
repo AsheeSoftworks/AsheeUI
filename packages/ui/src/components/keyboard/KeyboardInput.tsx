@@ -1,24 +1,20 @@
 "use client";
 
 import { cn } from "@asheeui/utils";
-import {
-  forwardRef,
-  type InputHTMLAttributes,
-  useImperativeHandle,
-  useRef,
-} from "react";
+import { forwardRef, useImperativeHandle, useRef } from "react";
+import { Input, type InputProps } from "../input";
 import { useKeyboard } from "./keyboard-context";
 import { useKeyboardField } from "./use-keyboard-field";
 
 export interface KeyboardInputProps
-  extends InputHTMLAttributes<HTMLInputElement> {
+  extends Omit<InputProps, "value" | "onChange" | "onFocus" | "onBlur"> {
   name: string;
 }
 
 export const KeyboardInput = forwardRef<HTMLInputElement, KeyboardInputProps>(
   ({ name, className, ...props }, externalRef) => {
     const { inputs } = useKeyboard();
-    const internalRef = useRef<HTMLInputElement | null>(null);
+    const internalRef = useRef<HTMLInputElement>(null);
 
     useImperativeHandle(
       externalRef,
@@ -33,7 +29,7 @@ export const KeyboardInput = forwardRef<HTMLInputElement, KeyboardInputProps>(
     const value = inputs[name] ?? "";
 
     return (
-      <input
+      <Input
         {...props}
         ref={internalRef}
         name={name}

@@ -1,5 +1,27 @@
 # @asheeui/vite
 
+## 0.2.14
+
+### Patch Changes
+
+- Updated dependencies
+  - asheeui@0.4.0
+
+## 0.2.13
+
+### Patch Changes
+
+- Remove defaults from container component
+- Updated dependencies
+  - asheeui@0.3.13
+
+## 0.2.12
+
+### Patch Changes
+
+- Updated dependencies
+  - asheeui@0.3.12
+
 ## 0.2.11
 
 ### Patch Changes

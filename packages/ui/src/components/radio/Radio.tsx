@@ -1,7 +1,6 @@
 "use client";
 
 import { cn } from "@asheeui/utils";
-import { type HTMLMotionProps, motion } from "framer-motion";
 import {
   type ChangeEvent,
   forwardRef,
@@ -12,10 +11,8 @@ import {
   useState,
 } from "react";
 import { useAsheeConfig } from "../../libs/context";
-import { resolveAnimation } from "../../motion/resolve-animation";
-import type { AnimationProp } from "../../motion/types";
+import { RADIUS_CLASS, type Radius } from "../../shared/radius";
 import type { Color } from "../../shared/variant";
-import type { Radius } from "../../theme/radius/radius-config";
 import {
   resolveCascade,
   resolveClassKey,
@@ -34,7 +31,6 @@ import {
   RADIO_GAP_CLASS,
   RADIO_INNER_SIZE_CLASS,
   RADIO_OUTER_SIZE_CLASS,
-  RADIO_RADIUS_CLASS,
   RADIO_STATUS_BORDER_CLASS,
 } from "./radio-styles";
 
@@ -48,9 +44,8 @@ export interface RadioProps
   value: string;
   size?: FieldSizeKey;
   color?: Color;
-  radius?: keyof Radius;
+  radius?: Radius;
   variant?: RadioVariant;
-  animation?: AnimationProp;
   status?: FieldStatus;
   label?: ReactNode;
   description?: ReactNode;
@@ -73,7 +68,6 @@ export const Radio = forwardRef<HTMLInputElement, RadioProps>(
       color,
       radius,
       variant,
-      animation,
       status,
       label,
       description,
@@ -126,7 +120,7 @@ export const Radio = forwardRef<HTMLInputElement, RadioProps>(
     const resolvedColor = resolveCascade<Color>(
       color ?? group?.color,
       sectionConfig?.color,
-      config.theme.defaultColor,
+      config.defaultColor,
       FALLBACK_RADIO_CONFIG.color,
     );
 
@@ -137,9 +131,9 @@ export const Radio = forwardRef<HTMLInputElement, RadioProps>(
 
     // Radius Key Resolution
     const rawRadiusKey = resolveRadiusKey(
-      typeof radius === "string" ? radius : undefined,
-      typeof sectionConfig?.radius === "string" ? sectionConfig : undefined,
-      config.theme.radius?.default,
+      radius,
+      sectionConfig?.radius,
+      config.defaultRadius,
       FALLBACK_RADIO_CONFIG.radius,
     );
 
@@ -175,13 +169,13 @@ export const Radio = forwardRef<HTMLInputElement, RadioProps>(
 
     const radiusClass = resolveClassKey(
       rawRadiusKey,
-      RADIO_RADIUS_CLASS,
+      RADIUS_CLASS,
       FALLBACK_RADIO_CONFIG.radius,
     );
 
     const cardRadiusClass = resolveClassKey(
       effectiveCardRadiusKey,
-      RADIO_RADIUS_CLASS,
+      RADIUS_CLASS,
       "xl",
     );
 
@@ -191,10 +185,6 @@ export const Radio = forwardRef<HTMLInputElement, RadioProps>(
     const statusBorderClass =
       RADIO_STATUS_BORDER_CLASS[resolvedStatus] ??
       RADIO_STATUS_BORDER_CLASS.default;
-
-    const motionProps = resolveAnimation(
-      animation ?? (sectionConfig?.animation as AnimationProp | undefined),
-    );
 
     const handleChange = useCallback(
       (e: ChangeEvent<HTMLInputElement>) => {
@@ -243,22 +233,21 @@ export const Radio = forwardRef<HTMLInputElement, RadioProps>(
         {/* Outer Radio Box / Circle */}
         <div
           className={cn(
-            "shrink-0 flex items-center justify-center border-2 transition-all mt-0.5",
+            "shrink-0 flex items-center justify-center border-2 transition-all duration-150 mt-0.5",
             "peer-focus-visible:ring-2 peer-focus-visible:ring-primary peer-focus-visible:ring-offset-2",
             outerSizeClass,
             radiusClass,
             isChecked ? colorClasses.border : statusBorderClass,
           )}>
-          {/* Animated Inner Radio Indicator */}
-          <motion.span
-            className={cn(innerSizeClass, radiusClass, colorClasses.bg)}
-            initial={false}
-            animate={{
-              scale: isChecked ? 1 : 0,
-              opacity: isChecked ? 1 : 0,
-            }}
-            transition={{ type: "spring", stiffness: 500, damping: 30 }}
-            {...(motionProps as HTMLMotionProps<"span">)}
+          {/* Tailwind Animated Inner Radio Indicator */}
+          <span
+            className={cn(
+              innerSizeClass,
+              radiusClass,
+              colorClasses.bg,
+              "transition-all duration-200 ease-in-out transform-gpu",
+              isChecked ? "scale-100 opacity-100" : "scale-0 opacity-0",
+            )}
           />
         </div>
 

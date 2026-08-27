@@ -2,15 +2,12 @@
 
 import { cn } from "@asheeui/utils";
 import { type FloatingContext, FloatingFocusManager } from "@floating-ui/react";
-import { AnimatePresence, type HTMLMotionProps, motion } from "framer-motion";
 import { type ChangeEvent, type ReactNode, useMemo, useState } from "react";
 import { CheckIcon } from "../../icons/CheckIcon";
 import { SearchIcon } from "../../icons/SearchIcon";
-import { resolveAnimation } from "../../motion/resolve-animation";
-import type { AnimationProp } from "../../motion/types";
+import type { Size } from "../../shared/size";
 import type { Color, Variant } from "../../shared/variant";
 import { Button } from "../button/Button";
-import type { ButtonSizeKey } from "../button/button-config";
 import { Input } from "../input/Input";
 
 export interface SelectOption {
@@ -44,9 +41,8 @@ export interface SelectMenuProps {
 
   variant?: Variant;
   color?: Color;
-  size?: ButtonSizeKey;
+  size?: Size;
   radius?: string | number;
-  animation?: AnimationProp;
 
   renderOption?: (option: SelectOption, isSelected: boolean) => ReactNode;
   initialFocus?: number | React.RefObject<HTMLElement>;
@@ -73,7 +69,6 @@ export const SelectMenu = ({
   color = "primary",
   size = "sm",
   radius,
-  animation,
   renderOption,
   initialFocus,
   returnFocus,
@@ -89,8 +84,6 @@ export const SelectMenu = ({
     }
   };
 
-  const motionProps = resolveAnimation(animation);
-
   const filteredOptions = useMemo(() => {
     if (!isSearch || !activeQuery.trim()) return options;
     return options.filter((opt) =>
@@ -101,92 +94,84 @@ export const SelectMenu = ({
   const isOptionSelected = (val: string | number) =>
     selectedValues.includes(val);
 
+  if (!isOpen) return null;
+
   return (
-    <AnimatePresence>
-      {isOpen && (
-        <FloatingFocusManager
-          context={context}
-          modal={false}
-          initialFocus={initialFocus}
-          returnFocus={returnFocus}>
-          <div
-            ref={setFloatingRef}
-            style={{ ...floatingStyles, zIndex: 99999 }}
-            className="w-full min-w-55 outline-none"
-            {...getFloatingProps()}>
-            <motion.div
-              initial={{ opacity: 0, y: -4, scale: 0.98 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: -4, scale: 0.98 }}
-              transition={{ duration: 0.15, ease: "easeOut" }}
-              className={cn(
-                "w-full max-h-60 overflow-y-auto shadow-xl bg-background border border-border p-1 flex flex-col gap-0.5 overflow-x-hidden",
-                dropdownClassName,
-              )}
-              style={{ borderRadius: radius }}
-              {...(motionProps as HTMLMotionProps<"div">)}>
-              {/* Search Input Bar */}
-              {isSearch && (
-                <div className="w-full p-1 mb-1 sticky top-0 bg-background z-10 border-b border-border">
-                  <div className="relative flex items-center">
-                    <SearchIcon className="absolute left-2.5 w-4 h-4 text-muted-foreground pointer-events-none" />
-                    <Input
-                      name={searchInputName}
-                      type="text"
-                      value={activeQuery}
-                      onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                        handleQueryChange(e.target.value)
-                      }
-                      placeholder={searchPlaceholder}
-                      autoFocus
-                      className="w-full pl-8 h-8 text-xs bg-muted/30 border-none focus-visible:ring-0"
-                    />
-                  </div>
-                </div>
-              )}
-
-              {/* Options List */}
-              {filteredOptions.length === 0 ? (
-                <div className="px-3 py-4 text-xs text-muted-foreground text-center">
-                  No options found
-                </div>
-              ) : (
-                filteredOptions.map((option) => {
-                  const selected = isOptionSelected(option.value);
-
-                  if (renderOption) {
-                    return renderOption(option, selected);
+    <FloatingFocusManager
+      context={context}
+      modal={false}
+      initialFocus={initialFocus}
+      returnFocus={returnFocus}>
+      <div
+        ref={setFloatingRef}
+        style={{ ...floatingStyles, zIndex: 99999 }}
+        className="w-full min-w-55 outline-none"
+        {...getFloatingProps()}>
+        <div
+          className={cn(
+            "w-full max-h-60 overflow-y-auto shadow-xl bg-background border border-border p-1 flex flex-col gap-0.5 overflow-x-hidden",
+            "animate-in fade-in-0 zoom-in-95 slide-in-from-top-1 duration-150 ease-out",
+            dropdownClassName,
+          )}
+          style={{ borderRadius: radius }}>
+          {/* Search Input Bar */}
+          {isSearch && (
+            <div className="w-full p-1 mb-1 sticky top-0 bg-background z-10 border-b border-border">
+              <div className="relative flex items-center">
+                <SearchIcon className="absolute left-2.5 w-4 h-4 text-muted-foreground pointer-events-none" />
+                <Input
+                  name={searchInputName}
+                  type="text"
+                  value={activeQuery}
+                  onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                    handleQueryChange(e.target.value)
                   }
+                  placeholder={searchPlaceholder}
+                  autoFocus
+                  className="w-full pl-8 h-8 text-xs bg-muted/30 border-none focus-visible:ring-0"
+                />
+              </div>
+            </div>
+          )}
 
-                  return (
-                    <Button
-                      key={String(option.value)}
-                      type="button"
-                      variant={selected ? variant : "ghost"}
-                      color={selected ? color : "default"}
-                      size={size}
-                      isDisabled={option.disabled}
-                      onClick={() => onSelectOption(option)}
-                      className="w-full justify-between font-normal text-left transition-colors">
-                      <span>{option.label}</span>
-                      {selected && (
-                        <CheckIcon className="w-3.5 h-3.5 shrink-0 ml-2" />
-                      )}
-                    </Button>
-                  );
-                })
-              )}
+          {/* Options List */}
+          {filteredOptions.length === 0 ? (
+            <div className="px-3 py-4 text-xs text-muted-foreground text-center">
+              No options found
+            </div>
+          ) : (
+            filteredOptions.map((option) => {
+              const selected = isOptionSelected(option.value);
 
-              {belowList && (
-                <div className="border-t border-border pt-1 mt-1">
-                  {belowList}
-                </div>
-              )}
-            </motion.div>
-          </div>
-        </FloatingFocusManager>
-      )}
-    </AnimatePresence>
+              if (renderOption) {
+                return renderOption(option, selected);
+              }
+
+              return (
+                <Button
+                  key={String(option.value)}
+                  type="button"
+                  variant={selected ? variant : "ghost"}
+                  color={selected ? color : "default"}
+                  size={size}
+                  isDisabled={option.disabled}
+                  onClick={() => onSelectOption(option)}
+                  className="w-full justify-between font-normal text-left transition-colors">
+                  <span>{option.label}</span>
+                  {selected && (
+                    <CheckIcon className="w-3.5 h-3.5 shrink-0 ml-2" />
+                  )}
+                </Button>
+              );
+            })
+          )}
+
+          {belowList && (
+            <div className="border-t border-border pt-1 mt-1">{belowList}</div>
+          )}
+        </div>
+      </div>
+    </FloatingFocusManager>
   );
 };
 

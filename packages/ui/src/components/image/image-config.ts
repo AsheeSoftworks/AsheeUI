@@ -1,7 +1,5 @@
 import { registerComponentDefaults } from "../../libs/registry";
-import type { AnimationProp } from "../../motion/types";
-import type { Radius } from "../../theme/radius/radius-config";
-import type { Size } from "../../theme/size/size";
+import type { Radius } from "../../shared/radius";
 
 export type ImageFit = "cover" | "contain" | "fill" | "none" | "scale-down";
 export type ImageRatioKey = "auto" | "square" | "video" | "portrait";
@@ -9,9 +7,7 @@ export type ImageRatioKey = "auto" | "square" | "video" | "portrait";
 export interface ImageConfig {
   fit?: ImageFit;
   ratio?: ImageRatioKey;
-  radius?: keyof Radius;
-  shadow?: keyof Size;
-  animation?: AnimationProp;
+  radius?: Radius;
   loading?: "lazy" | "eager";
   showSkeleton?: boolean;
   className?: string;
@@ -20,19 +16,18 @@ export interface ImageConfig {
 export const defaultImageConfig: ImageConfig = {
   fit: "cover",
   ratio: "auto",
+  radius: "md",
   loading: "lazy",
   showSkeleton: true,
-  animation: "none",
 };
 
-export const FALLBACK_IMAGE_CONFIG = {
-  fit: "cover" as ImageFit,
-  ratio: "auto" as ImageRatioKey,
-  radius: "md" as keyof Radius,
-  shadow: "none" as keyof Size,
-  loading: "lazy" as const,
+export const FALLBACK_IMAGE_CONFIG: Required<ImageConfig> = {
+  fit: "cover",
+  ratio: "auto",
+  radius: "md",
+  loading: "lazy",
   showSkeleton: true,
-  animation: "none" as AnimationProp,
+  className: "",
 } as const;
 
 declare module "../../libs/registry" {

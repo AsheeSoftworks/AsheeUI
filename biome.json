@@ -24,6 +24,13 @@
       "trailingCommas": "all"
     }
   },
+  "linter": {
+    "rules": {
+      "a11y": {
+        "noStaticElementInteractions": "off"
+      }
+    }
+  },
   "assist": {
     "enabled": true,
     "actions": {

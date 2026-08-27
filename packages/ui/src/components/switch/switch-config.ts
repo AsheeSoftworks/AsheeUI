@@ -1,11 +1,10 @@
 import { registerComponentDefaults } from "../../libs/registry";
-import type { AnimationProp } from "../../motion/types";
+import type { Radius } from "../../shared/radius";
 import type { Color } from "../../shared/variant";
-import type { Radius } from "../../theme/radius/radius-config";
-import type {
-  FieldConfig,
-  FieldSizeKey,
-  InputAnimationPreset,
+import {
+  FALLBACK_FIELD_CONFIG,
+  type FieldConfig,
+  type FieldSizeKey,
 } from "../field/field-config";
 
 export type SwitchSizeKey = FieldSizeKey;
@@ -13,19 +12,18 @@ export type SwitchSizeKey = FieldSizeKey;
 export interface SwitchConfig extends Omit<FieldConfig, "size" | "variant"> {
   size?: SwitchSizeKey;
   color?: Color;
-  radius?: keyof Radius;
-  animation?: AnimationProp<InputAnimationPreset>;
+  radius?: Radius;
   className?: string;
 }
 
 export const defaultSwitchConfig: SwitchConfig = {
   size: "md",
   labelAlign: "left",
-  animation: "none",
   radius: "full",
 };
 
-export const FALLBACK_SWITCH_CONFIG = {
+export const FALLBACK_SWITCH_CONFIG: Required<SwitchConfig> = {
+  ...FALLBACK_FIELD_CONFIG,
   size: "md",
   radius: "full",
   color: "primary",

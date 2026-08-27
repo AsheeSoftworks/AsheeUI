@@ -107,7 +107,6 @@ export default defineConfig({
         "react-dom",
         "react/jsx-runtime",
         "@asheeui/utils",
-        "framer-motion",
         "@floating-ui/react",
         "virtual:ashee-config",
       ],

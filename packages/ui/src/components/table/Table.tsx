@@ -3,8 +3,8 @@
 import { cn } from "@asheeui/utils";
 import { type HTMLAttributes, type ReactNode, useCallback } from "react";
 import { useAsheeConfig } from "../../libs/context";
+import { RADIUS_CLASS, type Radius } from "../../shared/radius";
 import type { Color } from "../../shared/variant";
-import type { Radius } from "../../theme/radius/radius-config";
 import {
   resolveCascade,
   resolveClassKey,
@@ -23,7 +23,6 @@ import {
   TABLE_COLOR_STYLES,
   TABLE_FONT_CLASS,
   TABLE_HEADER_FONT_CLASS,
-  TABLE_RADIUS_CLASS,
 } from "./table-styles";
 
 export interface TableProps<TData>
@@ -52,8 +51,8 @@ export interface TableProps<TData>
   /** Display text or React element when data array is empty. */
   emptyMessage?: ReactNode;
 
-  /** Disables interactive hover/click styling on rows. */
-  isNotClickable?: boolean;
+  /** Enables interactive hover, active press animations, and click styling on rows. */
+  isClickable?: boolean;
 
   /** Visual table style variant. */
   variant?: TableVariant;
@@ -65,7 +64,7 @@ export interface TableProps<TData>
   size?: TableSizeKey;
 
   /** Border radius token key. */
-  radius?: keyof Radius;
+  radius?: Radius;
 
   /** Custom class for header container. */
   headerClassName?: string;
@@ -86,7 +85,7 @@ export function Table<TData>({
   handleDoubleClick,
   selectedRowKey,
   emptyMessage = "No items available",
-  isNotClickable = false,
+  isClickable,
   variant: variantProp,
   color: colorProp,
   size,
@@ -120,14 +119,14 @@ export function Table<TData>({
   const resolvedColor = resolveCascade<Color>(
     colorProp,
     sectionConfig?.color,
-    config.theme.defaultColor as Color | undefined,
+    config.defaultColor as Color,
     FALLBACK_TABLE_CONFIG.color,
   );
 
   const resolvedRadiusKey = resolveRadiusKey(
     radius,
-    sectionConfig,
-    config.theme.radius?.default,
+    sectionConfig?.radius,
+    config.defaultRadius as Radius,
     FALLBACK_TABLE_CONFIG.radius,
   );
 
@@ -159,7 +158,7 @@ export function Table<TData>({
 
   const radiusClass = resolveClassKey(
     resolvedRadiusKey,
-    TABLE_RADIUS_CLASS,
+    RADIUS_CLASS,
     FALLBACK_TABLE_CONFIG.radius,
   );
 
@@ -182,7 +181,7 @@ export function Table<TData>({
 
   const hasData = Array.isArray(data) && data.length > 0;
   const isInteractive =
-    !isNotClickable && Boolean(handleClick || handleDoubleClick);
+    isClickable ?? Boolean(handleClick || handleDoubleClick);
 
   return (
     <div
@@ -273,13 +272,13 @@ export function Table<TData>({
                     }
                   }}
                   className={cn(
-                    "border-b border-border/60 transition-colors outline-none align-middle",
+                    "border-b border-border/60 transition-all duration-150 outline-none align-middle",
                     fontClass,
                     resolvedVariant === "flush" && "last:border-b-0",
                     isStriped && "bg-secondary",
                     isInteractive &&
                       cn(
-                        "cursor-pointer",
+                        "cursor-pointer select-none active:scale-[0.99] active:opacity-90",
                         activeColorStyles.hover,
                         activeColorStyles.focus,
                       ),

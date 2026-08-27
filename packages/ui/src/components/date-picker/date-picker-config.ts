@@ -1,9 +1,8 @@
 import { registerComponentDefaults } from "../../libs/registry";
-import type { AnimationProp } from "../../motion/types";
-import type {
-  FieldConfig,
-  FieldSizeKey,
-  InputAnimationPreset,
+import {
+  FALLBACK_FIELD_CONFIG,
+  type FieldConfig,
+  type FieldSizeKey,
 } from "../field/field-config";
 
 export type PickerMode = "date" | "time" | "datetime";
@@ -11,7 +10,6 @@ export type DatePickerSizeKey = FieldSizeKey;
 
 export interface DatePickerConfig extends FieldConfig {
   mode?: PickerMode;
-  animation?: AnimationProp<InputAnimationPreset>;
 }
 
 export const defaultDatePickerConfig: DatePickerConfig = {
@@ -20,7 +18,8 @@ export const defaultDatePickerConfig: DatePickerConfig = {
   mode: "date",
 };
 
-export const FALLBACK_DATE_PICKER_CONFIG = {
+export const FALLBACK_DATE_PICKER_CONFIG: Required<DatePickerConfig> = {
+  ...FALLBACK_FIELD_CONFIG,
   size: "md",
   radius: "md",
   variant: "bordered",

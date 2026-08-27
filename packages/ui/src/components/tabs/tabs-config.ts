@@ -1,11 +1,11 @@
 import type { ReactNode } from "react";
 import { registerComponentDefaults } from "../../libs/registry";
-import type { AnimationProp } from "../../motion/types";
+import type { Radius } from "../../shared/radius";
+import type { Size } from "../../shared/size";
 import type { Color, Variant } from "../../shared/variant";
-import type { Radius } from "../../theme/radius/radius-config";
 
 export type TabsVariant = "underline" | "pills" | "bordered" | "ghost";
-export type TabsSizeKey = "sm" | "md" | "lg";
+export type TabsSizeKey = Size;
 
 export interface TabItem {
   id: string | number;
@@ -29,13 +29,12 @@ export interface TabItem {
 export interface TabsConfig {
   size?: TabsSizeKey;
   variant?: TabsVariant;
-  radius?: keyof Radius;
+  radius?: Radius;
 
-  activeRadius?: keyof Radius;
+  activeRadius?: Radius;
   activeVariant?: Variant;
   activeColor?: Color;
 
-  animation?: AnimationProp;
   className?: string;
   tabListClassName?: string;
   tabClassName?: string;
@@ -47,17 +46,19 @@ export const defaultTabsConfig: TabsConfig = {
   variant: "underline",
   radius: "md",
   activeRadius: "md",
-  animation: "fade",
 };
 
-export const FALLBACK_TABS_CONFIG = {
-  size: "md" as TabsSizeKey,
-  variant: "underline" as TabsVariant,
-  radius: "md" as keyof Radius,
-  activeRadius: "md" as keyof Radius,
-  activeVariant: "solid" as Variant,
-  activeColor: "primary" as Color,
-  animation: "fade" as AnimationProp,
+export const FALLBACK_TABS_CONFIG: Required<TabsConfig> = {
+  size: "md",
+  variant: "underline",
+  radius: "md",
+  activeRadius: "md",
+  activeVariant: "solid",
+  activeColor: "primary",
+  className: "",
+  tabListClassName: "",
+  tabClassName: "",
+  tabPanelClassName: "",
 } as const;
 
 declare module "../../libs/registry" {

@@ -1,22 +1,11 @@
-import { defaultColorConfig } from "../theme/color/default-color-config";
-import { defaultRadiusConfig } from "../theme/radius/default-radius-config";
-import { defaultScrollbarConfig } from "../theme/scrollbar/default-scrollbar-config";
-import { defaultShadowConfig } from "../theme/shadow/default-shadow-config";
-import { defaultSpacingConfig } from "../theme/spacing/default-spacing-config";
-import { defaultTypographyConfig } from "../theme/typography/default-typography-config";
+import { defaultColorConfig } from "../theme";
 import type { Config } from "./config";
 
 export const defaultConfig: Config = {
-  theme: {
-    color: defaultColorConfig,
-    radius: defaultRadiusConfig,
-    typography: defaultTypographyConfig,
-    shadow: defaultShadowConfig,
-    spacing: defaultSpacingConfig,
-    scrollbar: defaultScrollbarConfig,
-    defaultTheme: "system",
-    defaultVariant: "solid",
-    defaultColor: "primary",
-  },
+  color: defaultColorConfig,
+  defaultRadius: "md",
+  defaultTheme: "system",
+  defaultVariant: "solid",
+  defaultColor: "primary",
   components: {},
 };

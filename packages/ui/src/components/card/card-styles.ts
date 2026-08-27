@@ -1,39 +1,25 @@
-import type { Shadow } from "../../theme/shadow/shadow-config";
-import type { CardSizeKey, CardVariant } from "./card-config";
+import type { Size } from "../../shared/size";
+import type { CardVariant } from "./card-config";
 
-export const CARD_PADDING_CLASS: Record<CardSizeKey, string> = {
+export const CARD_PADDING_CLASS: Record<Size, string> = {
   sm: "p-4",
   md: "p-6",
   lg: "p-8",
+  xl: "p-10",
 };
 
-export const CARD_GAP_CLASS: Record<CardSizeKey, string> = {
+export const CARD_GAP_CLASS: Record<Size, string> = {
   sm: "gap-3",
   md: "gap-4",
   lg: "gap-5",
+  xl: "gap-6",
 };
 
-export const CARD_HEADER_GAP_CLASS: Record<CardSizeKey, string> = {
+export const CARD_HEADER_GAP_CLASS: Record<Size, string> = {
   sm: "gap-1",
   md: "gap-1.5",
   lg: "gap-2",
-};
-
-export const CARD_RADIUS_CLASS: Record<string, string> = {
-  none: "rounded-none",
-  sm: "rounded-sm",
-  md: "rounded-md",
-  lg: "rounded-lg",
-  xl: "rounded-xl",
-  full: "rounded-full",
-};
-
-export const CARD_SHADOW_CLASS: Record<keyof Shadow | string, string> = {
-  none: "shadow-none",
-  sm: "shadow-xs",
-  md: "shadow-md",
-  lg: "shadow-lg",
-  xl: "shadow-xl",
+  xl: "gap-2.5",
 };
 
 export const CARD_VARIANT_CLASS: Record<CardVariant, string> = {

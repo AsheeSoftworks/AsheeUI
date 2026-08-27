@@ -1,7 +1,6 @@
 "use client";
 
 import { cn } from "@asheeui/utils";
-import { type HTMLMotionProps, motion } from "framer-motion";
 import {
   forwardRef,
   type InputHTMLAttributes,
@@ -9,14 +8,12 @@ import {
   useId,
 } from "react";
 import { useAsheeConfig } from "../../libs/context";
-import { resolveAnimation } from "../../motion/resolve-animation";
-import type { AnimationProp } from "../../motion/types";
+import { RADIUS_CLASS, type Radius } from "../../shared/radius";
 import {
   type Color,
   resolveVariantClass,
   type Variant,
 } from "../../shared/variant";
-import type { Radius } from "../../theme/radius/radius-config";
 import {
   resolveCascade,
   resolveClassKey,
@@ -27,15 +24,10 @@ import {
   FALLBACK_FIELD_CONFIG,
   type FieldSizeKey,
   type FieldStatus,
-  type InputAnimationPreset,
   type LabelAlign,
 } from "../field/field-config";
 import type { InputConfig } from "./input-config";
-import {
-  INPUT_RADIUS_CLASS,
-  INPUT_SIZE_CLASS,
-  INPUT_STATUS_BORDER_CLASS,
-} from "./input-styles";
+import { INPUT_SIZE_CLASS, INPUT_STATUS_BORDER_CLASS } from "./input-styles";
 
 // ─── Component Interface ──────────────────────────────────────────────────────
 
@@ -45,10 +37,9 @@ export interface InputProps
     "size" | "color" | "children"
   > {
   size?: FieldSizeKey;
-  radius?: keyof Radius;
+  radius?: Radius;
   variant?: Variant;
   color?: Color;
-  animation?: AnimationProp<InputAnimationPreset>;
   status?: FieldStatus;
   label?: string;
   labelAlign?: LabelAlign;
@@ -69,7 +60,6 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
       radius,
       variant,
       color,
-      animation,
       status,
       label,
       labelAlign,
@@ -109,21 +99,23 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
     const resolvedVariant = resolveCascade<Variant>(
       variant,
       sectionConfig?.variant,
-      config.theme.defaultVariant,
+      config.defaultVariant,
       FALLBACK_FIELD_CONFIG.variant,
     );
 
     const resolvedColor = resolveCascade<Color>(
       color,
       sectionConfig?.color,
-      config.theme.defaultColor,
+      config.defaultColor,
       FALLBACK_FIELD_CONFIG.color,
     );
 
     const resolvedRadiusKey = resolveRadiusKey(
       typeof radius === "string" ? radius : undefined,
-      typeof sectionConfig?.radius === "string" ? sectionConfig : undefined,
-      config.theme.radius?.default,
+      typeof sectionConfig?.radius === "string"
+        ? sectionConfig.radius
+        : undefined,
+      config.defaultRadius,
       FALLBACK_FIELD_CONFIG.radius,
     );
 
@@ -135,8 +127,6 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
       undefined,
       FALLBACK_FIELD_CONFIG.labelAlign,
     );
-
-    const motionProps = resolveAnimation(animation ?? sectionConfig?.animation);
 
     // ─── 2. Class Maps ────────────────────────────────────────────────────────
 
@@ -150,7 +140,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
         ? "rounded-none"
         : resolveClassKey(
             resolvedRadiusKey,
-            INPUT_RADIUS_CLASS,
+            RADIUS_CLASS,
             FALLBACK_FIELD_CONFIG.radius,
           );
 
@@ -176,7 +166,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
             </span>
           )}
 
-          <motion.input
+          <input
             ref={ref}
             id={fieldId}
             disabled={disabled}
@@ -199,8 +189,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
               className,
             )}
             style={style}
-            {...(motionProps as HTMLMotionProps<"input">)}
-            {...(rest as HTMLMotionProps<"input">)}
+            {...rest}
           />
 
           {endContent && (

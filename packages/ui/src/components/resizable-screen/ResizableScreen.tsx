@@ -12,12 +12,12 @@ import {
   useState,
 } from "react";
 import { useAsheeConfig } from "../../libs/context";
+import { RADIUS_CLASS, type Radius } from "../../shared/radius";
 import {
   type Color,
   resolveVariantClass,
   type Variant,
 } from "../../shared/variant";
-import type { Radius } from "../../theme/radius/radius-config";
 import {
   resolveCascade,
   resolveClassKey,
@@ -28,7 +28,6 @@ import {
   type ResizableOrientation,
   type ResizableScreenConfig,
 } from "./resizable-screen-config";
-import { RESIZABLE_SCREEN_RADIUS_CLASS } from "./resizable-screen-styles";
 
 export interface ResizableScreenProps
   extends Omit<HTMLAttributes<HTMLDivElement>, "children"> {
@@ -90,7 +89,7 @@ export interface ResizableScreenProps
   /**
    * Border radius for the notch indicator.
    */
-  handleRadius?: keyof Radius;
+  handleRadius?: Radius;
 
   /**
    * Option to completely hide the handle separator.
@@ -137,7 +136,7 @@ export const ResizableScreen = forwardRef<HTMLDivElement, ResizableScreenProps>(
       | ResizableScreenConfig
       | undefined;
 
-    // ─── 1. Token Resolvers (4-Tier Cascade) ──────────────────────────────────
+    // ─── 1. Token Resolvers ──────────────────────────────────────────────────
 
     const minSize = resolveCascade<number>(
       minSizeProp,
@@ -177,31 +176,29 @@ export const ResizableScreen = forwardRef<HTMLDivElement, ResizableScreenProps>(
     const resolvedHandleVariant = resolveCascade<Variant>(
       handleVariantProp,
       sectionConfig?.handleVariant,
-      config.theme.defaultVariant,
+      config.defaultVariant as Variant,
       FALLBACK_RESIZABLE_SCREEN_CONFIG.handleVariant,
     );
 
     const resolvedHandleColor = resolveCascade<Color>(
       handleColorProp,
       sectionConfig?.handleColor,
-      config.theme.defaultColor as Color | undefined,
+      config.defaultColor as Color,
       FALLBACK_RESIZABLE_SCREEN_CONFIG.handleColor,
     );
 
     const resolvedHandleRadiusKey = resolveRadiusKey(
       handleRadiusProp,
-      sectionConfig?.handleRadius
-        ? { radius: sectionConfig.handleRadius }
-        : undefined,
-      config.theme.radius?.default,
+      sectionConfig?.handleRadius,
+      config.defaultRadius as Radius,
       FALLBACK_RESIZABLE_SCREEN_CONFIG.handleRadius,
     );
 
     // ─── 2. Class Maps ────────────────────────────────────────────────────────
 
     const handleRadiusClass = resolveClassKey(
-      resolvedHandleRadiusKey,
-      RESIZABLE_SCREEN_RADIUS_CLASS,
+      resolvedHandleRadiusKey as Radius,
+      RADIUS_CLASS,
       FALLBACK_RESIZABLE_SCREEN_CONFIG.handleRadius,
     );
 
@@ -214,7 +211,7 @@ export const ResizableScreen = forwardRef<HTMLDivElement, ResizableScreenProps>(
 
     const [internalSize, setInternalSize] = useState<number>(initialSize);
     const [isDragging, setIsDragging] = useState<boolean>(false);
-    const containerRef = useRef<HTMLDivElement>(null);
+    const containerRef = useRef<HTMLDivElement | null>(null);
 
     const isControlled = size !== undefined;
     const currentSize = isControlled ? size : internalSize;
@@ -303,8 +300,6 @@ export const ResizableScreen = forwardRef<HTMLDivElement, ResizableScreenProps>(
         className={cn(
           "w-full h-full min-h-0 relative select-none flex",
           isHorizontal ? "flex-row" : "flex-col",
-          isDragging &&
-            (isHorizontal ? "cursor-col-resize" : "cursor-row-resize"),
           sectionConfig?.className,
           className,
         )}

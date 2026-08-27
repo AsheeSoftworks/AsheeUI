@@ -1,7 +1,7 @@
 import "asheeui";
 
 declare module "asheeui" {
-  interface AsheeThemeRegistry {
+  interface AsheeColorRegistry {
     "company-red": true;
   }
 }

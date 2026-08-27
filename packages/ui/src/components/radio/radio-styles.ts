@@ -5,33 +5,28 @@ export const RADIO_OUTER_SIZE_CLASS: Record<FieldSizeKey, string> = {
   sm: "size-4",
   md: "size-5",
   lg: "size-6",
+  xl: "size-7",
 };
 
 export const RADIO_INNER_SIZE_CLASS: Record<FieldSizeKey, string> = {
   sm: "size-2",
   md: "size-2.5",
   lg: "size-3",
+  xl: "size-3.5",
 };
 
 export const RADIO_FONT_SIZE_CLASS: Record<FieldSizeKey, string> = {
   sm: "text-xs",
   md: "text-sm",
   lg: "text-base",
+  xl: "text-lg",
 };
 
 export const RADIO_GAP_CLASS: Record<FieldSizeKey, string> = {
   sm: "gap-2",
   md: "gap-2.5",
   lg: "gap-3",
-};
-
-export const RADIO_RADIUS_CLASS: Record<string, string> = {
-  none: "rounded-none",
-  sm: "rounded-sm",
-  md: "rounded-md",
-  lg: "rounded-lg",
-  xl: "rounded-xl",
-  full: "rounded-full",
+  xl: "gap-3.5",
 };
 
 export const RADIO_COLOR_CLASS: Record<

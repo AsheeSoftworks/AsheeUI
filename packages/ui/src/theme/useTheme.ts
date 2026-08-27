@@ -1,6 +1,6 @@
 "use client";
 import { useSyncExternalStore } from "react";
-import type { ThemeName } from "../color/color-config";
+import type { ThemeName } from "./color";
 import { type ThemeSelection, themeController } from "./controller";
 
 export function useTheme() {

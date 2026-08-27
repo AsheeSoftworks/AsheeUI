@@ -1,28 +1,26 @@
 "use client";
 
-import { Accordion } from "asheeui/accordion";
-import { Button } from "asheeui/button";
-import { Card } from "asheeui/card";
-import { Carousel } from "asheeui/carousel";
-import { Chip } from "asheeui/chip";
-import { Container } from "asheeui/container";
-import { DatePicker } from "asheeui/date-picker";
 import {
+  Accordion,
+  Button,
+  Card,
+  Carousel,
+  Chip,
+  DatePicker,
   Drawer,
   type DrawerPlacement,
-  type DrawerSizeKey,
-} from "asheeui/drawer";
-import { Flex } from "asheeui/flex";
-import { Grid } from "asheeui/grid";
-import { Heading } from "asheeui/heading";
-import { Image } from "asheeui/image";
-import { Input, PasswordInput } from "asheeui/input";
-import { Link } from "asheeui/link";
-import { Radio, RadioGroup } from "asheeui/radio";
-import { Select, type SelectOption } from "asheeui/select";
-import { Switch } from "asheeui/switch";
-import { Text } from "asheeui/text";
-import { TextArea } from "asheeui/textarea";
+  type Size,
+  Image,
+  Input,
+  PasswordInput,
+  Link,
+  Radio,
+  RadioGroup,
+  Select,
+  type SelectOption,
+  Switch,
+  TextArea,
+} from "asheeui";
 import { useState } from "react";
 
 export default function ConfigTestPage() {
@@ -56,7 +54,7 @@ export default function ConfigTestPage() {
 
   // Configurable Parameters for Live Testing
   const [placement, setPlacement] = useState<DrawerPlacement>("right");
-  const [size, setSize] = useState<DrawerSizeKey>("md");
+  const [size, setSize] = useState<Size>("md");
   const [closeOnOverlayClick, setCloseOnOverlayClick] = useState(true);
   const [closeOnEsc, setCloseOnEsc] = useState(true);
 
@@ -120,33 +118,25 @@ export default function ConfigTestPage() {
       </header>
 
       {/* Chip */}
-      <Container className="space-y-3">
-        <Heading level={4} className="text-lg font-semibold">
-          Chip (Config)
-        </Heading>
-        <Container className="flex gap-2">
-          <Chip variant="bordered" animation={"none"}>
-            Default Chip
-          </Chip>
+      <section className="space-y-3">
+        <h4 className="text-lg font-semibold">Chip (Config)</h4>
+        <section className="flex gap-2">
+          <Chip variant="bordered">Default Chip</Chip>
           <Chip>Configured Style</Chip>
-        </Container>
-      </Container>
+        </section>
+      </section>
 
       {/* Link */}
-      <Container className="space-y-3">
-        <Heading level={4} className="text-lg font-semibold">
-          Link (Config)
-        </Heading>
-        <Container>
+      <section className="space-y-3">
+        <h4 className="text-lg font-semibold">Link (Config)</h4>
+        <section>
           <Link href="/dashboard">Navigate to Dashboard</Link>
-        </Container>
-      </Container>
+        </section>
+      </section>
 
       {/* Card */}
-      <Container className="space-y-3">
-        <Heading level={4} className="text-lg font-semibold">
-          Card (Config)
-        </Heading>
+      <section className="space-y-3">
+        <h4 className="text-lg font-semibold">Card (Config)</h4>
         <Card
           title="Configured Card Title"
           isClickable
@@ -155,76 +145,68 @@ export default function ConfigTestPage() {
             Card body content relying on default padding, gap, and variants.
           </p>
         </Card>
-      </Container>
+      </section>
 
       {/* Image */}
-      <Container className="space-y-3">
-        <Heading level={4} className="text-lg font-semibold">
-          Image (Config)
-        </Heading>
+      <section className="space-y-3">
+        <h4 className="text-lg font-semibold">Image (Config)</h4>
         <Image
           src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe"
           alt="Abstract config test image"
         />
-      </Container>
+      </section>
 
       {/* Accordion */}
-      <Container className="space-y-3">
-        <Heading level={4} className="text-lg font-semibold">
-          Accordion (Config)
-        </Heading>
+      <section className="space-y-3">
+        <h4 className="text-lg font-semibold">Accordion (Config)</h4>
         <Accordion
           variant="ghost"
           items={[
             {
               id: "item-1",
-              title: "Configured ContContainer 1",
+              title: "Configured Contsection 1",
               content:
-                "ContContainer content using global spacing and default animation.",
+                "Contsection content using global spacing and default animation.",
             },
             {
               id: "item-2",
-              title: "Configured ContContainer 2",
+              title: "Configured Contsection 2",
               content: "Additional panel content driven by configuration.",
             },
           ]}
         />
-      </Container>
+      </section>
 
       {/* Carousel */}
-      <Container className="space-y-3">
-        <Heading level={4} className="text-lg font-semibold">
-          Carousel (Config)
-        </Heading>
+      <section className="space-y-3">
+        <h4 className="text-lg font-semibold">Carousel (Config)</h4>
         <Carousel
           items={[
             {
               id: "1",
               content: (
-                <Container className="bg-muted p-8 text-center rounded-lg">
+                <section className="bg-muted p-8 text-center rounded-lg">
                   Slide 1
-                </Container>
+                </section>
               ),
             },
             {
               id: "2",
               content: (
-                <Container className="bg-muted p-8 text-center rounded-lg">
+                <section className="bg-muted p-8 text-center rounded-lg">
                   Slide 2
-                </Container>
+                </section>
               ),
             },
           ]}
         />
-      </Container>
+      </section>
 
-      <Container>
-        <Heading level={4} className="text-lg font-semibold">
-          DatePicker Component Test
-        </Heading>
+      <section>
+        <h4 className="text-lg font-semibold">DatePicker Component Test</h4>
 
         {/* Date Mode */}
-        <Container className="space-y-1.5">
+        <section className="space-y-1.5">
           <DatePicker
             label="Date Mode"
             mode="date"
@@ -236,10 +218,10 @@ export default function ConfigTestPage() {
           <p className="text-[11px] font-mono text-muted-foreground">
             Value: {dateValue ? dateValue.toISOString() : "null"}
           </p>
-        </Container>
+        </section>
 
         {/* Time Mode */}
-        <Container className="space-y-1.5">
+        <section className="space-y-1.5">
           <DatePicker
             label="Time Mode"
             mode="time"
@@ -251,10 +233,10 @@ export default function ConfigTestPage() {
           <p className="text-[11px] font-mono text-muted-foreground">
             Value: {timeValue ? timeValue.toTimeString() : "null"}
           </p>
-        </Container>
+        </section>
 
         {/* DateTime Mode */}
-        <Container className="space-y-1.5">
+        <section className="space-y-1.5">
           <DatePicker
             label="Date & Time Mode"
             mode="datetime"
@@ -266,15 +248,13 @@ export default function ConfigTestPage() {
           <p className="text-[11px] font-mono text-muted-foreground">
             Value: {dateTimeValue ? dateTimeValue.toLocaleString() : "null"}
           </p>
-        </Container>
-      </Container>
+        </section>
+      </section>
 
       <form
         onSubmit={handleSubmit}
         className="max-w-md space-y-4 p-6 border rounded-xl bg-background">
-        <Heading level={4} className="text-xl font-bold mb-4">
-          Create Account
-        </Heading>
+        <h4 className="text-xl font-bold mb-4">Create Account</h4>
 
         {/* Standard Input */}
         <Input
@@ -332,15 +312,13 @@ export default function ConfigTestPage() {
       </form>
 
       {/* SECTION 2: Radio & RadioGroup Demo */}
-      <Container>
-        <Flex direction="col">
-          <Heading level={4}>Radio & RadioGroup</Heading>
-          <Text>
-            Demonstrating default stacked list and card grid variants.
-          </Text>
-        </Flex>
+      <section>
+        <div className="flex flex-col gap-2">
+          <h4>Radio & RadioGroup</h4>
+          <p>Demonstrating default stacked list and card grid variants.</p>
+        </div>
 
-        <Flex direction="col">
+        <div className="flex flex-col gap-2">
           {/* Radio Card Variant (Horizontal Grid) */}
           <RadioGroup
             label="Select Subscription Tier"
@@ -395,8 +373,8 @@ export default function ConfigTestPage() {
               description="Turn off all automated communications"
             />
           </RadioGroup>
-        </Flex>
-      </Container>
+        </div>
+      </section>
 
       <section className="bg-card border border-border rounded-xl p-6 space-y-6 shadow-sm">
         <div>
@@ -435,16 +413,16 @@ export default function ConfigTestPage() {
       </section>
 
       {/* SECTION 2: Custom Dropdown Content & Actions */}
-      <Container className="bg-card border border-border rounded-xl p-6 space-y-6 shadow-sm">
-        <Flex>
-          <Heading level={4} className="text-lg font-semibold">
+      <section className="bg-card border border-border rounded-xl p-6 space-y-6 shadow-sm">
+        <div>
+          <h4 className="text-lg font-semibold">
             Select with `belowList` Action
-          </Heading>
-          <Text className="text-xs text-muted-foreground">
+          </h4>
+          <p className="text-xs text-muted-foreground">
             Embed custom components or action buttons at the bottom of the
             dropdown list.
-          </Text>
-        </Flex>
+          </p>
+        </div>
 
         <div className="max-w-md">
           <Select
@@ -467,28 +445,28 @@ export default function ConfigTestPage() {
             }
           />
         </div>
-      </Container>
+      </section>
 
       {/* SECTION 3: Validation & Field States */}
-      <Container className="bg-card border border-border rounded-xl p-6 space-y-6 shadow-sm">
-        <Flex align="center" justify="between">
-          <Flex>
-            <Heading level={4}>Statuses & Loading State</Heading>
-            <Text className="text-xs text-muted-foreground">
+      <section className="bg-card border border-border rounded-xl p-6 space-y-6 shadow-sm">
+        <div>
+          <div>
+            <h4>Statuses & Loading State</h4>
+            <p className="text-xs text-muted-foreground">
               Error, warning, success states and simulated loading spinners.
-            </Text>
-          </Flex>
+            </p>
+          </div>
           <Button
             type="button"
             onClick={() => setIsLoading(!isLoading)}
             className="px-3 py-1 text-xs border border-border rounded-md bg-secondary hover:bg-secondary/80">
             Toggle Loading ({isLoading ? "ON" : "OFF"})
           </Button>
-        </Flex>
-      </Container>
+        </div>
+      </section>
 
-      <Container>
-        <Heading level={4}>Controlled Component</Heading>
+      <section>
+        <h4>Controlled Component</h4>
 
         <Switch
           label="Push Notifications"
@@ -503,11 +481,11 @@ export default function ConfigTestPage() {
             {isNotificationsEnabled ? "Active (true)" : "Inactive (false)"}
           </strong>
         </p>
-      </Container>
+      </section>
 
       {/* ── 2. Colors & Sizes ──────────────────────────────────── */}
-      <Container className="space-y-4">
-        <Heading level={4}>Colors & Sizes</Heading>
+      <section className="space-y-4">
+        <h4>Colors & Sizes</h4>
 
         <Switch
           label="Dark Mode (Success - Large)"
@@ -529,19 +507,19 @@ export default function ConfigTestPage() {
           color="warning"
           defaultChecked
         />
-      </Container>
+      </section>
 
-      <Container>
+      <section>
         {/* ── Page Header ────────────────────────────────────────── */}
-        <Container>
-          <Heading level={4}>Drawer Component Test</Heading>
-          <Text>Interactive test harness for Ashee UI Drawer</Text>
-        </Container>
+        <section>
+          <h4>Drawer Component Test</h4>
+          <p>Interactive test harness for Ashee UI Drawer</p>
+        </section>
 
         {/* ── 1. Placement Triggers ────────────────────────────── */}
-        <Container>
-          <Heading level={4}>1. Test Placements</Heading>
-          <Grid columns={4}>
+        <section>
+          <h4>1. Test Placements</h4>
+          <div className="grid grid-cols-4 gap-1">
             <Button
               type="button"
               onClick={() => handleOpen("left")}
@@ -566,18 +544,18 @@ export default function ConfigTestPage() {
               className="px-4 py-2.5 rounded-lg border border-border bg-background hover:bg-muted font-medium text-sm transition-colors cursor-pointer">
               Open Bottom
             </Button>
-          </Grid>
-        </Container>
+          </div>
+        </section>
 
         {/* ── 2. Size & Option Controls ────────────────────────── */}
-        <Container>
-          <Heading level={4}>2. Configuration Options</Heading>
+        <section>
+          <h4>2. Configuration Options</h4>
 
           {/* Size Selection */}
-          <Container>
-            <Text as="label">Drawer Size Key</Text>
+          <section>
+            <p>Drawer Size Key</p>
             <div className="flex flex-wrap gap-2">
-              {(["sm", "md", "lg", "xl"] as DrawerSizeKey[]).map((s) => (
+              {(["sm", "md", "lg", "xl"] as Size[]).map((s) => (
                 <Button
                   key={s}
                   type="button"
@@ -591,11 +569,11 @@ export default function ConfigTestPage() {
                 </Button>
               ))}
             </div>
-          </Container>
+          </section>
 
           {/* Behavior Toggles */}
-          <Container className="flex flex-wrap gap-6 pt-2">
-            <Text as="label">
+          <section className="flex flex-wrap gap-6 pt-2">
+            <p>
               <input
                 type="checkbox"
                 checked={closeOnOverlayClick}
@@ -603,9 +581,9 @@ export default function ConfigTestPage() {
                 className="rounded border-border text-primary focus:ring-primary"
               />
               Close on Overlay Click
-            </Text>
+            </p>
 
-            <Text as="label">
+            <p>
               <input
                 type="checkbox"
                 checked={closeOnEsc}
@@ -613,12 +591,12 @@ export default function ConfigTestPage() {
                 className="rounded border-border text-primary focus:ring-primary"
               />
               Close on ESC Key
-            </Text>
-          </Container>
-        </Container>
+            </p>
+          </section>
+        </section>
 
         {/* ── 3. Active State Debug Readout ─────────────────────── */}
-        <Flex align="center" justify="between">
+        <div>
           <span>
             Drawer Open: <strong>{String(isOpen)}</strong>
           </span>
@@ -628,7 +606,7 @@ export default function ConfigTestPage() {
           <span>
             Size: <strong>{size}</strong>
           </span>
-        </Flex>
+        </div>
 
         {/* ── Drawer Component Instance ────────────────────────── */}
         <Drawer
@@ -639,15 +617,15 @@ export default function ConfigTestPage() {
           closeOnOverlayClick={closeOnOverlayClick}
           closeOnEsc={closeOnEsc}>
           {/* Drawer Header */}
-          <Flex>
-            <Flex>
-              <Heading level={5}>
+          <div>
+            <div>
+              <h5>
                 {placement.charAt(0).toUpperCase() + placement.slice(1)} Drawer
-              </Heading>
-              <Text>
+              </h5>
+              <p>
                 Configured with size: <span className="font-mono">{size}</span>
-              </Text>
-            </Flex>
+              </p>
+            </div>
             <Button
               type="button"
               onClick={() => setIsOpen(false)}
@@ -655,25 +633,25 @@ export default function ConfigTestPage() {
               className="p-1 rounded-md hover:bg-muted text-muted-foreground hover:text-foreground transition-colors cursor-pointer">
               ✕
             </Button>
-          </Flex>
+          </div>
 
           {/* Drawer Body */}
-          <Container className="flex-1 overflow-y-auto p-4 space-y-4">
-            <Text className="text-sm text-foreground/80 leading-relaxed">
+          <section className="flex-1 overflow-y-auto p-4 space-y-4">
+            <p className="text-sm text-foreground/80 leading-relaxed">
               This surface rendered smoothly using Framer Motion and `asheeui`
               responsive CSS variables.
-            </Text>
+            </p>
 
-            <Container>
-              <Text as="label">Example Field inside Drawer</Text>
+            <section>
+              <p>Example Field inside Drawer</p>
               <Input
                 type="text"
                 placeholder="Type something here..."
                 className="w-full px-3 py-2 text-sm rounded-md border border-border bg-background focus:outline-none focus:ring-2 focus:ring-primary"
               />
-            </Container>
+            </section>
 
-            <Container className="p-3 bg-muted/50 rounded-lg text-xs space-y-1">
+            <section className="p-3 bg-muted/50 rounded-lg text-xs space-y-1">
               <p className="font-semibold">Test Checklist:</p>
               <ul className="list-disc list-inside space-y-0.5 text-muted-foreground">
                 <li>
@@ -686,11 +664,11 @@ export default function ConfigTestPage() {
                 <li>Click overlay outside to dismiss</li>
                 <li>Observe slide & backdrop animation</li>
               </ul>
-            </Container>
-          </Container>
+            </section>
+          </section>
 
           {/* Drawer Footer */}
-          <Flex direction="row">
+          <div>
             <Button
               color="danger"
               type="button"
@@ -704,12 +682,12 @@ export default function ConfigTestPage() {
               className="px-4 py-2 rounded-md bg-primary text-primary-foreground text-xs font-medium hover:opacity-90 transition-opacity cursor-pointer">
               Save Changes
             </Button>
-          </Flex>
+          </div>
         </Drawer>
-      </Container>
+      </section>
 
-      <Container>
-        <Heading level={4}>Controlled Component</Heading>
+      <section>
+        <h4>Controlled Component</h4>
 
         <Switch
           label="Push Notifications"
@@ -724,7 +702,7 @@ export default function ConfigTestPage() {
             {isNotificationsEnabled ? "Active (true)" : "Inactive (false)"}
           </strong>
         </p>
-      </Container>
+      </section>
     </main>
   );
 }

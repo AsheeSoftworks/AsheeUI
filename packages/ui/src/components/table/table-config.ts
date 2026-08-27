@@ -1,9 +1,10 @@
 import type { ReactNode } from "react";
 import { registerComponentDefaults } from "../../libs/registry";
+import type { Radius } from "../../shared/radius";
+import type { Size } from "../../shared/size";
 import type { Color } from "../../shared/variant";
-import type { Radius } from "../../theme/radius/radius-config";
 
-export type TableSizeKey = "sm" | "md" | "lg";
+export type TableSizeKey = Size;
 export type TableVariant = "default" | "striped" | "bordered" | "flush";
 
 export interface ColumnDef<TData> {
@@ -19,7 +20,7 @@ export interface TableConfig {
   size?: TableSizeKey;
   variant?: TableVariant;
   color?: Color;
-  radius?: keyof Radius;
+  radius?: Radius;
   className?: string;
   headerClassName?: string;
   rowClassName?: string;
@@ -31,11 +32,15 @@ export const defaultTableConfig: TableConfig = {
   variant: "default",
 };
 
-export const FALLBACK_TABLE_CONFIG = {
-  size: "md" as TableSizeKey,
-  variant: "default" as TableVariant,
-  color: "primary" as Color,
-  radius: "md" as keyof Radius,
+export const FALLBACK_TABLE_CONFIG: Required<TableConfig> = {
+  size: "md",
+  variant: "default",
+  color: "primary",
+  radius: "md",
+  className: "",
+  headerClassName: "",
+  rowClassName: "",
+  cellClassName: "",
 } as const;
 
 declare module "../../libs/registry" {

@@ -10,7 +10,6 @@ export interface MarqueeConfig {
   gap?: string;
   pauseOnHover?: boolean;
   fadeEdges?: boolean;
-  className?: string;
 }
 
 export const defaultMarqueeConfig: MarqueeConfig = {
@@ -18,8 +17,8 @@ export const defaultMarqueeConfig: MarqueeConfig = {
   direction: "forward",
   speed: "normal",
   gap: "1.5rem",
-  pauseOnHover: true,
-  fadeEdges: true,
+  pauseOnHover: false,
+  fadeEdges: false,
 };
 
 export const FALLBACK_MARQUEE_CONFIG = {

@@ -1,10 +1,9 @@
 "use client";
 
 import { cn } from "@asheeui/utils";
-import { AnimatePresence, type HTMLMotionProps, motion } from "framer-motion";
 import { type HTMLAttributes, type ReactNode, useEffect } from "react";
 import { useAsheeConfig } from "../../libs/context";
-import type { Radius } from "../../theme/radius/radius-config";
+import { RADIUS_CLASS, type Radius } from "../../shared/radius";
 import {
   resolveCascade,
   resolveClassKey,
@@ -17,16 +16,15 @@ import {
   type ModalPosition,
   type ModalSizeKey,
 } from "./modal-config";
-import { resolveModalAnimation } from "./modal-motion";
 import {
+  MODAL_ANIMATION_CLASS,
   MODAL_MAX_WIDTH_CLASS,
   MODAL_PADDING_CLASS,
   MODAL_POSITION_CLASS,
-  MODAL_RADIUS_CLASS,
 } from "./modal-styles";
 
 export interface ModalProps
-  extends Omit<HTMLAttributes<HTMLDivElement>, "ref" | "size"> {
+  extends Omit<HTMLAttributes<HTMLDivElement>, "size"> {
   /** Controls open visibility state. */
   isOpen: boolean;
 
@@ -52,9 +50,9 @@ export interface ModalProps
   position?: ModalPosition;
 
   /** Radius scale token for modal content box. */
-  radius?: keyof Radius;
+  radius?: Radius;
 
-  /** Motion animation preset. */
+  /** Motion animation preset using Tailwind. */
   animation?: ModalAnimationPreset;
 
   /** Close modal when clicking dark backdrop overlay. Default: true. */
@@ -92,7 +90,7 @@ export function Modal({
   const config = useAsheeConfig();
   const sectionConfig = config.components?.modal as ModalConfig | undefined;
 
-  // ─── 1. Token Resolvers (4-Tier Cascade) ──────────────────────────────────
+  // ─── 1. Token Resolvers ──────────────────────────────────────────────────
 
   const resolvedSizeKey = resolveCascade<ModalSizeKey>(
     size,
@@ -123,18 +121,22 @@ export function Modal({
   );
 
   const resolvedRadiusKey = resolveRadiusKey(
-    typeof radius === "string" ? radius : undefined,
-    typeof sectionConfig?.radius === "string" ? sectionConfig : undefined,
-    config.theme.radius?.default,
+    radius,
+    sectionConfig?.radius,
+    config.defaultRadius as Radius,
     FALLBACK_MODAL_CONFIG.radius,
   );
 
-  const resolvedAnimation =
-    animation ?? sectionConfig?.animation ?? FALLBACK_MODAL_CONFIG.animation;
+  const resolvedAnimation = resolveCascade<ModalAnimationPreset>(
+    animation,
+    sectionConfig?.animation,
+    undefined,
+    FALLBACK_MODAL_CONFIG.animation,
+  );
 
   // ─── 2. Class Maps ────────────────────────────────────────────────────────
 
-  const maxWidthClass = width
+  const widthClass = width
     ? ""
     : resolveClassKey(
         resolvedSizeKey,
@@ -151,18 +153,19 @@ export function Modal({
       );
 
   const radiusClass = resolveClassKey(
-    resolvedRadiusKey,
-    MODAL_RADIUS_CLASS,
+    resolvedRadiusKey as Radius,
+    RADIUS_CLASS,
     FALLBACK_MODAL_CONFIG.radius,
   );
 
   const positionClass =
     MODAL_POSITION_CLASS[position] ?? MODAL_POSITION_CLASS.center;
 
-  const motionProps = resolveModalAnimation(
+  const animationClass = resolveClassKey(
     resolvedAnimation,
-    position,
-  ) as unknown as Partial<HTMLMotionProps<"div">>;
+    MODAL_ANIMATION_CLASS,
+    FALLBACK_MODAL_CONFIG.animation,
+  );
 
   // Keyboard Escape Handler
   useEffect(() => {
@@ -186,52 +189,47 @@ export function Modal({
     };
   }, [isOpen]);
 
-  return (
-    <AnimatePresence>
-      {isOpen && (
-        <div
-          role="dialog"
-          aria-modal="true"
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 overflow-y-auto">
-          {/* Backdrop Overlay */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.15 }}
-            onClick={closeOnBackdropClick ? onClose : undefined}
-            className={cn(
-              "fixed inset-0 bg-background/80 backdrop-blur-xs dark:bg-black/70",
-              sectionConfig?.overlayClassName,
-              overlayClassName,
-            )}
-          />
+  if (!isOpen) return null;
 
-          {/* Modal Content Box */}
-          <motion.div
-            {...motionProps}
-            className={cn(
-              "relative z-10 w-full bg-background text-foreground overflow-y-auto scrollbar-hide max-h-[90vh]",
-              positionClass,
-              maxWidthClass,
-              paddingClass,
-              radiusClass,
-              sectionConfig?.contentClassName,
-              contentClassName,
-              className,
-            )}
-            style={{
-              width,
-              height,
-              ...(padding ? { padding } : {}),
-              ...style,
-            }}
-            {...(props as HTMLMotionProps<"div">)}>
-            {children}
-          </motion.div>
-        </div>
-      )}
-    </AnimatePresence>
+  return (
+    <div
+      role="dialog"
+      aria-modal="true"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 overflow-y-auto">
+      {/* Backdrop Overlay */}
+      <button
+        type="button"
+        onClick={closeOnBackdropClick ? onClose : undefined}
+        className={cn(
+          "fixed inset-0 bg-background/80 backdrop-blur-xs dark:bg-black/70 animate-in fade-in-0 duration-150",
+          sectionConfig?.overlayClassName,
+          overlayClassName,
+        )}
+      />
+
+      {/* Modal Content Box */}
+      <div
+        className={cn(
+          "relative z-10 w-full bg-background text-foreground overflow-y-auto scrollbar-hide max-h-[90vh]",
+          positionClass,
+          widthClass,
+          paddingClass,
+          radiusClass,
+          animationClass,
+          sectionConfig?.contentClassName,
+          contentClassName,
+          className,
+        )}
+        style={{
+          width,
+          height,
+          ...(padding ? { padding } : {}),
+          ...style,
+        }}
+        {...props}>
+        {children}
+      </div>
+    </div>
   );
 }
 
