@@ -3,7 +3,7 @@ import { registerComponentDefaults } from "../../libs/registry";
 import type { Radius } from "../../shared/radius";
 import type { Size } from "../../shared/size";
 
-export type CarouselVariant = "default" | "cards" | "bordered" | "ghost";
+export type CarouselVariant = "bordered" | "ghost";
 
 export interface CarouselItem {
   id?: string;
@@ -43,7 +43,7 @@ registerComponentDefaults("carousel", defaultCarouselConfig);
 
 export const FALLBACK_CAROUSEL_CONFIG = {
   size: "md",
-  variant: "default",
+  variant: "bordered",
   radius: "lg",
   autoPlay: false,
   autoPlayInterval: 5000,

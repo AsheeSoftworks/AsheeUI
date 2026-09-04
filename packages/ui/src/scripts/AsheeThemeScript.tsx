@@ -1,8 +1,8 @@
 /// <reference path="../virtual-config.d.ts" />
 import externalConfig from "virtual:ashee-config";
 import { resolveConfig } from "../config/resolve-config";
-import { THEME_STORAGE_KEY } from "../theme/controller";
 import type { ColorConfig, ColorVariant } from "../theme/color";
+import { THEME_STORAGE_KEY } from "../theme/controller";
 
 const VAR_MAP: Record<keyof ColorVariant, string> = {
   background: "--ashee-background",

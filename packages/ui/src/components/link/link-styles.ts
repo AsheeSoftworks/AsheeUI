@@ -27,7 +27,7 @@ export const LINK_COLOR_CLASS: Record<Color | string, string> = {
 
 export const LINK_VARIANT_CLASS: Record<LinkVariant, string> = {
   default: "",
-  muted: "text-muted-foreground hover:text-foreground",
+  muted: "text-foreground/70 hover:text-foreground",
   subtle: "opacity-80 hover:opacity-100",
 };
 

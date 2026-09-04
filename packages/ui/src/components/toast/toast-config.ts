@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { registerComponentDefaults } from "../../libs/registry";
 import type { Radius } from "../../shared/radius";
+import type { Size } from "../../shared/size";
 import type { Variant } from "../../shared/variant";
 
 export type ToastType = "success" | "error" | "info" | "warning" | "default";
@@ -11,7 +12,7 @@ export type ToastPlacement =
   | "bottom-left"
   | "top-center"
   | "bottom-center";
-export type ToastSizeKey = "sm" | "md" | "lg" | "xl";
+export type ToastSizeKey = Size;
 
 export interface ToastItemData {
   id: string;
@@ -29,16 +30,17 @@ export interface ToastConfig {
   placement?: ToastPlacement;
   variant?: Variant;
   radius?: Radius;
+  animated?: boolean;
   defaultTimeout?: number;
   maxToasts?: number;
-  className?: string;
-  itemClassName?: string;
 }
 
 export const defaultToastConfig: ToastConfig = {
   size: "md",
   placement: "top-right",
-  variant: "ghost",
+  variant: "bordered",
+  radius: "md",
+  animated: true,
   defaultTimeout: 3500,
   maxToasts: 5,
 };
@@ -48,10 +50,9 @@ export const FALLBACK_TOAST_CONFIG = {
   placement: "top-right" as ToastPlacement,
   variant: "solid" as Variant,
   radius: "md" as Radius,
+  animated: true,
   defaultTimeout: 3500,
   maxToasts: 5,
-  className: "",
-  itemClassName: "",
 } as const;
 
 declare module "../../libs/registry" {

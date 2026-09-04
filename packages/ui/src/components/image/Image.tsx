@@ -3,7 +3,7 @@
 import { cn } from "@asheeui/utils";
 import { forwardRef, type ImgHTMLAttributes, useEffect, useState } from "react";
 import { useAsheeConfig } from "../../libs/context";
-import type { Radius } from "../../shared/radius";
+import { RADIUS_CLASS, type Radius } from "../../shared/radius";
 import {
   resolveCascade,
   resolveClassKey,
@@ -15,11 +15,7 @@ import {
   type ImageFit,
   type ImageRatioKey,
 } from "./image-config";
-import {
-  IMAGE_FIT_CLASS,
-  IMAGE_RADIUS_CLASS,
-  IMAGE_RATIO_CLASS,
-} from "./image-styles";
+import { IMAGE_FIT_CLASS, IMAGE_RATIO_CLASS } from "./image-styles";
 
 export interface ImageProps
   extends Omit<ImgHTMLAttributes<HTMLImageElement>, "children" | "alt"> {
@@ -114,14 +110,14 @@ export const Image = forwardRef<HTMLImageElement, ImageProps>(
 
     const radiusClass = resolveClassKey(
       resolvedRadiusKey as Radius,
-      IMAGE_RADIUS_CLASS,
+      RADIUS_CLASS,
       FALLBACK_IMAGE_CONFIG.radius,
     );
 
     return (
       <span
         className={cn(
-          "relative block overflow-hidden shrink-0",
+          "relative block w-full overflow-hidden",
           ratioClass,
           radiusClass,
         )}>
@@ -150,7 +146,6 @@ export const Image = forwardRef<HTMLImageElement, ImageProps>(
             "h-full w-full transition-opacity duration-300",
             fitClass,
             isLoaded ? "opacity-100" : "opacity-0",
-            sectionConfig?.className,
             className,
           )}
           {...rest}

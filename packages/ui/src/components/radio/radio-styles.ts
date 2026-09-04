@@ -36,11 +36,11 @@ export const RADIO_COLOR_CLASS: Record<
   none: {
     border: "border-border",
     bg: "bg-foreground",
-    cardBg: "bg-muted/10",
+    cardBg: "bg-secondary/10",
   },
   default: {
     border: "border-secondary",
-    bg: "bg-secondary-foreground",
+    bg: "bg--foreground/70",
     cardBg: "bg-secondary/10",
   },
   primary: {

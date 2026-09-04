@@ -63,7 +63,7 @@ const MOCK_USERS: User[] = [
 
 export default function TableDemo() {
   const [selectedId, setSelectedId] = useState<string | number>("usr_2");
-  const [variant, setVariant] = useState<TableVariant>("default");
+  const [variant, setVariant] = useState<TableVariant>("grid");
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [lastAction, setLastAction] = useState<string>("None");
 
@@ -86,7 +86,7 @@ export default function TableDemo() {
       cell: (user) => (
         <div className="flex flex-col">
           <span className="font-medium">{user.name}</span>
-          <span className="text-xs text-muted-foreground">{user.email}</span>
+          <span className="text-xs text-foreground/70">{user.email}</span>
         </div>
       ),
     },
@@ -137,7 +137,7 @@ export default function TableDemo() {
             e.stopPropagation(); // Prevents triggers on parent row
             setLastAction(`Clicked action button for ${user.name}`);
           }}
-          className="px-2 py-1 text-xs border border-border rounded hover:bg-muted transition-colors">
+          className="px-2 py-1 text-xs border border-border rounded hover:bg-secondary transition-colors">
           Manage
         </button>
       ),
@@ -148,19 +148,19 @@ export default function TableDemo() {
     <div className="max-w-5xl mx-auto p-8 space-y-8 font-sans">
       <div>
         <h1 className="text-2xl font-bold mb-1">Table Component Test Suite</h1>
-        <p className="text-sm text-muted-foreground">
+        <p className="text-sm text-foreground/70">
           Interactive evaluation for grid renderers, selection events, and
           design tokens.
         </p>
       </div>
 
       {/* ─── CONTROLS BAR ──────────────────────────────────────────────────────── */}
-      <div className="flex flex-wrap items-center justify-between gap-4 p-4 rounded-xl border bg-card">
+      <div className="flex flex-wrap items-center justify-between gap-4 p-4 rounded-xl border bg-secondary">
         {/* Search Input */}
         <div className="flex items-center gap-2">
           <label
             htmlFor="table-search"
-            className="text-xs font-semibold uppercase text-muted-foreground">
+            className="text-xs font-semibold uppercase text-foreground/70">
             Filter:
           </label>
           <input
@@ -175,10 +175,10 @@ export default function TableDemo() {
 
         {/* Variant Selectors */}
         <div className="flex items-center gap-2">
-          <span className="text-xs font-semibold uppercase text-muted-foreground">
+          <span className="text-xs font-semibold uppercase text-foreground/70">
             Variant:
           </span>
-          {(["default", "striped", "bordered", "flush"] as TableVariant[]).map(
+          {(["default", "striped", "bordered", "ghost"] as TableVariant[]).map(
             (v) => (
               <button
                 key={v}
@@ -187,7 +187,7 @@ export default function TableDemo() {
                 className={`px-3 py-1 text-xs font-medium rounded-md capitalize transition-colors ${
                   variant === v
                     ? "bg-primary text-primary-foreground"
-                    : "border border-border hover:bg-muted"
+                    : "border border-border hover:bg-secondary"
                 }`}>
                 {v}
               </button>
@@ -214,9 +214,9 @@ export default function TableDemo() {
           emptyMessage={
             <div className="py-8 space-y-2">
               <p className="text-base font-semibold">No users found</p>
-              <p className="text-xs text-muted-foreground">
+              <p className="text-xs text-foreground/70">
                 Try clearing your search term{" "}
-                <code className="bg-muted px-1.5 py-0.5 rounded">
+                <code className="bg-secondary px-1.5 py-0.5 rounded">
                   &quot;{searchQuery}&quot;
                 </code>
               </p>
@@ -227,8 +227,8 @@ export default function TableDemo() {
 
       {/* ─── EVENT READOUT & STATE LOG ────────────────────────────────────────── */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="p-4 rounded-xl border bg-card text-xs space-y-2">
-          <div className="font-semibold text-muted-foreground uppercase">
+        <div className="p-4 rounded-xl border bg-secondary text-xs space-y-2">
+          <div className="font-semibold text-foreground/70 uppercase">
             Selected Row State
           </div>
           <div className="font-mono">
@@ -240,13 +240,13 @@ export default function TableDemo() {
                 </span>
               </div>
             ) : (
-              <div className="text-muted-foreground">No row selected</div>
+              <div className="text-foreground/70">No row selected</div>
             )}
           </div>
         </div>
 
-        <div className="p-4 rounded-xl border bg-card text-xs space-y-2">
-          <div className="font-semibold text-muted-foreground uppercase">
+        <div className="p-4 rounded-xl border bg-secondary text-xs space-y-2">
+          <div className="font-semibold text-foreground/70 uppercase">
             Last Registered Event
           </div>
           <div className="font-mono text-foreground">{lastAction}</div>

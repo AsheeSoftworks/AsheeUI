@@ -143,13 +143,13 @@ function TimeSpinner({
 
   return (
     <div className="flex flex-col items-center gap-0.5">
-      <span className="text-[10px] uppercase tracking-widest text-muted-foreground select-none">
+      <span className="text-[10px] uppercase tracking-widest text-foreground/70 select-none">
         {label}
       </span>
       <button
         type="button"
         className={cn(
-          "w-10 h-7 flex items-center justify-center text-xs text-muted-foreground transition-colors",
+          "w-10 h-7 flex items-center justify-center text-xs text-foreground/70 transition-colors",
           radiusClass,
           colorStyles.hover,
         )}
@@ -167,7 +167,7 @@ function TimeSpinner({
       <button
         type="button"
         className={cn(
-          "w-10 h-7 flex items-center justify-center text-xs text-muted-foreground transition-colors",
+          "w-10 h-7 flex items-center justify-center text-xs text-foreground/70 transition-colors",
           radiusClass,
           colorStyles.hover,
         )}
@@ -342,7 +342,7 @@ function Calendar({
             {DAYS_OF_WEEK.map((d) => (
               <div
                 key={d}
-                className="text-xs font-semibold text-muted-foreground py-1">
+                className="text-xs font-semibold text-foreground/70 py-1">
                 {d}
               </div>
             ))}
@@ -360,7 +360,7 @@ function Calendar({
                     DATE_PICKER_CELL_SIZE_CLASS[resolvedSizeKey],
                     radiusClass,
                     isDisabled(day)
-                      ? "opacity-30 cursor-not-allowed text-muted-foreground"
+                      ? "opacity-30 cursor-not-allowed text-foreground/70"
                       : isSelected(day)
                         ? cn(colorStyles.bg, "font-semibold")
                         : isToday(day)
@@ -386,7 +386,7 @@ function Calendar({
             resolvedColor={resolvedColor}
             radiusClass={radiusClass}
           />
-          <span className="text-xl font-bold text-muted-foreground select-none pt-3">
+          <span className="text-xl font-bold text-foreground/70 select-none pt-3">
             :
           </span>
           <TimeSpinner
@@ -410,7 +410,7 @@ function Calendar({
                 onSelect(null);
                 onClose();
               }}
-              className="text-xs text-muted-foreground hover:text-danger transition-colors">
+              className="text-xs text-foreground/70 hover:text-danger transition-colors">
               Clear
             </button>
           )}
@@ -558,9 +558,21 @@ export const DatePicker = forwardRef<HTMLDivElement, DatePickerProps>(
     const resolvedMode =
       mode ?? sectionConfig?.mode ?? FALLBACK_DATE_PICKER_CONFIG.mode;
 
+    const resolvedStatusColor: Color =
+      resolvedStatus === "error"
+        ? "danger"
+        : resolvedStatus === "success"
+          ? "success"
+          : resolvedStatus === "warning"
+            ? "warning"
+            : resolvedColor;
+
     // ─── 2. Class Maps ────────────────────────────────────────────────────────
 
-    const variantClass = resolveVariantClass(resolvedVariant, resolvedColor);
+    const variantClass = resolveVariantClass(
+      resolvedVariant,
+      resolvedStatusColor,
+    );
     const statusClass =
       resolvedStatus !== "default"
         ? DATE_PICKER_STATUS_BORDER_CLASS[resolvedStatus]
@@ -573,6 +585,12 @@ export const DatePicker = forwardRef<HTMLDivElement, DatePickerProps>(
             RADIUS_CLASS,
             FALLBACK_DATE_PICKER_CONFIG.radius,
           );
+
+    const calenderRadiusClass = resolveClassKey(
+      resolvedRadiusKey === "full" ? "xl" : resolvedRadiusKey,
+      RADIUS_CLASS,
+      FALLBACK_DATE_PICKER_CONFIG.radius,
+    );
 
     const handleSelect = useCallback(
       (date: Date | null) => onChange?.(date),
@@ -604,10 +622,7 @@ export const DatePicker = forwardRef<HTMLDivElement, DatePickerProps>(
         message={message}
         status={resolvedStatus}
         required={required}
-        isLoading={isLoading}
-        labelClassName={sectionConfig?.labelClassName}
-        descriptionClassName={sectionConfig?.descriptionClassName}
-        messageClassName={sectionConfig?.messageClassName}>
+        isLoading={isLoading}>
         <div className="w-full relative inline-block">
           {/* Trigger Box */}
           <div
@@ -631,14 +646,13 @@ export const DatePicker = forwardRef<HTMLDivElement, DatePickerProps>(
               variantClass,
               statusClass,
               radiusClass,
-              sectionConfig?.className,
               className,
             )}
             style={style}
             {...getReferenceProps()}>
             <span
               className={
-                displayValue ? "text-foreground" : "text-muted-foreground"
+                displayValue ? "text-foreground" : "text-foreground/70"
               }>
               {displayValue ?? displayPlaceholder}
             </span>
@@ -649,11 +663,11 @@ export const DatePicker = forwardRef<HTMLDivElement, DatePickerProps>(
                   type="button"
                   onClick={handleClear}
                   aria-label="Clear selection"
-                  className="p-0.5 rounded text-muted-foreground hover:text-foreground transition-colors">
+                  className="p-0.5 rounded text-foreground/70 hover:text-foreground transition-colors">
                   <ClearIcon className="size-3.5" />
                 </button>
               )}
-              <span className="text-muted-foreground pointer-events-none">
+              <span className="text-foreground/70 pointer-events-none">
                 {resolvedMode === "time" ? <ClockIcon /> : <CalendarIcon />}
               </span>
             </div>
@@ -677,7 +691,7 @@ export const DatePicker = forwardRef<HTMLDivElement, DatePickerProps>(
                     onClose={handleClose}
                     disableFuture={disableFuture}
                     resolvedColor={resolvedColor}
-                    radiusClass={radiusClass}
+                    radiusClass={calenderRadiusClass}
                   />
                 </div>
               </div>

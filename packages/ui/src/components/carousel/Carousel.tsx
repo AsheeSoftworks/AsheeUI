@@ -186,7 +186,8 @@ export const Carousel = forwardRef<HTMLDivElement, CarouselProps>(
     );
 
     const variantClass =
-      CAROUSEL_VARIANT_CLASS[resolvedVariant] ?? CAROUSEL_VARIANT_CLASS.default;
+      CAROUSEL_VARIANT_CLASS[resolvedVariant] ??
+      CAROUSEL_VARIANT_CLASS.bordered;
 
     const slides: CarouselItem[] = useMemo(() => {
       if (items.length > 0) return items;

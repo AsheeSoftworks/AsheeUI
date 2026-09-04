@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 import { registerComponentDefaults } from "../../libs/registry";
 import type { Radius } from "../../shared/radius";
 
-export type AccordionVariant = "bordered" | "separated" | "flush" | "ghost";
+export type AccordionVariant = "bordered" | "separated" | "ghost" | "flush";
 export type AccordionSizeKey = "sm" | "md" | "lg";
 
 export interface AccordionItem {
@@ -19,7 +19,6 @@ export interface AccordionConfig {
   size?: AccordionSizeKey;
   radius?: Radius;
   allowMultiple?: boolean;
-  className?: string;
 }
 
 export const defaultAccordionConfig: AccordionConfig = {

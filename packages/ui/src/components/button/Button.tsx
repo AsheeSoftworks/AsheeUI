@@ -36,18 +36,12 @@ type CleanButtonProps = Omit<
   "color" | "disabled" | "className" | "children"
 >;
 
-type BaseButtonProps = ButtonCommonProps &
+type ButtonProps = ButtonCommonProps &
   CleanButtonProps & {
     type?: "button" | "submit" | "reset";
+    icon?: boolean;
+    children?: ReactNode;
   };
-
-export type ButtonProps =
-  | (BaseButtonProps & { icon?: false; children: ReactNode })
-  | (BaseButtonProps & {
-      icon: true;
-      "aria-label": string;
-      children?: ReactNode;
-    });
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
   (props, ref) => {
@@ -95,7 +89,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     const resolvedRadiusKey = resolveRadiusKey(
       radius,
       sectionConfig?.radius,
-      config.defaultRadius as Radius,
+      config.defaultRadius,
       FALLBACK_BUTTON_CONFIG.radius,
     );
 
@@ -137,7 +131,11 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         "motion-safe:transition-transform motion-safe:duration-100 motion-safe:active:scale-[0.99]",
       resolveVariantClass(resolvedVariant, resolvedColor),
       sizeClasses,
-      resolveClassKey(resolvedRadiusKey as Radius, RADIUS_CLASS, "md"),
+      resolveClassKey(
+        resolvedRadiusKey,
+        RADIUS_CLASS,
+        FALLBACK_BUTTON_CONFIG.radius,
+      ),
       className,
     );
 

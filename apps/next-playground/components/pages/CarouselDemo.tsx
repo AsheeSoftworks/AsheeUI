@@ -1,11 +1,11 @@
 "use client";
 
 import {
-  type Radius,
   Carousel,
   type CarouselItem,
-  type Size,
   type CarouselVariant,
+  type Radius,
+  type Size,
 } from "asheeui";
 import { useState } from "react";
 
@@ -84,13 +84,13 @@ const PRODUCT_ITEMS: CarouselItem[] = [
   {
     id: "prod-1",
     content: (
-      <div className="p-6 bg-card rounded-lg flex items-center justify-between gap-4 w-full">
+      <div className="p-6 bg-secondary rounded-lg flex items-center justify-between gap-4 w-full">
         <div>
           <span className="text-xs font-medium text-primary">In Stock</span>
           <h3 className="text-lg font-semibold text-foreground">
             Pro Audio Headphones
           </h3>
-          <p className="text-sm text-muted-foreground">$299.00</p>
+          <p className="text-sm text-foreground/70">$299.00</p>
         </div>
         <div className="w-16 h-16 rounded-lg bg-primary/10 flex items-center justify-center text-primary font-bold">
           🎧
@@ -101,7 +101,7 @@ const PRODUCT_ITEMS: CarouselItem[] = [
   {
     id: "prod-2",
     content: (
-      <div className="p-6 bg-card rounded-lg flex items-center justify-between gap-4 w-full">
+      <div className="p-6 bg-secondary rounded-lg flex items-center justify-between gap-4 w-full">
         <div>
           <span className="text-xs font-medium text-emerald-500">
             Sale -20%
@@ -109,7 +109,7 @@ const PRODUCT_ITEMS: CarouselItem[] = [
           <h3 className="text-lg font-semibold text-foreground">
             Mechanical Keyboard
           </h3>
-          <p className="text-sm text-muted-foreground">$149.00</p>
+          <p className="text-sm text-foreground/70">$149.00</p>
         </div>
         <div className="w-16 h-16 rounded-lg bg-emerald-500/10 flex items-center justify-center text-emerald-500 font-bold">
           ⌨️
@@ -120,13 +120,13 @@ const PRODUCT_ITEMS: CarouselItem[] = [
   {
     id: "prod-3",
     content: (
-      <div className="p-6 bg-card rounded-lg flex items-center justify-between gap-4 w-full">
+      <div className="p-6 bg-secondary rounded-lg flex items-center justify-between gap-4 w-full">
         <div>
           <span className="text-xs font-medium text-amber-500">Pre-Order</span>
           <h3 className="text-lg font-semibold text-foreground">
             Ultra-Wide Monitor
           </h3>
-          <p className="text-sm text-muted-foreground">$799.00</p>
+          <p className="text-sm text-foreground/70">$799.00</p>
         </div>
         <div className="w-16 h-16 rounded-lg bg-amber-500/10 flex items-center justify-center text-amber-500 font-bold">
           🖥️
@@ -140,7 +140,7 @@ const PRODUCT_ITEMS: CarouselItem[] = [
 
 export default function CarouselDemoPage() {
   // Playground State Knobs
-  const [variant, setVariant] = useState<CarouselVariant>("default");
+  const [variant, setVariant] = useState<CarouselVariant>("ghost");
   const [size, setSize] = useState<Size>("md");
   const [radius, setRadius] = useState<Radius>("lg");
   const [autoPlay, setAutoPlay] = useState<boolean>(true);
@@ -151,9 +151,6 @@ export default function CarouselDemoPage() {
   const [pauseOnHover, setPauseOnHover] = useState<boolean>(true);
   const [disableAnimation, setDisableAnimation] = useState<boolean>(false);
 
-  // Controlled Carousel State
-  const [controlledIndex, setControlledIndex] = useState<number>(0);
-
   return (
     <div className="min-h-screen bg-background text-foreground p-6 md:p-12 space-y-16 max-w-7xl mx-auto">
       {/* Header */}
@@ -161,7 +158,7 @@ export default function CarouselDemoPage() {
         <h1 className="text-3xl font-bold tracking-tight">
           Carousel Component Test Suite
         </h1>
-        <p className="text-muted-foreground text-sm">
+        <p className="text-foreground/70 text-sm">
           Interactive test cases for props, sizing scales, custom render
           controls, and state management.
         </p>
@@ -178,7 +175,7 @@ export default function CarouselDemoPage() {
 
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
           {/* Main Carousel Display */}
-          <div className="lg:col-span-3 flex items-center justify-center bg-card/40 p-4 rounded-xl border border-border">
+          <div className="lg:col-span-3 flex items-center justify-center bg-secondary/40 p-4 rounded-xl border border-border">
             <Carousel
               items={HERO_SLIDES}
               variant={variant}
@@ -195,16 +192,14 @@ export default function CarouselDemoPage() {
           </div>
 
           {/* Controls Panel */}
-          <div className="bg-card p-5 border border-border rounded-xl space-y-5 text-sm">
+          <div className="bg-secondary p-5 border border-border rounded-xl space-y-5 text-sm">
             <h3 className="font-semibold text-base border-b border-border pb-2">
               Properties
             </h3>
 
             {/* Variant */}
             <div className="space-y-1.5">
-              <p className="text-xs font-medium text-muted-foreground">
-                Variant
-              </p>
+              <p className="text-xs font-medium text-foreground/70">Variant</p>
               <select
                 value={variant}
                 onChange={(e) => setVariant(e.target.value as CarouselVariant)}
@@ -218,8 +213,8 @@ export default function CarouselDemoPage() {
 
             {/* Size */}
             <div className="space-y-1.5">
-              <p className="text-xs font-medium text-muted-foreground">Size</p>
-              <div className="grid grid-cols-3 gap-1 bg-muted p-1 rounded-md">
+              <p className="text-xs font-medium text-foreground/70">Size</p>
+              <div className="grid grid-cols-3 gap-1 bg-secondary p-1 rounded-md">
                 {(["sm", "md", "lg"] as Size[]).map((s) => (
                   <button
                     type="button"
@@ -230,7 +225,7 @@ export default function CarouselDemoPage() {
                       ${
                         size === s
                           ? "bg-background text-foreground shadow-xs"
-                          : "text-muted-foreground hover:text-foreground"
+                          : "text-foreground/70 hover:text-foreground"
                       }
                     `}>
                     {s}
@@ -241,7 +236,7 @@ export default function CarouselDemoPage() {
 
             {/* Radius */}
             <div className="space-y-1.5">
-              <p className="text-xs font-medium text-muted-foreground">
+              <p className="text-xs font-medium text-foreground/70">
                 Radius Key
               </p>
               <select
@@ -260,7 +255,7 @@ export default function CarouselDemoPage() {
             {/* AutoPlay Interval */}
             <div className="space-y-1.5">
               <div className="flex justify-between text-xs">
-                <span className="font-medium text-muted-foreground">
+                <span className="font-medium text-foreground/70">
                   Autoplay Speed
                 </span>
                 <span>{autoPlayInterval}ms</span>
@@ -305,7 +300,7 @@ export default function CarouselDemoPage() {
                 <p
                   key={toggle.label}
                   className="flex items-center justify-between cursor-pointer py-1">
-                  <span className="text-xs text-muted-foreground">
+                  <span className="text-xs text-foreground/70">
                     {toggle.label}
                   </span>
                   <input
@@ -322,15 +317,15 @@ export default function CarouselDemoPage() {
       </section>
 
       {/* ─── SECTION 2: CONTROLLED CAROUSEL & EXTERNAL NAVIGATION ─────────── */}
-      <section className="space-y-6">
+      {/* <section className="space-y-6">
         <div>
           <h2 className="text-xl font-semibold">
             2. Controlled State & Thumbnail Sync
           </h2>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-sm text-foreground/70">
             Control slide navigation state externally using{" "}
-            <code className="text-xs bg-muted p-1 rounded">index</code> and{" "}
-            <code className="text-xs bg-muted p-1 rounded">onIndexChange</code>.
+            <code className="text-xs bg-secondary p-1 rounded">index</code> and{" "}
+            <code className="text-xs bg-secondary p-1 rounded">onIndexChange</code>.
           </p>
         </div>
 
@@ -339,12 +334,11 @@ export default function CarouselDemoPage() {
             items={HERO_SLIDES}
             index={controlledIndex}
             onIndexChange={setControlledIndex}
-            variant="cards"
+            variant="bordered"
             size="md"
             autoPlay={false}
           />
 
-          {/* External Thumbnails / Selector */}
           <div className="flex gap-3 justify-center pt-2">
             {HERO_SLIDES.map((a, idx) => (
               <button
@@ -356,7 +350,7 @@ export default function CarouselDemoPage() {
                   ${
                     controlledIndex === idx
                       ? "bg-primary text-primary-foreground border-primary shadow-sm"
-                      : "bg-card text-muted-foreground border-border hover:border-foreground/30"
+                      : "bg-secondary text-foreground/70 border-border hover:border-foreground/30"
                   }
                 `}>
                 Jump to Slide {idx + 1}
@@ -364,19 +358,19 @@ export default function CarouselDemoPage() {
             ))}
           </div>
         </div>
-      </section>
+      </section> */}
 
       {/* ─── SECTION 3: CUSTOM CONTROL RENDER PROPS ───────────────────────── */}
       <section className="space-y-6">
         <div>
           <h2 className="text-xl font-semibold">3. Custom Render Controls</h2>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-sm text-foreground/70">
             Pass custom control elements using{" "}
-            <code className="text-xs bg-muted p-1 rounded">
+            <code className="text-xs bg-secondary p-1 rounded">
               renderPrevControl
             </code>{" "}
             and{" "}
-            <code className="text-xs bg-muted p-1 rounded">
+            <code className="text-xs bg-secondary p-1 rounded">
               renderNextControl
             </code>
             .
@@ -417,11 +411,11 @@ export default function CarouselDemoPage() {
           <h2 className="text-xl font-semibold">
             4. Standard Children Injection
           </h2>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-sm text-foreground/70">
             Passing inline JSX{" "}
-            <code className="text-xs bg-muted p-1 rounded">children</code>{" "}
+            <code className="text-xs bg-secondary p-1 rounded">children</code>{" "}
             without the{" "}
-            <code className="text-xs bg-muted p-1 rounded">items</code> prop
+            <code className="text-xs bg-secondary p-1 rounded">items</code> prop
             array.
           </p>
         </div>

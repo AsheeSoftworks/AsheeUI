@@ -13,11 +13,7 @@ export interface FieldConfig {
   variant?: Variant;
   color?: Color;
   labelAlign?: LabelAlign;
-  className?: string;
-  labelClassName?: string;
   fullWidth?: boolean;
-  descriptionClassName?: string;
-  messageClassName?: string;
   status?: FieldStatus;
 }
 
@@ -35,10 +31,6 @@ export const FALLBACK_FIELD_CONFIG: Required<FieldConfig> = {
   labelAlign: "left" as LabelAlign,
   fullWidth: false,
   status: "default",
-  className: "",
-  labelClassName: "",
-  descriptionClassName: "",
-  messageClassName: "",
 } as const;
 
 declare module "../../libs/registry" {

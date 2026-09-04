@@ -28,16 +28,33 @@ export const TOAST_TITLE_FONT_CLASS: Record<ToastSizeKey, string> = {
   xl: "text-lg font-semibold",
 };
 
-export const TOAST_ANIMATION_CLASS: Record<ToastPlacement, string> = {
-  "top-right":
-    "animate-in fade-in-0 slide-in-from-right-8 duration-200 ease-out",
-  "bottom-right":
-    "animate-in fade-in-0 slide-in-from-right-8 duration-200 ease-out",
-  "top-left": "animate-in fade-in-0 slide-in-from-left-8 duration-200 ease-out",
-  "bottom-left":
-    "animate-in fade-in-0 slide-in-from-left-8 duration-200 ease-out",
-  "top-center":
-    "animate-in fade-in-0 slide-in-from-top-8 duration-200 ease-out",
-  "bottom-center":
-    "animate-in fade-in-0 slide-in-from-bottom-8 duration-200 ease-out",
+// Simplified animation classes - just the placement and state
+export const TOAST_ANIMATION_STATE: Record<
+  ToastPlacement,
+  { enter: string; exit: string }
+> = {
+  "top-right": {
+    enter: "toast-enter-top-right",
+    exit: "toast-exit-top-right",
+  },
+  "bottom-right": {
+    enter: "toast-enter-bottom-right",
+    exit: "toast-exit-bottom-right",
+  },
+  "top-left": {
+    enter: "toast-enter-top-left",
+    exit: "toast-exit-top-left",
+  },
+  "bottom-left": {
+    enter: "toast-enter-bottom-left",
+    exit: "toast-exit-bottom-left",
+  },
+  "top-center": {
+    enter: "toast-enter-top-center",
+    exit: "toast-exit-top-center",
+  },
+  "bottom-center": {
+    enter: "toast-enter-bottom-center",
+    exit: "toast-exit-bottom-center",
+  },
 };

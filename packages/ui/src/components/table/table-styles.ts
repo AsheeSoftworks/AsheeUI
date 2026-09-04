@@ -75,9 +75,9 @@ export const TABLE_COLOR_STYLES: Record<
       "focus-visible:bg-foreground/10 focus-visible:ring-1 focus-visible:ring-border focus-visible:ring-inset",
   },
   none: {
-    selected: "bg-muted text-foreground font-medium hover:bg-muted/80",
-    hover: "hover:bg-muted/40 hover:text-foreground",
+    selected: "bg-secondary text-foreground font-medium hover:bg-secondary/80",
+    hover: "hover:bg-secondary/40 hover:text-foreground",
     focus:
-      "focus-visible:bg-muted/50 focus-visible:ring-1 focus-visible:ring-ring focus-visible:ring-inset",
+      "focus-visible:bg-secondary/50 focus-visible:ring-1 focus-visible:ring-ring focus-visible:ring-inset",
   },
 };

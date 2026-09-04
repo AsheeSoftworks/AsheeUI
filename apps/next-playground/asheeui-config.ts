@@ -2,7 +2,7 @@ import { defineConfig, type ExternalConfig } from "asheeui/config";
 
 const config: ExternalConfig = {
   defaultTheme: "company-red",
-  defaultVariant: "ghost",
+  defaultVariant: "underlined",
   defaultColor: "success",
   color: {
     dark: { primary: "#38bdf8", success: "#4ade80" },

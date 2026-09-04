@@ -1,42 +1,63 @@
 "use client";
 
 import {
-  KeyboardInput,
+  Input,
   KeyboardProvider,
   OnScreenKeyboard,
   useKeyboard,
 } from "asheeui";
+import { useState } from "react";
 
-// import { useState } from "react";
+// ─── Form Interface & Initial State ──────────────────────────────────────────
+
+interface FormDataState {
+  firstName: string;
+  lastName: string;
+  email: string;
+  zipCode: string;
+}
+
+const INITIAL_FORM_DATA: FormDataState = {
+  firstName: "",
+  lastName: "",
+  email: "",
+  zipCode: "",
+};
 
 // ─── Debug & Control Panel ────────────────────────────────────────────────────
 
-function KeyboardDebugger() {
-  const { isOpen, activeInput, inputs, forceClose, clearInputs, setInput } =
-    useKeyboard();
+interface KeyboardDebuggerProps {
+  formData: FormDataState;
+  setFormData: React.Dispatch<React.SetStateAction<FormDataState>>;
+  submittedData: FormDataState | null;
+}
 
-  //   const [submittedData, setSubmittedData] = useState<Record<
-  //     string,
-  //     string
-  //   > | null>(null);
+function KeyboardDebugger({
+  formData,
+  setFormData,
+  submittedData,
+}: KeyboardDebuggerProps) {
+  const { isOpen, forceClose } = useKeyboard();
 
   const handlePrefill = () => {
-    setInput("firstName", "John");
-    setInput("lastName", "Doe");
-    setInput("email", "john.doe@example.com");
-    setInput("zipCode", "90210");
+    setFormData({
+      firstName: "John",
+      lastName: "Doe",
+      email: "john.doe@example.com",
+      zipCode: "90210",
+    });
   };
 
-  //   const handleSubmit = (e: React.FormEvent) => {
-  //     e.preventDefault();
-  //     setSubmittedData(inputs);
-  //     forceClose();
-  //   };
+  const handleClear = () => {
+    setFormData(INITIAL_FORM_DATA);
+  };
+
+  const filledCount = Object.values(formData).filter(Boolean).length;
 
   return (
     <div className="space-y-6">
       {/* Real-time State Monitor */}
-      <div className="rounded-xl border border-border bg-card p-5 shadow-sm space-y-4">
+      <div className="rounded-xl border border-border bg-secondary p-5 shadow-sm space-y-4">
         <div className="flex items-center justify-between border-b border-border pb-3">
           <h2 className="font-semibold text-foreground text-base">
             Keyboard State Monitor
@@ -45,11 +66,11 @@ function KeyboardDebugger() {
             className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium ${
               isOpen
                 ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20"
-                : "bg-muted text-muted-foreground border border-border"
+                : "bg-secondary text-foreground/70 border border-border"
             }`}>
             <span
               className={`h-2 w-2 rounded-full ${
-                isOpen ? "bg-emerald-500 animate-pulse" : "bg-muted-foreground"
+                isOpen ? "bg-emerald-500 animate-pulse" : "bg--foreground/70"
               }`}
             />
             {isOpen ? "Active" : "Hidden"}
@@ -58,30 +79,30 @@ function KeyboardDebugger() {
 
         <div className="grid grid-cols-2 gap-4 text-sm">
           <div>
-            <span className="text-muted-foreground text-xs block mb-1">
-              Active Input ID
+            <span className="text-foreground/70 text-xs block mb-1">
+              Active Field (`name`)
             </span>
-            <code className="bg-muted px-2 py-1 rounded font-mono text-xs text-foreground block truncate">
-              {isOpen ? activeInput : "(none)"}
-            </code>
+            {/* <code className="bg-secondary px-2 py-1 rounded font-mono text-xs text-foreground block truncate">
+              {isOpen && activeInput ? activeInput : "(none)"}
+            </code> */}
           </div>
           <div>
-            <span className="text-muted-foreground text-xs block mb-1">
-              Field Count
+            <span className="text-foreground/70 text-xs block mb-1">
+              Filled Fields
             </span>
-            <code className="bg-muted px-2 py-1 rounded font-mono text-xs text-foreground block">
-              {Object.keys(inputs).length} registered
+            <code className="bg-secondary px-2 py-1 rounded font-mono text-xs text-foreground block">
+              {filledCount} / {Object.keys(formData).length} populated
             </code>
           </div>
         </div>
 
         {/* Live Values JSON */}
         <div>
-          <span className="text-muted-foreground text-xs block mb-1">
-            Live Input Values (`inputs`)
+          <span className="text-foreground/70 text-xs block mb-1">
+            React Local State (`useState`)
           </span>
-          <pre className="bg-muted/70 p-3 rounded-lg text-xs font-mono overflow-x-auto border border-border max-h-40 text-foreground">
-            {JSON.stringify(inputs, null, 2)}
+          <pre className="bg-secondary/70 p-3 rounded-lg text-xs font-mono overflow-x-auto border border-border max-h-40 text-foreground">
+            {JSON.stringify(formData, null, 2)}
           </pre>
         </div>
 
@@ -90,27 +111,27 @@ function KeyboardDebugger() {
           <button
             type="button"
             onClick={handlePrefill}
-            className="px-3 py-1.5 text-xs font-medium rounded-md bg-secondary text-secondary-foreground hover:bg-secondary/80 transition-colors">
+            className="px-3 py-1.5 text-xs font-medium rounded-md bg-secondary text-foreground/70 hover:bg-secondary/80 transition-colors">
             Pre-fill Sample Data
           </button>
           <button
             type="button"
-            onClick={clearInputs}
+            onClick={handleClear}
             className="px-3 py-1.5 text-xs font-medium rounded-md bg-destructive/10 text-destructive hover:bg-destructive/20 border border-destructive/20 transition-colors">
-            Clear All Inputs
+            Clear All Fields
           </button>
           <button
             type="button"
             onClick={forceClose}
             disabled={!isOpen}
-            className="px-3 py-1.5 text-xs font-medium rounded-md bg-muted text-muted-foreground hover:bg-accent hover:text-accent-foreground disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
+            className="px-3 py-1.5 text-xs font-medium rounded-md bg-secondary text-foreground/70 hover:bg-accent hover:text-accent-foreground disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
             Force Close Keyboard
           </button>
         </div>
       </div>
 
       {/* Form Submission Payload Output */}
-      {/* {submittedData && (
+      {submittedData && (
         <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/5 p-4 space-y-2">
           <h3 className="text-sm font-semibold text-emerald-600 dark:text-emerald-400">
             Form Submitted Successfully!
@@ -119,87 +140,106 @@ function KeyboardDebugger() {
             {JSON.stringify(submittedData, null, 2)}
           </pre>
         </div>
-      )} */}
+      )}
     </div>
   );
 }
 
 // ─── Main Test Form Component ─────────────────────────────────────────────────
 
-function KeyboardTestForm() {
+interface KeyboardTestFormProps {
+  formData: FormDataState;
+  setFormData: React.Dispatch<React.SetStateAction<FormDataState>>;
+  setSubmittedData: (data: FormDataState | null) => void;
+}
+
+function KeyboardTestForm({
+  formData,
+  setFormData,
+  setSubmittedData,
+}: KeyboardTestFormProps) {
   const { forceClose } = useKeyboard();
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setSubmittedData(formData);
+    forceClose();
+  };
+
+  const handleReset = () => {
+    setFormData(INITIAL_FORM_DATA);
+    setSubmittedData(null);
+  };
 
   return (
     <form
-      onSubmit={(e) => {
-        e.preventDefault();
-        const form = e.currentTarget;
-        const formData = new FormData(form);
-        const data = Object.fromEntries(formData.entries());
-        alert(`Form Submitted:\n${JSON.stringify(data, null, 2)}`);
-        forceClose();
-      }}
-      className="rounded-xl border border-border bg-card p-6 shadow-sm space-y-5">
+      onSubmit={handleSubmit}
+      className="rounded-xl border border-border bg-secondary p-6 shadow-sm space-y-5">
       <div>
         <h2 className="text-lg font-semibold text-foreground">Test Form</h2>
-        <p className="text-xs text-muted-foreground mt-0.5">
-          Focus any input below to launch the virtual keyboard.
+        <p className="text-xs text-foreground/70 mt-0.5">
+          Focus any input below to trigger the virtual keyboard with native UI
+          components.
         </p>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        {/* Input 1: Standard Text */}
-        <div className="space-y-1.5">
-          <label
-            htmlFor="firstName"
-            className="text-xs font-medium text-foreground">
-            First Name
-          </label>
-          <KeyboardInput
-            id="firstName"
-            name="firstName"
-            placeholder="e.g. Jane"
-          />
-        </div>
+        {/* Input 1: First Name */}
+        <Input
+          enableVirtualKeyboard
+          id="firstName"
+          name="firstName"
+          label="First Name"
+          placeholder="e.g. Jane"
+          value={formData.firstName}
+          onChange={handleChange}
+        />
 
-        {/* Input 2: Standard Text */}
-        <div className="space-y-1.5">
-          <label
-            htmlFor="lastName"
-            className="text-xs font-medium text-foreground">
-            Last Name
-          </label>
-          <KeyboardInput id="lastName" name="lastName" placeholder="e.g. Doe" />
-        </div>
-      </div>
-
-      {/* Input 3: Email */}
-      <div className="space-y-1.5">
-        <label htmlFor="email" className="text-xs font-medium text-foreground">
-          Email Address
-        </label>
-        <KeyboardInput
-          id="email"
-          name="email"
-          type="email"
-          placeholder="e.g. jane@example.com"
+        {/* Input 2: Last Name */}
+        <Input
+          enableVirtualKeyboard
+          id="lastName"
+          name="lastName"
+          label="Last Name"
+          placeholder="e.g. Doe"
+          value={formData.lastName}
+          onChange={handleChange}
         />
       </div>
 
-      {/* Input 4: Zip Code / Numbers */}
-      <div className="space-y-1.5">
-        <label
-          htmlFor="zipCode"
-          className="text-xs font-medium text-foreground">
-          ZIP / Postal Code
-        </label>
-        <KeyboardInput id="zipCode" name="zipCode" placeholder="e.g. 90210" />
-      </div>
+      {/* Input 3: Email */}
+      <Input
+        enableVirtualKeyboard
+        id="email"
+        name="email"
+        type="email"
+        label="Email Address"
+        placeholder="e.g. jane@example.com"
+        value={formData.email}
+        onChange={handleChange}
+      />
+
+      {/* Input 4: Zip Code */}
+      <Input
+        enableVirtualKeyboard
+        id="zipCode"
+        name="zipCode"
+        label="ZIP / Postal Code"
+        placeholder="e.g. 90210"
+        value={formData.zipCode}
+        onChange={handleChange}
+      />
 
       {/* Action Buttons */}
       <div className="pt-2 flex items-center justify-end gap-3">
         <button
-          type="reset"
+          type="button"
+          onClick={handleReset}
           className="px-4 py-2 text-sm font-medium rounded-md border border-border hover:bg-accent transition-colors">
           Reset
         </button>
@@ -217,6 +257,10 @@ function KeyboardTestForm() {
 
 function TestingChecklist() {
   const tests = [
+    {
+      label: "Native Input Integration",
+      desc: "Uses native <Input enableVirtualKeyboard /> directly",
+    },
     { label: "Focus input", desc: "Keyboard slides up smoothly from bottom" },
     {
       label: "{shift} key",
@@ -229,21 +273,17 @@ function TestingChecklist() {
     },
     {
       label: "Physical typing",
-      desc: "Highlights corresponding virtual key in real time",
+      desc: "Dispatches native events and updates React useState live",
     },
     { label: "Escape key", desc: "Closes virtual keyboard instantly" },
-    {
-      label: "Tab / Focus Switch",
-      desc: "Maintains active state without closing keyboard glitch",
-    },
   ];
 
   return (
-    <div className="rounded-xl border border-border bg-card p-5 shadow-sm space-y-3">
+    <div className="rounded-xl border border-border bg-secondary p-5 shadow-sm space-y-3">
       <h3 className="font-semibold text-foreground text-sm">
         Verification Test Cases
       </h3>
-      <ul className="space-y-2 text-xs text-muted-foreground">
+      <ul className="space-y-2 text-xs text-foreground/70">
         {tests.map((test) => (
           <li key={test.label} className="flex items-start gap-2">
             <span className="h-1.5 w-1.5 rounded-full bg-primary mt-1.5 shrink-0" />
@@ -263,6 +303,11 @@ function TestingChecklist() {
 // ─── Full Page Export ─────────────────────────────────────────────────────────
 
 export default function KeyboardDemoPage() {
+  const [formData, setFormData] = useState<FormDataState>(INITIAL_FORM_DATA);
+  const [submittedData, setSubmittedData] = useState<FormDataState | null>(
+    null,
+  );
+
   return (
     <KeyboardProvider autoShiftBack={true} closeDelay={150}>
       <div className="min-h-screen bg-background text-foreground p-4 sm:p-8 md:p-12 pb-80">
@@ -272,9 +317,9 @@ export default function KeyboardDemoPage() {
             <h1 className="text-2xl font-bold tracking-tight">
               On-Screen Keyboard Verification
             </h1>
-            <p className="text-sm text-muted-foreground mt-1">
-              Interactive test harness for virtual keyboard input binding,
-              layout handling, and physical keyboard sync.
+            <p className="text-sm text-foreground/70 mt-1">
+              Test harness for virtual keyboard input binding using native
+              component architecture.
             </p>
           </header>
 
@@ -282,13 +327,21 @@ export default function KeyboardDemoPage() {
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
             {/* Left Column: Form Testing */}
             <div className="lg:col-span-7 space-y-6">
-              <KeyboardTestForm />
+              <KeyboardTestForm
+                formData={formData}
+                setFormData={setFormData}
+                setSubmittedData={setSubmittedData}
+              />
               <TestingChecklist />
             </div>
 
             {/* Right Column: Live Debug & Controls */}
             <div className="lg:col-span-5">
-              <KeyboardDebugger />
+              <KeyboardDebugger
+                formData={formData}
+                setFormData={setFormData}
+                submittedData={submittedData}
+              />
             </div>
           </div>
         </div>

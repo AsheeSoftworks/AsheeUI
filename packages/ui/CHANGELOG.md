@@ -1,14 +1,25 @@
 # asheeui
 
+## 0.4.1
+
+### Patch Changes
+
+- Remove Card component
+  Remove tailwind classes card and muted
+  Fix underline radius issues on components
+  Update Sidebar component to have sections
+  Update all Input components varients to default to the boarderd varient
+  Fix micro bugs
+
 ## 0.4.0
 
 ### Minor Changes
 
-- - Remove all tokens including typogarphy, spacing, size and shadow
-  - Remove container, flex, grid, heading and text components
-  - Restructure config
-  - Update all components with the changes
-  - Remove framer motion
+- Remove all tokens including typogarphy, spacing, size and shadow
+  Remove container, flex, grid, heading and text components
+  Restructure config
+  Update all components with the changes
+  Remove framer motion
 
 ## 0.3.13
 
@@ -20,8 +31,8 @@
 
 ### Patch Changes
 
-- - Add height to container
-  - Remove unnessesary defaults from components
+- Add height to container
+  Remove unnessesary defaults from components
 
 ## 0.3.11
 

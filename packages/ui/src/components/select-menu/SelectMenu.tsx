@@ -116,27 +116,27 @@ export const SelectMenu = ({
           style={{ borderRadius: radius }}>
           {/* Search Input Bar */}
           {isSearch && (
-            <div className="w-full p-1 mb-1 sticky top-0 bg-background z-10 border-b border-border">
-              <div className="relative flex items-center">
-                <SearchIcon className="absolute left-2.5 w-4 h-4 text-muted-foreground pointer-events-none" />
-                <Input
-                  name={searchInputName}
-                  type="text"
-                  value={activeQuery}
-                  onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                    handleQueryChange(e.target.value)
-                  }
-                  placeholder={searchPlaceholder}
-                  autoFocus
-                  className="w-full pl-8 h-8 text-xs bg-muted/30 border-none focus-visible:ring-0"
-                />
-              </div>
+            <div className="w-full p-1 mb-1 sticky top-0 z-10 border-b border-border">
+              <Input
+                name={searchInputName}
+                type="text"
+                value={activeQuery}
+                onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                  handleQueryChange(e.target.value)
+                }
+                startContent={
+                  <SearchIcon className="w-3.5 h-3.5 shrink-0 ml-1.5 text-foreground/70" />
+                }
+                placeholder={searchPlaceholder}
+                autoFocus
+                className="w-full pl-8 h-8 text-xs bg-secondary/30 border-none focus-visible:ring-0"
+              />
             </div>
           )}
 
           {/* Options List */}
           {filteredOptions.length === 0 ? (
-            <div className="px-3 py-4 text-xs text-muted-foreground text-center">
+            <div className="px-3 py-4 text-xs text-foreground/70 text-center">
               No options found
             </div>
           ) : (

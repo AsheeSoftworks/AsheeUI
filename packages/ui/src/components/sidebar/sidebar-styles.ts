@@ -18,6 +18,12 @@ export const SIDEBAR_HEADER_CLASS: Record<SidebarSizeKey, string> = {
   lg: "h-16 text-base px-4",
 };
 
+export const SIDEBAR_SECTION_LABEL_CLASS: Record<SidebarSizeKey, string> = {
+  sm: "text-[10px] px-2 py-1.5",
+  md: "text-xs px-3 py-2",
+  lg: "text-sm px-4 py-2.5",
+};
+
 export const SIDEBAR_ITEM_CLASS: Record<SidebarSizeKey, string> = {
   sm: "h-9 text-xs px-2",
   md: "h-11 text-sm px-3",
@@ -29,5 +35,5 @@ export const SIDEBAR_VARIANT_CLASS: Record<SidebarVariant, string> = {
   bordered: "border-r-2 border-border bg-background/80 backdrop-blur-xs",
   floating:
     "m-2 rounded-xl border border-border shadow-md bg-background/80 backdrop-blur-xs",
-  flush: "border-none bg-background/80 backdrop-blur-xs",
+  ghost: "border-none bg-background/80 backdrop-blur-xs",
 };

@@ -3,21 +3,20 @@
 import {
   Accordion,
   Button,
-  Card,
   Carousel,
   Chip,
   DatePicker,
   Drawer,
   type DrawerPlacement,
-  type Size,
   Image,
   Input,
-  PasswordInput,
   Link,
+  PasswordInput,
   Radio,
   RadioGroup,
   Select,
   type SelectOption,
+  type Size,
   Switch,
   TextArea,
 } from "asheeui";
@@ -111,7 +110,7 @@ export default function ConfigTestPage() {
         <h1 className="text-2xl font-bold">
           Playground: Config-Driven Defaults
         </h1>
-        <p className="text-muted-foreground">
+        <p className="text-foreground/70">
           Testing components using system context/defaults without local prop
           overrides.
         </p>
@@ -132,19 +131,6 @@ export default function ConfigTestPage() {
         <section>
           <Link href="/dashboard">Navigate to Dashboard</Link>
         </section>
-      </section>
-
-      {/* Card */}
-      <section className="space-y-3">
-        <h4 className="text-lg font-semibold">Card (Config)</h4>
-        <Card
-          title="Configured Card Title"
-          isClickable
-          description="Default card description text using global settings">
-          <p>
-            Card body content relying on default padding, gap, and variants.
-          </p>
-        </Card>
       </section>
 
       {/* Image */}
@@ -185,7 +171,7 @@ export default function ConfigTestPage() {
             {
               id: "1",
               content: (
-                <section className="bg-muted p-8 text-center rounded-lg">
+                <section className="bg-secondary p-8 text-center rounded-lg">
                   Slide 1
                 </section>
               ),
@@ -193,7 +179,7 @@ export default function ConfigTestPage() {
             {
               id: "2",
               content: (
-                <section className="bg-muted p-8 text-center rounded-lg">
+                <section className="bg-secondary p-8 text-center rounded-lg">
                   Slide 2
                 </section>
               ),
@@ -215,7 +201,7 @@ export default function ConfigTestPage() {
             isClearable
             description="Pick a single date"
           />
-          <p className="text-[11px] font-mono text-muted-foreground">
+          <p className="text-[11px] font-mono text-foreground/70">
             Value: {dateValue ? dateValue.toISOString() : "null"}
           </p>
         </section>
@@ -230,7 +216,7 @@ export default function ConfigTestPage() {
             isClearable
             description="Pick hours and minutes"
           />
-          <p className="text-[11px] font-mono text-muted-foreground">
+          <p className="text-[11px] font-mono text-foreground/70">
             Value: {timeValue ? timeValue.toTimeString() : "null"}
           </p>
         </section>
@@ -245,7 +231,7 @@ export default function ConfigTestPage() {
             isClearable
             description="Combined date and time picker"
           />
-          <p className="text-[11px] font-mono text-muted-foreground">
+          <p className="text-[11px] font-mono text-foreground/70">
             Value: {dateTimeValue ? dateTimeValue.toLocaleString() : "null"}
           </p>
         </section>
@@ -376,12 +362,12 @@ export default function ConfigTestPage() {
         </div>
       </section>
 
-      <section className="bg-card border border-border rounded-xl p-6 space-y-6 shadow-sm">
+      <section className="bg-secondary border border-border rounded-xl p-6 space-y-6 shadow-sm">
         <div>
           <h2 className="text-lg font-semibold">
             1. Basic & Searchable Select
           </h2>
-          <p className="text-xs text-muted-foreground">
+          <p className="text-xs text-foreground/70">
             Supports live search filtering and custom option lists.
           </p>
         </div>
@@ -413,12 +399,12 @@ export default function ConfigTestPage() {
       </section>
 
       {/* SECTION 2: Custom Dropdown Content & Actions */}
-      <section className="bg-card border border-border rounded-xl p-6 space-y-6 shadow-sm">
+      <section className="bg-secondary border border-border rounded-xl p-6 space-y-6 shadow-sm">
         <div>
           <h4 className="text-lg font-semibold">
             Select with `belowList` Action
           </h4>
-          <p className="text-xs text-muted-foreground">
+          <p className="text-xs text-foreground/70">
             Embed custom components or action buttons at the bottom of the
             dropdown list.
           </p>
@@ -448,11 +434,11 @@ export default function ConfigTestPage() {
       </section>
 
       {/* SECTION 3: Validation & Field States */}
-      <section className="bg-card border border-border rounded-xl p-6 space-y-6 shadow-sm">
+      <section className="bg-secondary border border-border rounded-xl p-6 space-y-6 shadow-sm">
         <div>
           <div>
             <h4>Statuses & Loading State</h4>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-xs text-foreground/70">
               Error, warning, success states and simulated loading spinners.
             </p>
           </div>
@@ -475,7 +461,7 @@ export default function ConfigTestPage() {
           onChange={(checked) => setIsNotificationsEnabled(checked)}
         />
 
-        <p className="text-xs text-muted-foreground bg-muted p-2 rounded">
+        <p className="text-xs text-foreground/70 bg-secondary p-2 rounded">
           Current State:{" "}
           <strong>
             {isNotificationsEnabled ? "Active (true)" : "Inactive (false)"}
@@ -523,25 +509,25 @@ export default function ConfigTestPage() {
             <Button
               type="button"
               onClick={() => handleOpen("left")}
-              className="px-4 py-2.5 rounded-lg border border-border bg-background hover:bg-muted font-medium text-sm transition-colors cursor-pointer">
+              className="px-4 py-2.5 rounded-lg border border-border bg-background hover:bg-secondary font-medium text-sm transition-colors cursor-pointer">
               Open Left
             </Button>
             <Button
               type="button"
               onClick={() => handleOpen("right")}
-              className="px-4 py-2.5 rounded-lg border border-border bg-background hover:bg-muted font-medium text-sm transition-colors cursor-pointer">
+              className="px-4 py-2.5 rounded-lg border border-border bg-background hover:bg-secondary font-medium text-sm transition-colors cursor-pointer">
               Open Right
             </Button>
             <Button
               type="button"
               onClick={() => handleOpen("top")}
-              className="px-4 py-2.5 rounded-lg border border-border bg-background hover:bg-muted font-medium text-sm transition-colors cursor-pointer">
+              className="px-4 py-2.5 rounded-lg border border-border bg-background hover:bg-secondary font-medium text-sm transition-colors cursor-pointer">
               Open Top
             </Button>
             <Button
               type="button"
               onClick={() => handleOpen("bottom")}
-              className="px-4 py-2.5 rounded-lg border border-border bg-background hover:bg-muted font-medium text-sm transition-colors cursor-pointer">
+              className="px-4 py-2.5 rounded-lg border border-border bg-background hover:bg-secondary font-medium text-sm transition-colors cursor-pointer">
               Open Bottom
             </Button>
           </div>
@@ -563,7 +549,7 @@ export default function ConfigTestPage() {
                   className={`px-3 py-1.5 rounded-md text-xs font-medium transition-colors cursor-pointer ${
                     size === s
                       ? "bg-primary text-primary-foreground"
-                      : "bg-background border border-border hover:bg-muted"
+                      : "bg-background border border-border hover:bg-secondary"
                   }`}>
                   {s.toUpperCase()}
                 </Button>
@@ -630,7 +616,7 @@ export default function ConfigTestPage() {
               type="button"
               onClick={() => setIsOpen(false)}
               aria-label="Close drawer"
-              className="p-1 rounded-md hover:bg-muted text-muted-foreground hover:text-foreground transition-colors cursor-pointer">
+              className="p-1 rounded-md hover:bg-secondary text-foreground/70 hover:text-foreground transition-colors cursor-pointer">
               ✕
             </Button>
           </div>
@@ -651,9 +637,9 @@ export default function ConfigTestPage() {
               />
             </section>
 
-            <section className="p-3 bg-muted/50 rounded-lg text-xs space-y-1">
+            <section className="p-3 bg-secondary/50 rounded-lg text-xs space-y-1">
               <p className="font-semibold">Test Checklist:</p>
-              <ul className="list-disc list-inside space-y-0.5 text-muted-foreground">
+              <ul className="list-disc list-inside space-y-0.5 text-foreground/70">
                 <li>
                   Press{" "}
                   <kbd className="px-1 py-0.5 border rounded bg-background">
@@ -673,7 +659,7 @@ export default function ConfigTestPage() {
               color="danger"
               type="button"
               onClick={() => setIsOpen(false)}
-              className="px-4 py-2 rounded-md border border-border text-xs font-medium hover:bg-muted transition-colors cursor-pointer">
+              className="px-4 py-2 rounded-md border border-border text-xs font-medium hover:bg-secondary transition-colors cursor-pointer">
               Cancel
             </Button>
             <Button
@@ -696,7 +682,7 @@ export default function ConfigTestPage() {
           onChange={(checked) => setIsNotificationsEnabled(checked)}
         />
 
-        <p className="text-xs text-muted-foreground bg-muted p-2 rounded">
+        <p className="text-xs text-foreground/70 bg-secondary p-2 rounded">
           Current State:{" "}
           <strong>
             {isNotificationsEnabled ? "Active (true)" : "Inactive (false)"}

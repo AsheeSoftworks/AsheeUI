@@ -284,8 +284,6 @@ export const Tabs = forwardRef<HTMLDivElement, TabsProps>(
     // Variant-driven container layout classes
     const listVariantClasses = useMemo(() => {
       switch (resolvedVariant) {
-        case "pills":
-          return "bg-muted/50 p-1 border border-border";
         case "bordered":
           return "border border-border p-1 bg-background";
         case "ghost":
@@ -367,7 +365,7 @@ export const Tabs = forwardRef<HTMLDivElement, TabsProps>(
                 {tab.icon && <span className="shrink-0">{tab.icon}</span>}
                 <span>{tabTitle}</span>
                 {tab.badge !== undefined && (
-                  <span className="shrink-0 text-xs px-1.5 py-0.5 rounded-full bg-muted text-muted-foreground font-normal">
+                  <span className="shrink-0 text-xs px-1.5 py-0.5 rounded-full bg-secondary text-foreground/70 font-normal">
                     {tab.badge}
                   </span>
                 )}

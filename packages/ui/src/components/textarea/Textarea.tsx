@@ -1,7 +1,14 @@
 "use client";
 
 import { cn } from "@asheeui/utils";
-import { forwardRef, type TextareaHTMLAttributes, useId } from "react";
+import React, {
+  forwardRef,
+  type TextareaHTMLAttributes,
+  useCallback,
+  useId,
+  useImperativeHandle,
+  useRef,
+} from "react";
 import { useAsheeConfig } from "../../libs/context";
 import { RADIUS_CLASS, type Radius } from "../../shared/radius";
 import {
@@ -20,6 +27,7 @@ import type {
   FieldStatus,
   LabelAlign,
 } from "../field/field-config";
+import { useKeyboardField } from "../keyboard";
 import {
   FALLBACK_TEXTAREA_CONFIG,
   type TextAreaConfig,
@@ -48,6 +56,7 @@ export interface TextAreaProps
   message?: string;
   required?: boolean;
   rows?: number;
+  enableVirtualKeyboard?: boolean;
 }
 
 // ─── Component Implementation ─────────────────────────────────────────────────
@@ -71,6 +80,10 @@ export const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
       className,
       disabled,
       style,
+      onFocus,
+      onBlur,
+      enableVirtualKeyboard = true,
+      ...rest
     },
     ref,
   ) => {
@@ -79,12 +92,34 @@ export const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
       | TextAreaConfig
       | undefined;
 
+    const internalRef = useRef<HTMLTextAreaElement>(null);
+    useImperativeHandle(ref, () => internalRef.current as HTMLTextAreaElement);
+
     const generatedId = useId();
     const fieldId = id ?? generatedId;
     const descriptionId = description ? `${fieldId}-description` : undefined;
     const messageId = message ? `${fieldId}-message` : undefined;
     const describedBy =
       [descriptionId, messageId].filter(Boolean).join(" ") || undefined;
+
+    const { handleFocus: handleKeyboardFocus, handleBlur: handleKeyboardBlur } =
+      useKeyboardField(fieldId, internalRef, enableVirtualKeyboard);
+
+    const handleFocus = useCallback(
+      (e: React.FocusEvent<HTMLTextAreaElement>) => {
+        handleKeyboardFocus(e);
+        onFocus?.(e);
+      },
+      [handleKeyboardFocus, onFocus],
+    );
+
+    const handleBlur = useCallback(
+      (e: React.FocusEvent<HTMLTextAreaElement>) => {
+        handleKeyboardBlur();
+        onBlur?.(e);
+      },
+      [handleKeyboardBlur, onBlur],
+    );
 
     // ─── 1. Token Resolvers (4-Tier Cascade) ──────────────────────────────────
 
@@ -159,12 +194,9 @@ export const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
         messageId={messageId}
         status={resolvedStatus}
         required={required}
-        isLoading={isLoading}
-        labelClassName={sectionConfig?.labelClassName}
-        descriptionClassName={sectionConfig?.descriptionClassName}
-        messageClassName={sectionConfig?.messageClassName}>
-        <TextArea
-          ref={ref}
+        isLoading={isLoading}>
+        <textarea
+          ref={internalRef}
           id={fieldId}
           disabled={disabled}
           required={required}
@@ -172,6 +204,8 @@ export const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
           aria-busy={isLoading}
           aria-invalid={resolvedStatus === "error"}
           aria-describedby={describedBy}
+          onFocus={handleFocus}
+          onBlur={handleBlur}
           className={cn(
             "resize-y w-full text-foreground outline-none transition-colors shrink-0",
             "focus-visible:ring-2 focus-visible:ring-offset-2",
@@ -180,10 +214,10 @@ export const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
             variantClass,
             statusClass,
             radiusClass,
-            sectionConfig?.className,
             className,
           )}
           style={style}
+          {...rest}
         />
       </FieldShell>
     );

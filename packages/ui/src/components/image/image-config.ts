@@ -10,7 +10,6 @@ export interface ImageConfig {
   radius?: Radius;
   loading?: "lazy" | "eager";
   showSkeleton?: boolean;
-  className?: string;
 }
 
 export const defaultImageConfig: ImageConfig = {
@@ -27,7 +26,6 @@ export const FALLBACK_IMAGE_CONFIG: Required<ImageConfig> = {
   radius: "md",
   loading: "lazy",
   showSkeleton: true,
-  className: "",
 } as const;
 
 declare module "../../libs/registry" {

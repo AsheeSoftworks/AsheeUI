@@ -1,6 +1,6 @@
 "use client";
 
-import { ToastProvider, useToast, Button } from "asheeui";
+import { Button, ToastProvider, useToast } from "asheeui";
 
 function ToastTestControls() {
   const { success, error, info, warning, toast, clearToasts, toasts } =
@@ -10,7 +10,7 @@ function ToastTestControls() {
     <div className="p-12 max-w-4xl mx-auto space-y-8 bg-background text-foreground min-h-screen">
       <div>
         <h1 className="text-2xl font-bold mb-1">Toast Component Test Suite</h1>
-        <p className="text-sm text-muted-foreground">
+        <p className="text-sm text-foreground/70">
           Active toasts: <span className="font-semibold">{toasts.length}</span>
         </p>
       </div>
@@ -85,7 +85,7 @@ function ToastTestControls() {
                 ),
               })
             }
-            className="px-4 py-2 bg-secondary text-secondary-foreground rounded-md text-sm font-medium hover:opacity-80 transition">
+            className="px-4 py-2 bg-secondary text-foreground/70 rounded-md text-sm font-medium hover:opacity-80 transition">
             Toast with Action
           </Button>
 
@@ -96,13 +96,13 @@ function ToastTestControls() {
                 timeout: 10000,
               })
             }
-            className="px-4 py-2 bg-secondary text-secondary-foreground rounded-md text-sm font-medium hover:opacity-80 transition">
+            className="px-4 py-2 bg-secondary text-foreground/70 rounded-md text-sm font-medium hover:opacity-80 transition">
             10s Timeout
           </Button>
 
           <Button
             onClick={clearToasts}
-            className="px-4 py-2 border border-border rounded-md text-sm font-medium hover:bg-muted transition">
+            className="px-4 py-2 border border-border rounded-md text-sm font-medium hover:bg-secondary transition">
             Clear All Toasts
           </Button>
         </div>
@@ -113,7 +113,7 @@ function ToastTestControls() {
 
 export default function ToastTestPage() {
   return (
-    <ToastProvider>
+    <ToastProvider variant="underlined">
       <ToastTestControls />
     </ToastProvider>
   );

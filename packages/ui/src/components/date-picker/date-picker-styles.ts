@@ -33,7 +33,7 @@ export const CALENDAR_COLOR_CLASSES: Record<
     bg: "bg-foreground text-background",
     text: "text-foreground",
     border: "border-foreground",
-    hover: "hover:text-foreground hover:bg-muted",
+    hover: "hover:text-foreground hover:bg-secondary",
   },
   primary: {
     bg: "bg-primary text-primary-foreground",
@@ -42,7 +42,7 @@ export const CALENDAR_COLOR_CLASSES: Record<
     hover: "hover:text-primary hover:bg-primary/10",
   },
   secondary: {
-    bg: "bg-secondary text-secondary-foreground",
+    bg: "bg-secondary text-foreground/70",
     text: "text-secondary",
     border: "border-secondary",
     hover: "hover:text-secondary hover:bg-secondary/10",

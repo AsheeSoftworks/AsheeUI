@@ -4,7 +4,7 @@ import type { Radius } from "../../shared/radius";
 import type { Size } from "../../shared/size";
 import type { Color, Variant } from "../../shared/variant";
 
-export type TabsVariant = "underline" | "pills" | "bordered" | "ghost";
+export type TabsVariant = "underline" | "bordered" | "ghost";
 export type TabsSizeKey = Size;
 
 export interface TabItem {

@@ -187,7 +187,7 @@ export function Table<TData>({
     <div
       className={cn(
         "w-full h-full overflow-auto scrollable bg-background",
-        resolvedVariant === "flush"
+        resolvedVariant === "ghost"
           ? "border-0 shadow-none rounded-none"
           : cn("border border-border", radiusClass),
         sectionConfig?.className,
@@ -199,7 +199,7 @@ export function Table<TData>({
         {/* Table Header */}
         <thead
           className={cn(
-            "sticky top-0 z-10 border-b border-border bg-muted/90 backdrop-blur-xs font-semibold text-muted-foreground select-none",
+            "sticky top-0 z-10 border-b border-border bg-secondary/90 backdrop-blur-xs font-semibold text-foreground/70 select-none",
             sectionConfig?.headerClassName,
             headerClassName,
           )}>
@@ -220,7 +220,7 @@ export function Table<TData>({
                     paddingYClass,
                     paddingXClass,
                     headerFontClass,
-                    resolvedVariant === "bordered" &&
+                    resolvedVariant === "grid" &&
                       colIdx < columns.length - 1 &&
                       "border-r border-border",
                     sectionConfig?.cellClassName,
@@ -239,7 +239,7 @@ export function Table<TData>({
             <tr>
               <td
                 colSpan={columns.length || 1}
-                className="h-48 text-center align-middle p-6 text-sm text-muted-foreground">
+                className="h-48 text-center align-middle p-6 text-sm text-foreground/70">
                 {emptyMessage}
               </td>
             </tr>
@@ -274,7 +274,7 @@ export function Table<TData>({
                   className={cn(
                     "border-b border-border/60 transition-all duration-150 outline-none align-middle",
                     fontClass,
-                    resolvedVariant === "flush" && "last:border-b-0",
+                    resolvedVariant === "ghost" && "last:border-b-0",
                     isStriped && "bg-secondary",
                     isInteractive &&
                       cn(
@@ -300,7 +300,7 @@ export function Table<TData>({
                           "truncate min-w-0 align-middle",
                           paddingYClass,
                           paddingXClass,
-                          resolvedVariant === "bordered" &&
+                          resolvedVariant === "grid" &&
                             colIdx < columns.length - 1 &&
                             "border-r border-border",
                           sectionConfig?.cellClassName,

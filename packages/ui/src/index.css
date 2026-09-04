@@ -77,4 +77,406 @@
     -ms-overflow-style: none;
     scrollbar-width: none;
   }
+
+  /* Simple pop animation with opacity and scale */
+
+  @keyframes modalPopIn {
+    from {
+      opacity: 0;
+      transform: scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  @keyframes modalPopOut {
+    from {
+      opacity: 1;
+      transform: scale(1);
+    }
+    to {
+      opacity: 0;
+      transform: scale(0.95);
+    }
+  }
+
+  @keyframes backdropFadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes backdropFadeOut {
+    from {
+      opacity: 1;
+    }
+    to {
+      opacity: 0;
+    }
+  }
+
+  /* Animation utility classes */
+  .animate-modal-in {
+    animation: modalPopIn 200ms ease-out forwards;
+  }
+
+  .animate-modal-out {
+    animation: modalPopOut 150ms ease-in forwards;
+  }
+
+  .animate-backdrop-in {
+    animation: backdropFadeIn 150ms ease-out forwards;
+  }
+
+  .animate-backdrop-out {
+    animation: backdropFadeOut 150ms ease-in forwards;
+  }
+
+  /* Drawer Animations - Slide with opacity */
+
+  /* Right */
+  @keyframes drawerSlideRightOpen {
+    from {
+      transform: translateX(100%);
+      opacity: 0;
+    }
+    to {
+      transform: translateX(0);
+      opacity: 1;
+    }
+  }
+
+  @keyframes drawerSlideRightClosed {
+    from {
+      transform: translateX(0);
+      opacity: 1;
+    }
+    to {
+      transform: translateX(100%);
+      opacity: 0;
+    }
+  }
+
+  /* Left */
+  @keyframes drawerSlideLeftOpen {
+    from {
+      transform: translateX(-100%);
+      opacity: 0;
+    }
+    to {
+      transform: translateX(0);
+      opacity: 1;
+    }
+  }
+
+  @keyframes drawerSlideLeftClosed {
+    from {
+      transform: translateX(0);
+      opacity: 1;
+    }
+    to {
+      transform: translateX(-100%);
+      opacity: 0;
+    }
+  }
+
+  /* Top */
+  @keyframes drawerSlideTopOpen {
+    from {
+      transform: translateY(-100%);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+
+  @keyframes drawerSlideTopClosed {
+    from {
+      transform: translateY(0);
+      opacity: 1;
+    }
+    to {
+      transform: translateY(-100%);
+      opacity: 0;
+    }
+  }
+
+  /* Bottom */
+  @keyframes drawerSlideBottomOpen {
+    from {
+      transform: translateY(100%);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+
+  @keyframes drawerSlideBottomClosed {
+    from {
+      transform: translateY(0);
+      opacity: 1;
+    }
+    to {
+      transform: translateY(100%);
+      opacity: 0;
+    }
+  }
+
+  /* Backdrop animation */
+  @keyframes drawerBackdropIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes drawerBackdropOut {
+    from {
+      opacity: 1;
+    }
+    to {
+      opacity: 0;
+    }
+  }
+
+  /* Animation classes */
+  .drawer-slide-right-open {
+    animation: drawerSlideRightOpen 250ms ease-out forwards;
+  }
+
+  .drawer-slide-right-closed {
+    animation: drawerSlideRightClosed 250ms ease-in forwards;
+  }
+
+  .drawer-slide-left-open {
+    animation: drawerSlideLeftOpen 250ms ease-out forwards;
+  }
+
+  .drawer-slide-left-closed {
+    animation: drawerSlideLeftClosed 250ms ease-in forwards;
+  }
+
+  .drawer-slide-top-open {
+    animation: drawerSlideTopOpen 250ms ease-out forwards;
+  }
+
+  .drawer-slide-top-closed {
+    animation: drawerSlideTopClosed 250ms ease-in forwards;
+  }
+
+  .drawer-slide-bottom-open {
+    animation: drawerSlideBottomOpen 250ms ease-out forwards;
+  }
+
+  .drawer-slide-bottom-closed {
+    animation: drawerSlideBottomClosed 250ms ease-in forwards;
+  }
+
+  .drawer-backdrop-in {
+    animation: drawerBackdropIn 250ms ease-out forwards;
+  }
+
+  .drawer-backdrop-out {
+    animation: drawerBackdropOut 250ms ease-in forwards;
+  }
+
+  /* Toast Animations */
+
+  /* Top Right */
+  @keyframes toastEnterTopRight {
+    from {
+      transform: translateX(100%) scale(0.95);
+      opacity: 0;
+    }
+    to {
+      transform: translateX(0) scale(1);
+      opacity: 1;
+    }
+  }
+
+  @keyframes toastExitTopRight {
+    from {
+      transform: translateX(0) scale(1);
+      opacity: 1;
+    }
+    to {
+      transform: translateX(100%) scale(0.95);
+      opacity: 0;
+    }
+  }
+
+  /* Bottom Right */
+  @keyframes toastEnterBottomRight {
+    from {
+      transform: translateX(100%) scale(0.95);
+      opacity: 0;
+    }
+    to {
+      transform: translateX(0) scale(1);
+      opacity: 1;
+    }
+  }
+
+  @keyframes toastExitBottomRight {
+    from {
+      transform: translateX(0) scale(1);
+      opacity: 1;
+    }
+    to {
+      transform: translateX(100%) scale(0.95);
+      opacity: 0;
+    }
+  }
+
+  /* Top Left */
+  @keyframes toastEnterTopLeft {
+    from {
+      transform: translateX(-100%) scale(0.95);
+      opacity: 0;
+    }
+    to {
+      transform: translateX(0) scale(1);
+      opacity: 1;
+    }
+  }
+
+  @keyframes toastExitTopLeft {
+    from {
+      transform: translateX(0) scale(1);
+      opacity: 1;
+    }
+    to {
+      transform: translateX(-100%) scale(0.95);
+      opacity: 0;
+    }
+  }
+
+  /* Bottom Left */
+  @keyframes toastEnterBottomLeft {
+    from {
+      transform: translateX(-100%) scale(0.95);
+      opacity: 0;
+    }
+    to {
+      transform: translateX(0) scale(1);
+      opacity: 1;
+    }
+  }
+
+  @keyframes toastExitBottomLeft {
+    from {
+      transform: translateX(0) scale(1);
+      opacity: 1;
+    }
+    to {
+      transform: translateX(-100%) scale(0.95);
+      opacity: 0;
+    }
+  }
+
+  /* Top Center */
+  @keyframes toastEnterTopCenter {
+    from {
+      transform: translateY(-100%) scale(0.95);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0) scale(1);
+      opacity: 1;
+    }
+  }
+
+  @keyframes toastExitTopCenter {
+    from {
+      transform: translateY(0) scale(1);
+      opacity: 1;
+    }
+    to {
+      transform: translateY(-100%) scale(0.95);
+      opacity: 0;
+    }
+  }
+
+  /* Bottom Center */
+  @keyframes toastEnterBottomCenter {
+    from {
+      transform: translateY(100%) scale(0.95);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0) scale(1);
+      opacity: 1;
+    }
+  }
+
+  @keyframes toastExitBottomCenter {
+    from {
+      transform: translateY(0) scale(1);
+      opacity: 1;
+    }
+    to {
+      transform: translateY(100%) scale(0.95);
+      opacity: 0;
+    }
+  }
+
+  /* Animation Classes */
+  .toast-enter-top-right {
+    animation: toastEnterTopRight 200ms ease-out forwards;
+  }
+
+  .toast-exit-top-right {
+    animation: toastExitTopRight 150ms ease-in forwards;
+  }
+
+  .toast-enter-bottom-right {
+    animation: toastEnterBottomRight 200ms ease-out forwards;
+  }
+
+  .toast-exit-bottom-right {
+    animation: toastExitBottomRight 150ms ease-in forwards;
+  }
+
+  .toast-enter-top-left {
+    animation: toastEnterTopLeft 200ms ease-out forwards;
+  }
+
+  .toast-exit-top-left {
+    animation: toastExitTopLeft 150ms ease-in forwards;
+  }
+
+  .toast-enter-bottom-left {
+    animation: toastEnterBottomLeft 200ms ease-out forwards;
+  }
+
+  .toast-exit-bottom-left {
+    animation: toastExitBottomLeft 150ms ease-in forwards;
+  }
+
+  .toast-enter-top-center {
+    animation: toastEnterTopCenter 200ms ease-out forwards;
+  }
+
+  .toast-exit-top-center {
+    animation: toastExitTopCenter 150ms ease-in forwards;
+  }
+
+  .toast-enter-bottom-center {
+    animation: toastEnterBottomCenter 200ms ease-out forwards;
+  }
+
+  .toast-exit-bottom-center {
+    animation: toastExitBottomCenter 150ms ease-in forwards;
+  }
 }

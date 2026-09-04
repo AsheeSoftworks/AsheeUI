@@ -1,6 +1,6 @@
 "use client";
 
-import { useTheme, Button, Tooltip } from "asheeui";
+import { Button, Tooltip, useTheme } from "asheeui";
 
 export default function TooltipTestPage() {
   const { theme, resolvedTheme, toggleTheme } = useTheme();
@@ -8,7 +8,7 @@ export default function TooltipTestPage() {
     <div className="p-12 max-w-5xl mx-auto space-y-12 bg-background text-foreground min-h-screen">
       <div>
         <h1 className="text-2xl font-bold mb-2">Tooltip Component Test Page</h1>
-        <p className="text-muted-foreground text-sm">
+        <p className="text-foreground/70 text-sm">
           Hover or focus over the buttons below to verify placement, animations,
           arrows, colors, and variants.
         </p>
@@ -19,7 +19,7 @@ export default function TooltipTestPage() {
         <h2 className="text-lg font-semibold border-b border-border pb-2">
           1. Placements
         </h2>
-        <div className="flex flex-wrap gap-4 items-center justify-center py-8 bg-muted/20 rounded-lg">
+        <div className="flex flex-wrap gap-4 items-center justify-center py-8 bg-secondary/20 rounded-lg">
           <Tooltip content="Tooltip on Top" placement="top" showArrow>
             <Button className="px-4 py-2 text-sm bg-secondary rounded-md font-medium">
               Top
@@ -53,19 +53,19 @@ export default function TooltipTestPage() {
         </h2>
         <div className="flex flex-wrap gap-4 items-center">
           <Tooltip content="Small Tooltip Text" size="sm">
-            <Button className="px-3 py-1.5 text-xs bg-muted rounded">
+            <Button className="px-3 py-1.5 text-xs bg-secondary rounded">
               Small (sm)
             </Button>
           </Tooltip>
 
           <Tooltip content="Medium Tooltip Text" size="md">
-            <Button className="px-4 py-2 text-sm bg-muted rounded">
+            <Button className="px-4 py-2 text-sm bg-secondary rounded">
               Medium (md)
             </Button>
           </Tooltip>
 
           <Tooltip content="Large Tooltip Text" size="lg">
-            <Button className="px-5 py-2.5 text-base bg-muted rounded">
+            <Button className="px-5 py-2.5 text-base bg-secondary rounded">
               Large (lg)
             </Button>
           </Tooltip>
@@ -137,19 +137,19 @@ export default function TooltipTestPage() {
         </h2>
         <div className="flex flex-wrap gap-4 items-center">
           <Tooltip content="Instant opening!" delay={0}>
-            <Button className="px-4 py-2 text-sm bg-muted rounded">
+            <Button className="px-4 py-2 text-sm bg-secondary rounded">
               Zero Delay
             </Button>
           </Tooltip>
 
           <Tooltip content="Custom Rich Content 🔥" showArrow color="primary">
-            <Button className="px-4 py-2 text-sm bg-muted rounded">
+            <Button className="px-4 py-2 text-sm bg-secondary rounded">
               Rich Content
             </Button>
           </Tooltip>
 
           <Tooltip content="You shouldn't see this" isDisabled>
-            <Button className="px-4 py-2 text-sm bg-muted/40 text-muted-foreground rounded cursor-not-allowed">
+            <Button className="px-4 py-2 text-sm bg-secondary/40 text-foreground/70 rounded cursor-not-allowed">
               Disabled Tooltip
             </Button>
           </Tooltip>

@@ -20,7 +20,6 @@ export interface SelectOption {
 export interface SelectConfig extends Omit<FieldConfig, "size"> {
   size?: SelectSizeKey;
   radius?: Radius;
-  className?: string;
 
   // Menu / Popover Overrides
   menuVariant?: Variant;
@@ -32,13 +31,13 @@ export interface SelectConfig extends Omit<FieldConfig, "size"> {
 export const defaultSelectConfig: SelectConfig = {
   size: "md",
   labelAlign: "left",
+  variant: "bordered",
 };
 
 export const FALLBACK_SELECT_CONFIG: Required<SelectConfig> = {
   ...FALLBACK_FIELD_CONFIG,
   size: "md",
   radius: "md",
-  className: "",
   variant: "bordered",
   color: "primary",
   status: "default",

@@ -12,6 +12,7 @@
     "@asheeui/cli": "workspace:*",
     "@asheeui/next": "workspace:*",
     "@floating-ui/react": "^0.27.20",
+    "@heroicons/react": "^2.2.0",
     "asheeui": "workspace:*",
     "framer-motion": "^11.18.2",
     "next": "16.3.1",

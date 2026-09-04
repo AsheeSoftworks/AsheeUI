@@ -20,7 +20,6 @@ export interface MultiSelectOption {
 export interface MultiSelectConfig extends Omit<FieldConfig, "size"> {
   size?: MultiSelectSizeKey;
   radius?: Radius;
-  className?: string;
 
   // Menu / Popover Overrides
   menuVariant?: Variant;
@@ -37,6 +36,7 @@ export interface MultiSelectConfig extends Omit<FieldConfig, "size"> {
 
 export const defaultMultiSelectConfig: MultiSelectConfig = {
   size: "md",
+  variant: "bordered",
   labelAlign: "left",
   chipSize: "sm",
   menuSize: "sm",
@@ -46,7 +46,6 @@ export const FALLBACK_MULTI_SELECT_CONFIG: Required<MultiSelectConfig> = {
   ...FALLBACK_FIELD_CONFIG,
   size: "md",
   radius: "md",
-  className: "",
   variant: "bordered",
   color: "primary",
   status: "default",

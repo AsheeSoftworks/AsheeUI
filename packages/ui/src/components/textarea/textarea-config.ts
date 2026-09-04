@@ -8,6 +8,7 @@ export interface TextAreaConfig extends FieldConfig {
 export const defaultTextAreaConfig: TextAreaConfig = {
   size: "md",
   labelAlign: "left",
+  variant: "bordered",
   rows: 4,
 };
 

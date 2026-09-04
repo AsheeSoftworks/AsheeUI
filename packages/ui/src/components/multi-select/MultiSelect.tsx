@@ -266,6 +266,14 @@ export const MultiSelect = forwardRef<HTMLButtonElement, MultiSelectProps>(
     );
 
     const resolvedStatus = status ?? "default";
+    const resolvedStatusColor: Color =
+      resolvedStatus === "error"
+        ? "danger"
+        : resolvedStatus === "success"
+          ? "success"
+          : resolvedStatus === "warning"
+            ? "warning"
+            : resolvedColor;
     const resolvedLabelAlign = resolveCascade<LabelAlign>(
       labelAlign,
       sectionConfig?.labelAlign,
@@ -364,10 +372,7 @@ export const MultiSelect = forwardRef<HTMLButtonElement, MultiSelectProps>(
         message={message}
         status={resolvedStatus}
         required={required}
-        isLoading={isLoading}
-        labelClassName={sectionConfig?.labelClassName}
-        descriptionClassName={sectionConfig?.descriptionClassName}
-        messageClassName={sectionConfig?.messageClassName}>
+        isLoading={isLoading}>
         <div
           className={cn("w-full flex flex-col gap-3", containerClassName)}
           style={style}
@@ -384,7 +389,8 @@ export const MultiSelect = forwardRef<HTMLButtonElement, MultiSelectProps>(
               }}
               type="button"
               variant={resolvedVariant}
-              color={resolvedColor}
+              color={resolvedStatusColor}
+              animate={false}
               isDisabled={disabled}
               aria-expanded={isOpen}
               aria-haspopup="listbox"
@@ -396,7 +402,6 @@ export const MultiSelect = forwardRef<HTMLButtonElement, MultiSelectProps>(
                 paddingClass,
                 fontClass,
                 radiusClass,
-                sectionConfig?.className,
                 className,
               )}
               {...getReferenceProps()}>
@@ -441,13 +446,13 @@ export const MultiSelect = forwardRef<HTMLButtonElement, MultiSelectProps>(
           {!disableChipDisplay && (
             <div className="flex flex-col gap-1.5">
               {chipLabel && (
-                <span className="text-xs font-medium text-muted-foreground">
+                <span className="text-xs font-medium text-foreground/70">
                   {chipLabel}
                 </span>
               )}
-              <div className="flex flex-wrap gap-1.5 p-2 min-h-12 bg-muted/20 border border-dashed border-border rounded-lg items-center">
+              <div className="flex flex-wrap gap-1.5 p-2 min-h-12 bg-secondary/20 border border-dashed border-border rounded-lg items-center">
                 {activeChips.length === 0 ? (
-                  <span className="text-xs text-muted-foreground px-2 py-1">
+                  <span className="text-xs text-foreground/70 px-2 py-1">
                     No selections made
                   </span>
                 ) : (

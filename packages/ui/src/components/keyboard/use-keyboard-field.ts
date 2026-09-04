@@ -1,40 +1,34 @@
 "use client";
 
-import { type RefObject, useCallback, useEffect } from "react";
-
-import { type KeyboardElement, useKeyboard } from "./keyboard-context";
+import { type RefObject, useCallback, useContext } from "react";
+import { KeyboardContext, type KeyboardElement } from "./keyboard-context";
 
 export function useKeyboardField(
-  name: string,
-  ref: RefObject<KeyboardElement | null>,
+  id: string,
+  ref?: RefObject<KeyboardElement | null>,
+  enabled: boolean = false, // Set default to false (opt-in) or true
 ) {
-  const { openKeyboard, requestClose, setInput, registerField } = useKeyboard();
+  const keyboard = useContext(KeyboardContext);
 
-  useEffect(() => {
-    registerField(name, ref.current);
-    return () => {
-      registerField(name, null);
-    };
-  }, [name, ref, registerField]);
-
-  const handleFocus = useCallback(() => {
-    openKeyboard(name);
-  }, [name, openKeyboard]);
+  const handleFocus = useCallback(
+    (e?: React.FocusEvent<KeyboardElement>) => {
+      if (!enabled || !keyboard) return;
+      const element = e?.currentTarget ?? ref?.current;
+      if (element) {
+        keyboard.openKeyboard(id, element);
+      }
+    },
+    [id, ref, enabled, keyboard],
+  );
 
   const handleBlur = useCallback(() => {
-    requestClose(name);
-  }, [name, requestClose]);
-
-  const handleChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-      setInput(name, e.target.value);
-    },
-    [name, setInput],
-  );
+    if (!enabled || !keyboard) return;
+    keyboard.requestClose(id);
+  }, [id, enabled, keyboard]);
 
   return {
     handleFocus,
     handleBlur,
-    handleChange,
+    hasProvider: Boolean(keyboard),
   };
 }

@@ -25,10 +25,7 @@ export interface FieldShellProps {
   messageId?: string;
   status?: FieldStatus;
   required?: boolean;
-  isLoading?: boolean; // new
-  labelClassName?: string;
-  descriptionClassName?: string;
-  messageClassName?: string;
+  isLoading?: boolean;
   children: ReactNode;
 }
 
@@ -43,9 +40,6 @@ export function FieldShell({
   status = "default",
   required,
   isLoading,
-  labelClassName,
-  descriptionClassName,
-  messageClassName,
   children,
 }: FieldShellProps) {
   return (
@@ -56,7 +50,6 @@ export function FieldShell({
           className={cn(
             "text-sm font-medium text-foreground",
             LABEL_ALIGN_CLASS[labelAlign],
-            labelClassName,
           )}>
           <span className="inline-flex items-center gap-1.5">
             {label}
@@ -70,9 +63,7 @@ export function FieldShell({
         </label>
       )}
       {description && (
-        <p
-          id={descriptionId}
-          className={cn("text-sm text-foreground/60", descriptionClassName)}>
+        <p id={descriptionId} className={cn("text-sm text-foreground/60")}>
           {description}
         </p>
       )}
@@ -81,11 +72,7 @@ export function FieldShell({
         <p
           id={messageId}
           role={status === "error" ? "alert" : undefined}
-          className={cn(
-            "text-sm",
-            STATUS_TEXT_CLASS[status],
-            messageClassName,
-          )}>
+          className={cn("text-sm", STATUS_TEXT_CLASS[status])}>
           {message}
         </p>
       )}

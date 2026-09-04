@@ -29,3 +29,5 @@ commit.sh
 *.tgz
 .turbo/*
 .turbo
+docs/*
+docs

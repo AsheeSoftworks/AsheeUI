@@ -56,7 +56,7 @@ export function renderDoctorReport(
   for (const result of results) {
     const color = STATUS_COLOR[result.status];
     const icon = STATUS_ICON[result.status];
-    console.log(`${color(icon + " ")}${bold(result.title)}`);
+    console.log(`${color(`${icon} `)}${bold(result.title)}`);
     console.log(`    ${result.message}`);
     if (result.fix && result.status !== "pass" && result.status !== "info") {
       console.log(`    ${dim("Fix:")} ${result.fix}`);

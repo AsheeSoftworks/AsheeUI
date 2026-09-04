@@ -1,11 +1,14 @@
 "use client";
 
 import { cn } from "@asheeui/utils";
-import {
+import React, {
   forwardRef,
   type InputHTMLAttributes,
   type ReactNode,
+  useCallback,
   useId,
+  useImperativeHandle,
+  useRef,
 } from "react";
 import { useAsheeConfig } from "../../libs/context";
 import { RADIUS_CLASS, type Radius } from "../../shared/radius";
@@ -26,10 +29,9 @@ import {
   type FieldStatus,
   type LabelAlign,
 } from "../field/field-config";
+import { useKeyboardField } from "../keyboard";
 import type { InputConfig } from "./input-config";
 import { INPUT_SIZE_CLASS, INPUT_STATUS_BORDER_CLASS } from "./input-styles";
-
-// ─── Component Interface ──────────────────────────────────────────────────────
 
 export interface InputProps
   extends Omit<
@@ -49,9 +51,8 @@ export interface InputProps
   required?: boolean;
   startContent?: ReactNode;
   endContent?: ReactNode;
+  enableVirtualKeyboard?: boolean;
 }
-
-// ─── Component Implementation ─────────────────────────────────────────────────
 
 export const Input = forwardRef<HTMLInputElement, InputProps>(
   (
@@ -73,12 +74,18 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
       startContent,
       endContent,
       style,
+      onFocus,
+      onBlur,
+      enableVirtualKeyboard = true,
       ...rest
     },
     ref,
   ) => {
     const config = useAsheeConfig();
     const sectionConfig = config.components?.input as InputConfig | undefined;
+
+    const internalRef = useRef<HTMLInputElement>(null);
+    useImperativeHandle(ref, () => internalRef.current as HTMLInputElement);
 
     const generatedId = useId();
     const fieldId = id ?? generatedId;
@@ -87,7 +94,26 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
     const describedBy =
       [descriptionId, messageId].filter(Boolean).join(" ") || undefined;
 
-    // ─── 1. Token Resolvers (4-Tier Cascade) ──────────────────────────────────
+    const { handleFocus: handleKeyboardFocus, handleBlur: handleKeyboardBlur } =
+      useKeyboardField(fieldId, internalRef, enableVirtualKeyboard);
+
+    const handleFocus = useCallback(
+      (e: React.FocusEvent<HTMLInputElement>) => {
+        handleKeyboardFocus(e);
+        onFocus?.(e);
+      },
+      [handleKeyboardFocus, onFocus],
+    );
+
+    const handleBlur = useCallback(
+      (e: React.FocusEvent<HTMLInputElement>) => {
+        handleKeyboardBlur();
+        onBlur?.(e);
+      },
+      [handleKeyboardBlur, onBlur],
+    );
+
+    // ─── Token Resolvers ──────────────────────────────────────────────────
 
     const resolvedSizeKey = resolveCascade<FieldSizeKey>(
       size,
@@ -121,6 +147,15 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
 
     const resolvedStatus = status ?? FALLBACK_FIELD_CONFIG.status;
 
+    const resolvedStatusColor: Color =
+      resolvedStatus === "error"
+        ? "danger"
+        : resolvedStatus === "success"
+          ? "success"
+          : resolvedStatus === "warning"
+            ? "warning"
+            : resolvedColor;
+
     const resolvedLabelAlign = resolveCascade<LabelAlign>(
       labelAlign,
       sectionConfig?.labelAlign,
@@ -128,9 +163,10 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
       FALLBACK_FIELD_CONFIG.labelAlign,
     );
 
-    // ─── 2. Class Maps ────────────────────────────────────────────────────────
-
-    const variantClass = resolveVariantClass(resolvedVariant, resolvedColor);
+    const variantClass = resolveVariantClass(
+      resolvedVariant,
+      resolvedStatusColor,
+    );
     const statusClass =
       resolvedStatus !== "default"
         ? INPUT_STATUS_BORDER_CLASS[resolvedStatus]
@@ -155,19 +191,15 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
         messageId={messageId}
         status={resolvedStatus}
         required={required}
-        isLoading={isLoading}
-        labelClassName={sectionConfig?.labelClassName}
-        descriptionClassName={sectionConfig?.descriptionClassName}
-        messageClassName={sectionConfig?.messageClassName}>
+        isLoading={isLoading}>
         <div className="relative flex items-center w-full">
           {startContent && (
-            <span className="absolute left-3 z-10 flex items-center pointer-events-none text-foreground/50">
+            <span className="absolute left-1 z-10 flex items-center pointer-events-none text-foreground/50">
               {startContent}
             </span>
           )}
-
           <input
-            ref={ref}
+            ref={internalRef}
             id={fieldId}
             disabled={disabled}
             required={required}
@@ -175,6 +207,8 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
             aria-invalid={resolvedStatus === "error"}
             aria-describedby={describedBy}
             aria-busy={isLoading}
+            onFocus={handleFocus}
+            onBlur={handleBlur}
             className={cn(
               "w-full text-foreground outline-none transition-colors shrink-0",
               "focus-visible:ring-2 focus-visible:ring-offset-2",
@@ -183,17 +217,24 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
               variantClass,
               statusClass,
               radiusClass,
-              startContent && "pl-9",
-              endContent && "pr-9",
-              sectionConfig?.className,
+              startContent && "pl-11",
+              endContent && "pr-11",
               className,
             )}
             style={style}
             {...rest}
           />
-
           {endContent && (
-            <span className="absolute right-3 z-10 flex items-center pointer-events-none text-foreground/50">
+            <span
+              className={cn(
+                "absolute right-1 z-10 flex items-center",
+                typeof endContent === "string" ||
+                  (React.isValidElement(endContent) &&
+                    endContent.type === "span")
+                  ? "pointer-events-none"
+                  : "",
+                "text-foreground/50",
+              )}>
               {endContent}
             </span>
           )}

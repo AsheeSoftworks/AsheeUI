@@ -17,14 +17,13 @@ import {
   resolveRadiusKey,
 } from "../../utils/resolve-token";
 import {
-  type DrawerAnimation,
   type DrawerConfig,
   type DrawerPlacement,
   type DrawerSize,
   FALLBACK_DRAWER_CONFIG,
 } from "./drawer-config";
 import {
-  DRAWER_ANIMATION_CLASSES,
+  DRAWER_ANIMATION_STATE,
   DRAWER_BORDER_PLACEMENT_CLASS,
   DRAWER_CONTAINER_PLACEMENT_CLASS,
   DRAWER_HEIGHT_CLASS,
@@ -37,7 +36,7 @@ export interface DrawerProps extends HTMLAttributes<HTMLDivElement> {
   placement?: DrawerPlacement;
   size?: DrawerSize;
   radius?: Radius;
-  animation?: DrawerAnimation;
+  animated?: boolean;
   closeOnOverlayClick?: boolean;
   closeOnEsc?: boolean;
   overlayClassName?: string;
@@ -53,11 +52,11 @@ export const Drawer = forwardRef<HTMLDivElement, DrawerProps>(
       placement: placementProp,
       size,
       radius,
-      animation,
-      closeOnOverlayClick,
-      closeOnEsc,
-      overlayClassName,
-      contentClassName,
+      animated: animatedProp,
+      closeOnOverlayClick: closeOnOverlayClickProp,
+      closeOnEsc: closeOnEscProp,
+      overlayClassName: overlayClassNameProp,
+      contentClassName: contentClassNameProp,
       className,
       children,
       style,
@@ -68,22 +67,23 @@ export const Drawer = forwardRef<HTMLDivElement, DrawerProps>(
     const config = useAsheeConfig();
     const sectionConfig = config.components?.drawer as DrawerConfig | undefined;
 
-    // Mounting & CSS animation state
-    const [isMounted, setIsMounted] = useState(isOpen);
-    const [isVisible, setIsVisible] = useState(false);
+    // Use explicit animation status states to avoid flash transitions
+    const [renderState, setRenderState] = useState<
+      "unmounted" | "opening" | "open" | "closing"
+    >(isOpen ? "open" : "unmounted");
 
     useEffect(() => {
       if (isOpen) {
-        setIsMounted(true);
+        setRenderState("opening");
         const timer = requestAnimationFrame(() => {
-          setIsVisible(true);
+          setRenderState("open");
         });
         return () => cancelAnimationFrame(timer);
-      } else {
-        setIsVisible(false);
+      } else if (renderState !== "unmounted") {
+        setRenderState("closing");
         const timer = setTimeout(() => {
-          setIsMounted(false);
-        }, 250);
+          setRenderState("unmounted");
+        }, 250); // Matches CSS keyframe duration (250ms)
         return () => clearTimeout(timer);
       }
     }, [isOpen]);
@@ -105,14 +105,14 @@ export const Drawer = forwardRef<HTMLDivElement, DrawerProps>(
     );
 
     const shouldCloseOnOverlay = resolveCascade<boolean>(
-      closeOnOverlayClick,
+      closeOnOverlayClickProp,
       sectionConfig?.closeOnOverlayClick,
       undefined,
       FALLBACK_DRAWER_CONFIG.closeOnOverlayClick,
     );
 
     const shouldCloseOnEsc = resolveCascade<boolean>(
-      closeOnEsc,
+      closeOnEscProp,
       sectionConfig?.closeOnEsc,
       undefined,
       FALLBACK_DRAWER_CONFIG.closeOnEsc,
@@ -125,8 +125,17 @@ export const Drawer = forwardRef<HTMLDivElement, DrawerProps>(
       FALLBACK_DRAWER_CONFIG.radius,
     );
 
-    const resolvedAnimation =
-      animation ?? sectionConfig?.animation ?? FALLBACK_DRAWER_CONFIG.animation;
+    const animated = resolveCascade<boolean>(
+      animatedProp,
+      sectionConfig?.animated,
+      undefined,
+      FALLBACK_DRAWER_CONFIG.animated,
+    );
+
+    const overlayClassName =
+      overlayClassNameProp ?? "bg-black/70 backdrop-blur-md";
+
+    const contentClassName = contentClassNameProp ?? "bg-secondary";
 
     // ─── 2. Class Maps ────────────────────────────────────────────────────────
 
@@ -162,20 +171,20 @@ export const Drawer = forwardRef<HTMLDivElement, DrawerProps>(
       DRAWER_BORDER_PLACEMENT_CLASS[placement] ??
       DRAWER_BORDER_PLACEMENT_CLASS.right;
 
-    // Animation resolution
-    const animPreset =
-      typeof resolvedAnimation === "string" &&
-      resolvedAnimation in DRAWER_ANIMATION_CLASSES
-        ? (resolvedAnimation as "slide" | "zoom" | "fade")
-        : "slide";
+    // Animation state class mapping
+    const animState = DRAWER_ANIMATION_STATE[placement];
+    const isVisible = renderState === "open" || renderState === "opening";
 
-    const isAnimEnabled = resolvedAnimation !== false;
-    const animState = DRAWER_ANIMATION_CLASSES[animPreset][placement];
-
-    const transitionClasses = isAnimEnabled
+    const animationClass = animated
       ? isVisible
         ? animState.open
         : animState.closed
+      : "";
+
+    const backdropAnimationClass = animated
+      ? isVisible
+        ? "drawer-backdrop-in"
+        : "drawer-backdrop-out"
       : "";
 
     const handleKeyDown = useCallback(
@@ -188,12 +197,12 @@ export const Drawer = forwardRef<HTMLDivElement, DrawerProps>(
     );
 
     useEffect(() => {
-      if (!isMounted) return;
+      if (renderState === "unmounted") return;
       window.addEventListener("keydown", handleKeyDown);
       return () => window.removeEventListener("keydown", handleKeyDown);
-    }, [isMounted, handleKeyDown]);
+    }, [renderState, handleKeyDown]);
 
-    if (!isMounted) return null;
+    if (renderState === "unmounted") return null;
 
     return (
       <div
@@ -211,10 +220,9 @@ export const Drawer = forwardRef<HTMLDivElement, DrawerProps>(
           type="button"
           onClick={shouldCloseOnOverlay ? onClose : undefined}
           className={cn(
-            "absolute inset-0 bg-black/40 backdrop-blur-xs transition-opacity duration-250 ease-out",
-            isVisible ? "opacity-100" : "opacity-0",
-            sectionConfig?.overlayClassName,
+            "absolute inset-0",
             overlayClassName,
+            backdropAnimationClass,
           )}
         />
 
@@ -222,15 +230,13 @@ export const Drawer = forwardRef<HTMLDivElement, DrawerProps>(
         <div
           style={style}
           className={cn(
-            "relative z-10 flex flex-col bg-background text-foreground shadow-2xl border-border overflow-hidden",
-            "transition-all duration-250 ease-out transform-gpu",
+            "relative z-10 flex flex-col text-foreground shadow-2xl border-border overflow-hidden",
             borderPlacementClass,
             widthClass,
             heightClass,
             radiusClass,
-            transitionClasses,
-            sectionConfig?.contentClassName,
             contentClassName,
+            animationClass,
           )}>
           {children}
         </div>

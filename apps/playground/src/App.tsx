@@ -1,6 +1,12 @@
 "use client";
 
-import { useTheme, Sidebar, type SidebarItem, ToastProvider } from "asheeui";
+import {
+  Sidebar,
+  type SidebarItem,
+  type SidebarSection,
+  ToastProvider,
+  useTheme,
+} from "asheeui";
 import { useState } from "react";
 
 // Test Pages
@@ -27,7 +33,8 @@ type PageKey =
   | "resize"
   | "keyboard"
   | "carousel"
-  | "marquee";
+  | "marquee"
+  | "test";
 
 const navItems: SidebarItem<PageKey>[] = [
   {
@@ -241,6 +248,33 @@ const navItems: SidebarItem<PageKey>[] = [
       </svg>
     ),
   },
+  {
+    id: "test",
+    label: "Test Demo",
+    icon: (
+      <svg
+        className="w-5 h-5"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+        aria-hidden="true">
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth={2}
+          d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+        />
+      </svg>
+    ),
+  },
+];
+
+const navSections: SidebarSection<PageKey>[] = [
+  {
+    id: "globals",
+    label: "Components",
+    items: navItems,
+  },
 ];
 
 // ─── Main Application Component ───────────────────────────────────────────────
@@ -273,7 +307,7 @@ export function AppContent() {
       case "marquee":
         return <MarqueeDemoPage />;
       default:
-        return <ConfigTestPage />;
+        return <ToastTestPage />;
     }
   }
 
@@ -282,19 +316,18 @@ export function AppContent() {
       {/* Sidebar Component */}
       <Sidebar<PageKey>
         title="Test Suite"
-        items={navItems}
+        sections={navSections}
         activeKey={page}
         isCollapsed={isCollapsed}
+        onCollapseChange={setIsCollapsed}
         onSelect={(item) => setPage(item.id)}
-        onBack={() => setIsCollapsed((prev) => !prev)}
         size="md"
         footer={
           <button
             type="button"
-            // onClick={() => setIsCollapsed((prev) => !prev)}
-            onClick={toggleTheme}
-            className="w-full flex items-center justify-center p-2 text-xs font-medium text-muted-foreground hover:text-foreground bg-muted/40 hover:bg-muted rounded-md transition-colors">
-            {isCollapsed ? "Expand" : "Collapse Sidebar"}
+            onClick={() => toggleTheme()}
+            className="w-full flex items-center justify-center p-2 text-xs font-medium text-foreground/70 hover:text-foreground bg-secondary/40 hover:bg-secondary rounded-md transition-colors truncate">
+            {isCollapsed ? "Theme" : "Toggle Theme"}
           </button>
         }
       />
@@ -305,7 +338,7 @@ export function AppContent() {
   );
 }
 
-export default function App() {
+export default function SideBar() {
   return (
     <ToastProvider>
       <AppContent />

@@ -16,6 +16,7 @@ export const defaultDatePickerConfig: DatePickerConfig = {
   size: "md",
   labelAlign: "left",
   mode: "date",
+  variant: "bordered",
 };
 
 export const FALLBACK_DATE_PICKER_CONFIG: Required<DatePickerConfig> = {

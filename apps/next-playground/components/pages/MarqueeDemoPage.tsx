@@ -100,14 +100,14 @@ export default function MarqueeDemoPage() {
             Interactive Test Suite
           </span>
         </div>
-        <p className="text-muted-foreground mt-2">
+        <p className="text-foreground/70 mt-2">
           Seamless infinite looping track supporting horizontal/vertical axes,
           customizable speed presets, and edge masking.
         </p>
       </div>
 
       {/* ─── 1. INTERACTIVE PLAYGROUND ───────────────────────────────────────── */}
-      <section className="p-6 border rounded-xl bg-card/50 space-y-6">
+      <section className="p-6 border rounded-xl bg-secondary/50 space-y-6">
         <h2 className="text-lg font-semibold border-b pb-3">
           Interactive Playground
         </h2>
@@ -118,7 +118,7 @@ export default function MarqueeDemoPage() {
           <div className="space-y-1.5">
             <label
               htmlFor="axis-select"
-              className="font-medium text-muted-foreground">
+              className="font-medium text-foreground/70">
               Axis
             </label>
             <select
@@ -135,7 +135,7 @@ export default function MarqueeDemoPage() {
           <div className="space-y-1.5">
             <label
               htmlFor="direction-select"
-              className="font-medium text-muted-foreground">
+              className="font-medium text-foreground/70">
               Direction
             </label>
             <select
@@ -152,7 +152,7 @@ export default function MarqueeDemoPage() {
           <div className="space-y-1.5">
             <label
               htmlFor="speed-select"
-              className="font-medium text-muted-foreground">
+              className="font-medium text-foreground/70">
               Speed
             </label>
             <select
@@ -170,7 +170,7 @@ export default function MarqueeDemoPage() {
           <div className="space-y-1.5">
             <label
               htmlFor="gap-select"
-              className="font-medium text-muted-foreground">
+              className="font-medium text-foreground/70">
               Gap
             </label>
             <select
@@ -186,7 +186,7 @@ export default function MarqueeDemoPage() {
 
           {/* Pause On Hover Toggle */}
           <div className="space-y-1.5">
-            <span className="font-medium text-muted-foreground block">
+            <span className="font-medium text-foreground/70 block">
               Pause on Hover
             </span>
             <button
@@ -195,7 +195,7 @@ export default function MarqueeDemoPage() {
               className={`w-full p-2 rounded-md border font-semibold transition-colors ${
                 pauseOnHover
                   ? "bg-primary/10 border-primary text-primary"
-                  : "bg-background text-muted-foreground"
+                  : "bg-background text-foreground/70"
               }`}>
               {pauseOnHover ? "Enabled" : "Disabled"}
             </button>
@@ -203,7 +203,7 @@ export default function MarqueeDemoPage() {
 
           {/* Fade Edges Toggle */}
           <div className="space-y-1.5">
-            <span className="font-medium text-muted-foreground block">
+            <span className="font-medium text-foreground/70 block">
               Fade Edges
             </span>
             <button
@@ -212,7 +212,7 @@ export default function MarqueeDemoPage() {
               className={`w-full p-2 rounded-md border font-semibold transition-colors ${
                 fadeEdges
                   ? "bg-primary/10 border-primary text-primary"
-                  : "bg-background text-muted-foreground"
+                  : "bg-background text-foreground/70"
               }`}>
               {fadeEdges ? "Enabled" : "Disabled"}
             </button>
@@ -244,10 +244,10 @@ export default function MarqueeDemoPage() {
       {/* ─── 2. PRESET SCENARIOS SHOWCASE ────────────────────────────────────── */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         {/* Scenario A: Dual Opposite Streams */}
-        <section className="p-6 border rounded-xl bg-card/50 space-y-4">
+        <section className="p-6 border rounded-xl bg-secondary/50 space-y-4">
           <div>
             <h3 className="font-semibold text-base">Dual Opposite Streams</h3>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-xs text-foreground/70">
               Stacked marquees moving in opposing directions for visual energy.
             </p>
           </div>
@@ -257,7 +257,7 @@ export default function MarqueeDemoPage() {
               {LOGO_ITEMS.slice(0, 4).map((item) => (
                 <div
                   key={item.name}
-                  className="px-4 py-2 border rounded-md text-xs font-semibold bg-muted/40">
+                  className="px-4 py-2 border rounded-md text-xs font-semibold bg-secondary/40">
                   {item.name}
                 </div>
               ))}
@@ -267,7 +267,7 @@ export default function MarqueeDemoPage() {
               {LOGO_ITEMS.slice(4).map((item) => (
                 <div
                   key={item.name}
-                  className="px-4 py-2 border rounded-md text-xs font-semibold bg-muted/40">
+                  className="px-4 py-2 border rounded-md text-xs font-semibold bg-secondary/40">
                   {item.name}
                 </div>
               ))}
@@ -276,10 +276,10 @@ export default function MarqueeDemoPage() {
         </section>
 
         {/* Scenario B: Vertical Activity Stream */}
-        <section className="p-6 border rounded-xl bg-card/50 space-y-4">
+        <section className="p-6 border rounded-xl bg-secondary/50 space-y-4">
           <div>
             <h3 className="font-semibold text-base">Vertical Activity Feed</h3>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-xs text-foreground/70">
               Y-axis loop useful for notifications, recent sales, or live logs.
             </p>
           </div>
@@ -289,9 +289,9 @@ export default function MarqueeDemoPage() {
               {NOTIFICATIONS.map((notif) => (
                 <div
                   key={notif.title}
-                  className="px-3 py-2 text-xs border rounded-md bg-card flex items-center justify-between gap-4">
+                  className="px-3 py-2 text-xs border rounded-md bg-secondary flex items-center justify-between gap-4">
                   <span className="font-medium">{notif.title}</span>
-                  <span className="text-[10px] text-muted-foreground">
+                  <span className="text-[10px] text-foreground/70">
                     {notif.time}
                   </span>
                 </div>
@@ -302,10 +302,10 @@ export default function MarqueeDemoPage() {
       </div>
 
       {/* Scenario C: Full-Width Testimonials Loop */}
-      <section className="p-6 border rounded-xl bg-card/50 space-y-4">
+      <section className="p-6 border rounded-xl bg-secondary/50 space-y-4">
         <div>
           <h3 className="font-semibold text-base">Testimonial Cards</h3>
-          <p className="text-xs text-muted-foreground">
+          <p className="text-xs text-foreground/70">
             Rich card layouts with hover-pause enabled for easy reading.
           </p>
         </div>
@@ -315,12 +315,12 @@ export default function MarqueeDemoPage() {
             <div
               key={t.name}
               className="w-75 p-4 rounded-xl border bg-background shadow-xs space-y-2 flex flex-col justify-between">
-              <p className="text-xs text-muted-foreground leading-relaxed italic">
+              <p className="text-xs text-foreground/70 leading-relaxed italic">
                 &quot;{t.text}&quot;
               </p>
               <div className="pt-2 border-t">
                 <p className="text-xs font-bold text-foreground">{t.name}</p>
-                <p className="text-[10px] text-muted-foreground">{t.role}</p>
+                <p className="text-[10px] text-foreground/70">{t.role}</p>
               </div>
             </div>
           ))}

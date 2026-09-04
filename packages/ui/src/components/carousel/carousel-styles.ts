@@ -16,8 +16,6 @@ export const CAROUSEL_PADDING_CLASS: Record<Size, string> = {
 };
 
 export const CAROUSEL_VARIANT_CLASS: Record<CarouselVariant, string> = {
-  default: "bg-card border border-border shadow-xs",
-  cards: "bg-card border border-border/60 shadow-lg",
   bordered: "bg-background border-2 border-border",
   ghost: "bg-transparent",
 };

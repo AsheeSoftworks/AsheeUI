@@ -51,6 +51,7 @@ export interface ToastProviderProps {
   radius?: Radius;
   defaultTimeout?: number;
   maxToasts?: number;
+  animated?: boolean;
   className?: string;
 }
 
@@ -64,6 +65,7 @@ export function ToastProvider({
   radius,
   defaultTimeout,
   maxToasts,
+  animated,
   className,
 }: ToastProviderProps) {
   const [toasts, setToasts] = useState<ToastItemData[]>([]);
@@ -112,6 +114,13 @@ export function ToastProvider({
     sectionConfig?.defaultTimeout,
     undefined,
     FALLBACK_TOAST_CONFIG.defaultTimeout,
+  );
+
+  const resolvedAnimated = resolveCascade<boolean>(
+    animated,
+    sectionConfig?.animated,
+    undefined,
+    FALLBACK_TOAST_CONFIG.animated,
   );
 
   // ─── 2. Toast State Handlers ──────────────────────────────────────────────
@@ -213,7 +222,6 @@ export function ToastProvider({
             "top-0 left-1/2 -translate-x-1/2 items-center",
           resolvedPlacement === "bottom-center" &&
             "bottom-0 left-1/2 -translate-x-1/2 items-center",
-          sectionConfig?.className,
           className,
         )}>
         {toasts.map((toastItem) => (
@@ -221,11 +229,11 @@ export function ToastProvider({
             key={toastItem.id}
             {...toastItem}
             placement={resolvedPlacement}
-            sizeKey={resolvedSizeKey}
+            size={resolvedSizeKey}
             variant={resolvedVariant}
             radius={resolvedRadiusKey}
             onDismiss={removeToast}
-            className={sectionConfig?.itemClassName}
+            animated={resolvedAnimated}
           />
         ))}
       </section>

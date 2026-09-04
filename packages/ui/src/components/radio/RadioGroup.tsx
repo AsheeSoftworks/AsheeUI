@@ -87,10 +87,7 @@ export const RadioGroup = forwardRef<HTMLDivElement, RadioGroupProps>(
         description={description}
         message={message}
         status={resolvedStatus}
-        required={required}
-        labelClassName={sectionConfig?.labelClassName}
-        descriptionClassName={sectionConfig?.descriptionClassName}
-        messageClassName={sectionConfig?.messageClassName}>
+        required={required}>
         <RadioContext.Provider
           value={{
             name: groupName,

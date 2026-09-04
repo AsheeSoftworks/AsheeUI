@@ -109,7 +109,7 @@ export const Switch = forwardRef<HTMLInputElement, SwitchProps>(
     const resolvedRadiusKey = resolveRadiusKey(
       radius,
       sectionConfig?.radius,
-      config.defaultRadius,
+      undefined,
       FALLBACK_SWITCH_CONFIG.radius,
     );
 
@@ -174,10 +174,7 @@ export const Switch = forwardRef<HTMLInputElement, SwitchProps>(
         message={message}
         status={resolvedStatus}
         required={required}
-        isLoading={isLoading}
-        labelClassName={sectionConfig?.labelClassName}
-        descriptionClassName={sectionConfig?.descriptionClassName}
-        messageClassName={sectionConfig?.messageClassName}>
+        isLoading={isLoading}>
         <label
           htmlFor={fieldId}
           className={cn(
@@ -214,8 +211,7 @@ export const Switch = forwardRef<HTMLInputElement, SwitchProps>(
                 "peer-focus-visible:ring-2 peer-focus-visible:ring-primary peer-focus-visible:ring-offset-2",
                 statusBorderClass,
                 radiusClass,
-                isChecked ? checkedColorClass : "bg-muted/60",
-                sectionConfig?.className,
+                isChecked ? checkedColorClass : "bg-secondary/60",
                 className,
               )}
               style={style}

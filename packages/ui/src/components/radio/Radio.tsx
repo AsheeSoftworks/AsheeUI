@@ -133,7 +133,7 @@ export const Radio = forwardRef<HTMLInputElement, RadioProps>(
     const rawRadiusKey = resolveRadiusKey(
       radius,
       sectionConfig?.radius,
-      config.defaultRadius,
+      undefined,
       FALLBACK_RADIO_CONFIG.radius,
     );
 
@@ -264,7 +264,7 @@ export const Radio = forwardRef<HTMLInputElement, RadioProps>(
               </span>
             )}
             {description && (
-              <span className="text-xs sm:text-sm text-muted-foreground leading-snug mt-0.5">
+              <span className="text-xs sm:text-sm text-foreground/70 leading-snug mt-0.5">
                 {description}
               </span>
             )}

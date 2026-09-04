@@ -285,10 +285,7 @@ export const Select = forwardRef<HTMLButtonElement, SelectProps>(
         message={message}
         status={resolvedStatus}
         required={required}
-        isLoading={isLoading}
-        labelClassName={sectionConfig?.labelClassName}
-        descriptionClassName={sectionConfig?.descriptionClassName}
-        messageClassName={sectionConfig?.messageClassName}>
+        isLoading={isLoading}>
         <div className="w-full relative inline-block">
           {/* Trigger Button */}
           <button
@@ -313,7 +310,6 @@ export const Select = forwardRef<HTMLButtonElement, SelectProps>(
               statusClass,
               radiusClass,
               buttonColor && `bg-[${buttonColor}]`,
-              sectionConfig?.className,
               className,
             )}
             style={style}
@@ -322,13 +318,13 @@ export const Select = forwardRef<HTMLButtonElement, SelectProps>(
               className={
                 selectedOption || initialValue
                   ? "text-foreground"
-                  : "text-muted-foreground"
+                  : "text-foreground/70"
               }>
               {displayLabel}
             </span>
             <ChevronDownIcon
               className={cn(
-                "ml-2 shrink-0 text-muted-foreground transition-transform duration-200",
+                "ml-2 shrink-0 text-foreground/70 transition-transform duration-200",
                 isOpen && "rotate-180",
               )}
             />
@@ -363,7 +359,3 @@ export const Select = forwardRef<HTMLButtonElement, SelectProps>(
 );
 
 Select.displayName = "Select";
-
-// Backward Compatibility Aliases
-export const Dropdown = Select;
-export type DropdownProps = SelectProps;

@@ -20,7 +20,6 @@ export interface AutocompleteOption {
 export interface AutocompleteConfig extends FieldConfig {
   size?: AutocompleteSizeKey;
   radius?: Radius;
-  className?: string;
 
   // Trigger Overrides
   variant?: Variant;
@@ -36,13 +35,13 @@ export interface AutocompleteConfig extends FieldConfig {
 export const defaultAutocompleteConfig: AutocompleteConfig = {
   size: "md",
   labelAlign: "left",
+  variant: "bordered",
 };
 
 export const FALLBACK_AUTOCOMPLETE_CONFIG: Required<AutocompleteConfig> = {
   ...FALLBACK_FIELD_CONFIG,
   size: "md",
   radius: "md",
-  className: "",
   variant: "bordered",
   color: "primary",
   labelAlign: "left",

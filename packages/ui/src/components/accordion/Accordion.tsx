@@ -190,10 +190,9 @@ export const Accordion = forwardRef<HTMLDivElement, AccordionProps>(
         className={cn(
           "w-full",
           containerVariantClass,
-          resolvedVariant !== "flush" &&
-            resolvedVariant !== "ghost" &&
+          resolvedVariant !== "ghost" &&
+            resolvedVariant !== "flush" &&
             radiusClass,
-          sectionConfig?.className,
           className,
         )}
         style={style}
@@ -230,14 +229,14 @@ export const Accordion = forwardRef<HTMLDivElement, AccordionProps>(
                 )}>
                 <div className="flex items-center gap-3 min-w-0 flex-1">
                   {item.icon && (
-                    <span className="shrink-0 text-muted-foreground">
+                    <span className="shrink-0 text-foreground/70">
                       {item.icon}
                     </span>
                   )}
                   <div className="flex flex-col min-w-0">
                     <span className="font-semibold truncate">{item.title}</span>
                     {item.subtitle && (
-                      <span className="text-xs text-muted-foreground truncate">
+                      <span className="text-xs text-foreground/70 truncate">
                         {item.subtitle}
                       </span>
                     )}
@@ -247,7 +246,7 @@ export const Accordion = forwardRef<HTMLDivElement, AccordionProps>(
                 {/* Rotating Expand Indicator */}
                 <div
                   className={cn(
-                    "text-muted-foreground shrink-0 ml-2 transition-transform duration-200 ease-in-out",
+                    "text-foreground/70 shrink-0 ml-2 transition-transform duration-200 ease-in-out",
                     disableAnimation ? "transition-none" : "",
                     isOpen && "rotate-180",
                   )}>
@@ -270,7 +269,7 @@ export const Accordion = forwardRef<HTMLDivElement, AccordionProps>(
                 <div className="overflow-hidden">
                   <div
                     className={cn(
-                      "text-muted-foreground leading-relaxed pt-0",
+                      "text-foreground/70 leading-relaxed pt-0",
                       contentSizeClass,
                       contentClassName,
                     )}>

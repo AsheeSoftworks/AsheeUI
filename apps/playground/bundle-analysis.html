@@ -149,14 +149,14 @@ main {
 var drawChart = ((exports) => {
   'use strict';
 
-  var n,l$1,u$2,i$1,r$1,o$1,e$1,f$2,c$1,a$1,s$1,h$1,p$1,v$1,y$1,d$1={},w$1=[],_$1=/acit|ex(?:s|g|n|p|$)|rph|grid|ows|mnc|ntw|ine[ch]|zoo|^ord|itera/i,g=Array.isArray;function m$1(n,l){for(var u in l)n[u]=l[u];return n}function b(n){n&&n.parentNode&&n.parentNode.removeChild(n);}function k$1(l,u,t){var i,r,o,e={};for(o in u)"key"==o?i=u[o]:"ref"==o?r=u[o]:e[o]=u[o];if(arguments.length>2&&(e.children=arguments.length>3?n.call(arguments,2):t),"function"==typeof l&&null!=l.defaultProps)for(o in l.defaultProps) void 0===e[o]&&(e[o]=l.defaultProps[o]);return x$1(l,e,i,r,null)}function x$1(n,t,i,r,o){var e={type:n,props:t,key:i,ref:r,__k:null,__:null,__b:0,__e:null,__c:null,constructor:void 0,__v:null==o?++u$2:o,__i:-1,__u:0};return null==o&&null!=l$1.vnode&&l$1.vnode(e),e}function S(n){return n.children}function C$1(n,l){this.props=n,this.context=l;}function $(n,l){if(null==l)return n.__?$(n.__,n.__i+1):null;for(var u;l<n.__k.length;l++)if(null!=(u=n.__k[l])&&null!=u.__e)return u.__e;return "function"==typeof n.type?$(n):null}function I(n){if(n.__P&&n.__d){var u=n.__v,t=u.__e,i=[],r=[],o=m$1({},u);o.__v=u.__v+1,l$1.vnode&&l$1.vnode(o),q$1(n.__P,o,u,n.__n,n.__P.namespaceURI,32&u.__u?[t]:null,i,null==t?$(u):t,!!(32&u.__u),r),o.__v=u.__v,o.__.__k[o.__i]=o,D$1(i,o,r),u.__e=u.__=null,o.__e!=t&&P(o);}}function P(n){if(null!=(n=n.__)&&null!=n.__c)return n.__e=n.__c.base=null,n.__k.some((l)=> {if(null!=l&&null!=l.__e)return n.__e=n.__c.base=l.__e}),P(n)}function A$1(n){(!n.__d&&(n.__d=true)&&i$1.push(n)&&!H.__r++||r$1!=l$1.debounceRendering)&&((r$1=l$1.debounceRendering)||o$1)(H);}function H(){try{for(var n,l=1;i$1.length;)i$1.length>l&&i$1.sort(e$1),n=i$1.shift(),l=i$1.length,I(n);}finally{i$1.length=H.__r=0;}}function L(n,l,u,t,i,r,o,e,f,c,a){var s,h,p,v,y,_,g=t&&t.__k||w$1,m=l.length;for(f=T$1(u,l,g,f,m),s=0;s<m;s++)null!=(p=u.__k[s])&&(h=-1!=p.__i&&g[p.__i]||d$1,p.__i=s,_=q$1(n,p,h,i,r,o,e,f,c,a),v=p.__e,p.ref&&h.ref!=p.ref&&(h.ref&&J(h.ref,null,p),a.push(p.ref,p.__c||v,p)),null==y&&null!=v&&(y=v),4&p.__u?(f=j$1(p,f,n),h.__e&&(h.__e=null)):"function"==typeof p.type&&void 0!==_?f=_:v&&(f=v.nextSibling),p.__u&=-7);return u.__e=y,f}function T$1(n,l,u,t,i){var r,o,e,f,c,a=u.length,s=a,h=0;for(n.__k=new Array(i),r=0;r<i;r++)null!=(o=l[r])&&"boolean"!=typeof o&&"function"!=typeof o?("string"==typeof o||"number"==typeof o||"bigint"==typeof o||o.constructor==String?o=n.__k[r]=x$1(null,o,null,null,null):g(o)?o=n.__k[r]=x$1(S,{children:o},null,null,null):void 0===o.constructor&&o.__b>0?o=n.__k[r]=x$1(o.type,o.props,o.key,o.ref?o.ref:null,o.__v):n.__k[r]=o,f=r+h,o.__=n,o.__b=n.__b+1,e=null,-1!=(c=o.__i=O(o,u,f,s))&&(s--,(e=u[c])&&(e.__u|=2)),null==e||null==e.__v?(-1==c&&(i>a?h--:i<a&&h++),"function"!=typeof o.type&&(o.__u|=4)):c!=f&&(c==f-1?h--:c==f+1?h++:(c>f?h--:h++,o.__u|=4))):n.__k[r]=null;if(s)for(r=0;r<a;r++)null!=(e=u[r])&&0==(2&e.__u)&&(e.__e==t&&(t=$(e)),K(e,e));return t}function j$1(n,l,u){var t,i;if("function"==typeof n.type){for(t=n.__k,i=0;t&&i<t.length;i++)t[i]&&(t[i].__=n,l=j$1(t[i],l,u));return l}n.__e!=l&&(l&&n.type&&!l.parentNode&&(l=$(n)),l=u.insertBefore(n.__e,l||null));do{l=l&&l.nextSibling;}while(null!=l&&8==l.nodeType);return l}function O(n,l,u,t){var i,r,o,e=n.key,f=n.type,c=l[u],a=null!=c&&0==(2&c.__u);if(null===c&&null==e||a&&e==c.key&&f==c.type)return u;if(t>(a?1:0))for(i=u-1,r=u+1;i>=0||r<l.length;)if(null!=(c=l[o=i>=0?i--:r++])&&0==(2&c.__u)&&e==c.key&&f==c.type)return o;return  -1}function z$1(n,l,u){"-"==l[0]?n.setProperty(l,null==u?"":u):n[l]=null==u?"":"number"!=typeof u||_$1.test(l)?u:u+"px";}function N(n,l,u,t,i){var r,o;n:if("style"==l)if("string"==typeof u)n.style.cssText=u;else {if("string"==typeof t&&(n.style.cssText=t=""),t)for(l in t)u&&l in u||z$1(n.style,l,"");if(u)for(l in u)t&&u[l]==t[l]||z$1(n.style,l,u[l]);}else if("o"==l[0]&&"n"==l[1])r=l!=(l=l.replace(s$1,"$1")),o=l.toLowerCase(),l=o in n||"onFocusOut"==l||"onFocusIn"==l?o.slice(2):l.slice(2),n.l||(n.l={}),n.l[l+r]=u,u?t?u[a$1]=t[a$1]:(u[a$1]=h$1,n.addEventListener(l,r?v$1:p$1,r)):n.removeEventListener(l,r?v$1:p$1,r);else {if("http://www.w3.org/2000/svg"==i)l=l.replace(/xlink(H|:h)/,"h").replace(/sName$/,"s");else if("width"!=l&&"height"!=l&&"href"!=l&&"list"!=l&&"form"!=l&&"tabIndex"!=l&&"download"!=l&&"rowSpan"!=l&&"colSpan"!=l&&"role"!=l&&"popover"!=l&&l in n)try{n[l]=null==u?"":u;break n}catch(n){}"function"==typeof u||(null==u||false===u&&"-"!=l[4]?n.removeAttribute(l):n.setAttribute(l,"popover"==l&&1==u?"":u));}}function V(n){return function(u){if(this.l){var t=this.l[u.type+n];if(null==u[c$1])u[c$1]=h$1++;else if(u[c$1]<t[a$1])return;return t(l$1.event?l$1.event(u):u)}}}function q$1(n,u,t,i,r,o,e,f,c,a){var s,h,p,v,y,d,_,k,x,M,I,P,A,H,T,j,F=u.type;if(void 0!==u.constructor)return null;128&t.__u&&(c=!!(32&t.__u),o=[f=u.__e=t.__e]),(s=l$1.__b)&&s(u);n:if("function"==typeof F){h=e.length;try{if(x=u.props,M=F.prototype&&F.prototype.render,I=(s=F.contextType)&&i[s.__c],P=s?I?I.props.value:s.__:i,t.__c?k=(p=u.__c=t.__c).__=p.__E:(M?u.__c=p=new F(x,P):(u.__c=p=new C$1(x,P),p.constructor=F,p.render=Q),I&&I.sub(p),p.state||(p.state={}),p.__n=i,v=p.__d=!0,p.__h=[],p._sb=[]),M&&null==p.__s&&(p.__s=p.state),M&&null!=F.getDerivedStateFromProps&&(p.__s==p.state&&(p.__s=m$1({},p.__s)),m$1(p.__s,F.getDerivedStateFromProps(x,p.__s))),y=p.props,d=p.state,p.__v=u,v)M&&null==F.getDerivedStateFromProps&&null!=p.componentWillMount&&p.componentWillMount(),M&&null!=p.componentDidMount&&p.__h.push(p.componentDidMount);else {if(M&&null==F.getDerivedStateFromProps&&x!==y&&null!=p.componentWillReceiveProps&&p.componentWillReceiveProps(x,P),u.__v==t.__v||!p.__e&&null!=p.shouldComponentUpdate&&!1===p.shouldComponentUpdate(x,p.__s,P)){u.__v!=t.__v&&(p.props=x,p.state=p.__s,p.__d=!1),u.__e=t.__e,u.__k=t.__k,u.__k.some((n)=> {n&&(n.__=u);}),w$1.push.apply(p.__h,p._sb),p._sb=[],p.__h.length&&e.push(p),f=$(t);break n}null!=p.componentWillUpdate&&p.componentWillUpdate(x,p.__s,P),M&&null!=p.componentDidUpdate&&p.__h.push(()=> {p.componentDidUpdate(y,d,_);});}if(p.context=P,p.props=x,p.__P=n,p.__e=!1,A=l$1.__r,H=0,M)p.state=p.__s,p.__d=!1,A&&A(u),s=p.render(p.props,p.state,p.context),w$1.push.apply(p.__h,p._sb),p._sb=[];else do{p.__d=!1,A&&A(u),s=p.render(p.props,p.state,p.context),p.state=p.__s;}while(p.__d&&++H<25);p.state=p.__s,null!=p.getChildContext&&(i=m$1(m$1({},i),p.getChildContext())),M&&!v&&null!=p.getSnapshotBeforeUpdate&&(_=p.getSnapshotBeforeUpdate(y,d)),T=null!=s&&s.type===S&&null==s.key?E(s.props.children):s,f=L(n,g(T)?T:[T],u,t,i,r,o,e,f,c,a),p.base=u.__e,u.__u&=-161,p.__h.length&&e.push(p),k&&(p.__E=p.__=null);}catch(n){if(e.length=h,u.__v=null,c||null!=o){if(n.then){for(u.__u|=c?160:128;f&&8==f.nodeType&&f.nextSibling;)f=f.nextSibling;null!=o&&(o[o.indexOf(f)]=null),u.__e=f;}else if(null!=o)for(j=o.length;j--;)b(o[j]);}else u.__e=t.__e;null==u.__k&&(u.__k=t.__k||[]),n.then||B$1(u),l$1.__e(n,u,t);}}else null==o&&u.__v==t.__v?(u.__k=t.__k,u.__e=t.__e):f=u.__e=G(t.__e,u,t,i,r,o,e,c,a);return (s=l$1.diffed)&&s(u),128&u.__u?void 0:f}function B$1(n){n&&(n.__c&&(n.__c.__e=true),n.__k&&n.__k.some(B$1));}function D$1(n,u,t){for(var i=0;i<t.length;i++)J(t[i],t[++i],t[++i]);l$1.__c&&l$1.__c(u,n),n.some((u)=> {try{n=u.__h,u.__h=[],n.some((n)=> {n.call(u);});}catch(n){l$1.__e(n,u.__v);}});}function E(n){return "object"!=typeof n||null==n||n.__b>0?n:g(n)?n.map(E):void 0!==n.constructor?null:m$1({},n)}function G(u,t,i,r,o,e,f,c,a){var s,h,p,v,y,w,_,m=i.props||d$1,k=t.props,x=t.type;if("svg"==x?o="http://www.w3.org/2000/svg":"math"==x?o="http://www.w3.org/1998/Math/MathML":o||(o="http://www.w3.org/1999/xhtml"),null!=e)for(s=0;s<e.length;s++)if((y=e[s])&&"setAttribute"in y==!!x&&(x?y.localName==x:3==y.nodeType)){u=y,e[s]=null;break}if(null==u){if(null==x)return document.createTextNode(k);u=document.createElementNS(o,x,k.is&&k),c&&(l$1.__m&&l$1.__m(t,e),c=false),e=null;}if(null==x)m===k||c&&u.data==k||(u.data=k);else {if(e="textarea"==x&&null!=k.defaultValue?null:e&&n.call(u.childNodes),!c&&null!=e)for(m={},s=0;s<u.attributes.length;s++)m[(y=u.attributes[s]).name]=y.value;for(s in m)y=m[s],"dangerouslySetInnerHTML"==s?p=y:"children"==s||s in k||"value"==s&&"defaultValue"in k||"checked"==s&&"defaultChecked"in k||N(u,s,null,y,o);for(s in k)y=k[s],"children"==s?v=y:"dangerouslySetInnerHTML"==s?h=y:"value"==s?w=y:"checked"==s?_=y:c&&"function"!=typeof y||m[s]===y||N(u,s,y,m[s],o);if(h)c||p&&(h.__html==p.__html||h.__html==u.innerHTML)||(u.innerHTML=h.__html),t.__k=[];else if(p&&(u.innerHTML=""),L("template"==t.type?u.content:u,g(v)?v:[v],t,i,r,"foreignObject"==x?"http://www.w3.org/1999/xhtml":o,e,f,e?e[0]:i.__k&&$(i,0),c,a),null!=e)for(s=e.length;s--;)b(e[s]);c&&"textarea"!=x||(s="value","progress"==x&&null==w?u.removeAttribute("value"):null!=w&&(w!==u[s]||"progress"==x&&!w||"option"==x&&w!=m[s])&&N(u,s,w,m[s],o),s="checked",null!=_&&_!=u[s]&&N(u,s,_,m[s],o));}return u}function J(n,u,t){try{if("function"==typeof n){var i="function"==typeof n.__u;i&&n.__u(),i&&null==u||(n.__u=n(u));}else n.current=u;}catch(n){l$1.__e(n,t);}}function K(n,u,t){var i,r;if(l$1.unmount&&l$1.unmount(n),(i=n.ref)&&(i.current&&i.current!=n.__e||J(i,null,u)),null!=(i=n.__c)){if(i.componentWillUnmount)try{i.componentWillUnmount();}catch(n){l$1.__e(n,u);}i.base=i.__P=i.__n=null;}if(i=n.__k)for(r=0;r<i.length;r++)i[r]&&K(i[r],u,t||"function"!=typeof n.type);t||b(n.__e),n.__c=n.__=n.__e=void 0;}function Q(n,l,u){return this.constructor(n,u)}function R(u,t,i){var r,o,e,f;t==document&&(t=document.documentElement),l$1.__&&l$1.__(u,t),o=(r="function"=="undefined")?null:t.__k,e=[],f=[],q$1(t,u=(t).__k=k$1(S,null,[u]),o||d$1,d$1,t.namespaceURI,o?null:t.firstChild?n.call(t.childNodes):null,e,o?o.__e:t.firstChild,r,f),D$1(e,u,f),u.props.children=null;}function X(n){function l(n){var u,t;return this.getChildContext||(u=new Set,(t={})[l.__c]=this,this.getChildContext=()=> t,this.componentWillUnmount=()=> {u=null;},this.shouldComponentUpdate=function(n){this.props.value!=n.value&&u.forEach((n)=> {n.__e=true,A$1(n);});},this.sub=(n)=> {u.add(n);var l=n.componentWillUnmount;n.componentWillUnmount=()=> {u&&u.delete(n),l&&l.call(n);};}),n.children}return l.__c="__cC"+y$1++,l.__=n,l.Provider=l.__l=(l.Consumer=(n,l)=> n.children(l)).contextType=l,l}n=w$1.slice,l$1={__e:(n,l,u,t)=> {for(var i,r,o;l=l.__;)if((i=l.__c)&&!i.__)try{if((r=i.constructor)&&null!=r.getDerivedStateFromError&&(i.setState(r.getDerivedStateFromError(n)),o=i.__d),null!=i.componentDidCatch&&(i.componentDidCatch(n,t||{}),o=i.__d),o)return i.__E=i}catch(l){n=l;}throw n}},u$2=0,C$1.prototype.setState=function(n,l){var u;u=null!=this.__s&&this.__s!=this.state?this.__s:this.__s=m$1({},this.state),"function"==typeof n&&(n=n(m$1({},u),this.props)),n&&m$1(u,n),null!=n&&this.__v&&(l&&this._sb.push(l),A$1(this));},C$1.prototype.forceUpdate=function(n){this.__v&&(this.__e=true,n&&this.__h.push(n),A$1(this));},C$1.prototype.render=S,i$1=[],o$1="function"==typeof Promise?Promise.prototype.then.bind(Promise.resolve()):setTimeout,e$1=(n,l)=> n.__v.__b-l.__v.__b,H.__r=0,f$2=Math.random().toString(8),c$1="__d"+f$2,a$1="__a"+f$2,s$1=/(PointerCapture)$|Capture$/i,h$1=0,p$1=V(false),v$1=V(true),y$1=0;
+  var n,l$1,u$2,i$1,r$1,o$1,e$1,f$2,c$1,a$1,s$1,h$1,p$1,v$1,y$1,d$1={},w$1=[],_$1=/acit|ex(?:s|g|n|p|$)|rph|grid|ows|mnc|ntw|ine[ch]|zoo|^ord|itera/i,g=Array.isArray;function m$1(n,l){for(var u in l)n[u]=l[u];return n}function b(n){n?.parentNode?.removeChild(n);}function k$1(l,u,t){var i,r,o,e={};for(o in u)"key"===o?i=u[o]:"ref"===o?r=u[o]:e[o]=u[o];if(arguments.length>2&&(e.children=arguments.length>3?n.call(arguments,2):t),"function"===typeof l&&null!=l.defaultProps)for(o in l.defaultProps) void 0===e[o]&&(e[o]=l.defaultProps[o]);return x$1(l,e,i,r,null)}function x$1(n,t,i,r,o){var e={type:n,props:t,key:i,ref:r,__k:null,__:null,__b:0,__e:null,__c:null,constructor:void 0,__v:null==o?++u$2:o,__i:-1,__u:0};return null==o&&null!=l$1.vnode&&l$1.vnode(e),e}function S(n){return n.children}function C$1(n,l){this.props=n,this.context=l;}function $(n,l){if(null==l)return n.__?$(n.__,n.__i+1):null;for(var u;l<n.__k.length;l++)if(null!=(u=n.__k[l])&&null!=u.__e)return u.__e;return "function"===typeof n.type?$(n):null}function I(n){if(n.__P&&n.__d){var u=n.__v,t=u.__e,i=[],r=[],o=m$1({},u);o.__v=u.__v+1,l$1.vnode?.(o),q$1(n.__P,o,u,n.__n,n.__P.namespaceURI,32&u.__u?[t]:null,i,null==t?$(u):t,!!(32&u.__u),r),o.__v=u.__v,o.__.__k[o.__i]=o,D$1(i,o,r),u.__e=u.__=null,o.__e!==t&&P(o);}}function P(n){if(null!=(n=n.__)&&null!=n.__c)return n.__e=n.__c.base=null,n.__k.some((l)=> {if(null!=l&&null!=l.__e)return n.__e=n.__c.base=l.__e}),P(n)}function A$1(n){(!n.__d&&(n.__d=true)&&i$1.push(n)&&!H.__r++||r$1!==l$1.debounceRendering)&&((r$1=l$1.debounceRendering)||o$1)(H);}function H(){try{for(var n,l=1;i$1.length;)i$1.length>l&&i$1.sort(e$1),n=i$1.shift(),l=i$1.length,I(n);}finally{i$1.length=H.__r=0;}}function L(n,l,u,t,i,r,o,e,f,c,a){var s,h,p,v,y,_,g=t?.__k||w$1,m=l.length;for(f=T$1(u,l,g,f,m),s=0;s<m;s++)null!=(p=u.__k[s])&&(h=-1!==p.__i&&g[p.__i]||d$1,p.__i=s,_=q$1(n,p,h,i,r,o,e,f,c,a),v=p.__e,p.ref&&h.ref!==p.ref&&(h.ref&&J(h.ref,null,p),a.push(p.ref,p.__c||v,p)),null==y&&null!=v&&(y=v),4&p.__u?(f=j$1(p,f,n),h.__e&&(h.__e=null)):"function"===typeof p.type&&void 0!==_?f=_:v&&(f=v.nextSibling),p.__u&=-7);return u.__e=y,f}function T$1(n,l,u,t,i){var r,o,e,f,c,a=u.length,s=a,h=0;for(n.__k=new Array(i),r=0;r<i;r++)null!=(o=l[r])&&"boolean"!==typeof o&&"function"!==typeof o?("string"===typeof o||"number"===typeof o||"bigint"===typeof o||o.constructor===String?o=n.__k[r]=x$1(null,o,null,null,null):g(o)?o=n.__k[r]=x$1(S,{children:o},null,null,null):void 0===o.constructor&&o.__b>0?o=n.__k[r]=x$1(o.type,o.props,o.key,o.ref?o.ref:null,o.__v):n.__k[r]=o,f=r+h,o.__=n,o.__b=n.__b+1,e=null,-1!==(c=o.__i=O(o,u,f,s))&&(s--,(e=u[c])&&(e.__u|=2)),null==e||null==e.__v?(-1===c&&(i>a?h--:i<a&&h++),"function"!==typeof o.type&&(o.__u|=4)):c!==f&&(c===f-1?h--:c===f+1?h++:(c>f?h--:h++,o.__u|=4))):n.__k[r]=null;if(s)for(r=0;r<a;r++)null!=(e=u[r])&&0===(2&e.__u)&&(e.__e===t&&(t=$(e)),K(e,e));return t}function j$1(n,l,u){var t,i;if("function"===typeof n.type){for(t=n.__k,i=0;t&&i<t.length;i++)t[i]&&(t[i].__=n,l=j$1(t[i],l,u));return l}n.__e!==l&&(l&&n.type&&!l.parentNode&&(l=$(n)),l=u.insertBefore(n.__e,l||null));do{l=l?.nextSibling;}while(null!=l&&8===l.nodeType);return l}function O(n,l,u,t){var i,r,o,e=n.key,f=n.type,c=l[u],a=null!=c&&0===(2&c.__u);if(null===c&&null==e||a&&e===c.key&&f===c.type)return u;if(t>(a?1:0))for(i=u-1,r=u+1;i>=0||r<l.length;)if(null!=(c=l[o=i>=0?i--:r++])&&0===(2&c.__u)&&e===c.key&&f===c.type)return o;return  -1}function z$1(n,l,u){"-"===l[0]?n.setProperty(l,null==u?"":u):n[l]=null==u?"":"number"!==typeof u||_$1.test(l)?u:`${u}px`;}function N(n,l,u,t,i){var r,o;n:if("style"===l)if("string"===typeof u)n.style.cssText=u;else {if("string"===typeof t&&(n.style.cssText=t=""),t)for(l in t)u&&l in u||z$1(n.style,l,"");if(u)for(l in u)t&&u[l]===t[l]||z$1(n.style,l,u[l]);}else if("o"===l[0]&&"n"===l[1])r=l!==(l=l.replace(s$1,"$1")),o=l.toLowerCase(),l=o in n||"onFocusOut"===l||"onFocusIn"===l?o.slice(2):l.slice(2),n.l||(n.l={}),n.l[l+r]=u,u?t?u[a$1]=t[a$1]:(u[a$1]=h$1,n.addEventListener(l,r?v$1:p$1,r)):n.removeEventListener(l,r?v$1:p$1,r);else {if("http://www.w3.org/2000/svg"===i)l=l.replace(/xlink(H|:h)/,"h").replace(/sName$/,"s");else if("width"!==l&&"height"!==l&&"href"!==l&&"list"!==l&&"form"!==l&&"tabIndex"!==l&&"download"!==l&&"rowSpan"!==l&&"colSpan"!==l&&"role"!==l&&"popover"!==l&&l in n)try{n[l]=null==u?"":u;break n}catch(n){}"function"===typeof u||(null==u||false===u&&"-"!==l[4]?n.removeAttribute(l):n.setAttribute(l,"popover"===l&&1===u?"":u));}}function V(n){return function(u){if(this.l){var t=this.l[u.type+n];if(null==u[c$1])u[c$1]=h$1++;else if(u[c$1]<t[a$1])return;return t(l$1.event?l$1.event(u):u)}}}function q$1(n,u,t,i,r,o,e,f,c,a){var s,h,p,v,y,d,_,k,x,M,I,P,A,H,T,j,F=u.type;if(void 0!==u.constructor)return null;128&t.__u&&(c=!!(32&t.__u),o=[f=u.__e=t.__e]),(s=l$1.__b)&&s(u);n:if("function"===typeof F){h=e.length;try{if(x=u.props,M=F.prototype?.render,I=(s=F.contextType)&&i[s.__c],P=s?I?I.props.value:s.__:i,t.__c?k=(p=u.__c=t.__c).__=p.__E:(M?u.__c=p=new F(x,P):(u.__c=p=new C$1(x,P),p.constructor=F,p.render=Q),I?.sub(p),p.state||(p.state={}),p.__n=i,v=p.__d=!0,p.__h=[],p._sb=[]),M&&null==p.__s&&(p.__s=p.state),M&&null!=F.getDerivedStateFromProps&&(p.__s===p.state&&(p.__s=m$1({},p.__s)),m$1(p.__s,F.getDerivedStateFromProps(x,p.__s))),y=p.props,d=p.state,p.__v=u,v)M&&null==F.getDerivedStateFromProps&&p.componentWillMount?.(),M&&null!=p.componentDidMount&&p.__h.push(p.componentDidMount);else {if(M&&null==F.getDerivedStateFromProps&&x!==y&&p.componentWillReceiveProps?.(x,P),u.__v===t.__v||!p.__e&&null!=p.shouldComponentUpdate&&!1===p.shouldComponentUpdate(x,p.__s,P)){u.__v!==t.__v&&(p.props=x,p.state=p.__s,p.__d=!1),u.__e=t.__e,u.__k=t.__k,u.__k.some((n)=> {n&&(n.__=u);}),w$1.push.apply(p.__h,p._sb),p._sb=[],p.__h.length&&e.push(p),f=$(t);break n}p.componentWillUpdate?.(x,p.__s,P),M&&null!=p.componentDidUpdate&&p.__h.push(()=> {p.componentDidUpdate(y,d,_);});}if(p.context=P,p.props=x,p.__P=n,p.__e=!1,A=l$1.__r,H=0,M)p.state=p.__s,p.__d=!1,A?.(u),s=p.render(p.props,p.state,p.context),w$1.push.apply(p.__h,p._sb),p._sb=[];else do{p.__d=!1,A?.(u),s=p.render(p.props,p.state,p.context),p.state=p.__s;}while(p.__d&&++H<25);p.state=p.__s,null!=p.getChildContext&&(i=m$1(m$1({},i),p.getChildContext())),M&&!v&&null!=p.getSnapshotBeforeUpdate&&(_=p.getSnapshotBeforeUpdate(y,d)),T=null!=s&&s.type===S&&null==s.key?E(s.props.children):s,f=L(n,g(T)?T:[T],u,t,i,r,o,e,f,c,a),p.base=u.__e,u.__u&=-161,p.__h.length&&e.push(p),k&&(p.__E=p.__=null);}catch(n){if(e.length=h,u.__v=null,c||null!=o){if(n.then){for(u.__u|=c?160:128;f&&8===f.nodeType&&f.nextSibling;)f=f.nextSibling;null!=o&&(o[o.indexOf(f)]=null),u.__e=f;}else if(null!=o)for(j=o.length;j--;)b(o[j]);}else u.__e=t.__e;null==u.__k&&(u.__k=t.__k||[]),n.then||B$1(u),l$1.__e(n,u,t);}}else null==o&&u.__v===t.__v?(u.__k=t.__k,u.__e=t.__e):f=u.__e=G(t.__e,u,t,i,r,o,e,c,a);return (s=l$1.diffed)&&s(u),128&u.__u?void 0:f}function B$1(n){n&&(n.__c&&(n.__c.__e=true),n.__k?.some(B$1));}function D$1(n,u,t){for(var i=0;i<t.length;i++)J(t[i],t[++i],t[++i]);l$1.__c?.(u,n),n.some((u)=> {try{n=u.__h,u.__h=[],n.some((n)=> {n.call(u);});}catch(n){l$1.__e(n,u.__v);}});}function E(n){return "object"!==typeof n||null==n||n.__b>0?n:g(n)?n.map(E):void 0!==n.constructor?null:m$1({},n)}function G(u,t,i,r,o,e,f,c,a){var s,h,p,v,y,w,_,m=i.props||d$1,k=t.props,x=t.type;if("svg"===x?o="http://www.w3.org/2000/svg":"math"===x?o="http://www.w3.org/1998/Math/MathML":o||(o="http://www.w3.org/1999/xhtml"),null!=e)for(s=0;s<e.length;s++)if((y=e[s])&&"setAttribute"in y===!!x&&(x?y.localName===x:3===y.nodeType)){u=y,e[s]=null;break}if(null==u){if(null==x)return document.createTextNode(k);u=document.createElementNS(o,x,k.is&&k),c&&(l$1.__m?.(t,e),c=false),e=null;}if(null==x)m===k||c&&u.data===k||(u.data=k);else {if(e="textarea"===x&&null!=k.defaultValue?null:e&&n.call(u.childNodes),!c&&null!=e)for(m={},s=0;s<u.attributes.length;s++)m[(y=u.attributes[s]).name]=y.value;for(s in m)y=m[s],"dangerouslySetInnerHTML"===s?p=y:"children"===s||s in k||"value"===s&&"defaultValue"in k||"checked"===s&&"defaultChecked"in k||N(u,s,null,y,o);for(s in k)y=k[s],"children"===s?v=y:"dangerouslySetInnerHTML"===s?h=y:"value"===s?w=y:"checked"===s?_=y:c&&"function"!==typeof y||m[s]===y||N(u,s,y,m[s],o);if(h)c||p&&(h.__html===p.__html||h.__html===u.innerHTML)||(u.innerHTML=h.__html),t.__k=[];else if(p&&(u.innerHTML=""),L("template"===t.type?u.content:u,g(v)?v:[v],t,i,r,"foreignObject"===x?"http://www.w3.org/1999/xhtml":o,e,f,e?e[0]:i.__k&&$(i,0),c,a),null!=e)for(s=e.length;s--;)b(e[s]);c&&"textarea"!==x||(s="value","progress"===x&&null==w?u.removeAttribute("value"):null!=w&&(w!==u[s]||"progress"===x&&!w||"option"===x&&w!==m[s])&&N(u,s,w,m[s],o),s="checked",null!=_&&_!==u[s]&&N(u,s,_,m[s],o));}return u}function J(n,u,t){try{if("function"===typeof n){var i="function"===typeof n.__u;i&&n.__u(),i&&null==u||(n.__u=n(u));}else n.current=u;}catch(n){l$1.__e(n,t);}}function K(n,u,t){var i,r;if(l$1.unmount?.(n),(i=n.ref)&&(i.current&&i.current!==n.__e||J(i,null,u)),null!=(i=n.__c)){if(i.componentWillUnmount)try{i.componentWillUnmount();}catch(n){l$1.__e(n,u);}i.base=i.__P=i.__n=null;}if(i=n.__k)for(r=0;r<i.length;r++)i[r]&&K(i[r],u,t||"function"!==typeof n.type);t||b(n.__e),n.__c=n.__=n.__e=void 0;}function Q(n,l,u){return this.constructor(n,u)}function R(u,t,i){var r,o,e,f;t===document&&(t=document.documentElement),l$1.__?.(u,t),o=(r="function"==="undefined")?null:t.__k,e=[],f=[],q$1(t,u=(t).__k=k$1(S,null,[u]),o||d$1,d$1,t.namespaceURI,o?null:t.firstChild?n.call(t.childNodes):null,e,o?o.__e:t.firstChild,r,f),D$1(e,u,f),u.props.children=null;}function X(n){function l(n){var u,t;return this.getChildContext||(u=new Set,(t={})[l.__c]=this,this.getChildContext=()=> t,this.componentWillUnmount=()=> {u=null;},this.shouldComponentUpdate=function(n){this.props.value!==n.value&&u.forEach((n)=> {n.__e=true,A$1(n);});},this.sub=(n)=> {u.add(n);var l=n.componentWillUnmount;n.componentWillUnmount=()=> {u?.delete(n),l?.call(n);};}),n.children}return l.__c=`__cC${y$1++}`,l.__=n,l.Provider=l.__l=(l.Consumer=(n,l)=> n.children(l)).contextType=l,l}n=w$1.slice,l$1={__e:(n,l,u,t)=> {for(var i,r,o;l=l.__;)if((i=l.__c)&&!i.__)try{if((r=i.constructor)&&null!=r.getDerivedStateFromError&&(i.setState(r.getDerivedStateFromError(n)),o=i.__d),null!=i.componentDidCatch&&(i.componentDidCatch(n,t||{}),o=i.__d),o)return i.__E=i}catch(l){n=l;}throw n}},u$2=0,C$1.prototype.setState=function(n,l){var u;u=null!=this.__s&&this.__s!==this.state?this.__s:this.__s=m$1({},this.state),"function"===typeof n&&(n=n(m$1({},u),this.props)),n&&m$1(u,n),null!=n&&this.__v&&(l&&this._sb.push(l),A$1(this));},C$1.prototype.forceUpdate=function(n){this.__v&&(this.__e=true,n&&this.__h.push(n),A$1(this));},C$1.prototype.render=S,i$1=[],o$1="function"===typeof Promise?Promise.prototype.then.bind(Promise.resolve()):setTimeout,e$1=(n,l)=> n.__v.__b-l.__v.__b,H.__r=0,f$2=Math.random().toString(8),c$1=`__d${f$2}`,a$1=`__a${f$2}`,s$1=/(PointerCapture)$|Capture$/i,h$1=0,p$1=V(false),v$1=V(true),y$1=0;
 
-  var f$1=0;function u$1(e,t,n,o,i,u){t||(t={});var a,c,p=t;if("ref"in p)for(c in p={},t)"ref"==c?a=t[c]:p[c]=t[c];var l={type:e,props:p,key:n,ref:a,__k:null,__:null,__b:0,__e:null,__c:null,constructor:void 0,__v:--f$1,__i:-1,__u:0,__source:i,__self:u};if("function"==typeof e&&(a=e.defaultProps))for(c in a) void 0===p[c]&&(p[c]=a[c]);return l$1.vnode&&l$1.vnode(l),l}
+  var f$1=0;function u$1(e,t,n,o,i,u){t||(t={});var a,c,p=t;if("ref"in p)for(c in p={},t)"ref"===c?a=t[c]:p[c]=t[c];var l={type:e,props:p,key:n,ref:a,__k:null,__:null,__b:0,__e:null,__c:null,constructor:void 0,__v:--f$1,__i:-1,__u:0,__source:i,__self:u};if("function"===typeof e&&(a=e.defaultProps))for(c in a) void 0===p[c]&&(p[c]=a[c]);return l$1.vnode?.(l),l}
 
   function count$1(node) {
     var sum = 0,
         children = node.children,
-        i = children && children.length;
+        i = children?.length;
     if (!i) sum = 1;
     else while (--i >= 0) sum += children[i].value;
     node.value = sum;
@@ -216,7 +216,7 @@ var drawChart = ((exports) => {
     return this.eachAfter((node) => {
       var sum = +value(node.data) || 0,
           children = node.children,
-          i = children && children.length;
+          i = children?.length;
       while (--i >= 0) sum += children[i].value;
       node.value = sum;
     });
@@ -657,7 +657,7 @@ var drawChart = ((exports) => {
       return availableSizeProperties;
   };
 
-  var t,r,u,i,o=0,f=[],c=l$1,e=c.__b,a=c.__r,v=c.diffed,l=c.__c,m=c.unmount,p=c.__;function s(n,t){c.__h&&c.__h(r,n,o||t),o=0;var u=r.__H||(r.__H={__:[],__h:[]});return n>=u.__.length&&u.__.push({}),u.__[n]}function d(n){return o=1,y(D,n)}function y(n,u,i){var o=s(t++,2);if(o.t=n,!o.__c&&(o.__=[D(void 0,u),(n)=> {var t=o.__N?o.__N[0]:o.__[0],r=o.t(t,n);t!==r&&(o.__N=[r,o.__[1]],o.__c.setState({}));}],o.__c=r,!r.__f)){var f=function(n,t,r){if(!o.__c.__H)return  true;var u=false,i=o.__c.props!==n;if(o.__c.__H.__.some((n)=> {if(n.__N){u=true;var t=n.__[0];n.__=n.__N,n.__N=void 0,t!==n.__[0]&&(i=true);}}),c){var f=c.call(this,n,t,r);return u?f||i:f}return !u||i};r.__f=true;var c=r.shouldComponentUpdate,e=r.componentWillUpdate;r.componentWillUpdate=function(n,t,r){if(this.__e){var u=c;c=void 0,f(n,t,r),c=u;}e&&e.call(this,n,t,r);},r.shouldComponentUpdate=f;}return o.__N||o.__}function h(n,u){var i=s(t++,3);!c.__s&&C(i.__H,u)&&(i.__=n,i.u=u,r.__H.__h.push(i));}function _(n,u){var i=s(t++,4);!c.__s&&C(i.__H,u)&&(i.__=n,i.u=u,r.__h.push(i));}function A(n){return o=5,T(()=> ({current:n}),[])}function T(n,r){var u=s(t++,7);return C(u.__H,r)&&(u.__=n(),u.__H=r,u.__h=n),u.__}function q(n,t){return o=8,T(()=> n,t)}function x(n){var u=r.context[n.__c],i=s(t++,9);return i.c=n,u?(null==i.__&&(i.__=true,u.sub(r)),u.props.value):n.__}function j(){for(var n;n=f.shift();){var t=n.__H;if(n.__P&&t)try{t.__h.some(z),t.__h.some(B),t.__h=[];}catch(r){t.__h=[],c.__e(r,n.__v);}}}c.__b=(n)=> {r=null,e&&e(n);},c.__=(n,t)=> {n&&t.__k&&t.__k.__m&&(n.__m=t.__k.__m),p&&p(n,t);},c.__r=(n)=> {a&&a(n),t=0;var i=(r=n.__c).__H;i&&(u===r?(i.__h=[],r.__h=[],i.__.some((n)=> {n.__N&&(n.__=n.__N),n.u=n.__N=void 0;})):(i.__h.some(z),i.__h.some(B),i.__h=[],t=0)),u=r;},c.diffed=(n)=> {v&&v(n);var t=n.__c;t&&t.__H&&(t.__H.__h.length&&(1!==f.push(t)&&i===c.requestAnimationFrame||((i=c.requestAnimationFrame)||w)(j)),t.__H.__.some((n)=> {n.u&&(n.__H=n.u,n.u=void 0);})),u=r=null;},c.__c=(n,t)=> {t.some((n)=> {try{n.__h.some(z),n.__h=n.__h.filter((n)=> !n.__||B(n));}catch(r){t.some((n)=> {n.__h&&(n.__h=[]);}),t=[],c.__e(r,n.__v);}}),l&&l(n,t);},c.unmount=(n)=> {m&&m(n);var t,r=n.__c;r&&r.__H&&(r.__H.__.some((n)=> {try{z(n);}catch(n){t=n;}}),r.__H=void 0,t&&c.__e(t,r.__v));};var k="function"==typeof requestAnimationFrame;function w(n){var t,r=()=> {clearTimeout(u),k&&cancelAnimationFrame(t),setTimeout(n);},u=setTimeout(r,35);k&&(t=requestAnimationFrame(r));}function z(n){var t=r,u=n.__c;"function"==typeof u&&(n.__c=void 0,u()),r=t;}function B(n){var t=r;n.__c=n.__(),r=t;}function C(n,t){return !n||n.length!==t.length||t.some((t,r)=> t!==n[r])}function D(n,t){return "function"==typeof t?t(n):t}
+  var t,r,u,i,o=0,f=[],c=l$1,e=c.__b,a=c.__r,v=c.diffed,l=c.__c,m=c.unmount,p=c.__;function s(n,t){c.__h?.(r,n,o||t),o=0;var u=r.__H||(r.__H={__:[],__h:[]});return n>=u.__.length&&u.__.push({}),u.__[n]}function d(n){return o=1,y(D,n)}function y(n,u,i){var o=s(t++,2);if(o.t=n,!o.__c&&(o.__=[D(void 0,u),(n)=> {var t=o.__N?o.__N[0]:o.__[0],r=o.t(t,n);t!==r&&(o.__N=[r,o.__[1]],o.__c.setState({}));}],o.__c=r,!r.__f)){var f=function(n,t,r){if(!o.__c.__H)return  true;var u=false,i=o.__c.props!==n;if(o.__c.__H.__.some((n)=> {if(n.__N){u=true;var t=n.__[0];n.__=n.__N,n.__N=void 0,t!==n.__[0]&&(i=true);}}),c){var f=c.call(this,n,t,r);return u?f||i:f}return !u||i};r.__f=true;var c=r.shouldComponentUpdate,e=r.componentWillUpdate;r.componentWillUpdate=function(n,t,r){if(this.__e){var u=c;c=void 0,f(n,t,r),c=u;}e?.call(this,n,t,r);},r.shouldComponentUpdate=f;}return o.__N||o.__}function h(n,u){var i=s(t++,3);!c.__s&&C(i.__H,u)&&(i.__=n,i.u=u,r.__H.__h.push(i));}function _(n,u){var i=s(t++,4);!c.__s&&C(i.__H,u)&&(i.__=n,i.u=u,r.__h.push(i));}function A(n){return o=5,T(()=> ({current:n}),[])}function T(n,r){var u=s(t++,7);return C(u.__H,r)&&(u.__=n(),u.__H=r,u.__h=n),u.__}function q(n,t){return o=8,T(()=> n,t)}function x(n){var u=r.context[n.__c],i=s(t++,9);return i.c=n,u?(null==i.__&&(i.__=true,u.sub(r)),u.props.value):n.__}function j(){for(var n;n=f.shift();){var t=n.__H;if(n.__P&&t)try{t.__h.some(z),t.__h.some(B),t.__h=[];}catch(r){t.__h=[],c.__e(r,n.__v);}}}c.__b=(n)=> {r=null,e?.(n);},c.__=(n,t)=> {n&&t.__k?.__m&&(n.__m=t.__k.__m),p?.(n,t);},c.__r=(n)=> {a?.(n),t=0;var i=(r=n.__c).__H;i&&(u===r?(i.__h=[],r.__h=[],i.__.some((n)=> {n.__N&&(n.__=n.__N),n.u=n.__N=void 0;})):(i.__h.some(z),i.__h.some(B),i.__h=[],t=0)),u=r;},c.diffed=(n)=> {v?.(n);var t=n.__c;t?.__H&&(t.__H.__h.length&&(1!==f.push(t)&&i===c.requestAnimationFrame||((i=c.requestAnimationFrame)||w)(j)),t.__H.__.some((n)=> {n.u&&(n.__H=n.u,n.u=void 0);})),u=r=null;},c.__c=(n,t)=> {t.some((n)=> {try{n.__h.some(z),n.__h=n.__h.filter((n)=> !n.__||B(n));}catch(r){t.some((n)=> {n.__h&&(n.__h=[]);}),t=[],c.__e(r,n.__v);}}),l?.(n,t);},c.unmount=(n)=> {m?.(n);var t,r=n.__c;r?.__H&&(r.__H.__.some((n)=> {try{z(n);}catch(n){t=n;}}),r.__H=void 0,t&&c.__e(t,r.__v));};var k="function"===typeof requestAnimationFrame;function w(n){var t,r=()=> {clearTimeout(u),k&&cancelAnimationFrame(t),setTimeout(n);},u=setTimeout(r,35);k&&(t=requestAnimationFrame(r));}function z(n){var t=r,u=n.__c;"function"===typeof u&&(n.__c=void 0,u()),r=t;}function B(n){var t=r;n.__c=n.__(),r=t;}function C(n,t){return !n||n.length!==t.length||t.some((t,r)=> t!==n[r])}function D(n,t){return "function"===typeof t?t(n):t}
 
   const PLACEHOLDER = "*/**/file.js";
   const SideBar = ({ availableSizeProperties, sizeProperty, setSizeProperty, onExcludeChange, onIncludeChange, }) => {
@@ -686,7 +686,7 @@ var drawChart = ((exports) => {
   };
 
   function getDefaultExportFromCjs (x) {
-  	return x && x.__esModule && Object.hasOwn(x, 'default') ? x['default'] : x;
+  	return x?.__esModule && Object.hasOwn(x, 'default') ? x.default : x;
   }
 
   var utils = {};
@@ -1401,7 +1401,7 @@ var drawChart = ((exports) => {
   	  try {
   	    /* eslint-disable-next-line no-new */
   	    new RegExp(value);
-  	  } catch (ex) {
+  	  } catch (_ex) {
   	    return args.map(v => utils.escapeRegex(v)).join('..');
   	  }
 
@@ -1616,7 +1616,7 @@ var drawChart = ((exports) => {
   	  while (index < pattern.length) {
   	    const match = parseRepeatedExtglob(pattern.slice(index), false);
 
-  	    if (!match || match.type !== '*') {
+  	    if (match?.type !== '*') {
   	      return;
   	    }
 
@@ -1626,7 +1626,7 @@ var drawChart = ((exports) => {
   	    }
 
   	    const branch = normalizeSimpleBranch(branches[0]);
-  	    if (!branch || branch.length !== 1) {
+  	    if (branch?.length !== 1) {
   	      return;
   	    }
 
@@ -2964,7 +2964,7 @@ var drawChart = ((exports) => {
   	 * @api public
   	 */
 
-  	picomatch.matchBase = (input, glob, options, posix = options && options.windows) => {
+  	picomatch.matchBase = (input, glob, options, posix = options?.windows) => {
   	  const regex = glob instanceof RegExp ? glob : picomatch.makeRe(glob, options);
   	  return regex.test(utils.basename(input, { windows: posix }));
   	};
@@ -3517,7 +3517,7 @@ var drawChart = ((exports) => {
           textProps.y = height / 2;
       }
       _(() => {
-          if (width == 0 || height == 0 || !textRef.current) {
+          if (width === 0 || height === 0 || !textRef.current) {
               return;
           }
           if (textRectRef.current == null) {
@@ -3538,7 +3538,7 @@ var drawChart = ((exports) => {
           }
           textRef.current.setAttribute("transform", `scale(${scale.toFixed(2)})`);
       }, [children, height, width]);
-      if (width == 0 || height == 0) {
+      if (width === 0 || height === 0) {
           return null;
       }
       return (u$1("g", { className: "node", transform: `translate(${x0},${y0})`, onClick: (event) => {
@@ -3671,11 +3671,11 @@ var drawChart = ((exports) => {
   	  }
 
   	  var mag = Math.abs(value);
-  	  var thousandsSeparator = (options && options.thousandsSeparator) || '';
-  	  var unitSeparator = (options && options.unitSeparator) || '';
+  	  var thousandsSeparator = (options?.thousandsSeparator) || '';
+  	  var unitSeparator = (options?.unitSeparator) || '';
   	  var decimalPlaces = (options && options.decimalPlaces !== undefined) ? options.decimalPlaces : 2;
-  	  var fixedDecimals = Boolean(options && options.fixedDecimals);
-  	  var unit = (options && options.unit) || '';
+  	  var fixedDecimals = Boolean(options?.fixedDecimals);
+  	  var unit = (options?.unit) || '';
 
   	  if (!unit || !map[unit.toLowerCase()]) {
   	    if (mag >= map.pb) {
@@ -3721,7 +3721,7 @@ var drawChart = ((exports) => {
   	 */
 
   	function parse(val) {
-  	  if (typeof val === 'number' && !isNaN(val)) {
+  	  if (typeof val === 'number' && !Number.isNaN(val)) {
   	    return val;
   	  }
 
@@ -3744,7 +3744,7 @@ var drawChart = ((exports) => {
   	    unit = results[4].toLowerCase();
   	  }
 
-  	  if (isNaN(floatValue)) {
+  	  if (Number.isNaN(floatValue)) {
   	    return null;
   	  }
 
@@ -3770,7 +3770,7 @@ var drawChart = ((exports) => {
           const mainSize = getModuleSize(node.data, sizeProperty);
           const percentageNum = (100 * mainSize) / getModuleSize(root.data, sizeProperty);
           const percentage = percentageNum.toFixed(2);
-          const percentageString = percentage + "%";
+          const percentageString = `${percentage}%`;
           const path = node
               .ancestors()
               .toReversed()
@@ -3887,7 +3887,7 @@ var drawChart = ((exports) => {
                   return 0;
               const meta = data.nodeMetas[data.nodeParts[node.uid].metaUid];
               /* eslint-disable typescript/no-non-null-asserted-optional-chain typescript/no-extra-non-null-assertion */
-              const bundleId = (_a = Object.entries(meta.moduleParts).find(([, uid]) => uid == node.uid)) === null || _a === void 0 ? void 0 : _a[0];
+              const bundleId = (_a = Object.entries(meta.moduleParts).find(([, uid]) => uid === node.uid)) === null || _a === void 0 ? void 0 : _a[0];
               const ownSize = getModuleSize(node, sizeProperty);
               const zoomMultiplier = getNodeSizeMultiplier(node);
               const filterMultiplier = getModuleFilterMultiplier(bundleId, meta);
@@ -4147,7 +4147,7 @@ var drawChart = ((exports) => {
 
   function color(format) {
     var m, l;
-    format = (format + "").trim().toLowerCase();
+    format = (`${format}`).trim().toLowerCase();
     return (m = reHex.exec(format)) ? (l = m[1].length, m = parseInt(m[1], 16), l === 6 ? rgbn(m) // #ff0000
         : l === 3 ? new Rgb((m >> 8 & 0xf) | (m >> 4 & 0xf0), (m >> 4 & 0xf) | (m & 0xf0), ((m & 0xf) << 4) | (m & 0xf), 1) // #f00
         : l === 8 ? rgba(m >> 24 & 0xff, m >> 16 & 0xff, m >> 8 & 0xff, (m & 0xff) / 0xff) // #ff000000
@@ -4224,7 +4224,7 @@ var drawChart = ((exports) => {
   }
 
   function rgb_formatHex8() {
-    return `#${hex(this.r)}${hex(this.g)}${hex(this.b)}${hex((isNaN(this.opacity) ? 1 : this.opacity) * 255)}`;
+    return `#${hex(this.r)}${hex(this.g)}${hex(this.b)}${hex((Number.isNaN(this.opacity) ? 1 : this.opacity) * 255)}`;
   }
 
   function rgb_formatRgb() {
@@ -4233,7 +4233,7 @@ var drawChart = ((exports) => {
   }
 
   function clampa(opacity) {
-    return isNaN(opacity) ? 1 : Math.max(0, Math.min(1, opacity));
+    return Number.isNaN(opacity) ? 1 : Math.max(0, Math.min(1, opacity));
   }
 
   function clampi(value) {
@@ -4300,7 +4300,7 @@ var drawChart = ((exports) => {
     },
     rgb() {
       var h = this.h % 360 + (this.h < 0) * 360,
-          s = isNaN(h) || isNaN(this.s) ? 0 : this.s,
+          s = Number.isNaN(h) || Number.isNaN(this.s) ? 0 : this.s,
           l = this.l,
           m2 = l + (l < 0.5 ? l : 1 - l) * s,
           m1 = 2 * l - m2;
@@ -4315,7 +4315,7 @@ var drawChart = ((exports) => {
       return new Hsl(clamph(this.h), clampt(this.s), clampt(this.l), clampa(this.opacity));
     },
     displayable() {
-      return (0 <= this.s && this.s <= 1 || isNaN(this.s))
+      return (0 <= this.s && this.s <= 1 || Number.isNaN(this.s))
           && (0 <= this.l && this.l <= 1)
           && (0 <= this.opacity && this.opacity <= 1);
     },
@@ -4353,12 +4353,12 @@ var drawChart = ((exports) => {
   }
 
   function gamma(y) {
-    return (y = +y) === 1 ? nogamma : ((a, b) => b - a ? exponential(a, b, y) : constant(isNaN(a) ? b : a));
+    return (y = +y) === 1 ? nogamma : ((a, b) => b - a ? exponential(a, b, y) : constant(Number.isNaN(a) ? b : a));
   }
 
   function nogamma(a, b) {
     var d = b - a;
-    return d ? linear$1(a, d) : constant(isNaN(a) ? b : a);
+    return d ? linear$1(a, d) : constant(Number.isNaN(a) ? b : a);
   }
 
   var rgb = (function rgbGamma(y) {
@@ -4374,7 +4374,7 @@ var drawChart = ((exports) => {
         start.g = g(t);
         start.b = b(t);
         start.opacity = opacity(t);
-        return start + "";
+        return `${start}`;
       };
     }
 
@@ -4453,7 +4453,7 @@ var drawChart = ((exports) => {
   }
 
   function one(b) {
-    return (t) => b(t) + "";
+    return (t) => `${b(t)}`;
   }
 
   function string(a, b) {
@@ -4466,7 +4466,7 @@ var drawChart = ((exports) => {
         q = []; // number interpolators
 
     // Coerce inputs to strings.
-    a = a + "", b = b + "";
+    a = `${a}`, b = `${b}`;
 
     // Interpolate pairs of numbers in a & b.
     while ((am = reA.exec(a))
@@ -4513,7 +4513,7 @@ var drawChart = ((exports) => {
         : b instanceof Date ? date
         : isNumberArray(b) ? numberArray
         : Array.isArray(b) ? genericArray
-        : typeof b.valueOf !== "function" && typeof b.toString !== "function" || isNaN(b) ? object
+        : typeof b.valueOf !== "function" && typeof b.toString !== "function" || Number.isNaN(b) ? object
         : interpolateNumber)(a, b);
   }
 
@@ -4538,7 +4538,7 @@ var drawChart = ((exports) => {
   function normalize(a, b) {
     return (b -= (a = +a))
         ? ((x) => (x - a) / b)
-        : constants(isNaN(b) ? NaN : 0.5);
+        : constants(Number.isNaN(b) ? NaN : 0.5);
   }
 
   function clamper(a, b) {
@@ -4609,7 +4609,7 @@ var drawChart = ((exports) => {
     }
 
     function scale(x) {
-      return x == null || isNaN(x = +x) ? unknown : (output || (output = piecewise(domain.map(transform), range, interpolate$1)))(transform(clamp(x)));
+      return x == null || Number.isNaN(x = +x) ? unknown : (output || (output = piecewise(domain.map(transform), range, interpolate$1)))(transform(clamp(x)));
     }
 
     scale.invert = (y) => clamp(untransform((input || (input = piecewise(range, domain.map(transform), interpolateNumber)))(y)));
@@ -4656,7 +4656,7 @@ var drawChart = ((exports) => {
   // significant digits p, where x is positive and p is in [1, 21] or undefined.
   // For example, formatDecimalParts(1.23) returns ["123", 0].
   function formatDecimalParts(x, p) {
-    if (!isFinite(x) || x === 0) return null; // NaN, ±Infinity, ±0
+    if (!Number.isFinite(x) || x === 0) return null; // NaN, ±Infinity, ±0
     var i = (x = p ? x.toExponential(p - 1) : x.toExponential()).indexOf("e"), coefficient = x.slice(0, i);
 
     // The string returned by toExponential either has the form \d\.\d+e[-+]\d+
@@ -4698,7 +4698,7 @@ var drawChart = ((exports) => {
   var re = /^(?:(.)?([<>=^]))?([+\-( ])?([$#])?(0)?(\d+)?(,)?(\.\d+)?(~)?([a-z%])?$/i;
 
   function formatSpecifier(specifier) {
-    if (!(match = re.exec(specifier))) throw new Error("invalid format: " + specifier);
+    if (!(match = re.exec(specifier))) throw new Error(`invalid format: ${specifier}`);
     var match;
     return new FormatSpecifier({
       fill: match[1],
@@ -4708,7 +4708,7 @@ var drawChart = ((exports) => {
       zero: match[5],
       width: match[6],
       comma: match[7],
-      precision: match[8] && match[8].slice(1),
+      precision: match[8]?.slice(1),
       trim: match[9],
       type: match[10]
     });
@@ -4717,16 +4717,16 @@ var drawChart = ((exports) => {
   formatSpecifier.prototype = FormatSpecifier.prototype; // instanceof
 
   function FormatSpecifier(specifier) {
-    this.fill = specifier.fill === undefined ? " " : specifier.fill + "";
-    this.align = specifier.align === undefined ? ">" : specifier.align + "";
-    this.sign = specifier.sign === undefined ? "-" : specifier.sign + "";
-    this.symbol = specifier.symbol === undefined ? "" : specifier.symbol + "";
+    this.fill = specifier.fill === undefined ? " " : `${specifier.fill}`;
+    this.align = specifier.align === undefined ? ">" : `${specifier.align}`;
+    this.sign = specifier.sign === undefined ? "-" : `${specifier.sign}`;
+    this.symbol = specifier.symbol === undefined ? "" : `${specifier.symbol}`;
     this.zero = !!specifier.zero;
     this.width = specifier.width === undefined ? undefined : +specifier.width;
     this.comma = !!specifier.comma;
     this.precision = specifier.precision === undefined ? undefined : +specifier.precision;
     this.trim = !!specifier.trim;
-    this.type = specifier.type === undefined ? "" : specifier.type + "";
+    this.type = specifier.type === undefined ? "" : `${specifier.type}`;
   }
 
   FormatSpecifier.prototype.toString = function() {
@@ -4737,7 +4737,7 @@ var drawChart = ((exports) => {
         + (this.zero ? "0" : "")
         + (this.width === undefined ? "" : Math.max(1, this.width | 0))
         + (this.comma ? "," : "")
-        + (this.precision === undefined ? "" : "." + Math.max(0, this.precision | 0))
+        + (this.precision === undefined ? "" : `.${Math.max(0, this.precision | 0)}`)
         + (this.trim ? "~" : "")
         + this.type;
   };
@@ -4765,24 +4765,24 @@ var drawChart = ((exports) => {
         n = coefficient.length;
     return i === n ? coefficient
         : i > n ? coefficient + new Array(i - n + 1).join("0")
-        : i > 0 ? coefficient.slice(0, i) + "." + coefficient.slice(i)
-        : "0." + new Array(1 - i).join("0") + formatDecimalParts(x, Math.max(0, p + i - 1))[0]; // less than 1y!
+        : i > 0 ? `${coefficient.slice(0, i)}.${coefficient.slice(i)}`
+        : `0.${new Array(1 - i).join("0")}${formatDecimalParts(x, Math.max(0, p + i - 1))[0]}`; // less than 1y!
   }
 
   function formatRounded(x, p) {
     var d = formatDecimalParts(x, p);
-    if (!d) return x + "";
+    if (!d) return `${x}`;
     var coefficient = d[0],
         exponent = d[1];
-    return exponent < 0 ? "0." + new Array(-exponent).join("0") + coefficient
-        : coefficient.length > exponent + 1 ? coefficient.slice(0, exponent + 1) + "." + coefficient.slice(exponent + 1)
+    return exponent < 0 ? `0.${new Array(-exponent).join("0")}${coefficient}`
+        : coefficient.length > exponent + 1 ? `${coefficient.slice(0, exponent + 1)}.${coefficient.slice(exponent + 1)}`
         : coefficient + new Array(exponent - coefficient.length + 2).join("0");
   }
 
   var formatTypes = {
     "%": (x, p) => (x * 100).toFixed(p),
     "b": (x) => Math.round(x).toString(2),
-    "c": (x) => x + "",
+    "c": (x) => `${x}`,
     "d": formatDecimal,
     "e": (x, p) => x.toExponential(p),
     "f": (x, p) => x.toFixed(p),
@@ -4803,14 +4803,14 @@ var drawChart = ((exports) => {
       prefixes = ["y","z","a","f","p","n","µ","m","","k","M","G","T","P","E","Z","Y"];
 
   function formatLocale(locale) {
-    var group = locale.grouping === undefined || locale.thousands === undefined ? identity : formatGroup(map.call(locale.grouping, Number), locale.thousands + ""),
-        currencyPrefix = locale.currency === undefined ? "" : locale.currency[0] + "",
-        currencySuffix = locale.currency === undefined ? "" : locale.currency[1] + "",
-        decimal = locale.decimal === undefined ? "." : locale.decimal + "",
+    var group = locale.grouping === undefined || locale.thousands === undefined ? identity : formatGroup(map.call(locale.grouping, Number), `${locale.thousands}`),
+        currencyPrefix = locale.currency === undefined ? "" : `${locale.currency[0]}`,
+        currencySuffix = locale.currency === undefined ? "" : `${locale.currency[1]}`,
+        decimal = locale.decimal === undefined ? "." : `${locale.decimal}`,
         numerals = locale.numerals === undefined ? identity : formatNumerals(map.call(locale.numerals, String)),
-        percent = locale.percent === undefined ? "%" : locale.percent + "",
-        minus = locale.minus === undefined ? "−" : locale.minus + "",
-        nan = locale.nan === undefined ? "NaN" : locale.nan + "";
+        percent = locale.percent === undefined ? "%" : `${locale.percent}`,
+        minus = locale.minus === undefined ? "−" : `${locale.minus}`,
+        nan = locale.nan === undefined ? "NaN" : `${locale.nan}`;
 
     function newFormat(specifier, options) {
       specifier = formatSpecifier(specifier);
@@ -4837,7 +4837,7 @@ var drawChart = ((exports) => {
 
       // Compute the prefix and suffix.
       // For SI-prefix, the suffix is lazily computed.
-      var prefix = (options && options.prefix !== undefined ? options.prefix : "") + (symbol === "$" ? currencyPrefix : symbol === "#" && /[boxX]/.test(type) ? "0" + type.toLowerCase() : ""),
+      var prefix = (options && options.prefix !== undefined ? options.prefix : "") + (symbol === "$" ? currencyPrefix : symbol === "#" && /[boxX]/.test(type) ? `0${type.toLowerCase()}` : ""),
           suffix = (symbol === "$" ? currencySuffix : /[%p]/.test(type) ? percent : "") + (options && options.suffix !== undefined ? options.suffix : "");
 
       // What format function should we use?
@@ -4869,7 +4869,7 @@ var drawChart = ((exports) => {
           var valueNegative = value < 0 || 1 / value < 0;
 
           // Perform the initial formatting.
-          value = isNaN(value) ? nan : formatType(Math.abs(value), precision);
+          value = Number.isNaN(value) ? nan : formatType(Math.abs(value), precision);
 
           // Trim insignificant zeros.
           if (trim) value = formatTrim(value);
@@ -4879,7 +4879,7 @@ var drawChart = ((exports) => {
 
           // Compute the prefix and suffix.
           valuePrefix = (valueNegative ? (sign === "(" ? sign : minus) : sign === "-" || sign === "(" ? "" : sign) + valuePrefix;
-          valueSuffix = (type === "s" && !isNaN(value) && prefixExponent !== undefined ? prefixes[8 + prefixExponent / 3] : "") + valueSuffix + (valueNegative && sign === "(" ? ")" : "");
+          valueSuffix = (type === "s" && !Number.isNaN(value) && prefixExponent !== undefined ? prefixes[8 + prefixExponent / 3] : "") + valueSuffix + (valueNegative && sign === "(" ? ")" : "");
 
           // Break the formatted value into the integer “value” part that can be
           // grouped, and fractional or exponential “suffix” part that is not.
@@ -4916,7 +4916,7 @@ var drawChart = ((exports) => {
         return numerals(value);
       }
 
-      format.toString = () => specifier + "";
+      format.toString = () => `${specifier}`;
 
       return format;
     }
@@ -4971,7 +4971,7 @@ var drawChart = ((exports) => {
     switch (specifier.type) {
       case "s": {
         var value = Math.max(Math.abs(start), Math.abs(stop));
-        if (specifier.precision == null && !isNaN(precision = precisionPrefix(step, value))) specifier.precision = precision;
+        if (specifier.precision == null && !Number.isNaN(precision = precisionPrefix(step, value))) specifier.precision = precision;
         return formatPrefix(specifier, value);
       }
       case "":
@@ -4979,12 +4979,12 @@ var drawChart = ((exports) => {
       case "g":
       case "p":
       case "r": {
-        if (specifier.precision == null && !isNaN(precision = precisionRound(step, Math.max(Math.abs(start), Math.abs(stop))))) specifier.precision = precision - (specifier.type === "e");
+        if (specifier.precision == null && !Number.isNaN(precision = precisionRound(step, Math.max(Math.abs(start), Math.abs(stop))))) specifier.precision = precision - (specifier.type === "e");
         break;
       }
       case "f":
       case "%": {
-        if (specifier.precision == null && !isNaN(precision = precisionFixed(step))) specifier.precision = precision - (specifier.type === "%") * 2;
+        if (specifier.precision == null && !Number.isNaN(precision = precisionFixed(step))) specifier.precision = precision - (specifier.type === "%") * 2;
         break;
       }
     }
@@ -5067,7 +5067,7 @@ var drawChart = ((exports) => {
         unknown;
 
     function scale(x) {
-      return x == null || isNaN(x = +x) ? unknown : interpolator(k10 === 0 ? 0.5 : (x = (transform(x) - t0) * k10, clamp ? Math.max(0, Math.min(1, x)) : x));
+      return x == null || Number.isNaN(x = +x) ? unknown : interpolator(k10 === 0 ? 0.5 : (x = (transform(x) - t0) * k10, clamp ? Math.max(0, Math.min(1, x)) : x));
     }
 
     scale.domain = function(_) {

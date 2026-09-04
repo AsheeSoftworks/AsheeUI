@@ -1,4 +1,5 @@
 "use client";
+
 import {
   createContext,
   type ReactNode,
@@ -23,20 +24,15 @@ export type KeyboardElement = HTMLInputElement | HTMLTextAreaElement;
 
 export interface KeyboardContextType {
   isOpen: boolean;
-  activeInput: string;
-  inputs: Record<string, string>;
+  activeInputId: string | null;
+  activeElement: KeyboardElement | null;
   config: KeyboardConfig;
-  openKeyboard: (inputName: string) => void;
-  requestClose: (inputName: string) => void;
+  openKeyboard: (id: string, el: KeyboardElement) => void;
+  requestClose: (id: string) => void;
   forceClose: () => void;
-  setInput: (inputName: string, value: string) => void;
-  getStringById: (id: string) => string;
-  clearInputs: () => void;
-  registerField: (name: string, el: KeyboardElement | null) => void;
-  getField: (name: string) => KeyboardElement | null;
 }
 
-const KeyboardContext = createContext<KeyboardContextType | null>(null);
+export const KeyboardContext = createContext<KeyboardContextType | null>(null);
 
 export interface KeyboardProviderProps {
   children: ReactNode;
@@ -70,7 +66,6 @@ export function KeyboardProvider({
     | KeyboardConfig
     | undefined;
 
-  // Resolve configuration cascade: Explicit Props > Provider Config > Global Ashee Theme > Default Fallback
   const mergedConfig = useMemo<KeyboardConfig>(
     () => ({
       layouts:
@@ -117,45 +112,33 @@ export function KeyboardProvider({
   );
 
   const [isOpen, setIsOpen] = useState(false);
-  const [activeInput, setActiveInput] = useState<string>("default");
-  const [inputs, setInputsState] = useState<Record<string, string>>({});
-
-  const closeTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const registryRef = useRef<Map<string, KeyboardElement>>(new Map());
-
-  const registerField = useCallback(
-    (name: string, el: KeyboardElement | null) => {
-      if (el) {
-        registryRef.current.set(name, el);
-      } else {
-        registryRef.current.delete(name);
-      }
-    },
-    [],
+  const [activeInputId, setActiveInputId] = useState<string | null>(null);
+  const [activeElement, setActiveElement] = useState<KeyboardElement | null>(
+    null,
   );
 
-  const getField = useCallback((name: string) => {
-    return registryRef.current.get(name) ?? null;
-  }, []);
+  const closeTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const openKeyboard = useCallback((inputName: string) => {
+  const openKeyboard = useCallback((id: string, el: KeyboardElement) => {
     if (closeTimeoutRef.current) {
       clearTimeout(closeTimeoutRef.current);
       closeTimeoutRef.current = null;
     }
-    setActiveInput(inputName);
+    setActiveInputId(id);
+    setActiveElement(el);
     setIsOpen(true);
   }, []);
 
   const requestClose = useCallback(
-    (inputName: string) => {
+    (id: string) => {
       if (closeTimeoutRef.current) {
         clearTimeout(closeTimeoutRef.current);
       }
       closeTimeoutRef.current = setTimeout(() => {
-        setActiveInput((current) => {
-          if (current === inputName) {
+        setActiveInputId((current) => {
+          if (current === id) {
             setIsOpen(false);
+            setActiveElement(null);
           }
           return current;
         });
@@ -171,47 +154,28 @@ export function KeyboardProvider({
       closeTimeoutRef.current = null;
     }
     setIsOpen(false);
-  }, []);
-
-  const setInput = useCallback((id: string, value: string) => {
-    setInputsState((prev) => ({ ...prev, [id]: value }));
-  }, []);
-
-  const getStringById = useCallback((id: string) => inputs[id] || "", [inputs]);
-
-  const clearInputs = useCallback(() => {
-    setInputsState({});
-    setActiveInput("default");
+    setActiveElement(null);
+    setActiveInputId(null);
   }, []);
 
   const value = useMemo(
     () => ({
       isOpen,
-      activeInput,
-      inputs,
+      activeInputId,
+      activeElement,
       config: mergedConfig,
       openKeyboard,
       requestClose,
       forceClose,
-      setInput,
-      getStringById,
-      clearInputs,
-      registerField,
-      getField,
     }),
     [
       isOpen,
-      activeInput,
-      inputs,
+      activeInputId,
+      activeElement,
       mergedConfig,
       openKeyboard,
       requestClose,
       forceClose,
-      setInput,
-      getStringById,
-      clearInputs,
-      registerField,
-      getField,
     ],
   );
 

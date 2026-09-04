@@ -41,8 +41,8 @@ const BORDERED_CLASS: Record<Color, string> = {
 };
 
 const FADED_CLASS: Record<Color, string> = {
-  none: "bg-muted/40 text-foreground border-2 border-transparent",
-  default: "bg-muted/40 text-foreground border-2 border-border",
+  none: "bg-secondary/40 text-foreground border-2 border-transparent",
+  default: "bg-secondary/40 text-foreground border-2 border-border",
   primary: "bg-primary/10 text-primary border-2 border-primary/20",
   secondary: "bg-secondary/15 text-foreground border-2 border-secondary/30",
   danger: "bg-danger/10 text-danger border-2 border-danger/20",
@@ -51,7 +51,7 @@ const FADED_CLASS: Record<Color, string> = {
 };
 
 const BASE_UNDERLINED =
-  "border-b-2 border-t-0 border-x-0 rounded-none bg-transparent px-0 shadow-none";
+  "border-b-2 border-t-0 border-x-0 rounded-none bg-transparent shadow-none";
 
 const UNDERLINED_CLASS: Record<Color, string> = {
   none: cn(BASE_UNDERLINED, "border-background text-foreground"),

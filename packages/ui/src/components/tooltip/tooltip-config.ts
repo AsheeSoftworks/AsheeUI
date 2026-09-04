@@ -1,5 +1,6 @@
 import { registerComponentDefaults } from "../../libs/registry";
 import type { Radius } from "../../shared/radius";
+import type { Size } from "../../shared/size";
 import type { Color, Variant } from "../../shared/variant";
 
 export type TooltipPlacement =
@@ -16,7 +17,7 @@ export type TooltipPlacement =
   | "right-start"
   | "right-end";
 
-export type TooltipSizeKey = "sm" | "md" | "lg" | "xl";
+export type TooltipSizeKey = Size;
 
 export interface TooltipConfig {
   variant?: Variant;

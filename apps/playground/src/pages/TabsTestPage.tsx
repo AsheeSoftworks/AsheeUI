@@ -31,9 +31,9 @@ const defaultTabs: TabItem[] = [
       </svg>
     ),
     content: (
-      <div className="p-6 rounded-lg bg-card border border-border shadow-xs space-y-3">
+      <div className="p-6 rounded-lg bg-secondary border border-border shadow-xs space-y-3">
         <h3 className="text-lg font-semibold">Account Settings</h3>
-        <p className="text-sm text-muted-foreground">
+        <p className="text-sm text-foreground/70">
           Manage your personal account details, display name, and avatar
           preferences.
         </p>
@@ -67,9 +67,9 @@ const defaultTabs: TabItem[] = [
       </svg>
     ),
     content: (
-      <div className="p-6 rounded-lg bg-card border border-border shadow-xs space-y-3">
+      <div className="p-6 rounded-lg bg-secondary border border-border shadow-xs space-y-3">
         <h3 className="text-lg font-semibold">Notification Center</h3>
-        <p className="text-sm text-muted-foreground">
+        <p className="text-sm text-foreground/70">
           Configure how you receive activity updates and digest emails.
         </p>
         <div className="space-y-2 pt-2">
@@ -113,9 +113,9 @@ const defaultTabs: TabItem[] = [
       </svg>
     ),
     content: (
-      <div className="p-6 rounded-lg bg-card border border-border shadow-xs space-y-3">
+      <div className="p-6 rounded-lg bg-secondary border border-border shadow-xs space-y-3">
         <h3 className="text-lg font-semibold">Security & Authentication</h3>
-        <p className="text-sm text-muted-foreground">
+        <p className="text-sm text-foreground/70">
           Update password and manage Two-Factor Authentication (2FA) sessions.
         </p>
         <button
@@ -146,9 +146,9 @@ const defaultTabs: TabItem[] = [
       </svg>
     ),
     content: (
-      <div className="p-6 rounded-lg bg-card border border-border shadow-xs">
+      <div className="p-6 rounded-lg bg-secondary border border-border shadow-xs">
         <h3 className="text-lg font-semibold">Billing Overview</h3>
-        <p className="text-sm text-muted-foreground">Disabled tab content.</p>
+        <p className="text-sm text-foreground/70">Disabled tab content.</p>
       </div>
     ),
   },
@@ -190,16 +190,16 @@ export default function TabsTestPage() {
         <h1 className="text-2xl font-bold tracking-tight">
           Tabs Component Test Bench
         </h1>
-        <p className="text-sm text-muted-foreground mt-1">
+        <p className="text-sm text-foreground/70 mt-1">
           Test interactive keyboard navigation (Arrow keys, Home, End),
           variants, animations, and controlled state management.
         </p>
       </div>
 
       {/* State & Event Monitor */}
-      <div className="p-4 rounded-lg bg-card border border-border shadow-xs flex flex-wrap items-center justify-between gap-4">
+      <div className="p-4 rounded-lg bg-secondary border border-border shadow-xs flex flex-wrap items-center justify-between gap-4">
         <div>
-          <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+          <span className="text-xs font-semibold uppercase tracking-wider text-foreground/70">
             Active Tab ID:
           </span>
           <p className="text-sm font-mono text-primary font-medium">
@@ -209,7 +209,7 @@ export default function TabsTestPage() {
           </p>
         </div>
         <div>
-          <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+          <span className="text-xs font-semibold uppercase tracking-wider text-foreground/70">
             Last Action:
           </span>
           <p className="text-sm font-mono text-emerald-500 font-medium">
@@ -223,7 +223,7 @@ export default function TabsTestPage() {
               type="button"
               disabled={t.disabled}
               onClick={() => handleTabChange(t.id)}
-              className="px-2 py-1 text-xs font-mono rounded bg-muted hover:bg-muted/80 disabled:opacity-40">
+              className="px-2 py-1 text-xs font-mono rounded bg-secondary hover:bg-secondary/80 disabled:opacity-40">
               Force &quot;{t.id}&quot;
             </button>
           ))}
@@ -231,11 +231,9 @@ export default function TabsTestPage() {
       </div>
 
       {/* Controls Panel */}
-      <div className="p-5 rounded-xl bg-card border border-border shadow-xs grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="p-5 rounded-xl bg-secondary border border-border shadow-xs grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="space-y-1">
-          <p className="text-xs font-medium text-muted-foreground">
-            State Mode
-          </p>
+          <p className="text-xs font-medium text-foreground/70">State Mode</p>
           <select
             value={isControlled ? "controlled" : "uncontrolled"}
             onChange={(e) => setIsControlled(e.target.value === "controlled")}
@@ -246,7 +244,7 @@ export default function TabsTestPage() {
         </div>
 
         <div className="space-y-1">
-          <p className="text-xs font-medium text-muted-foreground">Variant</p>
+          <p className="text-xs font-medium text-foreground/70">Variant</p>
           <select
             value={variant}
             onChange={(e) => setVariant(e.target.value as TabsVariant)}
@@ -259,7 +257,7 @@ export default function TabsTestPage() {
         </div>
 
         <div className="space-y-1">
-          <p className="text-xs font-medium text-muted-foreground">Size</p>
+          <p className="text-xs font-medium text-foreground/70">Size</p>
           <select
             value={size}
             onChange={(e) => setSize(e.target.value as TabsSizeKey)}
@@ -271,7 +269,7 @@ export default function TabsTestPage() {
         </div>
 
         <div className="space-y-1">
-          <p className="text-xs font-medium text-muted-foreground">Radius</p>
+          <p className="text-xs font-medium text-foreground/70">Radius</p>
           <select
             value={radius}
             onChange={(e) => setRadius(e.target.value as Radius)}
@@ -320,7 +318,7 @@ export default function TabsTestPage() {
 
       {/* ─── LIVE COMPONENT PREVIEW ───────────────────────────────────────── */}
       <div className="p-6 rounded-xl border border-border bg-background shadow-sm space-y-4">
-        <h2 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+        <h2 className="text-xs font-semibold uppercase tracking-wider text-foreground/70">
           Live Component Stage
         </h2>
         <div className="max-w-3xl">

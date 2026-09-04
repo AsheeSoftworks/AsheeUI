@@ -5,7 +5,7 @@ import type { Size } from "../../shared/size";
 import type { Color } from "../../shared/variant";
 
 export type TableSizeKey = Size;
-export type TableVariant = "default" | "striped" | "bordered" | "flush";
+export type TableVariant = "grid" | "striped" | "bordered" | "ghost";
 
 export interface ColumnDef<TData> {
   /** Optional explicit key for React list rendering. */
@@ -29,12 +29,12 @@ export interface TableConfig {
 
 export const defaultTableConfig: TableConfig = {
   size: "md",
-  variant: "default",
+  variant: "grid",
 };
 
 export const FALLBACK_TABLE_CONFIG: Required<TableConfig> = {
   size: "md",
-  variant: "default",
+  variant: "grid",
   color: "primary",
   radius: "md",
   className: "",

@@ -1,6 +1,7 @@
 "use client";
 
 import { cn } from "@asheeui/utils";
+import { useCallback, useState } from "react";
 import { CheckIcon } from "../../icons/CheckIcon";
 import { CloseIcon } from "../../icons/CloseIcon";
 import { ErrorIcon } from "../../icons/ErrorIcon";
@@ -13,11 +14,7 @@ import {
   resolveVariantClass,
   type Variant,
 } from "../../shared/variant";
-import {
-  resolveCascade,
-  resolveClassKey,
-  resolveRadiusKey,
-} from "../../utils/resolve-token";
+import { resolveCascade, resolveClassKey } from "../../utils/resolve-token";
 import {
   FALLBACK_TOAST_CONFIG,
   type ToastConfig,
@@ -27,7 +24,7 @@ import {
   type ToastType,
 } from "./toast-config";
 import {
-  TOAST_ANIMATION_CLASS,
+  TOAST_ANIMATION_STATE,
   TOAST_FONT_CLASS,
   TOAST_PADDING_CLASS,
   TOAST_TITLE_FONT_CLASS,
@@ -77,13 +74,12 @@ function getDefaultIcon(type: ToastType = "info", isSolid = false) {
 
 export interface ToastItemProps extends ToastItemData {
   onDismiss: (id: string) => void;
-  placement?: ToastPlacement;
-  sizeKey?: ToastSizeKey;
-  size?: ToastSizeKey;
-  variant?: Variant;
+  placement: ToastPlacement;
+  size: ToastSizeKey;
+  variant: Variant;
   color?: Color;
-  radius?: Radius;
-  className?: string;
+  radius: Radius;
+  animated?: boolean;
 }
 
 export function ToastItem({
@@ -97,87 +93,80 @@ export function ToastItem({
   dismissible = true,
   onDismiss,
   placement,
-  sizeKey,
   size,
   variant,
   color,
   radius,
-  className,
+  animated,
 }: ToastItemProps) {
   const config = useAsheeConfig();
   const sectionConfig = config.components?.toast as ToastConfig | undefined;
-  const { pause, resume } = usePausableTimeout(() => onDismiss(id), timeout);
+  const [isExiting, setIsExiting] = useState(false);
 
-  // ─── 1. Token Resolvers (4-Tier Cascade) ──────────────────────────────────
-
-  const resolvedSizeKey = resolveCascade<ToastSizeKey>(
-    sizeKey ?? size,
-    sectionConfig?.size,
+  // Resolve animated cascade fallback
+  const resolvedAnimated = resolveCascade<boolean>(
+    animated,
+    sectionConfig?.animated,
     undefined,
-    FALLBACK_TOAST_CONFIG.size,
+    FALLBACK_TOAST_CONFIG.animated,
   );
 
-  const resolvedPlacement = resolveCascade<ToastPlacement>(
-    placement,
-    sectionConfig?.placement,
-    undefined,
-    FALLBACK_TOAST_CONFIG.placement,
-  );
+  // Smooth dismissal handler
+  const handleDismiss = useCallback(() => {
+    if (resolvedAnimated && !isExiting) {
+      setIsExiting(true);
+      setTimeout(() => {
+        onDismiss(id);
+      }, 150);
+    } else {
+      onDismiss(id);
+    }
+  }, [resolvedAnimated, isExiting, onDismiss, id]);
 
-  const resolvedVariant = resolveCascade<Variant>(
-    variant,
-    sectionConfig?.variant,
-    config.defaultVariant as Variant | undefined,
-    FALLBACK_TOAST_CONFIG.variant,
-  );
+  const { pause, resume } = usePausableTimeout(handleDismiss, timeout);
 
-  const resolvedRadiusKey = resolveRadiusKey(
-    radius,
-    sectionConfig?.radius,
-    config.defaultRadius as Radius,
-    FALLBACK_TOAST_CONFIG.radius,
-  );
-
+  // ─── Token Resolvers (4-Tier Cascade) ──────────────────────────────────
   const resolvedColor = color ?? mapTypeToColor(type);
-  const isSolid = resolvedVariant === "solid";
+  const isSolid = variant === "solid";
 
-  // ─── 2. Class Maps ────────────────────────────────────────────────────────
+  // ─── Class Maps ────────────────────────────────────────────────────────
 
   const widthClass = resolveClassKey(
-    resolvedSizeKey,
+    size,
     TOAST_WIDTH_CLASS,
     FALLBACK_TOAST_CONFIG.size,
   );
 
   const paddingClass = resolveClassKey(
-    resolvedSizeKey,
+    size,
     TOAST_PADDING_CLASS,
     FALLBACK_TOAST_CONFIG.size,
   );
 
   const fontClass = resolveClassKey(
-    resolvedSizeKey,
+    size,
     TOAST_FONT_CLASS,
     FALLBACK_TOAST_CONFIG.size,
   );
 
   const titleFontClass = resolveClassKey(
-    resolvedSizeKey,
+    size,
     TOAST_TITLE_FONT_CLASS,
     FALLBACK_TOAST_CONFIG.size,
   );
 
   const radiusClass = resolveClassKey(
-    resolvedRadiusKey,
+    radius,
     RADIUS_CLASS,
     FALLBACK_TOAST_CONFIG.radius,
   );
 
-  const animationClass = resolveClassKey(
-    resolvedPlacement,
-    TOAST_ANIMATION_CLASS,
-    FALLBACK_TOAST_CONFIG.placement,
-  );
+  const animState = TOAST_ANIMATION_STATE[placement];
+  const animationClass = animated
+    ? isExiting
+      ? animState.exit
+      : animState.enter
+    : "";
 
   return (
     <div
@@ -185,16 +174,15 @@ export function ToastItem({
       onMouseLeave={resume}
       className={cn(
         "pointer-events-auto relative flex gap-3 items-start shadow-lg border backdrop-blur-md select-none overflow-hidden transition-all duration-200 active:scale-[0.99]",
+        "bg-background",
         widthClass,
         paddingClass,
         radiusClass,
         animationClass,
-        resolveVariantClass(resolvedVariant, resolvedColor),
-        sectionConfig?.itemClassName,
-        className,
+        resolveVariantClass(variant, resolvedColor),
       )}>
       {/* Toast Icon */}
-      <div className="shrink-0 pt-0.5">
+      <div className="shrink-0 pt-0.5 ps-1">
         {icon ?? getDefaultIcon(type, isSolid)}
       </div>
 

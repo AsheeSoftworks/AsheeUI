@@ -22,18 +22,27 @@ function getKeyWidthClass(token: string) {
   return "flex-1";
 }
 
-function withCursorEdit(
-  el: KeyboardElement | null,
-  current: string,
-  compute: (
-    value: string,
-    start: number,
-    end: number,
-  ) => { value: string; cursor: number },
+function dispatchInputValueChange(
+  el: KeyboardElement,
+  newValue: string,
+  cursorPos: number,
 ) {
-  const start = el?.selectionStart ?? current.length;
-  const end = el?.selectionEnd ?? current.length;
-  return compute(current, start, end);
+  const prototype = Object.getPrototypeOf(el);
+  const valueSetter = Object.getOwnPropertyDescriptor(prototype, "value")?.set;
+
+  if (valueSetter) {
+    valueSetter.call(el, newValue);
+  } else {
+    el.value = newValue;
+  }
+
+  // Dispatch standard input event for React synthetic onChange handlers
+  el.dispatchEvent(new Event("input", { bubbles: true }));
+
+  requestAnimationFrame(() => {
+    el.focus();
+    el.setSelectionRange(cursorPos, cursorPos);
+  });
 }
 
 function backspaceAtCursor(value: string, start: number, end: number) {
@@ -72,22 +81,17 @@ export function OnScreenKeyboard({
   radius: radiusProp,
   keyClassName,
 }: OnScreenKeyboardProps) {
-  const {
-    isOpen,
-    activeInput,
-    inputs,
-    config,
-    setInput,
-    forceClose,
-    getField,
-  } = useKeyboard();
+  const keyboardContext = useKeyboard();
+  if (!keyboardContext) return null;
+
+  const { isOpen, activeElement, config, forceClose } = keyboardContext;
   const globalConfig = useAsheeConfig();
+
   const activeLayouts = config.layouts ?? {};
   const activeDisplay = config.display ?? {};
   const effectiveHeightClass = heightClass ?? config.heightClass;
   const defaultLayoutName = config.defaultLayout ?? "default";
 
-  // Configuration token resolutions
   const resolvedVariant =
     variantProp ?? config.variant ?? globalConfig.defaultVariant ?? "solid";
   const resolvedColor =
@@ -100,7 +104,6 @@ export function OnScreenKeyboard({
   const [pressedKeys, setPressedKeys] = useState<Set<string>>(new Set());
   const [hoveredToken, setHoveredToken] = useState<string | null>(null);
 
-  // Reset layout when opening
   useEffect(() => {
     if (isOpen) {
       setLayout(initialLayout ?? defaultLayoutName);
@@ -120,7 +123,6 @@ export function OnScreenKeyboard({
     }));
   }, [activeLayouts, layout, defaultLayoutName]);
 
-  // Physical keyboard visual highlight listener
   useEffect(() => {
     if (!isOpen) return;
 
@@ -172,17 +174,16 @@ export function OnScreenKeyboard({
         e: number,
       ) => { value: string; cursor: number },
     ) => {
-      const el = getField(activeInput);
-      const current = inputs[activeInput] ?? "";
-      const { value, cursor } = withCursorEdit(el, current, compute);
+      if (!activeElement) return;
 
-      setInput(activeInput, value);
+      const current = activeElement.value;
+      const start = activeElement.selectionStart ?? current.length;
+      const end = activeElement.selectionEnd ?? current.length;
 
-      requestAnimationFrame(() => {
-        el?.setSelectionRange(cursor, cursor);
-      });
+      const { value, cursor } = compute(current, start, end);
+      dispatchInputValueChange(activeElement, value, cursor);
     },
-    [activeInput, inputs, getField, setInput],
+    [activeElement],
   );
 
   const handleKeyPress = useCallback(
@@ -206,15 +207,14 @@ export function OnScreenKeyboard({
         return;
       }
       if (token === "{clear}") {
-        setInput(activeInput, "");
+        if (activeElement) dispatchInputValueChange(activeElement, "", 0);
         return;
       }
       if (token === "{enter}") {
-        const el = getField(activeInput);
-        if (el?.tagName === "TEXTAREA") {
+        if (activeElement?.tagName === "TEXTAREA") {
           applyEdit(insertAtCursor("\n"));
         } else {
-          el?.blur();
+          activeElement?.blur();
         }
         return;
       }
@@ -230,15 +230,7 @@ export function OnScreenKeyboard({
         setLayout(defaultLayoutName);
       }
     },
-    [
-      activeInput,
-      applyEdit,
-      getField,
-      layout,
-      setInput,
-      config.autoShiftBack,
-      defaultLayoutName,
-    ],
+    [activeElement, applyEdit, layout, config.autoShiftBack, defaultLayoutName],
   );
 
   if (!isOpen) return null;

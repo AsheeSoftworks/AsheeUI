@@ -6,11 +6,18 @@ import {
   type ReactNode,
   useCallback,
   useMemo,
+  useState,
 } from "react";
 import { ArrowLeftIcon } from "../../icons/ArrowLeftIcon";
+import { ChevronLeftIcon } from "../../icons/ChevronLeftIcon";
+import { ChevronRightIcon } from "../../icons/ChevronRightIcon";
 import { useAsheeConfig } from "../../libs/context";
 import { RADIUS_CLASS, type Radius } from "../../shared/radius";
-import type { Color, Variant } from "../../shared/variant";
+import {
+  type Color,
+  resolveVariantClass,
+  type Variant,
+} from "../../shared/variant";
 import {
   resolveCascade,
   resolveClassKey,
@@ -22,6 +29,8 @@ import type { TooltipPlacement } from "../tooltip/tooltip-config";
 import type {
   SidebarConfig,
   SidebarItem,
+  SidebarItems,
+  SidebarSection,
   SidebarSizeKey,
   SidebarVariant,
 } from "./sidebar-config";
@@ -31,13 +40,21 @@ import {
   SIDEBAR_EXPANDED_WIDTH_CLASS,
   SIDEBAR_HEADER_CLASS,
   SIDEBAR_ITEM_CLASS,
+  SIDEBAR_SECTION_LABEL_CLASS,
   SIDEBAR_VARIANT_CLASS,
 } from "./sidebar-styles";
 
+// Helper type guard to check if items are sections
+function isSidebarSection<T>(
+  item: SidebarItem<T> | SidebarSection<T>,
+): item is SidebarSection<T> {
+  return "items" in item && Array.isArray(item.items);
+}
+
 export interface SidebarProps<T = string>
   extends Omit<HTMLAttributes<HTMLElement>, "onSelect" | "title"> {
-  /** List of navigation items. */
-  items: SidebarItem<T>[];
+  /** List of navigation items or sections. */
+  items?: SidebarItems<T>;
 
   /** Key of currently active item. */
   activeKey?: T;
@@ -47,6 +64,9 @@ export interface SidebarProps<T = string>
 
   /** Controlled collapsed drawer state. */
   isCollapsed?: boolean;
+
+  /** Callback when collapse state changes. */
+  onCollapseChange?: (collapsed: boolean) => void;
 
   /** Title displayed in the sidebar header when expanded. */
   title?: ReactNode;
@@ -76,7 +96,7 @@ export interface SidebarProps<T = string>
   itemRadius?: Radius;
 
   /** Active item variant. */
-  activeItemVariant?: Variant;
+  itemVariant?: Variant;
 
   /** Active item color. */
   activeItemColor?: Color;
@@ -86,6 +106,12 @@ export interface SidebarProps<T = string>
 
   /** Header back button color. */
   backButtonColor?: Color;
+
+  /** Collapse toggle button variant. */
+  collapseButtonVariant?: Variant;
+
+  /** Collapse toggle button color. */
+  collapseButtonColor?: Color;
 
   /** Whether to show tooltips on hover when the sidebar is collapsed. */
   showTooltips?: boolean;
@@ -101,13 +127,30 @@ export interface SidebarProps<T = string>
 
   /** Individual navigation item class override. */
   itemClassName?: string;
+
+  /** Section label class override. */
+  sectionLabelClassName?: string;
+
+  /** Footer class override. */
+  footerClassName?: string;
+
+  /** Anchor tag props passthrough. */
+  anchorProps?: Omit<
+    React.AnchorHTMLAttributes<HTMLAnchorElement>,
+    "href" | "children" | "onClick" | "className"
+  >;
+
+  /** @deprecated Use `items` instead. Will be removed in future version. */
+  sections?: SidebarSection<T>[];
 }
 
 export function Sidebar<T = string>({
-  items = [],
+  items: itemsProp,
+  sections: sectionsProp, // Keep for backward compatibility
   activeKey,
   onSelect,
-  isCollapsed = false,
+  isCollapsed: isCollapsedProp = false,
+  onCollapseChange,
   title,
   onBack,
   backIcon,
@@ -117,21 +160,38 @@ export function Sidebar<T = string>({
   size,
   radius,
   itemRadius,
-  activeItemVariant,
+  itemVariant,
   activeItemColor,
   backButtonVariant,
   backButtonColor,
+  collapseButtonVariant,
+  collapseButtonColor,
   showTooltips,
   tooltipPlacement,
   headerClassName,
   bodyClassName,
   itemClassName,
+  sectionLabelClassName,
+  footerClassName,
+  anchorProps,
   className,
   style,
   ...props
 }: SidebarProps<T>) {
   const config = useAsheeConfig();
   const sectionConfig = config.components?.sidebar as SidebarConfig | undefined;
+  const [internalCollapsed, setInternalCollapsed] = useState(isCollapsedProp);
+
+  const isCollapsed = isCollapsedProp ?? internalCollapsed;
+
+  const handleCollapseToggle = useCallback(() => {
+    const newState = !isCollapsed;
+    if (onCollapseChange) {
+      onCollapseChange(newState);
+    } else {
+      setInternalCollapsed(newState);
+    }
+  }, [isCollapsed, onCollapseChange]);
 
   // 1. Size & Variant Cascading
   const resolvedSizeKey = resolveCascade<SidebarSizeKey>(
@@ -164,11 +224,11 @@ export function Sidebar<T = string>({
   );
 
   // 3. Item & Button Tokens
-  const resolvedActiveItemVariant = resolveCascade<Variant>(
-    activeItemVariant,
-    sectionConfig?.activeItemVariant,
+  const resolvedItemVariant = resolveCascade<Variant>(
+    itemVariant,
+    sectionConfig?.itemVariant,
     config.defaultVariant as Variant,
-    FALLBACK_SIDEBAR_CONFIG.activeItemVariant,
+    FALLBACK_SIDEBAR_CONFIG.itemVariant,
   );
 
   const resolvedActiveItemColor = resolveCascade<Color>(
@@ -176,6 +236,16 @@ export function Sidebar<T = string>({
     sectionConfig?.activeItemColor,
     config.defaultColor as Color,
     FALLBACK_SIDEBAR_CONFIG.activeItemColor,
+  );
+
+  const activeVariantClasses = resolveVariantClass(
+    resolvedItemVariant,
+    resolvedActiveItemColor,
+  );
+
+  const inactiveVariantClasses = resolveVariantClass(
+    "ghost" as Variant,
+    "default" as Color,
   );
 
   const resolvedBackButtonVariant = resolveCascade<Variant>(
@@ -190,6 +260,20 @@ export function Sidebar<T = string>({
     sectionConfig?.backButtonColor,
     undefined,
     FALLBACK_SIDEBAR_CONFIG.backButtonColor,
+  );
+
+  const resolvedCollapseButtonVariant = resolveCascade<Variant>(
+    collapseButtonVariant,
+    sectionConfig?.collapseButtonVariant,
+    undefined,
+    FALLBACK_SIDEBAR_CONFIG.collapseButtonVariant,
+  );
+
+  const resolvedCollapseButtonColor = resolveCascade<Color>(
+    collapseButtonColor,
+    sectionConfig?.collapseButtonColor,
+    undefined,
+    FALLBACK_SIDEBAR_CONFIG.collapseButtonColor,
   );
 
   // 4. Tooltip Resolvers
@@ -207,18 +291,60 @@ export function Sidebar<T = string>({
     FALLBACK_SIDEBAR_CONFIG.tooltipPlacement,
   );
 
-  // Role Filtering
-  const filteredItems = useMemo(() => {
-    return items.filter((item) => {
-      if (!item.roles || item.roles.length === 0) return true;
-      if (!userRole) return false;
-      return item.roles.includes(userRole);
-    });
-  }, [items, userRole]);
+  // Determine which items to use (items prop takes priority)
+  const rawItems = itemsProp || sectionsProp;
+
+  // Normalize items to sections array
+  const normalizedSections = useMemo(() => {
+    if (!rawItems) return [];
+
+    // Check if first item is a section (has items property)
+    const firstItem = rawItems[0];
+    if (!firstItem) return [];
+
+    // If it's already a section array, return as is
+    if (isSidebarSection(firstItem)) {
+      return rawItems as SidebarSection<T>[];
+    }
+
+    // Otherwise, treat as flat items array and wrap in a single section
+    const flatItems = rawItems as SidebarItem<T>[];
+
+    // Create a section with no label (or a default one if needed)
+    return [
+      {
+        id: "__root" as T,
+        label: undefined,
+        items: flatItems,
+      },
+    ];
+  }, [rawItems]);
+
+  // Filter sections and items by role
+  const filteredSections = useMemo(() => {
+    return normalizedSections
+      .filter((section) => {
+        if (!section.roles || section.roles.length === 0) return true;
+        if (!userRole) return false;
+        return section.roles.includes(userRole);
+      })
+      .map((section) => ({
+        ...section,
+        items: section.items?.filter((item) => {
+          if (!item.roles || item.roles.length === 0) return true;
+          if (!userRole) return false;
+          return item.roles.includes(userRole);
+        }),
+      }))
+      .filter((section) => section.items && section.items.length > 0);
+  }, [normalizedSections, userRole]);
 
   const handleItemClick = useCallback(
-    (item: SidebarItem<T>) => {
-      if (item.disabled) return;
+    (e: React.MouseEvent<HTMLAnchorElement>, item: SidebarItem<T>) => {
+      if (item.disabled) {
+        e.preventDefault();
+        return;
+      }
       onSelect?.(item);
     },
     [onSelect],
@@ -227,6 +353,93 @@ export function Sidebar<T = string>({
   const widthClass = isCollapsed
     ? SIDEBAR_COLLAPSED_WIDTH_CLASS[resolvedSizeKey]
     : SIDEBAR_EXPANDED_WIDTH_CLASS[resolvedSizeKey];
+
+  // Render a single item
+  const renderItem = (item: SidebarItem<T>) => {
+    const isActive = item.id === activeKey;
+
+    const anchorElement = (
+      <a
+        key={String(item.id)}
+        href={item.disabled ? undefined : item.href}
+        target={item.target}
+        rel={item.rel}
+        onClick={(e) => handleItemClick(e, item)}
+        className={cn(
+          "w-full flex items-center gap-3 transition-all truncate no-underline",
+          SIDEBAR_ITEM_CLASS[resolvedSizeKey],
+          isCollapsed ? "justify-center px-0" : "justify-start",
+          isActive && "font-medium",
+          // Use the resolved variant classes
+          isActive ? activeVariantClasses : inactiveVariantClasses,
+          // Disabled styles
+          item.disabled && "opacity-50 cursor-not-allowed pointer-events-none",
+          // Radius
+          resolveClassKey(
+            resolvedItemVariant === "underlined" ? "none" : resolvedRadiusKey,
+            RADIUS_CLASS,
+            FALLBACK_SIDEBAR_CONFIG.itemRadius,
+          ),
+          itemClassName,
+        )}
+        {...anchorProps}>
+        {item.icon && (
+          <span className="shrink-0 flex items-center justify-center">
+            {item.icon}
+          </span>
+        )}
+
+        {!isCollapsed && (
+          <>
+            <span className="truncate flex-1 text-left">{item.label}</span>
+            {item.badge && <span className="shrink-0">{item.badge}</span>}
+          </>
+        )}
+      </a>
+    );
+
+    if (isCollapsed && resolvedShowTooltips) {
+      return (
+        <Tooltip
+          key={String(item.id)}
+          content={item.label}
+          placement={resolvedTooltipPlacement}
+          variant={
+            sectionConfig?.tooltipVariant ??
+            FALLBACK_SIDEBAR_CONFIG.tooltipVariant
+          }
+          color={
+            sectionConfig?.tooltipColor ?? FALLBACK_SIDEBAR_CONFIG.tooltipColor
+          }
+          radius={resolvedItemRadiusKey}>
+          {anchorElement}
+        </Tooltip>
+      );
+    }
+
+    return anchorElement;
+  };
+
+  // Render a section
+  const renderSection = (section: SidebarSection<T>) => {
+    if (!section.items || section.items.length === 0) return null;
+
+    return (
+      <div key={String(section.id)} className="flex flex-col gap-0.5">
+        {!isCollapsed && section.label && (
+          <div
+            className={cn(
+              "text-foreground/70 font-medium uppercase tracking-wider truncate",
+              SIDEBAR_SECTION_LABEL_CLASS[resolvedSizeKey],
+              sectionLabelClassName,
+            )}>
+            {section.label}
+          </div>
+        )}
+        {section.items.map(renderItem)}
+      </div>
+    );
+  };
 
   return (
     <aside
@@ -243,7 +456,7 @@ export function Sidebar<T = string>({
       )}
       style={style}
       {...props}>
-      {/* Sidebar Header */}
+      {/* Sidebar Header with Back Button */}
       {(onBack || title) && (
         <div
           className={cn(
@@ -255,7 +468,7 @@ export function Sidebar<T = string>({
           {onBack && (
             <Button
               icon
-              aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+              aria-label="Go back"
               variant={resolvedBackButtonVariant}
               color={resolvedBackButtonColor}
               size={resolvedSizeKey}
@@ -265,7 +478,6 @@ export function Sidebar<T = string>({
               <span
                 className={cn(
                   "flex items-center justify-center transition-transform duration-200",
-                  isCollapsed && "rotate-180",
                 )}>
                 {backIcon ?? <ArrowLeftIcon className="size-4" />}
               </span>
@@ -283,72 +495,46 @@ export function Sidebar<T = string>({
       {/* Navigation Body */}
       <nav
         className={cn(
-          "flex-1 overflow-y-auto py-3 px-2 flex flex-col gap-1 scrollbar-hide",
+          "flex-1 overflow-y-auto py-3 px-2 flex flex-col gap-3 scrollbar-hide",
           bodyClassName,
         )}>
-        {filteredItems.map((item) => {
-          const isActive = item.id === activeKey;
-
-          const itemButton = (
-            <Button
-              key={String(item.id)}
-              type="button"
-              isDisabled={item.disabled}
-              onClick={() => handleItemClick(item)}
-              variant={isActive ? resolvedActiveItemVariant : "ghost"}
-              color={isActive ? resolvedActiveItemColor : "none"}
-              size={resolvedSizeKey}
-              radius={resolvedItemRadiusKey}
-              className={cn(
-                "w-full flex items-center gap-3 transition-all truncate",
-                SIDEBAR_ITEM_CLASS[resolvedSizeKey],
-                isCollapsed ? "justify-center px-0" : "justify-start",
-                itemClassName,
-              )}>
-              {item.icon && (
-                <span className="shrink-0 flex items-center justify-center">
-                  {item.icon}
-                </span>
-              )}
-
-              {!isCollapsed && (
-                <span className="truncate flex-1 text-left">{item.label}</span>
-              )}
-
-              {!isCollapsed && item.badge && (
-                <span className="shrink-0">{item.badge}</span>
-              )}
-            </Button>
-          );
-
-          if (isCollapsed && resolvedShowTooltips) {
-            return (
-              <Tooltip
-                key={String(item.id)}
-                content={item.label}
-                placement={resolvedTooltipPlacement}
-                variant={
-                  sectionConfig?.tooltipVariant ??
-                  FALLBACK_SIDEBAR_CONFIG.tooltipVariant
-                }
-                color={
-                  sectionConfig?.tooltipColor ??
-                  FALLBACK_SIDEBAR_CONFIG.tooltipColor
-                }
-                radius={resolvedItemRadiusKey}>
-                {itemButton}
-              </Tooltip>
-            );
-          }
-
-          return itemButton;
-        })}
+        {filteredSections.map(renderSection)}
       </nav>
 
-      {/* Footer Slot */}
-      {!isCollapsed && footer && (
-        <div className="p-3 border-t border-border shrink-0">{footer}</div>
-      )}
+      {/* Footer with Collapse Button */}
+      <div
+        className={cn(
+          "border-t border-border shrink-0",
+          isCollapsed ? "p-2" : "p-3",
+          footerClassName,
+        )}>
+        {!isCollapsed && footer && <div className="mb-2">{footer}</div>}
+
+        {/* Collapse Toggle Button at Bottom */}
+        <Button
+          icon
+          aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+          variant={resolvedCollapseButtonVariant}
+          color={resolvedCollapseButtonColor}
+          size={resolvedSizeKey}
+          radius={resolvedItemRadiusKey}
+          onClick={handleCollapseToggle}
+          className={cn(
+            "w-full",
+            isCollapsed ? "justify-center px-0" : "justify-start",
+          )}>
+          <span className="flex items-center gap-2">
+            {isCollapsed ? (
+              <ChevronRightIcon className="size-4" />
+            ) : (
+              <>
+                <ChevronLeftIcon className="size-4" />
+                <span className="text-sm">Collapse</span>
+              </>
+            )}
+          </span>
+        </Button>
+      </div>
     </aside>
   );
 }

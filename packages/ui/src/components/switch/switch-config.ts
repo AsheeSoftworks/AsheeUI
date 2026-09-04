@@ -13,7 +13,6 @@ export interface SwitchConfig extends Omit<FieldConfig, "size" | "variant"> {
   size?: SwitchSizeKey;
   color?: Color;
   radius?: Radius;
-  className?: string;
 }
 
 export const defaultSwitchConfig: SwitchConfig = {

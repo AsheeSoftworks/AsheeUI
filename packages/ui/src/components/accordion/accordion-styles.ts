@@ -18,14 +18,14 @@ export const ACCORDION_VARIANT_CONTAINER_CLASS: Record<
 > = {
   bordered: "border border-border divide-y divide-border overflow-hidden",
   separated: "space-y-3",
-  flush: "divide-y divide-border border-y border-border",
-  ghost: "space-y-1",
+  ghost: "divide-y divide-border border-y border-border",
+  flush: "space-y-1",
 };
 
 export const ACCORDION_VARIANT_ITEM_CLASS: Record<AccordionVariant, string> = {
-  bordered: "bg-card transition-colors hover:bg-muted/30",
+  bordered: "bg-secondary transition-colors hover:bg-secondary/30",
   separated:
-    "border border-border bg-card transition-colors hover:bg-muted/30 shadow-xs",
-  flush: "bg-transparent transition-colors hover:bg-muted/20",
-  ghost: "bg-transparent hover:bg-muted/50 transition-colors",
+    "border border-border bg-secondary transition-colors hover:bg-secondary/30 shadow-xs",
+  ghost: "bg-transparent transition-colors hover:bg-secondary/20",
+  flush: "bg-transparent hover:bg-secondary/50 transition-colors",
 };
