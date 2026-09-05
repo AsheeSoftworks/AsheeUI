@@ -319,7 +319,7 @@ export function AppContent() {
       {/* Sidebar Component */}
       <Sidebar<PageKey>
         title="Test Suite"
-        sections={navSections}
+        items={navSections}
         activeKey={page}
         isCollapsed={isCollapsed}
         onCollapseChange={setIsCollapsed}

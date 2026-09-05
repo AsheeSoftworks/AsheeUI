@@ -4,7 +4,6 @@ export const DRAWER_WIDTH_CLASS: Record<DrawerSize, string> = {
   sm: "w-80",
   md: "w-[28rem]",
   lg: "w-[36rem]",
-  xl: "w-[48rem]",
   full: "w-screen",
 };
 
@@ -12,7 +11,6 @@ export const DRAWER_HEIGHT_CLASS: Record<DrawerSize, string> = {
   sm: "h-80",
   md: "h-[28rem]",
   lg: "h-[36rem]",
-  xl: "h-[48rem]",
   full: "h-screen",
 };
 

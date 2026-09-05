@@ -16,7 +16,7 @@ export const ACCORDION_VARIANT_CONTAINER_CLASS: Record<
   AccordionVariant,
   string
 > = {
-  bordered: "border border-border divide-y divide-border overflow-hidden",
+  bordered: "border border-border divide-y divide-border",
   separated: "space-y-3",
   ghost: "divide-y divide-border border-y border-border",
   flush: "space-y-1",

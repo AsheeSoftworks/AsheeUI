@@ -27,7 +27,7 @@ function ToastTestControls() {
                 title: "Success",
               })
             }
-            className="px-4 py-2 bg-emerald-600 text-white rounded-md text-sm font-medium hover:bg-emerald-700 transition">
+            className="px-4 py-2 bg-emerald-600 text-white  text-sm font-medium hover:bg-emerald-700 transition">
             Trigger Success
           </Button>
 
@@ -37,7 +37,7 @@ function ToastTestControls() {
                 title: "Connection Error",
               })
             }
-            className="px-4 py-2 bg-destructive text-destructive-foreground rounded-md text-sm font-medium hover:opacity-90 transition">
+            className="px-4 py-2 bg-destructive text-destructive-foreground  text-sm font-medium hover:opacity-90 transition">
             Trigger Error
           </Button>
 
@@ -47,7 +47,7 @@ function ToastTestControls() {
                 title: "System Update",
               })
             }
-            className="px-4 py-2 bg-sky-600 text-white rounded-md text-sm font-medium hover:bg-sky-700 transition">
+            className="px-4 py-2 bg-sky-600 text-white  text-sm font-medium hover:bg-sky-700 transition">
             Trigger Info
           </Button>
 
@@ -57,7 +57,7 @@ function ToastTestControls() {
                 title: "Storage Low",
               })
             }
-            className="px-4 py-2 bg-amber-600 text-white rounded-md text-sm font-medium hover:bg-amber-700 transition">
+            className="px-4 py-2 bg-amber-600 text-white  text-sm font-medium hover:bg-amber-700 transition">
             Trigger Warning
           </Button>
         </div>
@@ -85,7 +85,7 @@ function ToastTestControls() {
                 ),
               })
             }
-            className="px-4 py-2 bg-secondary text-foreground/70 rounded-md text-sm font-medium hover:opacity-80 transition">
+            className="px-4 py-2 bg-secondary text-foreground/70  text-sm font-medium hover:opacity-80 transition">
             Toast with Action
           </Button>
 
@@ -96,13 +96,13 @@ function ToastTestControls() {
                 timeout: 10000,
               })
             }
-            className="px-4 py-2 bg-secondary text-foreground/70 rounded-md text-sm font-medium hover:opacity-80 transition">
+            className="px-4 py-2 bg-secondary text-foreground/70  text-sm font-medium hover:opacity-80 transition">
             10s Timeout
           </Button>
 
           <Button
             onClick={clearToasts}
-            className="px-4 py-2 border border-border rounded-md text-sm font-medium hover:bg-secondary transition">
+            className="px-4 py-2 border border-border  text-sm font-medium hover:bg-secondary transition">
             Clear All Toasts
           </Button>
         </div>

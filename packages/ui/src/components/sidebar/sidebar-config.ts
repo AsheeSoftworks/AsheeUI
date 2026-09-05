@@ -1,10 +1,11 @@
 import type { ReactNode } from "react";
 import { registerComponentDefaults } from "../../libs/registry";
 import type { Radius } from "../../shared/radius";
+import type { Size } from "../../shared/size";
 import type { Color, Variant } from "../../shared/variant";
 import type { TooltipPlacement } from "../tooltip/tooltip-config";
 
-export type SidebarSizeKey = "sm" | "md" | "lg";
+export type SidebarSizeKey = Size;
 export type SidebarVariant = "default" | "bordered" | "floating" | "ghost";
 
 export interface SidebarItem<T = string> {
@@ -44,6 +45,7 @@ export interface SidebarSection<T = string> {
 // New type to support both flat items and sections
 export type SidebarItems<T = string> = SidebarItem<T>[] | SidebarSection<T>[];
 
+// Add to SidebarConfig interface
 export interface SidebarConfig {
   size?: SidebarSizeKey;
   variant?: SidebarVariant;
@@ -62,6 +64,9 @@ export interface SidebarConfig {
   collapseButtonVariant?: Variant;
   collapseButtonColor?: Color;
 
+  // Control collapse button visibility
+  showCollapseButton?: boolean;
+
   // Tooltip Configuration
   showTooltips?: boolean;
   tooltipPlacement?: TooltipPlacement;
@@ -70,13 +75,21 @@ export interface SidebarConfig {
 
   // Animation configuration
   animated?: boolean;
+
+  // Control initial collapsed state and collapsibility
+  defaultCollapsed?: boolean;
+  collapsible?: boolean;
 }
 
+// Update default config
 export const defaultSidebarConfig: SidebarConfig = {
   size: "md",
   showTooltips: true,
   tooltipPlacement: "right",
   animated: true,
+  defaultCollapsed: false, // Default to expanded
+  collapsible: true, // Default to collapsible
+  showCollapseButton: true, // Default to showing collapse button
 };
 
 export const FALLBACK_SIDEBAR_CONFIG: Required<SidebarConfig> = {
@@ -95,6 +108,9 @@ export const FALLBACK_SIDEBAR_CONFIG: Required<SidebarConfig> = {
   tooltipVariant: "solid",
   tooltipColor: "secondary",
   animated: true,
+  defaultCollapsed: false,
+  collapsible: true,
+  showCollapseButton: true,
 } as const;
 
 declare module "../../libs/registry" {

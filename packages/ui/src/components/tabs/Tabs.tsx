@@ -218,12 +218,6 @@ export const Tabs = forwardRef<HTMLDivElement, TabsProps>(
       FALLBACK_TABS_CONFIG.radius,
     );
 
-    const activeRadiusClass = resolveClassKey(
-      resolvedActiveRadiusKey,
-      RADIUS_CLASS,
-      FALLBACK_TABS_CONFIG.activeRadius,
-    );
-
     const handleTabChange = useCallback(
       (id: string | number) => {
         if (!isControlled) {
@@ -296,11 +290,7 @@ export const Tabs = forwardRef<HTMLDivElement, TabsProps>(
     return (
       <div
         ref={ref}
-        className={cn(
-          "w-full h-full flex flex-col gap-4",
-          sectionConfig?.className,
-          className,
-        )}
+        className={cn("w-full h-full flex flex-col gap-4", className)}
         style={style}
         {...props}>
         {/* Tablist Trigger Bar */}
@@ -311,7 +301,6 @@ export const Tabs = forwardRef<HTMLDivElement, TabsProps>(
             "flex flex-row w-full items-center overflow-x-auto scrollbar-hide shrink-0",
             listVariantClasses,
             resolvedVariant !== "underline" && radiusClass,
-            sectionConfig?.tabListClassName,
             tabListClassName,
           )}>
           {tabs.map((tab, index) => {
@@ -338,8 +327,9 @@ export const Tabs = forwardRef<HTMLDivElement, TabsProps>(
                 aria-controls={panelId}
                 aria-disabled={tab.disabled}
                 tabIndex={isActive ? 0 : -1}
-                radius="none"
+                radius={isActive ? resolvedActiveRadiusKey : resolvedRadiusKey}
                 isDisabled={tab.disabled}
+                size={resolvedSizeKey}
                 variant={
                   isActive
                     ? resolvedVariant === "underline"
@@ -356,10 +346,6 @@ export const Tabs = forwardRef<HTMLDivElement, TabsProps>(
                   paddingXClass,
                   fontClass,
                   fullWidth && "flex-1",
-                  isActive &&
-                    resolvedVariant !== "underline" &&
-                    activeRadiusClass,
-                  sectionConfig?.tabClassName,
                   tabClassName,
                 )}>
                 {tab.icon && <span className="shrink-0">{tab.icon}</span>}
@@ -383,7 +369,6 @@ export const Tabs = forwardRef<HTMLDivElement, TabsProps>(
             aria-labelledby={`${baseId}-tab-${activeTab.id}`}
             className={cn(
               "w-full h-full flex-1 outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 rounded-md transition-all duration-200 animate-in fade-in-50",
-              sectionConfig?.tabPanelClassName,
               tabPanelClassName,
             )}>
             {activeTab.content}

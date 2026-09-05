@@ -4,6 +4,8 @@ import type { Radius } from "../../shared/radius";
 import type { Size } from "../../shared/size";
 
 export type CarouselVariant = "bordered" | "ghost";
+export type CarouselSizeKey = Size;
+export type CarouselRadiusKey = Radius;
 
 export interface CarouselItem {
   id?: string;
@@ -12,8 +14,8 @@ export interface CarouselItem {
 
 export interface CarouselConfig {
   variant?: CarouselVariant;
-  size?: Size;
-  radius?: Radius;
+  size?: CarouselSizeKey;
+  radius?: CarouselRadiusKey;
   autoPlay?: boolean;
   autoPlayInterval?: number;
   loop?: boolean;

@@ -34,11 +34,6 @@ export interface TabsConfig {
   activeRadius?: Radius;
   activeVariant?: Variant;
   activeColor?: Color;
-
-  className?: string;
-  tabListClassName?: string;
-  tabClassName?: string;
-  tabPanelClassName?: string;
 }
 
 export const defaultTabsConfig: TabsConfig = {
@@ -55,10 +50,6 @@ export const FALLBACK_TABS_CONFIG: Required<TabsConfig> = {
   activeRadius: "md",
   activeVariant: "solid",
   activeColor: "primary",
-  className: "",
-  tabListClassName: "",
-  tabClassName: "",
-  tabPanelClassName: "",
 } as const;
 
 declare module "../../libs/registry" {

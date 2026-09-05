@@ -301,12 +301,6 @@ export const MultiSelect = forwardRef<HTMLButtonElement, MultiSelectProps>(
       FALLBACK_MULTI_SELECT_CONFIG.size,
     );
 
-    const radiusClass = resolveClassKey(
-      resolvedRadiusKey,
-      RADIUS_CLASS,
-      FALLBACK_MULTI_SELECT_CONFIG.radius,
-    );
-
     const chipRadiusClass = resolveClassKey(
       resolvedChipRadiusKey,
       RADIUS_CLASS,
@@ -387,10 +381,11 @@ export const MultiSelect = forwardRef<HTMLButtonElement, MultiSelectProps>(
                   (ref as React.RefObject<HTMLButtonElement | null>).current =
                     node;
               }}
-              type="button"
               variant={resolvedVariant}
               color={resolvedStatusColor}
+              radius={resolvedRadiusKey}
               animate={false}
+              size={resolvedSizeKey}
               isDisabled={disabled}
               aria-expanded={isOpen}
               aria-haspopup="listbox"
@@ -401,7 +396,6 @@ export const MultiSelect = forwardRef<HTMLButtonElement, MultiSelectProps>(
                 heightClass,
                 paddingClass,
                 fontClass,
-                radiusClass,
                 className,
               )}
               {...getReferenceProps()}>

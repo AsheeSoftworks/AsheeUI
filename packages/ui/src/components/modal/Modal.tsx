@@ -239,7 +239,7 @@ export function Modal({
         type="button"
         onClick={closeOnBackdropClick ? onClose : undefined}
         className={cn(
-          "fixed inset-0",
+          "fixed inset-0 bg-background/80 backdrop-blur-xs dark:bg-black/70",
           overlayClassNameProp,
           getBackdropAnimation(),
         )}
@@ -248,8 +248,7 @@ export function Modal({
       {/* Modal Content Box */}
       <div
         className={cn(
-          "relative z-10 w-full overflow-y-auto scrollbar-hide max-h-[90vh]",
-          "text-foreground",
+          "relative z-10 w-full bg-background text-foreground overflow-y-auto max-h-[90vh]",
           positionClass,
           widthClass,
           paddingClass,

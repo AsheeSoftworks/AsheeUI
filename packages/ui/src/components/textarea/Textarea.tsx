@@ -144,9 +144,17 @@ export const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
       FALLBACK_TEXTAREA_CONFIG.color,
     );
 
+    // ─── NEW: Filter out 'full' radius ──────────────────────────────────────
+    const filterRadius = (
+      radiusValue: Radius | undefined,
+    ): Radius | undefined => {
+      if (radiusValue === "full") return "xl";
+      return radiusValue;
+    };
+
     const resolvedRadiusKey = resolveRadiusKey(
-      radius,
-      sectionConfig?.radius,
+      filterRadius(radius),
+      filterRadius(sectionConfig?.radius),
       config.defaultRadius,
       FALLBACK_TEXTAREA_CONFIG.radius,
     );

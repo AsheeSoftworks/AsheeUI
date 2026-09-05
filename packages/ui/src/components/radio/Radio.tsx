@@ -203,9 +203,8 @@ export const Radio = forwardRef<HTMLInputElement, RadioProps>(
 
     return (
       <label
-        htmlFor={radioId}
         className={cn(
-          "inline-flex items-start select-none cursor-pointer transition-all duration-150 shrink-0",
+          "relative inline-flex items-start select-none cursor-pointer transition-all duration-150 shrink-0",
           gapClass,
           isCard ? cn("p-3 border bg-background", cardRadiusClass) : "",
           isCard &&
@@ -216,7 +215,7 @@ export const Radio = forwardRef<HTMLInputElement, RadioProps>(
           className,
         )}
         style={style}>
-        {/* Hidden Native Radio Input */}
+        {/* Native Radio Input */}
         <input
           ref={ref}
           id={radioId}
@@ -239,7 +238,7 @@ export const Radio = forwardRef<HTMLInputElement, RadioProps>(
             radiusClass,
             isChecked ? colorClasses.border : statusBorderClass,
           )}>
-          {/* Tailwind Animated Inner Radio Indicator */}
+          {/* Animated Inner Radio Indicator */}
           <span
             className={cn(
               innerSizeClass,

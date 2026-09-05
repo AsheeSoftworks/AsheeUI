@@ -3,8 +3,7 @@
 import { cn } from "@asheeui/utils";
 import { forwardRef, type MouseEvent, type ReactNode } from "react";
 import { useAsheeConfig } from "../../libs/context";
-import { RADIUS_CLASS, type Radius } from "../../shared/radius";
-import type { Size } from "../../shared/size";
+import { RADIUS_CLASS, UnderlineRadius } from "../../shared/radius";
 import {
   type Color,
   resolveVariantClass,
@@ -16,14 +15,19 @@ import {
   resolveRadiusKey,
 } from "../../utils/resolve-token";
 import { Spinner } from "../spinner/spinner";
-import { type ButtonConfig, FALLBACK_BUTTON_CONFIG } from "./button-config";
+import {
+  type ButtonConfig,
+  type ButtonRadiusKey,
+  type ButtonSizeKey,
+  FALLBACK_BUTTON_CONFIG,
+} from "./button-config";
 import { BUTTON_ICON_SIZE_CLASS, BUTTON_SIZE_CLASS } from "./button-styles";
 
 export interface ButtonCommonProps {
   variant?: Variant;
   color?: Color;
-  size?: Size;
-  radius?: Radius;
+  size?: ButtonSizeKey;
+  radius?: ButtonRadiusKey;
   animate?: boolean;
   fullWidth?: boolean;
   isDisabled?: boolean;
@@ -79,7 +83,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       FALLBACK_BUTTON_CONFIG.color,
     );
 
-    const resolvedSizeKey = resolveCascade<Size>(
+    const resolvedSizeKey = resolveCascade<ButtonSizeKey>(
       size,
       sectionConfig?.size,
       undefined,
@@ -132,9 +136,9 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       resolveVariantClass(resolvedVariant, resolvedColor),
       sizeClasses,
       resolveClassKey(
-        resolvedRadiusKey,
+        UnderlineRadius(resolvedVariant, resolvedRadiusKey),
         RADIUS_CLASS,
-        FALLBACK_BUTTON_CONFIG.radius,
+        UnderlineRadius(resolvedVariant, FALLBACK_BUTTON_CONFIG.radius),
       ),
       className,
     );

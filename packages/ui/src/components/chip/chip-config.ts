@@ -4,12 +4,14 @@ import type { Size } from "../../shared/size";
 import type { Color, Variant } from "../../shared/variant";
 
 export type ChipVariant = Exclude<Variant, "underlined">;
+export type ChipSizeKey = Size;
+export type ChipRadiusKey = Radius;
 
 export interface ChipConfig {
   variant?: ChipVariant;
   color?: Color;
-  size?: Size;
-  radius?: Radius;
+  size?: ChipSizeKey;
+  radius?: ChipRadiusKey;
   className?: string;
 }
 

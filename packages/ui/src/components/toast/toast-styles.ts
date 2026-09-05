@@ -4,28 +4,24 @@ export const TOAST_WIDTH_CLASS: Record<ToastSizeKey, string> = {
   sm: "w-72 max-w-full",
   md: "w-80 max-w-full",
   lg: "w-96 max-w-full",
-  xl: "w-[28rem] max-w-full",
 };
 
 export const TOAST_PADDING_CLASS: Record<ToastSizeKey, string> = {
   sm: "p-2.5",
   md: "p-3.5",
   lg: "p-4",
-  xl: "p-5",
 };
 
 export const TOAST_FONT_CLASS: Record<ToastSizeKey, string> = {
   sm: "text-xs",
   md: "text-sm",
   lg: "text-base",
-  xl: "text-lg",
 };
 
 export const TOAST_TITLE_FONT_CLASS: Record<ToastSizeKey, string> = {
   sm: "text-xs font-semibold",
   md: "text-sm font-semibold",
   lg: "text-base font-semibold",
-  xl: "text-lg font-semibold",
 };
 
 // Simplified animation classes - just the placement and state

@@ -1,13 +1,16 @@
 "use client";
 
 import { cn } from "@asheeui/utils";
-import { forwardRef, useState } from "react";
+import { forwardRef, type ReactNode, useState } from "react";
 import { EyeIcon } from "../../icons/EyeIcon";
 import { EyeOffIcon } from "../../icons/EyeOffIcon";
 import { Input, type InputProps } from "./Input";
 
-export interface PasswordInputProps extends Omit<InputProps, "type"> {
+export interface PasswordInputProps
+  extends Omit<InputProps, "type" | "endContent"> {
   toggleAriaLabel?: (show: boolean) => string;
+  offIcon?: ReactNode;
+  onIcon?: ReactNode;
 }
 
 export const PasswordInput = forwardRef<HTMLInputElement, PasswordInputProps>(
@@ -16,6 +19,8 @@ export const PasswordInput = forwardRef<HTMLInputElement, PasswordInputProps>(
       disabled,
       className,
       toggleAriaLabel,
+      offIcon,
+      onIcon,
       autoComplete = "current-password",
       ...rest
     },
@@ -48,7 +53,9 @@ export const PasswordInput = forwardRef<HTMLInputElement, PasswordInputProps>(
               "focus:outline-none focus-visible:ring-2 focus-visible:ring-primary",
               disabled && "pointer-events-none opacity-50",
             )}>
-            {showPassword ? <EyeOffIcon /> : <EyeIcon />}
+            {showPassword
+              ? (offIcon ?? <EyeOffIcon />)
+              : (onIcon ?? <EyeIcon />)}
           </button>
         }
         {...rest}

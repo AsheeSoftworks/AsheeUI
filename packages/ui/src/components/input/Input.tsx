@@ -194,7 +194,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
         isLoading={isLoading}>
         <div className="relative flex items-center w-full">
           {startContent && (
-            <span className="absolute left-1 z-10 flex items-center pointer-events-none text-foreground/50">
+            <span className="absolute left-3 z-10 flex items-center pointer-events-none text-foreground/50">
               {startContent}
             </span>
           )}
@@ -227,7 +227,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
           {endContent && (
             <span
               className={cn(
-                "absolute right-1 z-10 flex items-center",
+                "absolute right-3 z-10 flex items-center",
                 typeof endContent === "string" ||
                   (React.isValidElement(endContent) &&
                     endContent.type === "span")

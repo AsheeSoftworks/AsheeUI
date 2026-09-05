@@ -220,8 +220,9 @@ export const Switch = forwardRef<HTMLInputElement, SwitchProps>(
             {/* Thumb */}
             <span
               className={cn(
-                "relative z-10 bg-background shadow-sm rounded-full pointer-events-none shrink-0",
+                "relative z-10 bg-background shadow-sm pointer-events-none shrink-0",
                 "transition-transform duration-200 ease-in-out transform-gpu",
+                radiusClass,
                 thumbSizeClass,
                 isChecked ? translateClass : "translate-x-0",
               )}

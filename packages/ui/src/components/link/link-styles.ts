@@ -5,14 +5,12 @@ export const LINK_SIZE_CLASS: Record<LinkSizeKey, string> = {
   sm: "text-xs gap-1.5",
   md: "text-sm gap-2",
   lg: "text-base gap-2.5",
-  xl: "text-lg gap-3",
 };
 
 export const LINK_ICON_SIZE_CLASS: Record<LinkSizeKey, string> = {
   sm: "size-3.5",
   md: "size-4",
   lg: "size-4.5",
-  xl: "size-5",
 };
 
 export const LINK_COLOR_CLASS: Record<Color | string, string> = {

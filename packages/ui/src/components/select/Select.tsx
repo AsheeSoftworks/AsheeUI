@@ -239,12 +239,6 @@ export const Select = forwardRef<HTMLButtonElement, SelectProps>(
             FALLBACK_SELECT_CONFIG.radius,
           );
 
-    const menuRadiusClass = resolveClassKey(
-      resolvedMenuRadiusKey,
-      RADIUS_CLASS,
-      FALLBACK_SELECT_CONFIG.radius,
-    );
-
     const selectedOption = useMemo(
       () => options.find((opt) => opt.value === value),
       [options, value],
@@ -349,7 +343,7 @@ export const Select = forwardRef<HTMLButtonElement, SelectProps>(
             dropdownClassName={dropdownClassName}
             variant={resolvedMenuVariant}
             color={resolvedMenuColor}
-            radius={menuRadiusClass}
+            radius={resolvedMenuRadiusKey}
             size={resolvedMenuSize}
           />
         </div>

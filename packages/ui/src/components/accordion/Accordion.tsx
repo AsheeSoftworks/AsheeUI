@@ -207,7 +207,7 @@ export const Accordion = forwardRef<HTMLDivElement, AccordionProps>(
             <div
               key={itemKey}
               className={cn(
-                "overflow-hidden transition-colors",
+                "w-full transition-colors box-border",
                 itemVariantClass,
                 (resolvedVariant === "separated" ||
                   resolvedVariant === "ghost") &&
@@ -223,7 +223,7 @@ export const Accordion = forwardRef<HTMLDivElement, AccordionProps>(
                 disabled={item.disabled}
                 onClick={() => handleToggle(itemKey, item.disabled)}
                 className={cn(
-                  "w-full text-left flex items-center justify-between gap-3 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-inset text-foreground transition-colors disabled:opacity-50 disabled:cursor-not-allowed select-none",
+                  "w-full min-w-full text-left flex items-center justify-between gap-3 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-inset text-foreground transition-colors disabled:opacity-50 disabled:cursor-not-allowed select-none box-border",
                   headerSizeClass,
                   headerClassName,
                 )}>
@@ -254,19 +254,19 @@ export const Accordion = forwardRef<HTMLDivElement, AccordionProps>(
                 </div>
               </button>
 
-              {/* Expandable Content Panel (CSS Grid Auto-Height Trick) */}
+              {/* Expandable Content Panel */}
               <section
                 id={contentId}
                 aria-labelledby={headerId}
                 data-state={isOpen ? "open" : "closed"}
                 className={cn(
-                  "grid transition-[grid-template-rows,opacity] duration-250 ease-[cubic-bezier(0.16,1,0.3,1)]",
+                  "w-full grid transition-[grid-template-rows,opacity] duration-250 ease-[cubic-bezier(0.16,1,0.3,1)]",
                   disableAnimation ? "transition-none" : "",
                   isOpen
                     ? "grid-rows-[1fr] opacity-100"
                     : "grid-rows-[0fr] opacity-0 pointer-events-none",
                 )}>
-                <div className="overflow-hidden">
+                <div className="overflow-hidden w-full">
                   <div
                     className={cn(
                       "text-foreground/70 leading-relaxed pt-0",

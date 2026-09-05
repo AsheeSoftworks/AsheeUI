@@ -1,9 +1,10 @@
 import type { ReactNode } from "react";
 import { registerComponentDefaults } from "../../libs/registry";
 import type { Radius } from "../../shared/radius";
+import type { Size } from "../../shared/size";
 
 export type AccordionVariant = "bordered" | "separated" | "ghost" | "flush";
-export type AccordionSizeKey = "sm" | "md" | "lg";
+export type AccordionSizeKey = Size;
 
 export interface AccordionItem {
   id?: string;

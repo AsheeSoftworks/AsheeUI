@@ -7,6 +7,7 @@ import {
   useCallback,
   useMemo,
   useState,
+  useEffect,
 } from "react";
 import { ArrowLeftIcon } from "../../icons/ArrowLeftIcon";
 import { ChevronLeftIcon } from "../../icons/ChevronLeftIcon";
@@ -113,6 +114,11 @@ export interface SidebarProps<T = string>
   /** Collapse toggle button color. */
   collapseButtonColor?: Color;
 
+  // NEW: Control collapse button visibility and collapsibility
+  showCollapseButton?: boolean;
+  collapsible?: boolean;
+  defaultCollapsed?: boolean;
+
   /** Whether to show tooltips on hover when the sidebar is collapsed. */
   showTooltips?: boolean;
 
@@ -146,10 +152,9 @@ export interface SidebarProps<T = string>
 
 export function Sidebar<T = string>({
   items: itemsProp,
-  sections: sectionsProp, // Keep for backward compatibility
   activeKey,
   onSelect,
-  isCollapsed: isCollapsedProp = false,
+  isCollapsed: isCollapsedProp,
   onCollapseChange,
   title,
   onBack,
@@ -166,6 +171,10 @@ export function Sidebar<T = string>({
   backButtonColor,
   collapseButtonVariant,
   collapseButtonColor,
+  // NEW: Add these props
+  showCollapseButton: showCollapseButtonProp,
+  collapsible: collapsibleProp,
+  defaultCollapsed: defaultCollapsedProp,
   showTooltips,
   tooltipPlacement,
   headerClassName,
@@ -180,18 +189,54 @@ export function Sidebar<T = string>({
 }: SidebarProps<T>) {
   const config = useAsheeConfig();
   const sectionConfig = config.components?.sidebar as SidebarConfig | undefined;
-  const [internalCollapsed, setInternalCollapsed] = useState(isCollapsedProp);
+
+  // NEW: Resolve collapsible and collapse button visibility
+  const resolvedCollapsible = resolveCascade<boolean>(
+    collapsibleProp,
+    sectionConfig?.collapsible,
+    undefined,
+    FALLBACK_SIDEBAR_CONFIG.collapsible,
+  );
+
+  const resolvedShowCollapseButton = resolveCascade<boolean>(
+    showCollapseButtonProp,
+    sectionConfig?.showCollapseButton,
+    undefined,
+    FALLBACK_SIDEBAR_CONFIG.showCollapseButton,
+  );
+
+  // NEW: Resolve default collapsed state
+  const resolvedDefaultCollapsed = resolveCascade<boolean>(
+    defaultCollapsedProp,
+    sectionConfig?.defaultCollapsed,
+    undefined,
+    FALLBACK_SIDEBAR_CONFIG.defaultCollapsed,
+  );
+
+  // NEW: Use resolved default collapsed state if no controlled prop is provided
+  const [internalCollapsed, setInternalCollapsed] = useState(
+    isCollapsedProp ?? resolvedDefaultCollapsed,
+  );
+
+  // Update internal state if controlled prop changes
+  useEffect(() => {
+    if (isCollapsedProp !== undefined) {
+      setInternalCollapsed(isCollapsedProp);
+    }
+  }, [isCollapsedProp]);
 
   const isCollapsed = isCollapsedProp ?? internalCollapsed;
 
   const handleCollapseToggle = useCallback(() => {
+    if (!resolvedCollapsible) return; // Don't toggle if not collapsible
+
     const newState = !isCollapsed;
     if (onCollapseChange) {
       onCollapseChange(newState);
     } else {
       setInternalCollapsed(newState);
     }
-  }, [isCollapsed, onCollapseChange]);
+  }, [isCollapsed, onCollapseChange, resolvedCollapsible]);
 
   // 1. Size & Variant Cascading
   const resolvedSizeKey = resolveCascade<SidebarSizeKey>(
@@ -209,16 +254,24 @@ export function Sidebar<T = string>({
   );
 
   // 2. Radius Cascading
+  // NEW: Filter out 'full' radius and fallback to 'none'
+  const filterRadius = (
+    radiusValue: Radius | undefined,
+  ): Radius | undefined => {
+    if (radiusValue === "full") return "xl";
+    return radiusValue;
+  };
+
   const resolvedRadiusKey = resolveRadiusKey(
-    radius,
-    sectionConfig?.radius,
+    filterRadius(radius),
+    filterRadius(sectionConfig?.radius),
     config.defaultRadius as Radius,
     FALLBACK_SIDEBAR_CONFIG.radius,
   );
 
   const resolvedItemRadiusKey = resolveRadiusKey(
-    itemRadius,
-    sectionConfig?.itemRadius,
+    filterRadius(itemRadius),
+    filterRadius(sectionConfig?.itemRadius),
     config.defaultRadius as Radius,
     FALLBACK_SIDEBAR_CONFIG.itemRadius,
   );
@@ -291,8 +344,7 @@ export function Sidebar<T = string>({
     FALLBACK_SIDEBAR_CONFIG.tooltipPlacement,
   );
 
-  // Determine which items to use (items prop takes priority)
-  const rawItems = itemsProp || sectionsProp;
+  const rawItems = itemsProp;
 
   // Normalize items to sections array
   const normalizedSections = useMemo(() => {
@@ -355,6 +407,7 @@ export function Sidebar<T = string>({
     : SIDEBAR_EXPANDED_WIDTH_CLASS[resolvedSizeKey];
 
   // Render a single item
+  // Render a single item
   const renderItem = (item: SidebarItem<T>) => {
     const isActive = item.id === activeKey;
 
@@ -376,7 +429,9 @@ export function Sidebar<T = string>({
           item.disabled && "opacity-50 cursor-not-allowed pointer-events-none",
           // Radius
           resolveClassKey(
-            resolvedItemVariant === "underlined" ? "none" : resolvedRadiusKey,
+            resolvedItemVariant === "underlined"
+              ? "none"
+              : resolvedItemRadiusKey,
             RADIUS_CLASS,
             FALLBACK_SIDEBAR_CONFIG.itemRadius,
           ),
@@ -384,7 +439,11 @@ export function Sidebar<T = string>({
         )}
         {...anchorProps}>
         {item.icon && (
-          <span className="shrink-0 flex items-center justify-center">
+          <span
+            className={cn(
+              "shrink-0 flex items-center justify-center",
+              isCollapsed && "w-full", // Make the icon span take full width in collapsed mode
+            )}>
             {item.icon}
           </span>
         )}
@@ -501,40 +560,53 @@ export function Sidebar<T = string>({
         {filteredSections.map(renderSection)}
       </nav>
 
-      {/* Footer with Collapse Button */}
-      <div
-        className={cn(
-          "border-t border-border shrink-0",
-          isCollapsed ? "p-2" : "p-3",
-          footerClassName,
-        )}>
-        {!isCollapsed && footer && <div className="mb-2">{footer}</div>}
-
-        {/* Collapse Toggle Button at Bottom */}
-        <Button
-          icon
-          aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
-          variant={resolvedCollapseButtonVariant}
-          color={resolvedCollapseButtonColor}
-          size={resolvedSizeKey}
-          radius={resolvedItemRadiusKey}
-          onClick={handleCollapseToggle}
+      {/* Footer with Collapse Button - Now optional and conditionally rendered */}
+      {resolvedShowCollapseButton && resolvedCollapsible && (
+        <div
           className={cn(
-            "w-full",
-            isCollapsed ? "justify-center px-0" : "justify-start",
+            "border-t border-border shrink-0",
+            isCollapsed ? "p-2" : "p-3",
+            footerClassName,
           )}>
-          <span className="flex items-center gap-2">
-            {isCollapsed ? (
-              <ChevronRightIcon className="size-4" />
-            ) : (
-              <>
-                <ChevronLeftIcon className="size-4" />
-                <span className="text-sm">Collapse</span>
-              </>
-            )}
-          </span>
-        </Button>
-      </div>
+          {!isCollapsed && footer && <div className="mb-2">{footer}</div>}
+
+          {/* Collapse Toggle Button at Bottom */}
+          <Button
+            icon
+            aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+            variant={resolvedCollapseButtonVariant}
+            color={resolvedCollapseButtonColor}
+            size={resolvedSizeKey}
+            radius={resolvedItemRadiusKey}
+            onClick={handleCollapseToggle}
+            className={cn(
+              "w-full",
+              isCollapsed ? "justify-center px-0" : "justify-start",
+            )}>
+            <span className="flex items-center gap-2">
+              {isCollapsed ? (
+                <ChevronRightIcon className="size-4" />
+              ) : (
+                <>
+                  <ChevronLeftIcon className="size-4" />
+                  <span className="text-sm">Collapse</span>
+                </>
+              )}
+            </span>
+          </Button>
+        </div>
+      )}
+
+      {/* If footer exists but collapse button is hidden or not collapsible */}
+      {!resolvedShowCollapseButton && footer && (
+        <div
+          className={cn(
+            "border-t border-border shrink-0 p-3",
+            footerClassName,
+          )}>
+          {footer}
+        </div>
+      )}
     </aside>
   );
 }

@@ -5,14 +5,12 @@ export const CAROUSEL_HEIGHT_CLASS: Record<Size, string> = {
   sm: "h-60 md:h-80",
   md: "h-80 md:h-[420px]",
   lg: "h-[400px] md:h-[520px]",
-  xl: "h-[480px] md:h-[600px]",
 };
 
 export const CAROUSEL_PADDING_CLASS: Record<Size, string> = {
   sm: "p-4",
   md: "p-6",
   lg: "p-8",
-  xl: "p-10",
 };
 
 export const CAROUSEL_VARIANT_CLASS: Record<CarouselVariant, string> = {

@@ -12,17 +12,7 @@ import {
   useState,
 } from "react";
 import { useAsheeConfig } from "../../libs/context";
-import { RADIUS_CLASS, type Radius } from "../../shared/radius";
-import {
-  type Color,
-  resolveVariantClass,
-  type Variant,
-} from "../../shared/variant";
-import {
-  resolveCascade,
-  resolveClassKey,
-  resolveRadiusKey,
-} from "../../utils/resolve-token";
+import { resolveCascade } from "../../utils/resolve-token";
 import {
   FALLBACK_RESIZABLE_SCREEN_CONFIG,
   type ResizableOrientation,
@@ -77,21 +67,6 @@ export interface ResizableScreenProps
   orientation?: ResizableOrientation;
 
   /**
-   * Visual variant for the notch indicator, matching Button styling.
-   */
-  handleVariant?: Variant;
-
-  /**
-   * Color theme for the notch indicator, matching Button styling.
-   */
-  handleColor?: Color;
-
-  /**
-   * Border radius for the notch indicator.
-   */
-  handleRadius?: Radius;
-
-  /**
    * Option to completely hide the handle separator.
    * @default false
    */
@@ -119,9 +94,6 @@ export const ResizableScreen = forwardRef<HTMLDivElement, ResizableScreenProps>(
       maxSize: maxSizeProp,
       step: stepProp,
       orientation: orientationProp,
-      handleVariant: handleVariantProp,
-      handleColor: handleColorProp,
-      handleRadius: handleRadiusProp,
       hideHandle: hideHandleProp,
       onSizeChange,
       handleClassName,
@@ -171,35 +143,6 @@ export const ResizableScreen = forwardRef<HTMLDivElement, ResizableScreenProps>(
       sectionConfig?.hideHandle,
       undefined,
       FALLBACK_RESIZABLE_SCREEN_CONFIG.hideHandle,
-    );
-
-    const resolvedHandleVariant = resolveCascade<Variant>(
-      handleVariantProp,
-      sectionConfig?.handleVariant,
-      config.defaultVariant as Variant,
-      FALLBACK_RESIZABLE_SCREEN_CONFIG.handleVariant,
-    );
-
-    const resolvedHandleColor = resolveCascade<Color>(
-      handleColorProp,
-      sectionConfig?.handleColor,
-      config.defaultColor as Color,
-      FALLBACK_RESIZABLE_SCREEN_CONFIG.handleColor,
-    );
-
-    const resolvedHandleRadiusKey = resolveRadiusKey(
-      handleRadiusProp,
-      sectionConfig?.handleRadius,
-      config.defaultRadius as Radius,
-      FALLBACK_RESIZABLE_SCREEN_CONFIG.handleRadius,
-    );
-
-    // ─── 2. Class Maps ────────────────────────────────────────────────────────
-
-    const handleRadiusClass = resolveClassKey(
-      resolvedHandleRadiusKey as Radius,
-      RADIUS_CLASS,
-      FALLBACK_RESIZABLE_SCREEN_CONFIG.handleRadius,
     );
 
     const initialSize =
@@ -259,7 +202,11 @@ export const ResizableScreen = forwardRef<HTMLDivElement, ResizableScreenProps>(
 
     const handlePointerUp = (e: ReactPointerEvent<HTMLElement>) => {
       if (isDragging) {
-        e.currentTarget.releasePointerCapture(e.pointerId);
+        try {
+          e.currentTarget.releasePointerCapture(e.pointerId);
+        } catch {
+          // Ignore capture release edge cases
+        }
         setIsDragging(false);
       }
     };
@@ -298,9 +245,9 @@ export const ResizableScreen = forwardRef<HTMLDivElement, ResizableScreenProps>(
             (ref as React.RefObject<HTMLDivElement | null>).current = node;
         }}
         className={cn(
-          "w-full h-full min-h-0 relative select-none flex",
+          "w-full h-full min-h-[200px] min-w-0 min-h-0 relative flex",
+          isDragging && "select-none",
           isHorizontal ? "flex-row" : "flex-col",
-          sectionConfig?.className,
           className,
         )}
         style={{
@@ -314,7 +261,12 @@ export const ResizableScreen = forwardRef<HTMLDivElement, ResizableScreenProps>(
         {...props}>
         {/* Primary Panel */}
         <div
-          className="h-full w-full overflow-hidden shrink-0 transition-[width,height] duration-75 ease-linear"
+          className={cn(
+            "h-full w-full min-w-0 min-h-0 overflow-hidden shrink-0",
+            isDragging
+              ? "transition-none"
+              : "transition-[width,height] duration-150 ease-out",
+          )}
           style={{
             [isHorizontal ? "width" : "height"]: `${currentSize}%`,
           }}>
@@ -338,21 +290,21 @@ export const ResizableScreen = forwardRef<HTMLDivElement, ResizableScreenProps>(
             onPointerCancel={handlePointerUp}
             onKeyDown={handleKeyDown}
             className={cn(
-              "relative z-10 shrink-0 flex items-center justify-center outline-none group transition-colors focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1 select-none",
+              "relative z-20 shrink-0 flex items-center justify-center outline-none select-none group touch-none",
               isHorizontal
-                ? "w-2.5 h-full cursor-col-resize -mx-1"
-                : "h-2.5 w-full cursor-row-resize -my-1",
-              sectionConfig?.handleClassName,
-              handleClassName,
+                ? "w-4 h-full cursor-col-resize -mx-2"
+                : "h-4 w-full cursor-row-resize -my-2",
             )}>
-            {/* Visual Divider Notch styled like Button */}
+            {/* 100% Full Height / Width Bar Indicator */}
             <div
               className={cn(
-                "transition-all duration-200",
-                isHorizontal ? "w-1 h-10" : "h-1 w-10",
-                resolveVariantClass(resolvedHandleVariant, resolvedHandleColor),
-                handleRadiusClass,
-                isDragging && "scale-110",
+                "transition-colors duration-150",
+                isHorizontal ? "w-1 h-full" : "h-1 w-full",
+                handleClassName
+                  ? handleClassName
+                  : isDragging
+                    ? "bg-primary"
+                    : "bg-border group-hover:bg-primary/70 group-focus-visible:bg-primary",
               )}
             />
           </div>
@@ -360,7 +312,12 @@ export const ResizableScreen = forwardRef<HTMLDivElement, ResizableScreenProps>(
 
         {/* Secondary Panel */}
         <div
-          className="h-full w-full overflow-hidden shrink-0 flex-1"
+          className={cn(
+            "h-full w-full min-w-0 min-h-0 overflow-hidden shrink-0 flex-1",
+            isDragging
+              ? "transition-none"
+              : "transition-[width,height] duration-150 ease-out",
+          )}
           style={{
             [isHorizontal ? "width" : "height"]: `${100 - currentSize}%`,
           }}>

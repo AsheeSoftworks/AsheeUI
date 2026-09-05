@@ -9,6 +9,8 @@ import type { Size } from "../../shared/size";
 import type { Color, Variant } from "../../shared/variant";
 import { Button } from "../button/Button";
 import { Input } from "../input/Input";
+import { resolveClassKey } from "../../utils/resolve-token";
+import { type Radius, RADIUS_CLASS } from "../../shared/radius";
 
 export interface SelectOption {
   label: string;
@@ -42,7 +44,7 @@ export interface SelectMenuProps {
   variant?: Variant;
   color?: Color;
   size?: Size;
-  radius?: string | number;
+  radius?: Radius;
 
   renderOption?: (option: SelectOption, isSelected: boolean) => ReactNode;
   initialFocus?: number | React.RefObject<HTMLElement>;
@@ -94,6 +96,12 @@ export const SelectMenu = ({
   const isOptionSelected = (val: string | number) =>
     selectedValues.includes(val);
 
+  const menuRadiusClass = resolveClassKey(
+    radius === "full" ? "xl" : (radius ?? "md"),
+    RADIUS_CLASS,
+    "md",
+  );
+
   if (!isOpen) return null;
 
   return (
@@ -111,9 +119,9 @@ export const SelectMenu = ({
           className={cn(
             "w-full max-h-60 overflow-y-auto shadow-xl bg-background border border-border p-1 flex flex-col gap-0.5 overflow-x-hidden",
             "animate-in fade-in-0 zoom-in-95 slide-in-from-top-1 duration-150 ease-out",
+            menuRadiusClass,
             dropdownClassName,
-          )}
-          style={{ borderRadius: radius }}>
+          )}>
           {/* Search Input Bar */}
           {isSearch && (
             <div className="w-full p-1 mb-1 sticky top-0 z-10 border-b border-border">
@@ -125,7 +133,7 @@ export const SelectMenu = ({
                   handleQueryChange(e.target.value)
                 }
                 startContent={
-                  <SearchIcon className="w-3.5 h-3.5 shrink-0 ml-1.5 text-foreground/70" />
+                  <SearchIcon className="w-3.5 h-3.5  text-foreground/70" />
                 }
                 placeholder={searchPlaceholder}
                 autoFocus

@@ -123,9 +123,17 @@ export function Table<TData>({
     FALLBACK_TABLE_CONFIG.color,
   );
 
+  // ─── NEW: Filter out 'full' radius ──────────────────────────────────────
+  const filterRadius = (
+    radiusValue: Radius | undefined,
+  ): Radius | undefined => {
+    if (radiusValue === "full") return "xl";
+    return radiusValue;
+  };
+
   const resolvedRadiusKey = resolveRadiusKey(
-    radius,
-    sectionConfig?.radius,
+    filterRadius(radius),
+    filterRadius(sectionConfig?.radius),
     config.defaultRadius as Radius,
     FALLBACK_TABLE_CONFIG.radius,
   );
@@ -186,7 +194,7 @@ export function Table<TData>({
   return (
     <div
       className={cn(
-        "w-full h-full overflow-auto scrollable bg-background",
+        "w-full h-full scrollable",
         resolvedVariant === "ghost"
           ? "border-0 shadow-none rounded-none"
           : cn("border border-border", radiusClass),

@@ -1,5 +1,19 @@
 # asheeui
 
+## 0.4.2
+
+### Patch Changes
+
+- Remove radius from Drawer component
+  Remove size xl
+  Centralize Size, Radius, Color and Variant types in component configs with component-specific aliases
+  Add UnderlineRadius helper and enforce radius none when variant is underlined
+  Fix layout gap in `bordered`, `separated`, and `ghost` Accordion variants by removing redundant `overflow-hidden` clipping on item containers.
+  Add customizable on and off icons to PasswordInput componenet
+  Fix overlay and content color missing in Modal component
+  Redesigned resize handle and fixed dragging lag in ResizableScreen component
+  Add collapsible controls, collapse button visibility, default collapsed state, omit full radius, and fix icon centering in collapsed mode to the SIdebar component
+
 ## 0.4.1
 
 ### Patch Changes

@@ -3,11 +3,14 @@ import type { Radius } from "../../shared/radius";
 import type { Size } from "../../shared/size";
 import type { Color, Variant } from "../../shared/variant";
 
+export type ButtonSizeKey = Size;
+export type ButtonRadiusKey = Radius;
+
 export interface ButtonConfig {
   variant?: Variant;
   color?: Color;
-  size?: Size;
-  radius?: Radius;
+  size?: ButtonSizeKey;
+  radius?: ButtonRadiusKey;
   animate?: boolean;
   fullWidth?: boolean;
 }

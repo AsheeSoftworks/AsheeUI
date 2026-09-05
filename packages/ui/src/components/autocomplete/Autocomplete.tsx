@@ -20,14 +20,10 @@ import {
   useState,
 } from "react";
 import { useAsheeConfig } from "../../libs/context";
-import { RADIUS_CLASS, type Radius } from "../../shared/radius";
+import type { Radius } from "../../shared/radius";
 import type { Size } from "../../shared/size";
 import type { Color, Variant } from "../../shared/variant";
-import {
-  resolveCascade,
-  resolveClassKey,
-  resolveRadiusKey,
-} from "../../utils/resolve-token";
+import { resolveCascade, resolveRadiusKey } from "../../utils/resolve-token";
 import type { FieldSizeKey } from "../field/field-config";
 import { Input, type InputProps } from "../input/Input";
 import { SelectMenu } from "../select-menu/SelectMenu";
@@ -164,12 +160,6 @@ export const Autocomplete = forwardRef<HTMLInputElement, AutocompleteProps>(
 
     // ─── 2. Class Maps ────────────────────────────────────────────────────────
 
-    const menuRadiusClass = resolveClassKey(
-      resolvedMenuRadiusKey,
-      RADIUS_CLASS,
-      FALLBACK_AUTOCOMPLETE_CONFIG.radius,
-    );
-
     // Filter options dynamically as user types
     const filteredOptions = useMemo(() => {
       if (!inputValue.trim()) return options;
@@ -249,7 +239,7 @@ export const Autocomplete = forwardRef<HTMLInputElement, AutocompleteProps>(
           dropdownClassName={dropdownClassName}
           variant={resolvedMenuVariant}
           color={resolvedMenuColor}
-          radius={menuRadiusClass}
+          radius={resolvedMenuRadiusKey}
           size={resolvedMenuSize}
           initialFocus={-1}
           returnFocus={false}

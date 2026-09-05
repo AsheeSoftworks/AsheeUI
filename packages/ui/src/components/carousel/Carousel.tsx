@@ -16,8 +16,7 @@ import {
 import { ChevronLeftIcon } from "../../icons/ChevronLeftIcon";
 import { ChevronRightIcon } from "../../icons/ChevronRightIcon";
 import { useAsheeConfig } from "../../libs/context";
-import { RADIUS_CLASS, type Radius } from "../../shared/radius";
-import type { Size } from "../../shared/size";
+import { RADIUS_CLASS } from "../../shared/radius";
 import {
   resolveCascade,
   resolveClassKey,
@@ -26,6 +25,8 @@ import {
 import {
   type CarouselConfig,
   type CarouselItem,
+  type CarouselRadiusKey,
+  type CarouselSizeKey,
   type CarouselVariant,
   FALLBACK_CAROUSEL_CONFIG,
 } from "./carousel-config";
@@ -41,8 +42,8 @@ export interface CarouselProps
   extends Omit<HTMLAttributes<HTMLDivElement>, "onChange"> {
   items?: CarouselItem[];
   variant?: CarouselVariant;
-  size?: Size;
-  radius?: Radius;
+  size?: CarouselSizeKey;
+  radius?: CarouselRadiusKey;
   autoPlay?: boolean;
   autoPlayInterval?: number;
   loop?: boolean;
@@ -104,7 +105,7 @@ export const Carousel = forwardRef<HTMLDivElement, CarouselProps>(
     const generatedId = useId();
     const carouselId = id ?? generatedId;
 
-    const resolvedSizeKey = resolveCascade<Size>(
+    const resolvedSizeKey = resolveCascade<CarouselSizeKey>(
       size,
       sectionConfig?.size,
       undefined,
@@ -121,7 +122,7 @@ export const Carousel = forwardRef<HTMLDivElement, CarouselProps>(
     const resolvedRadiusKey = resolveRadiusKey(
       radius,
       sectionConfig?.radius,
-      config.defaultRadius as Radius,
+      config.defaultRadius,
       FALLBACK_CAROUSEL_CONFIG.radius,
     );
 
@@ -180,7 +181,7 @@ export const Carousel = forwardRef<HTMLDivElement, CarouselProps>(
     );
 
     const radiusClass = resolveClassKey(
-      resolvedRadiusKey as Radius,
+      resolvedRadiusKey,
       RADIUS_CLASS,
       FALLBACK_CAROUSEL_CONFIG.radius,
     );

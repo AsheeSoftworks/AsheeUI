@@ -10,12 +10,7 @@ import {
   useState,
 } from "react";
 import { useAsheeConfig } from "../../libs/context";
-import { RADIUS_CLASS, type Radius } from "../../shared/radius";
-import {
-  resolveCascade,
-  resolveClassKey,
-  resolveRadiusKey,
-} from "../../utils/resolve-token";
+import { resolveCascade, resolveClassKey } from "../../utils/resolve-token";
 import {
   type DrawerConfig,
   type DrawerPlacement,
@@ -35,7 +30,6 @@ export interface DrawerProps extends HTMLAttributes<HTMLDivElement> {
   onClose?: () => void;
   placement?: DrawerPlacement;
   size?: DrawerSize;
-  radius?: Radius;
   animated?: boolean;
   closeOnOverlayClick?: boolean;
   closeOnEsc?: boolean;
@@ -51,7 +45,6 @@ export const Drawer = forwardRef<HTMLDivElement, DrawerProps>(
       onClose,
       placement: placementProp,
       size,
-      radius,
       animated: animatedProp,
       closeOnOverlayClick: closeOnOverlayClickProp,
       closeOnEsc: closeOnEscProp,
@@ -118,13 +111,6 @@ export const Drawer = forwardRef<HTMLDivElement, DrawerProps>(
       FALLBACK_DRAWER_CONFIG.closeOnEsc,
     );
 
-    const resolvedRadiusKey = resolveRadiusKey(
-      radius,
-      sectionConfig?.radius,
-      config.defaultRadius as Radius,
-      FALLBACK_DRAWER_CONFIG.radius,
-    );
-
     const animated = resolveCascade<boolean>(
       animatedProp,
       sectionConfig?.animated,
@@ -156,12 +142,6 @@ export const Drawer = forwardRef<HTMLDivElement, DrawerProps>(
           FALLBACK_DRAWER_CONFIG.size,
         )
       : "h-full";
-
-    const radiusClass = resolveClassKey(
-      resolvedRadiusKey as Radius,
-      RADIUS_CLASS,
-      FALLBACK_DRAWER_CONFIG.radius,
-    );
 
     const containerPlacementClass =
       DRAWER_CONTAINER_PLACEMENT_CLASS[placement] ??
@@ -234,7 +214,6 @@ export const Drawer = forwardRef<HTMLDivElement, DrawerProps>(
             borderPlacementClass,
             widthClass,
             heightClass,
-            radiusClass,
             contentClassName,
             animationClass,
           )}>
