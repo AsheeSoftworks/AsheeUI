@@ -1,5 +1,18 @@
 # asheeui
 
+## 0.4.4
+
+### Patch Changes
+
+- Remove image possition left and right from Card component
+
+## 0.4.3
+
+### Patch Changes
+
+- Fix Image component infinite loading issue
+  Add Card component
+
 ## 0.4.2
 
 ### Patch Changes

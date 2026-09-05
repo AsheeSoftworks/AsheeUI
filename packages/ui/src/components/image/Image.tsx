@@ -1,7 +1,14 @@
 "use client";
 
 import { cn } from "@asheeui/utils";
-import { forwardRef, type ImgHTMLAttributes, useEffect, useState } from "react";
+import {
+  forwardRef,
+  type ImgHTMLAttributes,
+  type RefObject,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { useAsheeConfig } from "../../libs/context";
 import { RADIUS_CLASS, type Radius } from "../../shared/radius";
 import {
@@ -51,11 +58,47 @@ export const Image = forwardRef<HTMLImageElement, ImageProps>(
 
     const [isLoaded, setIsLoaded] = useState(false);
     const [currentSrc, setCurrentSrc] = useState(src);
+    const imgRef = useRef<HTMLImageElement>(null);
 
     useEffect(() => {
       setCurrentSrc(src);
       setIsLoaded(false);
     }, [src]);
+
+    // Handle cached images: img.complete may already be true before React attaches listeners
+    useEffect(() => {
+      const el = imgRef.current;
+      if (el?.complete && el.naturalWidth > 0) {
+        setIsLoaded(true);
+      }
+    }, [currentSrc]);
+
+    const handleLoad = (e: React.SyntheticEvent<HTMLImageElement>) => {
+      // Ignore stale events from a superseded src
+      if (
+        e.currentTarget.currentSrc !== currentSrc &&
+        e.currentTarget.src !== currentSrc
+      )
+        return;
+      setIsLoaded(true);
+      onLoad?.(e);
+    };
+
+    const handleError = (e: React.SyntheticEvent<HTMLImageElement>) => {
+      if (fallbackSrc && currentSrc !== fallbackSrc) {
+        setCurrentSrc(fallbackSrc);
+        return;
+      }
+      // No fallback, or fallback also failed — stop showing the skeleton
+      setIsLoaded(true);
+      onError?.(e);
+    };
+
+    const setRefs = (node: HTMLImageElement | null) => {
+      imgRef.current = node;
+      if (typeof ref === "function") ref(node);
+      else if (ref) (ref as RefObject<HTMLImageElement | null>).current = node;
+    };
 
     // ─── 1. Token Resolvers ──────────────────────────────────────────────────
 
@@ -115,12 +158,7 @@ export const Image = forwardRef<HTMLImageElement, ImageProps>(
     );
 
     return (
-      <span
-        className={cn(
-          "relative block w-full overflow-hidden",
-          ratioClass,
-          radiusClass,
-        )}>
+      <span className={cn("relative block w-full", ratioClass, radiusClass)}>
         {resolvedShowSkeleton && !isLoaded && (
           <span
             aria-hidden="true"
@@ -128,24 +166,17 @@ export const Image = forwardRef<HTMLImageElement, ImageProps>(
           />
         )}
         <img
-          ref={ref}
+          ref={setRefs}
           src={currentSrc}
           alt={alt}
           loading={resolvedLoading}
-          onLoad={(e) => {
-            setIsLoaded(true);
-            onLoad?.(e);
-          }}
-          onError={(e) => {
-            if (fallbackSrc && currentSrc !== fallbackSrc) {
-              setCurrentSrc(fallbackSrc);
-            }
-            onError?.(e);
-          }}
+          onLoad={handleLoad}
+          onError={handleError}
           className={cn(
             "h-full w-full transition-opacity duration-300",
             fitClass,
             isLoaded ? "opacity-100" : "opacity-0",
+            radiusClass,
             className,
           )}
           {...rest}

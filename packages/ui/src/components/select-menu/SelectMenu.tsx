@@ -5,12 +5,12 @@ import { type FloatingContext, FloatingFocusManager } from "@floating-ui/react";
 import { type ChangeEvent, type ReactNode, useMemo, useState } from "react";
 import { CheckIcon } from "../../icons/CheckIcon";
 import { SearchIcon } from "../../icons/SearchIcon";
+import { RADIUS_CLASS, type Radius } from "../../shared/radius";
 import type { Size } from "../../shared/size";
 import type { Color, Variant } from "../../shared/variant";
+import { resolveClassKey } from "../../utils/resolve-token";
 import { Button } from "../button/Button";
 import { Input } from "../input/Input";
-import { resolveClassKey } from "../../utils/resolve-token";
-import { type Radius, RADIUS_CLASS } from "../../shared/radius";
 
 export interface SelectOption {
   label: string;

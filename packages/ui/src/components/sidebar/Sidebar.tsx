@@ -5,9 +5,9 @@ import {
   type HTMLAttributes,
   type ReactNode,
   useCallback,
+  useEffect,
   useMemo,
   useState,
-  useEffect,
 } from "react";
 import { ArrowLeftIcon } from "../../icons/ArrowLeftIcon";
 import { ChevronLeftIcon } from "../../icons/ChevronLeftIcon";
