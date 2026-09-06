@@ -16,6 +16,7 @@
  * ```
  */
 import { Command } from "commander";
+import { version } from "../package.json";
 import { registerDoctorCommand } from "./commands/doctor";
 import { registerFixCommand } from "./commands/fix";
 import { registerInitCommand } from "./commands/init";
@@ -27,7 +28,7 @@ import { registerListCommand } from "./commands/list";
  * @returns A configured `Command` representing the `asheeui` CLI.
  */
 const program = new Command();
-program.name("asheeui").description("Ashee UI CLI").version("0.1.0");
+program.name("asheeui").description("Ashee UI CLI").version(version);
 
 registerInitCommand(program);
 registerDoctorCommand(program);

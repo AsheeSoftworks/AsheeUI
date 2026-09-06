@@ -1,5 +1,11 @@
 # @asheeui/cli
 
+## 0.5.1
+
+### Patch Changes
+
+- Sync CLI version flag with package.json
+
 ## 0.5.0
 
 ### Minor Changes
