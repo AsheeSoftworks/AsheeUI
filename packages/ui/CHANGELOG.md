@@ -1,5 +1,19 @@
 # asheeui
 
+## 0.4.6
+
+### Patch Changes
+
+- Change imageComponent and linkComponent type to `React.ElementType` to support components with differing prop signatures.
+
+## 0.4.5
+
+### Patch Changes
+
+- Add `linkComponent` and `linkProps` props to Sidebar component to allow using framework-specific link components (e.g., Next.js Link, TanStack Router Link) while preserving all styles and interactions.
+  Add `linkComponent` and `linkProps` props to Link component to replace the native `<a>` with custom routing components.
+  Add `imageComponent` and `imageProps` props to Image component to use custom image components (e.g., Next.js Image) while keeping skeleton, fallback, and styling behaviors.
+
 ## 0.4.4
 
 ### Patch Changes

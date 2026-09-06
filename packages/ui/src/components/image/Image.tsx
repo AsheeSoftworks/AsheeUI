@@ -2,6 +2,7 @@
 
 import { cn } from "@asheeui/utils";
 import {
+  type ElementType,
   forwardRef,
   type ImgHTMLAttributes,
   type RefObject,
@@ -33,6 +34,12 @@ export interface ImageProps
   fallbackSrc?: string;
   showSkeleton?: boolean;
   className?: string;
+
+  // NEW: Custom image component support (e.g., Next.js Image)
+  /** Custom image component to use instead of the native <img> tag. */
+  imageComponent?: ElementType;
+  /** Additional props to pass to the custom image component (e.g., { priority: true }). */
+  imageProps?: Record<string, unknown>;
 }
 
 export const Image = forwardRef<HTMLImageElement, ImageProps>(
@@ -49,6 +56,8 @@ export const Image = forwardRef<HTMLImageElement, ImageProps>(
       className,
       onLoad,
       onError,
+      imageComponent,
+      imageProps: imagePropsProp,
       ...rest
     },
     ref,
@@ -157,6 +166,32 @@ export const Image = forwardRef<HTMLImageElement, ImageProps>(
       FALLBACK_IMAGE_CONFIG.radius,
     );
 
+    // ─── 3. Build image props ──────────────────────────────────────────────
+
+    const ImageComponent = imageComponent || "img";
+
+    const imageClassName = cn(
+      "h-full w-full transition-opacity duration-300",
+      fitClass,
+      isLoaded ? "opacity-100" : "opacity-0",
+      radiusClass,
+      className,
+    );
+
+    const mergedImageProps = {
+      src: currentSrc,
+      alt,
+      loading: resolvedLoading,
+      onLoad: handleLoad,
+      onError: handleError,
+      className: imageClassName,
+      ref: setRefs,
+      ...rest,
+      ...(imagePropsProp || {}),
+    };
+
+    // ─── 4. Render ──────────────────────────────────────────────────────────
+
     return (
       <span className={cn("relative block w-full", ratioClass, radiusClass)}>
         {resolvedShowSkeleton && !isLoaded && (
@@ -165,22 +200,7 @@ export const Image = forwardRef<HTMLImageElement, ImageProps>(
             className="absolute inset-0 animate-pulse bg-border/40"
           />
         )}
-        <img
-          ref={setRefs}
-          src={currentSrc}
-          alt={alt}
-          loading={resolvedLoading}
-          onLoad={handleLoad}
-          onError={handleError}
-          className={cn(
-            "h-full w-full transition-opacity duration-300",
-            fitClass,
-            isLoaded ? "opacity-100" : "opacity-0",
-            radiusClass,
-            className,
-          )}
-          {...rest}
-        />
+        <ImageComponent {...mergedImageProps} />
       </span>
     );
   },

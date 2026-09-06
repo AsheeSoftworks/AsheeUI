@@ -1,5 +1,19 @@
 # @asheeui/vite
 
+## 0.2.20
+
+### Patch Changes
+
+- Updated dependencies
+  - asheeui@0.4.6
+
+## 0.2.19
+
+### Patch Changes
+
+- Updated dependencies
+  - asheeui@0.4.5
+
 ## 0.2.18
 
 ### Patch Changes

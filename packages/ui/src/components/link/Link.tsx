@@ -1,7 +1,12 @@
 "use client";
 
 import { cn } from "@asheeui/utils";
-import { type AnchorHTMLAttributes, forwardRef, type ReactNode } from "react";
+import {
+  type AnchorHTMLAttributes,
+  type ElementType,
+  forwardRef,
+  type ReactNode,
+} from "react";
 import { ExternalLinkIcon } from "../../icons/ExternalLinkIcon";
 import { useAsheeConfig } from "../../libs/context";
 import type { Color } from "../../shared/variant";
@@ -33,6 +38,12 @@ export interface LinkProps
   startIcon?: ReactNode;
   endIcon?: ReactNode;
   children?: ReactNode;
+
+  // NEW: Custom link component support (e.g., Next.js Link, TanStack Router Link)
+  /** Custom link component to use instead of the native <a> tag. */
+  linkComponent?: ElementType;
+  /** Additional props to pass to the custom link component (e.g., { prefetch: true }). */
+  linkProps?: Record<string, unknown>;
 }
 
 export const Link = forwardRef<HTMLAnchorElement, LinkProps>(
@@ -53,6 +64,8 @@ export const Link = forwardRef<HTMLAnchorElement, LinkProps>(
       target,
       rel,
       onClick,
+      linkComponent,
+      linkProps: linkPropsProp,
       ...props
     },
     ref,
@@ -146,26 +159,45 @@ export const Link = forwardRef<HTMLAnchorElement, LinkProps>(
       onClick?.(e);
     };
 
+    // ─── 3. Build link props ────────────────────────────────────────────────
+
+    const linkClassName = cn(
+      "inline-flex items-center transition-colors duration-200 outline-none select-none shrink-0",
+      "focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 rounded-xs",
+      sizeClass,
+      colorClass,
+      underlineClass,
+      disabled && "opacity-50 pointer-events-none cursor-not-allowed",
+      sectionConfig?.className,
+      className,
+    );
+
+    // Base props passed to both native <a> and custom component
+    const baseLinkProps = {
+      href: disabled ? undefined : href,
+      target: targetAttr,
+      rel: relAttr,
+      "aria-disabled": disabled,
+      onClick: handleClick,
+      className: linkClassName,
+      style,
+      ref, // forward ref to the custom component if it accepts it
+      ...props, // any other native anchor attributes
+    };
+
+    // Merge with user‑supplied linkProps (take precedence)
+    const mergedLinkProps = {
+      ...baseLinkProps,
+      ...(linkPropsProp || {}),
+    };
+
+    // Choose the component: custom or native <a>
+    const LinkComponent = linkComponent || "a";
+
+    // ─── 4. Render ──────────────────────────────────────────────────────────
+
     return (
-      <a
-        ref={ref}
-        href={disabled ? undefined : href}
-        target={targetAttr}
-        rel={relAttr}
-        aria-disabled={disabled}
-        onClick={handleClick}
-        className={cn(
-          "inline-flex items-center transition-colors duration-200 outline-none select-none shrink-0",
-          "focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 rounded-xs",
-          sizeClass,
-          colorClass,
-          underlineClass,
-          disabled && "opacity-50 pointer-events-none cursor-not-allowed",
-          sectionConfig?.className,
-          className,
-        )}
-        style={style}
-        {...props}>
+      <LinkComponent {...mergedLinkProps}>
         {startIcon && (
           <span
             className={cn(
@@ -193,7 +225,7 @@ export const Link = forwardRef<HTMLAnchorElement, LinkProps>(
             />
           )
         )}
-      </a>
+      </LinkComponent>
     );
   },
 );

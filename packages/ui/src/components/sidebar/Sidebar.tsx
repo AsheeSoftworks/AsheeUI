@@ -2,6 +2,7 @@
 
 import { cn } from "@asheeui/utils";
 import {
+  type ElementType,
   type HTMLAttributes,
   type ReactNode,
   useCallback,
@@ -140,14 +141,18 @@ export interface SidebarProps<T = string>
   /** Footer class override. */
   footerClassName?: string;
 
-  /** Anchor tag props passthrough. */
+  /** Anchor tag props passthrough (native <a> or custom link). */
   anchorProps?: Omit<
     React.AnchorHTMLAttributes<HTMLAnchorElement>,
     "href" | "children" | "onClick" | "className"
   >;
 
-  /** @deprecated Use `items` instead. Will be removed in future version. */
-  sections?: SidebarSection<T>[];
+  // NEW: Custom link component support
+  /** Custom link component (e.g., Next.js Link, TanStack Router Link). */
+  linkComponent?: ElementType;
+
+  /** Additional props to pass to the custom link component (e.g., { prefetch: true }). */
+  linkProps?: Record<string, unknown>;
 }
 
 export function Sidebar<T = string>({
@@ -171,7 +176,6 @@ export function Sidebar<T = string>({
   backButtonColor,
   collapseButtonVariant,
   collapseButtonColor,
-  // NEW: Add these props
   showCollapseButton: showCollapseButtonProp,
   collapsible: collapsibleProp,
   defaultCollapsed: defaultCollapsedProp,
@@ -183,6 +187,8 @@ export function Sidebar<T = string>({
   sectionLabelClassName,
   footerClassName,
   anchorProps,
+  linkComponent,
+  linkProps: linkPropsProp,
   className,
   style,
   ...props
@@ -407,37 +413,43 @@ export function Sidebar<T = string>({
     : SIDEBAR_EXPANDED_WIDTH_CLASS[resolvedSizeKey];
 
   // Render a single item
-  // Render a single item
   const renderItem = (item: SidebarItem<T>) => {
     const isActive = item.id === activeKey;
 
+    // Build the class name for the link
+    const linkClassName = cn(
+      "w-full flex items-center gap-3 transition-all truncate no-underline",
+      SIDEBAR_ITEM_CLASS[resolvedSizeKey],
+      isCollapsed ? "justify-center px-0" : "justify-start",
+      isActive && "font-medium",
+      // Use the resolved variant classes
+      isActive ? activeVariantClasses : inactiveVariantClasses,
+      // Disabled styles
+      item.disabled && "opacity-50 cursor-not-allowed pointer-events-none",
+      // Radius
+      resolveClassKey(
+        resolvedItemVariant === "underlined" ? "none" : resolvedItemRadiusKey,
+        RADIUS_CLASS,
+        FALLBACK_SIDEBAR_CONFIG.itemRadius,
+      ),
+      itemClassName,
+    );
+
+    // Choose the component: custom or native <a>
+    const LinkComponent = linkComponent || "a";
+    const linkProps = {
+      href: item.disabled ? undefined : item.href,
+      target: item.target,
+      rel: item.rel,
+      onClick: (e: React.MouseEvent<HTMLAnchorElement>) =>
+        handleItemClick(e, item),
+      className: linkClassName,
+      ...anchorProps,
+      ...(linkPropsProp || {}),
+    };
+
     const anchorElement = (
-      <a
-        key={String(item.id)}
-        href={item.disabled ? undefined : item.href}
-        target={item.target}
-        rel={item.rel}
-        onClick={(e) => handleItemClick(e, item)}
-        className={cn(
-          "w-full flex items-center gap-3 transition-all truncate no-underline",
-          SIDEBAR_ITEM_CLASS[resolvedSizeKey],
-          isCollapsed ? "justify-center px-0" : "justify-start",
-          isActive && "font-medium",
-          // Use the resolved variant classes
-          isActive ? activeVariantClasses : inactiveVariantClasses,
-          // Disabled styles
-          item.disabled && "opacity-50 cursor-not-allowed pointer-events-none",
-          // Radius
-          resolveClassKey(
-            resolvedItemVariant === "underlined"
-              ? "none"
-              : resolvedItemRadiusKey,
-            RADIUS_CLASS,
-            FALLBACK_SIDEBAR_CONFIG.itemRadius,
-          ),
-          itemClassName,
-        )}
-        {...anchorProps}>
+      <LinkComponent key={String(item.id)} {...linkProps}>
         {item.icon && (
           <span
             className={cn(
@@ -454,7 +466,7 @@ export function Sidebar<T = string>({
             {item.badge && <span className="shrink-0">{item.badge}</span>}
           </>
         )}
-      </a>
+      </LinkComponent>
     );
 
     if (isCollapsed && resolvedShowTooltips) {
