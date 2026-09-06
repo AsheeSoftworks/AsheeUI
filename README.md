@@ -1,13 +1,11 @@
-# asheeui
-
-> Accessible, customizable React primitives engineered with Tailwind CSS.
-
 [![npm version](https://img.shields.io/npm/v/asheeui?style=flat-square&logo=npm)](https://www.npmjs.com/package/asheeui)
 [![license](https://img.shields.io/badge/license-MIT-blue?style=flat-square)](#license)
 [![GitHub release](https://img.shields.io/github/v/release/AsheeSoftworks/AsheeUI?style=flat-square&logo=github)](https://github.com/AsheeSoftworks/AsheeUI/releases)
 [![build](https://img.shields.io/badge/build-passing-brightgreen?style=flat-square&logo=turborepo)](https://github.com/AsheeSoftworks/AsheeUI/actions)
 
-`asheeui` is a modern React component library that combines accessibility,
+# AsheeUI
+
+`AsheeUI` is a modern React component library that combines accessibility,
 performance, and deep Tailwind CSS integration. Components ship with
 first-class TypeScript types, theme token inheritance, and zero-config setup
 for the most popular React frameworks.

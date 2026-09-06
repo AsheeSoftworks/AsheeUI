@@ -149,4 +149,4 @@ git push origin feat/my-change
 ## Questions
 
 If you have a question about contributing, open a discussion or reach out at
-`support@asheeui.com`.
+`asheeui@gmail.com`.
