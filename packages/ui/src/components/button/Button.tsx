@@ -23,15 +23,51 @@ import {
 } from "./button-config";
 import { BUTTON_ICON_SIZE_CLASS, BUTTON_SIZE_CLASS } from "./button-styles";
 
+/**
+ * Visual and behavioural options shared by button-like elements.
+ */
 export interface ButtonCommonProps {
+  /** Visual style variant.
+   *
+   * @default "bordered"
+   */
   variant?: Variant;
+  /** Theme accent color.
+   *
+   * @default "primary"
+   */
   color?: Color;
+  /** Padding and font-size scale.
+   *
+   * @default "md"
+   */
   size?: ButtonSizeKey;
+  /** Corner rounding.
+   *
+   * @default "md"
+   */
   radius?: ButtonRadiusKey;
+  /** Enables the press-down scale animation.
+   *
+   * @default true
+   */
   animate?: boolean;
+  /** Makes the button stretch to fill its parent width.
+   *
+   * @default false
+   */
   fullWidth?: boolean;
+  /** Disables pointer events and dims the button.
+   *
+   * @default false
+   */
   isDisabled?: boolean;
+  /** Shows a loading spinner and blocks interaction.
+   *
+   * @default false
+   */
   isLoading?: boolean;
+  /** Extra classes merged with internal styles. */
   className?: string;
 }
 
@@ -40,13 +76,65 @@ type CleanButtonProps = Omit<
   "color" | "disabled" | "className" | "children"
 >;
 
+/**
+ * Configuration options for the Button component.
+ *
+ * @see {@link ButtonCommonProps} for the shared visual props.
+ */
 type ButtonProps = ButtonCommonProps &
   CleanButtonProps & {
+    /** Native button type.
+     *
+     * @default "button"
+     */
     type?: "button" | "submit" | "reset";
+    /** Switches to the compact icon-only layout.
+     *
+     * @default false
+     */
     icon?: boolean;
+    /** Button label content. */
     children?: ReactNode;
   };
 
+/**
+ * A clickable element that triggers an action or event.
+ *
+ * Button supports multiple visual variants, theme colors, density and
+ * radius scales, icon-only mode, loading state, and a press animation.
+ * Visual tokens resolve through the standard AsheeUI cascade: prop,
+ * component config, global theme defaults, and the built-in fallback.
+ *
+ * @param props - Button configuration options and native button props.
+ * @param props.variant - Visual style variant. Defaults to "bordered".
+ * @param props.color - Theme accent color. Defaults to "primary".
+ * @param props.size - Density scale. Defaults to "md".
+ * @param props.radius - Corner rounding. Defaults to "md".
+ * @param props.animate - Press animation. Defaults to true.
+ * @param props.fullWidth - Full-width layout. Defaults to false.
+ * @param props.isDisabled - Disabled state. Defaults to false.
+ * @param props.isLoading - Loading state. Defaults to false.
+ * @param props.type - Native button type. Defaults to "button".
+ * @param props.icon - Icon-only compact layout. Defaults to false.
+ * @param props.children - Button label content.
+ *
+ * @example
+ * ```tsx
+ * import { Button } from "asheeui";
+ *
+ * export function Example() {
+ *   return (
+ *     <Button
+ *       variant="solid"
+ *       color="primary"
+ *       onClick={() => console.log("Clicked")}
+ *     >
+ *       Click me
+ *     </Button>
+ *   );
+ * }
+ * ```
+ */
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
   (props, ref) => {
     const {

@@ -12,7 +12,7 @@ export function resolveConfig(externalConfig: ExternalConfig): Config {
   });
   const merged = mergeObject<Config>(configWithDefaults, externalConfig);
 
-  // generic mergeObject can't fall back keys it has no default for (custom themes) —
+  // generic mergeObject can't fall back keys it has no default for (custom themes) -
   // re-resolve color specifically so unfilled fields inherit from `light` or `dark`
   merged.color = resolveColorConfig(defaultColorConfig, externalConfig.color);
 

@@ -4,8 +4,14 @@ import { join } from "node:path";
 import { pathExists, readTextFile, toRelativePath } from "../common/file-utils";
 
 /**
- * Detects an optional custom theme registry (.d.ts files declaring the
- * "asheeui" module or AsheeThemeNameRegistry). Always informational.
+ * Detect an optional custom theme registry (`.d.ts` files declaring the
+ * `"asheeui"` module or `AsheeThemeNameRegistry`).
+ *
+ * Always informational: this check never fails the project. It is
+ * useful for projects that need custom theme tokens.
+ *
+ * @param cwd - Project directory to scan.
+ * @returns A {@link DoctorCheckResult} with status `"info"`.
  */
 export async function checkThemeAugmentation(cwd: string) {
   const dtsFiles: string[] = [];

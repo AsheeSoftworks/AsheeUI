@@ -8,6 +8,16 @@ const FRAMEWORK_OPTIONS: { value: SupportedFramework; label: string }[] = [
   { value: "tanstack-start", label: "TanStack Start" },
 ];
 
+/**
+ * Resolve which {@link SupportedFramework} the project at `cwd` is using.
+ *
+ * Tries auto-detection first. If detection fails (`framework === "unknown"`),
+ * prompts the user to pick from the supported options using
+ * `@clack/prompts`. A user cancellation exits the process with code 0.
+ *
+ * @param cwd - Project directory used for auto-detection.
+ * @returns The resolved {@link SupportedFramework}.
+ */
 export async function resolveFramework(
   cwd: string,
 ): Promise<SupportedFramework> {

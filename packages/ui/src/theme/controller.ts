@@ -77,7 +77,7 @@ class ThemeController {
   }
 
   /**
-   * Seeds the default theme. Kept for backward compatibility — prefer
+   * Seeds the default theme. Kept for backward compatibility - prefer
    * `configure()`, which also validates the stored selection against the
    * available theme map.
    */
@@ -170,7 +170,7 @@ class ThemeController {
     const root = document.documentElement;
     const cls = `${THEME_CLASS_PREFIX}${resolved}`;
 
-    // Remove any previously applied ashee theme class — including the one
+    // Remove any previously applied ashee theme class - including the one
     // added by the pre-paint FOUC script in <head>.
     for (const existing of Array.from(root.classList)) {
       if (existing.startsWith(THEME_CLASS_PREFIX)) {

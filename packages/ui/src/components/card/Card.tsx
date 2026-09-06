@@ -2,6 +2,7 @@
 
 import { cn } from "@asheeui/utils";
 import {
+  type ElementType,
   forwardRef,
   type HTMLAttributes,
   type KeyboardEvent,
@@ -22,6 +23,7 @@ import { Image } from "../image/Image";
 import type { ImageFit, ImageRatioKey } from "../image/image-config";
 import {
   type CardConfig,
+  type CardImageLoading,
   type CardImagePosition,
   type CardVariant,
   FALLBACK_CARD_CONFIG,
@@ -33,28 +35,142 @@ import {
   CARD_VARIANT_CLASS,
 } from "./card-styles";
 
+/**
+ * Configuration options for the Card component.
+ */
 export interface CardProps
   extends Omit<HTMLAttributes<HTMLDivElement>, "title" | "children"> {
+  /** Visual style variant.
+   *
+   * @default "bordered"
+   */
   variant?: CardVariant;
+  /** Padding and spacing scale for inner content.
+   *
+   * @default "md"
+   */
   size?: Size;
+  /** Corner rounding applied to the card border.
+   *
+   * @default "md"
+   */
   radius?: Radius;
+  /** Enables the press-down scale animation when clickable.
+   *
+   * @default true
+   */
   animate?: boolean;
+  /** Enables interactive hover effects and keyboard accessibility.
+   *
+   * @default false
+   */
   isClickable?: boolean;
+  /** Disables interactive states and dims card opacity.
+   *
+   * @default false
+   */
   isDisabled?: boolean;
+  /** Renders the card as a link when provided with `isClickable`. */
   href?: string;
+  /** Heading content rendered above the body. */
   title?: ReactNode;
+  /** Supporting text rendered under the title. */
   description?: ReactNode;
+  /** Custom header node rendered above the title. */
   header?: ReactNode;
+  /** Explicit body content; falls back to `children`. */
   body?: ReactNode;
+  /** Footer node rendered at the bottom of the content column. */
   footer?: ReactNode;
+  /** Source URL of the card image. */
   imageSrc?: string;
+  /** Alternative text for the card image.
+   *
+   * @default ""
+   */
   imageAlt?: string;
+  /** Placement of the image relative to the content.
+   *
+   * @default "top"
+   */
   imagePosition?: CardImagePosition;
+  /** Aspect ratio of the positioned image.
+   *
+   * @default "video"
+   */
   imageRatio?: ImageRatioKey;
+  /** Object-fit strategy of the positioned image.
+   *
+   * @default "cover"
+   */
   imageFit?: ImageFit;
+  /** Native loading strategy of the positioned image.
+   *
+   * @default "lazy"
+   */
+  imageLoading?: CardImageLoading;
+  /** Custom image component to render the card image with instead of
+   * the native `<img>` tag (e.g. `next/image`). */
+  imageComponent?: ElementType;
+  /** Additional props forwarded to `imageComponent`
+   * (e.g. `{ priority: true, sizes: "..." }`). */
+  imageProps?: Record<string, unknown>;
+  /** Card body content, used when `body` is not provided. */
   children?: ReactNode;
 }
 
+/**
+ * A versatile container component for displaying content, with support
+ * for headers, footers, image layouts, and interactive states.
+ *
+ * Card composes optional image, title, description, header, body, and
+ * footer regions. Visual tokens (`variant`, `size`, `radius`,
+ * `animate`, `isClickable`) resolve through the standard AsheeUI
+ * cascade. When `isClickable` is enabled, the card becomes keyboard
+ * accessible and adopts link or button semantics based on `href`.
+ *
+ * @param props - Card configuration options and HTML div element props.
+ * @param props.variant - Visual style variant. Defaults to "bordered".
+ * @param props.size - Content density scale. Defaults to "md".
+ * @param props.radius - Corner rounding. Defaults to "md".
+ * @param props.animate - Press animation. Defaults to true.
+ * @param props.isClickable - Interactive behaviour. Defaults to false.
+ * @param props.isDisabled - Disabled state. Defaults to false.
+ * @param props.href - Optional link destination.
+ * @param props.title - Heading content.
+ * @param props.description - Supporting text.
+ * @param props.header - Custom header node.
+ * @param props.body - Explicit body content.
+ * @param props.footer - Footer node.
+ * @param props.imageSrc - Image source URL.
+ * @param props.imageAlt - Image alternative text.
+ * @param props.imagePosition - Image placement.
+ * @param props.imageRatio - Image aspect ratio.
+ * @param props.imageFit - Image object-fit.
+ * @param props.imageLoading - Image loading strategy.
+ * @param props.imageComponent - Custom image component.
+ * @param props.imageProps - Props forwarded to the image component.
+ * @param props.children - Card body content.
+ *
+ * @example
+ * ```tsx
+ * import { Card, Button } from "asheeui";
+ *
+ * export function Example() {
+ *   return (
+ *     <Card
+ *       variant="elevated"
+ *       radius="lg"
+ *       title="Card Title"
+ *       description="Card description goes here."
+ *       footer={<Button size="sm">Action</Button>}
+ *     >
+ *       Card body content.
+ *     </Card>
+ *   );
+ * }
+ * ```
+ */
 export const Card = forwardRef<HTMLDivElement, CardProps>(
   (
     {
@@ -75,6 +191,9 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(
       imagePosition,
       imageRatio,
       imageFit,
+      imageLoading = "lazy",
+      imageComponent,
+      imageProps,
       className,
       children,
       onClick,
@@ -155,6 +274,13 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(
       FALLBACK_CARD_CONFIG.radius,
     );
 
+    const resolvedLoading = resolveCascade<CardImageLoading>(
+      imageLoading,
+      sectionConfig?.imageLoading,
+      undefined,
+      FALLBACK_CARD_CONFIG.imageLoading,
+    );
+
     const variantClass =
       CARD_VARIANT_CLASS[resolvedVariant] ?? CARD_VARIANT_CLASS.bordered;
 
@@ -177,22 +303,47 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(
         (e.key === "Enter" || e.key === " ")
       ) {
         e.preventDefault();
-        // Trigger click on Enter/Space for accessibility
-        if (e.key === "Enter" || e.key === " ") {
-          handleClick(e as unknown as MouseEvent<HTMLDivElement>);
-        }
+        handleClick(e as unknown as MouseEvent<HTMLDivElement>);
       }
     };
 
-    const renderImage = (position: CardImagePosition) => {
+    // ─── Render helper for top/bottom images ──────────────────────────────
+    const renderPositionedImage = (position: CardImagePosition) => {
       if (!imageSrc || resolvedImagePos !== position) return null;
 
       const positionStyles = {
-        top: "w-full shrink-0",
-        bottom: "w-full shrink-0 order-last",
-        background:
-          "absolute inset-0 z-0 w-full h-full opacity-40 pointer-events-none",
+        top: "w-full shrink-0 rounded-b-none",
+        bottom: "w-full shrink-0 order-last rounded-t-none",
+        background: "",
       }[position];
+
+      // ─── FIX: Force eager loading for custom image components ────────────
+      // Next.js Image with priority or lazy loading can cause script errors
+      // when used with AsheeUIProvider. Force eager loading as a safeguard.
+      let finalImageProps = { ...(imageProps ?? {}) };
+
+      if (imageComponent) {
+        // Check if user set loading="lazy" or priority
+        const hasLazy = imageProps?.loading === "lazy";
+        const hasPriority = imageProps?.priority === true;
+
+        if (hasLazy || hasPriority) {
+          console.warn(
+            `[Card] ${
+              hasLazy ? '`loading="lazy"`' : "`priority={true}`"
+            } with custom image component may cause rendering issues. ` +
+              `Consider using \`loading="eager"\` and removing \`priority\` for card images.`,
+          );
+        }
+
+        // Force loading to "eager" if custom component is used
+        finalImageProps = {
+          ...finalImageProps,
+          loading: "eager",
+          // Remove priority if present to avoid conflicts
+          ...(finalImageProps.priority !== undefined && { priority: false }),
+        };
+      }
 
       return (
         <Image
@@ -200,8 +351,52 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(
           alt={imageAlt}
           ratio={imageRatio ?? "video"}
           fit={imageFit ?? "cover"}
-          className={cn(positionStyles)}
+          className={positionStyles}
+          imageComponent={imageComponent}
+          imageProps={finalImageProps}
+          loading={resolvedLoading}
         />
+      );
+    };
+
+    // ─── Render background image directly (no Image wrapper) ──────────────
+    const renderBackgroundImage = () => {
+      if (!imageSrc || resolvedImagePos !== "background") return null;
+
+      const ImageComponent = imageComponent || "img";
+
+      // ─── FIX: Force eager loading for background images too ──────────────
+      let finalImageProps = { ...(imageProps ?? {}) };
+
+      if (imageComponent) {
+        const hasLazy = imageProps?.loading === "lazy";
+        const hasPriority = imageProps?.priority === true;
+
+        if (hasLazy || hasPriority) {
+          console.warn(
+            `[Card] ${
+              hasLazy ? '`loading="lazy"`' : "`priority={true}`"
+            } with custom image component may cause rendering issues. ` +
+              `Consider using \`loading="eager"\` and removing \`priority\` for card images.`,
+          );
+        }
+
+        finalImageProps = {
+          ...finalImageProps,
+          loading: "eager",
+          ...(finalImageProps.priority !== undefined && { priority: false }),
+        };
+      }
+
+      return (
+        <div className="absolute inset-0 z-0 pointer-events-none">
+          <ImageComponent
+            src={imageSrc}
+            alt={imageAlt}
+            className="h-full w-full object-cover"
+            {...finalImageProps}
+          />
+        </div>
       );
     };
 
@@ -232,8 +427,11 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(
         )}
         style={style}
         {...rest}>
-        {renderImage("top")}
-        {renderImage("background")}
+        {/* Top image */}
+        {renderPositionedImage("top")}
+
+        {/* Background image - rendered directly */}
+        {renderBackgroundImage()}
 
         <div
           className={cn(
@@ -274,7 +472,8 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(
           )}
         </div>
 
-        {renderImage("bottom")}
+        {/* Bottom image */}
+        {renderPositionedImage("bottom")}
       </div>
     );
   },

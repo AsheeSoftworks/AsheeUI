@@ -1,5 +1,31 @@
 # @asheeui/vite
 
+## 0.3.0
+
+### Minor Changes
+
+- docs: add standardized JSDoc annotations and complete component documentation
+
+### Patch Changes
+
+- Updated dependencies
+  - @asheeui/utils@0.3.0
+  - asheeui@0.5.0
+
+## 0.2.22
+
+### Patch Changes
+
+- Updated dependencies
+  - asheeui@0.4.8
+
+## 0.2.21
+
+### Patch Changes
+
+- Updated dependencies
+  - asheeui@0.4.7
+
 ## 0.2.20
 
 ### Patch Changes

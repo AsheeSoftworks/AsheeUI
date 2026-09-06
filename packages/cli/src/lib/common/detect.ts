@@ -11,10 +11,35 @@ interface Pkg {
   devDependencies?: Record<string, string>;
 }
 
+/** Options accepted by {@link detectFramework}. */
 export interface DetectOptions {
+  /** Directory whose `package.json` and source tree will be inspected. */
   cwd: string;
 }
 
+/**
+ * Detect the framework used by the project at `cwd`.
+ *
+ * Detection priority order:
+ * 1. `@tanstack/react-start` plus an `app.config.*` or router file.
+ * 2. `next` plus an `app/`, `pages/` or `next.config.*` file.
+ * 3. `vite` together with `react`/`react-dom` plus a `vite.config.*` or
+ *    conventional `src/main.*` entry.
+ *
+ * If none of the above match, returns a `Framework` of `"unknown"` with
+ * `confidence` set to `"low"`.
+ *
+ * @param options - Detection options containing the working directory.
+ * @returns A {@link FrameworkDetection} summarising what was found.
+ *
+ * @example
+ * ```ts
+ * const { framework, confidence } = await detectFramework({ cwd: process.cwd() });
+ * if (framework === "unknown") {
+ *   // prompt the user to pick a framework manually
+ * }
+ * ```
+ */
 export async function detectFramework(
   options: DetectOptions,
 ): Promise<FrameworkDetection> {
@@ -126,6 +151,12 @@ export async function detectFramework(
   };
 }
 
+/**
+ * Locate a Vite config file in `cwd`, checking each conventional name.
+ *
+ * @param cwd - Directory to scan.
+ * @returns The config file name, or `null` when none exists.
+ */
 async function findViteConfig(cwd: string): Promise<string | null> {
   const candidates = [
     "vite.config.ts",
@@ -141,6 +172,12 @@ async function findViteConfig(cwd: string): Promise<string | null> {
   return null;
 }
 
+/**
+ * Locate a conventional Vite entry point (`src/main.*` or `index.html`).
+ *
+ * @param cwd - Directory to scan.
+ * @returns The entry file name, or `null` when none exists.
+ */
 async function findViteEntry(cwd: string): Promise<string | null> {
   const candidates = [
     "src/main.tsx",
@@ -155,6 +192,12 @@ async function findViteEntry(cwd: string): Promise<string | null> {
   return null;
 }
 
+/**
+ * Locate a TanStack Start config or router file in `cwd`.
+ *
+ * @param cwd - Directory to scan.
+ * @returns The config/router file name, or `null` when none exists.
+ */
 async function findTanStackConfig(cwd: string): Promise<string | null> {
   const candidates = [
     "app.config.ts",
@@ -172,6 +215,12 @@ async function findTanStackConfig(cwd: string): Promise<string | null> {
   return null;
 }
 
+/**
+ * Convert a {@link Framework} identifier into a human-readable label.
+ *
+ * @param framework - The framework identifier to format.
+ * @returns A short display name suitable for CLI output.
+ */
 export function frameworkLabel(framework: Framework): string {
   switch (framework) {
     case "next":

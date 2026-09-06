@@ -1,4 +1,5 @@
 import { execSync } from "node:child_process";
+import { join } from "node:path";
 import * as p from "@clack/prompts";
 import { inspectDependencies } from "../common/deps";
 import { detectFramework, frameworkLabel } from "../common/detect";
@@ -11,12 +12,38 @@ import { buildPlan } from "./plan";
 import { reportResult } from "./report";
 import { resolveFramework } from "./resolve-framework";
 
+/**
+ * Run the full `asheeui init` workflow against the project at `cwd`.
+ *
+ * Steps performed:
+ * 1. Resolve the framework (auto-detect or prompt the user).
+ * 2. Detect the project structure (entry point, language, CSS, etc.).
+ * 3. Build a per-framework {@link IntegrationResult} describing the
+ *    files to write, files to edit, and packages to install.
+ * 4. Inspect the project's dependencies and identify missing ones.
+ * 5. Show an execution plan (skipped when `opts.yes` is `true`).
+ * 6. Apply file writes, file edits, and run integrity verification.
+ * 7. Install missing dependencies with the detected package manager.
+ *
+ * The whole flow is idempotent: existing files, edits, and packages
+ * are detected and skipped, so running `init` twice is safe.
+ *
+ * @param opts - User options forwarded from the command line.
+ * @param cwd - Project directory (defaults to the current working dir).
+ * @returns A summary {@link InitResult} describing what changed.
+ *
+ * @example
+ * ```ts
+ * const result = await runInit({ template: "default", yes: false });
+ * console.log(`Created ${result.filesCreated.length} files`);
+ * ```
+ */
 export async function runInit(
   opts: InitOptions,
   cwd = process.cwd(),
 ): Promise<InitResult> {
   if (!opts.yes) {
-    p.intro("Ashee UI — init");
+    p.intro("Ashee UI - init");
   }
 
   // Framework Resolution & Structure
@@ -89,7 +116,12 @@ export async function runInit(
   p.log.step("Checking file integrity");
   const integrityFailures: string[] = [];
   for (const check of integration.integrityChecks) {
-    const ok = await verifyEdits(check);
+    const targetFile = join(cwd, check.projectRelativeFile);
+    const ok = await verifyEdits({
+      projectRelativeFile: targetFile,
+      pattern: check.pattern,
+      message: check.message,
+    });
     if (!ok) {
       integrityFailures.push(
         `• ${check.projectRelativeFile}: ${check.message}`,
@@ -117,7 +149,6 @@ export async function runInit(
     const installCmd = buildInstallCommand(
       deps.packageManager,
       deps.missingDependencies,
-      opts.local,
     );
 
     p.log.step(`Installing missing dependencies with ${deps.packageManager}`);

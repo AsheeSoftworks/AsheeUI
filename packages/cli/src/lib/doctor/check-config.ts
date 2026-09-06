@@ -1,31 +1,30 @@
-import { join } from "node:path";
-import { discoverConfig } from "@asheeui/utils/node";
+import { findAsheeConfigFile } from "../../utils/audit";
 import { toRelativePath } from "../common/file-utils";
 import type { DoctorCheckResult, DoctorOptions } from "./types";
 
 /**
- * Validates that an asheeui configuration file exists in the
- * project root or in src/.
+ * Validate that an asheeui configuration file exists in the
+ * project root or in `src/`.
+ *
+ * Returns `pass` when {@link findAsheeConfigFile} locates one; `fail`
+ * otherwise (with a `fix` hint pointing at `npx asheeui init`).
+ *
+ * @param options - {@link DoctorOptions} containing the working directory.
+ * @returns A {@link DoctorCheckResult} describing the outcome.
  */
 export async function checkConfigFile(
   options: DoctorOptions,
 ): Promise<DoctorCheckResult> {
   const cwd = options.cwd;
 
-  // Use discoverConfig helper to check both root and src/ directories
-  const rootConfig = discoverConfig(cwd);
-  const srcConfig = discoverConfig(join(cwd, "src"));
+  const configPath = findAsheeConfigFile(cwd);
 
-  const found = [rootConfig, srcConfig].filter((path): path is string =>
-    Boolean(path),
-  );
-
-  if (found.length > 0) {
+  if (configPath) {
     return {
       id: "config",
       title: "Configuration file",
       status: "pass",
-      message: `Found ${found.map((path) => toRelativePath(cwd, path)).join(", ")}`,
+      message: `Found ${toRelativePath(cwd, configPath)}`,
     };
   }
 

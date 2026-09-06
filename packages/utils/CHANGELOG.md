@@ -1,5 +1,11 @@
 # @asheeui/utils
 
+## 0.3.0
+
+### Minor Changes
+
+- docs: add standardized JSDoc annotations and complete component documentation
+
 ## 0.2.7
 
 ### Patch Changes

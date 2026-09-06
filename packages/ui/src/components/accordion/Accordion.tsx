@@ -32,28 +32,118 @@ import {
 
 // ─── Component Interface ──────────────────────────────────────────────────────
 
+/**
+ * Configuration options for the Accordion component.
+ */
 export interface AccordionProps
   extends Omit<
     React.HTMLAttributes<HTMLDivElement>,
     "value" | "defaultValue" | "onChange"
   > {
+  /** The accordion items to render.
+   *
+   * @default []
+   */
   items: AccordionItem[];
+  /** Visual style variant.
+   *
+   * @default "separated"
+   */
   variant?: AccordionVariant;
+  /** Padding and spacing scale.
+   *
+   * @default "md"
+   */
   size?: AccordionSizeKey;
+  /** Corner rounding applied to separated and ghost item containers.
+   *
+   * @default "md"
+   */
   radius?: Radius;
+  /** Allows more than one item to remain open at the same time.
+   *
+   * @default false
+   */
   allowMultiple?: boolean;
+  /** Initial open item keys for the uncontrolled mode.
+   *
+   * Pass a `string` for single-open mode or `string[]` when
+   * `allowMultiple` is enabled.
+   */
   defaultValue?: string | string[];
+  /** Controlled open item keys.
+   *
+   * When provided, the component becomes controlled and updates are
+   * reported through `onValueChange`.
+   */
   value?: string | string[];
+  /** Callback fired with the current open item keys. */
   onValueChange?: (value: string[]) => void;
+  /** Custom node rendered as the expand indicator.
+   *
+   * Defaults to a rotating chevron-down icon.
+   */
   expandIcon?: ReactNode;
+  /** Disables all expand/collapse animations.
+   *
+   * @default false
+   */
   disableAnimation?: boolean;
+  /** Extra classes applied to each item container. */
   itemClassName?: string;
+  /** Extra classes applied to each header trigger button. */
   headerClassName?: string;
+  /** Extra classes applied to each content panel. */
   contentClassName?: string;
 }
 
 // ─── Component Implementation ─────────────────────────────────────────────────
 
+/**
+ * A vertically stacked set of expandable sections for showing content
+ * in a compact, space-efficient way.
+ *
+ * Accordion supports single and multi-open modes, controlled or
+ * uncontrolled open state, keyboard navigation, and disabled items.
+ * Visual tokens (`variant`, `size`, `radius`, `allowMultiple`) resolve
+ * through the standard AsheeUI cascade: prop, component config, global
+ * theme defaults, and finally the built-in fallback.
+ *
+ * @param props - Accordion configuration options and HTML div element
+ *   props.
+ * @param props.items - Accordion items to render.
+ * @param props.variant - Visual style variant. Defaults to "separated".
+ * @param props.size - Density scale. Defaults to "md".
+ * @param props.radius - Corner rounding. Defaults to "md".
+ * @param props.allowMultiple - Allow multiple open items. Defaults to
+ *   false.
+ * @param props.defaultValue - Uncontrolled initial open keys.
+ * @param props.value - Controlled open keys.
+ * @param props.onValueChange - Change callback with open keys.
+ * @param props.expandIcon - Custom expand indicator node.
+ * @param props.disableAnimation - Disable animations. Defaults to
+ *   false.
+ * @param props.itemClassName - Extra classes for each item.
+ * @param props.headerClassName - Extra classes for each header.
+ * @param props.contentClassName - Extra classes for each content panel.
+ *
+ * @example
+ * ```tsx
+ * import { Accordion } from "asheeui";
+ *
+ * export function Example() {
+ *   return (
+ *     <Accordion
+ *       variant="separated"
+ *       items={[
+ *         { title: "What is AsheeUI?", content: "A React component library." },
+ *         { title: "Is it free?", content: "Yes, it is MIT licensed." },
+ *       ]}
+ *     />
+ *   );
+ * }
+ * ```
+ */
 export const Accordion = forwardRef<HTMLDivElement, AccordionProps>(
   (
     {

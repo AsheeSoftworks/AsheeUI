@@ -1,6 +1,6 @@
 {
   "name": "@asheeui/next",
-  "version": "0.2.20",
+  "version": "0.3.0",
   "type": "module",
   "main": "./src/index.ts",
   "types": "./src/index.ts",

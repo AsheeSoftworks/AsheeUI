@@ -1,8 +1,6 @@
 import type { DoctorCheckResult } from "./types";
 
-// ---------------------------------------------------------------------------
-// Terminal rendering
-// ---------------------------------------------------------------------------
+// Terminal rendering helpers.
 
 const ANSI = {
   green: "\u001b[32m",
@@ -14,6 +12,13 @@ const ANSI = {
   reset: "\u001b[0m",
 };
 
+/**
+ * Wrap a string in an ANSI colour/style code, only when stdout is a TTY.
+ *
+ * @param code - ANSI escape prefix to apply.
+ * @param text - Text to colour.
+ * @returns The coloured text, or the original text when not a TTY.
+ */
 function colorize(code: string, text: string): string {
   if (!process.stdout.isTTY) return text;
   return `${code}${text}${ANSI.reset}`;
@@ -42,6 +47,24 @@ const STATUS_COLOR: Record<string, (text: string) => string> = {
 
 const DIVIDER = "─".repeat(60);
 
+/**
+ * Print a human-readable doctor report to `process.stdout`.
+ *
+ * Renders one coloured line per check result (icon + title + message),
+ * followed by a deduped list of suggested fixes. ANSI colours are only
+ * emitted when `process.stdout` is a TTY so log files stay readable.
+ *
+ * @param results - Doctor check results to render, in display order.
+ * @param cwd - Optional override for the directory label shown in the
+ *   header. Defaults to `process.cwd()`.
+ * @returns Nothing; output is written directly to `process.stdout`.
+ *
+ * @example
+ * ```ts
+ * const results = await runDoctorChecks({ cwd: process.cwd() });
+ * renderDoctorReport(results);
+ * ```
+ */
 export function renderDoctorReport(
   results: DoctorCheckResult[],
   cwd?: string,

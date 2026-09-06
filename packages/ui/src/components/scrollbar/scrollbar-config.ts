@@ -3,7 +3,7 @@ import { registerComponentDefaults } from "../../libs/registry";
 /**
  * Structural (non-color) scrollbar theming.
  * Thumb/track colors already live in ColorVariant (scrollbarThumb/scrollbarTrack)
- * per theme — this config controls shape/behavior, which is theme-agnostic.
+ * per theme - this config controls shape/behavior, which is theme-agnostic.
  */
 export interface ScrollbarConfig {
   /** Thickness of the scrollbar. Applied via ::-webkit-scrollbar width/height. */
@@ -18,7 +18,7 @@ export interface ScrollbarConfig {
    */
   thumbBorder: string;
   /**
-   * Native `scrollbar-gutter` value — reserves space for the scrollbar so
+   * Native `scrollbar-gutter` value - reserves space for the scrollbar so
    * content doesn't shift when a scrollbar appears/disappears.
    */
   gutter: "auto" | "stable" | "stable both-edges";

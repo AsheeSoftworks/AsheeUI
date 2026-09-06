@@ -16,7 +16,9 @@ import type {
 import { createWebpackHook } from "./webpack";
 
 /**
- * AsheeUI packages that ship TypeScript source and must be compiled by Next.
+ * AsheeUI packages that ship TypeScript source and must be compiled by
+ * Next.
+ *
  * `transpilePackages` takes npm package names, deduped against any the
  * consumer provides.
  */
@@ -25,10 +27,12 @@ const ASHEE_TRANSPILE_PACKAGES = ["asheeui"];
 type NextWebpack = NonNullable<NextConfig["webpack"]>;
 
 /**
+ * Structural superset of `NextConfig` used to reach legacy keys.
+ *
  * Next 15 kept `transpilePackages` on `NextConfig` and Turbopack behind
  * `experimental.turbo`; Next 16 removed both (Turbopack is the default).
- * This structural superset lets one code path type-check against either
- * major version of the peer dependency.
+ * This superset lets one code path type-check against either major
+ * version of the peer dependency.
  */
 type LegacyNextConfig = NextConfig & {
   transpilePackages?: string[];
@@ -38,17 +42,34 @@ type LegacyNextConfig = NextConfig & {
 };
 
 /**
- * Wrap a `next.config.mjs`/`next.config.ts` object with AsheeUI integration.
+ * Wrap a `next.config.mjs`/`next.config.ts` object with AsheeUI
+ * integration.
  *
+ * The wrapper:
  * 1. Generates a config shim at `.ashee/generated-config.mjs` (same
- *    resolution as @asheeui/vite's `virtual:ashee-config`).
- * 2. Adds a `virtual:ashee-config` alias for Webpack and Turbopack so app
- *    code uses the identical import specifier in both bundlers — webpack
- *    gets an absolute path (it resolves against its own context, not the
- *    `root` override), Turbopack gets a project-root-relative one (it
- *    rejects absolute targets).
- * 3. Merges `transpilePackages` so AsheeUI's source-shipping packages are
- *    compiled by Next.
+ *    resolution as `@asheeui/vite`'s `virtual:ashee-config`).
+ * 2. Adds a `virtual:ashee-config` alias for Webpack and Turbopack so
+ *    app code uses the identical import specifier in both bundlers.
+ *    Webpack gets an absolute path (it resolves against its own
+ *    context, not the `root` override), Turbopack gets a
+ *    project-root-relative one (it rejects absolute targets).
+ * 3. Merges `transpilePackages` so AsheeUI's source-shipping packages
+ *    are compiled by Next.
+ *
+ * @param config - Next config to wrap. AsheeUI override keys (`root`,
+ *   `transpilePackages`) are consumed and stripped from the returned
+ *   `NextConfig`. Defaults to `{}`.
+ * @returns A plain `NextConfig` with the AsheeUI integration applied.
+ *
+ * @example
+ * ```ts
+ * // next.config.ts
+ * import { withAsheeUI } from "@asheeui/next";
+ *
+ * export default withAsheeUI({
+ *   transpilePackages: ["@my-org/ui"],
+ * });
+ * ```
  */
 export function withAsheeUI(config: WithAsheeUIConfig = {}): NextConfig {
   const {

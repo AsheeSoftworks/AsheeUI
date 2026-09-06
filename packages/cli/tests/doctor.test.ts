@@ -51,8 +51,6 @@ describe("runDoctorChecks", () => {
       {
         react: "^19.0.0",
         "react-dom": "^19.0.0",
-        "framer-motion": "^12.0.0",
-        "@floating-ui/react": "^0.27.0",
       },
       { tailwindcss: "^4.0.0" },
     );
@@ -136,8 +134,6 @@ import { createRoot } from "react-dom/client";`,
         {
           react: "^19.1.0",
           "react-dom": "^19.1.0",
-          "framer-motion": "^12.0.0",
-          "@floating-ui/react": "^0.27.0",
         },
         { tailwindcss: "^4.0.0" },
       );
@@ -150,8 +146,6 @@ import { createRoot } from "react-dom/client";`,
         {
           react: "^18.3.1",
           "react-dom": "^18.3.1",
-          "framer-motion": "^12.0.0",
-          "@floating-ui/react": "^0.27.0",
         },
         { tailwindcss: "^3.4.0" },
       );
@@ -175,15 +169,15 @@ import { createRoot } from "react-dom/client";`,
       expect(result?.fix).toMatch(/tailwindcss/);
     });
 
-    it("warns but does not fail when only optional deps are missing", async () => {
+    it("passes (no warnings) when optional/animation packages are absent", async () => {
       await writePkg(
         { react: "^19.0.0", "react-dom": "^19.0.0" },
         { tailwindcss: "^4.0.0" },
       );
       const result = await resultOf("peer-deps");
-      expect(result?.status).toBe("warn");
-      expect(result?.fix).toMatch(/framer-motion/);
-      expect(result?.fix).toMatch(/@floating-ui\/react/);
+      expect(result?.status).toBe("pass");
+      expect(result?.message).not.toMatch(/framer-motion/);
+      expect(result?.message).not.toMatch(/optional/);
     });
 
     it("fails with unsupported version", async () => {

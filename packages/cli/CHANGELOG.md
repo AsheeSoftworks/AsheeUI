@@ -1,5 +1,38 @@
 # @asheeui/cli
 
+## 0.5.0
+
+### Minor Changes
+
+- Add shorthand aliases for all CLI commands and refresh the CLI reference docs.
+  
+  - `init` → alias `i`
+  - `list` → aliases `ls`, `l`
+  - `doctor` → aliases `doc`, `dr`
+  - `fix` → alias `f`
+  
+  docs: add standardized JSDoc annotations and complete component documentation
+
+### Patch Changes
+
+- Updated dependencies
+  - @asheeui/utils@0.3.0
+
+## 0.4.0
+
+### Minor Changes
+
+- Make CLI commands idempotent and add `list`/`fix` commands.
+  
+  - **init**: Running `init` multiple times no longer duplicates CSS imports, plugin registrations, provider wrappers, or generated config files.
+  - **init**: Removed the `--local` flag and all local workspace dependency resolution.
+  - **list**: New command that discovers and prints the components available in the installed `asheeui` package or a local registry path.
+  - **fix**: New command that runs the `doctor` checks and automatically repairs config files, CSS imports, root providers, and missing peer dependencies without duplicating content.
+  - **doctor/audit**: Shared audit helpers extracted so `doctor`, `init`, and `fix` use identical verification logic.
+  - **deps**: Removed `framer-motion` from the CLI's peer dependency checks, prompts and installers; `@floating-ui/react` is now bundled by `asheeui`.
+  - **deps**: Package-manager install helpers now consistently support `npm`, `pnpm`, `yarn`, and `bun` (including dev-dependency flags).
+  - **templates**: Generated `asheeui.config.ts` matches the current `defineConfig`/`ExternalConfig` API used by the playground apps.
+
 ## 0.3.7
 
 ### Patch Changes

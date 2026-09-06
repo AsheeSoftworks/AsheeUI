@@ -1,18 +1,21 @@
 import { join } from "node:path";
+import { containsRootProvider, ENTRYPOINT_CANDIDATES } from "../../utils/audit";
 import { firstExisting, readTextFile } from "../common/file-utils";
 import type { DoctorCheckResult, DoctorOptions } from "./types";
 
-export const ENTRYPOINT_CANDIDATES = [
-  "src/main.tsx",
-  "src/index.tsx",
-  "src/App.tsx",
-  "src/app/layout.tsx",
-  "app/layout.tsx",
-];
+export { ENTRYPOINT_CANDIDATES } from "../../utils/audit";
 
 /**
- * Validates that the root entrypoint wraps the app with AsheeUIProvider
- * or imports from "asheeui/config".
+ * Validate that the root entrypoint wraps the app with `AsheeUIProvider`
+ * or imports from `"asheeui/config"`.
+ *
+ * Scans each candidate in {@link ENTRYPOINT_CANDIDATES} and reports
+ * `pass` on the first one that contains a root-provider reference;
+ * otherwise returns `fail` with a `fix` describing the expected
+ * wrapping.
+ *
+ * @param options - {@link DoctorOptions} containing the working directory.
+ * @returns A {@link DoctorCheckResult} describing the outcome.
  */
 export async function checkRootProvider(
   options: DoctorOptions,
@@ -21,15 +24,12 @@ export async function checkRootProvider(
   for (const candidate of ENTRYPOINT_CANDIDATES) {
     const content = await readTextFile(join(cwd, candidate));
     if (content === null) continue;
-    if (
-      content.includes("asheeui/config") ||
-      content.includes("<AsheeUIProvider")
-    ) {
+    if (containsRootProvider(content)) {
       return {
         id: "provider",
         title: "Root provider",
         status: "pass",
-        message: content.includes("<AsheeUIProvider")
+        message: content.includes(`<AsheeUIProvider`)
           ? `<AsheeUIProvider> found in ${candidate}`
           : `asheeui/config import found in ${candidate}`,
       };

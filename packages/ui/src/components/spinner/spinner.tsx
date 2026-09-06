@@ -12,13 +12,53 @@ import {
 } from "./spinner-config";
 import { SPINNER_COLOR_CLASS, SPINNER_SIZE_CLASS } from "./spinner-styles";
 
+/**
+ * Configuration options for the Spinner component.
+ */
 export interface SpinnerProps extends SVGAttributes<SVGSVGElement> {
+  /** Pixel-size scale.
+   *
+   * @default "md"
+   */
   size?: SpinnerSizeKey;
+  /** Theme accent color.
+   *
+   * @default "primary"
+   */
   color?: Color;
+  /** CSS `animation-duration` for one rotation.
+   *
+   * @default "0.75s"
+   */
   speed?: string;
+  /** Extra classes merged with internal styles. */
   className?: string;
 }
 
+/**
+ * An animated SVG loading indicator.
+ *
+ * Spinner renders a rotating circle using the current theme color.
+ * Visual tokens (`size`, `color`, `speed`) resolve through the
+ * standard AsheeUI cascade. The SVG is hidden from assistive
+ * technology (`aria-hidden`); pair it with a visually hidden label or
+ * text for meaningful loading feedback.
+ *
+ * @param props - Spinner configuration options and SVG attributes.
+ * @param props.size - Pixel-size scale. Defaults to "md".
+ * @param props.color - Theme accent color. Defaults to "primary".
+ * @param props.speed - Rotation duration. Defaults to "0.75s".
+ * @param props.className - Extra classes for the SVG element.
+ *
+ * @example
+ * ```tsx
+ * import { Spinner } from "asheeui";
+ *
+ * export function Example() {
+ *   return <Spinner size="lg" color="primary" />;
+ * }
+ * ```
+ */
 export const Spinner = forwardRef<SVGSVGElement, SpinnerProps>(
   ({ size, color, speed, className, style, ...props }, ref) => {
     const config = useAsheeConfig();

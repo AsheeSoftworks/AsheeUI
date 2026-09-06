@@ -31,22 +31,94 @@ import {
   CHIP_PADDING_CLASS,
 } from "./chip-styles";
 
+/**
+ * Configuration options for the Chip component.
+ */
 export interface ChipProps
   extends Omit<HTMLAttributes<HTMLDivElement>, "color" | "size"> {
+  /** Visual style variant.
+   *
+   * @default "bordered"
+   */
   variant?: ChipVariant;
+  /** Theme accent color.
+   *
+   * @default "primary"
+   */
   color?: Color;
+  /** Height and font-size scale.
+   *
+   * @default "md"
+   */
   size?: Size;
+  /** Corner rounding.
+   *
+   * @default "full"
+   */
   radius?: Radius;
+  /** Disables interactions and dims the chip.
+   *
+   * @default false
+   */
   isDisabled?: boolean;
+  /** Leading icon rendered before the content. */
   startIcon?: ReactNode;
+  /** Trailing icon rendered after the content (hidden when closable). */
   endIcon?: ReactNode;
+  /** Avatar node rendered before the content, replacing `startIcon`. */
   avatar?: ReactNode;
+  /** Renders a small status dot.
+   *
+   * Pass `true` for the current color, or a CSS color string.
+   */
   dot?: boolean | string;
+  /** When provided, renders a remove button that fires this callback. */
   onClose?: (e: MouseEvent<HTMLButtonElement>) => void;
+  /** Custom remove icon shown inside the close button. */
   closeIcon?: ReactNode;
+  /** Chip content. */
   children?: ReactNode;
 }
 
+/**
+ * A compact element that represents an input, choice, or attribute.
+ *
+ * Chip displays short labels with optional avatars, icons, a status
+ * dot, and an optional close button. When `onClose` is provided the
+ * chip becomes keyboard-operable for removal. Visual tokens resolve
+ * through the standard AsheeUI cascade.
+ *
+ * @param props - Chip configuration options and HTML div props.
+ * @param props.variant - Visual style variant. Defaults to "bordered".
+ * @param props.color - Theme accent color. Defaults to "primary".
+ * @param props.size - Density scale. Defaults to "md".
+ * @param props.radius - Corner rounding. Defaults to "full".
+ * @param props.isDisabled - Disabled state. Defaults to false.
+ * @param props.startIcon - Leading icon.
+ * @param props.endIcon - Trailing icon.
+ * @param props.avatar - Avatar node.
+ * @param props.dot - Status dot.
+ * @param props.onClose - Close callback.
+ * @param props.closeIcon - Custom close icon.
+ * @param props.children - Chip label content.
+ *
+ * @example
+ * ```tsx
+ * import { Chip } from "asheeui";
+ *
+ * export function Example() {
+ *   return (
+ *     <Chip
+ *       variant="solid"
+ *       color="primary"
+ *       onClose={() => console.log("Removed")}
+ *     >
+ *       React
+ *     </Chip>
+ *   );
+ * }
+ * ```
+ */
 export const Chip = forwardRef<HTMLDivElement, ChipProps>(
   (
     {

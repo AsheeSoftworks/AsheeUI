@@ -3,6 +3,12 @@ import { buildNextIntegration } from "./next";
 import { buildTanStackStartIntegration } from "./tanstack-start";
 import { buildViteIntegration } from "./vite";
 
+/**
+ * Dispatch to the per-framework integration builder for `ctx.framework`.
+ *
+ * @param ctx - {@link IntegrationContext} describing the project.
+ * @returns The {@link IntegrationResult} produced by the framework builder.
+ */
 export async function buildIntegration(
   ctx: IntegrationContext,
 ): Promise<IntegrationResult> {

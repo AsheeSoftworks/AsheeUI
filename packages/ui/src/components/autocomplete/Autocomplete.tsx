@@ -35,25 +35,100 @@ import {
 
 // ─── Component Interface ──────────────────────────────────────────────────────
 
+/**
+ * Configuration options for the Autocomplete component.
+ */
 export interface AutocompleteProps
   extends Omit<InputProps, "value" | "onChange"> {
+  /** Suggestions shown while the user types.
+   *
+   * @default []
+   */
   options: AutocompleteOption[];
+  /** Controlled selected value, shown as its option label. */
   value?: string | number;
+  /** Callback fired with the selected value and option. */
   onValueChange?: (value: string | number, option?: AutocompleteOption) => void;
+  /** Callback fired whenever the raw input text changes. */
   onInputChange?: (inputValue: string) => void;
+  /** Allows free-form values that are not in the options list.
+   *
+   * When enabled, typing emits the raw text through `onValueChange`.
+   *
+   * @default false
+   */
   allowCustomValue?: boolean;
+  /** Content rendered below the options list. */
   belowList?: ReactNode;
+  /** Extra classes applied to the floating dropdown. */
   dropdownClassName?: string;
 
   // Menu / Popover Overrides
+  /** Visual style of the dropdown menu.
+   *
+   * @default "solid"
+   */
   menuVariant?: Variant;
+  /** Theme accent color of the dropdown menu.
+   *
+   * @default "default"
+   */
   menuColor?: Color;
+  /** Corner rounding of the dropdown menu.
+   *
+   * @default "md"
+   */
   menuRadius?: Radius;
+  /** Density scale of the dropdown menu.
+   *
+   * @default "sm"
+   */
   menuSize?: Size;
 }
 
 // ─── Component Implementation ─────────────────────────────────────────────────
 
+/**
+ * A text input with a filterable suggestion dropdown.
+ *
+ * Autocomplete combines an {@link Input} trigger with a floating
+ * {@link SelectMenu}. Suggestions are filtered as the user types, the
+ * selected value is reported through `onValueChange`, and free-form
+ * values are supported via `allowCustomValue`. Menu tokens resolve
+ * through the standard AsheeUI cascade.
+ *
+ * @param props - Autocomplete configuration options and input props.
+ * @param props.options - Suggestion list.
+ * @param props.value - Controlled selected value.
+ * @param props.onValueChange - Selection callback.
+ * @param props.onInputChange - Raw input change callback.
+ * @param props.allowCustomValue - Allow free-form values. Defaults to
+ *   false.
+ * @param props.belowList - Content below the options list.
+ * @param props.dropdownClassName - Extra dropdown classes.
+ * @param props.menuVariant - Dropdown variant. Defaults to "solid".
+ * @param props.menuColor - Dropdown color. Defaults to "default".
+ * @param props.menuRadius - Dropdown radius. Defaults to "md".
+ * @param props.menuSize - Dropdown density. Defaults to "sm".
+ *
+ * @example
+ * ```tsx
+ * import { Autocomplete } from "asheeui";
+ *
+ * export function Example() {
+ *   return (
+ *     <Autocomplete
+ *       options={[
+ *         { label: "React", value: "react" },
+ *         { label: "Vue", value: "vue" },
+ *         { label: "Svelte", value: "svelte" },
+ *       ]}
+ *       onValueChange={(value) => console.log(value)}
+ *     />
+ *   );
+ * }
+ * ```
+ */
 export const Autocomplete = forwardRef<HTMLInputElement, AutocompleteProps>(
   (
     {
