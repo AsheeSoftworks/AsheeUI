@@ -42,5 +42,6 @@
   "devDependencies": {
     "tsdown": "^0.22.14",
     "vitest": "^3.2.7"
-  }
+  },
+  "license": "MIT"
 }

@@ -1,0 +1,51 @@
+name: Feature request
+description: Propose a new feature or component for AsheeUI
+title: "[Feature]: "
+labels: ["enhancement", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for suggesting a new feature. Describe the problem you are
+        solving and, when possible, sketch the API you have in mind.
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed component or feature
+      description: Describe the new component, prop, or behavior you would like to see.
+      placeholder: A new `<Rating />` component that accepts a `value` and `onValueChange`.
+    validations:
+      required: true
+  - type: textarea
+    id: problem-statement
+    attributes:
+      label: Problem solved / Use case
+      description: What problem does this feature solve, and who benefits from it?
+      placeholder: Users currently have to compose several primitives to render a star rating.
+    validations:
+      required: true
+  - type: textarea
+    id: api-design
+    attributes:
+      label: Design / API ideas or code examples
+      description: Sketch the props, types, or usage examples you have in mind.
+      placeholder: |
+        ```tsx
+        import { Rating } from "asheeui";
+
+        export function Example() {
+          return <Rating value={3} max={5} onValueChange={(v) => console.log(v)} />;
+        }
+        ```
+      render: markdown
+    validations:
+      required: false
+  - type: checkboxes
+    id: confirmations
+    attributes:
+      label: Before submitting
+      options:
+        - label: I searched for an existing issue or discussion about this feature.
+          required: true
+        - label: I am willing to help implement this feature.
+          required: false

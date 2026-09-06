@@ -89,5 +89,6 @@
     "vite": "^6.0.0",
     "vite-plugin-dts": "^4.0.0"
   },
-  "module": "./src/index.ts"
+  "module": "./src/index.ts",
+  "license": "MIT"
 }
