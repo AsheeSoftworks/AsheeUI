@@ -1,5 +1,11 @@
 # @asheeui/next
 
+## 0.3.1
+
+### Patch Changes
+
+- Remove unused packages
+
 ## 0.3.0
 
 ### Minor Changes

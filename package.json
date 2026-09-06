@@ -1,6 +1,18 @@
 {
-  "name": "asheeui-ecosystem",
-  "private": true,
+  "name": "@asheesoftworks/asheeui",
+  "version": "0.1.0",
+  "description": "Accessible and customizable React primitives engineered with Tailwind CSS.",
+  "license": "MIT",
+  "author": "Ashee Softworks asheesoftworks@gmail.com",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/AsheeSoftworks/asheeui.git"
+  },
+  "homepage": "https://asheeui.com",
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
   "scripts": {
     "build": "turbo run build",
     "dev": "turbo run dev",
@@ -26,6 +38,5 @@
     "react": "19.2.8",
     "react-dom": "19.2.8"
   },
-  "packageManager": "pnpm@11.20.0",
-  "license": "MIT"
+  "packageManager": "pnpm@11.20.0"
 }
