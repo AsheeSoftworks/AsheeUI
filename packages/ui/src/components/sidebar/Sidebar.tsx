@@ -304,7 +304,7 @@ export function Sidebar<T = string>({
 
   const inactiveVariantClasses = resolveVariantClass(
     "ghost" as Variant,
-    "default" as Color,
+    "none" as Color,
   );
 
   const resolvedBackButtonVariant = resolveCascade<Variant>(
