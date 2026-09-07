@@ -1,3 +1,13 @@
+/**
+ * CLI command registration for `asheeui fix`.
+ *
+ * This module provides the `registerFixCommand` function that registers
+ * the `fix` subcommand on the commander program. The fix command attempts
+ * to automatically repair issues detected by the doctor command, such as
+ * missing config files, missing CSS imports, missing root provider, and
+ * missing peer dependencies.
+ */
+
 import type { Command } from "commander";
 import type { FixResult } from "../lib/fix/fix";
 import { runFix } from "../lib/fix/fix";

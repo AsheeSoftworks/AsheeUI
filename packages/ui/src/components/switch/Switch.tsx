@@ -1,3 +1,11 @@
+/**
+ * Switch component for AsheeUI.
+ * This file provides the main Switch component implementation, which renders
+ * a toggle switch with label, description, and validation support. It supports
+ * both controlled and uncontrolled usage, and integrates with the FieldShell
+ * for consistent layout and validation handling. Visual tokens resolve through
+ * the standard AsheeUI cascade system.
+ */
 "use client";
 
 import {
@@ -9,8 +17,7 @@ import {
   useState,
 } from "react";
 import { useAsheeConfig } from "../../libs/context";
-import { RADIUS_CLASS, type Radius } from "../../shared/radius";
-import { type Color, resolveVariantClass } from "../../shared/variant";
+import { type Color, RADIUS_CLASS, resolveVariantClass } from "../../shared";
 import { cn } from "../../utils";
 import {
   resolveCascade,
@@ -18,11 +25,7 @@ import {
   resolveRadiusKey,
 } from "../../utils/resolve-token";
 import { FieldShell } from "../field/FieldShell";
-import type {
-  FieldSizeKey,
-  FieldStatus,
-  LabelAlign,
-} from "../field/field-config";
+import type { FieldSizeKey, LabelAlign } from "../field/field-config";
 import { FALLBACK_SWITCH_CONFIG, type SwitchConfig } from "./switch-config";
 import {
   SWITCH_STATUS_BORDER_CLASS,
@@ -33,28 +36,137 @@ import {
 
 // ─── Component Interface ──────────────────────────────────────────────────────
 
-export interface SwitchProps
-  extends Omit<
+type BaseSwitchProps = SwitchConfig &
+  Omit<
     InputHTMLAttributes<HTMLInputElement>,
     "size" | "onChange" | "children" | "color"
-  > {
-  size?: FieldSizeKey;
-  color?: Color;
-  radius?: Radius;
-  status?: FieldStatus;
+  >;
+
+/**
+ * Configuration options for the Switch component.
+ */
+export interface SwitchProps extends BaseSwitchProps {
+  /**
+   * Label text for the switch.
+   * Displayed next to the toggle.
+   */
   label?: string;
-  labelAlign?: LabelAlign;
+
+  /**
+   * Description text shown below the label.
+   * Provides additional context for the switch.
+   */
   description?: string;
+
+  /**
+   * Validation message shown below the switch.
+   * Color is determined by the status prop.
+   */
   message?: string;
+
+  /**
+   * Whether the field is required.
+   * Adds a required indicator to the label.
+   *
+   * @default false
+   */
   required?: boolean;
+
+  /**
+   * Whether the switch is in a loading state.
+   * Disables interaction and shows loading indication.
+   *
+   * @default false
+   */
   isLoading?: boolean;
+
+  /**
+   * Controlled checked state.
+   * When provided, the component becomes controlled.
+   */
   checked?: boolean;
+
+  /**
+   * Uncontrolled initial checked state.
+   * @default false
+   */
   defaultChecked?: boolean;
+
+  /**
+   * Callback fired when the switch state changes.
+   * Receives the new checked state and the change event.
+   */
   onChange?: (checked: boolean, event: ChangeEvent<HTMLInputElement>) => void;
 }
 
 // ─── Component Implementation ─────────────────────────────────────────────────
 
+/**
+ * A toggle switch with label, description, and validation support.
+ *
+ * Switch renders a toggle input that can be checked or unchecked. It
+ * supports controlled and uncontrolled usage, validation states, and
+ * the standard AsheeUI cascade for visual tokens. The component
+ * integrates with FieldShell for label, description, and message
+ * handling.
+ *
+ * The component automatically handles accessibility attributes including
+ * role="switch", aria-checked, aria-invalid, and aria-busy for loading
+ * states. It also supports proper focus management through the native
+ * input element.
+ *
+ * @param props - Switch configuration options.
+ * @param props.label - Label text for the switch.
+ * @param props.description - Description text.
+ * @param props.message - Validation message.
+ * @param props.required - Whether the field is required. Defaults to false.
+ * @param props.isLoading - Loading state. Defaults to false.
+ * @param props.checked - Controlled checked state.
+ * @param props.defaultChecked - Uncontrolled initial checked state. Defaults to false.
+ * @param props.onChange - Callback fired when the switch state changes.
+ * @param props.size - Size scale. Defaults to "md".
+ * @param props.color - Theme accent color. Defaults to "primary".
+ * @param props.radius - Corner rounding. Defaults to "full".
+ * @param props.status - Validation status. Defaults to "default".
+ * @param props.labelAlign - Alignment of the label. Defaults to "left".
+ * @param props.disabled - Whether the switch is disabled.
+ * @param props.className - Extra CSS classes for the switch.
+ * @param props.id - Optional ID for the switch.
+ *
+ * @example
+ * ```tsx
+ * import { Switch } from "asheeui";
+ * import { useState } from "react";
+ *
+ * export function Example() {
+ *   const [checked, setChecked] = useState(false);
+ *
+ *   return (
+ *     <Switch
+ *       label="Enable notifications"
+ *       description="Receive email notifications for updates"
+ *       checked={checked}
+ *       onChange={(checked) => setChecked(checked)}
+ *     />
+ *   );
+ * }
+ * ```
+ *
+ * @example
+ * ```tsx
+ * // With validation
+ * <Switch
+ *   label="Terms accepted"
+ *   status="error"
+ *   message="You must accept the terms to continue"
+ *   required
+ * />
+ * ```
+ *
+ * @see SwitchConfig - The configuration type for component defaults.
+ * @see FieldShell - The wrapper component for label and validation.
+ * @see useAsheeConfig - Hook for accessing the global configuration.
+ */
 export const Switch = forwardRef<HTMLInputElement, SwitchProps>(
   (
     {
@@ -99,7 +211,7 @@ export const Switch = forwardRef<HTMLInputElement, SwitchProps>(
       FALLBACK_SWITCH_CONFIG.size,
     );
 
-    const resolvedColor = resolveCascade<Color>(
+    const resolvedColorKey = resolveCascade<Color>(
       color,
       sectionConfig?.color,
       config.defaultColor,
@@ -150,7 +262,7 @@ export const Switch = forwardRef<HTMLInputElement, SwitchProps>(
       SWITCH_STATUS_BORDER_CLASS[resolvedStatus] ??
       SWITCH_STATUS_BORDER_CLASS.default;
 
-    const checkedColorClass = resolveVariantClass("solid", resolvedColor);
+    const checkedColorClass = resolveVariantClass("solid", resolvedColorKey);
     const isInteractionDisabled = disabled || isLoading;
 
     const handleChange = useCallback(

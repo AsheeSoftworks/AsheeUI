@@ -1,5 +1,40 @@
 # asheeui
 
+## 0.6.3
+
+### Patch Changes
+
+- Standardize component configuration and token resolution across the core
+  `asheeui` package: components inherit their tokens from shared `*Config`
+  types, dropdown menus are wired through the unified `SelectMenu` API, and
+  solid-variant foreground colors are unified for dark-theme contrast.
+  
+  Add new shared `SelectMenuConfig`: added `select-menu-config.ts` with
+    `menuVariant`, `color`, `radius`, and `size` tokens plus
+    `FALLBACK_SELECT_MENU_CONFIG`, exported from the select-menu barrel.
+  
+  CMake `SelectMenu` resolves its own menu tokens: it now accepts `menuProps`
+    and `menuConfig` instead of individual visual props (`variant`, `color`,
+    `radius`, `size`) and applies the resolved tokens to the search input and
+    option buttons consistently.
+  
+  Make`Select`, `MultiSelect`, and `Autocomplete` use the unified `SelectMenu`
+    API: all three pass `menuProps` + `menuConfig` (no more legacy flat menu
+    props on the menu element). `Select` and `MultiSelect` expose a single
+    `menu?: SelectMenuConfig` override bag and delegate token resolution to the
+    menu, and `Autocomplete` forwards its `menu` config section unchanged.
+  
+  Add config inheritance across all components component props now
+    extend their corresponding config type instead of re
+  
+  Standardized token-resolution naming: the shared trigger tokens now use
+    the canonical `resolvedVariantKey`/`resolvedColorKey`/`resolvedRadiusKey`/
+    `resolvedSizeKey` .
+  
+  Add hover states to sharered variant
+  
+  Add detailed commenting and documentation
+
 ## 0.6.2
 
 ### Patch Changes
@@ -134,7 +169,7 @@
   Remove size xl
   Centralize Size, Radius, Color and Variant types in component configs with component-specific aliases
   Add UnderlineRadius helper and enforce radius none when variant is underlined
-  Fix layout gap in `bordered`, `separated`, and `ghost` Accordion variants by removing redundant `overflow-hidden` clipping on item containers.
+  Fix layout gap in `bordered`, `separated`, and `ghost` Accordion variants by removing redundant `overflow-clip` clipping on item containers.
   Add customizable on and off icons to PasswordInput componenet
   Fix overlay and content color missing in Modal component
   Redesigned resize handle and fixed dragging lag in ResizableScreen component

@@ -1,3 +1,11 @@
+/**
+ * CLI command registration for `asheeui list`.
+ *
+ * This module provides the `registerListCommand` function that registers
+ * the `list` subcommand on the commander program. The list command discovers
+ * the asheeui package and prints all available component folders.
+ */
+
 import type { Command } from "commander";
 import {
   discoverComponentFolders,

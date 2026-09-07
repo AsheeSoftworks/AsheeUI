@@ -1,32 +1,17 @@
+/**
+ * Autocomplete component configuration for AsheeUI.
+ * This file defines the configuration types and defaults for the Autocomplete
+ * component, which combines a text input with a filterable suggestion dropdown.
+ * It extends the FieldConfig for label handling and adds menu configuration options.
+ */
+
 import { registerComponentDefaults } from "../../libs/registry";
-import type { Radius } from "../../shared/radius";
-import type { Size } from "../../shared/size";
-import type { Color, Variant } from "../../shared/variant";
 import {
+  defaultFieldConfig,
   FALLBACK_FIELD_CONFIG,
   type FieldConfig,
-  type FieldSizeKey,
 } from "../field/field-config";
-
-/** Density scale used by the autocomplete trigger and menu. */
-export type AutocompleteSizeKey = FieldSizeKey;
-
-/**
- * A single selectable autocomplete suggestion.
- */
-export interface AutocompleteOption {
-  /** Text displayed in the input and in the options list. */
-  label: string;
-  /** Stable identifier returned via `onValueChange`. */
-  value: string | number;
-  /** Disables the option when `true`.
-   *
-   * @default false
-   */
-  disabled?: boolean;
-  /** Allows arbitrary option metadata (e.g. icons, descriptions). */
-  [key: string]: unknown;
-}
+import type { SelectConfig } from "../select";
 
 /**
  * Theme configuration options for the Autocomplete component.
@@ -36,50 +21,11 @@ export interface AutocompleteOption {
  * the AsheeUI config.
  */
 export interface AutocompleteConfig extends FieldConfig {
-  /** Trigger density scale.
-   *
-   * @default "md"
+  /**
+   * Configuration for the dropdown menu that displays suggestions.
+   * Controls the menu's visual appearance and behavior.
    */
-  size?: AutocompleteSizeKey;
-  /** Trigger and menu corner rounding.
-   *
-   * @default "md"
-   */
-  radius?: Radius;
-
-  // Trigger Overrides
-  /** Visual style of the trigger input.
-   *
-   * @default "bordered"
-   */
-  variant?: Variant;
-  /** Theme accent color of the trigger input.
-   *
-   * @default "primary"
-   */
-  color?: Color;
-
-  // Menu Overrides
-  /** Visual style of the dropdown menu.
-   *
-   * @default "solid"
-   */
-  menuVariant?: Variant;
-  /** Theme accent color of the dropdown menu.
-   *
-   * @default "default"
-   */
-  menuColor?: Color;
-  /** Corner rounding of the dropdown menu.
-   *
-   * @default "md"
-   */
-  menuRadius?: Radius;
-  /** Density scale of the dropdown menu.
-   *
-   * @default "sm"
-   */
-  menuSize?: Size;
+  menu?: SelectConfig;
 }
 
 /**
@@ -87,27 +33,14 @@ export interface AutocompleteConfig extends FieldConfig {
  *
  * Inherits field label defaults from `FALLBACK_FIELD_CONFIG`.
  */
-export const defaultAutocompleteConfig: AutocompleteConfig = {
-  size: "md",
-  labelAlign: "left",
-  variant: "bordered",
-};
+export const defaultAutocompleteConfig: AutocompleteConfig = defaultFieldConfig;
 
 /**
  * Hard fallback values used when no config tier provides a value.
+ * These values are used when instance props, component config,
+ * and global defaults are all undefined.
  */
-export const FALLBACK_AUTOCOMPLETE_CONFIG: Required<AutocompleteConfig> = {
-  ...FALLBACK_FIELD_CONFIG,
-  size: "md",
-  radius: "md",
-  variant: "bordered",
-  color: "primary",
-  labelAlign: "left",
-  menuVariant: "solid",
-  menuColor: "secondary",
-  menuRadius: "md",
-  menuSize: "sm",
-};
+export const FALLBACK_AUTOCOMPLETE_CONFIG = FALLBACK_FIELD_CONFIG;
 
 declare module "../../libs/registry" {
   interface ComponentTypeConfigRegistry {

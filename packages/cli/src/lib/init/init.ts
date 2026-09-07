@@ -1,3 +1,10 @@
+/**
+ * Init command runner for AsheeUI CLI.
+ * This module provides the runInit function that executes the full
+ * initialization workflow, including framework detection, file creation,
+ * edits, dependency installation, and integrity verification.
+ */
+
 import { execSync } from "node:child_process";
 import { join } from "node:path";
 import * as p from "@clack/prompts";

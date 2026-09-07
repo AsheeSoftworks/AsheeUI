@@ -1,30 +1,56 @@
-import type { Color } from "../../shared/variant";
+/**
+ * Radio component styles for AsheeUI.
+ * This file provides CSS class mappings for the Radio component's
+ * size, color, gap, and status options.
+ */
+
+import type { Color } from "../../shared";
 import type { FieldSizeKey, FieldStatus } from "../field/field-config";
 
+/**
+ * CSS classes for radio outer circle size.
+ * Controls the diameter of the radio button.
+ */
 export const RADIO_OUTER_SIZE_CLASS: Record<FieldSizeKey, string> = {
   sm: "size-4",
   md: "size-5",
   lg: "size-6",
 };
 
+/**
+ * CSS classes for radio inner dot size.
+ * Controls the diameter of the selected indicator.
+ */
 export const RADIO_INNER_SIZE_CLASS: Record<FieldSizeKey, string> = {
   sm: "size-2",
   md: "size-2.5",
   lg: "size-3",
 };
 
+/**
+ * CSS classes for radio label font size.
+ * Controls the text size of the label and description.
+ */
 export const RADIO_FONT_SIZE_CLASS: Record<FieldSizeKey, string> = {
   sm: "text-xs",
   md: "text-sm",
   lg: "text-base",
 };
 
+/**
+ * CSS classes for radio gap based on size.
+ * Controls the spacing between the radio button and its label.
+ */
 export const RADIO_GAP_CLASS: Record<FieldSizeKey, string> = {
   sm: "gap-2",
   md: "gap-2.5",
   lg: "gap-3",
 };
 
+/**
+ * CSS classes for radio color variants.
+ * Maps color keys to border, background, and card background classes.
+ */
 export const RADIO_COLOR_CLASS: Record<
   Color,
   { border: string; bg: string; cardBg: string }
@@ -61,6 +87,9 @@ export const RADIO_COLOR_CLASS: Record<
   },
 };
 
+/**
+ * CSS classes for radio status border styles.
+ */
 export const RADIO_STATUS_BORDER_CLASS: Record<FieldStatus, string> = {
   default: "border-border",
   error: "border-danger",

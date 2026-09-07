@@ -22,6 +22,7 @@
     "changeset": "changeset",
     "version-packages": "changeset version",
     "release": "turbo run build && changeset publish",
+    "publish": "changeset publish",
     "test": "turbo run test"
   },
   "devDependencies": {

@@ -1,30 +1,55 @@
-import type { Color } from "../../shared/variant";
-import type { TableSizeKey } from "./table-config";
+/**
+ * Table component styles for AsheeUI.
+ * This file provides CSS class mappings for the Table component's
+ * size, color, and variant options.
+ */
 
-export const TABLE_CELL_PADDING_Y_CLASS: Record<TableSizeKey, string> = {
+import type { Color, Size } from "../../shared";
+
+/**
+ * CSS classes for table cell vertical padding.
+ * Maps size keys to Tailwind padding-y classes.
+ */
+export const TABLE_CELL_PADDING_Y_CLASS: Record<Size, string> = {
   sm: "py-1.5",
   md: "py-2.5",
   lg: "py-3.5",
 };
 
-export const TABLE_CELL_PADDING_X_CLASS: Record<TableSizeKey, string> = {
+/**
+ * CSS classes for table cell horizontal padding.
+ * Maps size keys to Tailwind padding-x classes.
+ */
+export const TABLE_CELL_PADDING_X_CLASS: Record<Size, string> = {
   sm: "px-2",
   md: "px-3",
   lg: "px-4",
 };
 
-export const TABLE_FONT_CLASS: Record<TableSizeKey, string> = {
+/**
+ * CSS classes for table body font size.
+ * Maps size keys to Tailwind text size classes.
+ */
+export const TABLE_FONT_CLASS: Record<Size, string> = {
   sm: "text-[0.8125rem]",
   md: "text-sm",
   lg: "text-base",
 };
 
-export const TABLE_HEADER_FONT_CLASS: Record<TableSizeKey, string> = {
+/**
+ * CSS classes for table header font size.
+ * Maps size keys to Tailwind text size classes.
+ */
+export const TABLE_HEADER_FONT_CLASS: Record<Size, string> = {
   sm: "text-xs",
   md: "text-[0.8125rem]",
   lg: "text-sm",
 };
 
+/**
+ * CSS classes for table color styles.
+ * Each color defines styles for selected, hover, and focus states.
+ */
 export const TABLE_COLOR_STYLES: Record<
   Color,
   { selected: string; hover: string; focus: string }

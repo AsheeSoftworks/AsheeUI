@@ -1,3 +1,9 @@
+/**
+ * Doctor report renderer for AsheeUI CLI.
+ * This module provides the renderDoctorReport function that prints a
+ * human-readable summary of doctor check results to the terminal.
+ */
+
 import type { DoctorCheckResult } from "./types";
 
 // Terminal rendering helpers.

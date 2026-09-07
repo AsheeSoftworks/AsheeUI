@@ -1,3 +1,11 @@
+/**
+ * MultiSelect component for AsheeUI.
+ * This file provides the main MultiSelect component implementation, which
+ * renders a multi-select dropdown with search, selected value chips, and
+ * configurable menu and chip styles. It supports both controlled and
+ * uncontrolled selection state, validation states, and the standard
+ * AsheeUI cascade for visual tokens.
+ */
 "use client";
 
 import {
@@ -8,6 +16,7 @@ import {
   useClick,
   useDismiss,
   useFloating,
+  size as floatingSize,
   useInteractions,
   useRole,
 } from "@floating-ui/react";
@@ -23,9 +32,8 @@ import {
 import { ChevronDownIcon } from "../../icons/ChevronDownIcon";
 import { CloseIcon } from "../../icons/CloseIcon";
 import { useAsheeConfig } from "../../libs/context";
-import { RADIUS_CLASS, type Radius } from "../../shared/radius";
-import type { Size } from "../../shared/size";
-import type { Color, Variant } from "../../shared/variant";
+import type { Color, Size, Variant } from "../../shared";
+import { RADIUS_CLASS } from "../../shared";
 import { cn } from "../../utils";
 import {
   resolveCascade,
@@ -35,16 +43,12 @@ import {
 import { Button } from "../button/Button";
 import { Chip } from "../chip/Chip";
 import { FieldShell } from "../field/FieldShell";
-import type {
-  FieldSizeKey,
-  FieldStatus,
-  LabelAlign,
-} from "../field/field-config";
+import type { FieldSizeKey, LabelAlign } from "../field/field-config";
+import type { SelectMenuOption } from "../select-menu";
 import { SelectMenu } from "../select-menu/SelectMenu";
 import {
   FALLBACK_MULTI_SELECT_CONFIG,
   type MultiSelectConfig,
-  type MultiSelectOption,
 } from "./multi-select-config";
 import {
   MULTI_SELECT_FONT_CLASS,
@@ -55,55 +59,199 @@ import {
 
 // ─── Props Interface ──────────────────────────────────────────────────────────
 
-export interface MultiSelectProps
-  extends Omit<HTMLAttributes<HTMLDivElement>, "onChange"> {
-  options: MultiSelectOption[];
+type BaseMultiSelectProps = MultiSelectConfig &
+  Omit<HTMLAttributes<HTMLDivElement>, "color" | "size" | "onChange">;
+
+/**
+ * Configuration options for the MultiSelect component.
+ */
+export interface MultiSelectProps extends BaseMultiSelectProps {
+  /**
+   * Available options to select from.
+   * Each option must have a label and a unique value.
+   */
+  options: SelectMenuOption[];
+
+  /**
+   * Controlled selected values.
+   * Array of selected option values.
+   */
   value?: (string | number)[];
+
+  /**
+   * Callback fired when the selection changes.
+   * Receives the updated array of selected values.
+   */
   onChange?: (values: (string | number)[]) => void;
+
+  /**
+   * Label shown in the trigger when no items are selected.
+   * @default "Select Options..."
+   */
   InputLabel?: string;
+
+  /**
+   * Whether search input is shown in the dropdown.
+   * @default true
+   */
   isSearch?: boolean;
+
+  /**
+   * Placeholder text for the search input.
+   * @default "Search..."
+   */
   searchPlaceholder?: string;
+
+  /**
+   * Name attribute for the search input.
+   * @default "multiselect-search"
+   */
   searchInputName?: string;
+
+  /**
+   * Content rendered below the options list.
+   */
   belowList?: ReactNode;
 
-  // Custom/Legacy Chip Handlers
-  chipOptions?: MultiSelectOption[];
+  /**
+   * Custom chip options for legacy or external control.
+   * When provided, this overrides the derived chips from value.
+   */
+  chipOptions?: SelectMenuOption[];
+
+  /**
+   * Custom handler for removing a chip.
+   * For legacy or external control patterns.
+   */
   handleRemoveChip?: (id: string | number) => void;
-  handleAddChip?: (item: MultiSelectOption) => void;
+
+  /**
+   * Custom handler for adding a chip.
+   * For legacy or external control patterns.
+   */
+  handleAddChip?: (item: SelectMenuOption) => void;
+
+  /**
+   * Label shown above the chip list.
+   */
   chipLabel?: string;
+
+  /**
+   * Whether to hide the chip display section.
+   * @default false
+   */
   disableChipDisplay?: boolean;
 
-  // Chip Specific Overrides
-  chipVariant?: Variant;
-  chipColor?: Color;
-  chipRadius?: Radius;
-  chipSize?: Size;
-
-  // Menu Overrides
-  menuVariant?: Variant;
-  menuColor?: Color;
-  menuRadius?: Radius;
-  menuSize?: Size;
-
-  // Styling & Tokens
-  variant?: Variant;
-  color?: Color;
-  size?: FieldSizeKey;
-  radius?: Radius;
-  status?: FieldStatus;
+  /**
+   * Label text for the field.
+   */
   label?: string;
-  labelAlign?: LabelAlign;
+
+  /**
+   * Description text shown below the label.
+   */
   description?: string;
+
+  /**
+   * Validation message shown below the field.
+   */
   message?: string;
+
+  /**
+   * Whether the field is required.
+   * @default false
+   */
   required?: boolean;
+
+  /**
+   * Whether the field is in a loading state.
+   * @default false
+   */
   isLoading?: boolean;
+
+  /**
+   * Whether the field is disabled.
+   * @default false
+   */
   disabled?: boolean;
+
+  /**
+   * Extra classes for the container.
+   */
   containerClassName?: string;
+
+  /**
+   * Extra classes for the dropdown.
+   */
   dropdownClassName?: string;
 }
 
 // ─── Component Implementation ─────────────────────────────────────────────────
 
+/**
+ * A multi-select dropdown with search, chips, and configurable styles.
+ *
+ * MultiSelect renders a dropdown that allows selecting multiple options
+ * from a list. Selected options are displayed as chips below the trigger.
+ * It supports search filtering, controlled selection state, validation
+ * states, and custom menu and chip styles. Visual tokens resolve through
+ * the standard AsheeUI cascade system.
+ *
+ * The component uses Floating UI for positioning and accessibility,
+ * and integrates with the FieldShell for consistent label and validation
+ * handling.
+ *
+ * @param props - MultiSelect configuration options.
+ * @param props.options - Available options to select from.
+ * @param props.value - Controlled selected values.
+ * @param props.onChange - Callback fired when selection changes.
+ * @param props.InputLabel - Label shown in trigger. Defaults to "Select Options...".
+ * @param props.isSearch - Whether search is enabled. Defaults to true.
+ * @param props.searchPlaceholder - Search placeholder. Defaults to "Search...".
+ * @param props.belowList - Content below the options list.
+ * @param props.label - Field label text.
+ * @param props.description - Description text.
+ * @param props.message - Validation message.
+ * @param props.required - Whether the field is required.
+ * @param props.isLoading - Loading state.
+ * @param props.disabled - Disabled state.
+ * @param props.size - Size of the trigger. Defaults to "md".
+ * @param props.radius - Corner rounding. Defaults to "md".
+ * @param props.variant - Visual style variant. Defaults to "bordered".
+ * @param props.color - Theme accent color. Defaults to "primary".
+ * @param props.status - Validation status.
+ * @param props.labelAlign - Alignment of the label. Defaults to "left".
+ *
+ * @example
+ * ```tsx
+ * import { MultiSelect } from "asheeui";
+ * import { useState } from "react";
+ *
+ * export function Example() {
+ *   const [values, setValues] = useState<(string | number)[]>([]);
+ *
+ *   const options = [
+ *     { label: "React", value: "react" },
+ *     { label: "Vue", value: "vue" },
+ *     { label: "Svelte", value: "svelte" },
+ *   ];
+ *
+ *   return (
+ *     <MultiSelect
+ *       options={options}
+ *       value={values}
+ *       onChange={setValues}
+ *       label="Select Frameworks"
+ *       InputLabel="Choose frameworks..."
+ *     />
+ *   );
+ * }
+ * ```
+ *
+ * @see MultiSelectConfig - The configuration type for component defaults.
+ * @see SelectMenu - The dropdown menu component.
+ * @see FieldShell - The wrapper component for label and validation.
+ */
 export const MultiSelect = forwardRef<HTMLButtonElement, MultiSelectProps>(
   (
     {
@@ -120,14 +268,6 @@ export const MultiSelect = forwardRef<HTMLButtonElement, MultiSelectProps>(
       handleAddChip,
       chipLabel,
       disableChipDisplay = false,
-      chipVariant,
-      chipColor,
-      chipRadius,
-      chipSize,
-      menuVariant,
-      menuColor,
-      menuRadius,
-      menuSize,
       variant,
       color,
       size,
@@ -144,15 +284,15 @@ export const MultiSelect = forwardRef<HTMLButtonElement, MultiSelectProps>(
       dropdownClassName,
       id,
       className,
+      menu,
+      chip,
       style,
       ...props
     },
     ref,
   ) => {
     const config = useAsheeConfig();
-    const sectionConfig = config.components?.multiSelect as
-      | MultiSelectConfig
-      | undefined;
+    const sectionConfig = config.components?.multiSelect;
 
     const generatedId = useId();
     const fieldId = id ?? generatedId;
@@ -165,7 +305,18 @@ export const MultiSelect = forwardRef<HTMLButtonElement, MultiSelectProps>(
       onOpenChange: (open) => !disabled && setIsOpen(open),
       placement: "bottom-start",
       whileElementsMounted: autoUpdate,
-      middleware: [offset(4), flip(), shift({ padding: 8 })],
+      middleware: [
+        offset(4),
+        flip(),
+        shift({ padding: 8 }),
+        floatingSize({
+          apply({ availableHeight, elements }) {
+            Object.assign(elements.floating.style, {
+              maxHeight: `${availableHeight}px`,
+            });
+          },
+        }),
+      ],
     });
 
     const click = useClick(context, { enabled: !disabled });
@@ -186,17 +337,17 @@ export const MultiSelect = forwardRef<HTMLButtonElement, MultiSelectProps>(
       FALLBACK_MULTI_SELECT_CONFIG.size,
     );
 
-    const resolvedVariant = resolveCascade<Variant>(
+    const resolvedVariantKey = resolveCascade<Variant>(
       variant,
       sectionConfig?.variant,
       config.defaultVariant,
       FALLBACK_MULTI_SELECT_CONFIG.variant,
     );
 
-    const resolvedColor = resolveCascade<Color>(
+    const resolvedColorKey = resolveCascade<Color>(
       color,
       sectionConfig?.color,
-      config.defaultColor as Color | undefined,
+      config.defaultColor,
       FALLBACK_MULTI_SELECT_CONFIG.color,
     );
 
@@ -207,62 +358,26 @@ export const MultiSelect = forwardRef<HTMLButtonElement, MultiSelectProps>(
       FALLBACK_MULTI_SELECT_CONFIG.radius,
     );
 
-    // Menu Token Resolvers
-    const resolvedMenuVariant = resolveCascade<Variant>(
-      menuVariant,
-      sectionConfig?.menuVariant,
-      resolvedVariant,
-      FALLBACK_MULTI_SELECT_CONFIG.variant,
-    );
-
-    const resolvedMenuColor = resolveCascade<Color>(
-      menuColor,
-      sectionConfig?.menuColor,
-      resolvedColor,
-      FALLBACK_MULTI_SELECT_CONFIG.color,
-    );
-
-    const resolvedMenuSize = resolveCascade<Size>(
-      menuSize,
-      sectionConfig?.menuSize,
-      undefined,
-      FALLBACK_MULTI_SELECT_CONFIG.menuSize,
-    );
-
-    const resolvedMenuRadiusKey = resolveRadiusKey(
-      menuRadius,
-      sectionConfig?.menuRadius,
-      resolvedRadiusKey,
-      FALLBACK_MULTI_SELECT_CONFIG.radius,
-    );
-
-    // Chip Token Resolvers
-    const resolvedChipVariant = resolveCascade<Variant>(
-      chipVariant,
-      sectionConfig?.chipVariant,
-      resolvedVariant,
-      FALLBACK_MULTI_SELECT_CONFIG.variant,
-    );
-
+    // Chip Token Resolvers (chip override bag → component config → resolved tokens)
     const resolvedChipColor = resolveCascade<Color>(
-      chipColor,
-      sectionConfig?.chipColor,
-      resolvedColor,
-      FALLBACK_MULTI_SELECT_CONFIG.color,
+      chip?.color,
+      sectionConfig?.chip?.color,
+      resolvedColorKey,
+      FALLBACK_MULTI_SELECT_CONFIG.chip.color,
     );
 
     const resolvedChipSize = resolveCascade<Size>(
-      chipSize,
-      sectionConfig?.chipSize,
+      chip?.size,
+      sectionConfig?.chip?.size,
       undefined,
-      FALLBACK_MULTI_SELECT_CONFIG.chipSize,
+      FALLBACK_MULTI_SELECT_CONFIG.chip.size,
     );
 
     const resolvedChipRadiusKey = resolveRadiusKey(
-      chipRadius,
-      sectionConfig?.chipRadius,
+      chip?.radius,
+      sectionConfig?.chip?.radius,
       resolvedRadiusKey,
-      FALLBACK_MULTI_SELECT_CONFIG.radius,
+      FALLBACK_MULTI_SELECT_CONFIG.chip.radius,
     );
 
     const resolvedStatus = status ?? "default";
@@ -273,7 +388,7 @@ export const MultiSelect = forwardRef<HTMLButtonElement, MultiSelectProps>(
           ? "success"
           : resolvedStatus === "warning"
             ? "warning"
-            : resolvedColor;
+            : resolvedColorKey;
     const resolvedLabelAlign = resolveCascade<LabelAlign>(
       labelAlign,
       sectionConfig?.labelAlign,
@@ -304,7 +419,7 @@ export const MultiSelect = forwardRef<HTMLButtonElement, MultiSelectProps>(
     const chipRadiusClass = resolveClassKey(
       resolvedChipRadiusKey,
       RADIUS_CLASS,
-      FALLBACK_MULTI_SELECT_CONFIG.radius,
+      FALLBACK_MULTI_SELECT_CONFIG.chip.radius,
     );
 
     // Controlled or Custom Chip Selection Determination
@@ -324,7 +439,7 @@ export const MultiSelect = forwardRef<HTMLButtonElement, MultiSelectProps>(
     );
 
     const handleSelectOption = useCallback(
-      (option: MultiSelectOption) => {
+      (option: SelectMenuOption) => {
         const selected = isOptionSelected(option.value);
 
         if (handleAddChip || handleRemoveChip) {
@@ -381,7 +496,7 @@ export const MultiSelect = forwardRef<HTMLButtonElement, MultiSelectProps>(
                   (ref as React.RefObject<HTMLButtonElement | null>).current =
                     node;
               }}
-              variant={resolvedVariant}
+              variant={resolvedVariantKey}
               color={resolvedStatusColor}
               radius={resolvedRadiusKey}
               animate={false}
@@ -429,10 +544,8 @@ export const MultiSelect = forwardRef<HTMLButtonElement, MultiSelectProps>(
               onSearchChange={setSearchQuery}
               belowList={belowList}
               dropdownClassName={dropdownClassName}
-              variant={resolvedMenuVariant}
-              color={resolvedMenuColor}
-              size={resolvedMenuSize}
-              radius={resolvedMenuRadiusKey}
+              menuProps={menu}
+              menuConfig={sectionConfig?.menu}
             />
           </div>
 
@@ -453,11 +566,7 @@ export const MultiSelect = forwardRef<HTMLButtonElement, MultiSelectProps>(
                   activeChips.map((chip) => (
                     <Chip
                       key={String(chip.value)}
-                      variant={
-                        resolvedChipVariant === "underlined"
-                          ? "bordered"
-                          : "bordered"
-                      }
+                      variant="bordered"
                       color={resolvedChipColor}
                       size={resolvedChipSize}
                       isDisabled={disabled}

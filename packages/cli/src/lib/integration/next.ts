@@ -1,3 +1,10 @@
+/**
+ * Next.js integration builder for AsheeUI CLI.
+ * This module provides the buildNextIntegration function that generates
+ * all file writes, edits, and integrity checks required to wire AsheeUI
+ * into a Next.js project (both App Router and Pages Router).
+ */
+
 import { join } from "node:path";
 import { STYLES_IMPORT_MARKER } from "../../utils/audit";
 import { pathExists } from "../common/file-utils";

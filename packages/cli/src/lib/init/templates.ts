@@ -1,3 +1,9 @@
+/**
+ * Template rendering utilities for AsheeUI CLI init command.
+ * This module provides functions for generating provider wrapper content
+ * and default configuration files.
+ */
+
 import type { IntegrityCheck } from "../common/types";
 
 /**

@@ -1,3 +1,11 @@
+/**
+ * Marquee component for AsheeUI.
+ * This file provides the main Marquee component implementation, which renders
+ * an animated scrolling container that displays content in a continuous loop.
+ * It supports horizontal and vertical scrolling, configurable speed, direction,
+ * gap, pause on hover, and edge fading effects. Visual tokens resolve through
+ * the standard AsheeUI cascade system.
+ */
 "use client";
 
 import { forwardRef, isValidElement, type ReactNode, useMemo } from "react";
@@ -17,18 +25,88 @@ import {
   MARQUEE_SPEED_PRESETS,
 } from "./marquee-styles";
 
-export interface MarqueeProps
-  extends Omit<React.HTMLAttributes<HTMLDivElement>, "children"> {
+type BaseMarqueeProps = MarqueeConfig &
+  Omit<React.HTMLAttributes<HTMLDivElement>, "children">;
+
+/**
+ * Configuration options for the Marquee component.
+ */
+export interface MarqueeProps extends BaseMarqueeProps {
+  /**
+   * The content to display in the marquee.
+   * An array of React nodes that will be repeated for continuous scrolling.
+   */
   children: ReactNode[];
-  axis?: MarqueeAxis;
-  direction?: MarqueeDirection;
-  speed?: MarqueeSpeedPreset | number;
-  gap?: string;
-  pauseOnHover?: boolean;
-  fadeEdges?: boolean;
+
+  /**
+   * Extra classes applied to each item.
+   */
   itemClassName?: string;
 }
 
+/**
+ * An animated scrolling container that displays content in a continuous loop.
+ *
+ * Marquee renders its children in a horizontal or vertical scrolling animation
+ * that loops infinitely. It duplicates the content to create a seamless effect,
+ * and supports configurable speed, direction, gap, pause on hover, and edge
+ * fading.
+ *
+ * The component uses CSS keyframe animations for performance and smooth
+ * scrolling. It automatically handles the duplication of content to create
+ * the infinite scroll effect.
+ *
+ * @param props - Marquee configuration options and HTML div props.
+ * @param props.children - An array of React nodes to display.
+ * @param props.axis - The axis of the marquee. Defaults to "x".
+ * @param props.direction - The scroll direction. Defaults to "forward".
+ * @param props.speed - The animation speed. Defaults to "normal".
+ * @param props.gap - The gap between items. Defaults to "1.5rem".
+ * @param props.pauseOnHover - Whether to pause on hover. Defaults to false.
+ * @param props.fadeEdges - Whether to fade edges. Defaults to false.
+ * @param props.itemClassName - Extra classes for each item.
+ * @param props.className - Extra classes for the container.
+ *
+ * @example
+ * ```tsx
+ * import { Marquee } from "asheeui";
+ *
+ * export function Example() {
+ *   const logos = [
+ *     <div key="1">Logo 1</div>,
+ *     <div key="2">Logo 2</div>,
+ *     <div key="3">Logo 3</div>,
+ *   ];
+ *
+ *   return (
+ *     <Marquee
+ *       speed="slow"
+ *       gap="2rem"
+ *       pauseOnHover
+ *       fadeEdges
+ *     >
+ *       {logos}
+ *     </Marquee>
+ *   );
+ * }
+ * ```
+ *
+ * @example
+ * ```tsx
+ * // Vertical marquee
+ * <Marquee
+ *   axis="y"
+ *   direction="reverse"
+ *   speed={20}
+ *   gap="1rem"
+ * >
+ *   {items}
+ * </Marquee>
+ * ```
+ *
+ * @see MarqueeConfig - The configuration type for component defaults.
+ * @see useAsheeConfig - Hook for accessing the global configuration.
+ */
 export const Marquee = forwardRef<HTMLDivElement, MarqueeProps>(
   (
     {
@@ -46,9 +124,7 @@ export const Marquee = forwardRef<HTMLDivElement, MarqueeProps>(
     ref,
   ) => {
     const config = useAsheeConfig();
-    const sectionConfig = config.components?.marquee as
-      | MarqueeConfig
-      | undefined;
+    const sectionConfig = config.components?.marquee;
 
     // ─── 1. Token Resolvers ──────────────────────────────────────────────────
 
@@ -142,7 +218,7 @@ export const Marquee = forwardRef<HTMLDivElement, MarqueeProps>(
       <div
         ref={ref}
         className={cn(
-          "group relative overflow-hidden",
+          "group relative overflow-clip",
           isVertical ? "h-full" : "w-full",
           className,
         )}

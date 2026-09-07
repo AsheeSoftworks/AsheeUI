@@ -1,13 +1,23 @@
+/**
+ * Button component for AsheeUI.
+ * This file provides the main Button component implementation, which renders
+ * a clickable element that triggers actions or events. It supports multiple
+ * visual variants, theme colors, density and radius scales, icon-only mode,
+ * loading state, and press animation. The component uses the cascade resolution
+ * system for its visual tokens and follows AsheeUI's accessibility patterns.
+ */
 "use client";
 
-import { forwardRef, type MouseEvent, type ReactNode } from "react";
+import { forwardRef, type MouseEvent } from "react";
 import { useAsheeConfig } from "../../libs/context";
-import { RADIUS_CLASS, UnderlineRadius } from "../../shared/radius";
+import type { Size } from "../../shared";
 import {
   type Color,
+  RADIUS_CLASS,
   resolveVariantClass,
+  UnderlineRadius,
   type Variant,
-} from "../../shared/variant";
+} from "../../shared";
 import { cn } from "../../utils";
 import {
   resolveCascade,
@@ -15,87 +25,54 @@ import {
   resolveRadiusKey,
 } from "../../utils/resolve-token";
 import { Spinner } from "../spinner/spinner";
-import {
-  type ButtonConfig,
-  type ButtonRadiusKey,
-  type ButtonSizeKey,
-  FALLBACK_BUTTON_CONFIG,
-} from "./button-config";
+import { type ButtonConfig, FALLBACK_BUTTON_CONFIG } from "./button-config";
 import { BUTTON_ICON_SIZE_CLASS, BUTTON_SIZE_CLASS } from "./button-styles";
 
 /**
  * Visual and behavioural options shared by button-like elements.
+ * This type combines the ButtonConfig with native button HTML attributes.
  */
-export interface ButtonCommonProps {
-  /** Visual style variant.
-   *
-   * @default "bordered"
-   */
-  variant?: Variant;
-  /** Theme accent color.
-   *
-   * @default "primary"
-   */
-  color?: Color;
-  /** Padding and font-size scale.
-   *
-   * @default "md"
-   */
-  size?: ButtonSizeKey;
-  /** Corner rounding.
-   *
-   * @default "md"
-   */
-  radius?: ButtonRadiusKey;
-  /** Enables the press-down scale animation.
-   *
-   * @default true
-   */
-  animate?: boolean;
-  /** Makes the button stretch to fill its parent width.
-   *
-   * @default false
-   */
-  fullWidth?: boolean;
-  /** Disables pointer events and dims the button.
-   *
-   * @default false
-   */
-  isDisabled?: boolean;
-  /** Shows a loading spinner and blocks interaction.
-   *
-   * @default false
-   */
-  isLoading?: boolean;
-  /** Extra classes merged with internal styles. */
-  className?: string;
-}
-
-type CleanButtonProps = Omit<
-  React.ButtonHTMLAttributes<HTMLButtonElement>,
-  "color" | "disabled" | "className" | "children"
->;
+export type BaseButtonProps = ButtonConfig &
+  Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, "color" | "disabled">;
 
 /**
  * Configuration options for the Button component.
  *
  * @see {@link ButtonCommonProps} for the shared visual props.
  */
-type ButtonProps = ButtonCommonProps &
-  CleanButtonProps & {
-    /** Native button type.
-     *
-     * @default "button"
-     */
-    type?: "button" | "submit" | "reset";
-    /** Switches to the compact icon-only layout.
-     *
-     * @default false
-     */
-    icon?: boolean;
-    /** Button label content. */
-    children?: ReactNode;
-  };
+interface ButtonProps extends BaseButtonProps {
+  /**
+   * Whether the button is in a disabled state.
+   * Disabled buttons cannot be interacted with and appear dimmed.
+   *
+   * @default false
+   */
+  isDisabled?: boolean;
+
+  /**
+   * Shows a loading spinner and blocks interaction.
+   * When true, the button displays a spinner and prevents clicks.
+   *
+   * @default false
+   */
+  isLoading?: boolean;
+
+  /**
+   * Native button type.
+   * Controls the button's behavior in forms.
+   *
+   * @default "button"
+   */
+  type?: "button" | "submit" | "reset";
+
+  /**
+   * Switches to the compact icon-only layout.
+   * When true, the button becomes square and removes text padding.
+   *
+   * @default false
+   */
+  icon?: boolean;
+}
 
 /**
  * A clickable element that triggers an action or event.
@@ -104,6 +81,10 @@ type ButtonProps = ButtonCommonProps &
  * radius scales, icon-only mode, loading state, and a press animation.
  * Visual tokens resolve through the standard AsheeUI cascade: prop,
  * component config, global theme defaults, and the built-in fallback.
+ *
+ * The component automatically handles accessibility attributes including
+ * aria-disabled, aria-busy for loading states, and proper focus management.
+ * Icon-only buttons should provide an aria-label for accessibility.
  *
  * @param props - Button configuration options and native button props.
  * @param props.variant - Visual style variant. Defaults to "bordered".
@@ -117,6 +98,7 @@ type ButtonProps = ButtonCommonProps &
  * @param props.type - Native button type. Defaults to "button".
  * @param props.icon - Icon-only compact layout. Defaults to false.
  * @param props.children - Button label content.
+ * @param props.className - Extra CSS classes for the button.
  *
  * @example
  * ```tsx
@@ -134,6 +116,23 @@ type ButtonProps = ButtonCommonProps &
  *   );
  * }
  * ```
+ *
+ * @example
+ * ```tsx
+ * // Icon-only button with loading state
+ * <Button
+ *   icon
+ *   isLoading
+ *   aria-label="Refresh content"
+ *   onClick={handleRefresh}
+ * >
+ *   <RefreshIcon />
+ * </Button>
+ * ```
+ *
+ * @see ButtonConfig - The configuration type for component defaults.
+ * @see resolveVariantClass - Utility for resolving variant and color styles.
+ * @see useAsheeConfig - Hook for accessing the global configuration.
  */
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
   (props, ref) => {
@@ -155,9 +154,9 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     } = props;
 
     const config = useAsheeConfig();
-    const sectionConfig = config.components?.button as ButtonConfig | undefined;
+    const sectionConfig = config.components?.button;
 
-    const resolvedVariant = resolveCascade<Variant>(
+    const resolvedVariantKey = resolveCascade<Variant>(
       variant,
       sectionConfig?.variant,
       config.defaultVariant,
@@ -171,7 +170,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       FALLBACK_BUTTON_CONFIG.color,
     );
 
-    const resolvedSizeKey = resolveCascade<ButtonSizeKey>(
+    const resolvedSizeKey = resolveCascade<Size>(
       size,
       sectionConfig?.size,
       undefined,
@@ -221,12 +220,12 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       resolvedFullWidth && "w-full",
       resolvedAnimate &&
         "motion-safe:transition-transform motion-safe:duration-100 motion-safe:active:scale-[0.99]",
-      resolveVariantClass(resolvedVariant, resolvedColor),
+      resolveVariantClass(resolvedVariantKey, resolvedColor),
       sizeClasses,
       resolveClassKey(
-        UnderlineRadius(resolvedVariant, resolvedRadiusKey),
+        UnderlineRadius(resolvedVariantKey, resolvedRadiusKey),
         RADIUS_CLASS,
-        UnderlineRadius(resolvedVariant, FALLBACK_BUTTON_CONFIG.radius),
+        UnderlineRadius(resolvedVariantKey, FALLBACK_BUTTON_CONFIG.radius),
       ),
       className,
     );

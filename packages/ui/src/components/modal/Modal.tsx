@@ -1,3 +1,10 @@
+/**
+ * Modal component for AsheeUI.
+ * This file provides the main Modal component implementation, which renders
+ * a dialog overlay with backdrop, scroll locking, animation, and configurable
+ * positioning. It supports size, position, radius, animation, and behavior
+ * options that resolve through the standard AsheeUI cascade system.
+ */
 "use client";
 
 import {
@@ -7,7 +14,7 @@ import {
   useState,
 } from "react";
 import { useAsheeConfig } from "../../libs/context";
-import { RADIUS_CLASS, type Radius } from "../../shared/radius";
+import { RADIUS_CLASS, type Radius } from "../../shared";
 import { cn } from "../../utils";
 import {
   resolveCascade,
@@ -20,64 +27,141 @@ import {
   type ModalPosition,
   type ModalSizeKey,
 } from "./modal-config";
-import {
-  MODAL_MAX_WIDTH_CLASS,
-  MODAL_PADDING_CLASS,
-  MODAL_POSITION_CLASS,
-} from "./modal-styles";
+import { MODAL_MAX_WIDTH_CLASS, MODAL_POSITION_CLASS } from "./modal-styles";
 
-export interface ModalProps
-  extends Omit<HTMLAttributes<HTMLDivElement>, "size"> {
-  /** Controls open visibility state. */
+type BaseModalProps = ModalConfig &
+  Omit<HTMLAttributes<HTMLDivElement>, "size">;
+
+/**
+ * Configuration options for the Modal component.
+ */
+export interface ModalProps extends BaseModalProps {
+  /**
+   * Controls open visibility state.
+   * When true, the modal is rendered and visible.
+   */
   isOpen: boolean;
 
-  /** Close event callback. */
+  /**
+   * Close event callback.
+   * Called when the modal should close (backdrop click, Escape key).
+   */
   onClose?: () => void;
 
-  /** Modal inner content. */
+  /**
+   * Modal inner content.
+   * The content to display inside the modal.
+   */
   children: ReactNode;
 
-  /** Modal content width override. */
+  /**
+   * Modal content width override.
+   * Accepts any CSS width value (e.g., "500px", "80%").
+   * Overrides the size prop.
+   */
   width?: string;
 
-  /** Modal content height override. */
+  /**
+   * Modal content height override.
+   * Accepts any CSS height value (e.g., "400px", "auto").
+   */
   height?: string;
 
-  /** Padding token or CSS string override. */
-  padding?: string;
-
-  /** Modal size scale token key. */
-  size?: ModalSizeKey;
-
-  /** Vertical placement position. */
-  position?: ModalPosition;
-
-  /** Radius scale token for modal content box. */
-  radius?: Radius;
-
-  /** Enable/disable pop animation. Default: true */
-  animated?: boolean;
-
-  /** Close modal when clicking dark backdrop overlay. Default: true. */
-  closeOnBackdropClick?: boolean;
-
-  /** Close modal on Escape key press. Default: true. */
-  closeOnEscape?: boolean;
-
-  /** Backdrop overlay custom class name. */
+  /**
+   * Backdrop overlay custom class name.
+   * Extra classes applied to the backdrop element.
+   */
   overlayClassName?: string;
 
-  /** Content container custom class name. */
+  /**
+   * Content container custom class name.
+   * Extra classes applied to the modal content container.
+   */
   contentClassName?: string;
 }
 
+/**
+ * A dialog overlay with backdrop, scroll locking, and configurable animations.
+ *
+ * Modal renders a dialog that appears over the page content with a backdrop.
+ * It supports size, position, radius, animation, and behavior options. The
+ * component automatically locks body scroll when open, handles Escape key
+ * dismissal, and supports click-outside-to-close functionality.
+ *
+ * The modal manages its own animation states using a two-phase rendering
+ * approach: it renders the modal with an enter animation when opened, and
+ * plays an exit animation before removing from the DOM when closed.
+ *
+ * Visual tokens resolve through the standard AsheeUI cascade: prop,
+ * component config, global theme defaults, and the built-in fallback.
+ *
+ * @param props - Modal configuration options and HTML div props.
+ * @param props.isOpen - Whether the modal is open.
+ * @param props.onClose - Callback fired when the modal should close.
+ * @param props.size - Size of the modal. Defaults to "md".
+ * @param props.position - Position of the modal. Defaults to "center".
+ * @param props.radius - Corner rounding. Defaults to "lg".
+ * @param props.animated - Whether the modal has animations. Defaults to true.
+ * @param props.closeOnBackdropClick - Whether clicking the backdrop closes the modal. Defaults to true.
+ * @param props.closeOnEscape - Whether pressing Escape closes the modal. Defaults to true.
+ * @param props.width - Width override for the modal.
+ * @param props.height - Height override for the modal.
+ * @param props.overlayClassName - Extra classes for the backdrop.
+ * @param props.contentClassName - Extra classes for the content container.
+ * @param props.children - The modal content.
+ *
+ * @example
+ * ```tsx
+ * import { Modal, Button } from "asheeui";
+ * import { useState } from "react";
+ *
+ * export function Example() {
+ *   const [isOpen, setIsOpen] = useState(false);
+ *
+ *   return (
+ *     <>
+ *       <Button onClick={() => setIsOpen(true)}>Open Modal</Button>
+ *       <Modal
+ *         isOpen={isOpen}
+ *         onClose={() => setIsOpen(false)}
+ *         size="lg"
+ *         position="center"
+ *       >
+ *         <div className="p-6">
+ *           <h2 className="text-xl font-bold">Modal Title</h2>
+ *           <p className="mt-2">Modal content goes here.</p>
+ *           <Button onClick={() => setIsOpen(false)}>Close</Button>
+ *         </div>
+ *       </Modal>
+ *     </>
+ *   );
+ * }
+ * ```
+ *
+ * @example
+ * ```tsx
+ * // Top-positioned modal with custom width
+ * <Modal
+ *   isOpen={isOpen}
+ *   onClose={onClose}
+ *   position="top"
+ *   width="600px"
+ *   radius="md"
+ *   closeOnBackdropClick={false}
+ * >
+ *   {content}
+ * </Modal>
+ * ```
+ *
+ * @see ModalConfig - The configuration type for component defaults.
+ * @see useAsheeConfig - Hook for accessing the global configuration.
+ */
 export function Modal({
   isOpen,
   onClose,
   children,
   width,
   height,
-  padding,
   size,
   position: positionProp,
   radius,
@@ -148,14 +232,6 @@ export function Modal({
     : resolveClassKey(
         resolvedSizeKey,
         MODAL_MAX_WIDTH_CLASS,
-        FALLBACK_MODAL_CONFIG.size,
-      );
-
-  const paddingClass = padding
-    ? ""
-    : resolveClassKey(
-        resolvedSizeKey,
-        MODAL_PADDING_CLASS,
         FALLBACK_MODAL_CONFIG.size,
       );
 
@@ -251,7 +327,6 @@ export function Modal({
           "relative z-10 w-full bg-background text-foreground overflow-y-auto max-h-[90vh]",
           positionClass,
           widthClass,
-          paddingClass,
           radiusClass,
           contentClassNameProp,
           getModalAnimation(),
@@ -260,7 +335,6 @@ export function Modal({
         style={{
           width,
           height,
-          ...(padding ? { padding } : {}),
           ...style,
         }}
         {...props}>

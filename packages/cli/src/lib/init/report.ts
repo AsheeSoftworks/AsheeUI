@@ -1,4 +1,10 @@
 /**
+ * Result reporter for AsheeUI CLI init command.
+ * This module provides the reportResult function that prints write/edit
+ * outcomes to the CLI and collects failures for the final summary.
+ */
+
+/**
  * Report a single write/edit result in the CLI output and collect failures.
  *
  * Successful file paths are recorded for the final `InitResult`; edits

@@ -1,5 +1,15 @@
+/**
+ * Modal component styles for AsheeUI.
+ * This file provides CSS class mappings for the Modal component's
+ * size and position options.
+ */
+
 import type { ModalPosition, ModalSizeKey } from "./modal-config";
 
+/**
+ * CSS classes for modal maximum width based on size.
+ * Controls the width constraint of the modal content.
+ */
 export const MODAL_MAX_WIDTH_CLASS: Record<ModalSizeKey, string> = {
   sm: "max-w-sm",
   md: "max-w-lg",
@@ -8,14 +18,10 @@ export const MODAL_MAX_WIDTH_CLASS: Record<ModalSizeKey, string> = {
   full: "max-w-[calc(100vw-2rem)]",
 };
 
-export const MODAL_PADDING_CLASS: Record<ModalSizeKey, string> = {
-  sm: "p-5",
-  md: "p-6",
-  lg: "p-7",
-  xl: "p-8",
-  full: "p-8",
-};
-
+/**
+ * CSS classes for modal position.
+ * Controls the vertical alignment of the modal.
+ */
 export const MODAL_POSITION_CLASS: Record<ModalPosition, string> = {
   center: "",
   top: "self-start mt-12",

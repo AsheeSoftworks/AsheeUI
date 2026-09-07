@@ -1,3 +1,11 @@
+/**
+ * Carousel component for AsheeUI.
+ * This file provides the main Carousel component implementation, which renders
+ * a slideshow container for displaying content in a horizontal scrolling carousel.
+ * It supports autoplay, loop mode, navigation controls, indicator dots, and
+ * touch/swipe interactions. Visual tokens resolve through the standard AsheeUI
+ * cascade system.
+ */
 "use client";
 
 import {
@@ -15,7 +23,8 @@ import {
 import { ChevronLeftIcon } from "../../icons/ChevronLeftIcon";
 import { ChevronRightIcon } from "../../icons/ChevronRightIcon";
 import { useAsheeConfig } from "../../libs/context";
-import { RADIUS_CLASS } from "../../shared/radius";
+import type { Size } from "../../shared";
+import { RADIUS_CLASS } from "../../shared";
 import { cn } from "../../utils";
 import {
   resolveCascade,
@@ -25,8 +34,6 @@ import {
 import {
   type CarouselConfig,
   type CarouselItem,
-  type CarouselRadiusKey,
-  type CarouselSizeKey,
   type CarouselVariant,
   FALLBACK_CAROUSEL_CONFIG,
 } from "./carousel-config";
@@ -36,37 +43,143 @@ import {
   CAROUSEL_VARIANT_CLASS,
 } from "./carousel-styles";
 
+/**
+ * Minimum distance in pixels for a swipe to trigger a slide change.
+ */
 const SWIPE_THRESHOLD = 50;
 
-export interface CarouselProps
-  extends Omit<HTMLAttributes<HTMLDivElement>, "onChange"> {
+type BaseCarouselProps = CarouselConfig &
+  Omit<HTMLAttributes<HTMLDivElement>, "onChange">;
+
+/**
+ * Configuration options for the Carousel component.
+ */
+export interface CarouselProps extends BaseCarouselProps {
+  /**
+   * Array of items to display in the carousel.
+   * Each item must have content and an optional id.
+   */
   items?: CarouselItem[];
-  variant?: CarouselVariant;
-  size?: CarouselSizeKey;
-  radius?: CarouselRadiusKey;
-  autoPlay?: boolean;
-  autoPlayInterval?: number;
-  loop?: boolean;
-  showControls?: boolean;
-  showIndicators?: boolean;
-  pauseOnHover?: boolean;
-  disableAnimation?: boolean;
+
+  /**
+   * Initial slide index for uncontrolled usage.
+   * @default 0
+   */
   defaultIndex?: number;
+
+  /**
+   * Controlled slide index.
+   * When provided, the component becomes controlled.
+   */
   index?: number;
+
+  /**
+   * Callback fired when the slide index changes.
+   * Called with the new slide index.
+   */
   onIndexChange?: (index: number) => void;
+
+  /**
+   * Custom render function for the previous control button.
+   * Receives onClick handler and disabled state.
+   */
   renderPrevControl?: (props: {
     onClick: () => void;
     disabled: boolean;
   }) => ReactNode;
+
+  /**
+   * Custom render function for the next control button.
+   * Receives onClick handler and disabled state.
+   */
   renderNextControl?: (props: {
     onClick: () => void;
     disabled: boolean;
   }) => ReactNode;
+
+  /**
+   * Extra classes applied to each slide item container.
+   */
   itemClassName?: string;
+
+  /**
+   * Extra classes applied to control buttons.
+   */
   controlClassName?: string;
+
+  /**
+   * Extra classes applied to indicator buttons.
+   */
   indicatorClassName?: string;
 }
 
+/**
+ * A slideshow container for displaying content in a horizontal carousel.
+ *
+ * Carousel supports autoplay, loop mode, navigation controls, indicator dots,
+ and touch/swipe interactions. Visual tokens (`variant`, `size`, `radius`,
+ * `autoPlay`, `loop`, `showControls`, `showIndicators`, `pauseOnHover`)
+ * resolve through the standard AsheeUI cascade: prop, component config,
+ * global theme defaults, and the built-in fallback.
+ *
+ * The component automatically handles accessibility attributes including
+ * ARIA labels for controls and indicators. It supports both mouse and
+ * touch interactions for swipe gestures.
+ *
+ * @param props - Carousel configuration options and HTML div element props.
+ * @param props.items - Array of items to display.
+ * @param props.variant - Visual style variant. Defaults to "bordered".
+ * @param props.size - Height scale. Defaults to "md".
+ * @param props.radius - Corner rounding. Defaults to "lg".
+ * @param props.autoPlay - Enable autoplay. Defaults to false.
+ * @param props.autoPlayInterval - Autoplay interval in ms. Defaults to 5000.
+ * @param props.loop - Enable loop mode. Defaults to true.
+ * @param props.showControls - Show navigation controls. Defaults to true.
+ * @param props.showIndicators - Show indicator dots. Defaults to true.
+ * @param props.pauseOnHover - Pause autoplay on hover. Defaults to true.
+ * @param props.disableAnimation - Disable transitions. Defaults to false.
+ * @param props.defaultIndex - Initial slide index. Defaults to 0.
+ * @param props.index - Controlled slide index.
+ * @param props.onIndexChange - Change callback with slide index.
+ * @param props.renderPrevControl - Custom previous control renderer.
+ * @param props.renderNextControl - Custom next control renderer.
+ * @param props.itemClassName - Extra classes for slide items.
+ * @param props.controlClassName - Extra classes for controls.
+ * @param props.indicatorClassName - Extra classes for indicators.
+ * @param props.children - Child elements as slides (alternative to items).
+ *
+ * @example
+ * ```tsx
+ * import { Carousel } from "asheeui";
+ *
+ * export function Example() {
+ *   return (
+ *     <Carousel
+ *       autoPlay
+ *       loop
+ *       items={[
+ *         { content: <div>Slide 1</div> },
+ *         { content: <div>Slide 2</div> },
+ *         { content: <div>Slide 3</div> },
+ *       ]}
+ *     />
+ *   );
+ * }
+ * ```
+ *
+ * @example
+ * ```tsx
+ * // Using children instead of items
+ * <Carousel autoPlay>
+ *   <div>Slide 1</div>
+ *   <div>Slide 2</div>
+ *   <div>Slide 3</div>
+ * </Carousel>
+ * ```
+ *
+ * @see CarouselConfig - The configuration type for component defaults.
+ * @see useAsheeConfig - Hook for accessing the global configuration.
+ */
 export const Carousel = forwardRef<HTMLDivElement, CarouselProps>(
   (
     {
@@ -98,21 +211,19 @@ export const Carousel = forwardRef<HTMLDivElement, CarouselProps>(
     ref,
   ) => {
     const config = useAsheeConfig();
-    const sectionConfig = config.components?.carousel as
-      | CarouselConfig
-      | undefined;
+    const sectionConfig = config.components?.carousel;
 
     const generatedId = useId();
     const carouselId = id ?? generatedId;
 
-    const resolvedSizeKey = resolveCascade<CarouselSizeKey>(
+    const resolvedSizeKey = resolveCascade<Size>(
       size,
       sectionConfig?.size,
       undefined,
       FALLBACK_CAROUSEL_CONFIG.size,
     );
 
-    const resolvedVariant = resolveCascade<CarouselVariant>(
+    const resolvedVariantKey = resolveCascade<CarouselVariant>(
       variant,
       sectionConfig?.variant,
       config.defaultVariant as CarouselVariant | undefined,
@@ -187,7 +298,7 @@ export const Carousel = forwardRef<HTMLDivElement, CarouselProps>(
     );
 
     const variantClass =
-      CAROUSEL_VARIANT_CLASS[resolvedVariant] ??
+      CAROUSEL_VARIANT_CLASS[resolvedVariantKey] ??
       CAROUSEL_VARIANT_CLASS.bordered;
 
     const slides: CarouselItem[] = useMemo(() => {
@@ -311,11 +422,10 @@ export const Carousel = forwardRef<HTMLDivElement, CarouselProps>(
         onFocus={() => setIsHovered(true)}
         onBlur={() => setIsHovered(false)}
         className={cn(
-          "relative overflow-hidden w-full select-none flex flex-col group",
+          "relative overflow-clip w-full select-none flex flex-col group",
           variantClass,
           radiusClass,
           heightClass,
-          sectionConfig?.className,
           className,
         )}
         style={style}
@@ -325,7 +435,7 @@ export const Carousel = forwardRef<HTMLDivElement, CarouselProps>(
           onPointerMove={handlePointerMove}
           onPointerUp={handlePointerUp}
           onPointerCancel={handlePointerUp}
-          className="relative w-full h-full overflow-hidden flex-1 touch-pan-y cursor-grab active:cursor-grabbing">
+          className="relative w-full h-full overflow-clip flex-1 touch-pan-y cursor-grab active:cursor-grabbing">
           <div
             className={cn(
               "flex w-full h-full",
@@ -340,7 +450,7 @@ export const Carousel = forwardRef<HTMLDivElement, CarouselProps>(
               <div
                 key={slide.id || idx}
                 className={cn(
-                  "w-full h-full shrink-0 flex items-center justify-center overflow-hidden",
+                  "w-full h-full shrink-0 flex items-center justify-center overflow-clip",
                   paddingClass,
                   itemClassName,
                 )}>

@@ -1,3 +1,11 @@
+/**
+ * Tooltip component for AsheeUI.
+ * This file provides the main Tooltip component implementation, which renders
+ * a floating tooltip that appears on hover or focus of a child element. It
+ * supports configurable placement, delay, offset, radius, arrow, and styling
+ * through the standard AsheeUI cascade system. The component uses Floating UI
+ * for positioning and accessibility.
+ */
 "use client";
 
 import {
@@ -25,12 +33,12 @@ import {
   useState,
 } from "react";
 import { useAsheeConfig } from "../../libs/context";
-import { RADIUS_CLASS, type Radius } from "../../shared/radius";
 import {
   type Color,
+  RADIUS_CLASS,
   resolveVariantClass,
   type Variant,
-} from "../../shared/variant";
+} from "../../shared";
 import { cn } from "../../utils";
 import {
   resolveCascade,
@@ -49,21 +57,88 @@ import {
   TOOLTIP_PADDING_Y_CLASS,
 } from "./tooltip-styles";
 
-export interface TooltipProps {
+type BaseTooltipProps = TooltipConfig;
+
+/**
+ * Configuration options for the Tooltip component.
+ */
+export interface TooltipProps extends BaseTooltipProps {
+  /**
+   * The content to display inside the tooltip.
+   * When empty or null, the tooltip is not shown.
+   */
   content: ReactNode;
+
+  /**
+   * The child element that triggers the tooltip.
+   * Can be any React element or a string.
+   */
   children: ReactElement | ReactNode;
-  variant?: Variant;
-  color?: Color;
-  size?: TooltipSizeKey;
-  placement?: TooltipPlacement;
-  delay?: number | { open?: number; close?: number };
-  offset?: number;
-  radius?: Radius;
-  showArrow?: boolean;
+
+  /**
+   * Whether the tooltip is disabled.
+   * When true, the tooltip does not appear on hover or focus.
+   *
+   * @default false
+   */
   isDisabled?: boolean;
-  className?: string;
 }
 
+/**
+ * A floating tooltip that appears on hover or focus of a child element.
+ *
+ * Tooltip renders a floating popup with additional information that appears
+ * when the user hovers or focuses the trigger element. It supports configurable
+ * placement, delay, offset, radius, arrow, and styling through the standard
+ * AsheeUI cascade system.
+ *
+ * The component uses Floating UI for positioning and accessibility, and
+ * automatically handles viewport edge detection and flipping. It is fully
+ * accessible with keyboard focus support.
+ *
+ * @param props - Tooltip configuration options.
+ * @param props.content - The content to display inside the tooltip.
+ * @param props.children - The child element that triggers the tooltip.
+ * @param props.isDisabled - Whether the tooltip is disabled. Defaults to false.
+ * @param props.variant - Visual style variant. Defaults to "solid".
+ * @param props.color - Theme accent color. Defaults to "secondary".
+ * @param props.size - Size scale. Defaults to "md".
+ * @param props.placement - Placement relative to the trigger. Defaults to "top".
+ * @param props.delay - Delay before showing/hiding. Defaults to 200.
+ * @param props.offset - Offset from the trigger. Defaults to 8.
+ * @param props.radius - Corner rounding. Defaults to "md".
+ * @param props.showArrow - Whether to show a pointer arrow. Defaults to false.
+ * @param props.className - Extra classes for the tooltip.
+ *
+ * @example
+ * ```tsx
+ * import { Tooltip, Button } from "asheeui";
+ *
+ * export function Example() {
+ *   return (
+ *     <Tooltip content="This is a tooltip">
+ *       <Button>Hover me</Button>
+ *     </Tooltip>
+ *   );
+ * }
+ * ```
+ *
+ * @example
+ * ```tsx
+ * // With custom placement and arrow
+ * <Tooltip
+ *   content="Delete this item"
+ *   placement="bottom"
+ *   showArrow
+ *   color="danger"
+ * >
+ *   <TrashIcon />
+ * </Tooltip>
+ * ```
+ *
+ * @see TooltipConfig - The configuration type for component defaults.
+ * @see useAsheeConfig - Hook for accessing the global configuration.
+ */
 export const Tooltip = forwardRef<HTMLDivElement, TooltipProps>(
   (
     {
@@ -83,9 +158,7 @@ export const Tooltip = forwardRef<HTMLDivElement, TooltipProps>(
     ref,
   ) => {
     const config = useAsheeConfig();
-    const sectionConfig = config.components?.tooltip as
-      | TooltipConfig
-      | undefined;
+    const sectionConfig = config.components?.tooltip;
     const arrowRef = useRef<SVGSVGElement>(null);
 
     const [isOpen, setIsOpen] = useState(false);
@@ -106,17 +179,17 @@ export const Tooltip = forwardRef<HTMLDivElement, TooltipProps>(
       FALLBACK_TOOLTIP_CONFIG.placement,
     );
 
-    const resolvedVariant = resolveCascade<Variant>(
+    const resolvedVariantKey = resolveCascade<Variant>(
       variant,
       sectionConfig?.variant,
-      config.defaultVariant as Variant | undefined,
+      config.defaultVariant,
       FALLBACK_TOOLTIP_CONFIG.variant,
     );
 
-    const resolvedColor = resolveCascade<Color>(
+    const resolvedColorKey = resolveCascade<Color>(
       color,
       sectionConfig?.color,
-      config.defaultColor as Color | undefined,
+      config.defaultColor,
       FALLBACK_TOOLTIP_CONFIG.color,
     );
 
@@ -141,7 +214,7 @@ export const Tooltip = forwardRef<HTMLDivElement, TooltipProps>(
     const resolvedRadiusKey = resolveRadiusKey(
       radius,
       sectionConfig?.radius,
-      config.defaultRadius as Radius,
+      config.defaultRadius,
       FALLBACK_TOOLTIP_CONFIG.radius,
     );
 
@@ -248,7 +321,7 @@ export const Tooltip = forwardRef<HTMLDivElement, TooltipProps>(
                   paddingYClass,
                   fontClass,
                   radiusClass,
-                  resolveVariantClass(resolvedVariant, resolvedColor),
+                  resolveVariantClass(resolvedVariantKey, resolvedColorKey),
                   sectionConfig?.className,
                   className,
                 )}>

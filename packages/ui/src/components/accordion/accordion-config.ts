@@ -1,7 +1,14 @@
+/**
+ * Accordion component configuration for AsheeUI.
+ * This file defines the configuration types and defaults for the Accordion
+ * component, including variant, size, radius, and behavior options.
+ * It registers the default configuration with the component registry
+ * and provides fallback values for the cascade resolution system.
+ */
+
 import type { ReactNode } from "react";
 import { registerComponentDefaults } from "../../libs/registry";
-import type { Radius } from "../../shared/radius";
-import type { Size } from "../../shared/size";
+import type { Radius, Size } from "../../shared";
 
 /**
  * Visual style of the accordion.
@@ -13,7 +20,10 @@ import type { Size } from "../../shared/size";
  */
 export type AccordionVariant = "bordered" | "separated" | "ghost" | "flush";
 
-/** Padding and spacing scale used by accordion headers and content. */
+/**
+ * Padding and spacing scale used by accordion headers and content.
+ * Maps to the standard Size type: "sm", "md", or "lg".
+ */
 export type AccordionSizeKey = Size;
 
 /**
@@ -26,15 +36,30 @@ export interface AccordionItem {
    * When omitted, the item's `title` is used as the key.
    */
   id?: string;
-  /** Item header label. */
+
+  /**
+   * Item header label.
+   */
   title: ReactNode;
-  /** Expandable content rendered below the header. */
+
+  /**
+   * Expandable content rendered below the header.
+   */
   content: ReactNode;
-  /** Optional secondary text shown under the title. */
+
+  /**
+   * Optional secondary text shown under the title.
+   */
   subtitle?: ReactNode;
-  /** Optional leading icon rendered before the title. */
+
+  /**
+   * Optional leading icon rendered before the title.
+   */
   icon?: ReactNode;
-  /** Disables the item's trigger when `true`.
+
+  /**
+   * Disables the item's trigger when `true`.
+   * Disabled items cannot be opened or closed by the user.
    *
    * @default false
    */
@@ -48,26 +73,45 @@ export interface AccordionItem {
  * under `components.accordion` in the AsheeUI config.
  */
 export interface AccordionConfig {
-  /** Visual style variant.
+  /**
+   * Visual style variant.
+   * Controls the container and item appearance.
    *
    * @default "separated"
    */
   variant?: AccordionVariant;
-  /** Padding and spacing scale.
+
+  /**
+   * Padding and spacing scale.
+   * Controls the density of headers and content panels.
    *
    * @default "md"
    */
   size?: AccordionSizeKey;
-  /** Corner rounding.
+
+  /**
+   * Corner rounding.
+   * Controls the border-radius of the container or individual items.
    *
    * @default "md"
    */
   radius?: Radius;
-  /** Allows more than one item to stay open at a time.
+
+  /**
+   * Allows more than one item to stay open at a time.
+   * When false, opening one item closes all others.
    *
    * @default false
    */
   allowMultiple?: boolean;
+
+  /**
+   * Disables all expand/collapse animations.
+   * When true, items open and close instantly without transitions.
+   *
+   * @default false
+   */
+  disableAnimation?: boolean;
 }
 
 /**
@@ -91,6 +135,8 @@ registerComponentDefaults("accordion", defaultAccordionConfig);
 
 /**
  * Hard fallback values used when no config tier provides a value.
+ * These values are used when all other cascade tiers (instance prop,
+ * component config, and global default) are undefined.
  */
 export const FALLBACK_ACCORDION_CONFIG = {
   size: "md",

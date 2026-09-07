@@ -1,9 +1,26 @@
+/**
+ * AsheeUI global styles.
+ * This file defines the base styles, CSS variables, scrollbar styling,
+ * and animation keyframes for the AsheeUI component library. It uses
+ * Tailwind CSS v4 with the @theme and @layer directives.
+ *
+ * The styles are organized into layers:
+ * - @theme: Defines CSS custom properties mapped to AsheeUI theme variables.
+ * - @layer base: Contains global styles, scrollbar customization, and animations.
+ *
+ * This file should be imported once at the root of your application.
+ */
+
 @layer base, utilities;
 
 /* Tell Tailwind v4 to scan asheeui components for utility classes */
 @source "./**/*.{ts,tsx}";
 
 @theme inline {
+  /**
+   * Theme color variables mapped to AsheeUI CSS custom properties.
+   * These are set by the AsheeThemeScript and theme controller.
+   */
   --color-background: var(--ashee-background);
   --color-foreground: var(--ashee-foreground);
   --color-primary: var(--ashee-primary);
@@ -13,6 +30,10 @@
   --color-warning: var(--ashee-warning);
   --color-success: var(--ashee-success);
 
+  /**
+   * Scrollbar configuration variables.
+   * These are set by the scrollbar configuration.
+   */
   --scrollbar-width: var(--ashee-scrollbar-width);
   --scrollbar-radius: var(--ashee-scrollbar-radius);
   --scrollbar-track-radius: var(--ashee-scrollbar-track-radius);
@@ -21,13 +42,21 @@
 }
 
 @layer base {
+  /**
+   * Global HTML and body styles.
+   * Applies the theme background and text colors to the page.
+   */
   html,
   body {
     background-color: var(--ashee-background);
     color: var(--ashee-foreground);
-    overflow-x: hidden;
   }
 
+  /**
+   * Scrollbar styling for all elements.
+   * Uses both standard scrollbar properties and webkit-prefixed pseudo-elements
+   * for cross-browser compatibility.
+   */
   html,
   body,
   * {
@@ -56,12 +85,18 @@
     background-clip: padding-box;
   }
 
+  /**
+   * Remove spinner buttons from number inputs.
+   */
   input[type="number"]::-webkit-outer-spin-button,
   input[type="number"]::-webkit-inner-spin-button {
     -webkit-appearance: none;
     margin: 0;
   }
 
+  /**
+   * Disabled state styling for form elements.
+   */
   input:disabled,
   textarea:disabled,
   select:disabled {
@@ -70,6 +105,9 @@
     background-color: #f5f5f521;
   }
 
+  /**
+   * Utility class to hide scrollbars while maintaining scrollability.
+   */
   .scrollbar-hide::-webkit-scrollbar {
     display: none;
   }
@@ -78,7 +116,7 @@
     scrollbar-width: none;
   }
 
-  /* Simple pop animation with opacity and scale */
+  /* ─── Modal Animations ────────────────────────────────────────────────────── */
 
   @keyframes modalPopIn {
     from {
@@ -120,7 +158,6 @@
     }
   }
 
-  /* Animation utility classes */
   .animate-modal-in {
     animation: modalPopIn 200ms ease-out forwards;
   }
@@ -137,7 +174,7 @@
     animation: backdropFadeOut 150ms ease-in forwards;
   }
 
-  /* Drawer Animations - Slide with opacity */
+  /* ─── Drawer Animations ──────────────────────────────────────────────────── */
 
   /* Right */
   @keyframes drawerSlideRightOpen {
@@ -250,7 +287,6 @@
     }
   }
 
-  /* Animation classes */
   .drawer-slide-right-open {
     animation: drawerSlideRightOpen 250ms ease-out forwards;
   }
@@ -291,7 +327,7 @@
     animation: drawerBackdropOut 250ms ease-in forwards;
   }
 
-  /* Toast Animations */
+  /* ─── Toast Animations ────────────────────────────────────────────────────── */
 
   /* Top Right */
   @keyframes toastEnterTopRight {
@@ -431,7 +467,7 @@
     }
   }
 
-  /* Animation Classes */
+  /* Toast Animation Classes */
   .toast-enter-top-right {
     animation: toastEnterTopRight 200ms ease-out forwards;
   }

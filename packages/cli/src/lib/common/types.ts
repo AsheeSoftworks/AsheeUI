@@ -1,4 +1,11 @@
 /**
+ * AsheeUI CLI shared types.
+ * This file defines all shared type interfaces used across the CLI modules,
+ * including framework detection, project structure, file operations, and
+ * integration results.
+ */
+
+/**
  * Supported framework identifiers detected or selected by the CLI.
  *
  * - `next`: Next.js application.

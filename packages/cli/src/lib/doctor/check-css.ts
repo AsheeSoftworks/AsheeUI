@@ -1,3 +1,9 @@
+/**
+ * CSS import check for AsheeUI CLI doctor command.
+ * This module provides the checkCssImport function that validates whether
+ * `@import "asheeui/styles"` is present in a global CSS entry file.
+ */
+
 import { join } from "node:path";
 import {
   containsStylesImport,

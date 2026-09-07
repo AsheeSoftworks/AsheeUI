@@ -1,3 +1,11 @@
+/**
+ * Image component for AsheeUI.
+ * This file provides the main Image component implementation, which renders
+ * an image element with ratio locking, object-fit control, radius tokens,
+ * a loading skeleton, and an optional error fallback. It supports both
+ * native img elements and custom image components like Next.js Image.
+ * Visual tokens resolve through the standard AsheeUI cascade system.
+ */
 "use client";
 
 import {
@@ -10,7 +18,7 @@ import {
   useState,
 } from "react";
 import { useAsheeConfig } from "../../libs/context";
-import { RADIUS_CLASS, type Radius } from "../../shared/radius";
+import { RADIUS_CLASS, type Radius } from "../../shared";
 import { cn } from "../../utils";
 import {
   resolveCascade,
@@ -25,41 +33,25 @@ import {
 } from "./image-config";
 import { IMAGE_FIT_CLASS, IMAGE_RATIO_CLASS } from "./image-styles";
 
+type BaseImageProps = ImageConfig & ImgHTMLAttributes<HTMLImageElement>;
+
 /**
  * Configuration options for the Image component.
  */
-export interface ImageProps
-  extends Omit<ImgHTMLAttributes<HTMLImageElement>, "children" | "alt"> {
-  /** Accessible alternative text describing the image. */
-  alt: string;
-  /** Object-fit behaviour of the image inside its ratio box.
-   *
-   * @default "cover"
+export interface ImageProps extends BaseImageProps {
+  /**
+   * Fallback source shown when the primary `src` fails to load.
+   * When the primary image fails to load, this source is used instead.
    */
-  fit?: ImageFit;
-  /** Container aspect ratio.
-   *
-   * @default "auto"
-   */
-  ratio?: ImageRatioKey;
-  /** Corner rounding.
-   *
-   * @default "md"
-   */
-  radius?: Radius;
-  /** Fallback source shown when the primary `src` fails to load. */
   fallbackSrc?: string;
-  /** Shows a shimmering placeholder until the image loads.
-   *
-   * @default true
-   */
-  showSkeleton?: boolean;
-  /** Extra classes merged with internal styles. */
-  className?: string;
 
-  /** Custom image component to use instead of the native `<img>` tag
-   * (e.g. `next/image`). */
+  /**
+   * Custom image component to use instead of the native `<img>` tag
+   * (e.g. `next/image`).
+   * When provided, the component renders this instead of img.
+   */
   imageComponent?: ElementType;
+
   /**
    * Additional props to pass to the custom image component
    * (e.g. `{ priority: true, sizes: "..." }`).
@@ -71,6 +63,10 @@ export interface ImageProps
   imageProps?: Record<string, unknown>;
 }
 
+/**
+ * Checks if a value is a valid non-empty string.
+ * Used to validate image sources.
+ */
 function isValidSrc(value: unknown): value is string {
   return typeof value === "string" && value.trim().length > 0;
 }
@@ -86,6 +82,11 @@ function isValidSrc(value: unknown): value is string {
  * Visual tokens (`fit`, `ratio`, `radius`, `showSkeleton`, `loading`)
  * resolve through the standard AsheeUI cascade.
  *
+ * The component handles edge cases including cached images, error
+ * fallbacks, and proper cleanup of loading states. When using a
+ * custom image component, it automatically applies fill behavior
+ * for Next.js compatibility.
+ *
  * @param props - Image configuration options and native img attributes.
  * @param props.alt - Accessible alternative text.
  * @param props.fit - Object-fit behaviour. Defaults to "cover".
@@ -96,6 +97,9 @@ function isValidSrc(value: unknown): value is string {
  * @param props.className - Extra classes for the image element.
  * @param props.imageComponent - Custom image component.
  * @param props.imageProps - Props forwarded to the image component.
+ * @param props.src - The image source URL.
+ * @param props.onLoad - Callback fired when the image loads.
+ * @param props.onError - Callback fired when the image fails to load.
  *
  * @example
  * ```tsx
@@ -114,6 +118,22 @@ function isValidSrc(value: unknown): value is string {
  *   );
  * }
  * ```
+ *
+ * @example
+ * ```tsx
+ * // With Next.js Image component
+ * import NextImage from "next/image";
+ *
+ * <Image
+ *   src="/hero.png"
+ *   alt="Hero image"
+ *   imageComponent={NextImage}
+ *   imageProps={{ priority: true, sizes: "100vw" }}
+ * />
+ * ```
+ *
+ * @see ImageConfig - The configuration type for component defaults.
+ * @see useAsheeConfig - Hook for accessing the global configuration.
  */
 export const Image = forwardRef<HTMLImageElement, ImageProps>(
   (

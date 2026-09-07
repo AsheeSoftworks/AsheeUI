@@ -1,3 +1,9 @@
+/**
+ * File resolution utilities for AsheeUI CLI integration builders.
+ * This module provides functions for resolving global CSS files,
+ * framework config files, and router/entry point files.
+ */
+
 import { join } from "node:path";
 import { GLOBAL_CSS_CANDIDATES } from "../../utils/audit";
 import { pathExists } from "../common/file-utils";

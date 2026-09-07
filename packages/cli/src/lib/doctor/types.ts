@@ -1,4 +1,10 @@
 /**
+ * Doctor types for AsheeUI CLI.
+ * This file defines the types used by the doctor command for check results
+ * and options.
+ */
+
+/**
  * Severity level reported by a single doctor check.
  *
  * - `pass`: everything is fine.

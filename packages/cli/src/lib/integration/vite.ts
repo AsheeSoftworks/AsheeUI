@@ -1,3 +1,10 @@
+/**
+ * Vite + React integration builder for AsheeUI CLI.
+ * This module provides the buildViteIntegration function that generates
+ * all file writes, edits, and integrity checks required to wire AsheeUI
+ * into a Vite + React project.
+ */
+
 import { join } from "node:path";
 import { STYLES_IMPORT_MARKER } from "../../utils/audit";
 import { pathExists } from "../common/file-utils";

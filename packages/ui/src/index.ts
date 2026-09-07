@@ -1,5 +1,24 @@
+/**
+ * AsheeUI main entry point.
+ * This file exports all public components, types, and utilities from the
+ * AsheeUI component library. It serves as the single entry point for
+ * consumers of the library.
+ *
+ * The exports are organized into:
+ * - Core provider: AsheeUIProvider and its props
+ * - All components: accordion, button, card, modal, toast, etc.
+ * - Shared types: Radius, Size, Variant, Color
+ * - Theme types: ColorConfig, ThemeName, ColorVariant
+ * - Theme utilities: themeController, useTheme, THEME_STORAGE_KEY
+ */
+
 export type { AsheeUIProviderProps } from "./AsheeUIProvider";
 export { AsheeUIProvider } from "./AsheeUIProvider";
+
+/**
+ * All component exports.
+ * Each component is exported from its respective directory.
+ */
 export * from "./components/accordion";
 export * from "./components/autocomplete";
 export * from "./components/button";
@@ -27,8 +46,17 @@ export * from "./components/tabs";
 export * from "./components/textarea";
 export * from "./components/toast";
 export * from "./components/tooltip";
-export type { Radius } from "./shared/radius";
-export type { Size } from "./shared/size";
+
+/**
+ * Shared type exports.
+ * These types are used across multiple components for consistency.
+ */
+export type { Color, Radius, Size, Variant } from "./shared";
+
+/**
+ * Theme type exports.
+ * These types define the color system and theme configuration.
+ */
 export type {
   AsheeColorRegistry,
   ColorConfig,
@@ -36,6 +64,11 @@ export type {
   DefaultColorConfig,
   ThemeName,
 } from "./theme/color";
+
+/**
+ * Theme utilities and hooks.
+ * These provide runtime theme management and reactivity.
+ */
 export {
   THEME_STORAGE_KEY,
   themeController,

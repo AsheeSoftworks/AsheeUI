@@ -1,3 +1,11 @@
+/**
+ * Card component for AsheeUI.
+ * This file provides the main Card component implementation, which renders
+ * a versatile container for displaying content with support for headers,
+ * footers, image layouts, and interactive states. It composes optional
+ * image, title, description, header, body, and footer regions. Visual
+ * tokens resolve through the standard AsheeUI cascade system.
+ */
 "use client";
 
 import {
@@ -10,8 +18,8 @@ import {
   useId,
 } from "react";
 import { useAsheeConfig } from "../../libs/context";
-import { RADIUS_CLASS, type Radius } from "../../shared/radius";
-import type { Size } from "../../shared/size";
+import type { Size } from "../../shared";
+import { RADIUS_CLASS, type Radius } from "../../shared";
 import { cn } from "../../utils";
 import {
   resolveAnimate,
@@ -35,87 +43,126 @@ import {
   CARD_VARIANT_CLASS,
 } from "./card-styles";
 
+type BaseCardProps = CardConfig &
+  Omit<HTMLAttributes<HTMLDivElement>, "title" | "children">;
+
 /**
  * Configuration options for the Card component.
  */
-export interface CardProps
-  extends Omit<HTMLAttributes<HTMLDivElement>, "title" | "children"> {
-  /** Visual style variant.
-   *
-   * @default "bordered"
-   */
-  variant?: CardVariant;
-  /** Padding and spacing scale for inner content.
-   *
-   * @default "md"
-   */
-  size?: Size;
-  /** Corner rounding applied to the card border.
-   *
-   * @default "md"
-   */
-  radius?: Radius;
-  /** Enables the press-down scale animation when clickable.
-   *
-   * @default true
-   */
-  animate?: boolean;
-  /** Enables interactive hover effects and keyboard accessibility.
+export interface CardProps extends BaseCardProps {
+  /**
+   * Whether the card is clickable.
+   * When true, the card becomes interactive with hover and focus states.
+   * This is automatically enabled when href or onClick is provided.
    *
    * @default false
    */
   isClickable?: boolean;
-  /** Disables interactive states and dims card opacity.
+
+  /**
+   * Disables interactive states and dims card opacity.
+   * Disabled cards cannot be clicked or focused.
    *
    * @default false
    */
   isDisabled?: boolean;
-  /** Renders the card as a link when provided with `isClickable`. */
+
+  /**
+   * Renders the card as a link when provided with `isClickable`.
+   * Clicking the card navigates to this URL.
+   */
   href?: string;
-  /** Heading content rendered above the body. */
+
+  /**
+   * Heading content rendered above the body.
+   * Typically a string or React element.
+   */
   title?: ReactNode;
-  /** Supporting text rendered under the title. */
+
+  /**
+   * Supporting text rendered under the title.
+   * Typically a string providing additional context.
+   */
   description?: ReactNode;
-  /** Custom header node rendered above the title. */
+
+  /**
+   * Custom header node rendered above the title.
+   * Useful for adding icons, badges, or metadata.
+   */
   header?: ReactNode;
-  /** Explicit body content; falls back to `children`. */
+
+  /**
+   * Explicit body content; falls back to `children`.
+   * Use this when you need to explicitly set the body content.
+   */
   body?: ReactNode;
-  /** Footer node rendered at the bottom of the content column. */
+
+  /**
+   * Footer node rendered at the bottom of the content column.
+   * Typically used for actions or additional metadata.
+   */
   footer?: ReactNode;
-  /** Source URL of the card image. */
+
+  /**
+   * Source URL of the card image.
+   * When provided, displays an image in the card.
+   */
   imageSrc?: string;
-  /** Alternative text for the card image.
+
+  /**
+   * Alternative text for the card image.
+   * Important for accessibility.
    *
    * @default ""
    */
   imageAlt?: string;
-  /** Placement of the image relative to the content.
+
+  /**
+   * Placement of the image relative to the content.
+   * Determines whether the image appears at the top, bottom, or as a background.
    *
    * @default "top"
    */
   imagePosition?: CardImagePosition;
-  /** Aspect ratio of the positioned image.
+
+  /**
+   * Aspect ratio of the positioned image.
+   * Controls the proportional dimensions of the image container.
    *
    * @default "video"
    */
   imageRatio?: ImageRatioKey;
-  /** Object-fit strategy of the positioned image.
+
+  /**
+   * Object-fit strategy of the positioned image.
+   * Controls how the image fills its container.
    *
    * @default "cover"
    */
   imageFit?: ImageFit;
-  /** Native loading strategy of the positioned image.
+
+  /**
+   * Native loading strategy of the positioned image.
    *
    * @default "lazy"
    */
   imageLoading?: CardImageLoading;
-  /** Custom image component to render the card image with instead of
-   * the native `<img>` tag (e.g. `next/image`). */
+
+  /**
+   * Custom image component to render the card image with instead of
+   * the native `<img>` tag (e.g. `next/image`).
+   */
   imageComponent?: ElementType;
-  /** Additional props forwarded to `imageComponent`
-   * (e.g. `{ priority: true, sizes: "..." }`). */
+
+  /**
+   * Additional props forwarded to `imageComponent`
+   * (e.g. `{ priority: true, sizes: "..." }`).
+   */
   imageProps?: Record<string, unknown>;
-  /** Card body content, used when `body` is not provided. */
+
+  /**
+   * Card body content, used when `body` is not provided.
+   */
   children?: ReactNode;
 }
 
@@ -128,6 +175,10 @@ export interface CardProps
  * `animate`, `isClickable`) resolve through the standard AsheeUI
  * cascade. When `isClickable` is enabled, the card becomes keyboard
  * accessible and adopts link or button semantics based on `href`.
+ *
+ * The component automatically handles accessibility attributes including
+ * role, tabIndex, aria-disabled, and proper keyboard interaction with
+ * Enter and Space keys.
  *
  * @param props - Card configuration options and HTML div element props.
  * @param props.variant - Visual style variant. Defaults to "bordered".
@@ -151,6 +202,7 @@ export interface CardProps
  * @param props.imageComponent - Custom image component.
  * @param props.imageProps - Props forwarded to the image component.
  * @param props.children - Card body content.
+ * @param props.className - Extra CSS classes for the card.
  *
  * @example
  * ```tsx
@@ -170,6 +222,22 @@ export interface CardProps
  *   );
  * }
  * ```
+ *
+ * @example
+ * ```tsx
+ * // Clickable card with image
+ * <Card
+ *   isClickable
+ *   href="/blog/post-1"
+ *   imageSrc="/images/post-1.jpg"
+ *   imageAlt="Blog post cover"
+ *   title="Blog Post Title"
+ *   description="A brief description of the blog post."
+ * />
+ * ```
+ *
+ * @see CardConfig - The configuration type for component defaults.
+ * @see useAsheeConfig - Hook for accessing the global configuration.
  */
 export const Card = forwardRef<HTMLDivElement, CardProps>(
   (
@@ -217,7 +285,7 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(
       FALLBACK_CARD_CONFIG.size,
     );
 
-    const resolvedVariant = resolveCascade<CardVariant>(
+    const resolvedVariantKey = resolveCascade<CardVariant>(
       variant,
       sectionConfig?.variant,
       config.defaultVariant as CardVariant | undefined,
@@ -238,11 +306,7 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(
       FALLBACK_CARD_CONFIG.imagePosition,
     );
 
-    const resolvedClickable =
-      isClickable ??
-      Boolean(href || onClick) ??
-      sectionConfig?.isClickable ??
-      FALLBACK_CARD_CONFIG.isClickable;
+    const resolvedClickable = isClickable ?? Boolean(href || onClick);
 
     const resolvedAnimate = resolveAnimate<boolean>(
       animate,
@@ -282,7 +346,7 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(
     );
 
     const variantClass =
-      CARD_VARIANT_CLASS[resolvedVariant] ?? CARD_VARIANT_CLASS.bordered;
+      CARD_VARIANT_CLASS[resolvedVariantKey] ?? CARD_VARIANT_CLASS.bordered;
 
     const handleClick = (e: MouseEvent<HTMLDivElement>) => {
       if (isDisabled) {

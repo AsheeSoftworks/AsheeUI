@@ -1,3 +1,10 @@
+/**
+ * Fix command implementation for AsheeUI CLI.
+ * This module provides the runFix function that attempts to automatically
+ * repair issues detected by the doctor command, including missing config
+ * files, CSS imports, root provider wiring, and peer dependencies.
+ */
+
 import { execSync } from "node:child_process";
 import { join } from "node:path";
 import {

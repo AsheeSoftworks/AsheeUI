@@ -1,64 +1,85 @@
+/**
+ * MultiSelect component configuration for AsheeUI.
+ * This file defines the configuration types and defaults for the MultiSelect
+ * component, which extends the FieldConfig with menu and chip configuration
+ * options. It registers the default configuration with the component registry
+ * and provides fallback values for the cascade resolution system.
+ */
+
 import { registerComponentDefaults } from "../../libs/registry";
-import type { Radius } from "../../shared/radius";
-import type { Size } from "../../shared/size";
-import type { Color, Variant } from "../../shared/variant";
+import type { Color, Radius, Size, Variant } from "../../shared";
 import {
+  defaultFieldConfig,
   FALLBACK_FIELD_CONFIG,
   type FieldConfig,
-  type FieldSizeKey,
 } from "../field/field-config";
+import type { SelectMenuConfig } from "../select-menu";
 
-export type MultiSelectSizeKey = FieldSizeKey;
+/**
+ * Theme configuration options for the MultiSelect component.
+ *
+ * Set under `components.multiSelect` in the AsheeUI config. Values feed the
+ * component-level fallback tier of the theme cascade.
+ */
+export interface MultiSelectConfig extends FieldConfig {
+  /**
+   * Configuration for the dropdown menu.
+   * Controls the menu's visual appearance and behavior.
+   */
+  menu?: SelectMenuConfig;
 
-export interface MultiSelectOption {
-  label: string;
-  value: string | number;
-  disabled?: boolean;
-  [key: string]: unknown;
+  /**
+   * Configuration for selected value chips.
+   * Controls the appearance of chips in the selected values section.
+   */
+  chip?: {
+    /**
+     * Visual style variant for chips.
+     */
+    variant?: Variant;
+
+    /**
+     * Theme accent color for chips.
+     */
+    color?: Color;
+
+    /**
+     * Corner rounding for chips.
+     */
+    radius?: Radius;
+
+    /**
+     * Size scale for chips.
+     */
+    size?: Size;
+  };
 }
 
-export interface MultiSelectConfig extends Omit<FieldConfig, "size"> {
-  size?: MultiSelectSizeKey;
-  radius?: Radius;
-
-  // Menu / Popover Overrides
-  menuVariant?: Variant;
-  menuColor?: Color;
-  menuRadius?: Radius;
-  menuSize?: Size;
-
-  // Chip Overrides
-  chipVariant?: Variant;
-  chipColor?: Color;
-  chipRadius?: Radius;
-  chipSize?: Size;
-}
-
+/**
+ * Default config values registered for the MultiSelect component.
+ * Inherits field defaults and sets chip size to "sm".
+ */
 export const defaultMultiSelectConfig: MultiSelectConfig = {
-  size: "md",
-  variant: "bordered",
-  labelAlign: "left",
-  chipSize: "sm",
-  menuSize: "sm",
+  ...defaultFieldConfig,
+  chip: {
+    size: "sm",
+  },
 };
 
-export const FALLBACK_MULTI_SELECT_CONFIG: Required<MultiSelectConfig> = {
+/**
+ * Hard fallback values used when no config tier provides a value.
+ * These values are used when instance props, component config,
+ * and global defaults are all undefined.
+ */
+export const FALLBACK_MULTI_SELECT_CONFIG = {
   ...FALLBACK_FIELD_CONFIG,
-  size: "md",
-  radius: "md",
-  variant: "bordered",
-  color: "primary",
-  status: "default",
-  labelAlign: "left",
-  menuVariant: "solid",
-  menuColor: "secondary",
-  menuRadius: "md",
-  menuSize: "sm",
-  chipVariant: "solid",
-  chipColor: "primary",
-  chipRadius: "sm",
-  chipSize: "sm",
-};
+  chip: {
+    size: "sm",
+    color: "primary",
+    radius: "sm",
+    variant: "solid",
+  },
+} as const;
 
 declare module "../../libs/registry" {
   interface ComponentTypeConfigRegistry {

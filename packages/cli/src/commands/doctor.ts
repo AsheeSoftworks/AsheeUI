@@ -1,3 +1,12 @@
+/**
+ * CLI command registration for `asheeui doctor`.
+ *
+ * This module provides the `registerDoctorCommand` function that registers
+ * the `doctor` subcommand on the commander program. The doctor command scans
+ * the project for configuration errors, missing peer dependencies, and
+ * styling setup issues, then prints a human-readable summary.
+ */
+
 import type { Command } from "commander";
 import { runDoctorChecks } from "../lib/doctor/doctor";
 import { renderDoctorReport } from "../lib/doctor/render-report";

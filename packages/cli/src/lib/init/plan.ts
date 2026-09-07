@@ -1,3 +1,10 @@
+/**
+ * Execution plan builder for AsheeUI CLI init command.
+ * This module provides the buildPlan function that composes an execution
+ * plan from the integration summary, missing dependencies, and project
+ * structure.
+ */
+
 import type { ProjectStructure } from "../common/types";
 
 /**

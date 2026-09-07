@@ -1,3 +1,10 @@
+/**
+ * TextArea component for AsheeUI.
+ * This file provides the main TextArea component implementation, which renders
+ * a multi-line text input with label, description, validation message, and
+ * virtual keyboard support. It integrates with the FieldShell for consistent
+ * field layout and supports the standard AsheeUI cascade for visual tokens.
+ */
 "use client";
 
 import React, {
@@ -9,12 +16,13 @@ import React, {
   useRef,
 } from "react";
 import { useAsheeConfig } from "../../libs/context";
-import { RADIUS_CLASS, type Radius } from "../../shared/radius";
 import {
   type Color,
+  RADIUS_CLASS,
+  type Radius,
   resolveVariantClass,
   type Variant,
-} from "../../shared/variant";
+} from "../../shared";
 import { cn } from "../../utils";
 import {
   resolveCascade,
@@ -22,11 +30,7 @@ import {
   resolveRadiusKey,
 } from "../../utils/resolve-token";
 import { FieldShell } from "../field/FieldShell";
-import type {
-  FieldSizeKey,
-  FieldStatus,
-  LabelAlign,
-} from "../field/field-config";
+import type { FieldSizeKey, LabelAlign } from "../field/field-config";
 import { useKeyboardField } from "../keyboard";
 import {
   FALLBACK_TEXTAREA_CONFIG,
@@ -39,28 +43,129 @@ import {
 
 // ─── Component Interface ──────────────────────────────────────────────────────
 
-export interface TextAreaProps
-  extends Omit<
+type BaseTextAreaProps = TextAreaConfig &
+  Omit<
     TextareaHTMLAttributes<HTMLTextAreaElement>,
     "size" | "color" | "children"
-  > {
-  size?: FieldSizeKey;
-  radius?: Radius;
-  variant?: Variant;
-  color?: Color;
-  status?: FieldStatus;
+  >;
+
+/**
+ * Configuration options for the TextArea component.
+ */
+export interface TextAreaProps extends BaseTextAreaProps {
+  /**
+   * Label text for the textarea.
+   * Displayed above the input field.
+   */
   label?: string;
+
+  /**
+   * Whether the textarea is in a loading state.
+   * Shows a loading spinner next to the label.
+   *
+   * @default false
+   */
   isLoading?: boolean;
-  labelAlign?: LabelAlign;
+
+  /**
+   * Description text shown below the label.
+   * Provides additional context about the textarea.
+   */
   description?: string;
+
+  /**
+   * Validation message shown below the textarea.
+   * Color is determined by the status prop.
+   */
   message?: string;
+
+  /**
+   * Whether the field is required.
+   * Adds a required indicator (*) to the label.
+   *
+   * @default false
+   */
   required?: boolean;
-  rows?: number;
+
+  /**
+   * Whether the virtual keyboard should be enabled for mobile devices.
+   * Controls the inputmode attribute.
+   *
+   * @default true
+   */
   enableVirtualKeyboard?: boolean;
 }
 
 // ─── Component Implementation ─────────────────────────────────────────────────
 
+/**
+ * A multi-line text input with label, description, validation message,
+ * and virtual keyboard support.
+ *
+ * TextArea renders a textarea with consistent styling and field layout.
+ * It supports validation states, loading state, configurable rows, and
+ * the standard AsheeUI cascade for visual tokens. The component integrates
+ * with FieldShell for label, description, and message handling.
+ *
+ * The component automatically handles accessibility attributes including
+ * aria-invalid, aria-describedby, and proper focus management. It also
+ * supports mobile virtual keyboard control via the enableVirtualKeyboard prop.
+ *
+ * @param props - TextArea configuration options and native textarea props.
+ * @param props.label - Label text for the textarea.
+ * @param props.isLoading - Loading state. Defaults to false.
+ * @param props.description - Description text.
+ * @param props.message - Validation message.
+ * @param props.required - Whether the field is required. Defaults to false.
+ * @param props.enableVirtualKeyboard - Enable mobile virtual keyboard. Defaults to true.
+ * @param props.rows - Number of visible text rows. Defaults to 4.
+ * @param props.size - Size of the textarea. Defaults to "md".
+ * @param props.radius - Corner rounding. Defaults to "md".
+ * @param props.variant - Visual style variant. Defaults to "bordered".
+ * @param props.color - Theme accent color. Defaults to "primary".
+ * @param props.status - Validation status.
+ * @param props.labelAlign - Alignment of the label. Defaults to "left".
+ * @param props.disabled - Whether the textarea is disabled.
+ * @param props.className - Extra CSS classes for the textarea.
+ * @param props.id - Optional ID for the field.
+ * @param props.style - Inline styles for the textarea.
+ *
+ * @example
+ * ```tsx
+ * import { TextArea } from "asheeui";
+ * import { useState } from "react";
+ *
+ * export function Example() {
+ *   const [value, setValue] = useState("");
+ *
+ *   return (
+ *     <TextArea
+ *       label="Message"
+ *       description="Write your message here"
+ *       placeholder="Type your message..."
+ *       value={value}
+ *       onChange={(e) => setValue(e.target.value)}
+ *       rows={6}
+ *     />
+ *   );
+ * }
+ * ```
+ *
+ * @example
+ * ```tsx
+ * // With validation state
+ * <TextArea
+ *   label="Feedback"
+ *   status="error"
+ *   message="Feedback must be at least 10 characters"
+ *   required
+ * />
+ * ```
+ *
+ * @see TextAreaConfig - The configuration type for component defaults.
+ * @see FieldShell - The wrapper component for label and validation.
+ * @see useAsheeConfig - Hook for accessing the global configuration.
+ */
 export const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
   (
     {
@@ -130,14 +235,14 @@ export const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
       FALLBACK_TEXTAREA_CONFIG.size,
     );
 
-    const resolvedVariant = resolveCascade<Variant>(
+    const resolvedVariantKey = resolveCascade<Variant>(
       variant,
       sectionConfig?.variant,
       config.defaultVariant,
       FALLBACK_TEXTAREA_CONFIG.variant,
     );
 
-    const resolvedColor = resolveCascade<Color>(
+    const resolvedColorKey = resolveCascade<Color>(
       color,
       sectionConfig?.color,
       config.defaultColor,
@@ -177,13 +282,16 @@ export const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
 
     // ─── 2. Class Maps ────────────────────────────────────────────────────────
 
-    const variantClass = resolveVariantClass(resolvedVariant, resolvedColor);
+    const variantClass = resolveVariantClass(
+      resolvedVariantKey,
+      resolvedColorKey,
+    );
     const statusClass =
       resolvedStatus !== "default"
         ? TEXTAREA_STATUS_BORDER_CLASS[resolvedStatus]
         : "";
     const radiusClass =
-      resolvedVariant === "underlined"
+      resolvedVariantKey === "underlined"
         ? "rounded-none"
         : resolveClassKey(
             resolvedRadiusKey,

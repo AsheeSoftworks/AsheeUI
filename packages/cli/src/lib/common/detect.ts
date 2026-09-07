@@ -1,3 +1,10 @@
+/**
+ * Framework detection utilities for AsheeUI CLI.
+ * This module provides functions for detecting which framework a project
+ * is using (Next.js, Vite + React, TanStack Start, or unknown) based on
+ * dependencies and file structure.
+ */
+
 import { join } from "node:path";
 import { pathExists, readJson } from "./file-utils";
 import type {

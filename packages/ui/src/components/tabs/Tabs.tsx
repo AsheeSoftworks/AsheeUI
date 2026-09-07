@@ -1,3 +1,11 @@
+/**
+ * Tabs component for AsheeUI.
+ * This file provides the main Tabs component implementation, which renders
+ * a tabbed navigation interface with support for variants, sizes, icons,
+ * badges, and keyboard navigation. It supports both controlled and uncontrolled
+ * active tab selection, and integrates with the standard AsheeUI cascade
+ * for visual tokens.
+ */
 "use client";
 
 import {
@@ -9,8 +17,8 @@ import {
   useState,
 } from "react";
 import { useAsheeConfig } from "../../libs/context";
-import { RADIUS_CLASS, type Radius } from "../../shared/radius";
-import type { Color, Variant } from "../../shared/variant";
+import type { Color, Size, Variant } from "../../shared";
+import { RADIUS_CLASS } from "../../shared";
 import { cn } from "../../utils";
 import {
   resolveCascade,
@@ -22,7 +30,6 @@ import {
   FALLBACK_TABS_CONFIG,
   type TabItem,
   type TabsConfig,
-  type TabsSizeKey,
   type TabsVariant,
 } from "./tabs-config";
 import {
@@ -33,60 +40,41 @@ import {
 
 // ─── Props Interface ──────────────────────────────────────────────────────────
 
-export interface TabsProps
-  extends Omit<React.HTMLAttributes<HTMLDivElement>, "onChange"> {
+type BaseTabsProps = TabsConfig &
+  Omit<React.HTMLAttributes<HTMLDivElement>, "color" | "onChange">;
+
+/**
+ * Configuration options for the Tabs component.
+ */
+export interface TabsProps extends BaseTabsProps {
+  /**
+   * Array of tab items to render.
+   * Each tab must have an id and either label or name for display.
+   */
   tabs: TabItem[];
 
   /**
    * Controlled active tab identifier.
+   * When provided, the component becomes controlled.
    */
   activeId?: string | number;
 
   /**
    * Default active tab identifier for uncontrolled state.
+   * Used as the initial active tab when not controlled.
    */
   defaultActiveId?: string | number;
 
   /**
    * Callback fired when active tab changes.
+   * Receives the new active tab ID.
    */
   onChange?: (id: string | number) => void;
 
   /**
-   * Visual style variant for the tablist container.
-   * @default "underline"
-   */
-  variant?: TabsVariant;
-
-  /**
-   * Size scale key.
-   * @default "md"
-   */
-  size?: TabsSizeKey;
-
-  /**
-   * Border radius for the tablist container.
-   */
-  radius?: Radius;
-
-  /**
-   * Border radius for only the active tab button.
-   */
-  activeRadius?: Radius;
-
-  /**
-   * Button variant for only the active tab button.
-   */
-  activeVariant?: Variant;
-
-  /**
-   * Button color for only the active tab button.
-   * @default "primary"
-   */
-  activeColor?: Color;
-
-  /**
    * Full width stretch tabs inside container.
+   * When true, tabs expand to fill the container width.
+   *
    * @default false
    */
   fullWidth?: boolean;
@@ -109,6 +97,74 @@ export interface TabsProps
 
 // ─── Component Implementation ─────────────────────────────────────────────────
 
+/**
+ * A tabbed navigation interface with support for variants, sizes,
+ * icons, badges, and keyboard navigation.
+ *
+ * Tabs renders a horizontal list of tab triggers and a content panel
+ * that displays the content of the active tab. It supports multiple
+ * visual variants (underline, bordered, ghost), configurable sizes,
+ * and active state styling. The component handles keyboard navigation
+ * with arrow keys, Home, and End keys for accessibility.
+ *
+ * Visual tokens resolve through the standard AsheeUI cascade: prop,
+ * component config, global theme defaults, and the built-in fallback.
+ *
+ * @param props - Tabs configuration options.
+ * @param props.tabs - Array of tab items to render.
+ * @param props.activeId - Controlled active tab identifier.
+ * @param props.defaultActiveId - Default active tab for uncontrolled state.
+ * @param props.onChange - Callback fired when active tab changes.
+ * @param props.fullWidth - Whether tabs stretch to fill container. Defaults to false.
+ * @param props.variant - Visual style variant. Defaults to "underline".
+ * @param props.size - Density scale. Defaults to "md".
+ * @param props.radius - Corner rounding of the container. Defaults to "md".
+ * @param props.activeRadius - Corner rounding of the active tab. Defaults to "md".
+ * @param props.activeVariant - Visual variant for the active tab. Defaults to "solid".
+ * @param props.activeColor - Theme color for the active tab. Defaults to "primary".
+ * @param props.tabListClassName - Extra classes for the tablist.
+ * @param props.tabClassName - Extra classes for individual tabs.
+ * @param props.tabPanelClassName - Extra classes for the content panel.
+ *
+ * @example
+ * ```tsx
+ * import { Tabs } from "asheeui";
+ * import { useState } from "react";
+ *
+ * export function Example() {
+ *   const [activeId, setActiveId] = useState("tab-1");
+ *
+ *   return (
+ *     <Tabs
+ *       tabs={[
+ *         { id: "tab-1", label: "Tab 1", content: <div>Content 1</div> },
+ *         { id: "tab-2", label: "Tab 2", content: <div>Content 2</div> },
+ *         { id: "tab-3", label: "Tab 3", content: <div>Content 3</div> },
+ *       ]}
+ *       activeId={activeId}
+ *       onChange={setActiveId}
+ *       variant="bordered"
+ *     />
+ *   );
+ * }
+ * ```
+ *
+ * @example
+ * ```tsx
+ * // With icons and badges
+ * <Tabs
+ *   tabs={[
+ *     { id: "home", label: "Home", icon: <HomeIcon />, badge: 5 },
+ *     { id: "settings", label: "Settings", icon: <SettingsIcon /> },
+ *   ]}
+ *   fullWidth
+ * />
+ * ```
+ *
+ * @see TabsConfig - The configuration type for component defaults.
+ * @see TabItem - The tab item type.
+ * @see useAsheeConfig - Hook for accessing the global configuration.
+ */
 export const Tabs = forwardRef<HTMLDivElement, TabsProps>(
   (
     {
@@ -116,12 +172,12 @@ export const Tabs = forwardRef<HTMLDivElement, TabsProps>(
       activeId: activeIdProp,
       defaultActiveId,
       onChange,
-      variant: variantProp,
+      variant,
       size,
       radius,
-      activeRadius: activeRadiusProp,
-      activeVariant: activeVariantProp,
-      activeColor: activeColorProp,
+      activeRadius,
+      activeVariant,
+      activeColor,
       fullWidth = false,
       tabListClassName,
       tabClassName,
@@ -133,7 +189,7 @@ export const Tabs = forwardRef<HTMLDivElement, TabsProps>(
     ref,
   ) => {
     const config = useAsheeConfig();
-    const sectionConfig = config.components?.tabs as TabsConfig | undefined;
+    const sectionConfig = config.components?.tabs;
 
     const baseId = useId();
     const tabRefs = useRef<Map<string | number, HTMLButtonElement | null>>(
@@ -150,45 +206,45 @@ export const Tabs = forwardRef<HTMLDivElement, TabsProps>(
 
     // ─── 1. Token Resolvers (4-Tier Cascade) ──────────────────────────────────
 
-    const resolvedSizeKey = resolveCascade<TabsSizeKey>(
+    const resolvedSizeKey = resolveCascade<Size>(
       size,
       sectionConfig?.size,
       undefined,
       FALLBACK_TABS_CONFIG.size,
     );
 
-    const resolvedVariant = resolveCascade<TabsVariant>(
-      variantProp,
+    const resolvedVariantKey = resolveCascade<TabsVariant>(
+      variant,
       sectionConfig?.variant,
       undefined,
       FALLBACK_TABS_CONFIG.variant,
     );
 
     const resolvedActiveVariant = resolveCascade<Variant>(
-      activeVariantProp,
+      activeVariant,
       sectionConfig?.activeVariant,
-      undefined,
+      config.defaultVariant,
       FALLBACK_TABS_CONFIG.activeVariant,
     );
 
-    const resolvedActiveColor = resolveCascade<Color>(
-      activeColorProp,
+    const resolvedActiveColorKey = resolveCascade<Color>(
+      activeColor,
       sectionConfig?.activeColor,
-      config.defaultColor as Color | undefined,
+      config.defaultColor,
       FALLBACK_TABS_CONFIG.activeColor,
     );
 
     const resolvedRadiusKey = resolveRadiusKey(
       radius,
       sectionConfig?.radius,
-      config.defaultRadius as Radius,
+      config.defaultRadius,
       FALLBACK_TABS_CONFIG.radius,
     );
 
     const resolvedActiveRadiusKey = resolveRadiusKey(
-      activeRadiusProp,
+      activeRadius,
       sectionConfig?.activeRadius,
-      config.defaultRadius as Radius,
+      config.defaultRadius,
       FALLBACK_TABS_CONFIG.activeRadius,
     );
 
@@ -277,7 +333,7 @@ export const Tabs = forwardRef<HTMLDivElement, TabsProps>(
 
     // Variant-driven container layout classes
     const listVariantClasses = useMemo(() => {
-      switch (resolvedVariant) {
+      switch (resolvedVariantKey) {
         case "bordered":
           return "border border-border p-1 bg-background";
         case "ghost":
@@ -285,7 +341,7 @@ export const Tabs = forwardRef<HTMLDivElement, TabsProps>(
         default:
           return "border-b border-border gap-2";
       }
-    }, [resolvedVariant]);
+    }, [resolvedVariantKey]);
 
     return (
       <div
@@ -300,7 +356,7 @@ export const Tabs = forwardRef<HTMLDivElement, TabsProps>(
           className={cn(
             "flex flex-row w-full items-center overflow-x-auto scrollbar-hide shrink-0",
             listVariantClasses,
-            resolvedVariant !== "underline" && radiusClass,
+            resolvedVariantKey !== "underline" && radiusClass,
             tabListClassName,
           )}>
           {tabs.map((tab, index) => {
@@ -311,7 +367,7 @@ export const Tabs = forwardRef<HTMLDivElement, TabsProps>(
 
             // Resolve active button modifications
             const activeVariant = tab.activeVariant ?? resolvedActiveVariant;
-            const activeColor = tab.activeColor ?? resolvedActiveColor;
+            const activeColor = tab.activeColor ?? resolvedActiveColorKey;
 
             return (
               <Button
@@ -332,7 +388,7 @@ export const Tabs = forwardRef<HTMLDivElement, TabsProps>(
                 size={resolvedSizeKey}
                 variant={
                   isActive
-                    ? resolvedVariant === "underline"
+                    ? resolvedVariantKey === "underline"
                       ? "underlined"
                       : activeVariant
                     : "ghost"

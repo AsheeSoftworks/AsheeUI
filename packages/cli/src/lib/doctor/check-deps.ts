@@ -1,3 +1,10 @@
+/**
+ * Peer dependencies check for AsheeUI CLI doctor command.
+ * This module provides the checkPeerDependencies function that validates
+ * whether required peer dependencies (react, react-dom, tailwindcss) are
+ * installed and satisfy the supported version ranges.
+ */
+
 import { join } from "node:path";
 import { detectPackageManager, readJson } from "../common/file-utils";
 import { formatInstallCommand } from "../common/pm";
