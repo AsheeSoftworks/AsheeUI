@@ -1,6 +1,6 @@
 {
   "name": "@asheeui/cli",
-  "version": "0.6.2",
+  "version": "0.6.3",
   "bin": {
     "asheeui": "./dist/index.mjs"
   },
@@ -27,7 +27,6 @@
     "dist"
   ],
   "scripts": {
-    "dev": "tsx src/index.ts",
     "build": "tsdown src/index.ts --format esm --clean",
     "prepublishOnly": "pnpm build",
     "test": "vitest run",

@@ -1,3 +1,9 @@
+/**
+ * Root provider check for AsheeUI CLI doctor command.
+ * This module provides the checkRootProvider function that validates
+ * whether the application root is wrapped with AsheeUIProvider.
+ */
+
 import { join } from "node:path";
 import {
   containsRootProvider,

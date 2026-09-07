@@ -1,13 +1,13 @@
+/**
+ * Button component configuration for AsheeUI.
+ * This file defines the configuration types and defaults for the Button
+ * component, including variant, color, size, radius, and behavior options.
+ * It registers the default configuration with the component registry
+ * and provides fallback values for the cascade resolution system.
+ */
+
 import { registerComponentDefaults } from "../../libs/registry";
-import type { Radius } from "../../shared/radius";
-import type { Size } from "../../shared/size";
-import type { Color, Variant } from "../../shared/variant";
-
-/** Padding and font-size scale of the button. */
-export type ButtonSizeKey = Size;
-
-/** Corner rounding scale of the button. */
-export type ButtonRadiusKey = Radius;
+import type { Color, Radius, Size, Variant } from "../../shared";
 
 /**
  * Theme configuration options for the Button component.
@@ -16,32 +16,49 @@ export type ButtonRadiusKey = Radius;
  * component-level fallback tier of the theme cascade.
  */
 export interface ButtonConfig {
-  /** Visual style variant.
+  /**
+   * Visual style variant.
+   * Controls the background, border, and hover treatment.
    *
    * @default "bordered"
    */
   variant?: Variant;
-  /** Theme accent color.
+
+  /**
+   * Theme accent color.
+   * Controls the color of the button's primary visual elements.
    *
    * @default "primary"
    */
   color?: Color;
-  /** Padding and font-size scale.
+
+  /**
+   * Padding and font-size scale.
+   * Controls the density and text size of the button.
    *
    * @default "md"
    */
-  size?: ButtonSizeKey;
-  /** Corner rounding.
+  size?: Size;
+
+  /**
+   * Corner rounding.
+   * Controls the border-radius of the button.
    *
    * @default "md"
    */
-  radius?: ButtonRadiusKey;
-  /** Enables the press-down scale animation.
+  radius?: Radius;
+
+  /**
+   * Enables the press-down scale animation.
+   * When true, the button scales down slightly on click.
    *
    * @default true
    */
   animate?: boolean;
-  /** Makes the button stretch to fill its parent width.
+
+  /**
+   * Makes the button stretch to fill its parent width.
+   * When true, the button expands to 100% of its container width.
    *
    * @default false
    */
@@ -71,6 +88,8 @@ registerComponentDefaults("button", defaultButtonConfig);
 
 /**
  * Hard fallback values used when no config tier provides a value.
+ * These values are used when instance props, component config,
+ * and global defaults are all undefined.
  */
 export const FALLBACK_BUTTON_CONFIG: Required<ButtonConfig> = {
   size: "md",

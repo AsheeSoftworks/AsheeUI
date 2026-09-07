@@ -1,3 +1,12 @@
+/**
+ * AsheeUI config file discovery for the CLI.
+ *
+ * This module provides the `discoverConfig` function that searches for
+ * conventional AsheeUI config files in a project directory. It supports
+ * both `asheeui.config.*` and `asheeui-config.*` spellings across
+ * TypeScript and JavaScript module extensions.
+ */
+
 import { existsSync } from "node:fs";
 import { resolve } from "node:path";
 

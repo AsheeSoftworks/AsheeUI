@@ -1,3 +1,11 @@
+/**
+ * Select component for AsheeUI.
+ * This file provides the main Select component implementation, which renders
+ * a dropdown selector with search, label, validation, and configurable styles.
+ * It supports both controlled and uncontrolled selection state, and integrates
+ * with the FieldShell for consistent label and validation handling. Visual
+ * tokens resolve through the standard AsheeUI cascade system.
+ */
 "use client";
 
 import {
@@ -9,6 +17,7 @@ import {
   useDismiss,
   useFloating,
   useInteractions,
+  size as floatingSize,
   useRole,
 } from "@floating-ui/react";
 import {
@@ -21,13 +30,12 @@ import {
 } from "react";
 import { ChevronDownIcon } from "../../icons/ChevronDownIcon";
 import { useAsheeConfig } from "../../libs/context";
-import { RADIUS_CLASS, type Radius } from "../../shared/radius";
-import type { Size } from "../../shared/size";
 import {
   type Color,
+  RADIUS_CLASS,
   resolveVariantClass,
   type Variant,
-} from "../../shared/variant";
+} from "../../shared";
 import { cn } from "../../utils";
 import {
   resolveCascade,
@@ -35,62 +43,215 @@ import {
   resolveRadiusKey,
 } from "../../utils/resolve-token";
 import { FieldShell } from "../field/FieldShell";
-import type {
-  FieldSizeKey,
-  FieldStatus,
-  LabelAlign,
-} from "../field/field-config";
+import type { FieldSizeKey, LabelAlign } from "../field/field-config";
 import { SelectMenu } from "../select-menu/SelectMenu";
-import {
-  FALLBACK_SELECT_CONFIG,
-  type SelectConfig,
-  type SelectOption,
-} from "./select-config";
+import type { SelectMenuOption } from "../select-menu/select-menu-config";
+import { FALLBACK_SELECT_CONFIG, type SelectConfig } from "./select-config";
 import { SELECT_SIZE_CLASS, SELECT_STATUS_BORDER_CLASS } from "./select-styles";
 
 // ─── Component Interface ──────────────────────────────────────────────────────
 
-export interface SelectProps
-  extends Omit<
+type BaseSelectProps = SelectConfig &
+  Omit<
     React.SelectHTMLAttributes<HTMLSelectElement>,
-    "size" | "color" | "onChange" | "value"
-  > {
-  options: SelectOption[];
-  value?: string | number;
-  onChange?: (e: React.ChangeEvent<HTMLSelectElement>) => void;
-  onValueChange?: (value: string | number) => void;
-  size?: FieldSizeKey;
-  radius?: Radius;
-  variant?: Variant;
-  color?: Color;
-  status?: FieldStatus;
-  label?: string;
-  labelAlign?: LabelAlign;
-  description?: string;
-  message?: string;
-  required?: boolean;
-  isLoading?: boolean;
-  isSearch?: boolean;
-  searchPlaceholder?: string;
-  searchInputName?: string;
-  initialValue?: string | number;
-  belowList?: ReactNode;
-  placeholder?: string;
-  buttonColor?: string;
-  className?: string;
-  dropdownClassName?: string;
-  id?: string;
-  name?: string;
+    "color" | "size" | "value" | "onChange"
+  >;
 
-  // Menu / Popover Overrides
-  menuVariant?: Variant;
-  menuColor?: Color;
-  menuRadius?: Radius;
-  menuSize?: Size;
+/**
+ * Configuration options for the Select component.
+ */
+export interface SelectProps extends BaseSelectProps {
+  /**
+   * Available options to select from.
+   * Each option must have a label and a unique value.
+   */
+  options: SelectMenuOption[];
+
+  /**
+   * Controlled selected value.
+   */
+  value?: string | number;
+
+  /**
+   * Native change event handler.
+   * Receives a synthetic change event.
+   */
+  onChange?: (e: React.ChangeEvent<HTMLSelectElement>) => void;
+
+  /**
+   * Value change handler.
+   * Receives the new selected value directly.
+   */
+  onValueChange?: (value: string | number) => void;
+
+  /**
+   * Label text for the field.
+   */
+  label?: string;
+
+  /**
+   * Description text shown below the label.
+   */
+  description?: string;
+
+  /**
+   * Validation message shown below the field.
+   */
+  message?: string;
+
+  /**
+   * Whether the field is required.
+   * @default false
+   */
+  required?: boolean;
+
+  /**
+   * Whether the field is in a loading state.
+   * @default false
+   */
+  isLoading?: boolean;
+
+  /**
+   * Whether search input is shown in the dropdown.
+   * @default false
+   */
+  isSearch?: boolean;
+
+  /**
+   * Placeholder text for the search input.
+   * @default "Search options..."
+   */
+  searchPlaceholder?: string;
+
+  /**
+   * Name attribute for the search input.
+   * @default "select-search"
+   */
+  searchInputName?: string;
+
+  /**
+   * Initial value for uncontrolled usage.
+   */
+  initialValue?: string | number;
+
+  /**
+   * Content rendered below the options list.
+   */
+  belowList?: ReactNode;
+
+  /**
+   * Placeholder text shown when no value is selected.
+   * @default "Select..."
+   */
+  placeholder?: string;
+
+  /**
+   * Custom background color for the trigger button.
+   * Accepts any CSS color value.
+   */
+  buttonColor?: string;
+
+  /**
+   * Extra CSS classes for the trigger button.
+   */
+  className?: string;
+
+  /**
+   * Extra CSS classes for the dropdown.
+   */
+  dropdownClassName?: string;
+
+  /**
+   * Optional ID for the field.
+   */
+  id?: string;
+
+  /**
+   * Name attribute for the select.
+   */
+  name?: string;
 }
 
 // ─── Component Implementation ─────────────────────────────────────────────────
 
+/**
+ * A dropdown selector with search, label, validation, and configurable styles.
+ *
+ * Select renders a dropdown that allows selecting a single option from a list.
+ * It supports search filtering, controlled and uncontrolled selection state,
+ * validation states, and custom menu and trigger styles. Visual tokens resolve
+ * through the standard AsheeUI cascade system.
+ *
+ * The component uses Floating UI for positioning and accessibility, and
+ * integrates with the FieldShell for consistent label and validation handling.
+ *
+ * @param props - Select configuration options.
+ * @param props.options - Available options to select from.
+ * @param props.value - Controlled selected value.
+ * @param props.onChange - Native change event handler.
+ * @param props.onValueChange - Value change handler.
+ * @param props.label - Field label text.
+ * @param props.description - Description text.
+ * @param props.message - Validation message.
+ * @param props.required - Whether the field is required.
+ * @param props.isLoading - Loading state.
+ * @param props.disabled - Disabled state.
+ * @param props.isSearch - Whether search is enabled. Defaults to false.
+ * @param props.searchPlaceholder - Search placeholder. Defaults to "Search options...".
+ * @param props.initialValue - Initial value for uncontrolled usage.
+ * @param props.belowList - Content below the options list.
+ * @param props.placeholder - Placeholder text. Defaults to "Select...".
+ * @param props.buttonColor - Custom background color for the trigger.
+ * @param props.size - Size of the trigger. Defaults to "md".
+ * @param props.radius - Corner rounding. Defaults to "md".
+ * @param props.variant - Visual style variant. Defaults to "bordered".
+ * @param props.color - Theme accent color. Defaults to "primary".
+ * @param props.status - Validation status.
+ * @param props.labelAlign - Alignment of the label. Defaults to "left".
+ *
+ * @example
+ * ```tsx
+ * import { Select } from "asheeui";
+ * import { useState } from "react";
+ *
+ * export function Example() {
+ *   const [value, setValue] = useState<string | number>("react");
+ *
+ *   const options = [
+ *     { label: "React", value: "react" },
+ *     { label: "Vue", value: "vue" },
+ *     { label: "Svelte", value: "svelte" },
+ *   ];
+ *
+ *   return (
+ *     <Select
+ *       options={options}
+ *       value={value}
+ *       onValueChange={setValue}
+ *       label="Select Framework"
+ *       placeholder="Choose a framework..."
+ *     />
+ *   );
+ * }
+ * ```
+ *
+ * @example
+ * ```tsx
+ * // With search and validation
+ * <Select
+ *   options={fruits}
+ *   label="Favorite Fruit"
+ *   isSearch
+ *   status="error"
+ *   message="Please select a fruit"
+ *   required
+ * />
+ * ```
+ *
+ * @see SelectConfig - The configuration type for component defaults.
+ * @see SelectMenu - The dropdown menu component.
+ * @see FieldShell - The wrapper component for label and validation.
+ */
 export const Select = forwardRef<HTMLButtonElement, SelectProps>(
   (
     {
@@ -121,10 +282,7 @@ export const Select = forwardRef<HTMLButtonElement, SelectProps>(
       dropdownClassName,
       id,
       name,
-      menuVariant,
-      menuColor,
-      menuRadius,
-      menuSize,
+      menu,
       style,
     },
     ref,
@@ -143,7 +301,18 @@ export const Select = forwardRef<HTMLButtonElement, SelectProps>(
       onOpenChange: (open) => !disabled && setIsOpen(open),
       placement: "bottom-start",
       whileElementsMounted: autoUpdate,
-      middleware: [offset(4), flip(), shift({ padding: 8 })],
+      middleware: [
+        offset(4),
+        flip(),
+        shift({ padding: 8 }),
+        floatingSize({
+          apply({ availableHeight, elements }) {
+            Object.assign(elements.floating.style, {
+              maxHeight: `${availableHeight}px`,
+            });
+          },
+        }),
+      ],
     });
 
     const click = useClick(context, { enabled: !disabled });
@@ -164,14 +333,14 @@ export const Select = forwardRef<HTMLButtonElement, SelectProps>(
       FALLBACK_SELECT_CONFIG.size,
     );
 
-    const resolvedVariant = resolveCascade<Variant>(
+    const resolvedVariantKey = resolveCascade<Variant>(
       variant,
       sectionConfig?.variant,
       config.defaultVariant,
       FALLBACK_SELECT_CONFIG.variant,
     );
 
-    const resolvedColor = resolveCascade<Color>(
+    const resolvedColorKey = resolveCascade<Color>(
       color,
       sectionConfig?.color,
       config.defaultColor,
@@ -194,44 +363,18 @@ export const Select = forwardRef<HTMLButtonElement, SelectProps>(
       FALLBACK_SELECT_CONFIG.labelAlign,
     );
 
-    // Menu Token Resolvers
-    const resolvedMenuVariant = resolveCascade<Variant>(
-      menuVariant,
-      sectionConfig?.menuVariant,
-      undefined,
-      resolvedVariant,
-    );
-
-    const resolvedMenuColor = resolveCascade<Color>(
-      menuColor,
-      sectionConfig?.menuColor,
-      undefined,
-      resolvedColor,
-    );
-
-    const resolvedMenuRadiusKey = resolveRadiusKey(
-      menuRadius,
-      sectionConfig?.menuRadius,
-      resolvedRadiusKey,
-      FALLBACK_SELECT_CONFIG.radius,
-    );
-
-    const resolvedMenuSize = resolveCascade<Size>(
-      menuSize,
-      sectionConfig?.menuSize,
-      undefined,
-      FALLBACK_SELECT_CONFIG.menuSize,
-    );
-
     // ─── 2. Class Maps ────────────────────────────────────────────────────────
 
-    const variantClass = resolveVariantClass(resolvedVariant, resolvedColor);
+    const variantClass = resolveVariantClass(
+      resolvedVariantKey,
+      resolvedColorKey,
+    );
     const statusClass =
       resolvedStatus !== "default"
         ? SELECT_STATUS_BORDER_CLASS[resolvedStatus]
         : "";
     const radiusClass =
-      resolvedVariant === "underlined"
+      resolvedVariantKey === "underlined"
         ? "rounded-none"
         : resolveClassKey(
             resolvedRadiusKey,
@@ -245,7 +388,7 @@ export const Select = forwardRef<HTMLButtonElement, SelectProps>(
     );
 
     const handleSelectOption = useCallback(
-      (option: SelectOption) => {
+      (option: SelectMenuOption) => {
         onValueChange?.(option.value);
         if (onChange) {
           const event = {
@@ -341,10 +484,8 @@ export const Select = forwardRef<HTMLButtonElement, SelectProps>(
             onSearchChange={setSearchQuery}
             belowList={belowList}
             dropdownClassName={dropdownClassName}
-            variant={resolvedMenuVariant}
-            color={resolvedMenuColor}
-            radius={resolvedMenuRadiusKey}
-            size={resolvedMenuSize}
+            menuProps={menu}
+            menuConfig={sectionConfig}
           />
         </div>
       </FieldShell>

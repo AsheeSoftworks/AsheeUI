@@ -1,3 +1,11 @@
+/**
+ * Sidebar component for AsheeUI.
+ * This file provides the main Sidebar component implementation, which renders
+ * a collapsible navigation sidebar with support for sections, items, icons,
+ * badges, tooltips, and custom link components. It includes role-based
+ * visibility filtering, collapse state management, and the standard AsheeUI
+ * cascade for visual tokens.
+ */
 "use client";
 
 import {
@@ -13,12 +21,13 @@ import { ArrowLeftIcon } from "../../icons/ArrowLeftIcon";
 import { ChevronLeftIcon } from "../../icons/ChevronLeftIcon";
 import { ChevronRightIcon } from "../../icons/ChevronRightIcon";
 import { useAsheeConfig } from "../../libs/context";
-import { RADIUS_CLASS, type Radius } from "../../shared/radius";
 import {
   type Color,
+  RADIUS_CLASS,
+  type Radius,
   resolveVariantClass,
   type Variant,
-} from "../../shared/variant";
+} from "../../shared";
 import { cn } from "../../utils";
 import {
   resolveCascade,
@@ -46,115 +55,206 @@ import {
   SIDEBAR_VARIANT_CLASS,
 } from "./sidebar-styles";
 
-// Helper type guard to check if items are sections
+/**
+ * Helper type guard to check if items are sections.
+ * Determines whether the provided item is a SidebarSection or a SidebarItem.
+ */
 function isSidebarSection<T>(
   item: SidebarItem<T> | SidebarSection<T>,
 ): item is SidebarSection<T> {
   return "items" in item && Array.isArray(item.items);
 }
 
-export interface SidebarProps<T = string>
-  extends Omit<HTMLAttributes<HTMLElement>, "onSelect" | "title"> {
-  /** List of navigation items or sections. */
+type BaseSidebarProps = SidebarConfig &
+  Omit<HTMLAttributes<HTMLElement>, "color" | "size" | "onSelect" | "title">;
+
+/**
+ * Configuration options for the Sidebar component.
+ */
+export interface SidebarProps<T = string> extends BaseSidebarProps {
+  /**
+   * List of navigation items or sections.
+   * Can be a flat array of items or an array of sections.
+   */
   items?: SidebarItems<T>;
 
-  /** Key of currently active item. */
+  /**
+   * Key of currently active item.
+   * Used to highlight the selected navigation item.
+   */
   activeKey?: T;
 
-  /** Selection callback fired when an item is clicked. */
+  /**
+   * Selection callback fired when an item is clicked.
+   * Receives the clicked item object.
+   */
   onSelect?: (item: SidebarItem<T>) => void;
 
-  /** Controlled collapsed drawer state. */
+  /**
+   * Controlled collapsed drawer state.
+   * When provided, the component becomes controlled.
+   */
   isCollapsed?: boolean;
 
-  /** Callback when collapse state changes. */
+  /**
+   * Callback when collapse state changes.
+   * Receives the new collapsed state.
+   */
   onCollapseChange?: (collapsed: boolean) => void;
 
-  /** Title displayed in the sidebar header when expanded. */
+  /**
+   * Title displayed in the sidebar header when expanded.
+   */
   title?: ReactNode;
 
-  /** Header back button click handler. */
+  /**
+   * Header back button click handler.
+   * When provided, a back button is shown in the header.
+   */
   onBack?: () => void;
 
-  /** Custom back button icon element. */
+  /**
+   * Custom back button icon element.
+   * Defaults to ArrowLeftIcon.
+   */
   backIcon?: ReactNode;
 
-  /** Optional user role string to filter item visibility against item.roles. */
+  /**
+   * Optional user role string to filter item visibility against item.roles.
+   * Items and sections with roles that don't match this role are hidden.
+   */
   userRole?: string;
 
-  /** Footer slot element. */
+  /**
+   * Footer slot element.
+   * Rendered at the bottom of the sidebar.
+   */
   footer?: ReactNode;
 
-  /** Visual variant style. */
-  variant?: SidebarVariant;
-
-  /** Size scale token key. */
-  size?: SidebarSizeKey;
-
-  /** Radius scale token for sidebar container. */
-  radius?: Radius;
-
-  /** Radius scale token for individual items. */
-  itemRadius?: Radius;
-
-  /** Active item variant. */
-  itemVariant?: Variant;
-
-  /** Active item color. */
-  activeItemColor?: Color;
-
-  /** Header back button variant. */
-  backButtonVariant?: Variant;
-
-  /** Header back button color. */
-  backButtonColor?: Color;
-
-  /** Collapse toggle button variant. */
-  collapseButtonVariant?: Variant;
-
-  /** Collapse toggle button color. */
-  collapseButtonColor?: Color;
-
-  // NEW: Control collapse button visibility and collapsibility
-  showCollapseButton?: boolean;
-  collapsible?: boolean;
-  defaultCollapsed?: boolean;
-
-  /** Whether to show tooltips on hover when the sidebar is collapsed. */
-  showTooltips?: boolean;
-
-  /** Preferred tooltip placement when collapsed. */
-  tooltipPlacement?: TooltipPlacement;
-
-  /** Header section class override. */
+  /**
+   * Header section class override.
+   */
   headerClassName?: string;
 
-  /** Navigation container class override. */
+  /**
+   * Navigation container class override.
+   */
   bodyClassName?: string;
 
-  /** Individual navigation item class override. */
+  /**
+   * Individual navigation item class override.
+   */
   itemClassName?: string;
 
-  /** Section label class override. */
+  /**
+   * Section label class override.
+   */
   sectionLabelClassName?: string;
 
-  /** Footer class override. */
+  /**
+   * Footer class override.
+   */
   footerClassName?: string;
 
-  /** Anchor tag props passthrough (native <a> or custom link). */
+  /**
+   * Anchor tag props passthrough (native <a> or custom link).
+   */
   anchorProps?: Omit<
     React.AnchorHTMLAttributes<HTMLAnchorElement>,
     "href" | "children" | "onClick" | "className"
   >;
 
-  // NEW: Custom link component support
-  /** Custom link component (e.g., Next.js Link, TanStack Router Link). */
+  /**
+   * Custom link component (e.g., Next.js Link, TanStack Router Link).
+   * When provided, this component is used instead of the native <a> tag.
+   */
   linkComponent?: ElementType;
 
-  /** Additional props to pass to the custom link component (e.g., { prefetch: true }). */
+  /**
+   * Additional props to pass to the custom link component (e.g., { prefetch: true }).
+   * These take precedence over the component's own props.
+   */
   linkProps?: Record<string, unknown>;
 }
 
+/**
+ * A collapsible navigation sidebar with support for sections, items,
+ * icons, badges, tooltips, and custom link components.
+ *
+ * Sidebar renders a vertical navigation menu that can be collapsed to
+ * an icon-only state. It supports sections with labels, items with icons
+ * and badges, role-based visibility filtering, and tooltips for collapsed
+ * items. Visual tokens resolve through the standard AsheeUI cascade:
+ * prop, component config, global theme defaults, and the built-in fallback.
+ *
+ * The component automatically handles accessibility attributes including
+ * proper navigation landmarks, aria-label for tooltips, and focus
+ * management for interactive elements.
+ *
+ * @param props - Sidebar configuration options.
+ * @param props.items - List of navigation items or sections.
+ * @param props.activeKey - Key of currently active item.
+ * @param props.onSelect - Selection callback fired when an item is clicked.
+ * @param props.isCollapsed - Controlled collapsed state.
+ * @param props.onCollapseChange - Callback when collapse state changes.
+ * @param props.title - Title displayed in the header.
+ * @param props.onBack - Header back button click handler.
+ * @param props.userRole - Role for filtering items by visibility.
+ * @param props.footer - Footer slot element.
+ * @param props.size - Size scale. Defaults to "md".
+ * @param props.variant - Visual style variant. Defaults to "default".
+ * @param props.radius - Corner rounding of the sidebar.
+ * @param props.itemRadius - Corner rounding of navigation items.
+ * @param props.itemVariant - Visual variant for inactive items.
+ * @param props.activeItemVariant - Visual variant for active items.
+ * @param props.activeItemColor - Theme color for active items.
+ * @param props.showTooltips - Whether tooltips are shown. Defaults to true.
+ * @param props.tooltipPlacement - Placement of tooltips. Defaults to "right".
+ * @param props.showCollapseButton - Whether the collapse button is shown. Defaults to true.
+ * @param props.collapsible - Whether the sidebar can be collapsed. Defaults to true.
+ * @param props.linkComponent - Custom link component for routing.
+ * @param props.linkProps - Props for the custom link component.
+ *
+ * @example
+ * ```tsx
+ * import { Sidebar } from "asheeui";
+ * import { useState } from "react";
+ *
+ * export function Example() {
+ *   const [active, setActive] = useState("dashboard");
+ *
+ *   return (
+ *     <Sidebar
+ *       items={[
+ *         { id: "dashboard", label: "Dashboard", icon: <DashboardIcon /> },
+ *         { id: "settings", label: "Settings", icon: <SettingsIcon /> },
+ *       ]}
+ *       activeKey={active}
+ *       onSelect={(item) => setActive(item.id)}
+ *       title="My App"
+ *     />
+ *   );
+ * }
+ * ```
+ *
+ * @example
+ * ```tsx
+ * // With sections and Next.js Link
+ * import NextLink from "next/link";
+ *
+ * <Sidebar
+ *   items={[
+ *     { id: "main", label: "Main", items: mainItems },
+ *     { id: "admin", label: "Admin", items: adminItems },
+ *   ]}
+ *   linkComponent={NextLink}
+ *   userRole="admin"
+ * />
+ * ```
+ *
+ * @see SidebarConfig - The configuration type for component defaults.
+ * @see useAsheeConfig - Hook for accessing the global configuration.
+ */
 export function Sidebar<T = string>({
   items: itemsProp,
   activeKey,
@@ -166,16 +266,13 @@ export function Sidebar<T = string>({
   backIcon,
   userRole,
   footer,
-  variant: variantProp,
+  variant,
   size,
   radius,
   itemRadius,
   itemVariant,
+  activeItemVariant,
   activeItemColor,
-  backButtonVariant,
-  backButtonColor,
-  collapseButtonVariant,
-  collapseButtonColor,
   showCollapseButton: showCollapseButtonProp,
   collapsible: collapsibleProp,
   defaultCollapsed: defaultCollapsedProp,
@@ -194,9 +291,9 @@ export function Sidebar<T = string>({
   ...props
 }: SidebarProps<T>) {
   const config = useAsheeConfig();
-  const sectionConfig = config.components?.sidebar as SidebarConfig | undefined;
+  const sectionConfig = config.components?.sidebar;
 
-  // NEW: Resolve collapsible and collapse button visibility
+  // Resolve collapsible and collapse button visibility
   const resolvedCollapsible = resolveCascade<boolean>(
     collapsibleProp,
     sectionConfig?.collapsible,
@@ -211,7 +308,6 @@ export function Sidebar<T = string>({
     FALLBACK_SIDEBAR_CONFIG.showCollapseButton,
   );
 
-  // NEW: Resolve default collapsed state
   const resolvedDefaultCollapsed = resolveCascade<boolean>(
     defaultCollapsedProp,
     sectionConfig?.defaultCollapsed,
@@ -219,12 +315,10 @@ export function Sidebar<T = string>({
     FALLBACK_SIDEBAR_CONFIG.defaultCollapsed,
   );
 
-  // NEW: Use resolved default collapsed state if no controlled prop is provided
   const [internalCollapsed, setInternalCollapsed] = useState(
     isCollapsedProp ?? resolvedDefaultCollapsed,
   );
 
-  // Update internal state if controlled prop changes
   useEffect(() => {
     if (isCollapsedProp !== undefined) {
       setInternalCollapsed(isCollapsedProp);
@@ -234,7 +328,7 @@ export function Sidebar<T = string>({
   const isCollapsed = isCollapsedProp ?? internalCollapsed;
 
   const handleCollapseToggle = useCallback(() => {
-    if (!resolvedCollapsible) return; // Don't toggle if not collapsible
+    if (!resolvedCollapsible) return;
 
     const newState = !isCollapsed;
     if (onCollapseChange) {
@@ -244,7 +338,7 @@ export function Sidebar<T = string>({
     }
   }, [isCollapsed, onCollapseChange, resolvedCollapsible]);
 
-  // 1. Size & Variant Cascading
+  // Size & Variant Cascading
   const resolvedSizeKey = resolveCascade<SidebarSizeKey>(
     size,
     sectionConfig?.size,
@@ -252,15 +346,14 @@ export function Sidebar<T = string>({
     FALLBACK_SIDEBAR_CONFIG.size,
   );
 
-  const resolvedVariant = resolveCascade<SidebarVariant>(
-    variantProp,
+  const resolvedVariantKey = resolveCascade<SidebarVariant>(
+    variant,
     sectionConfig?.variant,
     undefined,
     FALLBACK_SIDEBAR_CONFIG.variant,
   );
 
-  // 2. Radius Cascading
-  // NEW: Filter out 'full' radius and fallback to 'none'
+  // Radius Cascading
   const filterRadius = (
     radiusValue: Radius | undefined,
   ): Radius | undefined => {
@@ -271,71 +364,50 @@ export function Sidebar<T = string>({
   const resolvedRadiusKey = resolveRadiusKey(
     filterRadius(radius),
     filterRadius(sectionConfig?.radius),
-    config.defaultRadius as Radius,
+    config.defaultRadius,
     FALLBACK_SIDEBAR_CONFIG.radius,
   );
 
   const resolvedItemRadiusKey = resolveRadiusKey(
     filterRadius(itemRadius),
     filterRadius(sectionConfig?.itemRadius),
-    config.defaultRadius as Radius,
+    config.defaultRadius,
     FALLBACK_SIDEBAR_CONFIG.itemRadius,
   );
 
-  // 3. Item & Button Tokens
+  // Item variant and active item variant
   const resolvedItemVariant = resolveCascade<Variant>(
     itemVariant,
     sectionConfig?.itemVariant,
-    config.defaultVariant as Variant,
+    config.defaultVariant,
     FALLBACK_SIDEBAR_CONFIG.itemVariant,
+  );
+
+  const resolvedActiveItemVariant = resolveCascade<Variant>(
+    activeItemVariant,
+    sectionConfig?.activeItemVariant,
+    config.defaultVariant,
+    FALLBACK_SIDEBAR_CONFIG.activeItemVariant,
   );
 
   const resolvedActiveItemColor = resolveCascade<Color>(
     activeItemColor,
     sectionConfig?.activeItemColor,
-    config.defaultColor as Color,
+    config.defaultColor,
     FALLBACK_SIDEBAR_CONFIG.activeItemColor,
   );
 
   const activeVariantClasses = resolveVariantClass(
-    resolvedItemVariant,
+    resolvedActiveItemVariant,
     resolvedActiveItemColor,
   );
 
   const inactiveVariantClasses = resolveVariantClass(
-    "ghost" as Variant,
+    resolvedItemVariant,
     "none" as Color,
   );
 
-  const resolvedBackButtonVariant = resolveCascade<Variant>(
-    backButtonVariant,
-    sectionConfig?.backButtonVariant,
-    undefined,
-    FALLBACK_SIDEBAR_CONFIG.backButtonVariant,
-  );
-
-  const resolvedBackButtonColor = resolveCascade<Color>(
-    backButtonColor,
-    sectionConfig?.backButtonColor,
-    undefined,
-    FALLBACK_SIDEBAR_CONFIG.backButtonColor,
-  );
-
-  const resolvedCollapseButtonVariant = resolveCascade<Variant>(
-    collapseButtonVariant,
-    sectionConfig?.collapseButtonVariant,
-    undefined,
-    FALLBACK_SIDEBAR_CONFIG.collapseButtonVariant,
-  );
-
-  const resolvedCollapseButtonColor = resolveCascade<Color>(
-    collapseButtonColor,
-    sectionConfig?.collapseButtonColor,
-    undefined,
-    FALLBACK_SIDEBAR_CONFIG.collapseButtonColor,
-  );
-
-  // 4. Tooltip Resolvers
+  // Tooltip Resolvers
   const resolvedShowTooltips = resolveCascade<boolean>(
     showTooltips,
     sectionConfig?.showTooltips,
@@ -356,19 +428,14 @@ export function Sidebar<T = string>({
   const normalizedSections = useMemo(() => {
     if (!rawItems) return [];
 
-    // Check if first item is a section (has items property)
     const firstItem = rawItems[0];
     if (!firstItem) return [];
 
-    // If it's already a section array, return as is
     if (isSidebarSection(firstItem)) {
       return rawItems as SidebarSection<T>[];
     }
 
-    // Otherwise, treat as flat items array and wrap in a single section
     const flatItems = rawItems as SidebarItem<T>[];
-
-    // Create a section with no label (or a default one if needed)
     return [
       {
         id: "__root" as T,
@@ -412,21 +479,18 @@ export function Sidebar<T = string>({
     ? SIDEBAR_COLLAPSED_WIDTH_CLASS[resolvedSizeKey]
     : SIDEBAR_EXPANDED_WIDTH_CLASS[resolvedSizeKey];
 
-  // Render a single item
+  // Render a single item - simplified with only itemVariant and active state
   const renderItem = (item: SidebarItem<T>) => {
     const isActive = item.id === activeKey;
 
-    // Build the class name for the link
     const linkClassName = cn(
       "w-full flex items-center gap-3 transition-all truncate no-underline",
       SIDEBAR_ITEM_CLASS[resolvedSizeKey],
       isCollapsed ? "justify-center px-0" : "justify-start",
       isActive && "font-medium",
-      // Use the resolved variant classes
+      // Use resolved variant classes - active items use activeItemVariant
       isActive ? activeVariantClasses : inactiveVariantClasses,
-      // Disabled styles
       item.disabled && "opacity-50 cursor-not-allowed pointer-events-none",
-      // Radius
       resolveClassKey(
         resolvedItemVariant === "underlined" ? "none" : resolvedItemRadiusKey,
         RADIUS_CLASS,
@@ -435,7 +499,6 @@ export function Sidebar<T = string>({
       itemClassName,
     );
 
-    // Choose the component: custom or native <a>
     const LinkComponent = linkComponent || "a";
     const linkProps = {
       href: item.disabled ? undefined : item.href,
@@ -454,7 +517,7 @@ export function Sidebar<T = string>({
           <span
             className={cn(
               "shrink-0 flex items-center justify-center",
-              isCollapsed && "w-full", // Make the icon span take full width in collapsed mode
+              isCollapsed && "w-full",
             )}>
             {item.icon}
           </span>
@@ -517,7 +580,7 @@ export function Sidebar<T = string>({
       className={cn(
         "h-full flex flex-col transition-all duration-200 select-none shrink-0",
         widthClass,
-        SIDEBAR_VARIANT_CLASS[resolvedVariant],
+        SIDEBAR_VARIANT_CLASS[resolvedVariantKey],
         resolveClassKey(
           resolvedRadiusKey,
           RADIUS_CLASS,
@@ -540,8 +603,8 @@ export function Sidebar<T = string>({
             <Button
               icon
               aria-label="Go back"
-              variant={resolvedBackButtonVariant}
-              color={resolvedBackButtonColor}
+              variant={resolvedItemVariant}
+              color="secondary"
               size={resolvedSizeKey}
               radius={resolvedItemRadiusKey}
               onClick={onBack}
@@ -572,7 +635,7 @@ export function Sidebar<T = string>({
         {filteredSections.map(renderSection)}
       </nav>
 
-      {/* Footer with Collapse Button - Now optional and conditionally rendered */}
+      {/* Footer with Collapse Button - simplified */}
       {resolvedShowCollapseButton && resolvedCollapsible && (
         <div
           className={cn(
@@ -582,12 +645,11 @@ export function Sidebar<T = string>({
           )}>
           {!isCollapsed && footer && <div className="mb-2">{footer}</div>}
 
-          {/* Collapse Toggle Button at Bottom */}
           <Button
             icon
             aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
-            variant={resolvedCollapseButtonVariant}
-            color={resolvedCollapseButtonColor}
+            variant={resolvedItemVariant}
+            color="secondary"
             size={resolvedSizeKey}
             radius={resolvedItemRadiusKey}
             onClick={handleCollapseToggle}
@@ -609,7 +671,6 @@ export function Sidebar<T = string>({
         </div>
       )}
 
-      {/* If footer exists but collapse button is hidden or not collapsible */}
       {!resolvedShowCollapseButton && footer && (
         <div
           className={cn(

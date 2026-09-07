@@ -1,3 +1,9 @@
+/**
+ * Config file check for AsheeUI CLI doctor command.
+ * This module provides the checkConfigFile function that validates
+ * whether an asheeui configuration file exists in the project.
+ */
+
 import { findAsheeConfigFile } from "../../utils/audit";
 import { toRelativePath } from "../common/file-utils";
 import type { DoctorCheckResult, DoctorOptions } from "./types";

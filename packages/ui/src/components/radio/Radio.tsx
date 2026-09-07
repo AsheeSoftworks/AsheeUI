@@ -1,277 +1,261 @@
+/**
+ * RadioGroup component for AsheeUI.
+ * This file provides the RadioGroup component that wraps multiple Radio
+ * components and manages shared state through context. It provides
+ * consistent labeling, validation, and layout for a group of radio options.
+ */
 "use client";
 
-import {
-  type ChangeEvent,
-  forwardRef,
-  type InputHTMLAttributes,
-  type ReactNode,
-  useCallback,
-  useId,
-  useState,
-} from "react";
+import { forwardRef, type ReactNode, useId } from "react";
 import { useAsheeConfig } from "../../libs/context";
-import { RADIUS_CLASS, type Radius } from "../../shared/radius";
-import type { Color } from "../../shared/variant";
+import type { Color } from "../../shared";
 import { cn } from "../../utils";
-import {
-  resolveCascade,
-  resolveClassKey,
-  resolveRadiusKey,
-} from "../../utils/resolve-token";
-import type { FieldSizeKey, FieldStatus } from "../field/field-config";
+import { resolveCascade } from "../../utils/resolve-token";
+import { FieldShell } from "../field/FieldShell";
+import type {
+  FieldSizeKey,
+  FieldStatus,
+  LabelAlign,
+} from "../field/field-config";
 import {
   FALLBACK_RADIO_CONFIG,
   type RadioConfig,
   type RadioVariant,
 } from "./radio-config";
-import { useRadioGroupContext } from "./radio-context";
-import {
-  RADIO_COLOR_CLASS,
-  RADIO_FONT_SIZE_CLASS,
-  RADIO_GAP_CLASS,
-  RADIO_INNER_SIZE_CLASS,
-  RADIO_OUTER_SIZE_CLASS,
-  RADIO_STATUS_BORDER_CLASS,
-} from "./radio-styles";
+import { RadioContext } from "./radio-context";
 
 // ─── Component Interface ──────────────────────────────────────────────────────
 
-export interface RadioProps
-  extends Omit<
-    InputHTMLAttributes<HTMLInputElement>,
-    "size" | "onChange" | "children" | "color"
-  > {
-  value: string;
+/**
+ * Configuration options for the RadioGroup component.
+ */
+export interface RadioGroupProps {
+  /**
+   * Radio components to render inside the group.
+   */
+  children: ReactNode;
+
+  /**
+   * Name attribute for all radio inputs in the group.
+   * Auto-generated if not provided.
+   */
+  name?: string;
+
+  /**
+   * Controlled selected value.
+   */
+  value?: string;
+
+  /**
+   * Uncontrolled initial selected value.
+   */
+  defaultValue?: string;
+
+  /**
+   * Callback fired when the selection changes.
+   * Receives the new selected value.
+   */
+  onChange?: (value: string) => void;
+
+  /**
+   * Size scale for all radios in the group.
+   * @default "md"
+   */
   size?: FieldSizeKey;
+
+  /**
+   * Theme accent color for all radios in the group.
+   * @default "primary"
+   */
   color?: Color;
-  radius?: Radius;
+
+  /**
+   * Visual style variant for all radios in the group.
+   * @default "default"
+   */
   variant?: RadioVariant;
+
+  /**
+   * Layout orientation of the radio group.
+   * - `horizontal`: Radios are laid out in a row.
+   * - `vertical`: Radios are laid out in a column.
+   * @default "vertical"
+   */
+  orientation?: "horizontal" | "vertical";
+
+  /**
+   * Validation status for the group.
+   * @default "default"
+   */
   status?: FieldStatus;
-  label?: ReactNode;
-  description?: ReactNode;
-  checked?: boolean;
-  defaultChecked?: boolean;
-  onChange?: (
-    checked: boolean,
-    value: string,
-    event: ChangeEvent<HTMLInputElement>,
-  ) => void;
+
+  /**
+   * Label text for the group.
+   */
+  label?: string;
+
+  /**
+   * Alignment of the label relative to the group.
+   * @default "left"
+   */
+  labelAlign?: LabelAlign;
+
+  /**
+   * Description text shown below the label.
+   */
+  description?: string;
+
+  /**
+   * Validation message shown below the group.
+   */
+  message?: string;
+
+  /**
+   * Whether the field is required.
+   * @default false
+   */
+  required?: boolean;
+
+  /**
+   * Whether all radios in the group are disabled.
+   * @default false
+   */
+  disabled?: boolean;
+
+  /**
+   * Extra CSS classes for the group container.
+   */
+  className?: string;
 }
 
 // ─── Component Implementation ─────────────────────────────────────────────────
 
-export const Radio = forwardRef<HTMLInputElement, RadioProps>(
+/**
+ * A group of radio buttons that manages shared state and layout.
+ *
+ * RadioGroup wraps multiple Radio components and provides a consistent
+ * context for shared props like name, value, size, color, and disabled
+ * state. It also handles labeling, validation, and layout through the
+ * FieldShell component.
+ *
+ * @param props - RadioGroup configuration options.
+ * @param props.children - Radio components to render.
+ * @param props.name - Name attribute for all radios.
+ * @param props.value - Controlled selected value.
+ * @param props.defaultValue - Uncontrolled initial selected value.
+ * @param props.onChange - Callback fired when selection changes.
+ * @param props.size - Size scale for all radios. Defaults to "md".
+ * @param props.color - Theme accent color. Defaults to "primary".
+ * @param props.variant - Visual style variant. Defaults to "default".
+ * @param props.orientation - Layout orientation. Defaults to "vertical".
+ * @param props.status - Validation status. Defaults to "default".
+ * @param props.label - Label text for the group.
+ * @param props.labelAlign - Alignment of the label. Defaults to "left".
+ * @param props.description - Description text.
+ * @param props.message - Validation message.
+ * @param props.required - Whether the field is required.
+ * @param props.disabled - Whether all radios are disabled.
+ * @param props.className - Extra CSS classes.
+ *
+ * @example
+ * ```tsx
+ * import { Radio, RadioGroup } from "asheeui";
+ * import { useState } from "react";
+ *
+ * export function Example() {
+ *   const [value, setValue] = useState("option-1");
+ *
+ *   return (
+ *     <RadioGroup
+ *       label="Choose an option"
+ *       value={value}
+ *       onChange={setValue}
+ *       orientation="horizontal"
+ *     >
+ *       <Radio value="option-1" label="Option 1" />
+ *       <Radio value="option-2" label="Option 2" />
+ *       <Radio value="option-3" label="Option 3" disabled />
+ *     </RadioGroup>
+ *   );
+ * }
+ * ```
+ *
+ * @see Radio - The individual radio component.
+ * @see RadioConfig - The configuration type for component defaults.
+ */
+export const RadioGroup = forwardRef<HTMLDivElement, RadioGroupProps>(
   (
     {
+      children,
+      name,
       value,
+      onChange,
       size,
       color,
-      radius,
       variant,
+      orientation = "vertical",
       status,
       label,
+      labelAlign,
       description,
-      id,
-      name: directName,
+      message,
+      required,
+      disabled,
       className,
-      style,
-      disabled: directDisabled,
-      checked: controlledChecked,
-      defaultChecked = false,
-      onChange,
-      ...rest
     },
     ref,
   ) => {
     const config = useAsheeConfig();
-    const group = useRadioGroupContext();
     const sectionConfig = config.components?.radio as RadioConfig | undefined;
 
     const generatedId = useId();
-    const radioId = id ?? generatedId;
+    const groupName = name ?? generatedId;
 
-    // Derived properties from Group context or Direct props
-    const resolvedName = directName ?? group?.name;
-    const isDisabled = directDisabled ?? group?.disabled ?? false;
+    const resolvedStatus = status ?? FALLBACK_RADIO_CONFIG.status;
 
-    // Controlled / Uncontrolled State Evaluation
-    const [uncontrolledChecked, setUncontrolledChecked] =
-      useState(defaultChecked);
-    const isChecked = group
-      ? group.value === value
-      : (controlledChecked ?? uncontrolledChecked);
-
-    // ─── 1. Token Resolvers (4-Tier Cascade: Prop -> Group -> Section -> Fallback)
-
-    const resolvedSizeKey = resolveCascade<FieldSizeKey>(
-      size ?? group?.size,
-      sectionConfig?.size,
+    const resolvedLabelAlign = resolveCascade<LabelAlign>(
+      labelAlign,
+      sectionConfig?.labelAlign,
       undefined,
-      FALLBACK_RADIO_CONFIG.size,
-    );
-
-    const resolvedVariant = resolveCascade<RadioVariant>(
-      variant ?? group?.variant,
-      sectionConfig?.variant,
-      undefined,
-      FALLBACK_RADIO_CONFIG.variant,
-    );
-
-    const resolvedColor = resolveCascade<Color>(
-      color ?? group?.color,
-      sectionConfig?.color,
-      config.defaultColor,
-      FALLBACK_RADIO_CONFIG.color,
-    );
-
-    const resolvedStatus =
-      status ?? group?.status ?? FALLBACK_RADIO_CONFIG.status;
-
-    const isCard = resolvedVariant === "card";
-
-    // Radius Key Resolution
-    const rawRadiusKey = resolveRadiusKey(
-      radius,
-      sectionConfig?.radius,
-      undefined,
-      FALLBACK_RADIO_CONFIG.radius,
-    );
-
-    // Override "full" radius to "xl" for card container background
-    const effectiveCardRadiusKey =
-      isCard && rawRadiusKey === "full" ? "xl" : rawRadiusKey;
-
-    // ─── 2. Class Maps ────────────────────────────────────────────────────────
-
-    const outerSizeClass = resolveClassKey(
-      resolvedSizeKey,
-      RADIO_OUTER_SIZE_CLASS,
-      FALLBACK_RADIO_CONFIG.size,
-    );
-
-    const innerSizeClass = resolveClassKey(
-      resolvedSizeKey,
-      RADIO_INNER_SIZE_CLASS,
-      FALLBACK_RADIO_CONFIG.size,
-    );
-
-    const fontSizeClass = resolveClassKey(
-      resolvedSizeKey,
-      RADIO_FONT_SIZE_CLASS,
-      FALLBACK_RADIO_CONFIG.size,
-    );
-
-    const gapClass = resolveClassKey(
-      resolvedSizeKey,
-      RADIO_GAP_CLASS,
-      FALLBACK_RADIO_CONFIG.size,
-    );
-
-    const radiusClass = resolveClassKey(
-      rawRadiusKey,
-      RADIUS_CLASS,
-      FALLBACK_RADIO_CONFIG.radius,
-    );
-
-    const cardRadiusClass = resolveClassKey(
-      effectiveCardRadiusKey,
-      RADIUS_CLASS,
-      "xl",
-    );
-
-    const colorClasses =
-      RADIO_COLOR_CLASS[resolvedColor] ?? RADIO_COLOR_CLASS.primary;
-
-    const statusBorderClass =
-      RADIO_STATUS_BORDER_CLASS[resolvedStatus] ??
-      RADIO_STATUS_BORDER_CLASS.default;
-
-    const handleChange = useCallback(
-      (e: ChangeEvent<HTMLInputElement>) => {
-        if (isDisabled) return;
-        if (group) {
-          group.onChange?.(value);
-        } else {
-          if (controlledChecked === undefined) {
-            setUncontrolledChecked(true);
-          }
-        }
-        onChange?.(e.target.checked, value, e);
-      },
-      [controlledChecked, group, isDisabled, onChange, value],
+      FALLBACK_RADIO_CONFIG.labelAlign,
     );
 
     return (
-      <label
-        className={cn(
-          "relative inline-flex items-start select-none cursor-pointer transition-all duration-150 shrink-0",
-          gapClass,
-          isCard ? cn("p-3 border bg-background", cardRadiusClass) : "",
-          isCard &&
-            (isChecked
-              ? `${colorClasses.border} ${colorClasses.cardBg}`
-              : statusBorderClass),
-          isDisabled && "opacity-50 pointer-events-none cursor-not-allowed",
-          className,
-        )}
-        style={style}>
-        {/* Native Radio Input */}
-        <input
-          ref={ref}
-          id={radioId}
-          type="radio"
-          name={resolvedName}
-          value={value}
-          checked={isChecked}
-          disabled={isDisabled}
-          onChange={handleChange}
-          className="sr-only peer"
-          {...rest}
-        />
-
-        {/* Outer Radio Box / Circle */}
-        <div
-          className={cn(
-            "shrink-0 flex items-center justify-center border-2 transition-all duration-150 mt-0.5",
-            "peer-focus-visible:ring-2 peer-focus-visible:ring-primary peer-focus-visible:ring-offset-2",
-            outerSizeClass,
-            radiusClass,
-            isChecked ? colorClasses.border : statusBorderClass,
-          )}>
-          {/* Animated Inner Radio Indicator */}
-          <span
+      <FieldShell
+        id={generatedId}
+        label={label}
+        labelAlign={resolvedLabelAlign}
+        description={description}
+        message={message}
+        status={resolvedStatus}
+        required={required}>
+        <RadioContext.Provider
+          value={{
+            name: groupName,
+            value,
+            onChange,
+            size,
+            color,
+            variant,
+            disabled,
+            status: resolvedStatus,
+          }}>
+          <div
+            ref={ref}
+            role="radiogroup"
             className={cn(
-              innerSizeClass,
-              radiusClass,
-              colorClasses.bg,
-              "transition-all duration-200 ease-in-out transform-gpu",
-              isChecked ? "scale-100 opacity-100" : "scale-0 opacity-0",
-            )}
-          />
-        </div>
-
-        {/* Text Container */}
-        {(label || description) && (
-          <div className="flex flex-col min-w-0">
-            {label && (
-              <span
-                className={cn(
-                  "font-medium text-foreground leading-snug",
-                  fontSizeClass,
-                )}>
-                {label}
-              </span>
-            )}
-            {description && (
-              <span className="text-xs sm:text-sm text-foreground/70 leading-snug mt-0.5">
-                {description}
-              </span>
-            )}
+              "flex",
+              orientation === "vertical"
+                ? "flex-col gap-2"
+                : "flex-row flex-wrap gap-4",
+              className,
+            )}>
+            {children}
           </div>
-        )}
-      </label>
+        </RadioContext.Provider>
+      </FieldShell>
     );
   },
 );
 
-Radio.displayName = "Radio";
+RadioGroup.displayName = "RadioGroup";

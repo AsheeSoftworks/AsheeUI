@@ -1,3 +1,10 @@
+/**
+ * DatePicker component for AsheeUI.
+ * This file provides the main DatePicker component implementation, which renders
+ * a date, time, or datetime picker with a calendar popover. It supports
+ * selection, clearing, validation states, and various visual tokens that
+ * resolve through the standard AsheeUI cascade system.
+ */
 "use client";
 
 import {
@@ -9,6 +16,7 @@ import {
   useClick,
   useDismiss,
   useFloating,
+  size as floatingSize,
   useInteractions,
   useRole,
 } from "@floating-ui/react";
@@ -26,12 +34,13 @@ import { ChevronRightIcon } from "../../icons/ChevronRightIcon";
 import { ClearIcon } from "../../icons/ClearIcon";
 import { ClockIcon } from "../../icons/ClockIcon";
 import { useAsheeConfig } from "../../libs/context";
-import { RADIUS_CLASS, type Radius } from "../../shared/radius";
 import {
   type Color,
+  RADIUS_CLASS,
+  type Radius,
   resolveVariantClass,
   type Variant,
-} from "../../shared/variant";
+} from "../../shared";
 import { cn } from "../../utils";
 import {
   resolveCascade,
@@ -58,8 +67,14 @@ import {
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
+/**
+ * Days of the week abbreviations used in the calendar header.
+ */
 const DAYS_OF_WEEK = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"] as const;
 
+/**
+ * Full month names used in the calendar header.
+ */
 const MONTHS = [
   "January",
   "February",
@@ -75,10 +90,21 @@ const MONTHS = [
   "December",
 ] as const;
 
+/**
+ * Pads a number with a leading zero to ensure two digits.
+ * @param n - The number to pad.
+ * @returns The padded string.
+ */
 function pad2(n: number): string {
   return String(n).padStart(2, "0");
 }
 
+/**
+ * Formats a date according to the picker mode.
+ * @param date - The date to format.
+ * @param mode - The picker mode (date, time, or datetime).
+ * @returns The formatted date string.
+ */
 function formatDisplay(date: Date, mode: PickerMode): string {
   const d = pad2(date.getDate());
   const mo = pad2(date.getMonth() + 1);
@@ -95,6 +121,11 @@ function formatDisplay(date: Date, mode: PickerMode): string {
   }
 }
 
+/**
+ * Returns the default placeholder text for a given picker mode.
+ * @param mode - The picker mode.
+ * @returns The placeholder string.
+ */
 function getDefaultPlaceholder(mode: PickerMode): string {
   switch (mode) {
     case "date":
@@ -106,6 +137,12 @@ function getDefaultPlaceholder(mode: PickerMode): string {
   }
 }
 
+/**
+ * Builds an array of day numbers for a given month, with nulls for empty slots.
+ * @param year - The year.
+ * @param month - The month (0-indexed).
+ * @returns An array of day numbers or nulls.
+ */
 function buildDayCells(year: number, month: number): (number | null)[] {
   const daysInMonth = new Date(year, month + 1, 0).getDate();
   const firstDay = new Date(year, month, 1).getDay();
@@ -128,6 +165,10 @@ interface TimeSpinnerProps {
   radiusClass: string;
 }
 
+/**
+ * A spinner control for selecting hours or minutes.
+ * Renders increment and decrement buttons around a centered value display.
+ */
 function TimeSpinner({
   value,
   max,
@@ -193,6 +234,10 @@ interface CalendarProps {
   disableFuture?: boolean;
 }
 
+/**
+ * The calendar panel that renders the date grid and time picker.
+ * Displays a month grid with selectable days, and optionally time controls.
+ */
 function Calendar({
   selected,
   mode,
@@ -435,31 +480,216 @@ function Calendar({
 // ─── Component Interface ──────────────────────────────────────────────────────
 
 export interface DatePickerProps {
+  /**
+   * The currently selected date.
+   * Use null for no selection.
+   */
   selected?: Date | null;
+
+  /**
+   * Callback fired when the selected date changes.
+   * Receives the new date or null when cleared.
+   */
   onChange?: (date: Date | null) => void;
+
+  /**
+   * The selection mode of the picker.
+   * Determines whether the picker shows date, time, or both.
+   *
+   * @default "date"
+   */
   mode?: PickerMode;
+
+  /**
+   * Size of the date picker.
+   * Controls the height and font size of the trigger.
+   *
+   * @default "md"
+   */
   size?: FieldSizeKey;
+
+  /**
+   * Corner rounding of the date picker.
+   *
+   * @default "md"
+   */
   radius?: Radius;
+
+  /**
+   * Visual style variant of the date picker trigger.
+   *
+   * @default "bordered"
+   */
   variant?: Variant;
+
+  /**
+   * Theme accent color of the date picker.
+   *
+   * @default "primary"
+   */
   color?: Color;
+
+  /**
+   * Validation status of the field.
+   * Controls border color and message styling.
+   */
   status?: FieldStatus;
+
+  /**
+   * Label text for the date picker.
+   */
   label?: string;
+
+  /**
+   * Alignment of the label relative to the input.
+   *
+   * @default "left"
+   */
   labelAlign?: LabelAlign;
+
+  /**
+   * Description text shown below the field.
+   */
   description?: string;
+
+  /**
+   * Validation message shown below the field.
+   * Color is determined by the status prop.
+   */
   message?: string;
+
+  /**
+   * Whether the field is required.
+   * Adds a required indicator to the label.
+   *
+   * @default false
+   */
   required?: boolean;
+
+  /**
+   * Whether the field is in a loading state.
+   * Shows a loading spinner.
+   *
+   * @default false
+   */
   isLoading?: boolean;
+
+  /**
+   * Whether the field is disabled.
+   * Prevents interaction and dims the field.
+   *
+   * @default false
+   */
   disabled?: boolean;
+
+  /**
+   * Whether a clear button is shown when a value is selected.
+   *
+   * @default false
+   */
   isClearable?: boolean;
+
+  /**
+   * Whether future dates are disabled for selection.
+   *
+   * @default false
+   */
   disableFuture?: boolean;
+
+  /**
+   * Custom placeholder text.
+   * Overrides the default placeholder for the selected mode.
+   */
   placeholder?: string;
+
+  /**
+   * Extra CSS classes for the date picker.
+   */
   className?: string;
+
+  /**
+   * Optional ID for the field.
+   */
   id?: string;
+
+  /**
+   * Inline styles for the date picker.
+   */
   style?: CSSProperties;
 }
 
 // ─── Main DatePicker Component ───────────────────────────────────────────────
 
+/**
+ * A date, time, or datetime picker component with a calendar popover.
+ *
+ * DatePicker displays a trigger input that opens a calendar panel for
+ * selecting dates and times. It supports multiple modes (date, time,
+ * datetime), clearable values, validation states, and the standard
+ * AsheeUI cascade for visual tokens.
+ *
+ * The component automatically handles accessibility attributes including
+ * role="combobox", aria-expanded, aria-invalid, and proper focus management
+ * through Floating UI.
+ *
+ * @param props - DatePicker configuration options.
+ * @param props.selected - The currently selected date.
+ * @param props.onChange - Callback fired when the selected date changes.
+ * @param props.mode - Selection mode. Defaults to "date".
+ * @param props.size - Size of the picker. Defaults to "md".
+ * @param props.radius - Corner rounding. Defaults to "md".
+ * @param props.variant - Visual style variant. Defaults to "bordered".
+ * @param props.color - Theme accent color. Defaults to "primary".
+ * @param props.status - Validation status.
+ * @param props.label - Label text.
+ * @param props.labelAlign - Label alignment. Defaults to "left".
+ * @param props.description - Description text.
+ * @param props.message - Validation message.
+ * @param props.required - Whether the field is required.
+ * @param props.isLoading - Loading state.
+ * @param props.disabled - Disabled state.
+ * @param props.isClearable - Whether a clear button is shown.
+ * @param props.disableFuture - Whether future dates are disabled.
+ * @param props.placeholder - Custom placeholder text.
+ * @param props.className - Extra CSS classes.
+ * @param props.id - Optional ID for the field.
+ * @param props.style - Inline styles.
+ *
+ * @example
+ * ```tsx
+ * import { DatePicker } from "asheeui";
+ * import { useState } from "react";
+ *
+ * export function Example() {
+ *   const [date, setDate] = useState<Date | null>(null);
+ *
+ *   return (
+ *     <DatePicker
+ *       selected={date}
+ *       onChange={setDate}
+ *       label="Select a date"
+ *       isClearable
+ *     />
+ *   );
+ * }
+ * ```
+ *
+ * @example
+ * ```tsx
+ * // DateTime picker with time selection
+ * <DatePicker
+ *   mode="datetime"
+ *   selected={dateTime}
+ *   onChange={setDateTime}
+ *   label="Select date and time"
+ *   disableFuture
+ * />
+ * ```
+ *
+ * @see DatePickerConfig - The configuration type for component defaults.
+ * @see FieldShell - The wrapper component for label and validation.
+ * @see useAsheeConfig - Hook for accessing the global configuration.
+ */
 export const DatePicker = forwardRef<HTMLDivElement, DatePickerProps>(
   (
     {
@@ -497,12 +727,23 @@ export const DatePicker = forwardRef<HTMLDivElement, DatePickerProps>(
     const [isOpen, setIsOpen] = useState<boolean>(false);
 
     // Floating UI context
-    const { refs, floatingStyles, context } = useFloating<HTMLDivElement>({
+    const { refs, floatingStyles, context } = useFloating<HTMLButtonElement>({
       open: isOpen,
       onOpenChange: (open) => !disabled && setIsOpen(open),
       placement: "bottom-start",
       whileElementsMounted: autoUpdate,
-      middleware: [offset(6), flip(), shift({ padding: 8 })],
+      middleware: [
+        offset(4),
+        flip(),
+        shift({ padding: 8 }),
+        floatingSize({
+          apply({ availableHeight, elements }) {
+            Object.assign(elements.floating.style, {
+              maxHeight: `${availableHeight}px`,
+            });
+          },
+        }),
+      ],
     });
 
     const click = useClick(context, { enabled: !disabled });
@@ -523,7 +764,7 @@ export const DatePicker = forwardRef<HTMLDivElement, DatePickerProps>(
       FALLBACK_DATE_PICKER_CONFIG.size,
     );
 
-    const resolvedVariant = resolveCascade<Variant>(
+    const resolvedVariantKey = resolveCascade<Variant>(
       variant,
       sectionConfig?.variant,
       config.defaultVariant,
@@ -570,7 +811,7 @@ export const DatePicker = forwardRef<HTMLDivElement, DatePickerProps>(
     // ─── 2. Class Maps ────────────────────────────────────────────────────────
 
     const variantClass = resolveVariantClass(
-      resolvedVariant,
+      resolvedVariantKey,
       resolvedStatusColor,
     );
     const statusClass =
@@ -578,7 +819,7 @@ export const DatePicker = forwardRef<HTMLDivElement, DatePickerProps>(
         ? DATE_PICKER_STATUS_BORDER_CLASS[resolvedStatus]
         : "";
     const radiusClass =
-      resolvedVariant === "underlined"
+      resolvedVariantKey === "underlined"
         ? "rounded-none"
         : resolveClassKey(
             resolvedRadiusKey,

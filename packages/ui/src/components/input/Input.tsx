@@ -1,3 +1,10 @@
+/**
+ * Input component for AsheeUI.
+ * This file provides the main Input component implementation, which renders
+ * a form input field with label, description, validation message, and
+ * content slot support. It integrates with the FieldShell for consistent
+ * field layout and supports the standard AsheeUI cascade for visual tokens.
+ */
 "use client";
 
 import React, {
@@ -10,12 +17,12 @@ import React, {
   useRef,
 } from "react";
 import { useAsheeConfig } from "../../libs/context";
-import { RADIUS_CLASS, type Radius } from "../../shared/radius";
 import {
   type Color,
+  RADIUS_CLASS,
   resolveVariantClass,
   type Variant,
-} from "../../shared/variant";
+} from "../../shared";
 import { cn } from "../../utils";
 import {
   resolveCascade,
@@ -26,34 +33,148 @@ import { FieldShell } from "../field/FieldShell";
 import {
   FALLBACK_FIELD_CONFIG,
   type FieldSizeKey,
-  type FieldStatus,
   type LabelAlign,
 } from "../field/field-config";
 import { useKeyboardField } from "../keyboard";
 import type { InputConfig } from "./input-config";
 import { INPUT_SIZE_CLASS, INPUT_STATUS_BORDER_CLASS } from "./input-styles";
 
-export interface InputProps
-  extends Omit<
-    InputHTMLAttributes<HTMLInputElement>,
-    "size" | "color" | "children"
-  > {
-  size?: FieldSizeKey;
-  radius?: Radius;
-  variant?: Variant;
-  color?: Color;
-  status?: FieldStatus;
+// ─── Component Interface ──────────────────────────────────────────────────────
+
+type BaseInputProps = InputConfig &
+  Omit<InputHTMLAttributes<HTMLInputElement>, "size" | "color" | "children">;
+
+/**
+ * Configuration options for the Input component.
+ */
+export interface InputProps extends BaseInputProps {
+  /**
+   * Label text for the input.
+   * Displayed above the input field.
+   */
   label?: string;
-  labelAlign?: LabelAlign;
+
+  /**
+   * Whether the input is in a loading state.
+   * Shows a loading spinner next to the label.
+   *
+   * @default false
+   */
   isLoading?: boolean;
+
+  /**
+   * Description text shown below the label.
+   * Provides additional context about the input.
+   */
   description?: string;
+
+  /**
+   * Validation message shown below the input.
+   * Color is determined by the status prop.
+   */
   message?: string;
+
+  /**
+   * Whether the field is required.
+   * Adds a required indicator (*) to the label.
+   *
+   * @default false
+   */
   required?: boolean;
+
+  /**
+   * Content rendered at the start of the input.
+   * Typically an icon or adornment.
+   */
   startContent?: ReactNode;
+
+  /**
+   * Content rendered at the end of the input.
+   * Typically an icon, button, or adornment.
+   */
   endContent?: ReactNode;
+
+  /**
+   * Whether the virtual keyboard should be enabled for mobile devices.
+   * Controls the inputmode attribute.
+   *
+   * @default true
+   */
   enableVirtualKeyboard?: boolean;
 }
 
+/**
+ * A form input field with label, description, validation message,
+ * and content slot support.
+ *
+ * Input renders a text input with consistent styling and field layout.
+ * It supports start and end content slots for icons and adornments,
+ * validation states, loading state, and the standard AsheeUI cascade
+ * for visual tokens. The component integrates with FieldShell for
+ * label, description, and message handling.
+ *
+ * The component automatically handles accessibility attributes including
+ * aria-invalid, aria-describedby, and proper focus management. It also
+ * supports mobile virtual keyboard control via the enableVirtualKeyboard
+ * prop.
+ *
+ * @param props - Input configuration options and native input props.
+ * @param props.label - Label text for the input.
+ * @param props.isLoading - Loading state. Defaults to false.
+ * @param props.description - Description text.
+ * @param props.message - Validation message.
+ * @param props.required - Whether the field is required. Defaults to false.
+ * @param props.startContent - Content at the start of the input.
+ * @param props.endContent - Content at the end of the input.
+ * @param props.enableVirtualKeyboard - Enable mobile virtual keyboard. Defaults to true.
+ * @param props.size - Size of the input. Defaults to "md".
+ * @param props.radius - Corner rounding. Defaults to "md".
+ * @param props.variant - Visual style variant. Defaults to "bordered".
+ * @param props.color - Theme accent color. Defaults to "primary".
+ * @param props.status - Validation status.
+ * @param props.labelAlign - Alignment of the label. Defaults to "left".
+ * @param props.disabled - Whether the input is disabled.
+ * @param props.className - Extra CSS classes for the input.
+ * @param props.id - Optional ID for the field.
+ * @param props.style - Inline styles for the input.
+ *
+ * @example
+ * ```tsx
+ * import { Input } from "asheeui";
+ * import { useState } from "react";
+ *
+ * export function Example() {
+ *   const [value, setValue] = useState("");
+ *
+ *   return (
+ *     <Input
+ *       label="Email Address"
+ *       description="We'll never share your email."
+ *       placeholder="you@example.com"
+ *       value={value}
+ *       onChange={(e) => setValue(e.target.value)}
+ *       startContent={<MailIcon />}
+ *     />
+ *   );
+ * }
+ * ```
+ *
+ * @example
+ * ```tsx
+ * // With validation state
+ * <Input
+ *   label="Password"
+ *   type="password"
+ *   status="error"
+ *   message="Password must be at least 8 characters"
+ *   required
+ * />
+ * ```
+ *
+ * @see InputConfig - The configuration type for component defaults.
+ * @see FieldShell - The wrapper component for label and validation.
+ * @see useAsheeConfig - Hook for accessing the global configuration.
+ */
 export const Input = forwardRef<HTMLInputElement, InputProps>(
   (
     {
@@ -122,14 +243,14 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
       FALLBACK_FIELD_CONFIG.size,
     );
 
-    const resolvedVariant = resolveCascade<Variant>(
+    const resolvedVariantKey = resolveCascade<Variant>(
       variant,
       sectionConfig?.variant,
       config.defaultVariant,
       FALLBACK_FIELD_CONFIG.variant,
     );
 
-    const resolvedColor = resolveCascade<Color>(
+    const resolvedColorKey = resolveCascade<Color>(
       color,
       sectionConfig?.color,
       config.defaultColor,
@@ -154,7 +275,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
           ? "success"
           : resolvedStatus === "warning"
             ? "warning"
-            : resolvedColor;
+            : resolvedColorKey;
 
     const resolvedLabelAlign = resolveCascade<LabelAlign>(
       labelAlign,
@@ -164,7 +285,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
     );
 
     const variantClass = resolveVariantClass(
-      resolvedVariant,
+      resolvedVariantKey,
       resolvedStatusColor,
     );
     const statusClass =
@@ -172,7 +293,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
         ? INPUT_STATUS_BORDER_CLASS[resolvedStatus]
         : "";
     const radiusClass =
-      resolvedVariant === "underlined"
+      resolvedVariantKey === "underlined"
         ? "rounded-none"
         : resolveClassKey(
             resolvedRadiusKey,

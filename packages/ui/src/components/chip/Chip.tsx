@@ -1,3 +1,11 @@
+/**
+ * Chip component for AsheeUI.
+ * This file provides the main Chip component implementation, which renders
+ * a compact element that represents an input, choice, or attribute. Chips
+ * display short labels with optional avatars, icons, a status dot, and an
+ * optional close button. Visual tokens resolve through the standard AsheeUI
+ * cascade system.
+ */
 "use client";
 
 import {
@@ -9,9 +17,8 @@ import {
 } from "react";
 import { CloseIcon } from "../../icons/CloseIcon";
 import { useAsheeConfig } from "../../libs/context";
-import { RADIUS_CLASS, type Radius } from "../../shared/radius";
-import type { Size } from "../../shared/size";
-import { type Color, resolveVariantClass } from "../../shared/variant";
+import type { Size } from "../../shared";
+import { type Color, RADIUS_CLASS, resolveVariantClass } from "../../shared";
 import { cn } from "../../utils";
 import {
   resolveCascade,
@@ -34,49 +41,58 @@ import {
 /**
  * Configuration options for the Chip component.
  */
-export interface ChipProps
-  extends Omit<HTMLAttributes<HTMLDivElement>, "color" | "size"> {
-  /** Visual style variant.
-   *
-   * @default "bordered"
-   */
-  variant?: ChipVariant;
-  /** Theme accent color.
-   *
-   * @default "primary"
-   */
-  color?: Color;
-  /** Height and font-size scale.
-   *
-   * @default "md"
-   */
-  size?: Size;
-  /** Corner rounding.
-   *
-   * @default "full"
-   */
-  radius?: Radius;
-  /** Disables interactions and dims the chip.
+type BaseChipProps = ChipConfig &
+  Omit<HTMLAttributes<HTMLDivElement>, "color" | "size">;
+
+export interface ChipProps extends BaseChipProps {
+  /**
+   * Disables interactions and dims the chip.
+   * Disabled chips cannot be clicked or closed.
    *
    * @default false
    */
   isDisabled?: boolean;
-  /** Leading icon rendered before the content. */
+
+  /**
+   * Leading icon rendered before the content.
+   * Typically used to add visual context to the chip.
+   */
   startIcon?: ReactNode;
-  /** Trailing icon rendered after the content (hidden when closable). */
+
+  /**
+   * Trailing icon rendered after the content (hidden when closable).
+   * When onClose is provided, this is replaced by the close button.
+   */
   endIcon?: ReactNode;
-  /** Avatar node rendered before the content, replacing `startIcon`. */
+
+  /**
+   * Avatar node rendered before the content, replacing `startIcon`.
+   * Typically used for user or entity avatars.
+   */
   avatar?: ReactNode;
-  /** Renders a small status dot.
-   *
+
+  /**
+   * Renders a small status dot.
    * Pass `true` for the current color, or a CSS color string.
    */
   dot?: boolean | string;
-  /** When provided, renders a remove button that fires this callback. */
+
+  /**
+   * When provided, renders a remove button that fires this callback.
+   * Makes the chip closable with a close button.
+   */
   onClose?: (e: MouseEvent<HTMLButtonElement>) => void;
-  /** Custom remove icon shown inside the close button. */
+
+  /**
+   * Custom remove icon shown inside the close button.
+   * Overrides the default CloseIcon.
+   */
   closeIcon?: ReactNode;
-  /** Chip content. */
+
+  /**
+   * Chip content.
+   * The label text to display inside the chip.
+   */
   children?: ReactNode;
 }
 
@@ -87,6 +103,10 @@ export interface ChipProps
  * dot, and an optional close button. When `onClose` is provided the
  * chip becomes keyboard-operable for removal. Visual tokens resolve
  * through the standard AsheeUI cascade.
+ *
+ * The component automatically handles accessibility attributes including
+ * aria-disabled, proper focus management, and keyboard interaction for
+ * both the chip and its close button.
  *
  * @param props - Chip configuration options and HTML div props.
  * @param props.variant - Visual style variant. Defaults to "bordered".
@@ -101,6 +121,8 @@ export interface ChipProps
  * @param props.onClose - Close callback.
  * @param props.closeIcon - Custom close icon.
  * @param props.children - Chip label content.
+ * @param props.className - Extra CSS classes for the chip.
+ * @param props.onClick - Click handler for the chip.
  *
  * @example
  * ```tsx
@@ -118,6 +140,22 @@ export interface ChipProps
  *   );
  * }
  * ```
+ *
+ * @example
+ * ```tsx
+ * // Chip with avatar and status dot
+ * <Chip
+ *   avatar={<img src="/avatar.jpg" alt="User" />}
+ *   dot
+ *   color="success"
+ * >
+ *   John Doe
+ * </Chip>
+ * ```
+ *
+ * @see ChipConfig - The configuration type for component defaults.
+ * @see resolveVariantClass - Utility for resolving variant and color styles.
+ * @see useAsheeConfig - Hook for accessing the global configuration.
  */
 export const Chip = forwardRef<HTMLDivElement, ChipProps>(
   (
@@ -154,10 +192,10 @@ export const Chip = forwardRef<HTMLDivElement, ChipProps>(
     );
 
     // Fallback 'underlined' to 'bordered'
-    const resolvedVariant: ChipVariant =
+    const resolvedVariantKey: ChipVariant =
       rawVariant === "underlined" ? "bordered" : (rawVariant as ChipVariant);
 
-    const resolvedColor = resolveCascade<Color>(
+    const resolvedColorKey = resolveCascade<Color>(
       color,
       sectionConfig?.color,
       config.defaultColor as Color | undefined,
@@ -174,7 +212,7 @@ export const Chip = forwardRef<HTMLDivElement, ChipProps>(
     const resolvedRadiusKey = resolveRadiusKey(
       radius,
       sectionConfig?.radius,
-      config.defaultRadius as Radius,
+      config.defaultRadius,
       FALLBACK_CHIP_CONFIG.radius,
     );
 
@@ -211,7 +249,7 @@ export const Chip = forwardRef<HTMLDivElement, ChipProps>(
     );
 
     const radiusClass = resolveClassKey(
-      resolvedRadiusKey as Radius,
+      resolvedRadiusKey,
       RADIUS_CLASS,
       FALLBACK_CHIP_CONFIG.radius,
     );
@@ -267,7 +305,7 @@ export const Chip = forwardRef<HTMLDivElement, ChipProps>(
         className={cn(
           "inline-flex items-center font-medium transition-all duration-200 select-none shrink-0",
           "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2",
-          resolveVariantClass(resolvedVariant, resolvedColor),
+          resolveVariantClass(resolvedVariantKey, resolvedColorKey),
           heightClass,
           paddingClass,
           fontClass,
@@ -277,7 +315,6 @@ export const Chip = forwardRef<HTMLDivElement, ChipProps>(
           onClick &&
             !isDisabled &&
             "cursor-pointer hover:opacity-90 active:scale-[0.98]",
-          sectionConfig?.className,
           className,
         )}
         style={style}
@@ -298,7 +335,7 @@ export const Chip = forwardRef<HTMLDivElement, ChipProps>(
         {avatar && (
           <span
             className={cn(
-              "inline-flex items-center justify-center shrink-0 overflow-hidden rounded-full",
+              "inline-flex items-center justify-center shrink-0 overflow-clip rounded-full",
               iconSizeClass,
             )}>
             {avatar}

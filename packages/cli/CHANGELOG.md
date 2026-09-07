@@ -1,5 +1,13 @@
 # @asheeui/cli
 
+## 0.6.3
+
+### Patch Changes
+
+- Removed the unused `dev` script from the CLI `package.json` (build, test, and prepublish scripts are unchanged).
+  
+  Add detailed commenting and documentation
+
 ## 0.6.2
 
 ### Patch Changes

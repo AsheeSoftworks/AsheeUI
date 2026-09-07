@@ -1,3 +1,9 @@
+/**
+ * Integration helpers for AsheeUI CLI.
+ * This module provides utility functions for building relative import
+ * specifiers used by the integration builders.
+ */
+
 import { relative } from "node:path";
 
 /**

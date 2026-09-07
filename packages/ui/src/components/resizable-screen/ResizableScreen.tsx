@@ -1,3 +1,11 @@
+/**
+ * ResizableScreen component for AsheeUI.
+ * This file provides the main ResizableScreen component implementation, which
+ * renders a split panel layout with a draggable handle for resizing. It supports
+ * horizontal and vertical orientations, keyboard controls, and configurable
+ * min/max size constraints. Visual tokens resolve through the standard AsheeUI
+ * cascade system.
+ */
 "use client";
 
 import {
@@ -19,61 +27,34 @@ import {
   type ResizableScreenConfig,
 } from "./resizable-screen-config";
 
-export interface ResizableScreenProps
-  extends Omit<HTMLAttributes<HTMLDivElement>, "children"> {
+type BaseResizableScreenProps = ResizableScreenConfig &
+  Omit<HTMLAttributes<HTMLDivElement>, "children">;
+
+/**
+ * Configuration options for the ResizableScreen component.
+ */
+export interface ResizableScreenProps extends BaseResizableScreenProps {
   /**
    * Exactly two child nodes representing the primary and secondary panels.
+   * The first child is the primary (resizable) panel, the second is the secondary (flex) panel.
    */
   children: [ReactNode, ReactNode];
 
   /**
    * Initial size of the first panel as a percentage (0-100).
-   * Alias for defaultSize.
+   * Alias for defaultSize for backward compatibility.
    */
   left?: number;
 
   /**
    * Controlled size percentage (0-100) for the primary panel.
+   * When provided, the component becomes controlled.
    */
   size?: number;
 
   /**
-   * Default size percentage (0-100) for uncontrolled state.
-   */
-  defaultSize?: number;
-
-  /**
-   * Minimum percentage allowed for the primary panel.
-   * @default 20
-   */
-  minSize?: number;
-
-  /**
-   * Maximum percentage allowed for the primary panel.
-   * @default 80
-   */
-  maxSize?: number;
-
-  /**
-   * Step percentage size when using keyboard arrow keys.
-   * @default 2
-   */
-  step?: number;
-
-  /**
-   * Layout direction of the split screen.
-   * @default "horizontal"
-   */
-  orientation?: ResizableOrientation;
-
-  /**
-   * Option to completely hide the handle separator.
-   * @default false
-   */
-  hideHandle?: boolean;
-
-  /**
    * Callback fired when pane size changes.
+   * Receives the new size percentage of the primary panel.
    */
   onSizeChange?: (size: number) => void;
 
@@ -83,6 +64,74 @@ export interface ResizableScreenProps
   handleClassName?: string;
 }
 
+/**
+ * A split panel layout with a draggable handle for resizing the primary panel.
+ *
+ * ResizableScreen renders two panels separated by a resizable handle. The primary
+ * panel (first child) can be resized by dragging the handle or using keyboard
+ * controls (arrow keys, Home, End). It supports horizontal and vertical
+ * orientations, configurable min/max sizes, and step increments for keyboard
+ * resizing. Visual tokens resolve through the standard AsheeUI cascade.
+ *
+ * The component automatically handles accessibility attributes including
+ * role="separator", aria-valuenow, aria-valuemin, aria-valuemax, and
+ * aria-orientation for the resize handle.
+ *
+ * @param props - ResizableScreen configuration options.
+ * @param props.children - Exactly two React nodes for the primary and secondary panels.
+ * @param props.left - Initial size of the primary panel (alias for defaultSize).
+ * @param props.size - Controlled size percentage for the primary panel.
+ * @param props.onSizeChange - Callback fired when pane size changes.
+ * @param props.defaultSize - Default size of the primary panel. Defaults to 50.
+ * @param props.minSize - Minimum size of the primary panel. Defaults to 20.
+ * @param props.maxSize - Maximum size of the primary panel. Defaults to 80.
+ * @param props.step - Step size for keyboard resizing. Defaults to 2.
+ * @param props.orientation - Layout orientation. Defaults to "horizontal".
+ * @param props.hideHandle - Whether to hide the resize handle. Defaults to false.
+ * @param props.handleClassName - Extra classes for the handle bar.
+ * @param props.className - Extra classes for the container.
+ *
+ * @example
+ * ```tsx
+ * import { ResizableScreen } from "asheeui";
+ *
+ * export function Example() {
+ *   return (
+ *     <div className="h-96">
+ *       <ResizableScreen
+ *         defaultSize={60}
+ *         minSize={30}
+ *         maxSize={70}
+ *         orientation="horizontal"
+ *       >
+ *         <div className="bg-blue-100 p-4">Left Panel</div>
+ *         <div className="bg-green-100 p-4">Right Panel</div>
+ *       </ResizableScreen>
+ *     </div>
+ *   );
+ * }
+ * ```
+ *
+ * @example
+ * ```tsx
+ * // Vertical orientation with controlled size
+ * const [size, setSize] = useState(50);
+ *
+ * <ResizableScreen
+ *   size={size}
+ *   onSizeChange={setSize}
+ *   orientation="vertical"
+ *   minSize={25}
+ *   maxSize={75}
+ * >
+ *   <div className="bg-red-100 p-4">Top Panel</div>
+ *   <div className="bg-blue-100 p-4">Bottom Panel</div>
+ * </ResizableScreen>
+ * ```
+ *
+ * @see ResizableScreenConfig - The configuration type for component defaults.
+ * @see useAsheeConfig - Hook for accessing the global configuration.
+ */
 export const ResizableScreen = forwardRef<HTMLDivElement, ResizableScreenProps>(
   (
     {
@@ -90,11 +139,11 @@ export const ResizableScreen = forwardRef<HTMLDivElement, ResizableScreenProps>(
       left,
       size,
       defaultSize,
-      minSize: minSizeProp,
-      maxSize: maxSizeProp,
-      step: stepProp,
-      orientation: orientationProp,
-      hideHandle: hideHandleProp,
+      minSize,
+      maxSize,
+      step,
+      orientation,
+      hideHandle,
       onSizeChange,
       handleClassName,
       className,
@@ -104,53 +153,53 @@ export const ResizableScreen = forwardRef<HTMLDivElement, ResizableScreenProps>(
     ref,
   ) => {
     const config = useAsheeConfig();
-    const sectionConfig = config.components?.resizableScreen as
-      | ResizableScreenConfig
-      | undefined;
+    const sectionConfig = config.components?.resizableScreen;
 
     // ─── 1. Token Resolvers ──────────────────────────────────────────────────
 
-    const minSize = resolveCascade<number>(
-      minSizeProp,
+    const resolvedMinSize = resolveCascade<number>(
+      minSize,
       sectionConfig?.minSize,
       undefined,
       FALLBACK_RESIZABLE_SCREEN_CONFIG.minSize,
     );
 
-    const maxSize = resolveCascade<number>(
-      maxSizeProp,
+    const resolvedMaxSize = resolveCascade<number>(
+      maxSize,
       sectionConfig?.maxSize,
       undefined,
       FALLBACK_RESIZABLE_SCREEN_CONFIG.maxSize,
     );
 
-    const step = resolveCascade<number>(
-      stepProp,
+    const resolvedStep = resolveCascade<number>(
+      step,
       sectionConfig?.step,
       undefined,
       FALLBACK_RESIZABLE_SCREEN_CONFIG.step,
     );
 
-    const orientation = resolveCascade<ResizableOrientation>(
-      orientationProp,
+    const resolvedOrientation = resolveCascade<ResizableOrientation>(
+      orientation,
       sectionConfig?.orientation,
       undefined,
       FALLBACK_RESIZABLE_SCREEN_CONFIG.orientation,
     );
 
-    const hideHandle = resolveCascade<boolean>(
-      hideHandleProp,
+    const resolvedHideHandle = resolveCascade<boolean>(
+      hideHandle,
       sectionConfig?.hideHandle,
       undefined,
       FALLBACK_RESIZABLE_SCREEN_CONFIG.hideHandle,
     );
 
-    const initialSize =
-      size ??
-      left ??
-      defaultSize ??
-      sectionConfig?.defaultSize ??
-      FALLBACK_RESIZABLE_SCREEN_CONFIG.defaultSize;
+    const resolvedDefaultSize = resolveCascade<number>(
+      defaultSize,
+      sectionConfig?.defaultSize,
+      undefined,
+      FALLBACK_RESIZABLE_SCREEN_CONFIG.defaultSize,
+    );
+
+    const initialSize = size ?? left ?? resolvedDefaultSize;
 
     const [internalSize, setInternalSize] = useState<number>(initialSize);
     const [isDragging, setIsDragging] = useState<boolean>(false);
@@ -160,8 +209,9 @@ export const ResizableScreen = forwardRef<HTMLDivElement, ResizableScreenProps>(
     const currentSize = isControlled ? size : internalSize;
 
     const clampSize = useCallback(
-      (val: number) => Math.min(Math.max(val, minSize), maxSize),
-      [minSize, maxSize],
+      (val: number) =>
+        Math.min(Math.max(val, resolvedMinSize), resolvedMaxSize),
+      [resolvedMinSize, resolvedMaxSize],
     );
 
     const updateSize = useCallback(
@@ -187,7 +237,7 @@ export const ResizableScreen = forwardRef<HTMLDivElement, ResizableScreenProps>(
       if (!isDragging || !containerRef.current) return;
 
       const rect = containerRef.current.getBoundingClientRect();
-      const isHorizontal = orientation === "horizontal";
+      const isHorizontal = resolvedOrientation === "horizontal";
 
       const totalSize = isHorizontal ? rect.width : rect.height;
       const currentPos = isHorizontal
@@ -214,27 +264,27 @@ export const ResizableScreen = forwardRef<HTMLDivElement, ResizableScreenProps>(
     // ─── Keyboard Accessibility ───────────────────────────────────────────────
 
     const handleKeyDown = (e: KeyboardEvent<HTMLElement>) => {
-      const isHorizontal = orientation === "horizontal";
+      const isHorizontal = resolvedOrientation === "horizontal";
       const shrinkKey = isHorizontal ? "ArrowLeft" : "ArrowUp";
       const expandKey = isHorizontal ? "ArrowRight" : "ArrowDown";
 
       if (e.key === shrinkKey) {
         e.preventDefault();
-        updateSize(currentSize - step);
+        updateSize(currentSize - resolvedStep);
       } else if (e.key === expandKey) {
         e.preventDefault();
-        updateSize(currentSize + step);
+        updateSize(currentSize + resolvedStep);
       } else if (e.key === "Home") {
         e.preventDefault();
-        updateSize(minSize);
+        updateSize(resolvedMinSize);
       } else if (e.key === "End") {
         e.preventDefault();
-        updateSize(maxSize);
+        updateSize(resolvedMaxSize);
       }
     };
 
     const [child1, child2] = children;
-    const isHorizontal = orientation === "horizontal";
+    const isHorizontal = resolvedOrientation === "horizontal";
 
     return (
       <div
@@ -245,7 +295,7 @@ export const ResizableScreen = forwardRef<HTMLDivElement, ResizableScreenProps>(
             (ref as React.RefObject<HTMLDivElement | null>).current = node;
         }}
         className={cn(
-          "w-full h-full min-h-[200px] min-w-0 min-h-0 relative flex",
+          "w-full h-full min-h-50 min-w-0 relative flex",
           isDragging && "select-none",
           isHorizontal ? "flex-row" : "flex-col",
           className,
@@ -262,7 +312,7 @@ export const ResizableScreen = forwardRef<HTMLDivElement, ResizableScreenProps>(
         {/* Primary Panel */}
         <div
           className={cn(
-            "h-full w-full min-w-0 min-h-0 overflow-hidden shrink-0",
+            "h-full w-full min-w-0 min-h-0 overflow-clip shrink-0",
             isDragging
               ? "transition-none"
               : "transition-[width,height] duration-150 ease-out",
@@ -274,14 +324,14 @@ export const ResizableScreen = forwardRef<HTMLDivElement, ResizableScreenProps>(
         </div>
 
         {/* Separator / Drag Handle Container */}
-        {!hideHandle && (
+        {!resolvedHideHandle && (
           // biome-ignore lint/a11y/useSemanticElements: interactive resizable handle requires div styling
           <div
             role="separator"
             tabIndex={0}
             aria-valuenow={Math.round(currentSize)}
-            aria-valuemin={minSize}
-            aria-valuemax={maxSize}
+            aria-valuemin={resolvedMinSize}
+            aria-valuemax={resolvedMaxSize}
             aria-orientation={isHorizontal ? "horizontal" : "vertical"}
             aria-label="Resize panel split"
             onPointerDown={handlePointerDown}
@@ -313,7 +363,7 @@ export const ResizableScreen = forwardRef<HTMLDivElement, ResizableScreenProps>(
         {/* Secondary Panel */}
         <div
           className={cn(
-            "h-full w-full min-w-0 min-h-0 overflow-hidden shrink-0 flex-1",
+            "h-full w-full min-w-0 min-h-0 overflow-clip shrink-0 flex-1",
             isDragging
               ? "transition-none"
               : "transition-[width,height] duration-150 ease-out",

@@ -1,3 +1,10 @@
+/**
+ * Dependency inspection utilities for AsheeUI CLI.
+ * This module provides functions for inspecting a project's dependencies,
+ * detecting the package manager, and determining which required packages
+ * are missing.
+ */
+
 import { join } from "node:path";
 import * as p from "@clack/prompts";
 import { detectPackageManager, readJson } from "./file-utils";

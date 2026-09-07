@@ -1,52 +1,47 @@
+/**
+ * Select component configuration for AsheeUI.
+ * This file defines the configuration types and defaults for the Select
+ * component, which extends the FieldConfig with menu configuration options.
+ * It registers the default configuration with the component registry and
+ * provides fallback values for the cascade resolution system.
+ */
+
 import { registerComponentDefaults } from "../../libs/registry";
-import type { Radius } from "../../shared/radius";
-import type { Size } from "../../shared/size";
-import type { Color, Variant } from "../../shared/variant";
 import {
+  defaultFieldConfig,
   FALLBACK_FIELD_CONFIG,
   type FieldConfig,
-  type FieldSizeKey,
 } from "../field/field-config";
+import type { SelectMenuConfig } from "../select-menu";
 
-export type SelectSizeKey = FieldSizeKey;
-
-export interface SelectOption {
-  label: string;
-  value: string | number;
-  disabled?: boolean;
-  [key: string]: unknown;
+/**
+ * Theme configuration options for the Select component.
+ *
+ * Inherits the shared field config (label handling) and adds trigger
+ * and dropdown-menu overrides. Set under `components.select` in
+ * the AsheeUI config.
+ */
+export interface SelectConfig extends FieldConfig {
+  /**
+   * Configuration for the dropdown menu.
+   * Controls the menu's visual appearance and behavior.
+   */
+  menu?: SelectMenuConfig;
 }
 
-export interface SelectConfig extends Omit<FieldConfig, "size"> {
-  size?: SelectSizeKey;
-  radius?: Radius;
+/**
+ * Default config values registered for the Select component.
+ *
+ * Inherits field label defaults from `FALLBACK_FIELD_CONFIG`.
+ */
+export const defaultSelectConfig: SelectConfig = defaultFieldConfig;
 
-  // Menu / Popover Overrides
-  menuVariant?: Variant;
-  menuColor?: Color;
-  menuRadius?: Radius;
-  menuSize?: Size;
-}
-
-export const defaultSelectConfig: SelectConfig = {
-  size: "md",
-  labelAlign: "left",
-  variant: "bordered",
-};
-
-export const FALLBACK_SELECT_CONFIG: Required<SelectConfig> = {
-  ...FALLBACK_FIELD_CONFIG,
-  size: "md",
-  radius: "md",
-  variant: "bordered",
-  color: "primary",
-  status: "default",
-  labelAlign: "left",
-  menuVariant: "solid",
-  menuColor: "secondary",
-  menuRadius: "md",
-  menuSize: "lg",
-};
+/**
+ * Hard fallback values used when no config tier provides a value.
+ * These values are used when instance props, component config,
+ * and global defaults are all undefined.
+ */
+export const FALLBACK_SELECT_CONFIG = FALLBACK_FIELD_CONFIG;
 
 declare module "../../libs/registry" {
   interface ComponentTypeConfigRegistry {

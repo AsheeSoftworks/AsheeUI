@@ -1,30 +1,57 @@
-import type { ToastPlacement, ToastSizeKey } from "./toast-config";
+/**
+ * Toast styles for AsheeUI.
+ * This file provides CSS class mappings for the Toast component's
+ * width, padding, font, and animation options.
+ */
 
-export const TOAST_WIDTH_CLASS: Record<ToastSizeKey, string> = {
+import type { Size } from "../../shared";
+import type { ToastPlacement } from "./toast-config";
+
+/**
+ * CSS classes for toast width based on size.
+ * Maps size keys to Tailwind width classes.
+ */
+export const TOAST_WIDTH_CLASS: Record<Size, string> = {
   sm: "w-72 max-w-full",
   md: "w-80 max-w-full",
   lg: "w-96 max-w-full",
 };
 
-export const TOAST_PADDING_CLASS: Record<ToastSizeKey, string> = {
+/**
+ * CSS classes for toast padding based on size.
+ * Maps size keys to Tailwind padding classes.
+ */
+export const TOAST_PADDING_CLASS: Record<Size, string> = {
   sm: "p-2.5",
   md: "p-3.5",
   lg: "p-4",
 };
 
-export const TOAST_FONT_CLASS: Record<ToastSizeKey, string> = {
+/**
+ * CSS classes for toast message font size.
+ * Maps size keys to Tailwind text size classes.
+ */
+export const TOAST_FONT_CLASS: Record<Size, string> = {
   sm: "text-xs",
   md: "text-sm",
   lg: "text-base",
 };
 
-export const TOAST_TITLE_FONT_CLASS: Record<ToastSizeKey, string> = {
+/**
+ * CSS classes for toast title font size.
+ * Maps size keys to Tailwind text size and weight classes.
+ */
+export const TOAST_TITLE_FONT_CLASS: Record<Size, string> = {
   sm: "text-xs font-semibold",
   md: "text-sm font-semibold",
   lg: "text-base font-semibold",
 };
 
-// Simplified animation classes - just the placement and state
+/**
+ * CSS classes for toast enter and exit animations.
+ * Each placement has its own enter and exit animation classes.
+ * These classes should be defined in your global CSS with keyframe animations.
+ */
 export const TOAST_ANIMATION_STATE: Record<
   ToastPlacement,
   { enter: string; exit: string }

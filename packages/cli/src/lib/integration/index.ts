@@ -1,3 +1,10 @@
+/**
+ * Integration dispatcher for AsheeUI CLI.
+ * This module provides the buildIntegration function that dispatches to
+ * the appropriate framework-specific integration builder based on the
+ * detected framework.
+ */
+
 import type { IntegrationContext, IntegrationResult } from "../common/types";
 import { buildNextIntegration } from "./next";
 import { buildTanStackStartIntegration } from "./tanstack-start";

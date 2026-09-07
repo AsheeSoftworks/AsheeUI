@@ -1,39 +1,28 @@
+/**
+ * Spinner component for AsheeUI.
+ * This file provides the main Spinner component implementation, which renders
+ * an animated SVG loading indicator. It supports configurable size, color,
+ * and animation speed through the standard AsheeUI cascade system. The spinner
+ * is hidden from assistive technology by default and should be paired with
+ * a visually hidden label for accessibility.
+ */
 "use client";
 
 import { forwardRef, type SVGAttributes } from "react";
 import { useAsheeConfig } from "../../libs/context";
-import type { Color } from "../../shared/variant";
+import type { Color, Size } from "../../shared";
 import { cn } from "../../utils";
 import { resolveCascade, resolveClassKey } from "../../utils/resolve-token";
-import {
-  FALLBACK_SPINNER_CONFIG,
-  type SpinnerConfig,
-  type SpinnerSizeKey,
-} from "./spinner-config";
+import { FALLBACK_SPINNER_CONFIG, type SpinnerConfig } from "./spinner-config";
 import { SPINNER_COLOR_CLASS, SPINNER_SIZE_CLASS } from "./spinner-styles";
 
 /**
  * Configuration options for the Spinner component.
  */
-export interface SpinnerProps extends SVGAttributes<SVGSVGElement> {
-  /** Pixel-size scale.
-   *
-   * @default "md"
-   */
-  size?: SpinnerSizeKey;
-  /** Theme accent color.
-   *
-   * @default "primary"
-   */
-  color?: Color;
-  /** CSS `animation-duration` for one rotation.
-   *
-   * @default "0.75s"
-   */
-  speed?: string;
-  /** Extra classes merged with internal styles. */
-  className?: string;
-}
+type BaseSpinnerProps = SpinnerConfig &
+  Omit<SVGAttributes<SVGSVGElement>, "color" | "className">;
+
+export interface SpinnerProps extends BaseSpinnerProps {}
 
 /**
  * An animated SVG loading indicator.
@@ -44,11 +33,16 @@ export interface SpinnerProps extends SVGAttributes<SVGSVGElement> {
  * technology (`aria-hidden`); pair it with a visually hidden label or
  * text for meaningful loading feedback.
  *
+ * The spinner uses a standard circular progress indicator design with
+ * a semi-transparent track and a solid arc that rotates. The rotation
+ * is powered by CSS animation with configurable duration.
+ *
  * @param props - Spinner configuration options and SVG attributes.
  * @param props.size - Pixel-size scale. Defaults to "md".
  * @param props.color - Theme accent color. Defaults to "primary".
  * @param props.speed - Rotation duration. Defaults to "0.75s".
  * @param props.className - Extra classes for the SVG element.
+ * @param props.style - Inline styles for the SVG element.
  *
  * @example
  * ```tsx
@@ -58,27 +52,43 @@ export interface SpinnerProps extends SVGAttributes<SVGSVGElement> {
  *   return <Spinner size="lg" color="primary" />;
  * }
  * ```
+ *
+ * @example
+ * ```tsx
+ * // Custom speed and color
+ * <Spinner size="sm" color="success" speed="1.2s" />
+ * ```
+ *
+ * @example
+ * ```tsx
+ * // With loading text for accessibility
+ * <div role="status">
+ *   <Spinner />
+ *   <span className="sr-only">Loading...</span>
+ * </div>
+ * ```
+ *
+ * @see SpinnerConfig - The configuration type for component defaults.
+ * @see useAsheeConfig - Hook for accessing the global configuration.
  */
 export const Spinner = forwardRef<SVGSVGElement, SpinnerProps>(
   ({ size, color, speed, className, style, ...props }, ref) => {
     const config = useAsheeConfig();
-    const sectionConfig = config.components?.spinner as
-      | SpinnerConfig
-      | undefined;
+    const sectionConfig = config.components?.spinner;
 
     // ─── 1. Token Resolvers (4-Tier Cascade) ──────────────────────────────────
 
-    const resolvedSizeKey = resolveCascade<SpinnerSizeKey>(
+    const resolvedSizeKey = resolveCascade<Size>(
       size,
       sectionConfig?.size,
       undefined,
       FALLBACK_SPINNER_CONFIG.size,
     );
 
-    const resolvedColor = resolveCascade<Color>(
+    const resolvedColorKey = resolveCascade<Color>(
       color,
       sectionConfig?.color,
-      config.defaultColor as Color,
+      config.defaultColor,
       FALLBACK_SPINNER_CONFIG.color,
     );
 
@@ -98,7 +108,7 @@ export const Spinner = forwardRef<SVGSVGElement, SpinnerProps>(
     );
 
     const colorClass = resolveClassKey(
-      resolvedColor,
+      resolvedColorKey,
       SPINNER_COLOR_CLASS,
       FALLBACK_SPINNER_CONFIG.color,
     );

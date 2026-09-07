@@ -1,3 +1,9 @@
+/**
+ * Doctor command runner for AsheeUI CLI.
+ * This module provides the runDoctorChecks function that executes all
+ * doctor checks in sequence and returns their results.
+ */
+
 import { checkConfigFile } from "./check-config";
 import { checkCssImport } from "./check-css";
 import { checkPeerDependencies } from "./check-deps";

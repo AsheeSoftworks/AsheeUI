@@ -1,3 +1,9 @@
+/**
+ * Theme augmentation check for AsheeUI CLI doctor command.
+ * This module provides the checkThemeAugmentation function that detects
+ * optional custom theme registry declaration files.
+ */
+
 import type { Dirent } from "node:fs";
 import { readdir } from "node:fs/promises";
 import { join } from "node:path";

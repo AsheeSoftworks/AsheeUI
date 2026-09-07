@@ -1,3 +1,9 @@
+/**
+ * Framework resolver for AsheeUI CLI init command.
+ * This module provides the resolveFramework function that attempts to
+ * auto-detect the framework or prompts the user to select one.
+ */
+
 import * as p from "@clack/prompts";
 import { detectFramework } from "../common/detect";
 import type { SupportedFramework } from "../common/types";

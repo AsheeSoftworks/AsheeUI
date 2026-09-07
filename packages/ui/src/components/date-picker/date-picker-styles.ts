@@ -1,28 +1,48 @@
-import type { Color } from "../../shared/variant";
-import type { FieldSizeKey, FieldStatus } from "../field/field-config";
+/**
+ * DatePicker component styles for AsheeUI.
+ * This file provides CSS class mappings for the DatePicker component's
+ * size, status, and calendar color options.
+ */
 
+import type { Color } from "../../shared";
+import type { FieldSizeKey, FieldStatus } from "../field/field-config";
+import { FIELD_STATUS_BORDER_CLASS } from "../field/field-styles";
+
+/**
+ * CSS classes for date picker trigger size.
+ * Maps size keys to Tailwind classes that control the trigger's
+ * height, padding, and font size.
+ */
 export const DATE_PICKER_SIZE_CLASS: Record<FieldSizeKey, string> = {
   sm: "h-8 px-2.5 text-xs",
   md: "h-10 px-3 text-sm",
   lg: "h-12 px-4 text-base",
 };
 
+/**
+ * CSS classes for date picker calendar cell size.
+ * Maps size keys to Tailwind classes that control individual
+ * day cells in the calendar grid.
+ */
 export const DATE_PICKER_CELL_SIZE_CLASS: Record<FieldSizeKey, string> = {
   sm: "size-7 text-xs",
   md: "size-8 text-xs",
   lg: "size-9 text-sm",
 };
 
-export const DATE_PICKER_STATUS_BORDER_CLASS: Record<FieldStatus, string> = {
-  default: "",
-  error:
-    "border-danger focus-visible:border-danger focus-visible:ring-danger/20",
-  warning:
-    "border-warning focus-visible:border-warning focus-visible:ring-warning/20",
-  success:
-    "border-success focus-visible:border-success focus-visible:ring-success/20",
-};
+/**
+ * CSS classes for date picker status border styles.
+ * Maps status values to Tailwind classes for border and
+ * focus ring colors.
+ */
+export const DATE_PICKER_STATUS_BORDER_CLASS: Record<FieldStatus, string> =
+  FIELD_STATUS_BORDER_CLASS;
 
+/**
+ * CSS classes for calendar color variations.
+ * Maps color names to the corresponding background, text,
+ * border, and hover styles for calendar elements.
+ */
 export const CALENDAR_COLOR_CLASSES: Record<
   Color | string,
   { bg: string; text: string; border: string; hover: string }

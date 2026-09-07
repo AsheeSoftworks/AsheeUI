@@ -1,3 +1,10 @@
+/**
+ * Toast item component for AsheeUI.
+ * This file provides the ToastItem component that renders a single toast
+ * notification with icon, title, message, action, and dismiss button.
+ * It supports pause on hover, enter/exit animations, and configurable
+ * styling through the cascade system.
+ */
 "use client";
 
 import { useCallback, useState } from "react";
@@ -7,20 +14,20 @@ import { ErrorIcon } from "../../icons/ErrorIcon";
 import { InfoIcon } from "../../icons/InfoIcon";
 import { WarningIcon } from "../../icons/WarningIcon";
 import { useAsheeConfig } from "../../libs/context";
-import { RADIUS_CLASS, type Radius } from "../../shared/radius";
 import {
   type Color,
+  RADIUS_CLASS,
+  type Radius,
   resolveVariantClass,
+  type Size,
   type Variant,
-} from "../../shared/variant";
+} from "../../shared";
 import { cn } from "../../utils";
 import { resolveCascade, resolveClassKey } from "../../utils/resolve-token";
 import {
   FALLBACK_TOAST_CONFIG,
-  type ToastConfig,
   type ToastItemData,
   type ToastPlacement,
-  type ToastSizeKey,
   type ToastType,
 } from "./toast-config";
 import {
@@ -34,6 +41,10 @@ import { usePausableTimeout } from "./use-pausable-timeout";
 
 // ─── Color Resolver ─────────────────────────────────────────────────────────
 
+/**
+ * Maps a toast type to a theme color.
+ * Used to determine the accent color for the toast.
+ */
 function mapTypeToColor(type: ToastType = "info"): Color {
   switch (type) {
     case "success":
@@ -51,6 +62,10 @@ function mapTypeToColor(type: ToastType = "info"): Color {
 
 // ─── Default SVG Icons ───────────────────────────────────────────────────────
 
+/**
+ * Returns the default icon for a given toast type.
+ * Used when no custom icon is provided.
+ */
 function getDefaultIcon(type: ToastType = "info", isSolid = false) {
   const iconClass = cn("w-5 h-5", isSolid && "text-current");
 
@@ -72,16 +87,77 @@ function getDefaultIcon(type: ToastType = "info", isSolid = false) {
 
 // ─── Component Props ──────────────────────────────────────────────────────────
 
+/**
+ * Props for the ToastItem component.
+ * Extends ToastItemData with additional configuration and callbacks.
+ */
 export interface ToastItemProps extends ToastItemData {
+  /**
+   * Callback fired when the toast should be dismissed.
+   */
   onDismiss: (id: string) => void;
+
+  /**
+   * Placement of the toast container.
+   * Determines the animation direction.
+   */
   placement: ToastPlacement;
-  size: ToastSizeKey;
+
+  /**
+   * Size scale of the toast.
+   */
+  size: Size;
+
+  /**
+   * Visual style variant of the toast.
+   */
   variant: Variant;
+
+  /**
+   * Theme color of the toast.
+   * Overrides the auto-detected color from the type.
+   */
   color?: Color;
+
+  /**
+   * Corner rounding of the toast.
+   */
   radius: Radius;
+
+  /**
+   * Whether the toast has animations.
+   */
   animated?: boolean;
 }
 
+/**
+ * A single toast notification item.
+ *
+ * ToastItem renders a toast notification with icon, title, message,
+ * optional action, and dismiss button. It supports pause on hover,
+ * enter/exit animations, and configurable styling. The component uses
+ * the usePausableTimeout hook to pause auto-dismissal during hover.
+ *
+ * @param props - ToastItem configuration options.
+ * @param props.id - Unique identifier for the toast.
+ * @param props.title - Optional title text.
+ * @param props.message - The main message content.
+ * @param props.type - Type of toast. Defaults to "info".
+ * @param props.timeout - Duration before auto-dismissal. Defaults to 3500.
+ * @param props.icon - Custom icon element.
+ * @param props.action - Action element rendered below the message.
+ * @param props.dismissible - Whether the toast can be dismissed. Defaults to true.
+ * @param props.onDismiss - Callback fired when the toast is dismissed.
+ * @param props.placement - Placement of the toast container.
+ * @param props.size - Size scale of the toast.
+ * @param props.variant - Visual style variant.
+ * @param props.color - Theme color override.
+ * @param props.radius - Corner rounding.
+ * @param props.animated - Whether the toast has animations.
+ *
+ * @see ToastItemData - The data structure for toast notifications.
+ * @see usePausableTimeout - Hook for pausing auto-dismissal.
+ */
 export function ToastItem({
   id,
   title,
@@ -100,7 +176,7 @@ export function ToastItem({
   animated,
 }: ToastItemProps) {
   const config = useAsheeConfig();
-  const sectionConfig = config.components?.toast as ToastConfig | undefined;
+  const sectionConfig = config.components?.toast;
   const [isExiting, setIsExiting] = useState(false);
 
   // Resolve animated cascade fallback
@@ -173,7 +249,7 @@ export function ToastItem({
       onMouseEnter={pause}
       onMouseLeave={resume}
       className={cn(
-        "pointer-events-auto relative flex gap-3 items-start shadow-lg border backdrop-blur-md select-none overflow-hidden transition-all duration-200 active:scale-[0.99]",
+        "pointer-events-auto relative flex gap-3 items-start shadow-lg border backdrop-blur-md select-none overflow-clip transition-all duration-200 active:scale-[0.99]",
         "bg-background",
         widthClass,
         paddingClass,

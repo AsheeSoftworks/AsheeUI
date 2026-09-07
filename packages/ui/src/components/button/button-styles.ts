@@ -1,11 +1,27 @@
-import type { Size } from "../../shared/size";
+/**
+ * Button component styles for AsheeUI.
+ * This file provides CSS class mappings for the Button component's
+ * size options, including both standard buttons and icon-only variants.
+ */
 
+import type { Size } from "../../shared";
+
+/**
+ * CSS classes for standard button sizes.
+ * Maps size keys to Tailwind classes that control padding, height,
+ * font size, and spacing between elements.
+ */
 export const BUTTON_SIZE_CLASS: Record<Size, string> = {
   sm: "h-8 px-3 text-xs gap-1.5",
   md: "h-9 px-3.5 text-xs sm:h-10 sm:px-4 sm:text-sm gap-2",
   lg: "h-11 px-5 text-sm sm:h-12 sm:px-6 sm:text-base gap-2.5",
 };
 
+/**
+ * CSS classes for icon-only button sizes.
+ * Maps size keys to Tailwind classes that create square buttons
+ * with consistent dimensions for icons.
+ */
 export const BUTTON_ICON_SIZE_CLASS: Record<Size, string> = {
   sm: "size-8 p-0 text-xs gap-0",
   md: "size-9 sm:size-10 p-0 text-xs sm:text-sm gap-0",

@@ -1,9 +1,13 @@
-import { registerComponentDefaults } from "../../libs/registry";
-import type { Size } from "../../shared/size";
-import type { Color } from "../../shared/variant";
+/**
+ * Spinner component configuration for AsheeUI.
+ * This file defines the configuration types and defaults for the Spinner
+ * component, including size, color, and animation speed options.
+ * It registers the default configuration with the component registry
+ * and provides fallback values for the cascade resolution system.
+ */
 
-/** Pixel-size scale of the spinner. */
-export type SpinnerSizeKey = Size;
+import { registerComponentDefaults } from "../../libs/registry";
+import type { Color, Size } from "../../shared";
 
 /**
  * Theme configuration options for the Spinner component.
@@ -12,22 +16,32 @@ export type SpinnerSizeKey = Size;
  * the component-level fallback tier of the theme cascade.
  */
 export interface SpinnerConfig {
-  /** Pixel-size scale.
+  /**
+   * Pixel-size scale.
+   * Controls the dimensions of the spinner.
    *
    * @default "md"
    */
-  size?: SpinnerSizeKey;
-  /** Theme accent color.
+  size?: Size;
+
+  /**
+   * Theme accent color.
+   * Controls the color of the spinner.
    *
    * @default "primary"
    */
   color?: Color;
-  /** CSS `animation-duration` for one rotation.
+
+  /**
+   * CSS `animation-duration` for one rotation.
+   * Controls how fast the spinner rotates.
    *
    * @default "0.75s"
    */
   speed?: string;
-  /** Extra classes applied to every spinner instance.
+
+  /**
+   * Extra classes applied to every spinner instance.
    *
    * @default ""
    */
@@ -47,6 +61,8 @@ export const defaultSpinnerConfig: SpinnerConfig = {
 
 /**
  * Hard fallback values used when no config tier provides a value.
+ * These values are used when instance props, component config,
+ * and global defaults are all undefined.
  */
 export const FALLBACK_SPINNER_CONFIG: Required<SpinnerConfig> = {
   size: "md",

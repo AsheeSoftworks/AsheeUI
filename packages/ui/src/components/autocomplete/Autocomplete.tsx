@@ -1,3 +1,11 @@
+/**
+ * Autocomplete component for AsheeUI.
+ * This file provides the main Autocomplete component implementation, which
+ * combines a text input with a floating suggestion dropdown. It supports
+ * filtered options, free-form values, and controlled selection state.
+ * The component uses Floating UI for positioning and follows AsheeUI's
+ * configuration cascade for visual tokens.
+ */
 "use client";
 
 import {
@@ -9,6 +17,7 @@ import {
   useFloating,
   useFocus,
   useInteractions,
+  size as floatingSize,
   useRole,
 } from "@floating-ui/react";
 import {
@@ -20,70 +29,73 @@ import {
   useState,
 } from "react";
 import { useAsheeConfig } from "../../libs/context";
-import type { Radius } from "../../shared/radius";
-import type { Size } from "../../shared/size";
-import type { Color, Variant } from "../../shared/variant";
+import type { Color, Variant } from "../../shared";
 import { resolveCascade, resolveRadiusKey } from "../../utils/resolve-token";
 import type { FieldSizeKey } from "../field/field-config";
 import { Input, type InputProps } from "../input/Input";
+import type { SelectMenuOption } from "../select-menu";
 import { SelectMenu } from "../select-menu/SelectMenu";
 import {
   type AutocompleteConfig,
-  type AutocompleteOption,
   FALLBACK_AUTOCOMPLETE_CONFIG,
 } from "./autocomplete-config";
 
 // ─── Component Interface ──────────────────────────────────────────────────────
 
+type BaseAutocompleteProps = AutocompleteConfig &
+  Omit<InputProps, "value" | "onChange">;
+
 /**
  * Configuration options for the Autocomplete component.
  */
-export interface AutocompleteProps
-  extends Omit<InputProps, "value" | "onChange"> {
-  /** Suggestions shown while the user types.
+export interface AutocompleteProps extends BaseAutocompleteProps {
+  /**
+   * Suggestions shown while the user types.
+   * Each option must have a label and a unique value.
    *
    * @default []
    */
-  options: AutocompleteOption[];
-  /** Controlled selected value, shown as its option label. */
+  options: SelectMenuOption[];
+
+  /**
+   * Controlled selected value, shown as its option label.
+   * When allowCustomValue is true, this can be a free-form string.
+   */
   value?: string | number;
-  /** Callback fired with the selected value and option. */
-  onValueChange?: (value: string | number, option?: AutocompleteOption) => void;
-  /** Callback fired whenever the raw input text changes. */
+
+  /**
+   * Callback fired with the selected value and option.
+   * Called when a suggestion is selected from the dropdown.
+   */
+  onValueChange?: (value: string | number, option?: SelectMenuOption) => void;
+
+  /**
+   * Callback fired whenever the raw input text changes.
+   * Called on every keystroke, providing the current input value.
+   */
   onInputChange?: (inputValue: string) => void;
-  /** Allows free-form values that are not in the options list.
+
+  /**
+   * Allows free-form values that are not in the options list.
    *
    * When enabled, typing emits the raw text through `onValueChange`.
+   * The dropdown will still show filtered suggestions, but the user
+   * can enter any text.
    *
    * @default false
    */
   allowCustomValue?: boolean;
-  /** Content rendered below the options list. */
-  belowList?: ReactNode;
-  /** Extra classes applied to the floating dropdown. */
-  dropdownClassName?: string;
 
-  // Menu / Popover Overrides
-  /** Visual style of the dropdown menu.
-   *
-   * @default "solid"
+  /**
+   * Content rendered below the options list.
+   * Useful for adding "Add new" buttons or status messages.
    */
-  menuVariant?: Variant;
-  /** Theme accent color of the dropdown menu.
-   *
-   * @default "default"
+  belowList?: ReactNode;
+
+  /**
+   * Extra classes applied to the floating dropdown.
    */
-  menuColor?: Color;
-  /** Corner rounding of the dropdown menu.
-   *
-   * @default "md"
-   */
-  menuRadius?: Radius;
-  /** Density scale of the dropdown menu.
-   *
-   * @default "sm"
-   */
-  menuSize?: Size;
+  dropdownClassName?: string;
 }
 
 // ─── Component Implementation ─────────────────────────────────────────────────
@@ -97,19 +109,25 @@ export interface AutocompleteProps
  * values are supported via `allowCustomValue`. Menu tokens resolve
  * through the standard AsheeUI cascade.
  *
+ * The component handles accessibility through Floating UI's interaction
+ * hooks, including focus management, dismissal on outside clicks,
+ * and proper ARIA roles for the combobox pattern.
+ *
  * @param props - Autocomplete configuration options and input props.
  * @param props.options - Suggestion list.
  * @param props.value - Controlled selected value.
  * @param props.onValueChange - Selection callback.
  * @param props.onInputChange - Raw input change callback.
- * @param props.allowCustomValue - Allow free-form values. Defaults to
- *   false.
+ * @param props.allowCustomValue - Allow free-form values. Defaults to false.
  * @param props.belowList - Content below the options list.
  * @param props.dropdownClassName - Extra dropdown classes.
  * @param props.menuVariant - Dropdown variant. Defaults to "solid".
- * @param props.menuColor - Dropdown color. Defaults to "default".
- * @param props.menuRadius - Dropdown radius. Defaults to "md".
- * @param props.menuSize - Dropdown density. Defaults to "sm".
+ * @param props.color - Dropdown color. Defaults to "default".
+ * @param props.radius - Dropdown radius. Defaults to "md".
+ * @param props.size - Dropdown density. Defaults to "sm".
+ * @param props.disabled - Whether the input is disabled.
+ * @param props.placeholder - Placeholder text for the input.
+ * @param props.className - Extra classes for the input.
  *
  * @example
  * ```tsx
@@ -128,6 +146,21 @@ export interface AutocompleteProps
  *   );
  * }
  * ```
+ *
+ * @example
+ * ```tsx
+ * // With free-form values
+ * <Autocomplete
+ *   allowCustomValue
+ *   options={fruits}
+ *   onValueChange={(value) => console.log('Selected:', value)}
+ *   placeholder="Type a fruit name..."
+ * />
+ * ```
+ *
+ * @see AutocompleteConfig - The configuration type for component defaults.
+ * @see SelectMenu - The dropdown component used for suggestions.
+ * @see useAsheeConfig - Hook for accessing the global configuration.
  */
 export const Autocomplete = forwardRef<HTMLInputElement, AutocompleteProps>(
   (
@@ -139,16 +172,16 @@ export const Autocomplete = forwardRef<HTMLInputElement, AutocompleteProps>(
       allowCustomValue = false,
       belowList,
       dropdownClassName,
-      menuVariant,
-      menuColor,
-      menuRadius,
-      menuSize,
+      menu,
+      variant,
+      color,
+      radius,
+      size,
       endContent,
       onClick,
       disabled,
       placeholder = "Type to search...",
       className,
-      size,
       ...inputProps
     },
     ref,
@@ -179,12 +212,23 @@ export const Autocomplete = forwardRef<HTMLInputElement, AutocompleteProps>(
     }, [selectedOption, value]);
 
     // Floating UI context
-    const { refs, floatingStyles, context } = useFloating<HTMLInputElement>({
+    const { refs, floatingStyles, context } = useFloating<HTMLButtonElement>({
       open: isOpen,
       onOpenChange: (open) => !disabled && setIsOpen(open),
       placement: "bottom-start",
       whileElementsMounted: autoUpdate,
-      middleware: [offset(4), flip(), shift({ padding: 8 })],
+      middleware: [
+        offset(4),
+        flip(),
+        shift({ padding: 8 }),
+        floatingSize({
+          apply({ availableHeight, elements }) {
+            Object.assign(elements.floating.style, {
+              maxHeight: `${availableHeight}px`,
+            });
+          },
+        }),
+      ],
     });
 
     const focus = useFocus(context);
@@ -196,41 +240,32 @@ export const Autocomplete = forwardRef<HTMLInputElement, AutocompleteProps>(
       role,
     ]);
 
-    // ─── 1. Token Resolvers (4-Tier Cascade) ──────────────────────────────────
+    const resolvedVariantKey = resolveCascade<Variant>(
+      variant,
+      sectionConfig?.variant,
+      config.defaultVariant,
+      FALLBACK_AUTOCOMPLETE_CONFIG.variant,
+    );
+
+    const resolvedColorKey = resolveCascade<Color>(
+      color,
+      sectionConfig?.color,
+      config.defaultColor,
+      FALLBACK_AUTOCOMPLETE_CONFIG.color,
+    );
+
+    const resolvedRadiusKey = resolveRadiusKey(
+      radius,
+      sectionConfig?.radius,
+      config.defaultRadius,
+      FALLBACK_AUTOCOMPLETE_CONFIG.radius,
+    );
 
     const resolvedSizeKey = resolveCascade<FieldSizeKey>(
       size,
       sectionConfig?.size,
       undefined,
       FALLBACK_AUTOCOMPLETE_CONFIG.size,
-    );
-
-    const resolvedMenuVariant = resolveCascade<Variant>(
-      menuVariant,
-      sectionConfig?.menuVariant,
-      config.defaultVariant as Variant | undefined,
-      FALLBACK_AUTOCOMPLETE_CONFIG.variant,
-    );
-
-    const resolvedMenuColor = resolveCascade<Color>(
-      menuColor,
-      sectionConfig?.menuColor,
-      config.defaultColor as Color | undefined,
-      FALLBACK_AUTOCOMPLETE_CONFIG.color,
-    );
-
-    const resolvedMenuRadiusKey = resolveRadiusKey(
-      menuRadius,
-      sectionConfig?.menuRadius,
-      config.defaultRadius,
-      FALLBACK_AUTOCOMPLETE_CONFIG.radius,
-    );
-
-    const resolvedMenuSize = resolveCascade<Size>(
-      menuSize,
-      sectionConfig?.menuSize,
-      undefined,
-      FALLBACK_AUTOCOMPLETE_CONFIG.menuSize,
     );
 
     // ─── 2. Class Maps ────────────────────────────────────────────────────────
@@ -260,7 +295,7 @@ export const Autocomplete = forwardRef<HTMLInputElement, AutocompleteProps>(
 
     // Handle Option Selection
     const handleSelectOption = useCallback(
-      (option: AutocompleteOption) => {
+      (option: SelectMenuOption) => {
         setInputValue(option.label);
         onValueChange?.(option.value, option);
         setIsOpen(false);
@@ -283,6 +318,9 @@ export const Autocomplete = forwardRef<HTMLInputElement, AutocompleteProps>(
             else if (ref)
               (ref as React.RefObject<HTMLInputElement | null>).current = node;
           }}
+          variant={resolvedVariantKey}
+          radius={resolvedRadiusKey}
+          color={resolvedColorKey}
           size={resolvedSizeKey}
           disabled={disabled}
           placeholder={placeholder}
@@ -293,7 +331,7 @@ export const Autocomplete = forwardRef<HTMLInputElement, AutocompleteProps>(
             onClick?.(e);
           }}
           aria-expanded={isOpen}
-          aria-autocomplete="list"
+          aria-autocomplete="none"
           endContent={endContent}
           className={className}
           {...getReferenceProps(inputProps)}
@@ -312,10 +350,8 @@ export const Autocomplete = forwardRef<HTMLInputElement, AutocompleteProps>(
           isSearch={false}
           belowList={belowList}
           dropdownClassName={dropdownClassName}
-          variant={resolvedMenuVariant}
-          color={resolvedMenuColor}
-          radius={resolvedMenuRadiusKey}
-          size={resolvedMenuSize}
+          menuProps={menu}
+          menuConfig={sectionConfig?.menu}
           initialFocus={-1}
           returnFocus={false}
         />

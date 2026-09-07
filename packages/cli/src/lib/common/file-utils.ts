@@ -1,3 +1,11 @@
+/**
+ * File system utilities for AsheeUI CLI.
+ * This module provides functions for reading, writing, editing, and
+ * verifying files in a project directory. It handles common operations
+ * like JSON parsing, file existence checking, and applying search/replace
+ * edits with idempotency support.
+ */
+
 import { promises as fs } from "node:fs";
 import { dirname, join, parse, relative } from "node:path";
 import { pathToFileURL } from "node:url";

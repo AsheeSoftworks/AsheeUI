@@ -1,3 +1,12 @@
+/**
+ * CLI command registration for `asheeui init`.
+ *
+ * This module provides the `registerInitCommand` function that registers
+ * the `init` subcommand on the commander program. The init command sets
+ * up AsheeUI in a project, including configuration file generation, CSS
+ * imports, provider wrapping, and dependency installation.
+ */
+
 import type { Command } from "commander";
 import { runInit } from "../lib/init/init";
 

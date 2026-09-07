@@ -1,32 +1,42 @@
-import { join } from "node:path";
-import { firstExisting, readTextFile } from "../lib/common/file-utils";
-import { discoverConfig } from "./config-discovery";
-
 /**
- * Shared audit utilities.
+ * Shared audit utilities for AsheeUI CLI.
  *
- * These helpers are the single source of truth for *verifying* whether an
+ * These helpers are the single source of truth for verifying whether an
  * `asheeui` setup element already exists on disk. They are consumed by the
  * `doctor` command (reporting), the `fix` command (repairing) and the `init`
  * command (guarding against duplicate writes/edits).
  */
 
+import { join } from "node:path";
+import { firstExisting, readTextFile } from "../lib/common/file-utils";
+import { discoverConfig } from "./config-discovery";
+
 // Markers.
 
-/** Substring that identifies an `asheeui` stylesheet import in a CSS file. */
+/**
+ * Substring that identifies an `asheeui` stylesheet import in a CSS file.
+ */
 export const STYLES_IMPORT_MARKER = "asheeui/styles";
 
-/** Matches `@import "asheeui/styles"` / `@import 'asheeui/styles.css';` etc. */
+/**
+ * Matches `@import "asheeui/styles"` / `@import 'asheeui/styles.css';` etc.
+ */
 export const STYLES_IMPORT_PATTERN =
   /@import\s+["']asheeui\/styles(?:\.css)?["']\s*;?/;
 
-/** Matches a bare tailwind v4 import. */
+/**
+ * Matches a bare tailwind v4 import.
+ */
 export const TAILWIND_IMPORT_PATTERN = /@import\s+["']tailwindcss["']\s*;?/;
 
-/** Provider tag used when wrapping application roots. */
+/**
+ * Provider tag used when wrapping application roots.
+ */
 export const PROVIDER_TAG = "AsheeUIProvider";
 
-/** Legacy provider name still accepted by doctor checks. */
+/**
+ * Legacy provider name still accepted by doctor checks.
+ */
 export const LEGACY_PROVIDER_TAG = "AsheeUIProvider";
 
 /**
@@ -44,7 +54,9 @@ export const GLOBAL_CSS_CANDIDATES = [
   "app/globals.css",
 ] as const;
 
-/** Entry files that may hold the root provider. */
+/**
+ * Entry files that may hold the root provider.
+ */
 export const ENTRYPOINT_CANDIDATES = [
   "src/main.tsx",
   "src/index.tsx",

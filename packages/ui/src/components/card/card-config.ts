@@ -1,6 +1,14 @@
+/**
+ * Card component configuration for AsheeUI.
+ * This file defines the configuration types and defaults for the Card
+ * component, including variant, size, radius, image placement, and
+ * behavior options. It registers the default configuration with the
+ * component registry and provides fallback values for the cascade
+ * resolution system.
+ */
+
 import { registerComponentDefaults } from "../../libs/registry";
-import type { Radius } from "../../shared/radius";
-import type { Size } from "../../shared/size";
+import type { Radius, Size } from "../../shared";
 import type { ImageFit, ImageRatioKey } from "../image/image-config";
 
 /**
@@ -13,10 +21,17 @@ import type { ImageFit, ImageRatioKey } from "../image/image-config";
  */
 export type CardVariant = "elevated" | "bordered" | "flat" | "ghost";
 
-/** Placement of the card image relative to the content. */
+/**
+ * Placement of the card image relative to the content.
+ * "top" and "bottom" place the image above or below the content.
+ * "background" places the image as a full-bleed background layer.
+ */
 export type CardImagePosition = "top" | "bottom" | "background";
 
-/** Native image loading strategy. */
+/**
+ * Native image loading strategy.
+ * Controls when the browser loads the image resource.
+ */
 export type CardImageLoading = "lazy" | "eager";
 
 /**
@@ -26,47 +41,64 @@ export type CardImageLoading = "lazy" | "eager";
  * component-level fallback tier of the theme cascade.
  */
 export interface CardConfig {
-  /** Visual style variant.
+  /**
+   * Visual style variant.
+   * Controls the card's background, border, and shadow treatment.
    *
    * @default "bordered"
    */
   variant?: CardVariant;
-  /** Content padding and spacing scale.
+
+  /**
+   * Content padding and spacing scale.
+   * Controls the density of the card's internal spacing.
    *
    * @default "md"
    */
   size?: Size;
-  /** Corner rounding.
+
+  /**
+   * Corner rounding.
+   * Controls the border-radius of the card.
    *
    * @default "md"
    */
   radius?: Radius;
-  /** Placement of the card image.
+
+  /**
+   * Placement of the card image.
+   * Determines where the image appears relative to the content.
    *
    * @default "top"
    */
   imagePosition?: CardImagePosition;
-  /** Aspect ratio of the positioned image.
+
+  /**
+   * Aspect ratio of the positioned image.
+   * Controls the proportional dimensions of the image container.
    *
    * @default "video"
    */
   imageRatio?: ImageRatioKey;
-  /** Object-fit strategy of the positioned image.
+
+  /**
+   * Object-fit strategy of the positioned image.
+   * Controls how the image fills its container.
    *
    * @default "cover"
    */
   imageFit?: ImageFit;
-  /** Native loading strategy of the positioned image.
+
+  /**
+   * Native loading strategy of the positioned image.
    *
    * @default "lazy"
    */
   imageLoading?: CardImageLoading;
-  /** Enables interactive hover and keyboard behaviour.
-   *
-   * @default false
-   */
-  isClickable?: boolean;
-  /** Enables the press animation when clickable.
+
+  /**
+   * Enables the press animation when clickable.
+   * When true, the card scales down slightly on click.
    *
    * @default true
    */
@@ -84,7 +116,6 @@ export const defaultCardConfig: CardConfig = {
   imagePosition: "top",
   imageRatio: "video",
   imageFit: "cover",
-  isClickable: false,
   animate: true,
 };
 
@@ -98,6 +129,8 @@ registerComponentDefaults("card", defaultCardConfig);
 
 /**
  * Hard fallback values used when no config tier provides a value.
+ * These values are used when instance props, component config,
+ * and global defaults are all undefined.
  */
 export const FALLBACK_CARD_CONFIG = {
   size: "md",
@@ -107,6 +140,5 @@ export const FALLBACK_CARD_CONFIG = {
   imageRatio: "video",
   imageFit: "cover",
   imageLoading: "lazy",
-  isClickable: false,
   animate: true,
 } as const;

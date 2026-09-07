@@ -1,3 +1,9 @@
+/**
+ * Project structure detection utilities for AsheeUI CLI.
+ * This module provides functions for detecting the structure of a project,
+ * including the entry point, language, Tailwind usage, and global CSS file.
+ */
+
 import { join } from "node:path";
 import { pathExists, readJson } from "./file-utils";
 import type { Language, NextRouter, ProjectStructure } from "./types";

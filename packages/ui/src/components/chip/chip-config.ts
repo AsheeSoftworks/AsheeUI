@@ -1,7 +1,13 @@
+/**
+ * Chip component configuration for AsheeUI.
+ * This file defines the configuration types and defaults for the Chip
+ * component, including variant, color, size, and radius options.
+ * It registers the default configuration with the component registry
+ * and provides fallback values for the cascade resolution system.
+ */
+
 import { registerComponentDefaults } from "../../libs/registry";
-import type { Radius } from "../../shared/radius";
-import type { Size } from "../../shared/size";
-import type { Color, Variant } from "../../shared/variant";
+import type { Color, Radius, Size, Variant } from "../../shared";
 
 /**
  * Visual style of the chip.
@@ -11,10 +17,16 @@ import type { Color, Variant } from "../../shared/variant";
  */
 export type ChipVariant = Exclude<Variant, "underlined">;
 
-/** Height and font-size scale of the chip. */
+/**
+ * Height and font-size scale of the chip.
+ * Maps to the standard Size type: "sm", "md", or "lg".
+ */
 export type ChipSizeKey = Size;
 
-/** Corner rounding scale of the chip. */
+/**
+ * Corner rounding scale of the chip.
+ * Maps to the standard Radius type.
+ */
 export type ChipRadiusKey = Radius;
 
 /**
@@ -24,31 +36,37 @@ export type ChipRadiusKey = Radius;
  * component-level fallback tier of the theme cascade.
  */
 export interface ChipConfig {
-  /** Visual style variant.
+  /**
+   * Visual style variant.
+   * Controls the chip's background, border, and hover treatment.
    *
    * @default "bordered"
    */
   variant?: ChipVariant;
-  /** Theme accent color.
+
+  /**
+   * Theme accent color.
+   * Controls the color of the chip's primary visual elements.
    *
    * @default "primary"
    */
   color?: Color;
-  /** Height and font-size scale.
+
+  /**
+   * Height and font-size scale.
+   * Controls the density and text size of the chip.
    *
    * @default "md"
    */
   size?: ChipSizeKey;
-  /** Corner rounding.
+
+  /**
+   * Corner rounding.
+   * Controls the border-radius of the chip.
    *
    * @default "full"
    */
   radius?: ChipRadiusKey;
-  /** Extra classes applied to every chip instance.
-   *
-   * @default ""
-   */
-  className?: string;
 }
 
 /**
@@ -64,13 +82,14 @@ export const defaultChipConfig: ChipConfig = {
 
 /**
  * Hard fallback values used when no config tier provides a value.
+ * These values are used when instance props, component config,
+ * and global defaults are all undefined.
  */
-export const FALLBACK_CHIP_CONFIG: Required<ChipConfig> = {
+export const FALLBACK_CHIP_CONFIG = {
   size: "md",
   variant: "bordered",
   color: "primary",
   radius: "full",
-  className: "",
 } as const;
 
 declare module "../../libs/registry" {
