@@ -7,7 +7,7 @@ import { resolve } from "node:path";
  * Supports both `asheeui.config.*` and `asheeui-config.*` spellings
  * across the TypeScript and JavaScript module extensions.
  */
-export const CANDIDATES = [
+export const CONFIG_CANDIDATES = [
   "asheeui.config.ts",
   "asheeui.config.mts",
   "asheeui.config.js",
@@ -21,8 +21,8 @@ export const CANDIDATES = [
 /**
  * Discover an existing AsheeUI config file inside `root`.
  *
- * Returns the first of {@link CANDIDATES} that exists on disk, walking
- * the list in priority order.
+ * Returns the first of {@link CONFIG_CANDIDATES} that exists on disk,
+ * walking the list in priority order.
  *
  * @param root - Directory to search. Defaults to `process.cwd()`.
  * @returns Absolute path of the first matching config file, or
@@ -38,5 +38,5 @@ export const CANDIDATES = [
  */
 export function discoverConfig(root?: string): string | undefined {
   const base = root ?? process.cwd();
-  return CANDIDATES.map((file) => resolve(base, file)).find(existsSync);
+  return CONFIG_CANDIDATES.map((file) => resolve(base, file)).find(existsSync);
 }

@@ -1,4 +1,4 @@
-import { cn } from "@asheeui/utils";
+import { cn } from "../utils";
 import type { IconProps } from "./types";
 
 export function EyeIcon({ className, ...props }: IconProps) {

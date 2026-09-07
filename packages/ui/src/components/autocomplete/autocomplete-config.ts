@@ -104,7 +104,7 @@ export const FALLBACK_AUTOCOMPLETE_CONFIG: Required<AutocompleteConfig> = {
   color: "primary",
   labelAlign: "left",
   menuVariant: "solid",
-  menuColor: "default",
+  menuColor: "secondary",
   menuRadius: "md",
   menuSize: "sm",
 };

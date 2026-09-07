@@ -73,8 +73,8 @@ function generateBarrels(): Plugin {
         }
       }
 
-      // Regenerate dist/config and dist/libs barrels referenced by exports map
-      for (const sub of ["config", "libs"]) {
+      // Regenerate dist/config, dist/libs and dist/utils barrels referenced by exports map
+      for (const sub of ["config", "libs", "utils"]) {
         const dir = join(distRoot, sub);
         if (existsSync(dir)) {
           writeBarrel(dir, listModules(dir));
@@ -106,9 +106,9 @@ export default defineConfig({
         "react",
         "react-dom",
         "react/jsx-runtime",
-        "@asheeui/utils",
         "@floating-ui/react",
-        "virtual:ashee-config",
+        "clsx",
+        "tailwind-merge",
       ],
       output: {
         preserveModules: true,

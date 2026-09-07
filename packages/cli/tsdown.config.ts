@@ -5,5 +5,4 @@ export default defineConfig({
   format: ["esm", "cjs"],
   dts: true,
   clean: true,
-  noExternal: ["@asheeui/utils"], // Inlines internal utils package into dist/
 });

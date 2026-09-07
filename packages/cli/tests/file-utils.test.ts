@@ -27,7 +27,7 @@ describe("applyEdit", () => {
       path: target,
       search: 'import { StrictMode } from "react";',
       replace:
-        'import { StrictMode } from "react";\nimport { AsheeUIProvider } from "asheeui";',
+        'import { StrictMode } from "react";\nimport { AsheeProvider } from "asheeui";',
       description: "Inject provider import",
     });
 
@@ -37,7 +37,7 @@ describe("applyEdit", () => {
     expect(result.error).toBeUndefined();
 
     const updated = await readFile(target, "utf8");
-    expect(updated).toContain('import { AsheeUIProvider } from "asheeui";');
+    expect(updated).toContain('import { AsheeProvider } from "asheeui";');
   });
 
   it("returns a failed EditResult (no throw) when the file is missing", async () => {
@@ -61,7 +61,7 @@ describe("applyEdit", () => {
     const result = await applyEdit({
       path: target,
       search: "plugins: [",
-      replace: "plugins: [asheeui(), ",
+      replace: "plugins: [customPlugin(), ",
       notFoundMessage: "Could not find plugins array in vite.config.ts",
     });
 

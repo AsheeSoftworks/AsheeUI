@@ -1,8 +1,8 @@
 "use client";
 
-import { cn } from "@asheeui/utils";
 import { forwardRef, isValidElement, type ReactNode, useMemo } from "react";
 import { useAsheeConfig } from "../../libs/context";
+import { cn } from "../../utils";
 import { resolveCascade } from "../../utils/resolve-token";
 import {
   FALLBACK_MARQUEE_CONFIG,

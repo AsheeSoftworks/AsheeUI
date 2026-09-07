@@ -8,11 +8,8 @@ import type {
   IntegrityCheck,
 } from "../common/types";
 import { defaultConfigContent } from "../init/templates";
-import {
-  resolveGlobalCss,
-  resolveRouterOrEntryPoint,
-  resolveViteOrAppConfig,
-} from "./resolvers";
+import { relativeImport } from "./helpers";
+import { resolveGlobalCss, resolveRouterOrEntryPoint } from "./resolvers";
 
 /**
  * Build the {@link IntegrationResult} describing every change required
@@ -22,11 +19,9 @@ import {
  * 1. Create the `asheeui.config.*` file when missing.
  * 2. Inject `@import "asheeui/styles";` into the project's global
  *    stylesheet (right under `@import "tailwindcss";`).
- * 3. Register the `asheeui()` plugin in `app.config.*` (TanStack uses
- *    the same Vite plugin).
- * 4. Wrap `{children}` inside `<AsheeUIProvider>` in the root route
- *    file (`src/routes/__root.tsx` or `app/routes/__root.tsx`) and
- *    add `suppressHydrationWarning` to the `<html>` tag.
+ * 3. Wrap `{children}` inside `<AsheeProvider config={config}>` in the
+ *    root route file (`src/routes/__root.tsx` or `app/routes/__root.tsx`)
+ *    and add `suppressHydrationWarning` to the `<html>` tag.
  *
  * @param ctx - {@link IntegrationContext} for the TanStack Start project.
  * @returns A populated {@link IntegrationResult}.
@@ -44,7 +39,7 @@ export async function buildTanStackStartIntegration(
   ctx: IntegrationContext,
 ): Promise<IntegrationResult> {
   const { directory, structure } = ctx;
-  const providerName = "AsheeUIProvider";
+  const providerName = "AsheeProvider";
 
   // Priority: Always prefer __root.tsx for tanstack-start over router.tsx
   let rootRouteFile = await resolveRouterOrEntryPoint(
@@ -55,7 +50,6 @@ export async function buildTanStackStartIntegration(
     rootRouteFile = structure.entryPoint;
   }
 
-  const appConfigFile = await resolveViteOrAppConfig(directory);
   const cssFile = await resolveGlobalCss(directory);
   const configFile =
     structure.language === "typescript"
@@ -95,42 +89,19 @@ export async function buildTanStackStartIntegration(
     summary.push(`add asheeui styles import to ${cssRelative}`);
   }
 
-  // 2. Vite Config Injection
-  if (appConfigFile) {
-    const configRelative = toProjectRelative(directory, appConfigFile);
-    fileEdits.push(
-      {
-        path: appConfigFile,
-        search: `import { defineConfig } from "vite";`,
-        replace: `import { defineConfig } from "vite";\nimport { asheeui } from "@asheeui/vite";`,
-        skipIfContentIncludes: "@asheeui/vite",
-        notFoundMessage: `Could not find defineConfig import in ${configRelative}`,
-        description: `Import asheeui from @asheeui/vite in ${configRelative}`,
-      },
-      {
-        path: appConfigFile,
-        search: `plugins: [`,
-        replace: `plugins: [asheeui(), `,
-        skipIfContentIncludes: "asheeui()",
-        notFoundMessage: `Could not find plugins array in ${configRelative}`,
-        description: `Register asheeui() plugin in ${configRelative}`,
-      },
-    );
-    summary.push(`add asheeui() plugin to ${configRelative}`);
-  }
-
-  // 3. __root.tsx Integration
+  // 2. __root.tsx Integration
   if (rootRouteFile) {
     const rootRelative = toProjectRelative(directory, rootRouteFile);
+    const configRel = relativeImport(rootRouteFile, configPath);
 
-    // Import AsheeUIProvider
+    // Import AsheeProvider and the generated config
     fileEdits.push({
       path: rootRouteFile,
       search: `import { HeadContent`,
-      replace: `import { ${providerName} } from "asheeui";\nimport { HeadContent`,
+      replace: `import { ${providerName} } from "asheeui";\nimport config from "${configRel}";\nimport { HeadContent`,
       skipIfContentIncludes: `from "asheeui"`,
       notFoundMessage: `Could not find import statement in ${rootRelative}`,
-      description: `Import ${providerName} in ${rootRelative}`,
+      description: `Import ${providerName} and config in ${rootRelative}`,
     });
 
     // Ensure suppressHydrationWarning is on <html ...>
@@ -143,12 +114,12 @@ export async function buildTanStackStartIntegration(
       description: `Add suppressHydrationWarning to <html /> in ${rootRelative}`,
     });
 
-    // Wrap {children} with <AsheeUIProvider>
+    // Wrap {children} with <AsheeProvider config={config}>
     fileEdits.push({
       path: rootRouteFile,
       search: `{children}`,
-      replace: `<${providerName}>{children}</${providerName}>`,
-      skipIfContentIncludes: `<${providerName}>`,
+      replace: `<${providerName} config={config}>{children}</${providerName}>`,
+      skipIfContentIncludes: `<${providerName}`,
       notFoundMessage: `Could not find {children} in ${rootRelative}`,
       description: `Wrap {children} with <${providerName}> in ${rootRelative}`,
     });
@@ -166,7 +137,7 @@ export async function buildTanStackStartIntegration(
     fileWrites,
     fileEdits,
     integrityChecks,
-    dependenciesToInstall: ["asheeui", "@asheeui/vite"],
+    dependenciesToInstall: ["asheeui"],
     summary,
   };
 }

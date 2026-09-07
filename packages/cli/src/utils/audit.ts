@@ -1,6 +1,6 @@
 import { join } from "node:path";
-import { discoverConfig } from "@asheeui/utils/node";
 import { firstExisting, readTextFile } from "../lib/common/file-utils";
+import { discoverConfig } from "./config-discovery";
 
 /**
  * Shared audit utilities.
@@ -24,7 +24,10 @@ export const STYLES_IMPORT_PATTERN =
 export const TAILWIND_IMPORT_PATTERN = /@import\s+["']tailwindcss["']\s*;?/;
 
 /** Provider tag used when wrapping application roots. */
-export const PROVIDER_TAG = "AsheeUIProvider";
+export const PROVIDER_TAG = "AsheeProvider";
+
+/** Legacy provider name still accepted by doctor checks. */
+export const LEGACY_PROVIDER_TAG = "AsheeUIProvider";
 
 /**
  * Global stylesheet candidates, ordered by conventional priority across
@@ -64,14 +67,17 @@ export function containsStylesImport(content: string): boolean {
 
 /**
  * Test whether `content` already references the root provider, either by
- * rendering `<AsheeUIProvider>` or by importing from `asheeui/config`.
+ * rendering `<AsheeProvider>` (or the legacy `<AsheeUIProvider>`) or by
+ * importing from `asheeui/config`.
  *
  * @param content - File source to scan.
  * @returns `true` when a root provider reference is detected.
  */
 export function containsRootProvider(content: string): boolean {
   return (
-    content.includes("asheeui/config") || content.includes(`<${PROVIDER_TAG}`)
+    content.includes("asheeui/config") ||
+    content.includes(`<${PROVIDER_TAG}`) ||
+    content.includes(`<${LEGACY_PROVIDER_TAG}`)
   );
 }
 

@@ -9,8 +9,11 @@ export function useAsheeConfig(): Config {
   const config = useContext(AsheeConfigContext);
   if (!config) {
     throw new Error(
-      "useAsheeConfig must be used within an AsheeUIProvider - wrap your app root with <AsheeUIProvider>.",
+      "useAsheeConfig must be used within an AsheeProvider - wrap your app root with <AsheeProvider>.",
     );
   }
   return config;
 }
+
+/** Alias for {@link useAsheeConfig}, exported from the `asheeui` root. */
+export const useAshee = useAsheeConfig;

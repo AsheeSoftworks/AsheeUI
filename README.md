@@ -20,8 +20,8 @@ for the most popular React frameworks.
 - Zero-config setup across Next.js, Vite, and TanStack Start.
 - Themeable primitives with variant, color, radius, and density scales.
 - Keyboard navigation, ARIA semantics, and reduced-motion support built in.
-- Headless, framework-agnostic integration packages (`@asheeui/next`,
-  `@asheeui/vite`, and `@asheeui/utils`).
+- Runtime customization through a single `AsheeProvider` context - no bundler
+  plugins or build-time config shims required.
 
 ## Installation
 
@@ -68,7 +68,8 @@ deno add npm:asheeui
 ```
 
 **2. Initialize the integration** from your project root. The CLI detects
-your framework and wires up the provider, theme config, and bundler plugin:
+your framework, creates an `asheeui.config.*` file, and wraps your app in the
+runtime `AsheeProvider`:
 
 ```bash
 npx asheeui init

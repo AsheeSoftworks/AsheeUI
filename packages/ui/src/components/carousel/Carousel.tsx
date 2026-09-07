@@ -1,6 +1,5 @@
 "use client";
 
-import { cn } from "@asheeui/utils";
 import {
   forwardRef,
   type HTMLAttributes,
@@ -17,6 +16,7 @@ import { ChevronLeftIcon } from "../../icons/ChevronLeftIcon";
 import { ChevronRightIcon } from "../../icons/ChevronRightIcon";
 import { useAsheeConfig } from "../../libs/context";
 import { RADIUS_CLASS } from "../../shared/radius";
+import { cn } from "../../utils";
 import {
   resolveCascade,
   resolveClassKey,

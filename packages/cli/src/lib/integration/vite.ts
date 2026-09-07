@@ -8,11 +8,8 @@ import type {
   IntegrityCheck,
 } from "../common/types";
 import { defaultConfigContent } from "../init/templates";
-import {
-  resolveGlobalCss,
-  resolveRouterOrEntryPoint,
-  resolveViteOrAppConfig,
-} from "./resolvers";
+import { relativeImport } from "./helpers";
+import { resolveGlobalCss, resolveRouterOrEntryPoint } from "./resolvers";
 
 /**
  * Build the {@link IntegrationResult} describing every change required
@@ -22,8 +19,9 @@ import {
  * 1. Create the `asheeui.config.*` file when it does not already exist.
  * 2. Inject `@import "asheeui/styles";` into the project's global
  *    stylesheet (right under `@import "tailwindcss";`).
- * 3. Register the `asheeui()` plugin in `vite.config.*` and wrap the
- *    application's entry component with `<AsheeUIProvider>`.
+ * 3. Wrap the application's entry component with `<AsheeProvider
+ *    config={config}>`, passing the runtime config straight to the
+ *    provider.
  *
  * @param ctx - {@link IntegrationContext} for the Vite project.
  * @returns A populated {@link IntegrationResult}.
@@ -41,17 +39,16 @@ export async function buildViteIntegration(
   ctx: IntegrationContext,
 ): Promise<IntegrationResult> {
   const { directory, structure } = ctx;
-  const providerName = "AsheeUIProvider";
+  const providerName = "AsheeProvider";
   const configFile =
     structure.language === "typescript"
       ? "asheeui.config.ts"
       : "asheeui.config.js";
 
-  // Resolve entry, config and CSS dynamically
+  // Resolve entry and CSS dynamically
   const entry =
     structure.entryPoint ??
     (await resolveRouterOrEntryPoint(directory, "vite-react"));
-  const viteConfigPath = await resolveViteOrAppConfig(directory);
   const indexCssPath = await resolveGlobalCss(directory);
 
   const fileEdits: FileEdit[] = [];
@@ -89,50 +86,25 @@ export async function buildViteIntegration(
     summary.push("skip CSS injection (no global stylesheet found)");
   }
 
-  // 2. Inject asheeui plugin and its import into vite.config
-  if (viteConfigPath) {
-    const configRelative = toProjectRelative(directory, viteConfigPath);
-    fileEdits.push(
-      {
-        path: viteConfigPath,
-        search: `import { defineConfig } from "vite";`,
-        replace: `import { defineConfig } from "vite";\nimport { asheeui } from "@asheeui/vite";`,
-        skipIfContentIncludes: "@asheeui/vite",
-        notFoundMessage: `Could not find defineConfig import in ${configRelative}`,
-        description: `Import asheeui from @asheeui/vite in ${configRelative}`,
-      },
-      {
-        path: viteConfigPath,
-        search: `plugins: [`,
-        replace: `plugins: [asheeui(), `,
-        skipIfContentIncludes: "asheeui()",
-        notFoundMessage: `Could not find plugins array in ${configRelative}`,
-        description: `Register asheeui() plugin in ${configRelative}`,
-      },
-    );
-    summary.push(`add asheeui() plugin to ${configRelative}`);
-  } else {
-    summary.push("skip config plugin injection (no vite.config.* found)");
-  }
-
-  // 3. Update entry point (e.g. main.tsx) imports and provider wrapping
+  // 2. Update entry point (e.g. main.tsx) imports and provider wrapping
   if (entry) {
     const projectRelativeEntry = toProjectRelative(directory, entry);
+    const configRel = relativeImport(entry, configPath);
 
     fileEdits.push(
       {
         path: entry,
         search: `import { StrictMode } from "react";`,
-        replace: `import { StrictMode } from "react";\nimport { ${providerName} } from "asheeui";`,
+        replace: `import { StrictMode } from "react";\nimport { ${providerName} } from "asheeui";\nimport config from "${configRel}";`,
         skipIfContentIncludes: `from "asheeui"`,
         notFoundMessage: `Could not find StrictMode import in ${projectRelativeEntry}`,
-        description: `Import ${providerName} in ${projectRelativeEntry}`,
+        description: `Import ${providerName} and config in ${projectRelativeEntry}`,
       },
       {
         path: entry,
         search: `<StrictMode>`,
-        replace: `<StrictMode>\n    <${providerName}>`,
-        skipIfContentIncludes: `<${providerName}>`,
+        replace: `<StrictMode>\n    <${providerName} config={config}>`,
+        skipIfContentIncludes: `<${providerName}`,
         notFoundMessage: `Could not find <StrictMode> in ${projectRelativeEntry}`,
         description: `Wrap <StrictMode> with <${providerName}> in ${projectRelativeEntry}`,
       },
@@ -161,7 +133,7 @@ export async function buildViteIntegration(
     fileWrites,
     fileEdits,
     integrityChecks,
-    dependenciesToInstall: ["asheeui", "@asheeui/vite"],
+    dependenciesToInstall: ["asheeui"],
     summary,
   };
 }

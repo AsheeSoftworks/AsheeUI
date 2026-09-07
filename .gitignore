@@ -31,3 +31,5 @@ commit.sh
 .turbo
 docs/*
 docs
+apps
+apps/*

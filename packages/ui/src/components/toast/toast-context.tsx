@@ -1,6 +1,5 @@
 "use client";
 
-import { cn } from "@asheeui/utils";
 import {
   createContext,
   type ReactNode,
@@ -12,6 +11,7 @@ import {
 import { useAsheeConfig } from "../../libs/context";
 import type { Radius } from "../../shared/radius";
 import type { Variant } from "../../shared/variant";
+import { cn } from "../../utils";
 import { resolveCascade, resolveRadiusKey } from "../../utils/resolve-token";
 import { ToastItem } from "./ToastItem";
 import {

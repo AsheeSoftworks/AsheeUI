@@ -1,5 +1,5 @@
-import { cn } from "@asheeui/utils";
 import type { ReactNode } from "react";
+import { cn } from "../../utils";
 import { Spinner } from "../spinner/spinner";
 import type { FieldStatus, LabelAlign } from "./field-config";
 

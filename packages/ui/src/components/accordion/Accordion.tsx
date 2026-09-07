@@ -1,6 +1,5 @@
 "use client";
 
-import { cn } from "@asheeui/utils";
 import {
   forwardRef,
   type ReactNode,
@@ -11,6 +10,7 @@ import {
 import { ChevronDownIcon } from "../../icons/ChevronDownIcon";
 import { useAsheeConfig } from "../../libs/context";
 import { RADIUS_CLASS, type Radius } from "../../shared/radius";
+import { cn } from "../../utils";
 import {
   resolveCascade,
   resolveClassKey,

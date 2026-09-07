@@ -1,6 +1,4 @@
-/// <reference path="../virtual-config.d.ts" />
-import externalConfig from "virtual:ashee-config";
-import { resolveConfig } from "../config/resolve-config";
+import type { Config } from "../config/config";
 import type { ColorConfig, ColorVariant } from "../theme/color";
 import { THEME_STORAGE_KEY } from "../theme/controller";
 
@@ -32,8 +30,14 @@ function buildThemeCss(colors: ColorConfig): string {
     .join("\n\n");
 }
 
-export function AsheeThemeScript() {
-  const config = resolveConfig(externalConfig ?? {});
+/**
+ * Render a pre-paint theme script that applies the resolved theme class
+ * and injects the theme CSS variables before first paint.
+ *
+ * The resolved {@link Config} is supplied by {@link AsheeProvider} so
+ * runtime configuration never needs a bundler plugin or virtual module.
+ */
+export function AsheeThemeScript({ config }: { config: Config }) {
   const themes = Object.keys(config.color ?? {});
   const defaultTheme = config.defaultTheme ?? "system";
   const storageKey = THEME_STORAGE_KEY;

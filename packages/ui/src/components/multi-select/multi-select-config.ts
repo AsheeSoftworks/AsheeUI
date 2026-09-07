@@ -51,7 +51,7 @@ export const FALLBACK_MULTI_SELECT_CONFIG: Required<MultiSelectConfig> = {
   status: "default",
   labelAlign: "left",
   menuVariant: "solid",
-  menuColor: "default",
+  menuColor: "secondary",
   menuRadius: "md",
   menuSize: "sm",
   chipVariant: "solid",

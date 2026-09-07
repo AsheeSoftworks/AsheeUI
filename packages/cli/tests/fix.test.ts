@@ -44,7 +44,6 @@ async function scaffoldBrokenViteProject() {
           "react-dom": "^19.0.0",
         },
         devDependencies: {
-          "@asheeui/vite": "^0.2.0",
           tailwindcss: "^4.0.0",
           vite: "^6.0.0",
         },
@@ -115,9 +114,10 @@ describe("runFix", () => {
 
     expect(css).toContain('@import "asheeui/styles"');
     expect(countOccurrences(css, '@import "asheeui/styles"')).toBe(1);
-    expect(countOccurrences(vite, "@asheeui/vite")).toBe(1);
-    expect(countOccurrences(vite, "asheeui()")).toBe(1);
-    expect(countOccurrences(main, "AsheeUIProvider")).toBe(3);
+    expect(countOccurrences(vite, "@asheeui/vite")).toBe(0);
+    expect(countOccurrences(vite, "asheeui()")).toBe(0);
+    expect(countOccurrences(main, "AsheeProvider")).toBe(3);
+    expect(main).toContain('import config from "../asheeui.config"');
     expect(countOccurrences(config, "defineConfig")).toBe(2);
 
     // Doctor now passes every actionable check.
@@ -149,9 +149,9 @@ describe("runFix", () => {
     const vite = afterSecond.vite;
     const main = afterSecond.main;
     expect(countOccurrences(css, '@import "asheeui/styles"')).toBe(1);
-    expect(countOccurrences(vite, "@asheeui/vite")).toBe(1);
-    expect(countOccurrences(vite, "asheeui()")).toBe(1);
-    expect(countOccurrences(main, "AsheeUIProvider")).toBe(3);
+    expect(countOccurrences(vite, "@asheeui/vite")).toBe(0);
+    expect(countOccurrences(vite, "asheeui()")).toBe(0);
+    expect(countOccurrences(main, "AsheeProvider")).toBe(3);
     expect(first.outcomes.length).toBeGreaterThan(0);
   });
 

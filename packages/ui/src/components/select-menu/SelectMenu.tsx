@@ -1,6 +1,5 @@
 "use client";
 
-import { cn } from "@asheeui/utils";
 import { type FloatingContext, FloatingFocusManager } from "@floating-ui/react";
 import { type ChangeEvent, type ReactNode, useMemo, useState } from "react";
 import { CheckIcon } from "../../icons/CheckIcon";
@@ -8,6 +7,7 @@ import { SearchIcon } from "../../icons/SearchIcon";
 import { RADIUS_CLASS, type Radius } from "../../shared/radius";
 import type { Size } from "../../shared/size";
 import type { Color, Variant } from "../../shared/variant";
+import { cn } from "../../utils";
 import { resolveClassKey } from "../../utils/resolve-token";
 import { Button } from "../button/Button";
 import { Input } from "../input/Input";
@@ -160,7 +160,7 @@ export const SelectMenu = ({
                   key={String(option.value)}
                   type="button"
                   variant={selected ? variant : "ghost"}
-                  color={selected ? color : "default"}
+                  color={selected ? color : "secondary"}
                   size={size}
                   isDisabled={option.disabled}
                   onClick={() => onSelectOption(option)}

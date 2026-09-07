@@ -43,7 +43,7 @@ export const FALLBACK_SELECT_CONFIG: Required<SelectConfig> = {
   status: "default",
   labelAlign: "left",
   menuVariant: "solid",
-  menuColor: "default",
+  menuColor: "secondary",
   menuRadius: "md",
   menuSize: "lg",
 };

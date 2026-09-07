@@ -1,4 +1,3 @@
-import type { DeepPartial } from "@asheeui/utils";
 import type { ComponentConfigRegistry } from "../libs/registry";
 import type { Radius } from "../shared/radius";
 import type { Color, Variant } from "../shared/variant";
@@ -7,8 +6,9 @@ import type {
   ExternalColorConfig,
   ThemeName,
 } from "../theme/color";
+import type { DeepPartial } from "../utils";
 
-export type { DeepPartial } from "@asheeui/utils";
+export type { DeepPartial } from "../utils";
 
 export type ComponentsConfig = {
   [K in keyof ComponentConfigRegistry]?: DeepPartial<

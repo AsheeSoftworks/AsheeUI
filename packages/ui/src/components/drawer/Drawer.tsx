@@ -1,6 +1,5 @@
 "use client";
 
-import { cn } from "@asheeui/utils";
 import {
   forwardRef,
   type HTMLAttributes,
@@ -10,6 +9,7 @@ import {
   useState,
 } from "react";
 import { useAsheeConfig } from "../../libs/context";
+import { cn } from "../../utils";
 import { resolveCascade, resolveClassKey } from "../../utils/resolve-token";
 import {
   type DrawerConfig,

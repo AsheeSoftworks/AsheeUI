@@ -8,11 +8,8 @@ import type {
   IntegrityCheck,
 } from "../common/types";
 import { defaultConfigContent } from "../init/templates";
-import {
-  resolveGlobalCss,
-  resolveRouterOrEntryPoint,
-  resolveViteOrAppConfig,
-} from "./resolvers";
+import { relativeImport } from "./helpers";
+import { resolveGlobalCss, resolveRouterOrEntryPoint } from "./resolvers";
 
 /**
  * Build the {@link IntegrationResult} describing every change required
@@ -22,9 +19,9 @@ import {
  * 1. Create the `asheeui.config.*` file when missing.
  * 2. Inject `@import "asheeui/styles";` into the project's global
  *    stylesheet (right under `@import "tailwindcss";`).
- * 3. Wrap `next.config.*` with `withAsheeUI(nextConfig)`.
- * 4. Wrap `{children}` (App Router) or `<Component />` (Pages Router)
- *    inside `<AsheeUIProvider>` in the layout / `_app` file.
+ * 3. Wrap `{children}` (App Router) or `<Component />` (Pages Router)
+ *    inside `<AsheeProvider config={config}>` in the layout / `_app`
+ *    file, feeding the runtime config straight to the provider.
  *
  * @param ctx - {@link IntegrationContext} for the Next.js project.
  * @returns A populated {@link IntegrationResult}.
@@ -42,9 +39,8 @@ export async function buildNextIntegration(
   ctx: IntegrationContext,
 ): Promise<IntegrationResult> {
   const { directory, structure } = ctx;
-  const providerName = "AsheeUIProvider";
+  const providerName = "AsheeProvider";
 
-  const nextConfigPath = await resolveViteOrAppConfig(directory);
   const globalsCssPath = await resolveGlobalCss(directory);
   const configFile =
     structure.language === "typescript"
@@ -84,41 +80,7 @@ export async function buildNextIntegration(
     summary.push(`add asheeui styles import to ${cssRelative}`);
   }
 
-  // 2. Wrap Next.js Config
-  if (nextConfigPath) {
-    const configRelative = toProjectRelative(directory, nextConfigPath);
-
-    fileEdits.push(
-      {
-        path: nextConfigPath,
-        search: `import type { NextConfig } from "next";`,
-        replace: `import { withAsheeUI } from "@asheeui/next";\nimport type { NextConfig } from "next";`,
-        skipIfContentIncludes: "@asheeui/next",
-        notFoundMessage: `Could not find NextConfig import in ${configRelative}`,
-        description: `Import withAsheeUI in ${configRelative}`,
-      },
-      {
-        path: nextConfigPath,
-        search: `const nextConfig: NextConfig =`,
-        replace: `const nextConfig: NextConfig =`,
-        skipIfContentIncludes: "withAsheeUI(nextConfig)",
-        notFoundMessage: `Could not find nextConfig in ${configRelative}`,
-        description: `Verify nextConfig in ${configRelative}`,
-      },
-      {
-        path: nextConfigPath,
-        search: `};`,
-        replace: `};\n\nexport default withAsheeUI(nextConfig);`,
-        skipIfContentIncludes: "withAsheeUI(nextConfig)",
-        notFoundMessage: `Could not find end of config block in ${configRelative}`,
-        description: `Export wrapped nextConfig in ${configRelative}`,
-      },
-    );
-
-    summary.push(`wrap next.config with withAsheeUI in ${configRelative}`);
-  }
-
-  // 3. Update App or Pages Router Entry Point
+  // 2. Wrap the App or Pages Router Entry Point
   if (structure.nextRouter === "app") {
     const layout =
       structure.entryPoint ??
@@ -127,14 +89,15 @@ export async function buildNextIntegration(
     if (layout) {
       const layoutRelative = toProjectRelative(directory, layout);
 
-      // Import AsheeUIProvider directly from asheeui
+      // Import the runtime provider and the generated config
+      const configRel = relativeImport(layout, configPath);
       fileEdits.push({
         path: layout,
         search: `import type { Metadata } from "next";`,
-        replace: `import type { Metadata } from "next";\nimport { ${providerName} } from "asheeui";`,
+        replace: `import type { Metadata } from "next";\nimport { ${providerName} } from "asheeui";\nimport config from "${configRel}";`,
         skipIfContentIncludes: `from "asheeui"`,
         notFoundMessage: `Could not find Metadata import in ${layoutRelative}`,
-        description: `Import ${providerName} in ${layoutRelative}`,
+        description: `Import ${providerName} and config in ${layoutRelative}`,
       });
 
       // Inject suppressHydrationWarning into <html ...> regardless of formatting
@@ -147,12 +110,12 @@ export async function buildNextIntegration(
         description: `Add suppressHydrationWarning to <html /> in ${layoutRelative}`,
       });
 
-      // Wrap {children} directly
+      // Wrap {children} directly, passing the runtime config object
       fileEdits.push({
         path: layout,
         search: `{children}`,
-        replace: `<${providerName}>{children}</${providerName}>`,
-        skipIfContentIncludes: `<${providerName}>`,
+        replace: `<${providerName} config={config}>{children}</${providerName}>`,
+        skipIfContentIncludes: `<${providerName}`,
         notFoundMessage: `Could not find {children} in ${layoutRelative}`,
         description: `Wrap {children} with <${providerName}> in ${layoutRelative}`,
       });
@@ -175,20 +138,21 @@ export async function buildNextIntegration(
     if (appFile) {
       const appRelative = toProjectRelative(directory, appFile);
 
+      const configRel = relativeImport(appFile, configPath);
       fileEdits.push(
         {
           path: appFile,
           search: `import type { AppProps } from "next/app";`,
-          replace: `import type { AppProps } from "next/app";\nimport { ${providerName} } from "asheeui";`,
+          replace: `import type { AppProps } from "next/app";\nimport { ${providerName} } from "asheeui";\nimport config from "${configRel}";`,
           skipIfContentIncludes: `from "asheeui"`,
           notFoundMessage: `Could not find AppProps import in ${appRelative}`,
-          description: `Import ${providerName} in ${appRelative}`,
+          description: `Import ${providerName} and config in ${appRelative}`,
         },
         {
           path: appFile,
           search: `<Component {...pageProps} />`,
-          replace: `<${providerName}><Component {...pageProps} /></${providerName}>`,
-          skipIfContentIncludes: `<${providerName}>`,
+          replace: `<${providerName} config={config}><Component {...pageProps} /></${providerName}>`,
+          skipIfContentIncludes: `<${providerName}`,
           notFoundMessage: `Could not find <Component {...pageProps} /> in ${appRelative}`,
           description: `Wrap <Component /> with <${providerName}> in ${appRelative}`,
         },
@@ -210,7 +174,7 @@ export async function buildNextIntegration(
     fileWrites,
     fileEdits,
     integrityChecks,
-    dependenciesToInstall: ["asheeui", "@asheeui/next"],
+    dependenciesToInstall: ["asheeui"],
     summary,
   };
 }

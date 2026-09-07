@@ -1,9 +1,9 @@
 "use client";
 
-import { cn } from "@asheeui/utils";
 import { forwardRef, type SVGAttributes } from "react";
 import { useAsheeConfig } from "../../libs/context";
 import type { Color } from "../../shared/variant";
+import { cn } from "../../utils";
 import { resolveCascade, resolveClassKey } from "../../utils/resolve-token";
 import {
   FALLBACK_SPINNER_CONFIG,

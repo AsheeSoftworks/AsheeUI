@@ -1,6 +1,6 @@
 {
   "name": "@asheeui/cli",
-  "version": "0.5.1",
+  "version": "0.6.0",
   "bin": {
     "asheeui": "./dist/index.mjs"
   },
@@ -14,6 +14,7 @@
     }
   },
   "publishConfig": {
+    "access": "public",
     "main": "./dist/index.mjs",
     "types": "./dist/index.d.mts",
     "exports": {
@@ -36,8 +37,7 @@
   "dependencies": {
     "@clack/prompts": "^1.7.0",
     "commander": "^15.0.0",
-    "tsx": "^4.23.12",
-    "@asheeui/utils": "workspace:*"
+    "tsx": "^4.23.12"
   },
   "devDependencies": {
     "tsdown": "^0.22.14",

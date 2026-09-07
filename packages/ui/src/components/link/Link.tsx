@@ -1,6 +1,5 @@
 "use client";
 
-import { cn } from "@asheeui/utils";
 import {
   type AnchorHTMLAttributes,
   type ElementType,
@@ -10,6 +9,7 @@ import {
 import { ExternalLinkIcon } from "../../icons/ExternalLinkIcon";
 import { useAsheeConfig } from "../../libs/context";
 import type { Color } from "../../shared/variant";
+import { cn } from "../../utils";
 import { resolveCascade, resolveClassKey } from "../../utils/resolve-token";
 import {
   FALLBACK_LINK_CONFIG,

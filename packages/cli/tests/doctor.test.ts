@@ -232,7 +232,7 @@ import { createRoot } from "react-dom/client";`,
       );
       const result = await resultOf("provider");
       expect(result?.status).toBe("fail");
-      expect(result?.fix).toContain("AsheeUIProvider");
+      expect(result?.fix).toContain("AsheeProvider");
     });
 
     it("fails when no entrypoint exists", async () => {

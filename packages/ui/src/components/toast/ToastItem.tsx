@@ -1,6 +1,5 @@
 "use client";
 
-import { cn } from "@asheeui/utils";
 import { useCallback, useState } from "react";
 import { CheckIcon } from "../../icons/CheckIcon";
 import { CloseIcon } from "../../icons/CloseIcon";
@@ -14,6 +13,7 @@ import {
   resolveVariantClass,
   type Variant,
 } from "../../shared/variant";
+import { cn } from "../../utils";
 import { resolveCascade, resolveClassKey } from "../../utils/resolve-token";
 import {
   FALLBACK_TOAST_CONFIG,

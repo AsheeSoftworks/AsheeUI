@@ -1,9 +1,9 @@
 "use client";
 
-import { cn } from "@asheeui/utils";
 import { forwardRef, type ReactNode, useId } from "react";
 import { useAsheeConfig } from "../../libs/context";
 import type { Color } from "../../shared/variant";
+import { cn } from "../../utils";
 import { resolveCascade } from "../../utils/resolve-token";
 import { FieldShell } from "../field/FieldShell";
 import type {

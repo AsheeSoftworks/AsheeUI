@@ -1,9 +1,8 @@
-import { cn } from "@asheeui/utils";
+import { cn } from "../utils";
 
 export type Variant = "solid" | "ghost" | "bordered" | "faded" | "underlined";
 export type Color =
   | "none"
-  | "default"
   | "primary"
   | "secondary"
   | "danger"
@@ -12,7 +11,6 @@ export type Color =
 
 const SOLID_CLASS: Record<Color, string> = {
   none: "bg-background text-foreground",
-  default: "bg-secondary text-foreground",
   primary: "bg-primary text-secondary",
   secondary: "bg-secondary text-foreground",
   danger: "bg-danger text-secondary",
@@ -22,7 +20,6 @@ const SOLID_CLASS: Record<Color, string> = {
 
 const GHOST_CLASS: Record<Color, string> = {
   none: "bg-transparent text-foreground hover:bg-foreground/10",
-  default: "bg-transparent text-foreground hover:bg-foreground/10",
   primary: "bg-transparent text-primary hover:bg-primary/10",
   secondary: "bg-transparent text-foreground hover:bg-secondary/10",
   danger: "bg-transparent text-danger hover:bg-danger/10",
@@ -32,7 +29,6 @@ const GHOST_CLASS: Record<Color, string> = {
 
 const BORDERED_CLASS: Record<Color, string> = {
   none: cn(GHOST_CLASS.primary, "border-2 border-background"),
-  default: cn(GHOST_CLASS.primary, "border-2 border-secondary"),
   primary: cn(GHOST_CLASS.primary, "border-2 border-primary"),
   secondary: cn(GHOST_CLASS.secondary, "border-2 border-border"),
   danger: cn(GHOST_CLASS.danger, "border-2 border-danger"),
@@ -42,7 +38,6 @@ const BORDERED_CLASS: Record<Color, string> = {
 
 const FADED_CLASS: Record<Color, string> = {
   none: "bg-secondary/40 text-foreground border-2 border-transparent",
-  default: "bg-secondary/40 text-foreground border-2 border-border",
   primary: "bg-primary/10 text-primary border-2 border-primary/20",
   secondary: "bg-secondary/15 text-foreground border-2 border-secondary/30",
   danger: "bg-danger/10 text-danger border-2 border-danger/20",
@@ -55,7 +50,6 @@ const BASE_UNDERLINED =
 
 const UNDERLINED_CLASS: Record<Color, string> = {
   none: cn(BASE_UNDERLINED, "border-background text-foreground"),
-  default: cn(BASE_UNDERLINED, "border-border text-foreground"),
   primary: cn(BASE_UNDERLINED, "border-primary text-primary"),
   secondary: cn(BASE_UNDERLINED, "border-secondary text-secondary"),
   danger: cn(BASE_UNDERLINED, "border-danger text-danger"),
@@ -72,5 +66,5 @@ const VARIANT_CLASS: Record<Variant, Record<Color, string>> = {
 };
 
 export function resolveVariantClass(variant: Variant, color: Color): string {
-  return VARIANT_CLASS[variant]?.[color] ?? VARIANT_CLASS.bordered.default;
+  return VARIANT_CLASS[variant]?.[color] ?? VARIANT_CLASS.bordered.secondary;
 }

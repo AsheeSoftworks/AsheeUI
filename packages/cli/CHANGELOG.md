@@ -1,5 +1,50 @@
 # @asheeui/cli
 
+## 0.6.0
+
+### Minor Changes
+
+- Refactor the monorepo architecture to remove the framework-specific plugins
+  (`@asheeui/next`, `@asheeui/vite`) and the standalone utilities package
+  (`@asheeui/utils`), moving to a clean, framework-agnostic setup.
+  
+  **Highlights**
+  
+  - **Removed bundler plugins** — `@asheeui/next` (`withAsheeUI`) and
+    `@asheeui/vite` (`asheeui()`) are gone from the workspace. Runtime config is
+    no longer injected through `virtual:ashee-config` build shims, so apps no
+    longer need to modify `next.config.*`, `vite.config.*`, or `app.config.*` to
+    use AsheeUI.
+  
+  - **Consolidated shared utilities** — `cn`, `mergeObject`, and `DeepPartial`
+    now live inside core `asheeui` and are exported from the package root (and
+    the `asheeui/utils` entry point). Projects that depended on `@asheeui/utils`
+    should switch to `asheeui` directly.
+  
+  - **Added `AsheeProvider` and `useAshee`** — runtime theme and component
+    configuration is now managed explicitly through React Context. Wrap your app
+    once and pass your config object:
+  
+    ```tsx
+    import { AsheeProvider } from "asheeui";
+    import config from "./asheeui.config";
+  
+    <AsheeProvider config={config}>{children}</AsheeProvider>;
+    ```
+  
+  - **Updated `@asheeui/cli`** — init/doctor/fix templates no longer install or
+    wire up the removed plugin packages. Projects are scaffolded with the
+    plugin-free setup and their app roots are wrapped with
+    `<AsheeProvider config={config}>`.
+  
+  **Migration notes**
+  
+  - Remove `@asheeui/next`, `@asheeui/vite`, and `@asheeui/utils` from your
+    `package.json` and bundler configs.
+  - Replace `<AsheeUIProvider>` with `<AsheeProvider config={...}>` at your app
+    root (passing the object from your `asheeui.config.*` file), or let
+    `npx asheeui init` / `npx asheeui fix` rewire the provider for you.
+
 ## 0.5.1
 
 ### Patch Changes

@@ -99,8 +99,8 @@ describe("formatInstallCommand", () => {
 
 describe("buildInstallCommand (init helper)", () => {
   it("matches formatInstallCommand across managers", () => {
-    expect(buildInstallCommand("pnpm", ["asheeui", "@asheeui/vite"])).toBe(
-      formatInstallCommand("pnpm", ["asheeui", "@asheeui/vite"]),
+    expect(buildInstallCommand("pnpm", ["asheeui"])).toBe(
+      formatInstallCommand("pnpm", ["asheeui"]),
     );
     expect(buildInstallCommand("npm", ["asheeui"])).toBe("npm install asheeui");
     expect(buildInstallCommand("yarn", ["asheeui"])).toBe("yarn add asheeui");

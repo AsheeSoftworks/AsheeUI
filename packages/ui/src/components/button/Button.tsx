@@ -1,6 +1,5 @@
 "use client";
 
-import { cn } from "@asheeui/utils";
 import { forwardRef, type MouseEvent, type ReactNode } from "react";
 import { useAsheeConfig } from "../../libs/context";
 import { RADIUS_CLASS, UnderlineRadius } from "../../shared/radius";
@@ -9,6 +8,7 @@ import {
   resolveVariantClass,
   type Variant,
 } from "../../shared/variant";
+import { cn } from "../../utils";
 import {
   resolveCascade,
   resolveClassKey,

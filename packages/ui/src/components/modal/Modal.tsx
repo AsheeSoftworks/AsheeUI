@@ -1,6 +1,5 @@
 "use client";
 
-import { cn } from "@asheeui/utils";
 import {
   type HTMLAttributes,
   type ReactNode,
@@ -9,6 +8,7 @@ import {
 } from "react";
 import { useAsheeConfig } from "../../libs/context";
 import { RADIUS_CLASS, type Radius } from "../../shared/radius";
+import { cn } from "../../utils";
 import {
   resolveCascade,
   resolveClassKey,

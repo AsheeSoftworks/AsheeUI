@@ -1,5 +1,3 @@
-export type { AsheeUIProviderProps } from "./AsheeUIProvider";
-export { AsheeUIProvider } from "./AsheeUIProvider";
 export * from "./components/accordion";
 export * from "./components/autocomplete";
 export * from "./components/button";
@@ -27,6 +25,8 @@ export * from "./components/tabs";
 export * from "./components/textarea";
 export * from "./components/toast";
 export * from "./components/tooltip";
+export type { AsheeProviderProps } from "./provider";
+export { AsheeProvider } from "./provider";
 export type { Radius } from "./shared/radius";
 export type { Size } from "./shared/size";
 export type {

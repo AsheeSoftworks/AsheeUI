@@ -42,9 +42,6 @@ The repository is a pnpm + Turborepo monorepo with these publishable packages:
 | --- | --- |
 | `asheeui` | React component library (`packages/ui`) |
 | `@asheeui/cli` | Scaffolding and doctor/fix CLI (`packages/cli`) |
-| `@asheeui/next` | Next.js integration (`packages/next`) |
-| `@asheeui/vite` | Vite plugin (`packages/vite`) |
-| `@asheeui/utils` | Shared utilities (`packages/utils`) |
 
 ## Development Workflow
 

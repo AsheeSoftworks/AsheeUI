@@ -1,6 +1,5 @@
 "use client";
 
-import { cn } from "@asheeui/utils";
 import {
   type ElementType,
   forwardRef,
@@ -12,6 +11,7 @@ import {
 } from "react";
 import { useAsheeConfig } from "../../libs/context";
 import { RADIUS_CLASS, type Radius } from "../../shared/radius";
+import { cn } from "../../utils";
 import {
   resolveCascade,
   resolveClassKey,
@@ -266,7 +266,7 @@ export const Image = forwardRef<HTMLImageElement, ImageProps>(
 
     // ─── FIX: Force eager loading for custom image components ──────────────
     // Next.js Image with priority or lazy loading can cause script errors
-    // when used with AsheeUIProvider. Force eager loading as a safeguard.
+    // when used with AsheeProvider. Force eager loading as a safeguard.
     let finalImageProps = { ...(imagePropsProp ?? {}) };
 
     if (isCustomComponent) {

@@ -3,7 +3,7 @@ import type { IntegrityCheck } from "../common/types";
 /**
  * Render the source code of a provider wrapper component.
  *
- * The wrapper imports `AsheeUIProvider` from `asheeui`, imports the
+ * The wrapper imports `AsheeProvider` from `asheeui`, imports the
  * generated config, and renders `children` inside the provider. When
  * `hasNonAsheeChildren` is `false`, the children are wrapped in a
  * fragment so JSX still parses when the original entry file does not

@@ -1,6 +1,5 @@
 "use client";
 
-import { cn } from "@asheeui/utils";
 import React, {
   forwardRef,
   type InputHTMLAttributes,
@@ -17,6 +16,7 @@ import {
   resolveVariantClass,
   type Variant,
 } from "../../shared/variant";
+import { cn } from "../../utils";
 import {
   resolveCascade,
   resolveClassKey,

@@ -9,7 +9,6 @@ export const SPINNER_SIZE_CLASS: Record<SpinnerSizeKey, string> = {
 
 export const SPINNER_COLOR_CLASS: Record<Color, string> = {
   none: "text-background",
-  default: "text-secondary",
   primary: "text-primary",
   secondary: "text-secondary",
   danger: "text-danger",

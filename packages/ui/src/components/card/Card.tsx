@@ -1,6 +1,5 @@
 "use client";
 
-import { cn } from "@asheeui/utils";
 import {
   type ElementType,
   forwardRef,
@@ -13,6 +12,7 @@ import {
 import { useAsheeConfig } from "../../libs/context";
 import { RADIUS_CLASS, type Radius } from "../../shared/radius";
 import type { Size } from "../../shared/size";
+import { cn } from "../../utils";
 import {
   resolveAnimate,
   resolveCascade,
@@ -319,7 +319,7 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(
 
       // ─── FIX: Force eager loading for custom image components ────────────
       // Next.js Image with priority or lazy loading can cause script errors
-      // when used with AsheeUIProvider. Force eager loading as a safeguard.
+      // when used with AsheeProvider. Force eager loading as a safeguard.
       let finalImageProps = { ...(imageProps ?? {}) };
 
       if (imageComponent) {

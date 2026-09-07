@@ -325,7 +325,7 @@ export function injectStylesImport(content: string): string {
 
 /**
  * Fix the `provider` doctor check by re-running the framework
- * integration flow (config, CSS, plugin, and root-provider wiring).
+ * integration flow (config, CSS, and root-provider wiring).
  *
  * @param check - The doctor check result to act on.
  * @param opts - Shared fix options (cwd, skipInstall).
@@ -356,7 +356,7 @@ async function fixProvider(
       message:
         "Could not detect a supported framework (Next.js, Vite + React or TanStack Start). " +
         (check.fix ??
-          "Wrap your application root with <AsheeUIProvider> manually."),
+          "Wrap your application root with <AsheeProvider> manually."),
     };
   }
 
@@ -397,7 +397,7 @@ async function fixProvider(
     id: check.id,
     title: check.title,
     status: "fixed",
-    message: `Applied ${applied} integration change(s) for ${detection.framework} (config/CSS/provider/plugin). Re-run doctor to confirm.`,
+    message: `Applied ${applied} integration change(s) for ${detection.framework} (config/CSS/provider). Re-run doctor to confirm.`,
   };
 }
 

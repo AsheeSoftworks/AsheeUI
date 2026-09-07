@@ -1,6 +1,6 @@
-import { mergeObject } from "@asheeui/utils";
 import { getAllComponentDefaults } from "../libs/registry";
 import { defaultColorConfig } from "../theme";
+import { mergeObject } from "../utils";
 import type { Config, ExternalConfig } from "./config";
 import { defaultConfig } from "./default-config";
 import { resolveColorConfig } from "./resolve-color";

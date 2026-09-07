@@ -42,7 +42,6 @@ async function scaffoldViteProject() {
           "react-dom": "^19.0.0",
         },
         devDependencies: {
-          "@asheeui/vite": "^0.2.0",
           "@vitejs/plugin-react": "^4.0.0",
           tailwindcss: "^4.0.0",
           vite: "^6.0.0",
@@ -97,16 +96,17 @@ describe("runInit idempotency", () => {
     const css = await read("src/index.css");
     expect(countOccurrences(css, '@import "asheeui/styles"')).toBe(1);
 
-    // Vite config plugin + import added exactly once
+    // The bundler config is left untouched: no plugin is needed anymore.
     const viteConfig = await read("vite.config.ts");
-    expect(countOccurrences(viteConfig, "@asheeui/vite")).toBe(1);
-    expect(countOccurrences(viteConfig, "asheeui()")).toBe(1);
+    expect(countOccurrences(viteConfig, "@asheeui/vite")).toBe(0);
+    expect(countOccurrences(viteConfig, "asheeui()")).toBe(0);
 
-    // Provider import + open/close wrap in main.tsx
+    // Provider + runtime config import added exactly once in main.tsx
     const main = await read("src/main.tsx");
-    expect(countOccurrences(main, "AsheeUIProvider")).toBe(3);
-    expect(main).toContain("<AsheeUIProvider>");
-    expect(main).toContain("</AsheeUIProvider>");
+    expect(countOccurrences(main, "AsheeProvider")).toBe(3);
+    expect(main).toContain('import config from "../asheeui.config"');
+    expect(main).toContain("<AsheeProvider config={config}>");
+    expect(main).toContain("</AsheeProvider>");
   });
 
   it("does not duplicate configs, imports or file contents when run twice", async () => {
@@ -140,9 +140,9 @@ describe("runInit idempotency", () => {
     const config = await read("asheeui.config.ts");
 
     expect(countOccurrences(css, '@import "asheeui/styles"')).toBe(1);
-    expect(countOccurrences(viteConfig, "@asheeui/vite")).toBe(1);
-    expect(countOccurrences(viteConfig, "asheeui()")).toBe(1);
-    expect(countOccurrences(main, "AsheeUIProvider")).toBe(3);
+    expect(countOccurrences(viteConfig, "@asheeui/vite")).toBe(0);
+    expect(countOccurrences(viteConfig, "asheeui()")).toBe(0);
+    expect(countOccurrences(main, "AsheeProvider")).toBe(3);
     expect(countOccurrences(main, 'from "asheeui"')).toBe(1);
     expect(countOccurrences(config, "defineConfig")).toBe(2);
   });

@@ -1,6 +1,5 @@
 "use client";
 
-import { cn } from "@asheeui/utils";
 import {
   type ChangeEvent,
   forwardRef,
@@ -13,6 +12,7 @@ import {
 import { useAsheeConfig } from "../../libs/context";
 import { RADIUS_CLASS, type Radius } from "../../shared/radius";
 import type { Color } from "../../shared/variant";
+import { cn } from "../../utils";
 import {
   resolveCascade,
   resolveClassKey,

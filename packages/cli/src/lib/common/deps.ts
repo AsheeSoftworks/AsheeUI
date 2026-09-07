@@ -33,7 +33,6 @@ export interface DependencyInfo {
  * ```ts
  * const info = await inspectDependencies(process.cwd(), [
  *   "asheeui",
- *   "@asheeui/vite",
  * ], true);
  * if (info.missingDependencies.length > 0) {
  *   // install them with info.packageManager

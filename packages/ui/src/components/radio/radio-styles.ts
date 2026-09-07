@@ -34,11 +34,6 @@ export const RADIO_COLOR_CLASS: Record<
     bg: "bg-foreground",
     cardBg: "bg-secondary/10",
   },
-  default: {
-    border: "border-secondary",
-    bg: "bg--foreground/70",
-    cardBg: "bg-secondary/10",
-  },
   primary: {
     border: "border-primary",
     bg: "bg-primary",

@@ -1,6 +1,5 @@
 "use client";
 
-import { cn } from "@asheeui/utils";
 import {
   autoUpdate,
   flip,
@@ -29,6 +28,7 @@ import {
   resolveVariantClass,
   type Variant,
 } from "../../shared/variant";
+import { cn } from "../../utils";
 import {
   resolveCascade,
   resolveClassKey,
