@@ -20,7 +20,7 @@ import { resolveGlobalCss, resolveRouterOrEntryPoint } from "./resolvers";
  * 2. Inject `@import "asheeui/styles";` into the project's global
  *    stylesheet (right under `@import "tailwindcss";`).
  * 3. Wrap `{children}` (App Router) or `<Component />` (Pages Router)
- *    inside `<AsheeProvider config={config}>` in the layout / `_app`
+ *    inside `<AsheeUIProvider config={config}>` in the layout / `_app`
  *    file, feeding the runtime config straight to the provider.
  *
  * @param ctx - {@link IntegrationContext} for the Next.js project.
@@ -39,7 +39,7 @@ export async function buildNextIntegration(
   ctx: IntegrationContext,
 ): Promise<IntegrationResult> {
   const { directory, structure } = ctx;
-  const providerName = "AsheeProvider";
+  const providerName = "AsheeUIProvider";
 
   const globalsCssPath = await resolveGlobalCss(directory);
   const configFile =

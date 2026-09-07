@@ -116,7 +116,7 @@ describe("runFix", () => {
     expect(countOccurrences(css, '@import "asheeui/styles"')).toBe(1);
     expect(countOccurrences(vite, "@asheeui/vite")).toBe(0);
     expect(countOccurrences(vite, "asheeui()")).toBe(0);
-    expect(countOccurrences(main, "AsheeProvider")).toBe(3);
+    expect(countOccurrences(main, "AsheeUIProvider")).toBe(3);
     expect(main).toContain('import config from "../asheeui.config"');
     expect(countOccurrences(config, "defineConfig")).toBe(2);
 
@@ -151,7 +151,7 @@ describe("runFix", () => {
     expect(countOccurrences(css, '@import "asheeui/styles"')).toBe(1);
     expect(countOccurrences(vite, "@asheeui/vite")).toBe(0);
     expect(countOccurrences(vite, "asheeui()")).toBe(0);
-    expect(countOccurrences(main, "AsheeProvider")).toBe(3);
+    expect(countOccurrences(main, "AsheeUIProvider")).toBe(3);
     expect(first.outcomes.length).toBeGreaterThan(0);
   });
 

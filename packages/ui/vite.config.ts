@@ -90,7 +90,7 @@ export default defineConfig({
     dts({
       entryRoot: "src",
       include: ["src"],
-      exclude: ["src/scripts/**", "src/**/*.test.*"],
+      exclude: ["src/scripts/**", "src/test/**", "src/**/*.test.*"],
     }),
     copyStyles(),
     generateBarrels(),

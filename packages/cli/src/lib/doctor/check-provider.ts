@@ -11,7 +11,7 @@ import type { DoctorCheckResult, DoctorOptions } from "./types";
 export { ENTRYPOINT_CANDIDATES } from "../../utils/audit";
 
 /**
- * Validate that the root entrypoint wraps the app with `AsheeProvider`
+ * Validate that the root entrypoint wraps the app with `AsheeUIProvider`
  * (or imports from `"asheeui/config"`).
  *
  * Scans each candidate in {@link ENTRYPOINT_CANDIDATES} and reports
@@ -49,10 +49,10 @@ export async function checkRootProvider(
     title: "Root provider",
     status: "fail",
     message: entry
-      ? `No AsheeProvider or asheeui/config import found in ${entry}.`
+      ? `No AsheeUIProvider or asheeui/config import found in ${entry}.`
       : "No common application entrypoint found (src/main.tsx, src/App.tsx, app/layout.tsx, etc.).",
     fix: entry
-      ? `Wrap your application root with <AsheeProvider> in ${entry}. See the Ashee UI docs for setup instructions.`
-      : "Create an entrypoint (e.g. src/main.tsx) and wrap the root with <AsheeProvider>.",
+      ? `Wrap your application root with <AsheeUIProvider> in ${entry}. See the Ashee UI docs for setup instructions.`
+      : "Create an entrypoint (e.g. src/main.tsx) and wrap the root with <AsheeUIProvider>.",
   };
 }

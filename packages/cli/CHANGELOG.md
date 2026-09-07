@@ -1,5 +1,12 @@
 # @asheeui/cli
 
+## 0.6.1
+
+### Patch Changes
+
+- Fix AsheeUIProvider name change
+  Add vitest tests to asheeui
+
 ## 0.6.0
 
 ### Minor Changes
@@ -21,27 +28,27 @@
     the `asheeui/utils` entry point). Projects that depended on `@asheeui/utils`
     should switch to `asheeui` directly.
   
-  - **Added `AsheeProvider` and `useAshee`** — runtime theme and component
+  - **Added `AsheeUIProvider` and `useAshee`** — runtime theme and component
     configuration is now managed explicitly through React Context. Wrap your app
     once and pass your config object:
   
     ```tsx
-    import { AsheeProvider } from "asheeui";
+    import { AsheeUIProvider } from "asheeui";
     import config from "./asheeui.config";
   
-    <AsheeProvider config={config}>{children}</AsheeProvider>;
+    <AsheeUIProvider config={config}>{children}</AsheeUIProvider>;
     ```
   
   - **Updated `@asheeui/cli`** — init/doctor/fix templates no longer install or
     wire up the removed plugin packages. Projects are scaffolded with the
     plugin-free setup and their app roots are wrapped with
-    `<AsheeProvider config={config}>`.
+    `<AsheeUIProvider config={config}>`.
   
   **Migration notes**
   
   - Remove `@asheeui/next`, `@asheeui/vite`, and `@asheeui/utils` from your
     `package.json` and bundler configs.
-  - Replace `<AsheeUIProvider>` with `<AsheeProvider config={...}>` at your app
+  - Replace `<AsheeUIProvider>` with `<AsheeUIProvider config={...}>` at your app
     root (passing the object from your `asheeui.config.*` file), or let
     `npx asheeui init` / `npx asheeui fix` rewire the provider for you.
 

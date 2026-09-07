@@ -103,10 +103,10 @@ describe("runInit idempotency", () => {
 
     // Provider + runtime config import added exactly once in main.tsx
     const main = await read("src/main.tsx");
-    expect(countOccurrences(main, "AsheeProvider")).toBe(3);
+    expect(countOccurrences(main, "AsheeUIProvider")).toBe(3);
     expect(main).toContain('import config from "../asheeui.config"');
-    expect(main).toContain("<AsheeProvider config={config}>");
-    expect(main).toContain("</AsheeProvider>");
+    expect(main).toContain("<AsheeUIProvider config={config}>");
+    expect(main).toContain("</AsheeUIProvider>");
   });
 
   it("does not duplicate configs, imports or file contents when run twice", async () => {
@@ -142,7 +142,7 @@ describe("runInit idempotency", () => {
     expect(countOccurrences(css, '@import "asheeui/styles"')).toBe(1);
     expect(countOccurrences(viteConfig, "@asheeui/vite")).toBe(0);
     expect(countOccurrences(viteConfig, "asheeui()")).toBe(0);
-    expect(countOccurrences(main, "AsheeProvider")).toBe(3);
+    expect(countOccurrences(main, "AsheeUIProvider")).toBe(3);
     expect(countOccurrences(main, 'from "asheeui"')).toBe(1);
     expect(countOccurrences(config, "defineConfig")).toBe(2);
   });

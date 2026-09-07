@@ -1,3 +1,5 @@
+"use client";
+
 import { createContext, useContext } from "react";
 import type { Color } from "../../shared/variant";
 import type { FieldSizeKey, FieldStatus } from "../field/field-config";

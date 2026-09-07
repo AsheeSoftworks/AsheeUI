@@ -8,7 +8,7 @@ import { useIsomorphicLayoutEffect } from "./libs/use-isomorphic-layout-effect";
 import { AsheeThemeScript } from "./scripts/AsheeThemeScript";
 import { themeController } from "./theme/controller";
 
-export interface AsheeProviderProps {
+export interface AsheeUIProviderProps {
   /**
    * Optional partial runtime config merged over the library defaults.
    *
@@ -23,22 +23,25 @@ export interface AsheeProviderProps {
 /**
  * Runtime configuration provider.
  *
- * Resolves {@link AsheeProviderProps.config} against the library
+ * Resolves {@link AsheeUIProviderProps.config} against the library
  * defaults and exposes the resulting config through React context
  * (consumed via `useAsheeConfig` / `useAshee`). Theme controller
  * setup and the pre-paint theme script are wired automatically.
  *
  * @example
  * ```tsx
- * import { AsheeProvider } from "asheeui";
+ * import { AsheeUIProvider } from "asheeui";
  * import config from "./asheeui.config";
  *
  * export function Providers({ children }) {
- *   return <AsheeProvider config={config}>{children}</AsheeProvider>;
+ *   return <AsheeUIProvider config={config}>{children}</AsheeUIProvider>;
  * }
  * ```
  */
-export function AsheeProvider({ config = {}, children }: AsheeProviderProps) {
+export function AsheeUIProvider({
+  config = {},
+  children,
+}: AsheeUIProviderProps) {
   const resolvedConfig = useMemo(() => resolveConfig(config), [config]);
 
   useIsomorphicLayoutEffect(() => {

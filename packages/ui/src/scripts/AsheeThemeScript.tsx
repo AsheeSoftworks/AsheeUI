@@ -34,7 +34,7 @@ function buildThemeCss(colors: ColorConfig): string {
  * Render a pre-paint theme script that applies the resolved theme class
  * and injects the theme CSS variables before first paint.
  *
- * The resolved {@link Config} is supplied by {@link AsheeProvider} so
+ * The resolved {@link Config} is supplied by {@link AsheeUIProvider} so
  * runtime configuration never needs a bundler plugin or virtual module.
  */
 export function AsheeThemeScript({ config }: { config: Config }) {

@@ -19,7 +19,7 @@ import { resolveGlobalCss, resolveRouterOrEntryPoint } from "./resolvers";
  * 1. Create the `asheeui.config.*` file when it does not already exist.
  * 2. Inject `@import "asheeui/styles";` into the project's global
  *    stylesheet (right under `@import "tailwindcss";`).
- * 3. Wrap the application's entry component with `<AsheeProvider
+ * 3. Wrap the application's entry component with `<AsheeUIProvider
  *    config={config}>`, passing the runtime config straight to the
  *    provider.
  *
@@ -39,7 +39,7 @@ export async function buildViteIntegration(
   ctx: IntegrationContext,
 ): Promise<IntegrationResult> {
   const { directory, structure } = ctx;
-  const providerName = "AsheeProvider";
+  const providerName = "AsheeUIProvider";
   const configFile =
     structure.language === "typescript"
       ? "asheeui.config.ts"

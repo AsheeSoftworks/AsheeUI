@@ -24,7 +24,7 @@ export const STYLES_IMPORT_PATTERN =
 export const TAILWIND_IMPORT_PATTERN = /@import\s+["']tailwindcss["']\s*;?/;
 
 /** Provider tag used when wrapping application roots. */
-export const PROVIDER_TAG = "AsheeProvider";
+export const PROVIDER_TAG = "AsheeUIProvider";
 
 /** Legacy provider name still accepted by doctor checks. */
 export const LEGACY_PROVIDER_TAG = "AsheeUIProvider";
@@ -67,7 +67,7 @@ export function containsStylesImport(content: string): boolean {
 
 /**
  * Test whether `content` already references the root provider, either by
- * rendering `<AsheeProvider>` (or the legacy `<AsheeUIProvider>`) or by
+ * rendering `<AsheeUIProvider>` (or the legacy `<AsheeUIProvider>`) or by
  * importing from `asheeui/config`.
  *
  * @param content - File source to scan.

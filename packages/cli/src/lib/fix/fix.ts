@@ -356,7 +356,7 @@ async function fixProvider(
       message:
         "Could not detect a supported framework (Next.js, Vite + React or TanStack Start). " +
         (check.fix ??
-          "Wrap your application root with <AsheeProvider> manually."),
+          "Wrap your application root with <AsheeUIProvider> manually."),
     };
   }
 

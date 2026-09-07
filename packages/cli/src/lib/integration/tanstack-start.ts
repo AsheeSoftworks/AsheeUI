@@ -19,7 +19,7 @@ import { resolveGlobalCss, resolveRouterOrEntryPoint } from "./resolvers";
  * 1. Create the `asheeui.config.*` file when missing.
  * 2. Inject `@import "asheeui/styles";` into the project's global
  *    stylesheet (right under `@import "tailwindcss";`).
- * 3. Wrap `{children}` inside `<AsheeProvider config={config}>` in the
+ * 3. Wrap `{children}` inside `<AsheeUIProvider config={config}>` in the
  *    root route file (`src/routes/__root.tsx` or `app/routes/__root.tsx`)
  *    and add `suppressHydrationWarning` to the `<html>` tag.
  *
@@ -39,7 +39,7 @@ export async function buildTanStackStartIntegration(
   ctx: IntegrationContext,
 ): Promise<IntegrationResult> {
   const { directory, structure } = ctx;
-  const providerName = "AsheeProvider";
+  const providerName = "AsheeUIProvider";
 
   // Priority: Always prefer __root.tsx for tanstack-start over router.tsx
   let rootRouteFile = await resolveRouterOrEntryPoint(
@@ -94,7 +94,7 @@ export async function buildTanStackStartIntegration(
     const rootRelative = toProjectRelative(directory, rootRouteFile);
     const configRel = relativeImport(rootRouteFile, configPath);
 
-    // Import AsheeProvider and the generated config
+    // Import AsheeUIProvider and the generated config
     fileEdits.push({
       path: rootRouteFile,
       search: `import { HeadContent`,
@@ -114,7 +114,7 @@ export async function buildTanStackStartIntegration(
       description: `Add suppressHydrationWarning to <html /> in ${rootRelative}`,
     });
 
-    // Wrap {children} with <AsheeProvider config={config}>
+    // Wrap {children} with <AsheeUIProvider config={config}>
     fileEdits.push({
       path: rootRouteFile,
       search: `{children}`,
