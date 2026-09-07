@@ -1,6 +1,6 @@
 {
   "name": "@asheeui/cli",
-  "version": "0.6.1",
+  "version": "0.6.2",
   "bin": {
     "asheeui": "./dist/index.mjs"
   },
@@ -14,7 +14,6 @@
     }
   },
   "publishConfig": {
-    "access": "public",
     "main": "./dist/index.mjs",
     "types": "./dist/index.d.mts",
     "exports": {

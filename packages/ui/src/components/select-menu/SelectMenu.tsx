@@ -112,7 +112,7 @@ export const SelectMenu = ({
       returnFocus={returnFocus}>
       <div
         ref={setFloatingRef}
-        style={{ ...floatingStyles, zIndex: 99999 }}
+        style={{ ...floatingStyles, zIndex: 9998 }}
         className="w-full min-w-55 outline-none"
         {...getFloatingProps()}>
         <div

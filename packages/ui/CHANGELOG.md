@@ -1,5 +1,11 @@
 # asheeui
 
+## 0.6.2
+
+### Patch Changes
+
+- Fix Sidebar default inactive item color
+
 ## 0.6.1
 
 ### Patch Changes
