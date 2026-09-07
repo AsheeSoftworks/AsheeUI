@@ -1,5 +1,11 @@
 # asheeui
 
+## 0.6.4
+
+### Patch Changes
+
+- Fix wronk menu type in Autocomplete from SelectConfig to SelectMenuConfig
+
 ## 0.6.3
 
 ### Patch Changes

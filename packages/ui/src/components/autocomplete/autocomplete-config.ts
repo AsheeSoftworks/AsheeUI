@@ -11,7 +11,7 @@ import {
   FALLBACK_FIELD_CONFIG,
   type FieldConfig,
 } from "../field/field-config";
-import type { SelectConfig } from "../select";
+import type { SelectMenuConfig } from "../select-menu";
 
 /**
  * Theme configuration options for the Autocomplete component.
@@ -25,7 +25,7 @@ export interface AutocompleteConfig extends FieldConfig {
    * Configuration for the dropdown menu that displays suggestions.
    * Controls the menu's visual appearance and behavior.
    */
-  menu?: SelectConfig;
+  menu?: SelectMenuConfig;
 }
 
 /**
