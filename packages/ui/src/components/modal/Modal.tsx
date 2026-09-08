@@ -279,16 +279,6 @@ export function Modal({
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [isOpen, closeOnEscape, onClose]);
 
-  // Body Scroll Lock
-  useEffect(() => {
-    if (!isOpen) return;
-    const originalOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    return () => {
-      document.body.style.overflow = originalOverflow;
-    };
-  }, [isOpen]);
-
   if (!shouldRender) return null;
 
   // Determine animation classes
@@ -307,7 +297,7 @@ export function Modal({
       role="dialog"
       aria-modal="true"
       className={cn(
-        "fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 overflow-y-auto",
+        "fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 h-screen w-screen scrollbar-hide",
         getBackdropAnimation(),
       )}>
       {/* Backdrop Overlay */}

@@ -389,7 +389,7 @@ export const Select = forwardRef<HTMLButtonElement, SelectProps>(
 
     // ─── 4. Handlers ──────────────────────────────────────────────────────────
 
-    const handleSelectOption = useCallback(
+    const handleSelectMenuOption = useCallback(
       (option: SelectMenuOption) => {
         onValueChange?.(option.value);
         if (onChange) {
@@ -477,7 +477,7 @@ export const Select = forwardRef<HTMLButtonElement, SelectProps>(
             setFloatingRef={refs.setFloating}
             options={options}
             selectedValues={selectedValues}
-            onSelectOption={handleSelectOption}
+            onSelectMenuOption={handleSelectMenuOption}
             isSearch={isSearch}
             searchPlaceholder={searchPlaceholder}
             searchInputName={searchInputName}

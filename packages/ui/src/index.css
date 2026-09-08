@@ -108,12 +108,34 @@
   /**
    * Utility class to hide scrollbars while maintaining scrollability.
    */
-  .scrollbar-hide::-webkit-scrollbar {
+  .scrollable-hidden::-webkit-scrollbar {
     display: none;
   }
-  .scrollbar-hide {
+  .scrollable-hidden {
     -ms-overflow-style: none;
     scrollbar-width: none;
+  }
+
+  /**
+   * Utility class to hide scrollbars completely and eliminate scrollbar spacing
+   * across all browsers while preserving scrollability.
+   */
+  .scrollbar-hide {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    scrollbar-gutter: auto;
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+    width: 0;
+    height: 0;
+  }
+
+  .scrollbar-hide::-webkit-scrollbar-track,
+  .scrollbar-hide::-webkit-scrollbar-thumb {
+    background: transparent;
+    border: none;
   }
 
   /* ─── Modal Animations ────────────────────────────────────────────────────── */
