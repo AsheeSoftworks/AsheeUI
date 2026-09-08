@@ -38,9 +38,9 @@ import {
 } from "../../utils/resolve-token";
 import { FieldShell } from "../field/FieldShell";
 import type { FieldSizeKey, LabelAlign } from "../field/field-config";
+import { useSelectFloating } from "../select-menu";
 import { SelectMenu } from "../select-menu/SelectMenu";
 import type { SelectMenuOption } from "../select-menu/select-menu-config";
-import { useSelectFloating } from "../select-menu";
 import { FALLBACK_SELECT_CONFIG, type SelectConfig } from "./select-config";
 import { SELECT_SIZE_CLASS, SELECT_STATUS_BORDER_CLASS } from "./select-styles";
 

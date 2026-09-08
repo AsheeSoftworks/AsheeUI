@@ -17,7 +17,6 @@ import {
   useCallback,
   useRef,
   useState,
-  useEffect,
 } from "react";
 import { useAsheeConfig } from "../../libs/context";
 import { cn } from "../../utils";
