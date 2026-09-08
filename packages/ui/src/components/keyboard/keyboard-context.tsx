@@ -93,11 +93,6 @@ export interface KeyboardProviderProps extends KeyboardConfig {
    * @default "default"
    */
   defaultLayout?: LayoutName;
-
-  /**
-   * CSS height class for the keyboard container.
-   */
-  heightClass?: string;
 }
 
 /**
@@ -113,12 +108,13 @@ export interface KeyboardProviderProps extends KeyboardConfig {
  * @param props.layouts - Available keyboard layouts.
  * @param props.display - Display mappings for special keys.
  * @param props.defaultLayout - Default layout name. Defaults to "default".
- * @param props.heightClass - CSS height class for the keyboard.
+ * @param props.size - Size scale for keyboard keys. Defaults to "md".
  * @param props.autoShiftBack - Auto switch back from shift. Defaults to true.
  * @param props.closeDelay - Close delay in milliseconds. Defaults to 120.
  * @param props.variant - Visual variant for keys.
  * @param props.color - Theme color for keys.
  * @param props.radius - Corner rounding for keys.
+ * @param props.portal - Whether to render the keyboard in a portal. Defaults to true.
  *
  * @example
  * ```tsx
@@ -126,7 +122,7 @@ export interface KeyboardProviderProps extends KeyboardConfig {
  *
  * export function App() {
  *   return (
- *     <KeyboardProvider heightClass="h-56">
+ *     <KeyboardProvider size="lg">
  *       <Input
  *         label="Search"
  *         enableVirtualKeyboard
@@ -145,12 +141,13 @@ export function KeyboardProvider({
   layouts,
   display,
   defaultLayout,
-  heightClass,
+  size,
   autoShiftBack,
   closeDelay = 120,
   variant,
   color,
   radius,
+  portal: portalProp,
 }: KeyboardProviderProps) {
   const globalConfig = useAsheeConfig();
   const themeKeyboardConfig = globalConfig?.components?.keyboard as
@@ -171,7 +168,7 @@ export function KeyboardProvider({
         defaultLayout ??
         themeKeyboardConfig?.defaultLayout ??
         defaultKeyboardConfig.defaultLayout,
-      heightClass: heightClass,
+      size: size ?? themeKeyboardConfig?.size ?? defaultKeyboardConfig.size,
       autoShiftBack:
         autoShiftBack ??
         themeKeyboardConfig?.autoShiftBack ??
@@ -179,17 +176,22 @@ export function KeyboardProvider({
       variant: variant ?? themeKeyboardConfig?.variant,
       color: color ?? themeKeyboardConfig?.color,
       radius: radius ?? themeKeyboardConfig?.radius,
+      portal:
+        portalProp ??
+        themeKeyboardConfig?.portal ??
+        defaultKeyboardConfig.portal,
     }),
     [
       layouts,
       themeKeyboardConfig,
       display,
       defaultLayout,
-      heightClass,
+      size,
       autoShiftBack,
       variant,
       color,
       radius,
+      portalProp,
     ],
   );
 

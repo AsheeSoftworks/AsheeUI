@@ -53,6 +53,24 @@ export interface MultiSelectConfig extends FieldConfig {
      */
     size?: Size;
   };
+
+  /**
+   * Whether to render the dropdown menu in a React portal.
+   * When true, the menu is rendered at the document body level,
+   * escaping any parent DOM hierarchy. This prevents CSS containment
+   * and stacking context issues. Defaults to true because dropdowns
+   * should always appear above other content.
+   *
+   * @default true
+   */
+  portal?: boolean;
+
+  /**
+   * Custom portal target element for the dropdown menu.
+   * When portal is enabled, the menu is rendered into this element.
+   * Defaults to document.body.
+   */
+  portalTarget?: HTMLElement | null;
 }
 
 /**
@@ -64,6 +82,8 @@ export const defaultMultiSelectConfig: MultiSelectConfig = {
   chip: {
     size: "sm",
   },
+  portal: true,
+  portalTarget: null,
 };
 
 /**
@@ -79,6 +99,8 @@ export const FALLBACK_MULTI_SELECT_CONFIG = {
     radius: "sm",
     variant: "solid",
   },
+  portal: true,
+  portalTarget: null,
 } as const;
 
 declare module "../../libs/registry" {

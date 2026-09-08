@@ -146,6 +146,17 @@ export interface ToastConfig {
    * @default 5
    */
   maxToasts?: number;
+
+  /**
+   * Whether to render toasts in a React portal.
+   * When true, toasts are rendered at the document body level,
+   * escaping any parent DOM hierarchy. This prevents CSS containment
+   * and stacking context issues. Defaults to true because toasts
+   * should always appear above other content.
+   *
+   * @default true
+   */
+  portal?: boolean;
 }
 
 /**
@@ -159,6 +170,7 @@ export const defaultToastConfig: ToastConfig = {
   animated: true,
   defaultTimeout: 3500,
   maxToasts: 5,
+  portal: true,
 };
 
 /**
@@ -174,6 +186,7 @@ export const FALLBACK_TOAST_CONFIG = {
   animated: true,
   defaultTimeout: 3500,
   maxToasts: 5,
+  portal: true,
 } as const;
 
 declare module "../../libs/registry" {

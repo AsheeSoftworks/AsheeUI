@@ -10,6 +10,7 @@
 
 import { type FloatingContext, FloatingFocusManager } from "@floating-ui/react";
 import { type ChangeEvent, type ReactNode, useMemo, useState } from "react";
+import { createPortal } from "react-dom";
 import { CheckIcon } from "../../icons/CheckIcon";
 import { SearchIcon } from "../../icons/SearchIcon";
 import { useAsheeConfig } from "../../libs/context";
@@ -146,6 +147,22 @@ export interface SelectMenuProps {
    * @default false
    */
   returnFocus?: boolean;
+
+  /**
+   * Whether to render the menu in a React portal.
+   * When true, the menu is rendered at the document body level.
+   * Defaults to true. This is typically controlled by the parent
+   * component (Select, MultiSelect, Autocomplete) via their own
+   * config or props.
+   */
+  portal?: boolean;
+
+  /**
+   * Custom portal target element for the menu.
+   * When portal is enabled, the menu is rendered into this element.
+   * Defaults to document.body.
+   */
+  portalTarget?: HTMLElement | null;
 }
 
 /**
@@ -158,6 +175,12 @@ export interface SelectMenuProps {
  * The component uses Floating UI for positioning and accessibility, and
  * supports custom option rendering, search filtering, and configurable
  * item styles through the cascade resolution system.
+ *
+ * By default, the menu uses React's createPortal to render at the document
+ * body level. This ensures the menu escapes CSS containment, overflow
+ * clipping, and stacking context issues. The portal can be disabled via
+ * the `portal` prop if the menu needs to stay within a specific parent
+ * container. This is typically controlled by the parent component.
  *
  * @param props - SelectMenu configuration options.
  * @param props.isOpen - Whether the menu is open.
@@ -175,6 +198,8 @@ export interface SelectMenuProps {
  * @param props.menuConfig - Configuration for menu items.
  * @param props.menuProps - Props override for menu configuration.
  * @param props.renderOption - Custom render function for options.
+ * @param props.portal - Whether to render the menu in a portal. Defaults to true.
+ * @param props.portalTarget - Custom portal target element. Defaults to document.body.
  *
  * @example
  * ```tsx
@@ -216,6 +241,8 @@ export const SelectMenu = ({
   renderOption,
   initialFocus,
   returnFocus,
+  portal = true,
+  portalTarget,
 }: SelectMenuProps) => {
   const config = useAsheeConfig();
   const [internalQuery, setInternalQuery] = useState("");
@@ -282,9 +309,13 @@ export const SelectMenu = ({
     FALLBACK_SELECT_MENU_CONFIG.size,
   );
 
+  // Resolve portal target - use prop > document.body fallback
+  const resolvedPortalTarget =
+    portalTarget ?? (typeof document !== "undefined" ? document.body : null);
+
   if (!isOpen) return null;
 
-  return (
+  const menuContent = (
     <FloatingFocusManager
       context={context}
       modal={false}
@@ -292,12 +323,12 @@ export const SelectMenu = ({
       returnFocus={returnFocus}>
       <div
         ref={setFloatingRef}
-        style={{ ...floatingStyles, zIndex: 9999 }}
+        style={{ ...floatingStyles, zIndex: 999999 }}
         className="w-full outline-none"
         {...getFloatingProps()}>
         <div
           className={cn(
-            "w-full max-h-60 shadow-xl bg-background border border-border p-1 flex flex-col gap-0.5 overflow-y-auto scrollbar-hide",
+            "max-h-60 shadow-xl bg-background border border-border p-1 flex flex-col gap-0.5 overflow-y-auto scrollbar-hide",
             "animate-in fade-in-0 zoom-in-95 slide-in-from-top-1 duration-150 ease-out",
             dropdownClassName,
           )}>
@@ -366,6 +397,13 @@ export const SelectMenu = ({
       </div>
     </FloatingFocusManager>
   );
+
+  // Render with or without portal based on portal prop and portalTarget availability
+  if (portal && resolvedPortalTarget) {
+    return createPortal(menuContent, resolvedPortalTarget);
+  }
+
+  return menuContent;
 };
 
 SelectMenu.displayName = "SelectMenu";

@@ -2,8 +2,8 @@
  * Tooltip component configuration for AsheeUI.
  * This file defines the configuration types and defaults for the Tooltip
  * component, including variant, color, size, placement, delay, offset,
- * radius, and arrow options. It registers the default configuration with
- * the component registry and provides fallback values for the cascade
+ * radius, arrow, and portal options. It registers the default configuration
+ * with the component registry and provides fallback values for the cascade
  * resolution system.
  */
 
@@ -103,11 +103,15 @@ export interface TooltipConfig {
   showArrow?: boolean;
 
   /**
-   * Extra classes applied to every tooltip instance.
+   * Whether to render the tooltip in a Floating UI portal.
+   * When true, the tooltip is rendered at the document body level,
+   * escaping any parent DOM hierarchy. This prevents CSS containment,
+   * overflow clipping, and stacking context issues. Defaults to true
+   * because tooltips should always appear above other content.
    *
-   * @default ""
+   * @default true
    */
-  className?: string;
+  portal?: boolean;
 }
 
 /**
@@ -119,6 +123,7 @@ export const defaultTooltipConfig: TooltipConfig = {
   delay: 200,
   offset: 8,
   showArrow: false,
+  portal: true,
 };
 
 /**
@@ -135,7 +140,7 @@ export const FALLBACK_TOOLTIP_CONFIG: Required<TooltipConfig> = {
   offset: 8,
   radius: "md" as Radius,
   showArrow: false,
-  className: "",
+  portal: true,
 } as const;
 
 declare module "../../libs/registry" {

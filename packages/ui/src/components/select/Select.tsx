@@ -9,15 +9,9 @@
 "use client";
 
 import {
-  autoUpdate,
-  flip,
-  offset,
-  shift,
   useClick,
   useDismiss,
-  useFloating,
   useInteractions,
-  size as floatingSize,
   useRole,
 } from "@floating-ui/react";
 import {
@@ -46,6 +40,7 @@ import { FieldShell } from "../field/FieldShell";
 import type { FieldSizeKey, LabelAlign } from "../field/field-config";
 import { SelectMenu } from "../select-menu/SelectMenu";
 import type { SelectMenuOption } from "../select-menu/select-menu-config";
+import { useSelectFloating } from "../select-menu";
 import { FALLBACK_SELECT_CONFIG, type SelectConfig } from "./select-config";
 import { SELECT_SIZE_CLASS, SELECT_STATUS_BORDER_CLASS } from "./select-styles";
 
@@ -146,12 +141,6 @@ export interface SelectProps extends BaseSelectProps {
   placeholder?: string;
 
   /**
-   * Custom background color for the trigger button.
-   * Accepts any CSS color value.
-   */
-  buttonColor?: string;
-
-  /**
    * Extra CSS classes for the trigger button.
    */
   className?: string;
@@ -185,6 +174,12 @@ export interface SelectProps extends BaseSelectProps {
  * The component uses Floating UI for positioning and accessibility, and
  * integrates with the FieldShell for consistent label and validation handling.
  *
+ * By default, the dropdown menu uses React's createPortal to render at the
+ * document body level. This ensures the menu escapes CSS containment, overflow
+ * clipping, and stacking context issues. The portal can be disabled via the
+ * `portal` prop or `components.select.portal` in the config if the menu needs
+ * to stay within a specific parent container.
+ *
  * @param props - Select configuration options.
  * @param props.options - Available options to select from.
  * @param props.value - Controlled selected value.
@@ -201,13 +196,14 @@ export interface SelectProps extends BaseSelectProps {
  * @param props.initialValue - Initial value for uncontrolled usage.
  * @param props.belowList - Content below the options list.
  * @param props.placeholder - Placeholder text. Defaults to "Select...".
- * @param props.buttonColor - Custom background color for the trigger.
  * @param props.size - Size of the trigger. Defaults to "md".
  * @param props.radius - Corner rounding. Defaults to "md".
  * @param props.variant - Visual style variant. Defaults to "bordered".
  * @param props.color - Theme accent color. Defaults to "primary".
  * @param props.status - Validation status.
  * @param props.labelAlign - Alignment of the label. Defaults to "left".
+ * @param props.portal - Whether to render the dropdown in a portal. Defaults to true.
+ * @param props.portalTarget - Custom portal target element. Defaults to document.body.
  *
  * @example
  * ```tsx
@@ -277,12 +273,13 @@ export const Select = forwardRef<HTMLButtonElement, SelectProps>(
       initialValue,
       belowList,
       placeholder = "Select...",
-      buttonColor,
       className,
       dropdownClassName,
       id,
       name,
       menu,
+      portal: portalProp,
+      portalTarget: portalTargetProp,
       style,
     },
     ref,
@@ -294,35 +291,6 @@ export const Select = forwardRef<HTMLButtonElement, SelectProps>(
     const fieldId = id ?? generatedId;
     const [isOpen, setIsOpen] = useState(false);
     const [searchQuery, setSearchQuery] = useState("");
-
-    // Floating UI context
-    const { refs, floatingStyles, context } = useFloating<HTMLButtonElement>({
-      open: isOpen,
-      onOpenChange: (open) => !disabled && setIsOpen(open),
-      placement: "bottom-start",
-      whileElementsMounted: autoUpdate,
-      middleware: [
-        offset(4),
-        flip(),
-        shift({ padding: 8 }),
-        floatingSize({
-          apply({ availableHeight, elements }) {
-            Object.assign(elements.floating.style, {
-              maxHeight: `${availableHeight}px`,
-            });
-          },
-        }),
-      ],
-    });
-
-    const click = useClick(context, { enabled: !disabled });
-    const dismiss = useDismiss(context);
-    const role = useRole(context, { role: "listbox" });
-    const { getReferenceProps, getFloatingProps } = useInteractions([
-      click,
-      dismiss,
-      role,
-    ]);
 
     // ─── 1. Token Resolvers (4-Tier Cascade) ──────────────────────────────────
 
@@ -363,6 +331,20 @@ export const Select = forwardRef<HTMLButtonElement, SelectProps>(
       FALLBACK_SELECT_CONFIG.labelAlign,
     );
 
+    const resolvedPortal = resolveCascade<boolean>(
+      portalProp,
+      sectionConfig?.portal,
+      undefined,
+      FALLBACK_SELECT_CONFIG.portal,
+    );
+
+    const resolvedPortalTarget = resolveCascade<HTMLElement | null>(
+      portalTargetProp,
+      sectionConfig?.portalTarget,
+      undefined,
+      FALLBACK_SELECT_CONFIG.portalTarget,
+    );
+
     // ─── 2. Class Maps ────────────────────────────────────────────────────────
 
     const variantClass = resolveVariantClass(
@@ -386,6 +368,26 @@ export const Select = forwardRef<HTMLButtonElement, SelectProps>(
       () => options.find((opt) => opt.value === value),
       [options, value],
     );
+
+    // ─── 3. Floating UI ──────────────────────────────────────────────────────
+
+    const { refs, floatingStyles, context } =
+      useSelectFloating<HTMLButtonElement>({
+        isOpen,
+        onOpenChange: setIsOpen,
+        disabled,
+      });
+
+    const click = useClick(context, { enabled: !disabled });
+    const dismiss = useDismiss(context);
+    const role = useRole(context, { role: "listbox" });
+    const { getReferenceProps, getFloatingProps } = useInteractions([
+      click,
+      dismiss,
+      role,
+    ]);
+
+    // ─── 4. Handlers ──────────────────────────────────────────────────────────
 
     const handleSelectOption = useCallback(
       (option: SelectMenuOption) => {
@@ -446,7 +448,6 @@ export const Select = forwardRef<HTMLButtonElement, SelectProps>(
               variantClass,
               statusClass,
               radiusClass,
-              buttonColor && `bg-[${buttonColor}]`,
               className,
             )}
             style={style}
@@ -486,6 +487,8 @@ export const Select = forwardRef<HTMLButtonElement, SelectProps>(
             dropdownClassName={dropdownClassName}
             menuProps={menu}
             menuConfig={sectionConfig}
+            portal={resolvedPortal}
+            portalTarget={resolvedPortalTarget}
           />
         </div>
       </FieldShell>

@@ -9,15 +9,9 @@
 "use client";
 
 import {
-  autoUpdate,
-  flip,
-  offset,
-  shift,
   useDismiss,
-  useFloating,
   useFocus,
   useInteractions,
-  size as floatingSize,
   useRole,
 } from "@floating-ui/react";
 import {
@@ -33,7 +27,7 @@ import type { Color, Variant } from "../../shared";
 import { resolveCascade, resolveRadiusKey } from "../../utils/resolve-token";
 import type { FieldSizeKey } from "../field/field-config";
 import { Input, type InputProps } from "../input/Input";
-import type { SelectMenuOption } from "../select-menu";
+import { useSelectFloating, type SelectMenuOption } from "../select-menu";
 import { SelectMenu } from "../select-menu/SelectMenu";
 import {
   type AutocompleteConfig,
@@ -113,6 +107,12 @@ export interface AutocompleteProps extends BaseAutocompleteProps {
  * hooks, including focus management, dismissal on outside clicks,
  * and proper ARIA roles for the combobox pattern.
  *
+ * By default, the dropdown menu uses React's createPortal to render at the
+ * document body level. This ensures the menu escapes CSS containment, overflow
+ * clipping, and stacking context issues. The portal can be disabled via the
+ * `portal` prop or `components.autocomplete.portal` in the config if the menu
+ * needs to stay within a specific parent container.
+ *
  * @param props - Autocomplete configuration options and input props.
  * @param props.options - Suggestion list.
  * @param props.value - Controlled selected value.
@@ -128,6 +128,8 @@ export interface AutocompleteProps extends BaseAutocompleteProps {
  * @param props.disabled - Whether the input is disabled.
  * @param props.placeholder - Placeholder text for the input.
  * @param props.className - Extra classes for the input.
+ * @param props.portal - Whether to render the dropdown in a portal. Defaults to true.
+ * @param props.portalTarget - Custom portal target element. Defaults to document.body.
  *
  * @example
  * ```tsx
@@ -182,6 +184,8 @@ export const Autocomplete = forwardRef<HTMLInputElement, AutocompleteProps>(
       disabled,
       placeholder = "Type to search...",
       className,
+      portal: portalProp,
+      portalTarget: portalTargetProp,
       ...inputProps
     },
     ref,
@@ -191,54 +195,7 @@ export const Autocomplete = forwardRef<HTMLInputElement, AutocompleteProps>(
       | AutocompleteConfig
       | undefined;
 
-    // Find selected option to compute initial display text
-    const selectedOption = useMemo(
-      () => options.find((opt) => opt.value === value),
-      [options, value],
-    );
-
-    const [isOpen, setIsOpen] = useState(false);
-    const [inputValue, setInputValue] = useState(() =>
-      selectedOption ? selectedOption.label : String(value ?? ""),
-    );
-
-    // Sync input text when value prop changes externally
-    useEffect(() => {
-      if (selectedOption) {
-        setInputValue(selectedOption.label);
-      } else if (value !== undefined && value !== null) {
-        setInputValue(String(value));
-      }
-    }, [selectedOption, value]);
-
-    // Floating UI context
-    const { refs, floatingStyles, context } = useFloating<HTMLButtonElement>({
-      open: isOpen,
-      onOpenChange: (open) => !disabled && setIsOpen(open),
-      placement: "bottom-start",
-      whileElementsMounted: autoUpdate,
-      middleware: [
-        offset(4),
-        flip(),
-        shift({ padding: 8 }),
-        floatingSize({
-          apply({ availableHeight, elements }) {
-            Object.assign(elements.floating.style, {
-              maxHeight: `${availableHeight}px`,
-            });
-          },
-        }),
-      ],
-    });
-
-    const focus = useFocus(context);
-    const dismiss = useDismiss(context);
-    const role = useRole(context, { role: "combobox" });
-    const { getReferenceProps, getFloatingProps } = useInteractions([
-      focus,
-      dismiss,
-      role,
-    ]);
+    // ─── 1. Token Resolvers (4-Tier Cascade) ──────────────────────────────────
 
     const resolvedVariantKey = resolveCascade<Variant>(
       variant,
@@ -268,7 +225,61 @@ export const Autocomplete = forwardRef<HTMLInputElement, AutocompleteProps>(
       FALLBACK_AUTOCOMPLETE_CONFIG.size,
     );
 
-    // ─── 2. Class Maps ────────────────────────────────────────────────────────
+    const resolvedPortal = resolveCascade<boolean>(
+      portalProp,
+      sectionConfig?.portal,
+      undefined,
+      FALLBACK_AUTOCOMPLETE_CONFIG.portal,
+    );
+
+    const resolvedPortalTarget = resolveCascade<HTMLElement | null>(
+      portalTargetProp,
+      sectionConfig?.portalTarget,
+      undefined,
+      FALLBACK_AUTOCOMPLETE_CONFIG.portalTarget,
+    );
+
+    // ─── 2. State ──────────────────────────────────────────────────────────────
+
+    // Find selected option to compute initial display text
+    const selectedOption = useMemo(
+      () => options.find((opt) => opt.value === value),
+      [options, value],
+    );
+
+    const [isOpen, setIsOpen] = useState(false);
+    const [inputValue, setInputValue] = useState(() =>
+      selectedOption ? selectedOption.label : String(value ?? ""),
+    );
+
+    // Sync input text when value prop changes externally
+    useEffect(() => {
+      if (selectedOption) {
+        setInputValue(selectedOption.label);
+      } else if (value !== undefined && value !== null) {
+        setInputValue(String(value));
+      }
+    }, [selectedOption, value]);
+
+    // ─── 3. Floating UI ──────────────────────────────────────────────────────
+
+    const { refs, floatingStyles, context } =
+      useSelectFloating<HTMLInputElement>({
+        isOpen,
+        onOpenChange: setIsOpen,
+        disabled,
+      });
+
+    const focus = useFocus(context);
+    const dismiss = useDismiss(context);
+    const role = useRole(context, { role: "combobox" });
+    const { getReferenceProps, getFloatingProps } = useInteractions([
+      focus,
+      dismiss,
+      role,
+    ]);
+
+    // ─── 4. Handlers ──────────────────────────────────────────────────────────
 
     // Filter options dynamically as user types
     const filteredOptions = useMemo(() => {
@@ -354,6 +365,8 @@ export const Autocomplete = forwardRef<HTMLInputElement, AutocompleteProps>(
           menuConfig={sectionConfig?.menu}
           initialFocus={-1}
           returnFocus={false}
+          portal={resolvedPortal}
+          portalTarget={resolvedPortalTarget}
         />
       </div>
     );

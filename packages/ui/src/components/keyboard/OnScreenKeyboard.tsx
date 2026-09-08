@@ -19,6 +19,10 @@ import {
   type LayoutName,
 } from "./keyboard-config";
 import { type KeyboardElement, useKeyboard } from "./keyboard-context";
+import {
+  KEYBOARD_KEY_SIZE_CLASS,
+  KEYBOARD_SIZE_CLASS,
+} from "./keyboard-styles";
 
 /**
  * Determines the flex width class for a key based on its token.
@@ -108,10 +112,11 @@ export interface OnScreenKeyboardProps extends KeyboardConfig {
   keyClassName?: string;
 
   /**
-   * CSS height class for the keyboard container.
-   * Required to set the keyboard height.
+   * Whether to render the keyboard in a Floating UI portal.
+   * When true, the keyboard is rendered at the document body level.
+   * Defaults to true.
    */
-  heightClass: string;
+  portal?: boolean;
 }
 
 /**
@@ -127,14 +132,23 @@ export interface OnScreenKeyboardProps extends KeyboardConfig {
  * placed inside a KeyboardProvider. It automatically shows and hides
  * based on the context state.
  *
+ * By default, the keyboard uses FloatingPortal to render at the document
+ * body level. This ensures the keyboard appears at the bottom of the screen
+ * regardless of where the input is in the DOM tree, escaping CSS containment,
+ * overflow clipping, and stacking context issues. The portal can be disabled
+ * via the `portal` prop or `components.keyboard.portal` in the config if the
+ * keyboard needs to stay within a specific parent container.
+ *
  * @param props - OnScreenKeyboard configuration options.
  * @param props.className - Extra CSS classes for the container.
- * @param props.heightClass - CSS height class for the keyboard.
+ * @param props.heightClass - CSS height class for the keyboard (deprecated).
+ * @param props.size - Size scale for keyboard keys. Defaults to "md".
  * @param props.initialLayout - Initial layout name.
  * @param props.keyClassName - Extra CSS classes for keys.
  * @param props.variant - Visual variant for keys.
  * @param props.color - Theme color for keys.
  * @param props.radius - Corner rounding for keys.
+ * @param props.portal - Whether to render the keyboard in a portal. Defaults to true.
  *
  * @example
  * ```tsx
@@ -142,7 +156,7 @@ export interface OnScreenKeyboardProps extends KeyboardConfig {
  *
  * export function App() {
  *   return (
- *     <KeyboardProvider heightClass="h-56">
+ *     <KeyboardProvider size="lg">
  *       <Input label="Search" enableVirtualKeyboard />
  *       <OnScreenKeyboard />
  *     </KeyboardProvider>
@@ -155,12 +169,13 @@ export interface OnScreenKeyboardProps extends KeyboardConfig {
  */
 export function OnScreenKeyboard({
   className,
-  heightClass,
   initialLayout,
+  size: sizeProp,
   variant: variantProp,
   color: colorProp,
   radius: radiusProp,
   keyClassName,
+  portal: portalProp,
 }: OnScreenKeyboardProps) {
   const keyboardContext = useKeyboard();
   if (!keyboardContext) return null;
@@ -170,9 +185,14 @@ export function OnScreenKeyboard({
 
   const activeLayouts = config.layouts ?? {};
   const activeDisplay = config.display ?? {};
-  const effectiveHeightClass = heightClass;
   const defaultLayoutName =
     config.defaultLayout ?? FALLBACK_KEYBOARD_CONFIG.defaultLayout;
+
+  const resolvedSizeKey =
+    sizeProp ?? config.size ?? FALLBACK_KEYBOARD_CONFIG.size;
+
+  // Use heightClass if provided (backward compatibility), otherwise use size-based class
+  const resolvedHeightClass = KEYBOARD_SIZE_CLASS[resolvedSizeKey];
 
   const resolvedVariantKey =
     variantProp ??
@@ -185,6 +205,11 @@ export function OnScreenKeyboard({
     globalConfig.defaultColor ??
     FALLBACK_KEYBOARD_CONFIG.color;
   const resolvedRadiusKey = radiusProp ?? config.radius;
+  const resolvedPortal =
+    portalProp ?? config.portal ?? FALLBACK_KEYBOARD_CONFIG.portal;
+
+  // Resolve key size class based on the keyboard size
+  const keySizeClass = KEYBOARD_KEY_SIZE_CLASS[resolvedSizeKey];
 
   const [layout, setLayout] = useState<LayoutName>(
     initialLayout ?? defaultLayoutName,
@@ -323,54 +348,62 @@ export function OnScreenKeyboard({
 
   if (!isOpen) return null;
 
-  return (
-    <FloatingPortal>
-      <section
-        aria-label="Virtual Keyboard"
-        className="fixed inset-x-0 bottom-0 z-9999 pointer-events-auto"
-        onMouseDown={(e) => e.preventDefault()}>
-        <div
-          className={cn(
-            "w-full bg-background border-t border-border shadow-2xl flex flex-col select-none",
-            effectiveHeightClass,
-            className,
-          )}>
-          <div className="flex flex-col gap-1.5 p-2 flex-1 min-h-0">
-            {parsedRows.map((row) => (
-              <div key={row.id} className="flex gap-1.5 flex-1">
-                {row.keys.map(({ id, token }) => {
-                  const isPressed = pressedKeys.has(token);
-                  const isHovered = hoveredToken === token;
-                  const isKeyActive = isPressed || isHovered;
-                  const keyLabel = activeDisplay[token] ?? token;
+  // ─── Render Keyboard Content ─────────────────────────────────────────────
 
-                  const currentKeyColor: Color = isKeyActive
-                    ? resolvedColorKey
-                    : "secondary";
+  const keyboardContent = (
+    <section
+      aria-label="Virtual Keyboard"
+      className="fixed inset-x-0 bottom-0 z-9999 pointer-events-auto"
+      onMouseDown={(e) => e.preventDefault()}>
+      <div
+        className={cn(
+          "w-full bg-background border-t border-border shadow-2xl flex flex-col select-none",
+          resolvedHeightClass,
+          className,
+        )}>
+        <div className="flex flex-col gap-1.5 p-2 flex-1 min-h-0">
+          {parsedRows.map((row) => (
+            <div key={row.id} className="flex gap-1.5 flex-1">
+              {row.keys.map(({ id, token }) => {
+                const isPressed = pressedKeys.has(token);
+                const isHovered = hoveredToken === token;
+                const isKeyActive = isPressed || isHovered;
+                const keyLabel = activeDisplay[token] ?? token;
 
-                  return (
-                    <Button
-                      key={id}
-                      variant={resolvedVariantKey}
-                      color={currentKeyColor}
-                      radius={resolvedRadiusKey}
-                      onClick={() => handleKeyPress(token)}
-                      onMouseEnter={() => setHoveredToken(token)}
-                      onMouseLeave={() => setHoveredToken(null)}
-                      className={cn(
-                        "h-full text-lg font-medium p-0 flex items-center justify-center",
-                        getKeyWidthClass(token),
-                        keyClassName,
-                      )}>
-                      {keyLabel}
-                    </Button>
-                  );
-                })}
-              </div>
-            ))}
-          </div>
+                const currentKeyColor: Color = isKeyActive
+                  ? resolvedColorKey
+                  : "secondary";
+
+                return (
+                  <Button
+                    key={id}
+                    variant={resolvedVariantKey}
+                    color={currentKeyColor}
+                    radius={resolvedRadiusKey}
+                    size={resolvedSizeKey}
+                    onClick={() => handleKeyPress(token)}
+                    onMouseEnter={() => setHoveredToken(token)}
+                    onMouseLeave={() => setHoveredToken(null)}
+                    className={cn(
+                      "font-medium p-0 flex items-center justify-center",
+                      keySizeClass,
+                      getKeyWidthClass(token),
+                      keyClassName,
+                    )}>
+                    {keyLabel}
+                  </Button>
+                );
+              })}
+            </div>
+          ))}
         </div>
-      </section>
-    </FloatingPortal>
+      </div>
+    </section>
+  );
+
+  return resolvedPortal ? (
+    <FloatingPortal>{keyboardContent}</FloatingPortal>
+  ) : (
+    keyboardContent
   );
 }

@@ -78,7 +78,7 @@ export interface SelectMenuConfig {
    * Variant for the selected option.
    * Controls the visual style of the currently selected item.
    *
-   * @default "solid"
+   * @default "faded"
    */
   activeItemVariant?: Variant;
 
@@ -101,6 +101,6 @@ export const FALLBACK_SELECT_MENU_CONFIG: Required<SelectMenuConfig> = {
   size: "md",
   itemVariant: "ghost",
   itemColor: "primary",
-  activeItemVariant: "solid",
+  activeItemVariant: "faded",
   activeItemColor: "primary",
 };

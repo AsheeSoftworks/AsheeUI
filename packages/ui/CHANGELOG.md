@@ -1,5 +1,73 @@
 # asheeui
 
+## 0.6.6
+
+### Patch Changes
+
+- Fix Accordian overflow issue
+  
+  - Added `portal?: boolean` to the following component configs and props:
+    - `SelectConfig` / `SelectProps`
+    - `MultiSelectConfig` / `MultiSelectProps`
+    - `AutocompleteConfig` / `AutocompleteProps`
+    - `DatePickerConfig` / `DatePickerProps`
+    - `ToastConfig` / `ToastProviderProps`
+    - `TooltipConfig` / `TooltipProps`
+    - `KeyboardConfig` / `KeyboardProviderProps` / `OnScreenKeyboardProps`
+  
+  - Added `portalTarget?: HTMLElement | null` to the following component configs and props:
+    - `SelectConfig` / `SelectProps`
+    - `MultiSelectConfig` / `MultiSelectProps`
+    - `AutocompleteConfig` / `AutocompleteProps`
+    - `DatePickerConfig` / `DatePickerProps`
+    - `ToastProviderProps`
+    - `SelectMenuProps` (direct prop only)
+  
+  - All relevant default configs and fallbacks now include `portal: true` and `portalTarget: null`.
+  
+  - New shared hook for Floating UI positioning used by Select, MultiSelect, Autocomplete, and DatePicker.
+  
+  - `Select` Now uses `useSelectFloating` hook and passes portal props to `SelectMenu`.
+  
+  - `MultiSelect` Now uses `useSelectFloating` hook and passes portal props to `SelectMenu`.
+  
+  - `Autocomplete` Now uses `useSelectFloating` hook and passes portal props to `SelectMenu`.
+  
+  - `DatePicker` Now uses `useSelectFloating` hook and conditionally renders popover content via `createPortal`.
+  
+  - `ToastProvider` Now conditionally renders toast container via `createPortal` based on `portal` prop.
+  
+  - `Tooltip` Now conditionally renders tooltip content via `FloatingPortal` based on `portal` prop.
+  
+  - `OnScreenKeyboard` Now conditionally renders keyboard via `FloatingPortal` based on `portal` prop.
+  
+  - `SelectMenu` Now accepts `portal` and `portalTarget` props and conditionally renders via `createPortal`.
+  
+  - Fixed consistent portal behavior All floating components now handle portal rendering consistently, with proper cascade resolution (prop > component config > fallback).
+  
+  - Fixed portal target resolution All components now resolve portal targets with proper fallback to `document.body` when available.
+  
+  - Fixed z-index consistency Updated z-index values across floating components to ensure proper stacking (z-50 for toasts, z-9999 for keyboard and select menus, z-999999 for date picker popovers).
+  
+  - Added TSDoc comments All new `portal` and `portalTarget` props are fully documented with explanations of when and why to use them.
+  
+  - Added component doc comments Updated component-level documentation to explain portal behavior and benefits.
+  
+  - Added examples JSDoc examples now show portal usage where relevant.
+  
+  
+  -  Added `size?: KeyboardSizeKey` to `KeyboardConfig`, `KeyboardProviderProps`, and `OnScreenKeyboardProps`
+    - `KeyboardSizeKey` is an alias for `Size` (`"sm" | "md" | "lg"`)
+    - Default value is `"md"`
+    - Follows the standard AsheeUI cascade: prop > component config > fallback
+  
+  - Fix ResizableScreen handle visibility when parent sizes are "auto". Use flexbox `self-stretch` for the separator and inner handle instead of
+    percentage `h-full`/`w-full`, which can collapse when ancestor heights are
+    not definite.
+  - Remove the `ResizeObserver` based measurement and rely on CSS fallbacks
+    (`minHeight` / `minWidth`) so the handle appears correctly even when
+    children provide the container size.
+
 ## 0.6.5
 
 ### Patch Changes

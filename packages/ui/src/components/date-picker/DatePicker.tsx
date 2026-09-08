@@ -8,15 +8,9 @@
 "use client";
 
 import {
-  autoUpdate,
   FloatingFocusManager,
-  flip,
-  offset,
-  shift,
   useClick,
   useDismiss,
-  useFloating,
-  size as floatingSize,
   useInteractions,
   useRole,
 } from "@floating-ui/react";
@@ -28,6 +22,7 @@ import {
   useMemo,
   useState,
 } from "react";
+import { createPortal } from "react-dom";
 import { CalendarIcon } from "../../icons/CalendarIcon";
 import { ChevronLeftIcon } from "../../icons/ChevronLeftIcon";
 import { ChevronRightIcon } from "../../icons/ChevronRightIcon";
@@ -64,6 +59,7 @@ import {
   DATE_PICKER_SIZE_CLASS,
   DATE_PICKER_STATUS_BORDER_CLASS,
 } from "./date-picker-styles";
+import { useSelectFloating } from "../select-menu";
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
@@ -616,6 +612,20 @@ export interface DatePickerProps {
    * Inline styles for the date picker.
    */
   style?: CSSProperties;
+
+  /**
+   * Whether to render the calendar popover in a React portal.
+   * When true, the popover is rendered at the document body level.
+   * Defaults to true.
+   */
+  portal?: boolean;
+
+  /**
+   * Custom portal target element for the calendar popover.
+   * When portal is enabled, the popover is rendered into this element.
+   * Defaults to document.body.
+   */
+  portalTarget?: HTMLElement | null;
 }
 
 // ─── Main DatePicker Component ───────────────────────────────────────────────
@@ -631,6 +641,12 @@ export interface DatePickerProps {
  * The component automatically handles accessibility attributes including
  * role="combobox", aria-expanded, aria-invalid, and proper focus management
  * through Floating UI.
+ *
+ * By default, the calendar popover uses React's createPortal to render at the
+ * document body level. This ensures the popover escapes CSS containment,
+ * overflow clipping, and stacking context issues. The portal can be disabled
+ * via the `portal` prop or `components.datePicker.portal` in the config if
+ * the popover needs to stay within a specific parent container.
  *
  * @param props - DatePicker configuration options.
  * @param props.selected - The currently selected date.
@@ -654,6 +670,8 @@ export interface DatePickerProps {
  * @param props.className - Extra CSS classes.
  * @param props.id - Optional ID for the field.
  * @param props.style - Inline styles.
+ * @param props.portal - Whether to render the popover in a portal. Defaults to true.
+ * @param props.portalTarget - Custom portal target element. Defaults to document.body.
  *
  * @example
  * ```tsx
@@ -714,6 +732,8 @@ export const DatePicker = forwardRef<HTMLDivElement, DatePickerProps>(
       className,
       id,
       style,
+      portal: portalProp,
+      portalTarget: portalTargetProp,
     },
     ref,
   ) => {
@@ -725,35 +745,6 @@ export const DatePicker = forwardRef<HTMLDivElement, DatePickerProps>(
     const generatedId = useId();
     const fieldId = id ?? generatedId;
     const [isOpen, setIsOpen] = useState<boolean>(false);
-
-    // Floating UI context
-    const { refs, floatingStyles, context } = useFloating<HTMLButtonElement>({
-      open: isOpen,
-      onOpenChange: (open) => !disabled && setIsOpen(open),
-      placement: "bottom-start",
-      whileElementsMounted: autoUpdate,
-      middleware: [
-        offset(4),
-        flip(),
-        shift({ padding: 8 }),
-        floatingSize({
-          apply({ availableHeight, elements }) {
-            Object.assign(elements.floating.style, {
-              maxHeight: `${availableHeight}px`,
-            });
-          },
-        }),
-      ],
-    });
-
-    const click = useClick(context, { enabled: !disabled });
-    const dismiss = useDismiss(context);
-    const role = useRole(context, { role: "dialog" });
-    const { getReferenceProps, getFloatingProps } = useInteractions([
-      click,
-      dismiss,
-      role,
-    ]);
 
     // ─── 1. Token Resolvers (4-Tier Cascade) ──────────────────────────────────
 
@@ -799,6 +790,20 @@ export const DatePicker = forwardRef<HTMLDivElement, DatePickerProps>(
     const resolvedMode =
       mode ?? sectionConfig?.mode ?? FALLBACK_DATE_PICKER_CONFIG.mode;
 
+    const resolvedPortal = resolveCascade<boolean>(
+      portalProp,
+      sectionConfig?.portal,
+      undefined,
+      FALLBACK_DATE_PICKER_CONFIG.portal,
+    );
+
+    const resolvedPortalTarget = resolveCascade<HTMLElement | null>(
+      portalTargetProp,
+      sectionConfig?.portalTarget,
+      undefined,
+      FALLBACK_DATE_PICKER_CONFIG.portalTarget,
+    );
+
     const resolvedStatusColor: Color =
       resolvedStatus === "error"
         ? "danger"
@@ -833,6 +838,26 @@ export const DatePicker = forwardRef<HTMLDivElement, DatePickerProps>(
       FALLBACK_DATE_PICKER_CONFIG.radius,
     );
 
+    // ─── 3. Floating UI ──────────────────────────────────────────────────────
+
+    const { refs, floatingStyles, context } =
+      useSelectFloating<HTMLButtonElement>({
+        isOpen,
+        onOpenChange: setIsOpen,
+        disabled,
+      });
+
+    const click = useClick(context, { enabled: !disabled });
+    const dismiss = useDismiss(context);
+    const role = useRole(context, { role: "dialog" });
+    const { getReferenceProps, getFloatingProps } = useInteractions([
+      click,
+      dismiss,
+      role,
+    ]);
+
+    // ─── 4. Handlers ──────────────────────────────────────────────────────────
+
     const handleSelect = useCallback(
       (date: Date | null) => onChange?.(date),
       [onChange],
@@ -853,6 +878,37 @@ export const DatePicker = forwardRef<HTMLDivElement, DatePickerProps>(
     const displayValue = selected
       ? formatDisplay(selected, resolvedMode)
       : null;
+
+    // ─── 5. Render ────────────────────────────────────────────────────────────
+
+    const popoverContent = isOpen ? (
+      <FloatingFocusManager context={context} modal={false}>
+        <div
+          ref={refs.setFloating}
+          style={{ ...floatingStyles, zIndex: 999999 }}
+          className="outline-none"
+          {...getFloatingProps()}>
+          <div className="animate-in fade-in-0 zoom-in-95 duration-150 ease-out">
+            <Calendar
+              selected={selected}
+              mode={resolvedMode}
+              isClearable={isClearable}
+              resolvedSizeKey={resolvedSizeKey}
+              onSelect={handleSelect}
+              onClose={handleClose}
+              disableFuture={disableFuture}
+              resolvedColor={resolvedColor}
+              radiusClass={calenderRadiusClass}
+            />
+          </div>
+        </div>
+      </FloatingFocusManager>
+    ) : null;
+
+    // Resolve portal target - use prop > config > document.body fallback
+    const finalPortalTarget =
+      resolvedPortalTarget ??
+      (typeof document !== "undefined" ? document.body : null);
 
     return (
       <FieldShell
@@ -914,30 +970,11 @@ export const DatePicker = forwardRef<HTMLDivElement, DatePickerProps>(
             </div>
           </div>
 
-          {/* Popover */}
-          {isOpen && (
-            <FloatingFocusManager context={context} modal={false}>
-              <div
-                ref={refs.setFloating}
-                style={{ ...floatingStyles, zIndex: 99999 }}
-                className="outline-none"
-                {...getFloatingProps()}>
-                <div className="animate-in fade-in-0 zoom-in-95 duration-150 ease-out">
-                  <Calendar
-                    selected={selected}
-                    mode={resolvedMode}
-                    isClearable={isClearable}
-                    resolvedSizeKey={resolvedSizeKey}
-                    onSelect={handleSelect}
-                    onClose={handleClose}
-                    disableFuture={disableFuture}
-                    resolvedColor={resolvedColor}
-                    radiusClass={calenderRadiusClass}
-                  />
-                </div>
-              </div>
-            </FloatingFocusManager>
-          )}
+          {/* Popover with optional portal */}
+          {isOpen &&
+            (resolvedPortal && finalPortalTarget
+              ? createPortal(popoverContent, finalPortalTarget)
+              : popoverContent)}
         </div>
       </FieldShell>
     );

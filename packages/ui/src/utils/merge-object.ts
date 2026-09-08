@@ -18,6 +18,12 @@ function isPlainObject(item: unknown): item is Record<string, unknown> {
  * user value is `undefined` are skipped, leaving the default intact.
  * The `defaults` object is not mutated.
  *
+ * `T` is inferred exclusively from `defaults`; `U` (the override type) is a
+ * separate type parameter constrained to a deep partial of `T`. This keeps
+ * TypeScript from ever inferring `T` from the `userConfig` argument, which
+ * would otherwise force a full `DeepPartial<T>` instantiation at every call
+ * site (the source of "excessively deep type instantiation" errors).
+ *
  * @param defaults - Baseline object providing fallback values.
  * @param userConfig - Optional partial override object.
  * @returns A new object with the user overrides applied.
@@ -31,10 +37,10 @@ function isPlainObject(item: unknown): item is Record<string, unknown> {
  * // -> { theme: { color: "primary", radius: "lg" } }
  * ```
  */
-export function mergeObject<T extends Record<string, unknown>>(
-  defaults: T,
-  userConfig?: DeepPartial<T>,
-): T {
+export function mergeObject<
+  T extends Record<string, unknown>,
+  U extends DeepPartial<T> = DeepPartial<T>,
+>(defaults: T, userConfig?: U): T {
   if (!userConfig) {
     return defaults;
   }

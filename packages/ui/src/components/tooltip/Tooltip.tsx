@@ -82,6 +82,20 @@ export interface TooltipProps extends BaseTooltipProps {
    * @default false
    */
   isDisabled?: boolean;
+
+  /**
+   * Extra classes applied to every tooltip instance.
+   *
+   * @default ""
+   */
+  className?: string;
+
+  /**
+   * Whether to render the tooltip in a Floating UI portal.
+   * When true, the tooltip is rendered at the document body level,
+   * escaping any parent DOM hierarchy. Defaults to true.
+   */
+  portal?: boolean;
 }
 
 /**
@@ -96,6 +110,12 @@ export interface TooltipProps extends BaseTooltipProps {
  * automatically handles viewport edge detection and flipping. It is fully
  * accessible with keyboard focus support.
  *
+ * By default, the tooltip uses FloatingPortal to render at the document body
+ * level. This ensures the tooltip escapes CSS containment, overflow clipping,
+ * and stacking context issues. The portal can be disabled via the `portal` prop
+ * or `components.tooltip.portal` in the config if the tooltip needs to stay
+ * within a specific parent container.
+ *
  * @param props - Tooltip configuration options.
  * @param props.content - The content to display inside the tooltip.
  * @param props.children - The child element that triggers the tooltip.
@@ -108,6 +128,7 @@ export interface TooltipProps extends BaseTooltipProps {
  * @param props.offset - Offset from the trigger. Defaults to 8.
  * @param props.radius - Corner rounding. Defaults to "md".
  * @param props.showArrow - Whether to show a pointer arrow. Defaults to false.
+ * @param props.portal - Whether to render the tooltip in a portal. Defaults to true.
  * @param props.className - Extra classes for the tooltip.
  *
  * @example
@@ -154,6 +175,7 @@ export const Tooltip = forwardRef<HTMLDivElement, TooltipProps>(
       showArrow,
       isDisabled = false,
       className,
+      portal: portalProp,
     },
     ref,
   ) => {
@@ -216,6 +238,13 @@ export const Tooltip = forwardRef<HTMLDivElement, TooltipProps>(
       sectionConfig?.radius,
       config.defaultRadius,
       FALLBACK_TOOLTIP_CONFIG.radius,
+    );
+
+    const resolvedPortal = resolveCascade<boolean>(
+      portalProp,
+      sectionConfig?.portal,
+      undefined,
+      FALLBACK_TOOLTIP_CONFIG.portal,
     );
 
     // ─── 2. Class Maps ────────────────────────────────────────────────────────
@@ -300,43 +329,48 @@ export const Tooltip = forwardRef<HTMLDivElement, TooltipProps>(
       return <>{children}</>;
     }
 
+    // ─── Render Tooltip Content ─────────────────────────────────────────────
+
+    const tooltipContent = (
+      <div
+        ref={(node) => {
+          refs.setFloating(node);
+          if (typeof ref === "function") ref(node);
+          else if (ref) ref.current = node;
+        }}
+        style={floatingStyles}
+        className="z-50 pointer-events-none"
+        {...getFloatingProps()}>
+        <div
+          className={cn(
+            "font-medium border whitespace-nowrap select-none bg-background shadow-md transition-all duration-150 ease-out animate-in fade-in-0 zoom-in-95",
+            paddingXClass,
+            paddingYClass,
+            fontClass,
+            radiusClass,
+            resolveVariantClass(resolvedVariantKey, resolvedColorKey),
+            className,
+          )}>
+          {content}
+          {resolvedShowArrow && (
+            <FloatingArrow
+              ref={arrowRef}
+              context={context}
+              className="fill-current text-border"
+            />
+          )}
+        </div>
+      </div>
+    );
+
     return (
       <>
         {trigger}
-        <FloatingPortal>
-          {isOpen && (
-            <div
-              ref={(node) => {
-                refs.setFloating(node);
-                if (typeof ref === "function") ref(node);
-                else if (ref) ref.current = node;
-              }}
-              style={floatingStyles}
-              className="z-50 pointer-events-none"
-              {...getFloatingProps()}>
-              <div
-                className={cn(
-                  "font-medium border whitespace-nowrap select-none bg-background shadow-md transition-all duration-150 ease-out animate-in fade-in-0 zoom-in-95",
-                  paddingXClass,
-                  paddingYClass,
-                  fontClass,
-                  radiusClass,
-                  resolveVariantClass(resolvedVariantKey, resolvedColorKey),
-                  sectionConfig?.className,
-                  className,
-                )}>
-                {content}
-                {resolvedShowArrow && (
-                  <FloatingArrow
-                    ref={arrowRef}
-                    context={context}
-                    className="fill-current text-border"
-                  />
-                )}
-              </div>
-            </div>
-          )}
-        </FloatingPortal>
+        {resolvedPortal ? (
+          <FloatingPortal>{tooltipContent}</FloatingPortal>
+        ) : (
+          tooltipContent
+        )}
       </>
     );
   },
