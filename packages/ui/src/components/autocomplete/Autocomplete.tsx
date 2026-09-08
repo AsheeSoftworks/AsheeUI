@@ -27,7 +27,7 @@ import type { Color, Variant } from "../../shared";
 import { resolveCascade, resolveRadiusKey } from "../../utils/resolve-token";
 import type { FieldSizeKey } from "../field/field-config";
 import { Input, type InputProps } from "../input/Input";
-import { useSelectFloating, type SelectMenuOption } from "../select-menu";
+import { type SelectMenuOption, useSelectFloating } from "../select-menu";
 import { SelectMenu } from "../select-menu/SelectMenu";
 import {
   type AutocompleteConfig,

@@ -38,7 +38,7 @@ import { Button } from "../button/Button";
 import { Chip } from "../chip/Chip";
 import { FieldShell } from "../field/FieldShell";
 import type { FieldSizeKey, LabelAlign } from "../field/field-config";
-import { useSelectFloating, type SelectMenuOption } from "../select-menu";
+import { type SelectMenuOption, useSelectFloating } from "../select-menu";
 import { SelectMenu } from "../select-menu/SelectMenu";
 import {
   FALLBACK_MULTI_SELECT_CONFIG,

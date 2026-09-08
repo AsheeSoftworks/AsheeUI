@@ -48,6 +48,7 @@ import type {
   FieldStatus,
   LabelAlign,
 } from "../field/field-config";
+import { useSelectFloating } from "../select-menu";
 import {
   type DatePickerConfig,
   FALLBACK_DATE_PICKER_CONFIG,
@@ -59,7 +60,6 @@ import {
   DATE_PICKER_SIZE_CLASS,
   DATE_PICKER_STATUS_BORDER_CLASS,
 } from "./date-picker-styles";
-import { useSelectFloating } from "../select-menu";
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 

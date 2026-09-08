@@ -11,12 +11,12 @@
 import {
   autoUpdate,
   flip,
-  offset,
-  shift,
   size as floatingSize,
-  useFloating,
+  offset,
   type Placement,
+  shift,
   type UseFloatingReturn,
+  useFloating,
 } from "@floating-ui/react";
 
 /**
