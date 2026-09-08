@@ -9,14 +9,8 @@
 "use client";
 
 import {
-  autoUpdate,
-  flip,
-  offset,
-  shift,
   useClick,
   useDismiss,
-  useFloating,
-  size as floatingSize,
   useInteractions,
   useRole,
 } from "@floating-ui/react";
@@ -44,7 +38,7 @@ import { Button } from "../button/Button";
 import { Chip } from "../chip/Chip";
 import { FieldShell } from "../field/FieldShell";
 import type { FieldSizeKey, LabelAlign } from "../field/field-config";
-import type { SelectMenuOption } from "../select-menu";
+import { useSelectFloating, type SelectMenuOption } from "../select-menu";
 import { SelectMenu } from "../select-menu/SelectMenu";
 import {
   FALLBACK_MULTI_SELECT_CONFIG,
@@ -201,6 +195,12 @@ export interface MultiSelectProps extends BaseMultiSelectProps {
  * and integrates with the FieldShell for consistent label and validation
  * handling.
  *
+ * By default, the dropdown menu uses React's createPortal to render at the
+ * document body level. This ensures the menu escapes CSS containment, overflow
+ * clipping, and stacking context issues. The portal can be disabled via the
+ * `portal` prop or `components.multiSelect.portal` in the config if the menu
+ * needs to stay within a specific parent container.
+ *
  * @param props - MultiSelect configuration options.
  * @param props.options - Available options to select from.
  * @param props.value - Controlled selected values.
@@ -221,6 +221,8 @@ export interface MultiSelectProps extends BaseMultiSelectProps {
  * @param props.color - Theme accent color. Defaults to "primary".
  * @param props.status - Validation status.
  * @param props.labelAlign - Alignment of the label. Defaults to "left".
+ * @param props.portal - Whether to render the dropdown in a portal. Defaults to true.
+ * @param props.portalTarget - Custom portal target element. Defaults to document.body.
  *
  * @example
  * ```tsx
@@ -286,6 +288,8 @@ export const MultiSelect = forwardRef<HTMLButtonElement, MultiSelectProps>(
       className,
       menu,
       chip,
+      portal: portalProp,
+      portalTarget: portalTargetProp,
       style,
       ...props
     },
@@ -298,35 +302,6 @@ export const MultiSelect = forwardRef<HTMLButtonElement, MultiSelectProps>(
     const fieldId = id ?? generatedId;
     const [isOpen, setIsOpen] = useState(false);
     const [searchQuery, setSearchQuery] = useState("");
-
-    // Floating UI Context
-    const { refs, floatingStyles, context } = useFloating<HTMLButtonElement>({
-      open: isOpen,
-      onOpenChange: (open) => !disabled && setIsOpen(open),
-      placement: "bottom-start",
-      whileElementsMounted: autoUpdate,
-      middleware: [
-        offset(4),
-        flip(),
-        shift({ padding: 8 }),
-        floatingSize({
-          apply({ availableHeight, elements }) {
-            Object.assign(elements.floating.style, {
-              maxHeight: `${availableHeight}px`,
-            });
-          },
-        }),
-      ],
-    });
-
-    const click = useClick(context, { enabled: !disabled });
-    const dismiss = useDismiss(context);
-    const role = useRole(context, { role: "listbox" });
-    const { getReferenceProps, getFloatingProps } = useInteractions([
-      click,
-      dismiss,
-      role,
-    ]);
 
     // ─── 1. Token Resolvers (4-Tier Cascade) ──────────────────────────────────
 
@@ -396,6 +371,20 @@ export const MultiSelect = forwardRef<HTMLButtonElement, MultiSelectProps>(
       FALLBACK_MULTI_SELECT_CONFIG.labelAlign,
     );
 
+    const resolvedPortal = resolveCascade<boolean>(
+      portalProp,
+      sectionConfig?.portal,
+      undefined,
+      FALLBACK_MULTI_SELECT_CONFIG.portal,
+    );
+
+    const resolvedPortalTarget = resolveCascade<HTMLElement | null>(
+      portalTargetProp,
+      sectionConfig?.portalTarget as HTMLElement | null,
+      undefined,
+      FALLBACK_MULTI_SELECT_CONFIG.portalTarget,
+    );
+
     // ─── 2. Class Maps ────────────────────────────────────────────────────────
 
     const heightClass = resolveClassKey(
@@ -421,6 +410,26 @@ export const MultiSelect = forwardRef<HTMLButtonElement, MultiSelectProps>(
       RADIUS_CLASS,
       FALLBACK_MULTI_SELECT_CONFIG.chip.radius,
     );
+
+    // ─── 3. Floating UI ──────────────────────────────────────────────────────
+
+    const { refs, floatingStyles, context } =
+      useSelectFloating<HTMLButtonElement>({
+        isOpen,
+        onOpenChange: setIsOpen,
+        disabled,
+      });
+
+    const click = useClick(context, { enabled: !disabled });
+    const dismiss = useDismiss(context);
+    const role = useRole(context, { role: "listbox" });
+    const { getReferenceProps, getFloatingProps } = useInteractions([
+      click,
+      dismiss,
+      role,
+    ]);
+
+    // ─── 4. Handlers ──────────────────────────────────────────────────────────
 
     // Controlled or Custom Chip Selection Determination
     const activeChips = useMemo(() => {
@@ -546,6 +555,8 @@ export const MultiSelect = forwardRef<HTMLButtonElement, MultiSelectProps>(
               dropdownClassName={dropdownClassName}
               menuProps={menu}
               menuConfig={sectionConfig?.menu}
+              portal={resolvedPortal}
+              portalTarget={resolvedPortalTarget}
             />
           </div>
 

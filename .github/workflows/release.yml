@@ -49,7 +49,7 @@ jobs:
         uses: changesets/action@v1
         with:
           version: pnpm version-packages
-          publish: pnpm publish
+          publish: pnpm changeset publish --no-git-checks
           title: "chore: publish package updates"
           commit: "chore: version packages"
           createGithubReleases: true

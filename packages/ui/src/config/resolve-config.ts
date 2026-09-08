@@ -38,10 +38,15 @@ import { resolveColorConfig } from "./resolve-color";
  */
 export function resolveConfig(externalConfig: ExternalConfig): Config {
   const registeredDefaults = getAllComponentDefaults() as Config["components"];
-  const configWithDefaults = mergeObject<Config>(defaultConfig, {
+
+  // No explicit `<Config>` type argument: `mergeObject` infers `T` from
+  // `defaultConfig` and treats the override object as its own type parameter,
+  // avoiding a forced full `DeepPartial<Config>` instantiation at the call
+  // site while still validating each override against `Config`.
+  const configWithDefaults = mergeObject(defaultConfig, {
     components: registeredDefaults,
   });
-  const merged = mergeObject<Config>(configWithDefaults, externalConfig);
+  const merged = mergeObject(configWithDefaults, externalConfig);
 
   // generic mergeObject can't fall back keys it has no default for (custom themes) -
   // re-resolve color specifically so unfilled fields inherit from `light` or `dark`

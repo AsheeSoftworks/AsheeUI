@@ -9,7 +9,7 @@
 
 import type { ReactNode } from "react";
 import { registerComponentDefaults } from "../../libs/registry";
-import type { Color, Radius, Variant } from "../../shared";
+import type { Color, Radius, Size, Variant } from "../../shared";
 
 /**
  * Standard layout names for the virtual keyboard.
@@ -25,6 +25,13 @@ export type StandardLayoutName = "default" | "shift" | "symbols" | "numeric";
  * Can be either a StandardLayoutName or a custom string identifier.
  */
 export type LayoutName = StandardLayoutName | (string & {});
+
+/**
+ * Size key for the keyboard.
+ * Maps to the standard Size type: "sm", "md", or "lg".
+ * Controls the height, font size, and padding of keyboard keys.
+ */
+export type KeyboardSizeKey = Size;
 
 /**
  * Mapping of layout names to arrays of row strings.
@@ -76,6 +83,14 @@ export interface KeyboardConfig {
   autoShiftBack?: boolean;
 
   /**
+   * Size scale for keyboard keys.
+   * Controls the height, font size, and padding of individual keys.
+   *
+   * @default "md"
+   */
+  size?: KeyboardSizeKey;
+
+  /**
    * Visual style variant for keyboard keys.
    * @default "solid"
    */
@@ -91,6 +106,18 @@ export interface KeyboardConfig {
    * Corner rounding for keyboard keys.
    */
   radius?: Radius;
+
+  /**
+   * Whether to render the keyboard in a Floating UI portal.
+   * When true, the keyboard is rendered at the document body level,
+   * escaping any parent DOM hierarchy. This prevents CSS containment,
+   * overflow clipping, and stacking context issues. Defaults to true
+   * because the keyboard should always appear at the bottom of the screen
+   * above all other content.
+   *
+   * @default true
+   */
+  portal?: boolean;
 }
 
 /**
@@ -146,6 +173,8 @@ export const defaultKeyboardConfig: KeyboardConfig = {
   defaultLayout: "default",
   closeDelay: 500,
   autoShiftBack: true,
+  size: "md",
+  portal: true,
 };
 
 declare module "../../libs/registry" {
@@ -163,6 +192,8 @@ registerComponentDefaults("keyboard", defaultKeyboardConfig);
  */
 export const FALLBACK_KEYBOARD_CONFIG = {
   defaultLayout: "default",
+  size: "md" as KeyboardSizeKey,
   variant: "solid" as Variant,
   color: "primary" as Color,
+  portal: true,
 };

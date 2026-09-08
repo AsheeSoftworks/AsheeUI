@@ -16,6 +16,7 @@ import {
   useMemo,
   useState,
 } from "react";
+import { createPortal } from "react-dom";
 import { useAsheeConfig } from "../../libs/context";
 import type { Size, Variant } from "../../shared";
 import { cn } from "../../utils";
@@ -91,6 +92,13 @@ export interface ToastContextType {
    * Clear all active toasts.
    */
   clearToasts: () => void;
+
+  /**
+   * The portal target element for toast rendering.
+   * When portal is enabled, toasts are rendered into this element.
+   * Defaults to document.body.
+   */
+  portalTarget?: HTMLElement | null;
 }
 
 const ToastContext = createContext<ToastContextType | null>(null);
@@ -111,6 +119,13 @@ export interface ToastProviderProps extends ToastConfig {
    * Extra classes for the toast container.
    */
   className?: string;
+
+  /**
+   * Custom portal target element.
+   * When portal is enabled, toasts are rendered into this element.
+   * Defaults to document.body.
+   */
+  portalTarget?: HTMLElement | null;
 }
 
 // ─── Provider Component ───────────────────────────────────────────────────────
@@ -123,6 +138,12 @@ export interface ToastProviderProps extends ToastConfig {
  * rendering, and dismissal logic, and automatically positions toasts
  * based on the configured placement.
  *
+ * The provider uses React's createPortal to render toasts at the document
+ * body level by default. This ensures toasts escape CSS containment,
+ * stacking context, and overflow issues. Portaling can be disabled via
+ * the `portal` config option if the toasts need to stay within a specific
+ * parent container.
+ *
  * @param props - ToastProvider configuration options.
  * @param props.children - Child components.
  * @param props.size - Size scale of toasts. Defaults to "md".
@@ -132,6 +153,8 @@ export interface ToastProviderProps extends ToastConfig {
  * @param props.defaultTimeout - Default timeout in ms. Defaults to 3500.
  * @param props.maxToasts - Maximum number of toasts. Defaults to 5.
  * @param props.animated - Whether toasts have animations. Defaults to true.
+ * @param props.portal - Whether to render toasts in a portal. Defaults to true.
+ * @param props.portalTarget - Custom portal target element. Defaults to document.body.
  * @param props.className - Extra classes for the toast container.
  *
  * @example
@@ -169,6 +192,8 @@ export function ToastProvider({
   defaultTimeout,
   maxToasts,
   animated,
+  portal: portalProp,
+  portalTarget: portalTargetProp,
   className,
 }: ToastProviderProps) {
   const [toasts, setToasts] = useState<ToastItemData[]>([]);
@@ -225,6 +250,18 @@ export function ToastProvider({
     undefined,
     FALLBACK_TOAST_CONFIG.animated,
   );
+
+  const resolvedPortal = resolveCascade<boolean>(
+    portalProp,
+    sectionConfig?.portal,
+    undefined,
+    FALLBACK_TOAST_CONFIG.portal,
+  );
+
+  // Resolve portal target - defaults to document.body when available
+  const portalTarget =
+    portalTargetProp ??
+    (typeof document !== "undefined" ? document.body : null);
 
   // ─── 2. Toast State Handlers ──────────────────────────────────────────────
 
@@ -304,42 +341,59 @@ export function ToastProvider({
       warning,
       removeToast,
       clearToasts,
+      portalTarget,
     }),
-    [toasts, toast, success, error, info, warning, removeToast, clearToasts],
+    [
+      toasts,
+      toast,
+      success,
+      error,
+      info,
+      warning,
+      removeToast,
+      clearToasts,
+      portalTarget,
+    ],
+  );
+
+  // ─── Render Toast Container ───────────────────────────────────────────────
+
+  const toastContainer = (
+    <section
+      aria-label="Notifications"
+      className={cn(
+        "fixed z-50 flex flex-col gap-3 pointer-events-none p-4 max-h-screen overflow-clip",
+        resolvedPlacement === "top-right" && "top-0 right-0 items-end",
+        resolvedPlacement === "top-left" && "top-0 left-0 items-start",
+        resolvedPlacement === "bottom-right" && "bottom-0 right-0 items-end",
+        resolvedPlacement === "bottom-left" && "bottom-0 left-0 items-start",
+        resolvedPlacement === "top-center" &&
+          "top-0 left-1/2 -translate-x-1/2 items-center",
+        resolvedPlacement === "bottom-center" &&
+          "bottom-0 left-1/2 -translate-x-1/2 items-center",
+        className,
+      )}>
+      {toasts.map((toastItem) => (
+        <ToastItem
+          key={toastItem.id}
+          {...toastItem}
+          placement={resolvedPlacement}
+          size={resolvedSizeKey}
+          variant={resolvedVariantKey}
+          radius={resolvedRadiusKey}
+          onDismiss={removeToast}
+          animated={resolvedAnimated}
+        />
+      ))}
+    </section>
   );
 
   return (
     <ToastContext.Provider value={contextValue}>
       {children}
-
-      {/* Floating Toast Portal Container */}
-      <section
-        aria-label="Notifications"
-        className={cn(
-          "fixed z-50 flex flex-col gap-3 pointer-events-none p-4 max-h-screen overflow-clip",
-          resolvedPlacement === "top-right" && "top-0 right-0 items-end",
-          resolvedPlacement === "top-left" && "top-0 left-0 items-start",
-          resolvedPlacement === "bottom-right" && "bottom-0 right-0 items-end",
-          resolvedPlacement === "bottom-left" && "bottom-0 left-0 items-start",
-          resolvedPlacement === "top-center" &&
-            "top-0 left-1/2 -translate-x-1/2 items-center",
-          resolvedPlacement === "bottom-center" &&
-            "bottom-0 left-1/2 -translate-x-1/2 items-center",
-          className,
-        )}>
-        {toasts.map((toastItem) => (
-          <ToastItem
-            key={toastItem.id}
-            {...toastItem}
-            placement={resolvedPlacement}
-            size={resolvedSizeKey}
-            variant={resolvedVariantKey}
-            radius={resolvedRadiusKey}
-            onDismiss={removeToast}
-            animated={resolvedAnimated}
-          />
-        ))}
-      </section>
+      {resolvedPortal && portalTarget
+        ? createPortal(toastContainer, portalTarget)
+        : toastContainer}
     </ToastContext.Provider>
   );
 }
@@ -383,6 +437,7 @@ export function useToast() {
       warning: () => "",
       removeToast: () => {},
       clearToasts: () => {},
+      portalTarget: null,
     };
   }
   return context;

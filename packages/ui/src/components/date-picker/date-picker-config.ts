@@ -42,6 +42,24 @@ export interface DatePickerConfig extends FieldConfig {
    * @default "date"
    */
   mode?: PickerMode;
+
+  /**
+   * Whether to render the calendar popover in a React portal.
+   * When true, the popover is rendered at the document body level,
+   * escaping any parent DOM hierarchy. This prevents CSS containment
+   * and stacking context issues. Defaults to true because popovers
+   * should always appear above other content.
+   *
+   * @default true
+   */
+  portal?: boolean;
+
+  /**
+   * Custom portal target element for the calendar popover.
+   * When portal is enabled, the popover is rendered into this element.
+   * Defaults to document.body.
+   */
+  portalTarget?: HTMLElement | null;
 }
 
 /**
@@ -51,6 +69,8 @@ export interface DatePickerConfig extends FieldConfig {
 export const defaultDatePickerConfig: DatePickerConfig = {
   ...defaultFieldConfig,
   mode: "date",
+  portal: true,
+  portalTarget: null,
 };
 
 /**
@@ -61,6 +81,8 @@ export const defaultDatePickerConfig: DatePickerConfig = {
 export const FALLBACK_DATE_PICKER_CONFIG: Required<DatePickerConfig> = {
   ...FALLBACK_FIELD_CONFIG,
   mode: "date",
+  portal: true,
+  portalTarget: null,
 } as const;
 
 declare module "../../libs/registry" {

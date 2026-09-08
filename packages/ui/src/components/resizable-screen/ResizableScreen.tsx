@@ -17,6 +17,7 @@ import {
   useCallback,
   useRef,
   useState,
+  useEffect,
 } from "react";
 import { useAsheeConfig } from "../../libs/context";
 import { cn } from "../../utils";
@@ -62,6 +63,20 @@ export interface ResizableScreenProps extends BaseResizableScreenProps {
    * Additional custom styling for the resize handle bar container.
    */
   handleClassName?: string;
+
+  /**
+   * Minimum height of the resizable container in pixels.
+   * Used when the container has no explicit height from its parent.
+   * @default 200
+   */
+  minContainerHeight?: number;
+
+  /**
+   * Minimum width of the resizable container in pixels.
+   * Used when the container has no explicit width from its parent.
+   * @default 200
+   */
+  minContainerWidth?: number;
 }
 
 /**
@@ -89,6 +104,8 @@ export interface ResizableScreenProps extends BaseResizableScreenProps {
  * @param props.orientation - Layout orientation. Defaults to "horizontal".
  * @param props.hideHandle - Whether to hide the resize handle. Defaults to false.
  * @param props.handleClassName - Extra classes for the handle bar.
+ * @param props.minContainerHeight - Minimum container height in pixels. Defaults to 200.
+ * @param props.minContainerWidth - Minimum container width in pixels. Defaults to 200.
  * @param props.className - Extra classes for the container.
  *
  * @example
@@ -97,17 +114,15 @@ export interface ResizableScreenProps extends BaseResizableScreenProps {
  *
  * export function Example() {
  *   return (
- *     <div className="h-96">
- *       <ResizableScreen
- *         defaultSize={60}
- *         minSize={30}
- *         maxSize={70}
- *         orientation="horizontal"
- *       >
- *         <div className="bg-blue-100 p-4">Left Panel</div>
- *         <div className="bg-green-100 p-4">Right Panel</div>
- *       </ResizableScreen>
- *     </div>
+ *     <ResizableScreen
+ *       defaultSize={60}
+ *       minSize={30}
+ *       maxSize={70}
+ *       orientation="horizontal"
+ *     >
+ *       <div className="bg-blue-100 p-4">Left Panel</div>
+ *       <div className="bg-green-100 p-4">Right Panel</div>
+ *     </ResizableScreen>
  *   );
  * }
  * ```
@@ -146,6 +161,8 @@ export const ResizableScreen = forwardRef<HTMLDivElement, ResizableScreenProps>(
       hideHandle,
       onSizeChange,
       handleClassName,
+      minContainerHeight = 200,
+      minContainerWidth = 200,
       className,
       style,
       ...props
@@ -207,6 +224,10 @@ export const ResizableScreen = forwardRef<HTMLDivElement, ResizableScreenProps>(
 
     const isControlled = size !== undefined;
     const currentSize = isControlled ? size : internalSize;
+
+    // Note: Removed ResizeObserver and runtime measurement. We rely on
+    // flexbox `self-stretch` for the handle to grow to the available
+    // cross-axis size, and use CSS `minWidth` / `minHeight` as fallbacks.
 
     const clampSize = useCallback(
       (val: number) =>
@@ -295,7 +316,7 @@ export const ResizableScreen = forwardRef<HTMLDivElement, ResizableScreenProps>(
             (ref as React.RefObject<HTMLDivElement | null>).current = node;
         }}
         className={cn(
-          "w-full h-full min-h-50 min-w-0 relative flex",
+          "flex relative",
           isDragging && "select-none",
           isHorizontal ? "flex-row" : "flex-col",
           className,
@@ -306,19 +327,25 @@ export const ResizableScreen = forwardRef<HTMLDivElement, ResizableScreenProps>(
               ? "col-resize"
               : "row-resize"
             : "default",
+          // Ensure sensible minimums so the component works even when no
+          // ancestor provides a definite size. These are fallbacks only.
+          minHeight: `${minContainerHeight}px`,
+          minWidth: `${minContainerWidth}px`,
           ...style,
         }}
         {...props}>
         {/* Primary Panel */}
         <div
           className={cn(
-            "h-full w-full min-w-0 min-h-0 overflow-clip shrink-0",
+            "min-w-0 min-h-0 overflow-auto",
             isDragging
               ? "transition-none"
               : "transition-[width,height] duration-150 ease-out",
           )}
           style={{
             [isHorizontal ? "width" : "height"]: `${currentSize}%`,
+            flexShrink: 0,
+            flexGrow: 0,
           }}>
           {child1}
         </div>
@@ -342,14 +369,14 @@ export const ResizableScreen = forwardRef<HTMLDivElement, ResizableScreenProps>(
             className={cn(
               "relative z-20 shrink-0 flex items-center justify-center outline-none select-none group touch-none",
               isHorizontal
-                ? "w-4 h-full cursor-col-resize -mx-2"
-                : "h-4 w-full cursor-row-resize -my-2",
+                ? "w-4 self-stretch cursor-col-resize -mx-2"
+                : "h-4 self-stretch w-full cursor-row-resize -my-2",
             )}>
             {/* 100% Full Height / Width Bar Indicator */}
             <div
               className={cn(
                 "transition-colors duration-150",
-                isHorizontal ? "w-1 h-full" : "h-1 w-full",
+                isHorizontal ? "w-1 self-stretch" : "h-1 self-stretch w-full",
                 handleClassName
                   ? handleClassName
                   : isDragging
@@ -363,13 +390,14 @@ export const ResizableScreen = forwardRef<HTMLDivElement, ResizableScreenProps>(
         {/* Secondary Panel */}
         <div
           className={cn(
-            "h-full w-full min-w-0 min-h-0 overflow-clip shrink-0 flex-1",
+            "min-w-0 min-h-0 overflow-auto",
             isDragging
               ? "transition-none"
               : "transition-[width,height] duration-150 ease-out",
           )}
           style={{
             [isHorizontal ? "width" : "height"]: `${100 - currentSize}%`,
+            flex: 1,
           }}>
           {child2}
         </div>
