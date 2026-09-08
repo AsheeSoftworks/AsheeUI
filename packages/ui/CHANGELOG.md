@@ -1,5 +1,11 @@
 # asheeui
 
+## 0.6.7
+
+### Patch Changes
+
+- 09de53d: Revert tooltip changes
+
 ## 0.6.6
 
 ### Patch Changes
