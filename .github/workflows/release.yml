@@ -44,12 +44,17 @@ jobs:
       - name: Run Tests
         run: pnpm test
 
+      - name: Reset working directory
+        run: |
+          git reset --hard
+          git clean -fd
+
       - name: Create Release PR or Publish
         id: changesets
         uses: changesets/action@v1
         with:
           version: pnpm version-packages
-          publish: pnpm changeset publish --no-git-checks
+          publish: pnpm changeset publish
           title: "chore: publish package updates"
           commit: "chore: version packages"
           createGithubReleases: true
