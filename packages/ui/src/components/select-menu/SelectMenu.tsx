@@ -27,8 +27,8 @@ import { Button } from "../button/Button";
 import { Input } from "../input/Input";
 import {
   FALLBACK_SELECT_MENU_CONFIG,
-  type SelectMenuOption,
   type SelectMenuConfig,
+  type SelectMenuOption,
 } from "./select-menu-config";
 
 /**
