@@ -447,7 +447,7 @@ export const MultiSelect = forwardRef<HTMLButtonElement, MultiSelectProps>(
       [activeChips],
     );
 
-    const handleSelectOption = useCallback(
+    const handleSelectMenuOption = useCallback(
       (option: SelectMenuOption) => {
         const selected = isOptionSelected(option.value);
 
@@ -545,7 +545,7 @@ export const MultiSelect = forwardRef<HTMLButtonElement, MultiSelectProps>(
               setFloatingRef={refs.setFloating}
               options={options}
               selectedValues={selectedValues}
-              onSelectOption={handleSelectOption}
+              onSelectMenuOption={handleSelectMenuOption}
               isSearch={isSearch}
               searchPlaceholder={searchPlaceholder}
               searchInputName={searchInputName}

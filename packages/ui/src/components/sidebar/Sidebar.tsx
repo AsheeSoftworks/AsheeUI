@@ -629,7 +629,7 @@ export function Sidebar<T = string>({
       {/* Navigation Body */}
       <nav
         className={cn(
-          "flex-1 overflow-y-auto py-3 px-2 flex flex-col gap-3 scrollbar-hide",
+          "flex-1 overflow-y-auto py-3 px-2 flex flex-col gap-3 scrollable-hidden",
           bodyClassName,
         )}>
         {filteredSections.map(renderSection)}

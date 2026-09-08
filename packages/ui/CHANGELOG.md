@@ -1,5 +1,13 @@
 # asheeui
 
+## 0.6.8
+
+### Patch Changes
+
+- Add lockScroll to the SelectMenu
+  Update Modal to fit the whole screen
+  Remove the redundant SelectOption type from SelectMenu
+
 ## 0.6.7
 
 ### Patch Changes

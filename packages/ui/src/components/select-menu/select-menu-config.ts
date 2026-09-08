@@ -89,6 +89,15 @@ export interface SelectMenuConfig {
    * @default "primary"
    */
   activeItemColor?: Color;
+
+  /**
+   * Whether to lock body scroll when the dropdown is open.
+   * When true, the page behind the dropdown cannot scroll.
+   * This prevents the page from scrolling while interacting with the dropdown.
+   *
+   * @default false
+   */
+  lockScroll?: boolean;
 }
 
 /**
@@ -103,4 +112,5 @@ export const FALLBACK_SELECT_MENU_CONFIG: Required<SelectMenuConfig> = {
   itemColor: "primary",
   activeItemVariant: "faded",
   activeItemColor: "primary",
+  lockScroll: false,
 };

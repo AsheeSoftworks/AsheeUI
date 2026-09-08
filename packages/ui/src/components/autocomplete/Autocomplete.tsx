@@ -305,7 +305,7 @@ export const Autocomplete = forwardRef<HTMLInputElement, AutocompleteProps>(
     );
 
     // Handle Option Selection
-    const handleSelectOption = useCallback(
+    const handleSelectMenuOption = useCallback(
       (option: SelectMenuOption) => {
         setInputValue(option.label);
         onValueChange?.(option.value, option);
@@ -357,7 +357,7 @@ export const Autocomplete = forwardRef<HTMLInputElement, AutocompleteProps>(
           setFloatingRef={refs.setFloating}
           options={filteredOptions}
           selectedValues={selectedValues}
-          onSelectOption={handleSelectOption}
+          onSelectMenuOption={handleSelectMenuOption}
           isSearch={false}
           belowList={belowList}
           dropdownClassName={dropdownClassName}

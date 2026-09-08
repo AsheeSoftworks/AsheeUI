@@ -354,7 +354,7 @@ export const Tabs = forwardRef<HTMLDivElement, TabsProps>(
           role="tablist"
           aria-orientation="horizontal"
           className={cn(
-            "flex flex-row w-full items-center overflow-x-auto scrollbar-hide shrink-0",
+            "flex flex-row w-full items-center overflow-x-auto scrollable-hidden shrink-0",
             listVariantClasses,
             resolvedVariantKey !== "underline" && radiusClass,
             tabListClassName,

@@ -9,7 +9,13 @@
 "use client";
 
 import { type FloatingContext, FloatingFocusManager } from "@floating-ui/react";
-import { type ChangeEvent, type ReactNode, useMemo, useState } from "react";
+import {
+  type ChangeEvent,
+  type ReactNode,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import { createPortal } from "react-dom";
 import { CheckIcon } from "../../icons/CheckIcon";
 import { SearchIcon } from "../../icons/SearchIcon";
@@ -21,19 +27,9 @@ import { Button } from "../button/Button";
 import { Input } from "../input/Input";
 import {
   FALLBACK_SELECT_MENU_CONFIG,
+  type SelectMenuOption,
   type SelectMenuConfig,
 } from "./select-menu-config";
-
-/**
- * Type alias for a select option.
- * Each option must have a label and a unique value.
- */
-export interface SelectOption {
-  label: string;
-  value: string | number;
-  disabled?: boolean;
-  [key: string]: unknown;
-}
 
 /**
  * Props for the SelectMenu component.
@@ -69,7 +65,7 @@ export interface SelectMenuProps {
   /**
    * Available options to display in the menu.
    */
-  options: SelectOption[];
+  options: SelectMenuOption[];
 
   /**
    * Currently selected values.
@@ -81,7 +77,7 @@ export interface SelectMenuProps {
    * Callback fired when an option is selected.
    * Receives the selected option object.
    */
-  onSelectOption: (option: SelectOption) => void;
+  onSelectMenuOption: (option: SelectMenuOption) => void;
 
   /**
    * Whether search input is shown in the menu.
@@ -135,7 +131,7 @@ export interface SelectMenuProps {
    * Custom render function for each option.
    * Receives the option and a boolean indicating if it's selected.
    */
-  renderOption?: (option: SelectOption, isSelected: boolean) => ReactNode;
+  renderOption?: (option: SelectMenuOption, isSelected: boolean) => ReactNode;
 
   /**
    * Initial focus target for the FloatingFocusManager.
@@ -190,7 +186,7 @@ export interface SelectMenuProps {
  * @param props.setFloatingRef - Ref setter for the floating element.
  * @param props.options - Available options to display.
  * @param props.selectedValues - Currently selected values.
- * @param props.onSelectOption - Callback fired when an option is selected.
+ * @param props.onSelectMenuOption - Callback fired when an option is selected.
  * @param props.isSearch - Whether search is enabled. Defaults to true.
  * @param props.searchPlaceholder - Search placeholder. Defaults to "Search...".
  * @param props.belowList - Content below the options list.
@@ -200,6 +196,7 @@ export interface SelectMenuProps {
  * @param props.renderOption - Custom render function for options.
  * @param props.portal - Whether to render the menu in a portal. Defaults to true.
  * @param props.portalTarget - Custom portal target element. Defaults to document.body.
+ * @param props.lockScroll - Whether to lock body scroll. Defaults to true.
  *
  * @example
  * ```tsx
@@ -213,7 +210,7 @@ export interface SelectMenuProps {
  *   setFloatingRef={refs.setFloating}
  *   options={options}
  *   selectedValues={selectedValues}
- *   onSelectOption={handleSelect}
+ *   onSelectMenuOption={handleSelect}
  * />
  * ```
  *
@@ -228,7 +225,7 @@ export const SelectMenu = ({
   setFloatingRef,
   options = [],
   selectedValues = [],
-  onSelectOption,
+  onSelectMenuOption,
   isSearch = true,
   searchPlaceholder = "Search...",
   searchInputName = "select-menu-search",
@@ -256,6 +253,38 @@ export const SelectMenu = ({
     }
   };
 
+  // ─── 1. Resolve Config Values ───────────────────────────────────────────
+
+  const resolvedLockScroll = resolveCascade<boolean>(
+    menuProps?.lockScroll,
+    menuConfig?.lockScroll,
+    undefined,
+    FALLBACK_SELECT_MENU_CONFIG.lockScroll,
+  );
+
+  // ─── 2. Scroll Lock ──────────────────────────────────────────────────────
+
+  // Lock body scroll when the dropdown is open
+  useEffect(() => {
+    if (!isOpen || !resolvedLockScroll) return;
+
+    const originalOverflow = document.body.style.overflow;
+    const originalPosition = document.body.style.position;
+    const originalWidth = document.body.style.width;
+
+    document.body.style.overflow = "hidden";
+    document.body.style.position = "fixed";
+    document.body.style.width = "100%";
+
+    return () => {
+      document.body.style.overflow = originalOverflow;
+      document.body.style.position = originalPosition;
+      document.body.style.width = originalWidth;
+    };
+  }, [isOpen, resolvedLockScroll]);
+
+  // ─── 3. Filter Options ──────────────────────────────────────────────────
+
   const filteredOptions = useMemo(() => {
     if (!isSearch || !activeQuery.trim()) return options;
     return options.filter((opt) =>
@@ -266,7 +295,8 @@ export const SelectMenu = ({
   const isOptionSelected = (val: string | number) =>
     selectedValues.includes(val);
 
-  // Resolve all config values
+  // ─── 4. Resolve Visual Config Values ────────────────────────────────────
+
   const resolvedItemVariant = resolveCascade<Variant>(
     menuProps?.itemVariant,
     menuConfig?.itemVariant,
@@ -309,7 +339,8 @@ export const SelectMenu = ({
     FALLBACK_SELECT_MENU_CONFIG.size,
   );
 
-  // Resolve portal target - use prop > document.body fallback
+  // ─── 5. Portal Target ────────────────────────────────────────────────────
+
   const resolvedPortalTarget =
     portalTarget ?? (typeof document !== "undefined" ? document.body : null);
 
@@ -328,7 +359,7 @@ export const SelectMenu = ({
         {...getFloatingProps()}>
         <div
           className={cn(
-            "max-h-60 shadow-xl bg-background border border-border p-1 flex flex-col gap-0.5 overflow-y-auto scrollbar-hide",
+            "max-h-60 shadow-xl bg-background border border-border p-1 flex flex-col gap-0.5 overflow-y-auto scrollable-hidden",
             "animate-in fade-in-0 zoom-in-95 slide-in-from-top-1 duration-150 ease-out",
             dropdownClassName,
           )}>
@@ -379,7 +410,7 @@ export const SelectMenu = ({
                   radius={resolvedRadiusKey}
                   size={resolvedSize}
                   isDisabled={option.disabled}
-                  onClick={() => onSelectOption(option)}
+                  onClick={() => onSelectMenuOption(option)}
                   className="w-full justify-between font-normal text-left transition-colors truncate">
                   <span>{option.label}</span>
                   {selected && (
