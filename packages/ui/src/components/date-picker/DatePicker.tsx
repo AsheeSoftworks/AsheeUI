@@ -9,6 +9,7 @@
 
 import {
   FloatingFocusManager,
+  FloatingPortal,
   useClick,
   useDismiss,
   useInteractions,
@@ -22,7 +23,6 @@ import {
   useRef,
   useState,
 } from "react";
-import { createPortal } from "react-dom";
 import { CalendarIcon } from "../../icons/CalendarIcon";
 import { ClearIcon } from "../../icons/ClearIcon";
 import { ClockIcon } from "../../icons/ClockIcon";
@@ -124,11 +124,12 @@ export interface DatePickerProps extends BaseDatePickerProps {
  * with Floating UI for popover positioning and follows the standard AsheeUI
  * cascade system for visual tokens.
  *
- * By default, the calendar popover uses React's createPortal to render at the
- * document body level. This ensures the popover escapes CSS containment,
- * overflow clipping, and stacking context issues. The portal can be disabled
- * via the `picker.portal` prop or `components.datePicker.picker.portal` in
- * the config if the popover needs to stay within a specific parent container.
+ * By default, the calendar popover uses Floating UI's FloatingPortal to
+ * render at the document body level. This ensures the popover escapes CSS
+ * containment, overflow clipping, and stacking context issues. The portal
+ * can be disabled via the `picker.portal` prop or
+ * `components.datePicker.picker.portal` in the config if the popover needs
+ * to stay within a specific parent container.
  *
  * @param props - DatePicker configuration options.
  * @param props.selected - Currently selected date or null.
@@ -270,7 +271,7 @@ export const DatePicker = forwardRef<HTMLInputElement, DatePickerProps>(
 
     // ─── Floating UI ─────────────────────────────────────────────────────
 
-    const { refs, floatingStyles, context } =
+    const { refs, floatingStyles, context, isPositioned } =
       useSelectFloating<HTMLInputElement>({
         isOpen,
         onOpenChange: setIsOpen,
@@ -424,7 +425,10 @@ export const DatePicker = forwardRef<HTMLInputElement, DatePickerProps>(
             minWidth: "fit-content",
           }}
           className={cn(
-            "z-100 outline-none animate-in fade-in-0 zoom-in-95 duration-150 ease-out",
+            "z-100 outline-none",
+            isPositioned
+              ? "animate-in fade-in-0 zoom-in-95 duration-150 ease-out"
+              : "invisible opacity-0 pointer-events-none",
             picker?.className,
           )}
           {...getFloatingProps()}>
@@ -486,9 +490,13 @@ export const DatePicker = forwardRef<HTMLInputElement, DatePickerProps>(
           {...getReferenceProps()}
         />
         {isOpen &&
-          (resolvedPortal && finalPortalTarget
-            ? createPortal(popoverContent, finalPortalTarget)
-            : popoverContent)}
+          (resolvedPortal ? (
+            <FloatingPortal root={finalPortalTarget}>
+              {popoverContent}
+            </FloatingPortal>
+          ) : (
+            popoverContent
+          ))}
       </div>
     );
   },

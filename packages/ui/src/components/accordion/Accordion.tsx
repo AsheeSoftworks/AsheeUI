@@ -381,7 +381,7 @@ export const Accordion = forwardRef<HTMLDivElement, AccordionProps>(
                     ? "grid-rows-[1fr] opacity-100"
                     : "grid-rows-[0fr] opacity-0 pointer-events-none",
                 )}>
-                <div className="overflow-hidden w-full">
+                <div className="scrollbar-hide overflow-hidden w-full">
                   <div
                     className={cn(
                       "text-foreground/70 leading-relaxed pt-0",

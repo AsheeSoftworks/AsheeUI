@@ -6,8 +6,8 @@
  */
 "use client";
 
+import { FloatingPortal } from "@floating-ui/react";
 import { type ReactNode, useCallback, useMemo, useState } from "react";
-import { createPortal } from "react-dom";
 import { useAsheeConfig } from "../../libs/context";
 import type { Size, Variant } from "../../shared";
 import { cn } from "../../utils";
@@ -59,11 +59,11 @@ export interface ToastProviderProps extends ToastConfig {
  * own size, placement, variant, radius, and animation settings via the
  * toast options.
  *
- * The provider uses React's createPortal to render toasts at the document
- * body level by default. This ensures toasts escape CSS containment,
- * stacking context, and overflow issues. Portaling can be disabled via
- * the `portal` config option if the toasts need to stay within a specific
- * parent container.
+ * The provider uses Floating UI's FloatingPortal to render toasts at the
+ * document body level by default. This ensures toasts escape CSS containment,
+ * stacking context, and overflow issues. Portaling can be disabled via the
+ * `portal` config option if the toasts need to stay within a specific parent
+ * container.
  *
  * @param props - ToastProvider configuration options.
  * @param props.children - Child components.
@@ -376,7 +376,7 @@ export function ToastProvider({
           key={placementKey}
           aria-label="Notifications"
           className={cn(
-            "fixed z-99999 flex flex-col gap-3 pointer-events-none p-4 max-h-screen overflow-clip",
+            "fixed z-99999 flex flex-col gap-3 pointer-events-none p-4 max-h-screen scrollbar-hide overflow-hidden",
             PLACEMENT_CLASSES[placementKey],
             className,
           )}>
@@ -400,9 +400,11 @@ export function ToastProvider({
   return (
     <ToastContext.Provider value={contextValue}>
       {children}
-      {resolvedPortal && portalTarget
-        ? createPortal(toastContainer, portalTarget)
-        : toastContainer}
+      {resolvedPortal ? (
+        <FloatingPortal root={portalTarget}>{toastContainer}</FloatingPortal>
+      ) : (
+        toastContainer
+      )}
     </ToastContext.Provider>
   );
 }

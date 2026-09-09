@@ -1,5 +1,37 @@
 # asheeui
 
+## 0.6.11
+
+### Patch Changes
+
+- ### SelectMenu
+  
+  - Fixed dropdown lag when scrolling with the menu open by switching Floating UI `strategy` to `"fixed"` and isolating the option list in a memoized `SelectMenuOptionsList`, so scroll-driven position updates no longer rebuild every option `Button` on each re-render
+  - Fixed visible "jump then settle" flash on first open by keeping the menu hidden (`invisible opacity-0 pointer-events-none`) and applying the enter animation only once Floating UI's `isPositioned` state is true, so the reveal and the animation start together
+  - Replaced manual `react-dom` `createPortal` usage with `@floating-ui/react`'s `FloatingPortal` for consistent focus-trap and nested-floating-element support
+  - Added `isPositioned` prop to control initial-render visibility
+  
+  ### Select
+  
+  - Threaded `isPositioned` from `useSelectFloating` through to `SelectMenu` to support the new anti-flash behavior
+  
+  ### MultiSelect
+  
+  - Threaded `isPositioned` from `useSelectFloating` through to `SelectMenu` to support the new anti-flash behavior
+  
+  ### Autocomplete
+  
+  - Threaded `isPositioned` from `useSelectFloating` through to `SelectMenu` to support the new anti-flash behavior
+  
+  ### DatePicker
+  
+  - Applied the same Floating UI positioning and portal fixes as SelectMenu: `strategy: "fixed"` and `FloatingPortal` in place of manual `createPortal`
+  - Gated the calendar popover's initial visibility and enter animation on Floating UI's `isPositioned` state to prevent a "jump then settle" flash and pop-in on first open
+  
+  ### Toast
+  
+  - Replaced manual `react-dom` `createPortal` usage with `@floating-ui/react`'s `FloatingPortal` for consistency with other floating components in the library
+
 ## 0.6.10
 
 ### Patch Changes

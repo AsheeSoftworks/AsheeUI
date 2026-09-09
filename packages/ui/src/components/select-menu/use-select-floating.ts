@@ -3,7 +3,10 @@
  * This file provides a reusable hook that configures Floating UI for
  * dropdown components like Select, MultiSelect, and Autocomplete.
  * It handles positioning, flipping, shifting, and size management
- * with consistent defaults across the library.
+ * with consistent defaults across the library. Dropdowns are positioned
+ * with `strategy: "fixed"` and tracked with Floating UI's event-driven
+ * `autoUpdate` (ancestor scroll/resize), keeping body-portaled menus
+ * aligned while the page scrolls without per-frame re-rendering cost.
  */
 
 "use client";
@@ -83,7 +86,9 @@ export interface UseSelectFloatingProps {
  * This hook configures Floating UI with sensible defaults for dropdown
  * components. It handles automatic position updates, viewport edge detection
  * via flip and shift middleware, and optional width matching of the
- * reference element.
+ * reference element. Positioning uses `strategy: "fixed"` with Floating
+ * UI's event-driven `autoUpdate` tracking so portaled menus stay aligned
+ * while the page scrolls without paying per-frame re-render cost.
  *
  * @param props - Configuration options for the floating element.
  * @param props.isOpen - Whether the floating element is open.
@@ -93,7 +98,8 @@ export interface UseSelectFloatingProps {
  * @param props.offsetDistance - Distance from reference in pixels. Defaults to 4.
  * @param props.padding - Viewport padding for shift middleware. Defaults to 8.
  * @param props.matchReferenceWidth - Whether to match reference width. Defaults to true.
- * @returns The Floating UI context including refs, styles, and middleware.
+ * @returns The Floating UI context including refs, styles, middleware, and
+ * the `isPositioned` flag for gating initial-render visibility.
  *
  * @example
  * ```tsx
@@ -131,6 +137,13 @@ export function useSelectFloating<T extends HTMLElement = HTMLElement>({
     open: isOpen,
     onOpenChange: (open) => !disabled && onOpenChange(open),
     placement,
+    strategy: "fixed",
+    // Event-driven tracking (ancestorScroll + ancestorResize, both on by
+    // default) is sufficient to keep a fixed-strategy floating element
+    // aligned during scroll, and far cheaper than polling every animation
+    // frame. animationFrame:true doesn't fix scroll lag on its own — the
+    // actual cost was re-rendering the option list on every tick; see
+    // SelectMenuOptionsList in SelectMenu.tsx.
     whileElementsMounted: autoUpdate,
     middleware: [
       offset(offsetDistance),

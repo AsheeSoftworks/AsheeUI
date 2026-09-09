@@ -62,7 +62,7 @@ describe("runDoctorChecks", () => {
     );
     await write(
       "src/main.tsx",
-      `import { AsheeUIProvider } from "asheeui/config";
+      `import { AsheeUIProvider } from "asheeui";
 import { createRoot } from "react-dom/client";`,
     );
 
@@ -199,18 +199,15 @@ import { createRoot } from "react-dom/client";`,
 
   describe("root provider check", () => {
     it("passes when AsheeUIProvider is in src/main.tsx", async () => {
-      await write(
-        "src/main.tsx",
-        `import { AsheeUIProvider } from "asheeui/config";`,
-      );
+      await write("src/main.tsx", `import { AsheeUIProvider } from "asheeui";`);
       const result = await resultOf("provider");
       expect(result?.status).toBe("pass");
     });
 
-    it("passes when asheeui/config is imported in app/layout.tsx", async () => {
+    it("passes when asheeui is imported in app/layout.tsx", async () => {
       await write(
         "app/layout.tsx",
-        `import { AsheeUIProvider } from "asheeui/config";`,
+        `import { AsheeUIProvider } from "asheeui";`,
       );
       const result = await resultOf("provider");
       expect(result?.status).toBe("pass");

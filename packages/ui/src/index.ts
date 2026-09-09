@@ -47,13 +47,12 @@ export * from "./components/tabs";
 export * from "./components/textarea";
 export * from "./components/toast";
 export * from "./components/tooltip";
-
+export type { ExternalConfig } from "./config";
 /**
  * Shared type exports.
  * These types are used across multiple components for consistency.
  */
 export type { Color, Radius, Size, Variant } from "./shared";
-
 /**
  * Theme type exports.
  * These types define the color system and theme configuration.
@@ -65,7 +64,6 @@ export type {
   DefaultColorConfig,
   ThemeName,
 } from "./theme/color";
-
 /**
  * Theme utilities and hooks.
  * These provide runtime theme management and reactivity.

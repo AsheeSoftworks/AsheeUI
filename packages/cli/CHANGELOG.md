@@ -1,5 +1,11 @@
 # @asheeui/cli
 
+## 0.6.4
+
+### Patch Changes
+
+- Remove references to defineConfig and ashee/config
+
 ## 0.6.3
 
 ### Patch Changes

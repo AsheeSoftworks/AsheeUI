@@ -35,11 +35,6 @@ export const TAILWIND_IMPORT_PATTERN = /@import\s+["']tailwindcss["']\s*;?/;
 export const PROVIDER_TAG = "AsheeUIProvider";
 
 /**
- * Legacy provider name still accepted by doctor checks.
- */
-export const LEGACY_PROVIDER_TAG = "AsheeUIProvider";
-
-/**
  * Global stylesheet candidates, ordered by conventional priority across
  * Vite, Next.js and TanStack Start templates.
  */
@@ -79,18 +74,13 @@ export function containsStylesImport(content: string): boolean {
 
 /**
  * Test whether `content` already references the root provider, either by
- * rendering `<AsheeUIProvider>` (or the legacy `<AsheeUIProvider>`) or by
- * importing from `asheeui/config`.
+ * rendering `<AsheeUIProvider>` or by importing from `asheeui`.
  *
  * @param content - File source to scan.
  * @returns `true` when a root provider reference is detected.
  */
 export function containsRootProvider(content: string): boolean {
-  return (
-    content.includes("asheeui/config") ||
-    content.includes(`<${PROVIDER_TAG}`) ||
-    content.includes(`<${LEGACY_PROVIDER_TAG}`)
-  );
+  return content.includes("asheeui") || content.includes(`<${PROVIDER_TAG}`);
 }
 
 // File discovery.

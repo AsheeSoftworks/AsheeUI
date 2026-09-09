@@ -110,7 +110,6 @@ describe("runFix", () => {
     const css = await read("src/index.css");
     const vite = await read("vite.config.ts");
     const main = await read("src/main.tsx");
-    const config = await read("asheeui.config.ts");
 
     expect(css).toContain('@import "asheeui/styles"');
     expect(countOccurrences(css, '@import "asheeui/styles"')).toBe(1);
@@ -118,7 +117,6 @@ describe("runFix", () => {
     expect(countOccurrences(vite, "asheeui()")).toBe(0);
     expect(countOccurrences(main, "AsheeUIProvider")).toBe(3);
     expect(main).toContain('import config from "../asheeui.config"');
-    expect(countOccurrences(config, "defineConfig")).toBe(2);
 
     // Doctor now passes every actionable check.
     const after = await runDoctorChecks({ cwd: dir });
