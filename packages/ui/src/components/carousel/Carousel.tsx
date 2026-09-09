@@ -422,7 +422,7 @@ export const Carousel = forwardRef<HTMLDivElement, CarouselProps>(
         onFocus={() => setIsHovered(true)}
         onBlur={() => setIsHovered(false)}
         className={cn(
-          "relative overflow-clip w-full select-none flex flex-col group",
+          "relative scrollbar-hide overflow-hidden w-full select-none flex flex-col group",
           variantClass,
           radiusClass,
           heightClass,
@@ -435,7 +435,7 @@ export const Carousel = forwardRef<HTMLDivElement, CarouselProps>(
           onPointerMove={handlePointerMove}
           onPointerUp={handlePointerUp}
           onPointerCancel={handlePointerUp}
-          className="relative w-full h-full overflow-clip flex-1 touch-pan-y cursor-grab active:cursor-grabbing">
+          className="relative w-full h-full scrollbar-hide overflow-hidden flex-1 touch-pan-y cursor-grab active:cursor-grabbing">
           <div
             className={cn(
               "flex w-full h-full",
@@ -450,7 +450,7 @@ export const Carousel = forwardRef<HTMLDivElement, CarouselProps>(
               <div
                 key={slide.id || idx}
                 className={cn(
-                  "w-full h-full shrink-0 flex items-center justify-center overflow-clip",
+                  "w-full h-full shrink-0 flex items-center justify-center scrollbar-hide overflow-hidden",
                   paddingClass,
                   itemClassName,
                 )}>

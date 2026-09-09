@@ -218,7 +218,7 @@ export const Marquee = forwardRef<HTMLDivElement, MarqueeProps>(
       <div
         ref={ref}
         className={cn(
-          "group relative overflow-clip",
+          "group relative scrollbar-hide overflow-hidden",
           isVertical ? "h-full" : "w-full",
           className,
         )}

@@ -249,7 +249,7 @@ export function ToastItem({
       onMouseEnter={pause}
       onMouseLeave={resume}
       className={cn(
-        "pointer-events-auto relative flex gap-3 items-start shadow-lg border backdrop-blur-md select-none overflow-clip transition-all duration-200 active:scale-[0.99]",
+        "pointer-events-auto relative flex gap-3 items-start shadow-lg border backdrop-blur-md select-none scrollbar-hide overflow-hidden transition-all duration-200 active:scale-[0.99]",
         "bg-background",
         widthClass,
         paddingClass,

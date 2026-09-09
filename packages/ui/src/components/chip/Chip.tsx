@@ -335,7 +335,7 @@ export const Chip = forwardRef<HTMLDivElement, ChipProps>(
         {avatar && (
           <span
             className={cn(
-              "inline-flex items-center justify-center shrink-0 overflow-clip rounded-full",
+              "inline-flex items-center justify-center shrink-0 scrollbar-hide overflow-hidden rounded-full",
               iconSizeClass,
             )}>
             {avatar}

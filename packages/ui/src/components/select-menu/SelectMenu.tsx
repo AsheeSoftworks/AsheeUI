@@ -8,19 +8,23 @@
  */
 "use client";
 
-import { type FloatingContext, FloatingFocusManager } from "@floating-ui/react";
+import {
+  type FloatingContext,
+  FloatingFocusManager,
+  FloatingPortal,
+} from "@floating-ui/react";
 import {
   type ChangeEvent,
+  memo,
   type ReactNode,
   useEffect,
   useMemo,
   useState,
 } from "react";
-import { createPortal } from "react-dom";
 import { CheckIcon } from "../../icons/CheckIcon";
 import { SearchIcon } from "../../icons/SearchIcon";
 import { useAsheeConfig } from "../../libs/context";
-import type { Color, Size, Variant } from "../../shared";
+import type { Color, Radius, Size, Variant } from "../../shared";
 import { cn } from "../../utils";
 import { resolveCascade, resolveRadiusKey } from "../../utils/resolve-token";
 import { Button } from "../button/Button";
@@ -72,6 +76,18 @@ export interface SelectMenuProps {
    * Ref setter for the floating element.
    */
   setFloatingRef: (node: HTMLElement | null) => void;
+
+  /**
+   * Whether the floating element has completed its first position update.
+   * When false, the menu stays in the DOM (so Floating UI can measure it)
+   * but is hidden (`invisible opacity-0 pointer-events-none`), preventing a
+   * visible flash at its initial (0, 0) coordinate. The enter animation
+   * classes are only applied once this is true so the reveal and animation
+   * start together.
+   *
+   * @default true
+   */
+  isPositioned?: boolean;
 
   /**
    * Available options to display in the menu.
@@ -153,6 +169,86 @@ export interface SelectMenuProps {
 }
 
 /**
+ * Props for the memoized options list rendered inside SelectMenu.
+ * Isolated so Floating UI's per-scroll position updates (which re-render
+ * SelectMenu via a changing `floatingStyles` prop) don't force the entire
+ * option list to re-render along with it.
+ */
+interface SelectMenuOptionsListProps {
+  filteredOptions: SelectMenuOption[];
+  selectedValues: (string | number)[];
+  onSelectMenuOption: (option: SelectMenuOption) => void;
+  renderOption?: (option: SelectMenuOption, isSelected: boolean) => ReactNode;
+  itemVariant: Variant;
+  itemColor: Color;
+  activeItemVariant: Variant;
+  activeItemColor: Color;
+  radius: Radius;
+  size: Size;
+}
+
+/**
+ * Renders the selectable option list.
+ *
+ * Kept as a separate memoized component from SelectMenu's positioning
+ * wrapper. Without this split, every scroll-driven position recalculation
+ * (which updates `floatingStyles` on the parent) would re-create every
+ * option `Button` even though nothing about the options themselves
+ * changed — the visible cause of lag when scrolling with the menu open.
+ * React.memo lets this subtree bail out unless its own props change.
+ */
+const SelectMenuOptionsList = memo(function SelectMenuOptionsList({
+  filteredOptions,
+  selectedValues,
+  onSelectMenuOption,
+  renderOption,
+  itemVariant,
+  itemColor,
+  activeItemVariant,
+  activeItemColor,
+  radius,
+  size,
+}: SelectMenuOptionsListProps) {
+  const isOptionSelected = (val: string | number) =>
+    selectedValues.includes(val);
+
+  if (filteredOptions.length === 0) {
+    return (
+      <div className="px-3 py-4 text-xs text-foreground/70 text-center">
+        No options found
+      </div>
+    );
+  }
+
+  return (
+    <>
+      {filteredOptions.map((option) => {
+        const selected = isOptionSelected(option.value);
+
+        if (renderOption) {
+          return renderOption(option, selected);
+        }
+
+        return (
+          <Button
+            key={String(option.value)}
+            variant={selected ? activeItemVariant : itemVariant}
+            color={selected ? activeItemColor : itemColor}
+            radius={radius}
+            size={size}
+            isDisabled={option.disabled}
+            onClick={() => onSelectMenuOption(option)}
+            className="w-full justify-between font-normal text-left transition-colors truncate">
+            <span>{option.label}</span>
+            {selected && <CheckIcon className="w-3.5 h-3.5 shrink-0 ml-2" />}
+          </Button>
+        );
+      })}
+    </>
+  );
+});
+
+/**
  * A reusable dropdown menu for selecting options from a list.
  *
  * SelectMenu renders a floating dropdown with search, option list, and
@@ -163,8 +259,8 @@ export interface SelectMenuProps {
  * supports custom option rendering, search filtering, and configurable
  * item styles through the cascade resolution system.
  *
- * By default, the menu uses React's createPortal to render at the document
- * body level. This ensures the menu escapes CSS containment, overflow
+ * By default, the menu uses Floating UI's FloatingPortal to render at the
+ * document body level. This ensures the menu escapes CSS containment, overflow
  * clipping, and stacking context issues. The portal can be disabled via
  * the `menuProps.portal` prop if the menu needs to stay within a specific
  * parent container. This is typically controlled by the parent component.
@@ -175,6 +271,7 @@ export interface SelectMenuProps {
  * @param props.floatingStyles - CSS styles for positioning.
  * @param props.getFloatingProps - Props getter for the floating element.
  * @param props.setFloatingRef - Ref setter for the floating element.
+ * @param props.isPositioned - Whether the floating element has been positioned by Floating UI. Defaults to true.
  * @param props.options - Available options to display.
  * @param props.selectedValues - Currently selected values.
  * @param props.onSelectMenuOption - Callback fired when an option is selected.
@@ -236,6 +333,7 @@ export const SelectMenu = ({
   floatingStyles,
   getFloatingProps,
   setFloatingRef,
+  isPositioned = true,
   options = [],
   selectedValues = [],
   onSelectMenuOption,
@@ -333,12 +431,6 @@ export const SelectMenu = ({
     );
   }, [options, isSearch, activeQuery]);
 
-  /**
-   * Checks if a value is currently selected.
-   */
-  const isOptionSelected = (val: string | number) =>
-    selectedValues.includes(val);
-
   // ─── 4. Resolve Visual Config Values ────────────────────────────────────
 
   const resolvedItemVariant = resolveCascade<Variant>(
@@ -395,8 +487,10 @@ export const SelectMenu = ({
         ref={setFloatingRef}
         style={{ ...floatingStyles }}
         className={cn(
-          "z-100 w-full outline-none max-h-60 shadow-xl bg-background border border-border p-1 flex flex-col gap-0.5 overflow-y-auto scrollable-hidden",
-          "animate-in fade-in-0 zoom-in-95 slide-in-from-top-1 duration-150 ease-out",
+          "z-30 w-full outline-none max-h-60 shadow-xl bg-background border border-border p-1 flex flex-col gap-0.5 overflow-y-auto scrollable-hidden",
+          isPositioned
+            ? "animate-in fade-in-0 zoom-in-95 slide-in-from-top-1 duration-150 ease-out"
+            : "invisible opacity-0 pointer-events-none",
           menuProps?.className,
         )}
         {...getFloatingProps()}>
@@ -425,36 +519,18 @@ export const SelectMenu = ({
         )}
 
         {/* Options List */}
-        {filteredOptions.length === 0 ? (
-          <div className="px-3 py-4 text-xs text-foreground/70 text-center">
-            No options found
-          </div>
-        ) : (
-          filteredOptions.map((option) => {
-            const selected = isOptionSelected(option.value);
-
-            if (renderOption) {
-              return renderOption(option, selected);
-            }
-
-            return (
-              <Button
-                key={String(option.value)}
-                variant={selected ? resolvedActiveVariant : resolvedItemVariant}
-                color={selected ? resolvedActiveColor : resolvedItemColor}
-                radius={resolvedRadiusKey}
-                size={resolvedSize}
-                isDisabled={option.disabled}
-                onClick={() => onSelectMenuOption(option)}
-                className="w-full justify-between font-normal text-left transition-colors truncate">
-                <span>{option.label}</span>
-                {selected && (
-                  <CheckIcon className="w-3.5 h-3.5 shrink-0 ml-2" />
-                )}
-              </Button>
-            );
-          })
-        )}
+        <SelectMenuOptionsList
+          filteredOptions={filteredOptions}
+          selectedValues={selectedValues}
+          onSelectMenuOption={onSelectMenuOption}
+          renderOption={renderOption}
+          itemVariant={resolvedItemVariant}
+          itemColor={resolvedItemColor}
+          activeItemVariant={resolvedActiveVariant}
+          activeItemColor={resolvedActiveColor}
+          radius={resolvedRadiusKey}
+          size={resolvedSize}
+        />
 
         {belowList && (
           <div className="border-t border-border pt-1 mt-1">{belowList}</div>
@@ -463,9 +539,12 @@ export const SelectMenu = ({
     </FloatingFocusManager>
   );
 
-  // Render with or without portal based on resolved portal and portalTarget
-  if (resolvedPortal && resolvedPortalTarget) {
-    return createPortal(menuContent, resolvedPortalTarget);
+  // Render in a FloatingPortal when enabled. FloatingPortal accepts a null
+  // `root` and falls back to creating its own body-level node.
+  if (resolvedPortal) {
+    return (
+      <FloatingPortal root={resolvedPortalTarget}>{menuContent}</FloatingPortal>
+    );
   }
 
   return menuContent;

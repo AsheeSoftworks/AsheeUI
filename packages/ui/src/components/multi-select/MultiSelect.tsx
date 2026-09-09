@@ -206,11 +206,11 @@ export interface MultiSelectProps
  * label, description, and message handling, and uses Floating UI for
  * positioning and accessibility.
  *
- * By default, the dropdown menu uses React's createPortal to render at the
- * document body level. This ensures the menu escapes CSS containment, overflow
- * clipping, and stacking context issues. The portal can be disabled via the
- * `menu.portal` prop or `components.multiSelect.menu.portal` in the config
- * if the menu needs to stay within a specific parent container.
+ * By default, the dropdown menu uses Floating UI's FloatingPortal to render
+ * at the document body level. This ensures the menu escapes CSS containment,
+ * overflow clipping, and stacking context issues. The portal can be disabled
+ * via the `menu.portal` prop or `components.multiSelect.menu.portal` in the
+ * config if the menu needs to stay within a specific parent container.
  *
  * @param props - MultiSelect configuration options.
  * @param props.options - Available options to select from.
@@ -441,7 +441,7 @@ export const MultiSelect = forwardRef<HTMLButtonElement, MultiSelectProps>(
 
     // ─── Floating UI ─────────────────────────────────────────────────────
 
-    const { refs, floatingStyles, context } =
+    const { refs, floatingStyles, context, isPositioned } =
       useSelectFloating<HTMLButtonElement>({
         isOpen,
         onOpenChange: setIsOpen,
@@ -614,6 +614,7 @@ export const MultiSelect = forwardRef<HTMLButtonElement, MultiSelectProps>(
               floatingStyles={floatingStyles}
               getFloatingProps={getFloatingProps}
               setFloatingRef={refs.setFloating}
+              isPositioned={isPositioned}
               options={options}
               selectedValues={selectedValues}
               onSelectMenuOption={handleSelectMenuOption}

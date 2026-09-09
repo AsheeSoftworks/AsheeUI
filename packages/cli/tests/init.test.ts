@@ -89,7 +89,7 @@ describe("runInit idempotency", () => {
 
     // Config file
     const config = await read("asheeui.config.ts");
-    expect(config).toContain('from "asheeui/config"');
+    expect(config).toContain('from "asheeui"');
     expect(config).toContain('defaultTheme: "light"');
 
     // CSS import added exactly once
@@ -137,29 +137,25 @@ describe("runInit idempotency", () => {
     const css = await read("src/index.css");
     const viteConfig = await read("vite.config.ts");
     const main = await read("src/main.tsx");
-    const config = await read("asheeui.config.ts");
 
     expect(countOccurrences(css, '@import "asheeui/styles"')).toBe(1);
     expect(countOccurrences(viteConfig, "@asheeui/vite")).toBe(0);
     expect(countOccurrences(viteConfig, "asheeui()")).toBe(0);
     expect(countOccurrences(main, "AsheeUIProvider")).toBe(3);
     expect(countOccurrences(main, 'from "asheeui"')).toBe(1);
-    expect(countOccurrences(config, "defineConfig")).toBe(2);
   });
 
   it("keeps an existing user config intact", async () => {
     await scaffoldViteProject();
     await write(
       "asheeui.config.ts",
-      `import { defineConfig, type ExternalConfig } from "asheeui/config";
+      `import type { ExternalConfig } from "asheeui";
 
-const config: ExternalConfig = {
+export default const config
   defaultTheme: "company-red",
   defaultVariant: "solid",
   defaultColor: "success",
 };
-
-export default defineConfig(config);
 `,
     );
 
