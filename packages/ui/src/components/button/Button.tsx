@@ -3,12 +3,13 @@
  * This file provides the main Button component implementation, which renders
  * a clickable element that triggers actions or events. It supports multiple
  * visual variants, theme colors, density and radius scales, icon-only mode,
- * loading state, and press animation. The component uses the cascade resolution
- * system for its visual tokens and follows AsheeUI's accessibility patterns.
+ * loading state, press animation, and content slots for icons and adornments.
+ * The component uses the cascade resolution system for its visual tokens and
+ * follows AsheeUI's accessibility patterns.
  */
 "use client";
 
-import { forwardRef, type MouseEvent } from "react";
+import { forwardRef, type MouseEvent, type ReactNode } from "react";
 import { useAsheeConfig } from "../../libs/context";
 import type { Size } from "../../shared";
 import {
@@ -28,11 +29,13 @@ import { Spinner } from "../spinner/spinner";
 import { type ButtonConfig, FALLBACK_BUTTON_CONFIG } from "./button-config";
 import { BUTTON_ICON_SIZE_CLASS, BUTTON_SIZE_CLASS } from "./button-styles";
 
+// ─── Component Interface ──────────────────────────────────────────────────────
+
 /**
  * Visual and behavioural options shared by button-like elements.
  * This type combines the ButtonConfig with native button HTML attributes.
  */
-export type BaseButtonProps = ButtonConfig &
+type BaseButtonProps = ButtonConfig &
   Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, "color" | "disabled">;
 
 /**
@@ -40,7 +43,7 @@ export type BaseButtonProps = ButtonConfig &
  *
  * @see {@link ButtonCommonProps} for the shared visual props.
  */
-interface ButtonProps extends BaseButtonProps {
+export interface ButtonProps extends BaseButtonProps {
   /**
    * Whether the button is in a disabled state.
    * Disabled buttons cannot be interacted with and appear dimmed.
@@ -72,15 +75,28 @@ interface ButtonProps extends BaseButtonProps {
    * @default false
    */
   icon?: boolean;
+
+  /**
+   * Content rendered at the start of the button.
+   * Typically an icon or adornment.
+   */
+  startContent?: ReactNode;
+
+  /**
+   * Content rendered at the end of the button.
+   * Typically an icon, badge, or adornment.
+   */
+  endContent?: ReactNode;
 }
 
 /**
  * A clickable element that triggers an action or event.
  *
  * Button supports multiple visual variants, theme colors, density and
- * radius scales, icon-only mode, loading state, and a press animation.
- * Visual tokens resolve through the standard AsheeUI cascade: prop,
- * component config, global theme defaults, and the built-in fallback.
+ * radius scales, icon-only mode, loading state, press animation, and
+ * start/end content slots for icons and adornments. Visual tokens resolve
+ * through the standard AsheeUI cascade: prop, component config, global
+ * theme defaults, and the built-in fallback.
  *
  * The component automatically handles accessibility attributes including
  * aria-disabled, aria-busy for loading states, and proper focus management.
@@ -97,6 +113,8 @@ interface ButtonProps extends BaseButtonProps {
  * @param props.isLoading - Loading state. Defaults to false.
  * @param props.type - Native button type. Defaults to "button".
  * @param props.icon - Icon-only compact layout. Defaults to false.
+ * @param props.startContent - Content at the start of the button.
+ * @param props.endContent - Content at the end of the button.
  * @param props.children - Button label content.
  * @param props.className - Extra CSS classes for the button.
  *
@@ -110,6 +128,7 @@ interface ButtonProps extends BaseButtonProps {
  *       variant="solid"
  *       color="primary"
  *       onClick={() => console.log("Clicked")}
+ *       startContent={<Icon />}
  *     >
  *       Click me
  *     </Button>
@@ -127,6 +146,17 @@ interface ButtonProps extends BaseButtonProps {
  *   onClick={handleRefresh}
  * >
  *   <RefreshIcon />
+ * </Button>
+ * ```
+ *
+ * @example
+ * ```tsx
+ * // With end content badge
+ * <Button
+ *   variant="bordered"
+ *   endContent={<Badge count={5} />}
+ * >
+ *   Notifications
  * </Button>
  * ```
  *
@@ -150,6 +180,8 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       children,
       type = "button",
       onClick,
+      startContent,
+      endContent,
       ...rest
     } = props;
 
@@ -242,7 +274,9 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         {...rest}>
         {isLoading && <Spinner className={resolvedSizeKey} />}
         {isLoading && <span className="sr-only">Loading</span>}
-        {isLoading && icon ? null : children}
+        {!isLoading && startContent}
+        {!isLoading && children}
+        {!isLoading && endContent}
       </button>
     );
   },

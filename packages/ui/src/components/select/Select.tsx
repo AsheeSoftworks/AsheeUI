@@ -2,9 +2,10 @@
  * Select component for AsheeUI.
  * This file provides the main Select component implementation, which renders
  * a dropdown selector with search, label, validation, and configurable styles.
- * It supports both controlled and uncontrolled selection state, and integrates
- * with the FieldShell for consistent label and validation handling. Visual
- * tokens resolve through the standard AsheeUI cascade system.
+ * It supports both controlled and uncontrolled selection state, integrates
+ * with FieldShell for consistent label and validation handling, and uses
+ * the Button component as the trigger. Visual tokens resolve through the
+ * standard AsheeUI cascade system.
  */
 "use client";
 
@@ -24,38 +25,50 @@ import {
 } from "react";
 import { ChevronDownIcon } from "../../icons/ChevronDownIcon";
 import { useAsheeConfig } from "../../libs/context";
-import {
-  type Color,
-  RADIUS_CLASS,
-  resolveVariantClass,
-  type Variant,
-} from "../../shared";
+import type { Color, Variant } from "../../shared";
 import { cn } from "../../utils";
-import {
-  resolveCascade,
-  resolveClassKey,
-  resolveRadiusKey,
-} from "../../utils/resolve-token";
+import { resolveCascade, resolveRadiusKey } from "../../utils/resolve-token";
+import { Button } from "../button/Button";
 import { FieldShell } from "../field/FieldShell";
 import type { FieldSizeKey, LabelAlign } from "../field/field-config";
+import type { InputProps } from "../input/Input";
 import { useSelectFloating } from "../select-menu";
 import { SelectMenu } from "../select-menu/SelectMenu";
-import type { SelectMenuOption } from "../select-menu/select-menu-config";
+import type {
+  MenuConfig,
+  SelectMenuOption,
+} from "../select-menu/select-menu-config";
 import { FALLBACK_SELECT_CONFIG, type SelectConfig } from "./select-config";
-import { SELECT_SIZE_CLASS, SELECT_STATUS_BORDER_CLASS } from "./select-styles";
+import { SELECT_STATUS_BORDER_CLASS } from "./select-styles";
 
 // ─── Component Interface ──────────────────────────────────────────────────────
 
-type BaseSelectProps = SelectConfig &
-  Omit<
-    React.SelectHTMLAttributes<HTMLSelectElement>,
-    "color" | "size" | "value" | "onChange"
-  >;
+/**
+ * Field-related props that Select inherits from Input.
+ * Picked to avoid conflicts with Button-specific props.
+ */
+type SelectFieldProps = Pick<
+  InputProps,
+  | "label"
+  | "description"
+  | "message"
+  | "required"
+  | "isLoading"
+  | "status"
+  | "labelAlign"
+  | "className"
+  | "id"
+  | "style"
+>;
 
 /**
  * Configuration options for the Select component.
+ * Extends field props from Input, and SelectConfig for
+ * component-specific options. Uses Button for trigger styling.
  */
-export interface SelectProps extends BaseSelectProps {
+export interface SelectProps
+  extends SelectFieldProps,
+    Omit<SelectConfig, "menu"> {
   /**
    * Available options to select from.
    * Each option must have a label and a unique value.
@@ -80,46 +93,22 @@ export interface SelectProps extends BaseSelectProps {
   onValueChange?: (value: string | number) => void;
 
   /**
-   * Label text for the field.
-   */
-  label?: string;
-
-  /**
-   * Description text shown below the label.
-   */
-  description?: string;
-
-  /**
-   * Validation message shown below the field.
-   */
-  message?: string;
-
-  /**
-   * Whether the field is required.
-   * @default false
-   */
-  required?: boolean;
-
-  /**
-   * Whether the field is in a loading state.
-   * @default false
-   */
-  isLoading?: boolean;
-
-  /**
    * Whether search input is shown in the dropdown.
+   *
    * @default false
    */
   isSearch?: boolean;
 
   /**
    * Placeholder text for the search input.
+   *
    * @default "Search options..."
    */
   searchPlaceholder?: string;
 
   /**
    * Name attribute for the search input.
+   *
    * @default "select-search"
    */
   searchInputName?: string;
@@ -131,54 +120,66 @@ export interface SelectProps extends BaseSelectProps {
 
   /**
    * Content rendered below the options list.
+   * Useful for adding "Add new" buttons or status messages.
    */
   belowList?: ReactNode;
 
   /**
    * Placeholder text shown when no value is selected.
+   *
    * @default "Select..."
    */
   placeholder?: string;
 
   /**
-   * Extra CSS classes for the trigger button.
-   */
-  className?: string;
-
-  /**
-   * Extra CSS classes for the dropdown.
-   */
-  dropdownClassName?: string;
-
-  /**
-   * Optional ID for the field.
-   */
-  id?: string;
-
-  /**
    * Name attribute for the select.
    */
   name?: string;
-}
 
-// ─── Component Implementation ─────────────────────────────────────────────────
+  /**
+   * Content rendered at the start of the button.
+   * Typically an icon or adornment.
+   */
+  startContent?: ReactNode;
+
+  /**
+   * Content rendered at the end of the button.
+   * Typically an icon, badge, or adornment.
+   */
+  endContent?: ReactNode;
+
+  /**
+   * Whether the select is disabled.
+   *
+   * @default false
+   */
+  disabled?: boolean;
+
+  /**
+   * Menu configuration overrides including portal, portalTarget, className, and visual styles.
+   * All menu-related props should be passed through this object.
+   */
+  menu?: MenuConfig;
+}
 
 /**
  * A dropdown selector with search, label, validation, and configurable styles.
  *
  * Select renders a dropdown that allows selecting a single option from a list.
  * It supports search filtering, controlled and uncontrolled selection state,
- * validation states, and custom menu and trigger styles. Visual tokens resolve
- * through the standard AsheeUI cascade system.
+ * validation states, custom menu and trigger styles, and start/end content
+ * slots. Visual tokens resolve through the standard AsheeUI cascade system.
  *
- * The component uses Floating UI for positioning and accessibility, and
- * integrates with the FieldShell for consistent label and validation handling.
+ * The component uses a Button component as the trigger, which provides
+ * consistent button styling and behavior. It integrates with FieldShell for
+ * label, description, and message handling, and uses Floating UI for
+ * positioning and accessibility.
  *
  * By default, the dropdown menu uses React's createPortal to render at the
  * document body level. This ensures the menu escapes CSS containment, overflow
  * clipping, and stacking context issues. The portal can be disabled via the
- * `portal` prop or `components.select.portal` in the config if the menu needs
- * to stay within a specific parent container.
+ * `menu.portal` prop or `components.select.menu.portal` in the config if the
+ * menu needs to stay within a specific parent container.
  *
  * @param props - Select configuration options.
  * @param props.options - Available options to select from.
@@ -188,11 +189,12 @@ export interface SelectProps extends BaseSelectProps {
  * @param props.label - Field label text.
  * @param props.description - Description text.
  * @param props.message - Validation message.
- * @param props.required - Whether the field is required.
- * @param props.isLoading - Loading state.
- * @param props.disabled - Disabled state.
+ * @param props.required - Whether the field is required. Defaults to false.
+ * @param props.isLoading - Loading state. Defaults to false.
+ * @param props.disabled - Disabled state. Defaults to false.
  * @param props.isSearch - Whether search is enabled. Defaults to false.
  * @param props.searchPlaceholder - Search placeholder. Defaults to "Search options...".
+ * @param props.searchInputName - Name attribute for the search input. Defaults to "select-search".
  * @param props.initialValue - Initial value for uncontrolled usage.
  * @param props.belowList - Content below the options list.
  * @param props.placeholder - Placeholder text. Defaults to "Select...".
@@ -202,8 +204,12 @@ export interface SelectProps extends BaseSelectProps {
  * @param props.color - Theme accent color. Defaults to "primary".
  * @param props.status - Validation status.
  * @param props.labelAlign - Alignment of the label. Defaults to "left".
- * @param props.portal - Whether to render the dropdown in a portal. Defaults to true.
- * @param props.portalTarget - Custom portal target element. Defaults to document.body.
+ * @param props.startContent - Content at the start of the trigger button.
+ * @param props.endContent - Content at the end of the trigger button.
+ * @param props.menu - Menu configuration overrides including className, portal, portalTarget, and visual styles.
+ * @param props.name - Name attribute for the select.
+ * @param props.className - Extra classes for the trigger button.
+ * @param props.id - HTML id attribute.
  *
  * @example
  * ```tsx
@@ -233,7 +239,7 @@ export interface SelectProps extends BaseSelectProps {
  *
  * @example
  * ```tsx
- * // With search and validation
+ * // With search, validation, and menu configuration
  * <Select
  *   options={fruits}
  *   label="Favorite Fruit"
@@ -241,10 +247,19 @@ export interface SelectProps extends BaseSelectProps {
  *   status="error"
  *   message="Please select a fruit"
  *   required
+ *   startContent={<FruitIcon />}
+ *   menu={{
+ *     className: "custom-dropdown",
+ *     portal: false,
+ *     itemVariant: "solid",
+ *     activeItemColor: "success"
+ *   }}
  * />
  * ```
  *
  * @see SelectConfig - The configuration type for component defaults.
+ * @see Input - The input component that provides field capabilities.
+ * @see Button - The button component used as the trigger.
  * @see SelectMenu - The dropdown menu component.
  * @see FieldShell - The wrapper component for label and validation.
  */
@@ -274,13 +289,12 @@ export const Select = forwardRef<HTMLButtonElement, SelectProps>(
       belowList,
       placeholder = "Select...",
       className,
-      dropdownClassName,
       id,
       name,
       menu,
-      portal: portalProp,
-      portalTarget: portalTargetProp,
       style,
+      startContent,
+      endContent,
     },
     ref,
   ) => {
@@ -292,7 +306,7 @@ export const Select = forwardRef<HTMLButtonElement, SelectProps>(
     const [isOpen, setIsOpen] = useState(false);
     const [searchQuery, setSearchQuery] = useState("");
 
-    // ─── 1. Token Resolvers (4-Tier Cascade) ──────────────────────────────────
+    // ─── Token Resolvers ──────────────────────────────────────────────────
 
     const resolvedSizeKey = resolveCascade<FieldSizeKey>(
       size,
@@ -331,45 +345,23 @@ export const Select = forwardRef<HTMLButtonElement, SelectProps>(
       FALLBACK_SELECT_CONFIG.labelAlign,
     );
 
-    const resolvedPortal = resolveCascade<boolean>(
-      portalProp,
-      sectionConfig?.portal,
-      undefined,
-      FALLBACK_SELECT_CONFIG.portal,
-    );
+    // ─── Class Maps ──────────────────────────────────────────────────────
 
-    const resolvedPortalTarget = resolveCascade<HTMLElement | null>(
-      portalTargetProp,
-      sectionConfig?.portalTarget,
-      undefined,
-      FALLBACK_SELECT_CONFIG.portalTarget,
-    );
-
-    // ─── 2. Class Maps ────────────────────────────────────────────────────────
-
-    const variantClass = resolveVariantClass(
-      resolvedVariantKey,
-      resolvedColorKey,
-    );
     const statusClass =
       resolvedStatus !== "default"
         ? SELECT_STATUS_BORDER_CLASS[resolvedStatus]
         : "";
-    const radiusClass =
-      resolvedVariantKey === "underlined"
-        ? "rounded-none"
-        : resolveClassKey(
-            resolvedRadiusKey,
-            RADIUS_CLASS,
-            FALLBACK_SELECT_CONFIG.radius,
-          );
 
+    /**
+     * The currently selected option object.
+     * Used to display the label in the trigger button.
+     */
     const selectedOption = useMemo(
       () => options.find((opt) => opt.value === value),
       [options, value],
     );
 
-    // ─── 3. Floating UI ──────────────────────────────────────────────────────
+    // ─── Floating UI ─────────────────────────────────────────────────────
 
     const { refs, floatingStyles, context } =
       useSelectFloating<HTMLButtonElement>({
@@ -387,8 +379,12 @@ export const Select = forwardRef<HTMLButtonElement, SelectProps>(
       role,
     ]);
 
-    // ─── 4. Handlers ──────────────────────────────────────────────────────────
+    // ─── Handlers ────────────────────────────────────────────────────────
 
+    /**
+     * Handles option selection from the dropdown.
+     * Updates the value, triggers onChange, and closes the dropdown.
+     */
     const handleSelectMenuOption = useCallback(
       (option: SelectMenuOption) => {
         onValueChange?.(option.value);
@@ -404,6 +400,10 @@ export const Select = forwardRef<HTMLButtonElement, SelectProps>(
       [name, onChange, onValueChange],
     );
 
+    /**
+     * The label displayed in the trigger button.
+     * Shows the selected option label, initial value, or placeholder.
+     */
     const displayLabel = useMemo(() => {
       if (selectedOption?.label) return selectedOption.label;
       if (initialValue !== undefined) return String(initialValue);
@@ -415,19 +415,26 @@ export const Select = forwardRef<HTMLButtonElement, SelectProps>(
       [value],
     );
 
+    // ─── Render ─────────────────────────────────────────────────────────
+
+    // Get reference props from Floating UI, excluding any that conflict with buttonProps
+    const referenceProps = getReferenceProps();
+
     return (
       <FieldShell
         id={fieldId}
         label={label}
         labelAlign={resolvedLabelAlign}
         description={description}
+        descriptionId={description ? `${fieldId}-description` : undefined}
         message={message}
+        messageId={message ? `${fieldId}-message` : undefined}
         status={resolvedStatus}
         required={required}
         isLoading={isLoading}>
         <div className="w-full relative inline-block">
           {/* Trigger Button */}
-          <button
+          <Button
             ref={(node) => {
               refs.setReference(node);
               if (typeof ref === "function") ref(node);
@@ -436,39 +443,53 @@ export const Select = forwardRef<HTMLButtonElement, SelectProps>(
                   node;
             }}
             type="button"
-            disabled={disabled}
+            variant={resolvedVariantKey}
+            color={resolvedColorKey}
+            animate={false}
+            size={resolvedSizeKey}
+            radius={resolvedRadiusKey}
+            isDisabled={disabled}
+            isLoading={isLoading}
+            fullWidth
             aria-expanded={isOpen}
             aria-haspopup="listbox"
             aria-invalid={resolvedStatus === "error"}
+            aria-describedby={
+              [description ? `${fieldId}-description` : undefined]
+                .filter(Boolean)
+                .join(" ") || undefined
+            }
             className={cn(
-              "w-full flex items-center justify-between font-normal text-left text-foreground transition-colors outline-none select-none cursor-pointer shrink-0",
-              "focus-visible:ring-2 focus-visible:ring-offset-2",
-              "disabled:pointer-events-none disabled:opacity-50 disabled:cursor-not-allowed",
-              SELECT_SIZE_CLASS[resolvedSizeKey],
-              variantClass,
+              "font-normal text-left justify-between",
               statusClass,
-              radiusClass,
               className,
             )}
             style={style}
-            {...getReferenceProps()}>
+            startContent={startContent}
+            endContent={
+              <>
+                {endContent}
+                <ChevronDownIcon
+                  className={cn(
+                    "shrink-0 text-foreground/70 transition-transform duration-200",
+                    isOpen && "rotate-180",
+                  )}
+                />
+              </>
+            }
+            {...referenceProps}>
             <span
-              className={
+              className={cn(
+                "truncate",
                 selectedOption || initialValue
                   ? "text-foreground"
-                  : "text-foreground/70"
-              }>
+                  : "text-foreground/70",
+              )}>
               {displayLabel}
             </span>
-            <ChevronDownIcon
-              className={cn(
-                "ml-2 shrink-0 text-foreground/70 transition-transform duration-200",
-                isOpen && "rotate-180",
-              )}
-            />
-          </button>
+          </Button>
 
-          {/* Reusable SelectMenu */}
+          {/* Floating SelectMenu */}
           <SelectMenu
             isOpen={isOpen}
             context={context}
@@ -484,11 +505,8 @@ export const Select = forwardRef<HTMLButtonElement, SelectProps>(
             searchQuery={searchQuery}
             onSearchChange={setSearchQuery}
             belowList={belowList}
-            dropdownClassName={dropdownClassName}
             menuProps={menu}
-            menuConfig={sectionConfig}
-            portal={resolvedPortal}
-            portalTarget={resolvedPortalTarget}
+            menuConfig={sectionConfig?.menu}
           />
         </div>
       </FieldShell>

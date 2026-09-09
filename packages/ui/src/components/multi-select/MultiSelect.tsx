@@ -16,7 +16,6 @@ import {
 } from "@floating-ui/react";
 import {
   forwardRef,
-  type HTMLAttributes,
   type ReactNode,
   useCallback,
   useId,
@@ -38,8 +37,10 @@ import { Button } from "../button/Button";
 import { Chip } from "../chip/Chip";
 import { FieldShell } from "../field/FieldShell";
 import type { FieldSizeKey, LabelAlign } from "../field/field-config";
+import type { InputProps } from "../input/Input";
+import type { MenuConfig } from "../select-menu";
 import { type SelectMenuOption, useSelectFloating } from "../select-menu";
-import { SelectMenu } from "../select-menu/SelectMenu";
+import { type MenuProps, SelectMenu } from "../select-menu/SelectMenu";
 import {
   FALLBACK_MULTI_SELECT_CONFIG,
   type MultiSelectConfig,
@@ -51,15 +52,40 @@ import {
   STATUS_BORDER_CLASS,
 } from "./multi-select-styles";
 
-// ─── Props Interface ──────────────────────────────────────────────────────────
+// ─── Component Interface ──────────────────────────────────────────────────────
 
-type BaseMultiSelectProps = MultiSelectConfig &
-  Omit<HTMLAttributes<HTMLDivElement>, "color" | "size" | "onChange">;
+/**
+ * Field-related props that MultiSelect inherits from Input.
+ * Picked to avoid conflicts with Button-specific props.
+ */
+type MultiSelectFieldProps = Pick<
+  InputProps,
+  | "label"
+  | "description"
+  | "message"
+  | "required"
+  | "isLoading"
+  | "status"
+  | "labelAlign"
+  | "className"
+  | "id"
+  | "style"
+>;
+
+/**
+ * Content-related props from Input.
+ */
+type MultiSelectContentProps = Pick<InputProps, "startContent" | "endContent">;
 
 /**
  * Configuration options for the MultiSelect component.
+ * Extends field and content props from Input, and MultiSelectConfig for
+ * component-specific options. Uses Button for trigger styling.
  */
-export interface MultiSelectProps extends BaseMultiSelectProps {
+export interface MultiSelectProps
+  extends MultiSelectFieldProps,
+    MultiSelectContentProps,
+    Omit<MultiSelectConfig, "menu"> {
   /**
    * Available options to select from.
    * Each option must have a label and a unique value.
@@ -80,30 +106,35 @@ export interface MultiSelectProps extends BaseMultiSelectProps {
 
   /**
    * Label shown in the trigger when no items are selected.
+   *
    * @default "Select Options..."
    */
   InputLabel?: string;
 
   /**
    * Whether search input is shown in the dropdown.
+   *
    * @default true
    */
   isSearch?: boolean;
 
   /**
    * Placeholder text for the search input.
+   *
    * @default "Search..."
    */
   searchPlaceholder?: string;
 
   /**
    * Name attribute for the search input.
+   *
    * @default "multiselect-search"
    */
   searchInputName?: string;
 
   /**
    * Content rendered below the options list.
+   * Useful for adding "Add new" buttons or status messages.
    */
   belowList?: ReactNode;
 
@@ -132,42 +163,10 @@ export interface MultiSelectProps extends BaseMultiSelectProps {
 
   /**
    * Whether to hide the chip display section.
+   *
    * @default false
    */
   disableChipDisplay?: boolean;
-
-  /**
-   * Label text for the field.
-   */
-  label?: string;
-
-  /**
-   * Description text shown below the label.
-   */
-  description?: string;
-
-  /**
-   * Validation message shown below the field.
-   */
-  message?: string;
-
-  /**
-   * Whether the field is required.
-   * @default false
-   */
-  required?: boolean;
-
-  /**
-   * Whether the field is in a loading state.
-   * @default false
-   */
-  isLoading?: boolean;
-
-  /**
-   * Whether the field is disabled.
-   * @default false
-   */
-  disabled?: boolean;
 
   /**
    * Extra classes for the container.
@@ -175,12 +174,23 @@ export interface MultiSelectProps extends BaseMultiSelectProps {
   containerClassName?: string;
 
   /**
-   * Extra classes for the dropdown.
+   * Name attribute for the select.
    */
-  dropdownClassName?: string;
-}
+  name?: string;
 
-// ─── Component Implementation ─────────────────────────────────────────────────
+  /**
+   * Whether the select is disabled.
+   *
+   * @default false
+   */
+  disabled?: boolean;
+
+  /**
+   * Menu configuration overrides including portal, portalTarget, className, and visual styles.
+   * All menu-related props should be passed through this object.
+   */
+  menu?: MenuProps;
+}
 
 /**
  * A multi-select dropdown with search, chips, and configurable styles.
@@ -188,18 +198,19 @@ export interface MultiSelectProps extends BaseMultiSelectProps {
  * MultiSelect renders a dropdown that allows selecting multiple options
  * from a list. Selected options are displayed as chips below the trigger.
  * It supports search filtering, controlled selection state, validation
- * states, and custom menu and chip styles. Visual tokens resolve through
- * the standard AsheeUI cascade system.
+ * states, custom menu and chip styles, and start/end content slots.
+ * Visual tokens resolve through the standard AsheeUI cascade system.
  *
- * The component uses Floating UI for positioning and accessibility,
- * and integrates with the FieldShell for consistent label and validation
- * handling.
+ * The component uses a Button component as the trigger, which provides
+ * consistent button styling and behavior. It integrates with FieldShell for
+ * label, description, and message handling, and uses Floating UI for
+ * positioning and accessibility.
  *
  * By default, the dropdown menu uses React's createPortal to render at the
  * document body level. This ensures the menu escapes CSS containment, overflow
  * clipping, and stacking context issues. The portal can be disabled via the
- * `portal` prop or `components.multiSelect.portal` in the config if the menu
- * needs to stay within a specific parent container.
+ * `menu.portal` prop or `components.multiSelect.menu.portal` in the config
+ * if the menu needs to stay within a specific parent container.
  *
  * @param props - MultiSelect configuration options.
  * @param props.options - Available options to select from.
@@ -208,21 +219,31 @@ export interface MultiSelectProps extends BaseMultiSelectProps {
  * @param props.InputLabel - Label shown in trigger. Defaults to "Select Options...".
  * @param props.isSearch - Whether search is enabled. Defaults to true.
  * @param props.searchPlaceholder - Search placeholder. Defaults to "Search...".
+ * @param props.searchInputName - Name attribute for the search input. Defaults to "multiselect-search".
  * @param props.belowList - Content below the options list.
+ * @param props.chipLabel - Label shown above the chip list.
+ * @param props.disableChipDisplay - Hide chip display section. Defaults to false.
  * @param props.label - Field label text.
  * @param props.description - Description text.
  * @param props.message - Validation message.
- * @param props.required - Whether the field is required.
- * @param props.isLoading - Loading state.
- * @param props.disabled - Disabled state.
+ * @param props.required - Whether the field is required. Defaults to false.
+ * @param props.isLoading - Loading state. Defaults to false.
+ * @param props.disabled - Disabled state. Defaults to false.
  * @param props.size - Size of the trigger. Defaults to "md".
  * @param props.radius - Corner rounding. Defaults to "md".
  * @param props.variant - Visual style variant. Defaults to "bordered".
  * @param props.color - Theme accent color. Defaults to "primary".
  * @param props.status - Validation status.
  * @param props.labelAlign - Alignment of the label. Defaults to "left".
- * @param props.portal - Whether to render the dropdown in a portal. Defaults to true.
- * @param props.portalTarget - Custom portal target element. Defaults to document.body.
+ * @param props.startContent - Content at the start of the trigger button.
+ * @param props.endContent - Content at the end of the trigger button.
+ * @param props.menu - Menu configuration overrides including className, portal, portalTarget, and visual styles.
+ * @param props.containerClassName - Extra classes for the container.
+ * @param props.chip - Chip configuration overrides including color, size, and radius.
+ * @param props.chipOptions - Custom chip options for legacy control.
+ * @param props.handleRemoveChip - Custom handler for removing a chip.
+ * @param props.handleAddChip - Custom handler for adding a chip.
+ * @param props.name - Name attribute for the select.
  *
  * @example
  * ```tsx
@@ -250,8 +271,30 @@ export interface MultiSelectProps extends BaseMultiSelectProps {
  * }
  * ```
  *
+ * @example
+ * ```tsx
+ * // With custom chip colors and menu configuration
+ * <MultiSelect
+ *   options={fruits}
+ *   value={selectedFruits}
+ *   onChange={setSelectedFruits}
+ *   label="Favorite Fruits"
+ *   chip={{ color: "success", size: "sm" }}
+ *   startContent={<FruitIcon />}
+ *   menu={{
+ *     className: "custom-dropdown",
+ *     portal: false,
+ *     itemVariant: "solid",
+ *     activeItemColor: "success"
+ *   }}
+ * />
+ * ```
+ *
  * @see MultiSelectConfig - The configuration type for component defaults.
+ * @see Input - The input component that provides field capabilities.
+ * @see Button - The button component used as the trigger.
  * @see SelectMenu - The dropdown menu component.
+ * @see Chip - The chip component for selected items.
  * @see FieldShell - The wrapper component for label and validation.
  */
 export const MultiSelect = forwardRef<HTMLButtonElement, MultiSelectProps>(
@@ -283,15 +326,13 @@ export const MultiSelect = forwardRef<HTMLButtonElement, MultiSelectProps>(
       isLoading,
       disabled,
       containerClassName,
-      dropdownClassName,
       id,
       className,
       menu,
       chip,
-      portal: portalProp,
-      portalTarget: portalTargetProp,
       style,
-      ...props
+      startContent,
+      endContent,
     },
     ref,
   ) => {
@@ -303,7 +344,7 @@ export const MultiSelect = forwardRef<HTMLButtonElement, MultiSelectProps>(
     const [isOpen, setIsOpen] = useState(false);
     const [searchQuery, setSearchQuery] = useState("");
 
-    // ─── 1. Token Resolvers (4-Tier Cascade) ──────────────────────────────────
+    // ─── Token Resolvers ──────────────────────────────────────────────────
 
     const resolvedSizeKey = resolveCascade<FieldSizeKey>(
       size,
@@ -355,7 +396,7 @@ export const MultiSelect = forwardRef<HTMLButtonElement, MultiSelectProps>(
       FALLBACK_MULTI_SELECT_CONFIG.chip.radius,
     );
 
-    const resolvedStatus = status ?? "default";
+    const resolvedStatus = status ?? FALLBACK_MULTI_SELECT_CONFIG.status;
     const resolvedStatusColor: Color =
       resolvedStatus === "error"
         ? "danger"
@@ -364,6 +405,7 @@ export const MultiSelect = forwardRef<HTMLButtonElement, MultiSelectProps>(
           : resolvedStatus === "warning"
             ? "warning"
             : resolvedColorKey;
+
     const resolvedLabelAlign = resolveCascade<LabelAlign>(
       labelAlign,
       sectionConfig?.labelAlign,
@@ -371,21 +413,7 @@ export const MultiSelect = forwardRef<HTMLButtonElement, MultiSelectProps>(
       FALLBACK_MULTI_SELECT_CONFIG.labelAlign,
     );
 
-    const resolvedPortal = resolveCascade<boolean>(
-      portalProp,
-      sectionConfig?.portal,
-      undefined,
-      FALLBACK_MULTI_SELECT_CONFIG.portal,
-    );
-
-    const resolvedPortalTarget = resolveCascade<HTMLElement | null>(
-      portalTargetProp,
-      sectionConfig?.portalTarget as HTMLElement | null,
-      undefined,
-      FALLBACK_MULTI_SELECT_CONFIG.portalTarget,
-    );
-
-    // ─── 2. Class Maps ────────────────────────────────────────────────────────
+    // ─── Class Maps ──────────────────────────────────────────────────────
 
     const heightClass = resolveClassKey(
       resolvedSizeKey,
@@ -411,7 +439,7 @@ export const MultiSelect = forwardRef<HTMLButtonElement, MultiSelectProps>(
       FALLBACK_MULTI_SELECT_CONFIG.chip.radius,
     );
 
-    // ─── 3. Floating UI ──────────────────────────────────────────────────────
+    // ─── Floating UI ─────────────────────────────────────────────────────
 
     const { refs, floatingStyles, context } =
       useSelectFloating<HTMLButtonElement>({
@@ -429,7 +457,7 @@ export const MultiSelect = forwardRef<HTMLButtonElement, MultiSelectProps>(
       role,
     ]);
 
-    // ─── 4. Handlers ──────────────────────────────────────────────────────────
+    // ─── Handlers ────────────────────────────────────────────────────────
 
     // Controlled or Custom Chip Selection Determination
     const activeChips = useMemo(() => {
@@ -440,6 +468,10 @@ export const MultiSelect = forwardRef<HTMLButtonElement, MultiSelectProps>(
       return [];
     }, [chipOptions, value, options]);
 
+    /**
+     * Checks if an option is currently selected.
+     * Used to determine if a chip should be highlighted.
+     */
     const isOptionSelected = useCallback(
       (optValue: string | number) => {
         return activeChips.some((chip) => chip.value === optValue);
@@ -447,6 +479,10 @@ export const MultiSelect = forwardRef<HTMLButtonElement, MultiSelectProps>(
       [activeChips],
     );
 
+    /**
+     * Handles option selection from the dropdown.
+     * Toggles the selection state and updates the value.
+     */
     const handleSelectMenuOption = useCallback(
       (option: SelectMenuOption) => {
         const selected = isOptionSelected(option.value);
@@ -465,6 +501,10 @@ export const MultiSelect = forwardRef<HTMLButtonElement, MultiSelectProps>(
       [isOptionSelected, handleAddChip, handleRemoveChip, onChange, value],
     );
 
+    /**
+     * Handles removal of a chip.
+     * Removes the value from the selection.
+     */
     const handleRemove = useCallback(
       (val: string | number) => {
         if (handleRemoveChip) {
@@ -481,22 +521,35 @@ export const MultiSelect = forwardRef<HTMLButtonElement, MultiSelectProps>(
       [activeChips],
     );
 
+    const displayLabel = useMemo(() => {
+      if (activeChips.length > 0) {
+        return `${activeChips.length} selected`;
+      }
+      return InputLabel;
+    }, [activeChips.length, InputLabel]);
+
+    // ─── Render ─────────────────────────────────────────────────────────
+
+    // Get reference props from Floating UI
+    const referenceProps = getReferenceProps();
+
     return (
       <FieldShell
         id={fieldId}
         label={label}
         labelAlign={resolvedLabelAlign}
         description={description}
+        descriptionId={description ? `${fieldId}-description` : undefined}
         message={message}
+        messageId={message ? `${fieldId}-message` : undefined}
         status={resolvedStatus}
         required={required}
         isLoading={isLoading}>
         <div
           className={cn("w-full flex flex-col gap-3", containerClassName)}
-          style={style}
-          {...props}>
+          style={style}>
           <div className="relative w-full">
-            {/* Trigger Button built on Button Primitive */}
+            {/* Trigger Button */}
             <Button
               ref={(node) => {
                 refs.setReference(node);
@@ -505,38 +558,55 @@ export const MultiSelect = forwardRef<HTMLButtonElement, MultiSelectProps>(
                   (ref as React.RefObject<HTMLButtonElement | null>).current =
                     node;
               }}
+              type="button"
               variant={resolvedVariantKey}
               color={resolvedStatusColor}
-              radius={resolvedRadiusKey}
-              animate={false}
               size={resolvedSizeKey}
+              radius={resolvedRadiusKey}
               isDisabled={disabled}
+              isLoading={isLoading}
+              fullWidth
               aria-expanded={isOpen}
               aria-haspopup="listbox"
               aria-invalid={resolvedStatus === "error"}
+              aria-describedby={
+                [description ? `${fieldId}-description` : undefined]
+                  .filter(Boolean)
+                  .join(" ") || undefined
+              }
               className={cn(
-                "w-full flex items-center justify-between font-normal text-left transition-all duration-200 outline-none select-none",
+                "font-normal text-left justify-between",
                 STATUS_BORDER_CLASS[resolvedStatus],
                 heightClass,
                 paddingClass,
                 fontClass,
                 className,
               )}
-              {...getReferenceProps()}>
-              <span>
-                {activeChips.length > 0
-                  ? `${activeChips.length} selected`
-                  : InputLabel}
-              </span>
-              <ChevronDownIcon
+              startContent={startContent}
+              endContent={
+                <>
+                  {endContent}
+                  <ChevronDownIcon
+                    className={cn(
+                      "shrink-0 text-foreground/70 transition-transform duration-200",
+                      isOpen && "rotate-180",
+                    )}
+                  />
+                </>
+              }
+              {...referenceProps}>
+              <span
                 className={cn(
-                  "ml-2 shrink-0 transition-transform duration-200",
-                  isOpen && "rotate-180",
-                )}
-              />
+                  "truncate",
+                  activeChips.length > 0
+                    ? "text-foreground"
+                    : "text-foreground/70",
+                )}>
+                {displayLabel}
+              </span>
             </Button>
 
-            {/* Reusable SelectMenu */}
+            {/* Floating SelectMenu */}
             <SelectMenu
               isOpen={isOpen}
               context={context}
@@ -552,11 +622,8 @@ export const MultiSelect = forwardRef<HTMLButtonElement, MultiSelectProps>(
               searchQuery={searchQuery}
               onSearchChange={setSearchQuery}
               belowList={belowList}
-              dropdownClassName={dropdownClassName}
               menuProps={menu}
-              menuConfig={sectionConfig?.menu}
-              portal={resolvedPortal}
-              portalTarget={resolvedPortalTarget}
+              menuConfig={sectionConfig?.menu as MenuConfig | undefined}
             />
           </div>
 

@@ -1,8 +1,10 @@
 export { ArrowLeftIcon } from "./ArrowLeftIcon";
 export { CalendarIcon } from "./CalendarIcon";
 export { CheckIcon } from "./CheckIcon";
+export { ChevronDownIcon } from "./ChevronDownIcon";
 export { ChevronLeftIcon } from "./ChevronLeftIcon";
 export { ChevronRightIcon } from "./ChevronRightIcon";
+export { ChevronUpIcon } from "./ChevronUpIcon";
 export { ClearIcon } from "./ClearIcon";
 export { ClockIcon } from "./ClockIcon";
 export { CloseIcon } from "./CloseIcon";

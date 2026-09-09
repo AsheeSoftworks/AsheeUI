@@ -1,10 +1,10 @@
 /**
  * Switch component styles for AsheeUI.
  * This file provides CSS class mappings for the Switch component's
- * track size, thumb size, thumb translation, and status border options.
+ * track size, thumb size, and thumb translation options.
  */
 
-import type { FieldSizeKey, FieldStatus } from "../field/field-config";
+import type { FieldSizeKey } from "../field/field-config";
 
 /**
  * CSS classes for switch track size.
@@ -35,15 +35,4 @@ export const SWITCH_THUMB_TRANSLATE_CLASS: Record<FieldSizeKey, string> = {
   sm: "translate-x-3.5",
   md: "translate-x-5",
   lg: "translate-x-6",
-};
-
-/**
- * CSS classes for switch status border styles.
- * Re-exports the FIELD_STATUS_BORDER_CLASS for consistent validation styling.
- */
-export const SWITCH_STATUS_BORDER_CLASS: Record<FieldStatus, string> = {
-  default: "border-border/60",
-  error: "border-danger",
-  warning: "border-warning",
-  success: "border-success",
 };

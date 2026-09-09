@@ -31,7 +31,7 @@ import {
 } from "../../utils/resolve-token";
 import { FieldShell } from "../field/FieldShell";
 import type { FieldSizeKey, LabelAlign } from "../field/field-config";
-import { useKeyboardField } from "../keyboard";
+import { type KeyboardOpenOptions, useKeyboardField } from "../keyboard";
 import {
   FALLBACK_TEXTAREA_CONFIG,
   type TextAreaConfig,
@@ -91,9 +91,12 @@ export interface TextAreaProps extends BaseTextAreaProps {
    * Whether the virtual keyboard should be enabled for mobile devices.
    * Controls the inputmode attribute.
    *
+   * When enabled, the textarea will use the virtual keyboard system.
+   * Can also be an object to configure the keyboard behavior.
+   *
    * @default true
    */
-  enableVirtualKeyboard?: boolean;
+  enableVirtualKeyboard?: boolean | KeyboardOpenOptions;
 }
 
 // ─── Component Implementation ─────────────────────────────────────────────────
@@ -162,9 +165,23 @@ export interface TextAreaProps extends BaseTextAreaProps {
  * />
  * ```
  *
+ * @example
+ * ```tsx
+ * // With virtual keyboard configuration
+ * <TextArea
+ *   label="Numeric Input"
+ *   enableVirtualKeyboard={{
+ *     layout: "numeric",
+ *     size: "lg",
+ *     color: "primary"
+ *   }}
+ * />
+ * ```
+ *
  * @see TextAreaConfig - The configuration type for component defaults.
  * @see FieldShell - The wrapper component for label and validation.
  * @see useAsheeConfig - Hook for accessing the global configuration.
+ * @see useKeyboardField - Hook for connecting inputs to the virtual keyboard.
  */
 export const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
   (
@@ -207,8 +224,21 @@ export const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
     const describedBy =
       [descriptionId, messageId].filter(Boolean).join(" ") || undefined;
 
+    // Determine if keyboard is enabled and get options
+    const isKeyboardEnabled = Boolean(enableVirtualKeyboard);
+    const keyboardOptions =
+      typeof enableVirtualKeyboard === "object" &&
+      enableVirtualKeyboard !== null
+        ? enableVirtualKeyboard
+        : undefined;
+
     const { handleFocus: handleKeyboardFocus, handleBlur: handleKeyboardBlur } =
-      useKeyboardField(fieldId, internalRef, enableVirtualKeyboard);
+      useKeyboardField(
+        fieldId,
+        internalRef,
+        isKeyboardEnabled,
+        keyboardOptions,
+      );
 
     const handleFocus = useCallback(
       (e: React.FocusEvent<HTMLTextAreaElement>) => {

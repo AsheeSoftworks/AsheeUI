@@ -46,12 +46,43 @@ export type KeyboardLayouts = Record<string, string[]>;
 export type KeyDisplayMap = Record<string, ReactNode>;
 
 /**
+ * Per-keyboard styling options that can override provider defaults.
+ */
+export interface KeyboardStylingOptions {
+  /**
+   * Size scale for keyboard keys.
+   * Controls the height, font size, and padding of individual keys.
+   */
+  size?: KeyboardSizeKey;
+
+  /**
+   * Visual style variant for keyboard keys.
+   */
+  variant?: Variant;
+
+  /**
+   * Theme accent color for keyboard keys.
+   */
+  color?: Color;
+
+  /**
+   * Corner rounding for keyboard keys.
+   */
+  radius?: Radius;
+
+  /**
+   * Whether to render the keyboard in a Floating UI portal.
+   */
+  portal?: boolean;
+}
+
+/**
  * Theme configuration options for the Keyboard component.
  *
  * Set under `components.keyboard` in the AsheeUI config. Values feed the
  * component-level fallback tier of the theme cascade.
  */
-export interface KeyboardConfig {
+export interface KeyboardConfig extends KeyboardStylingOptions {
   /**
    * The layouts available for the keyboard.
    * Maps layout names to arrays of row strings.
@@ -83,41 +114,11 @@ export interface KeyboardConfig {
   autoShiftBack?: boolean;
 
   /**
-   * Size scale for keyboard keys.
-   * Controls the height, font size, and padding of individual keys.
-   *
-   * @default "md"
+   * Whether the keyboard system is globally disabled.
+   * When true, all keyboard interactions are prevented.
+   * @default false
    */
-  size?: KeyboardSizeKey;
-
-  /**
-   * Visual style variant for keyboard keys.
-   * @default "solid"
-   */
-  variant?: Variant;
-
-  /**
-   * Theme accent color for keyboard keys.
-   * @default "primary"
-   */
-  color?: Color;
-
-  /**
-   * Corner rounding for keyboard keys.
-   */
-  radius?: Radius;
-
-  /**
-   * Whether to render the keyboard in a Floating UI portal.
-   * When true, the keyboard is rendered at the document body level,
-   * escaping any parent DOM hierarchy. This prevents CSS containment,
-   * overflow clipping, and stacking context issues. Defaults to true
-   * because the keyboard should always appear at the bottom of the screen
-   * above all other content.
-   *
-   * @default true
-   */
-  portal?: boolean;
+  disabled?: boolean;
 }
 
 /**
@@ -175,6 +176,7 @@ export const defaultKeyboardConfig: KeyboardConfig = {
   autoShiftBack: true,
   size: "md",
   portal: true,
+  disabled: false,
 };
 
 declare module "../../libs/registry" {
@@ -191,9 +193,13 @@ registerComponentDefaults("keyboard", defaultKeyboardConfig);
  * and global defaults are all undefined.
  */
 export const FALLBACK_KEYBOARD_CONFIG = {
-  defaultLayout: "default",
+  defaultLayout: "default" as LayoutName,
   size: "md" as KeyboardSizeKey,
   variant: "solid" as Variant,
   color: "primary" as Color,
+  radius: "md" as Radius,
   portal: true,
-};
+  disabled: false,
+  closeDelay: 500,
+  autoShiftBack: true,
+} as const;

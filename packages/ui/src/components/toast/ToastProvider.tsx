@@ -1,107 +1,26 @@
 /**
- * Toast provider and hook for AsheeUI.
- * This file provides the ToastProvider component and useToast hook
- * for managing toast notifications throughout the application. The
- * provider manages the toast queue, rendering, and dismissal logic,
- * while the hook provides methods for showing toasts with different
- * types and configurations.
+ * Toast provider component for AsheeUI.
+ * This file provides the ToastProvider component that manages the toast
+ * queue, rendering, and dismissal logic. Each toast can have its own
+ * size, placement, variant, radius, and animation settings.
  */
 "use client";
 
-import {
-  createContext,
-  type ReactNode,
-  useCallback,
-  useContext,
-  useMemo,
-  useState,
-} from "react";
+import { type ReactNode, useCallback, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
 import { useAsheeConfig } from "../../libs/context";
 import type { Size, Variant } from "../../shared";
 import { cn } from "../../utils";
 import { resolveCascade, resolveRadiusKey } from "../../utils/resolve-token";
+import { ToastContext } from "./ToastContext";
 import { ToastItem } from "./ToastItem";
 import {
   FALLBACK_TOAST_CONFIG,
   type ToastConfig,
   type ToastItemData,
   type ToastPlacement,
+  type ToastShowOptions,
 } from "./toast-config";
-
-// ─── Context Interface ────────────────────────────────────────────────────────
-
-/**
- * Options for showing a toast notification.
- * Extends ToastItemData but makes id optional.
- */
-export interface ToastShowOptions extends Omit<ToastItemData, "id"> {
-  /**
-   * Optional unique identifier for the toast.
-   * If not provided, a random ID is generated.
-   */
-  id?: string;
-}
-
-/**
- * Context type for the toast system.
- * Provides methods for showing and managing toast notifications.
- */
-export interface ToastContextType {
-  /**
-   * Array of currently active toast items.
-   */
-  toasts: ToastItemData[];
-
-  /**
-   * Show a toast with the given options.
-   * Returns the toast ID.
-   */
-  toast: (options: ToastShowOptions | string) => string;
-
-  /**
-   * Show a success toast.
-   * Returns the toast ID.
-   */
-  success: (message: ReactNode, options?: Partial<ToastShowOptions>) => string;
-
-  /**
-   * Show an error toast.
-   * Returns the toast ID.
-   */
-  error: (message: ReactNode, options?: Partial<ToastShowOptions>) => string;
-
-  /**
-   * Show an info toast.
-   * Returns the toast ID.
-   */
-  info: (message: ReactNode, options?: Partial<ToastShowOptions>) => string;
-
-  /**
-   * Show a warning toast.
-   * Returns the toast ID.
-   */
-  warning: (message: ReactNode, options?: Partial<ToastShowOptions>) => string;
-
-  /**
-   * Remove a toast by ID.
-   */
-  removeToast: (id: string) => void;
-
-  /**
-   * Clear all active toasts.
-   */
-  clearToasts: () => void;
-
-  /**
-   * The portal target element for toast rendering.
-   * When portal is enabled, toasts are rendered into this element.
-   * Defaults to document.body.
-   */
-  portalTarget?: HTMLElement | null;
-}
-
-const ToastContext = createContext<ToastContextType | null>(null);
 
 // ─── Component Props ──────────────────────────────────────────────────────────
 
@@ -135,8 +54,9 @@ export interface ToastProviderProps extends ToastConfig {
  *
  * ToastProvider wraps your application and provides toast notification
  * functionality through the useToast hook. It manages the toast queue,
- * rendering, and dismissal logic, and automatically positions toasts
- * based on the configured placement.
+ * rendering, and dismissal logic. Each toast can be customized with its
+ * own size, placement, variant, radius, and animation settings via the
+ * toast options.
  *
  * The provider uses React's createPortal to render toasts at the document
  * body level by default. This ensures toasts escape CSS containment,
@@ -146,13 +66,13 @@ export interface ToastProviderProps extends ToastConfig {
  *
  * @param props - ToastProvider configuration options.
  * @param props.children - Child components.
- * @param props.size - Size scale of toasts. Defaults to "md".
- * @param props.placement - Placement of toasts. Defaults to "top-right".
- * @param props.variant - Visual style variant. Defaults to "bordered".
- * @param props.radius - Corner rounding. Defaults to "md".
+ * @param props.size - Default size scale of toasts. Defaults to "md".
+ * @param props.placement - Default placement of toasts. Defaults to "top-right".
+ * @param props.variant - Default visual style variant. Defaults to "bordered".
+ * @param props.radius - Default corner rounding. Defaults to "md".
  * @param props.defaultTimeout - Default timeout in ms. Defaults to 3500.
  * @param props.maxToasts - Maximum number of toasts. Defaults to 5.
- * @param props.animated - Whether toasts have animations. Defaults to true.
+ * @param props.animated - Whether toasts have animations by default. Defaults to true.
  * @param props.portal - Whether to render toasts in a portal. Defaults to true.
  * @param props.portalTarget - Custom portal target element. Defaults to document.body.
  * @param props.className - Extra classes for the toast container.
@@ -180,6 +100,26 @@ export interface ToastProviderProps extends ToastConfig {
  * }
  * ```
  *
+ * @example
+ * ```tsx
+ * // Customizing individual toasts
+ * function MyComponent() {
+ *   const toast = useToast();
+ *
+ *   const showCustomToast = () => {
+ *     toast.success("Custom toast!", {
+ *       placement: "bottom-center",
+ *       size: "lg",
+ *       variant: "solid",
+ *       radius: "full",
+ *       animated: false,
+ *     });
+ *   };
+ *
+ *   return <button onClick={showCustomToast}>Show Custom Toast</button>;
+ * }
+ * ```
+ *
  * @see useToast - Hook for showing toast notifications.
  * @see ToastConfig - The configuration type for the toast system.
  */
@@ -200,7 +140,7 @@ export function ToastProvider({
   const config = useAsheeConfig();
   const sectionConfig = config.components?.toast;
 
-  // ─── 1. Token Resolvers (4-Tier Cascade) ──────────────────────────────────
+  // ─── Token Resolvers ──────────────────────────────────────────────────
 
   const resolvedSizeKey = resolveCascade<Size>(
     size,
@@ -263,7 +203,7 @@ export function ToastProvider({
     portalTargetProp ??
     (typeof document !== "undefined" ? document.body : null);
 
-  // ─── 2. Toast State Handlers ──────────────────────────────────────────────
+  // ─── Toast State Handlers ──────────────────────────────────────────────
 
   const removeToast = useCallback((id: string) => {
     setToasts((prev) => prev.filter((t) => t.id !== id));
@@ -282,6 +222,32 @@ export function ToastProvider({
             ? window.crypto.randomUUID()
             : String(Date.now());
 
+      // Resolve toast-specific values with provider defaults as fallback
+      const resolvedToastPlacement =
+        typeof options === "object" && options.placement
+          ? options.placement
+          : resolvedPlacement;
+
+      const resolvedToastSize =
+        typeof options === "object" && options.size
+          ? options.size
+          : resolvedSizeKey;
+
+      const resolvedToastVariant =
+        typeof options === "object" && options.variant
+          ? options.variant
+          : resolvedVariantKey;
+
+      const resolvedToastRadius =
+        typeof options === "object" && options.radius
+          ? options.radius
+          : resolvedRadiusKey;
+
+      const resolvedToastAnimated =
+        typeof options === "object" && options.animated !== undefined
+          ? options.animated
+          : resolvedAnimated;
+
       const newItem: ToastItemData =
         typeof options === "string"
           ? {
@@ -289,12 +255,25 @@ export function ToastProvider({
               message: options,
               timeout: resolvedDefaultTimeout,
               type: "info",
+              placement: resolvedToastPlacement,
+              size: resolvedToastSize,
+              variant: resolvedToastVariant,
+              radius: resolvedToastRadius,
+              animated: resolvedToastAnimated,
             }
           : {
               ...options,
               id,
               timeout: options.timeout ?? resolvedDefaultTimeout,
               type: options.type ?? "info",
+              placement: options.placement ?? resolvedToastPlacement,
+              size: options.size ?? resolvedToastSize,
+              variant: options.variant ?? resolvedToastVariant,
+              radius: options.radius ?? resolvedToastRadius,
+              animated:
+                options.animated !== undefined
+                  ? options.animated
+                  : resolvedToastAnimated,
             };
 
       setToasts((prev) => {
@@ -304,7 +283,15 @@ export function ToastProvider({
 
       return id;
     },
-    [resolvedDefaultTimeout, resolvedMaxToasts],
+    [
+      resolvedDefaultTimeout,
+      resolvedMaxToasts,
+      resolvedPlacement,
+      resolvedSizeKey,
+      resolvedVariantKey,
+      resolvedRadiusKey,
+      resolvedAnimated,
+    ],
   );
 
   const success = useCallback(
@@ -342,6 +329,11 @@ export function ToastProvider({
       removeToast,
       clearToasts,
       portalTarget,
+      defaultPlacement: resolvedPlacement,
+      defaultSize: resolvedSizeKey,
+      defaultVariant: resolvedVariantKey,
+      defaultRadius: resolvedRadiusKey,
+      defaultAnimated: resolvedAnimated,
     }),
     [
       toasts,
@@ -353,6 +345,11 @@ export function ToastProvider({
       removeToast,
       clearToasts,
       portalTarget,
+      resolvedPlacement,
+      resolvedSizeKey,
+      resolvedVariantKey,
+      resolvedRadiusKey,
+      resolvedAnimated,
     ],
   );
 
@@ -377,12 +374,12 @@ export function ToastProvider({
         <ToastItem
           key={toastItem.id}
           {...toastItem}
-          placement={resolvedPlacement}
-          size={resolvedSizeKey}
-          variant={resolvedVariantKey}
-          radius={resolvedRadiusKey}
           onDismiss={removeToast}
-          animated={resolvedAnimated}
+          placement={toastItem.placement ?? resolvedPlacement}
+          size={toastItem.size ?? resolvedSizeKey}
+          variant={toastItem.variant ?? resolvedVariantKey}
+          radius={toastItem.radius ?? resolvedRadiusKey}
+          animated={toastItem.animated ?? resolvedAnimated}
         />
       ))}
     </section>
@@ -396,49 +393,4 @@ export function ToastProvider({
         : toastContainer}
     </ToastContext.Provider>
   );
-}
-
-// ─── Custom Hook ──────────────────────────────────────────────────────────────
-
-/**
- * Hook for accessing the toast system.
- *
- * useToast returns methods for showing toast notifications with
- * different types (success, error, info, warning). It must be used
- * within a ToastProvider component.
- *
- * @returns The toast context with methods for showing and managing toasts.
- *         If used outside a ToastProvider, returns safe fallback methods.
- *
- * @example
- * ```tsx
- * function MyComponent() {
- *   const toast = useToast();
- *
- *   const handleClick = () => {
- *     toast.success("Saved successfully!");
- *   };
- *
- *   return <button onClick={handleClick}>Save</button>;
- * }
- * ```
- *
- * @see ToastProvider - The provider component that enables the toast system.
- */
-export function useToast() {
-  const context = useContext(ToastContext);
-  if (!context) {
-    return {
-      toasts: [],
-      toast: () => "",
-      success: () => "",
-      error: () => "",
-      info: () => "",
-      warning: () => "",
-      removeToast: () => {},
-      clearToasts: () => {},
-      portalTarget: null,
-    };
-  }
-  return context;
 }

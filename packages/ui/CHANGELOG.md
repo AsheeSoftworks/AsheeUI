@@ -1,5 +1,108 @@
 # asheeui
 
+## 0.6.9
+
+### Patch Changes
+
+- ### Switch
+  - Removed error state from Switch
+  
+  ### Autocomplete
+  
+  - Added comprehensive JSDoc comments to the Autocomplete component and its configuration file
+  - Documented all component props with descriptions and default values
+  - Added usage examples for different scenarios
+  - Added `@see` references linking to related components
+  - Applied consistent commenting style matching the existing Input component
+  - Added file-level documentation headers
+  - Organized code sections with consistent separator comments
+  
+  ### DatePicker
+  
+  - Added comprehensive JSDoc comments to all DatePicker component files
+  - Documented all component props with descriptions and default values
+  - Added usage examples for different scenarios
+  - Added `@see` references linking to related components
+  - Applied consistent commenting style matching the existing Input component
+  - Added file-level documentation headers to all related files
+  - Organized code sections with consistent separator comments
+  - Added inline comments for complex logic sections
+  
+  ### Button
+  
+  - Added `startContent` and `endContent` props for icon/adornment slots
+  - Updated documentation with new props and usage examples
+  - Maintained existing behavior for loading states and icon-only mode
+  
+  ### Select
+  
+  - Refactored to use Button component as the trigger
+  - Added `startContent` and `endContent` support via Input props
+  - Extended Input field props (label, description, message, status, etc.)
+  - Removed custom button implementation in favor of Button component
+  - Updated component to follow DRY philosophy by reusing Input props
+  
+  ### MultiSelect
+  
+  - Refactored to use Button component as the trigger
+  - Added `startContent` and `endContent` support via Input props
+  - Extended Input field props (label, description, message, status, etc.)
+  - Removed custom button implementation in favor of Button component
+  - Updated component to follow DRY philosophy by reusing Input props
+  - Consistent prop structure with Select component
+  
+  ### Input
+  
+  - Updated `enableVirtualKeyboard` prop to accept configuration options object
+  - Added support for per-field keyboard customization (layout, size, variant, color, radius, portal)
+  - Updated `useKeyboardField` usage to pass through keyboard options
+  - Updated documentation with new prop type and examples
+  
+  ### Toast
+  
+  - Added per-toast styling options (placement, size, variant, radius, animated)
+  - Extended `ToastShowOptions` to include styling overrides
+  - Added default values to context for consumer access
+  - Updated ToastItem to accept and apply per-toast styling
+  - Refactored into separate files for better organization (ToastContext, ToastProvider, ToastItem)
+  - Improved DRY principles with shared type definitions
+  
+  ### Keyboard
+  
+  - Refactored to be hook-controlled (similar to Toast system)
+  - Added `disabled` prop for global keyboard disable
+  - Added `KeyboardOpenOptions` for per-instance configuration
+  - Updated `useKeyboardField` to accept configuration options
+  - Auto-renders keyboard via provider (no manual placement needed)
+  - Added per-keyboard styling (size, variant, color, radius, portal, layout)
+  - Improved DRY principles with shared type definitions
+  - Separated into multiple files (KeyboardContext, KeyboardProvider, OnScreenKeyboard)
+  
+  ## SelectMenu
+  
+  - Moved z-index from inline style to Tailwind class for better customization
+  - Changed default z-index from inline `999999` to Tailwind class `z-100`
+  
+  # Changeset Summary
+  
+  ## Card
+  
+  - Added comprehensive JSDoc comments to Card component and configuration file
+  - Documented all component props with descriptions and default values
+  - Added usage examples for different scenarios (basic, clickable with image, background image)
+  - Added `@see` references linking to related components
+  - Applied consistent commenting style matching the existing Input component
+  - Added file-level documentation headers
+  - Organized code sections with consistent separator comments
+  - Added inline comments for complex logic sections
+  - Added `CardImageConfig` interface for standardized image configuration
+  - Added `CardImageProps` extending config with `src`, `alt`, and custom `component` support
+  - Added support for three image positions: `top`, `bottom`, and `background`
+  - Added `ratio`, `fit`, and `loading` configuration options for images
+  - Implemented background image rendering with absolute positioning
+  - Added warning for potential rendering issues with custom image components
+  - Fixed Next.js Image component compatibility issues
+
 ## 0.6.8
 
 ### Patch Changes

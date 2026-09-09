@@ -44,6 +44,18 @@ export interface DatePickerConfig extends FieldConfig {
   mode?: PickerMode;
 
   /**
+   * Picker configuration for the calendar popover.
+   * Controls portal behavior and other picker-specific settings.
+   */
+  picker?: PickerConfig;
+}
+
+/**
+ * Picker configuration for the DatePicker component.
+ * Extends DatePickerConfig to allow override of portal settings.
+ */
+export interface PickerConfig {
+  /**
    * Whether to render the calendar popover in a React portal.
    * When true, the popover is rendered at the document body level,
    * escaping any parent DOM hierarchy. This prevents CSS containment
@@ -69,8 +81,6 @@ export interface DatePickerConfig extends FieldConfig {
 export const defaultDatePickerConfig: DatePickerConfig = {
   ...defaultFieldConfig,
   mode: "date",
-  portal: true,
-  portalTarget: null,
 };
 
 /**
@@ -78,11 +88,9 @@ export const defaultDatePickerConfig: DatePickerConfig = {
  * These values are used when instance props, component config,
  * and global defaults are all undefined.
  */
-export const FALLBACK_DATE_PICKER_CONFIG: Required<DatePickerConfig> = {
+export const FALLBACK_DATE_PICKER_CONFIG = {
   ...FALLBACK_FIELD_CONFIG,
   mode: "date",
-  portal: true,
-  portalTarget: null,
 } as const;
 
 declare module "../../libs/registry" {

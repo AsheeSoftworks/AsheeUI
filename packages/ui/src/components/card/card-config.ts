@@ -35,6 +35,51 @@ export type CardImagePosition = "top" | "bottom" | "background";
 export type CardImageLoading = "lazy" | "eager";
 
 /**
+ * Configuration options for the card image.
+ * Controls the placement, aspect ratio, fit, and loading behavior
+ * of images displayed within the card.
+ */
+export interface CardImageConfig {
+  /**
+   * Placement of the card image.
+   * Determines where the image appears relative to the content.
+   *
+   * @default "top"
+   */
+  position?: CardImagePosition;
+
+  /**
+   * Aspect ratio of the positioned image.
+   * Controls the proportional dimensions of the image container.
+   * Common values: "video" (16:9), "square" (1:1), "portrait" (3:4).
+   *
+   * @default "video"
+   */
+  ratio?: ImageRatioKey;
+
+  /**
+   * Object-fit strategy of the positioned image.
+   * Controls how the image fills its container.
+   *
+   * - `cover`: Scales the image to cover the container, cropping if necessary.
+   * - `contain`: Scales the image to fit within the container.
+   * - `fill`: Stretches the image to fill the container.
+   *
+   * @default "cover"
+   */
+  fit?: ImageFit;
+
+  /**
+   * Native loading strategy of the positioned image.
+   * `lazy` defers loading until the image is near the viewport.
+   * `eager` loads the image immediately.
+   *
+   * @default "lazy"
+   */
+  loading?: CardImageLoading;
+}
+
+/**
  * Theme configuration options for the Card component.
  *
  * Set under `components.card` in the AsheeUI config. Values feed the
@@ -45,6 +90,11 @@ export interface CardConfig {
    * Visual style variant.
    * Controls the card's background, border, and shadow treatment.
    *
+   * - `elevated`: Card with box shadow elevation.
+   * - `bordered`: Card with a subtle outline border.
+   * - `flat`: Card with a solid neutral background.
+   * - `ghost`: Transparent card background without a border.
+   *
    * @default "bordered"
    */
   variant?: CardVariant;
@@ -52,6 +102,7 @@ export interface CardConfig {
   /**
    * Content padding and spacing scale.
    * Controls the density of the card's internal spacing.
+   * Larger values provide more padding and gap between elements.
    *
    * @default "md"
    */
@@ -66,56 +117,32 @@ export interface CardConfig {
   radius?: Radius;
 
   /**
-   * Placement of the card image.
-   * Determines where the image appears relative to the content.
-   *
-   * @default "top"
-   */
-  imagePosition?: CardImagePosition;
-
-  /**
-   * Aspect ratio of the positioned image.
-   * Controls the proportional dimensions of the image container.
-   *
-   * @default "video"
-   */
-  imageRatio?: ImageRatioKey;
-
-  /**
-   * Object-fit strategy of the positioned image.
-   * Controls how the image fills its container.
-   *
-   * @default "cover"
-   */
-  imageFit?: ImageFit;
-
-  /**
-   * Native loading strategy of the positioned image.
-   *
-   * @default "lazy"
-   */
-  imageLoading?: CardImageLoading;
-
-  /**
    * Enables the press animation when clickable.
-   * When true, the card scales down slightly on click.
+   * When true, the card scales down slightly on click for tactile feedback.
    *
    * @default true
    */
   animate?: boolean;
+
+  /**
+   * Image configuration for the card.
+   * Controls the placement, aspect ratio, fit, and loading behavior
+   * of the card's image.
+   */
+  image: CardImageConfig;
 }
 
 /**
  * Default config values registered for the Card component.
  *
  * `variant` and `radius` are intentionally absent so they inherit from
- * the global `defaultVariant` / `defaultRadius`.
+ * the global `defaultVariant` / `defaultRadius`. This allows the card
+ * to adapt to the global theme settings while providing sensible defaults
+ * for other properties.
  */
 export const defaultCardConfig: CardConfig = {
   size: "md",
-  imagePosition: "top",
-  imageRatio: "video",
-  imageFit: "cover",
+  image: { position: "top", ratio: "video", fit: "cover" },
   animate: true,
 };
 
@@ -131,14 +158,19 @@ registerComponentDefaults("card", defaultCardConfig);
  * Hard fallback values used when no config tier provides a value.
  * These values are used when instance props, component config,
  * and global defaults are all undefined.
+ *
+ * These provide the absolute minimum defaults to ensure the card
+ * renders correctly even when no configuration is available.
  */
 export const FALLBACK_CARD_CONFIG = {
   size: "md",
   variant: "bordered",
   radius: "md",
-  imagePosition: "top",
-  imageRatio: "video",
-  imageFit: "cover",
-  imageLoading: "lazy",
+  image: {
+    position: "top",
+    ratio: "video",
+    fit: "cover",
+    loading: "lazy",
+  },
   animate: true,
 } as const;
