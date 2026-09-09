@@ -1,5 +1,11 @@
 # asheeui
 
+## 0.6.12
+
+### Patch Changes
+
+- Remove unneccesary tests in asheeui
+
 ## 0.6.11
 
 ### Patch Changes
