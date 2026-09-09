@@ -8,11 +8,10 @@
 
 import { registerComponentDefaults } from "../../libs/registry";
 import {
-  defaultFieldConfig,
   FALLBACK_FIELD_CONFIG,
-  type FieldConfig,
   type FieldSizeKey,
 } from "../field/field-config";
+import { defaultInputConfig, type InputConfig } from "../input";
 
 /**
  * Size key for the switch component.
@@ -26,14 +25,14 @@ export type SwitchSizeKey = FieldSizeKey;
  * Set under `components.switch` in the AsheeUI config. Values feed the
  * component-level fallback tier of the theme cascade.
  */
-export interface SwitchConfig extends FieldConfig {}
+export interface SwitchConfig extends InputConfig {}
 
 /**
  * Default config values registered for the Switch component.
  * Inherits the default field configuration.
  */
 export const defaultSwitchConfig: SwitchConfig = {
-  ...defaultFieldConfig,
+  ...defaultInputConfig,
   radius: "full",
 };
 

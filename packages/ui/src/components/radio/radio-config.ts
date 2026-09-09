@@ -7,11 +7,10 @@
 
 import { registerComponentDefaults } from "../../libs/registry";
 import {
-  defaultFieldConfig,
   FALLBACK_FIELD_CONFIG,
-  type FieldConfig,
   type FieldSizeKey,
 } from "../field/field-config";
+import { defaultInputConfig, type InputConfig } from "../input";
 
 /**
  * Size key for radio components.
@@ -32,7 +31,7 @@ export type RadioVariant = "default" | "card";
  * Set under `components.radio` in the AsheeUI config. Values feed the
  * component-level fallback tier of the theme cascade.
  */
-export interface RadioConfig extends Omit<FieldConfig, "variant"> {
+export interface RadioConfig extends Omit<InputConfig, "variant"> {
   /**
    * Visual style variant.
    * Controls whether the radio appears as a standard button or a card.
@@ -47,7 +46,7 @@ export interface RadioConfig extends Omit<FieldConfig, "variant"> {
  * Sets radius to "full" for circular radio buttons.
  */
 export const defaultRadioConfig: RadioConfig = {
-  ...defaultFieldConfig,
+  ...defaultInputConfig,
   radius: "full",
   variant: "default",
 };

@@ -8,11 +8,10 @@
 
 import { registerComponentDefaults } from "../../libs/registry";
 import {
-  defaultFieldConfig,
   FALLBACK_FIELD_CONFIG,
-  type FieldConfig,
   type FieldSizeKey,
 } from "../field/field-config";
+import { defaultInputConfig, type InputConfig } from "../input";
 
 /**
  * The selection mode of the date picker.
@@ -34,7 +33,7 @@ export type DatePickerSizeKey = FieldSizeKey;
  * Set under `components.datePicker` in the AsheeUI config. Values feed the
  * component-level fallback tier of the theme cascade.
  */
-export interface DatePickerConfig extends FieldConfig {
+export interface DatePickerConfig extends InputConfig {
   /**
    * The selection mode of the picker.
    * Controls whether the picker shows date, time, or both.
@@ -79,7 +78,7 @@ export interface PickerConfig {
  * Inherits field label defaults and sets the default mode to "date".
  */
 export const defaultDatePickerConfig: DatePickerConfig = {
-  ...defaultFieldConfig,
+  ...defaultInputConfig,
   mode: "date",
 };
 

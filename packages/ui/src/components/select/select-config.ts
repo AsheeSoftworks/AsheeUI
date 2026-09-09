@@ -7,11 +7,8 @@
  */
 
 import { registerComponentDefaults } from "../../libs/registry";
-import {
-  defaultFieldConfig,
-  FALLBACK_FIELD_CONFIG,
-  type FieldConfig,
-} from "../field/field-config";
+import { FALLBACK_FIELD_CONFIG } from "../field/field-config";
+import { defaultInputConfig, type InputConfig } from "../input";
 import type { MenuConfig } from "../select-menu";
 
 /**
@@ -21,7 +18,7 @@ import type { MenuConfig } from "../select-menu";
  * and dropdown-menu overrides. Set under `components.select` in
  * the AsheeUI config.
  */
-export interface SelectConfig extends FieldConfig {
+export interface SelectConfig extends InputConfig {
   /**
    * Configuration for the dropdown menu.
    * Controls the menu's visual appearance and behavior.
@@ -31,10 +28,8 @@ export interface SelectConfig extends FieldConfig {
 
 /**
  * Default config values registered for the Select component.
- *
- * Inherits field label defaults from `FALLBACK_FIELD_CONFIG`.
  */
-export const defaultSelectConfig: SelectConfig = defaultFieldConfig;
+export const defaultSelectConfig: SelectConfig = defaultInputConfig;
 
 /**
  * Hard fallback values used when no config tier provides a value.

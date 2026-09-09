@@ -8,11 +8,8 @@
 
 import { registerComponentDefaults } from "../../libs/registry";
 import type { Color, Radius, Size, Variant } from "../../shared";
-import {
-  defaultFieldConfig,
-  FALLBACK_FIELD_CONFIG,
-  type FieldConfig,
-} from "../field/field-config";
+import { FALLBACK_FIELD_CONFIG } from "../field/field-config";
+import { defaultInputConfig, type InputConfig } from "../input";
 import type { MenuConfig } from "../select-menu";
 
 /**
@@ -21,7 +18,7 @@ import type { MenuConfig } from "../select-menu";
  * Set under `components.multiSelect` in the AsheeUI config. Values feed the
  * component-level fallback tier of the theme cascade.
  */
-export interface MultiSelectConfig extends FieldConfig {
+export interface MultiSelectConfig extends InputConfig {
   /**
    * Configuration for the dropdown menu.
    * Controls the menu's visual appearance and behavior.
@@ -60,7 +57,7 @@ export interface MultiSelectConfig extends FieldConfig {
  * Inherits field defaults and sets chip size to "sm".
  */
 export const defaultMultiSelectConfig: MultiSelectConfig = {
-  ...defaultFieldConfig,
+  ...defaultInputConfig,
   chip: {
     size: "sm",
   },
