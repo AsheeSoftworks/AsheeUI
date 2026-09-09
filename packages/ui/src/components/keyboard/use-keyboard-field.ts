@@ -7,7 +7,11 @@
 "use client";
 
 import { type RefObject, useCallback, useContext } from "react";
-import { KeyboardContext, type KeyboardElement } from "./keyboard-context";
+import {
+  KeyboardContext,
+  type KeyboardElement,
+  type KeyboardOpenOptions,
+} from "./KeyboardContext";
 
 /**
  * Hook that connects a form input to the virtual keyboard system.
@@ -20,6 +24,7 @@ import { KeyboardContext, type KeyboardElement } from "./keyboard-context";
  * @param ref - Optional ref to the input element.
  * @param enabled - Whether the keyboard should be enabled for this field.
  *                  Defaults to false (opt-in behavior).
+ * @param options - Optional configuration overrides for this field.
  * @returns An object containing handleFocus, handleBlur, and hasProvider.
  *
  * @example
@@ -30,7 +35,8 @@ import { KeyboardContext, type KeyboardElement } from "./keyboard-context";
  *   const { handleFocus, handleBlur } = useKeyboardField(
  *     "my-input",
  *     inputRef,
- *     true
+ *     true,
+ *     { layout: "numeric", size: "lg" }
  *   );
  *
  *   return (
@@ -44,28 +50,29 @@ import { KeyboardContext, type KeyboardElement } from "./keyboard-context";
  * ```
  *
  * @see KeyboardProvider - The provider that enables the keyboard.
- * @see OnScreenKeyboard - The keyboard UI component.
+ * @see useKeyboard - Hook for accessing the keyboard context.
  */
 export function useKeyboardField(
   id: string,
   ref?: RefObject<KeyboardElement | null>,
-  enabled: boolean = false, // Set default to false (opt-in) or true
+  enabled: boolean = false,
+  options?: KeyboardOpenOptions,
 ) {
   const keyboard = useContext(KeyboardContext);
 
   const handleFocus = useCallback(
     (e?: React.FocusEvent<KeyboardElement>) => {
-      if (!enabled || !keyboard) return;
+      if (!enabled || !keyboard || keyboard.isDisabled) return;
       const element = e?.currentTarget ?? ref?.current;
       if (element) {
-        keyboard.openKeyboard(id, element);
+        keyboard.openKeyboard(id, element, options);
       }
     },
-    [id, ref, enabled, keyboard],
+    [id, ref, enabled, keyboard, options],
   );
 
   const handleBlur = useCallback(() => {
-    if (!enabled || !keyboard) return;
+    if (!enabled || !keyboard || keyboard.isDisabled) return;
     keyboard.requestClose(id);
   }, [id, enabled, keyboard]);
 

@@ -41,7 +41,7 @@ export interface SelectMenuOption {
  * Theme configuration options for the SelectMenu component.
  * Controls the visual appearance of the dropdown menu and its items.
  */
-export interface SelectMenuConfig {
+export interface MenuConfig {
   /**
    * Corner rounding of the dropdown menu.
    * Controls the border-radius of the menu container.
@@ -98,6 +98,22 @@ export interface SelectMenuConfig {
    * @default false
    */
   lockScroll?: boolean;
+
+  /**
+   * Whether to render the menu in a React portal.
+   * When true, the menu is rendered at the document body level.
+   * Defaults to true. This is typically controlled by the parent
+   * component (Select, MultiSelect, Autocomplete) via their own
+   * config or props.
+   */
+  portal?: boolean;
+
+  /**
+   * Custom portal target element for the menu.
+   * When portal is enabled, the menu is rendered into this element.
+   * Defaults to document.body.
+   */
+  portalTarget?: HTMLElement | null;
 }
 
 /**
@@ -105,12 +121,13 @@ export interface SelectMenuConfig {
  * These values are used when instance props, component config,
  * and global defaults are all undefined.
  */
-export const FALLBACK_SELECT_MENU_CONFIG: Required<SelectMenuConfig> = {
-  radius: "md",
-  size: "md",
-  itemVariant: "ghost",
-  itemColor: "primary",
-  activeItemVariant: "faded",
-  activeItemColor: "primary",
+export const FALLBACK_SELECT_MENU_CONFIG = {
+  radius: "md" as Radius,
+  size: "md" as Size,
+  itemVariant: "ghost" as Variant,
+  itemColor: "primary" as Color,
+  activeItemVariant: "faded" as Variant,
+  activeItemColor: "primary" as Color,
   lockScroll: false,
+  portal: true,
 };

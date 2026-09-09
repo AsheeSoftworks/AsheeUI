@@ -84,6 +84,36 @@ export interface ToastItemData {
    * @default true
    */
   dismissible?: boolean;
+
+  /**
+   * Placement for this specific toast.
+   * Overrides the provider's placement setting.
+   */
+  placement?: ToastPlacement;
+
+  /**
+   * Size for this specific toast.
+   * Overrides the provider's size setting.
+   */
+  size?: Size;
+
+  /**
+   * Variant for this specific toast.
+   * Overrides the provider's variant setting.
+   */
+  variant?: Variant;
+
+  /**
+   * Radius for this specific toast.
+   * Overrides the provider's radius setting.
+   */
+  radius?: Radius;
+
+  /**
+   * Animation setting for this specific toast.
+   * Overrides the provider's animated setting.
+   */
+  animated?: boolean;
 }
 
 /**
@@ -157,6 +187,18 @@ export interface ToastConfig {
    * @default true
    */
   portal?: boolean;
+}
+
+/**
+ * Options for showing a toast notification.
+ * Extends ToastItemData but makes id optional.
+ */
+export interface ToastShowOptions extends Omit<ToastItemData, "id"> {
+  /**
+   * Optional unique identifier for the toast.
+   * If not provided, a random ID is generated.
+   */
+  id?: string;
 }
 
 /**

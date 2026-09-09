@@ -28,7 +28,7 @@ import { resolveCascade, resolveRadiusKey } from "../../utils/resolve-token";
 import type { FieldSizeKey } from "../field/field-config";
 import { Input, type InputProps } from "../input/Input";
 import { type SelectMenuOption, useSelectFloating } from "../select-menu";
-import { SelectMenu } from "../select-menu/SelectMenu";
+import { type MenuProps, SelectMenu } from "../select-menu/SelectMenu";
 import {
   type AutocompleteConfig,
   FALLBACK_AUTOCOMPLETE_CONFIG,
@@ -36,13 +36,14 @@ import {
 
 // ─── Component Interface ──────────────────────────────────────────────────────
 
-type BaseAutocompleteProps = AutocompleteConfig &
-  Omit<InputProps, "value" | "onChange">;
-
 /**
  * Configuration options for the Autocomplete component.
+ * Extends InputProps to inherit all input field capabilities including
+ * label, description, validation, and content slots.
  */
-export interface AutocompleteProps extends BaseAutocompleteProps {
+export interface AutocompleteProps
+  extends Omit<InputProps, "value" | "onChange" | "children">,
+    Omit<AutocompleteConfig, "menu"> {
   /**
    * Suggestions shown while the user types.
    * Each option must have a label and a unique value.
@@ -87,12 +88,11 @@ export interface AutocompleteProps extends BaseAutocompleteProps {
   belowList?: ReactNode;
 
   /**
-   * Extra classes applied to the floating dropdown.
+   * Menu configuration overrides including portal, portalTarget, className, and visual styles.
+   * All menu-related props should be passed through this object.
    */
-  dropdownClassName?: string;
+  menu?: MenuProps;
 }
-
-// ─── Component Implementation ─────────────────────────────────────────────────
 
 /**
  * A text input with a filterable suggestion dropdown.
@@ -110,26 +110,31 @@ export interface AutocompleteProps extends BaseAutocompleteProps {
  * By default, the dropdown menu uses React's createPortal to render at the
  * document body level. This ensures the menu escapes CSS containment, overflow
  * clipping, and stacking context issues. The portal can be disabled via the
- * `portal` prop or `components.autocomplete.portal` in the config if the menu
- * needs to stay within a specific parent container.
+ * `menu.portal` prop or `components.autocomplete.menu.portal` in the config
+ * if the menu needs to stay within a specific parent container.
  *
  * @param props - Autocomplete configuration options and input props.
- * @param props.options - Suggestion list.
+ * @param props.options - Suggestion list. Defaults to [].
  * @param props.value - Controlled selected value.
  * @param props.onValueChange - Selection callback.
  * @param props.onInputChange - Raw input change callback.
  * @param props.allowCustomValue - Allow free-form values. Defaults to false.
  * @param props.belowList - Content below the options list.
- * @param props.dropdownClassName - Extra dropdown classes.
- * @param props.menuVariant - Dropdown variant. Defaults to "solid".
- * @param props.color - Dropdown color. Defaults to "default".
- * @param props.radius - Dropdown radius. Defaults to "md".
- * @param props.size - Dropdown density. Defaults to "sm".
+ * @param props.menu - Menu configuration overrides including className, portal, portalTarget, and visual styles.
+ * @param props.variant - Visual style variant. Defaults to "bordered".
+ * @param props.color - Theme accent color. Defaults to "primary".
+ * @param props.radius - Corner rounding. Defaults to "md".
+ * @param props.size - Size of the input. Defaults to "md".
  * @param props.disabled - Whether the input is disabled.
- * @param props.placeholder - Placeholder text for the input.
+ * @param props.placeholder - Placeholder text. Defaults to "Type to search...".
  * @param props.className - Extra classes for the input.
- * @param props.portal - Whether to render the dropdown in a portal. Defaults to true.
- * @param props.portalTarget - Custom portal target element. Defaults to document.body.
+ * @param props.label - Label text for the input.
+ * @param props.description - Description text.
+ * @param props.message - Validation message.
+ * @param props.required - Whether the field is required. Defaults to false.
+ * @param props.status - Validation status.
+ * @param props.startContent - Content at the start of the input.
+ * @param props.endContent - Content at the end of the input.
  *
  * @example
  * ```tsx
@@ -144,6 +149,8 @@ export interface AutocompleteProps extends BaseAutocompleteProps {
  *         { label: "Svelte", value: "svelte" },
  *       ]}
  *       onValueChange={(value) => console.log(value)}
+ *       label="Framework"
+ *       description="Choose your preferred framework"
  *     />
  *   );
  * }
@@ -151,16 +158,24 @@ export interface AutocompleteProps extends BaseAutocompleteProps {
  *
  * @example
  * ```tsx
- * // With free-form values
+ * // With free-form values, custom content, and menu configuration
  * <Autocomplete
  *   allowCustomValue
  *   options={fruits}
  *   onValueChange={(value) => console.log('Selected:', value)}
  *   placeholder="Type a fruit name..."
+ *   belowList={<button onClick={addNew}>Add new fruit</button>}
+ *   isClearable
+ *   menu={{
+ *     className: "custom-dropdown",
+ *     portal: false,
+ *     itemVariant: "solid"
+ *   }}
  * />
  * ```
  *
  * @see AutocompleteConfig - The configuration type for component defaults.
+ * @see Input - The underlying input component for the trigger.
  * @see SelectMenu - The dropdown component used for suggestions.
  * @see useAsheeConfig - Hook for accessing the global configuration.
  */
@@ -173,7 +188,6 @@ export const Autocomplete = forwardRef<HTMLInputElement, AutocompleteProps>(
       onInputChange,
       allowCustomValue = false,
       belowList,
-      dropdownClassName,
       menu,
       variant,
       color,
@@ -184,8 +198,6 @@ export const Autocomplete = forwardRef<HTMLInputElement, AutocompleteProps>(
       disabled,
       placeholder = "Type to search...",
       className,
-      portal: portalProp,
-      portalTarget: portalTargetProp,
       ...inputProps
     },
     ref,
@@ -195,7 +207,7 @@ export const Autocomplete = forwardRef<HTMLInputElement, AutocompleteProps>(
       | AutocompleteConfig
       | undefined;
 
-    // ─── 1. Token Resolvers (4-Tier Cascade) ──────────────────────────────────
+    // ─── Token Resolvers ──────────────────────────────────────────────────
 
     const resolvedVariantKey = resolveCascade<Variant>(
       variant,
@@ -225,21 +237,7 @@ export const Autocomplete = forwardRef<HTMLInputElement, AutocompleteProps>(
       FALLBACK_AUTOCOMPLETE_CONFIG.size,
     );
 
-    const resolvedPortal = resolveCascade<boolean>(
-      portalProp,
-      sectionConfig?.portal,
-      undefined,
-      FALLBACK_AUTOCOMPLETE_CONFIG.portal,
-    );
-
-    const resolvedPortalTarget = resolveCascade<HTMLElement | null>(
-      portalTargetProp,
-      sectionConfig?.portalTarget,
-      undefined,
-      FALLBACK_AUTOCOMPLETE_CONFIG.portalTarget,
-    );
-
-    // ─── 2. State ──────────────────────────────────────────────────────────────
+    // ─── State ──────────────────────────────────────────────────────────────
 
     // Find selected option to compute initial display text
     const selectedOption = useMemo(
@@ -261,7 +259,7 @@ export const Autocomplete = forwardRef<HTMLInputElement, AutocompleteProps>(
       }
     }, [selectedOption, value]);
 
-    // ─── 3. Floating UI ──────────────────────────────────────────────────────
+    // ─── Floating UI ─────────────────────────────────────────────────────
 
     const { refs, floatingStyles, context } =
       useSelectFloating<HTMLInputElement>({
@@ -279,7 +277,7 @@ export const Autocomplete = forwardRef<HTMLInputElement, AutocompleteProps>(
       role,
     ]);
 
-    // ─── 4. Handlers ──────────────────────────────────────────────────────────
+    // ─── Handlers ────────────────────────────────────────────────────────
 
     // Filter options dynamically as user types
     const filteredOptions = useMemo(() => {
@@ -289,7 +287,10 @@ export const Autocomplete = forwardRef<HTMLInputElement, AutocompleteProps>(
       );
     }, [options, inputValue]);
 
-    // Handle Input Changes
+    /**
+     * Handles input changes and updates the search query.
+     * Opens the dropdown and optionally emits custom values.
+     */
     const handleInputChange = useCallback(
       (e: React.ChangeEvent<HTMLInputElement>) => {
         const text = e.target.value;
@@ -304,7 +305,10 @@ export const Autocomplete = forwardRef<HTMLInputElement, AutocompleteProps>(
       [allowCustomValue, onInputChange, onValueChange],
     );
 
-    // Handle Option Selection
+    /**
+     * Handles option selection from the dropdown.
+     * Updates the input value and closes the dropdown.
+     */
     const handleSelectMenuOption = useCallback(
       (option: SelectMenuOption) => {
         setInputValue(option.label);
@@ -360,13 +364,10 @@ export const Autocomplete = forwardRef<HTMLInputElement, AutocompleteProps>(
           onSelectMenuOption={handleSelectMenuOption}
           isSearch={false}
           belowList={belowList}
-          dropdownClassName={dropdownClassName}
           menuProps={menu}
           menuConfig={sectionConfig?.menu}
           initialFocus={-1}
           returnFocus={false}
-          portal={resolvedPortal}
-          portalTarget={resolvedPortalTarget}
         />
       </div>
     );

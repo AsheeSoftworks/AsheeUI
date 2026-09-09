@@ -8,6 +8,8 @@ import type { Color } from "../../shared";
 import type { FieldSizeKey, FieldStatus } from "../field/field-config";
 import { FIELD_STATUS_BORDER_CLASS } from "../field/field-styles";
 
+// ─── Size Classes ────────────────────────────────────────────────────────────
+
 /**
  * CSS classes for date picker trigger size.
  * Maps size keys to Tailwind classes that control the trigger's
@@ -30,6 +32,8 @@ export const DATE_PICKER_CELL_SIZE_CLASS: Record<FieldSizeKey, string> = {
   lg: "size-9 text-sm",
 };
 
+// ─── Status Classes ──────────────────────────────────────────────────────────
+
 /**
  * CSS classes for date picker status border styles.
  * Maps status values to Tailwind classes for border and
@@ -37,6 +41,8 @@ export const DATE_PICKER_CELL_SIZE_CLASS: Record<FieldSizeKey, string> = {
  */
 export const DATE_PICKER_STATUS_BORDER_CLASS: Record<FieldStatus, string> =
   FIELD_STATUS_BORDER_CLASS;
+
+// ─── Color Classes ───────────────────────────────────────────────────────────
 
 /**
  * CSS classes for calendar color variations.

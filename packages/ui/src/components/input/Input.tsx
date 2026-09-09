@@ -35,7 +35,7 @@ import {
   type FieldSizeKey,
   type LabelAlign,
 } from "../field/field-config";
-import { useKeyboardField } from "../keyboard";
+import { type KeyboardOpenOptions, useKeyboardField } from "../keyboard";
 import type { InputConfig } from "./input-config";
 import { INPUT_SIZE_CLASS, INPUT_STATUS_BORDER_CLASS } from "./input-styles";
 
@@ -98,9 +98,12 @@ export interface InputProps extends BaseInputProps {
    * Whether the virtual keyboard should be enabled for mobile devices.
    * Controls the inputmode attribute.
    *
+   * When enabled, the input will use the virtual keyboard system.
+   * Can also be an object to configure the keyboard behavior.
+   *
    * @default true
    */
-  enableVirtualKeyboard?: boolean;
+  enableVirtualKeyboard?: boolean | KeyboardOpenOptions;
 }
 
 /**
@@ -161,19 +164,21 @@ export interface InputProps extends BaseInputProps {
  *
  * @example
  * ```tsx
- * // With validation state
+ * // With virtual keyboard configuration
  * <Input
- *   label="Password"
- *   type="password"
- *   status="error"
- *   message="Password must be at least 8 characters"
- *   required
+ *   label="Numeric Input"
+ *   enableVirtualKeyboard={{
+ *     layout: "numeric",
+ *     size: "lg",
+ *     color: "primary"
+ *   }}
  * />
  * ```
  *
  * @see InputConfig - The configuration type for component defaults.
  * @see FieldShell - The wrapper component for label and validation.
  * @see useAsheeConfig - Hook for accessing the global configuration.
+ * @see useKeyboardField - Hook for connecting inputs to the virtual keyboard.
  */
 export const Input = forwardRef<HTMLInputElement, InputProps>(
   (
@@ -215,8 +220,21 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
     const describedBy =
       [descriptionId, messageId].filter(Boolean).join(" ") || undefined;
 
+    // Determine if keyboard is enabled and get options
+    const isKeyboardEnabled = Boolean(enableVirtualKeyboard);
+    const keyboardOptions =
+      typeof enableVirtualKeyboard === "object" &&
+      enableVirtualKeyboard !== null
+        ? enableVirtualKeyboard
+        : undefined;
+
     const { handleFocus: handleKeyboardFocus, handleBlur: handleKeyboardBlur } =
-      useKeyboardField(fieldId, internalRef, enableVirtualKeyboard);
+      useKeyboardField(
+        fieldId,
+        internalRef,
+        isKeyboardEnabled,
+        keyboardOptions,
+      );
 
     const handleFocus = useCallback(
       (e: React.FocusEvent<HTMLInputElement>) => {

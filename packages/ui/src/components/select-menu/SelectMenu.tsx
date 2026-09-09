@@ -27,9 +27,20 @@ import { Button } from "../button/Button";
 import { Input } from "../input/Input";
 import {
   FALLBACK_SELECT_MENU_CONFIG,
-  type SelectMenuConfig,
+  type MenuConfig,
   type SelectMenuOption,
 } from "./select-menu-config";
+
+/**
+ * Menu props that extend MenuConfig with className.
+ * Used for menu configuration overrides.
+ */
+export type MenuProps = MenuConfig & {
+  /**
+   * Extra CSS classes for the menu container.
+   */
+  className?: string;
+};
 
 /**
  * Props for the SelectMenu component.
@@ -113,19 +124,15 @@ export interface SelectMenuProps {
   belowList?: ReactNode;
 
   /**
-   * Extra CSS classes for the dropdown.
-   */
-  dropdownClassName?: string;
-
-  /**
    * Configuration for menu items from the parent component.
    */
-  menuConfig?: SelectMenuConfig;
+  menuConfig?: MenuConfig;
 
   /**
    * Props override for menu configuration.
+   * Includes className, portal, portalTarget, and visual style options.
    */
-  menuProps?: SelectMenuConfig;
+  menuProps?: MenuProps;
 
   /**
    * Custom render function for each option.
@@ -143,22 +150,6 @@ export interface SelectMenuProps {
    * @default false
    */
   returnFocus?: boolean;
-
-  /**
-   * Whether to render the menu in a React portal.
-   * When true, the menu is rendered at the document body level.
-   * Defaults to true. This is typically controlled by the parent
-   * component (Select, MultiSelect, Autocomplete) via their own
-   * config or props.
-   */
-  portal?: boolean;
-
-  /**
-   * Custom portal target element for the menu.
-   * When portal is enabled, the menu is rendered into this element.
-   * Defaults to document.body.
-   */
-  portalTarget?: HTMLElement | null;
 }
 
 /**
@@ -175,8 +166,8 @@ export interface SelectMenuProps {
  * By default, the menu uses React's createPortal to render at the document
  * body level. This ensures the menu escapes CSS containment, overflow
  * clipping, and stacking context issues. The portal can be disabled via
- * the `portal` prop if the menu needs to stay within a specific parent
- * container. This is typically controlled by the parent component.
+ * the `menuProps.portal` prop if the menu needs to stay within a specific
+ * parent container. This is typically controlled by the parent component.
  *
  * @param props - SelectMenu configuration options.
  * @param props.isOpen - Whether the menu is open.
@@ -189,14 +180,15 @@ export interface SelectMenuProps {
  * @param props.onSelectMenuOption - Callback fired when an option is selected.
  * @param props.isSearch - Whether search is enabled. Defaults to true.
  * @param props.searchPlaceholder - Search placeholder. Defaults to "Search...".
+ * @param props.searchInputName - Name attribute for the search input. Defaults to "select-menu-search".
+ * @param props.searchQuery - Controlled search query value.
+ * @param props.onSearchChange - Callback fired when the search query changes.
  * @param props.belowList - Content below the options list.
- * @param props.dropdownClassName - Extra classes for the dropdown.
  * @param props.menuConfig - Configuration for menu items.
- * @param props.menuProps - Props override for menu configuration.
+ * @param props.menuProps - Props override for menu configuration. Includes className, portal, portalTarget, and visual styles.
  * @param props.renderOption - Custom render function for options.
- * @param props.portal - Whether to render the menu in a portal. Defaults to true.
- * @param props.portalTarget - Custom portal target element. Defaults to document.body.
- * @param props.lockScroll - Whether to lock body scroll. Defaults to true.
+ * @param props.initialFocus - Initial focus target for the FloatingFocusManager.
+ * @param props.returnFocus - Whether to return focus to the trigger after closing. Defaults to false.
  *
  * @example
  * ```tsx
@@ -214,7 +206,28 @@ export interface SelectMenuProps {
  * />
  * ```
  *
- * @see SelectMenuConfig - The configuration type for menu items.
+ * @example
+ * ```tsx
+ * // With custom menu configuration
+ * <SelectMenu
+ *   isOpen={isOpen}
+ *   context={context}
+ *   floatingStyles={floatingStyles}
+ *   getFloatingProps={getFloatingProps}
+ *   setFloatingRef={refs.setFloating}
+ *   options={options}
+ *   selectedValues={selectedValues}
+ *   onSelectMenuOption={handleSelect}
+ *   menuProps={{
+ *     className: "custom-dropdown",
+ *     portal: false,
+ *     itemVariant: "solid",
+ *     activeItemColor: "success"
+ *   }}
+ * />
+ * ```
+ *
+ * @see MenuConfig - The configuration type for menu items.
  * @see Button - The button component used for menu items.
  */
 export const SelectMenu = ({
@@ -232,19 +245,25 @@ export const SelectMenu = ({
   searchQuery,
   onSearchChange,
   belowList,
-  dropdownClassName,
   menuConfig,
-  menuProps,
+  menuProps = {},
   renderOption,
   initialFocus,
   returnFocus,
-  portal = true,
-  portalTarget,
 }: SelectMenuProps) => {
   const config = useAsheeConfig();
   const [internalQuery, setInternalQuery] = useState("");
 
+  /**
+   * The active search query value.
+   * Uses controlled searchQuery if provided, otherwise internal state.
+   */
   const activeQuery = searchQuery ?? internalQuery;
+
+  /**
+   * Handles search query changes.
+   * Calls onSearchChange if provided, otherwise updates internal state.
+   */
   const handleQueryChange = (val: string) => {
     if (onSearchChange) {
       onSearchChange(val);
@@ -260,6 +279,24 @@ export const SelectMenu = ({
     menuConfig?.lockScroll,
     undefined,
     FALLBACK_SELECT_MENU_CONFIG.lockScroll,
+  );
+
+  // Resolve portal configuration
+  const resolvedPortal = resolveCascade<boolean>(
+    menuProps?.portal,
+    menuConfig?.portal,
+    undefined,
+    FALLBACK_SELECT_MENU_CONFIG.portal,
+  );
+
+  // Resolve portal target configuration
+  // Note: portalTarget doesn't have a fallback value since it's a DOM element
+  // We'll use a default of document.body if not provided
+  const resolvedPortalTarget = resolveCascade<HTMLElement | null>(
+    menuProps?.portalTarget,
+    menuConfig?.portalTarget,
+    undefined,
+    typeof document !== "undefined" ? document.body : null,
   );
 
   // ─── 2. Scroll Lock ──────────────────────────────────────────────────────
@@ -285,6 +322,10 @@ export const SelectMenu = ({
 
   // ─── 3. Filter Options ──────────────────────────────────────────────────
 
+  /**
+   * Filters options based on the search query.
+   * Returns all options if search is disabled or query is empty.
+   */
   const filteredOptions = useMemo(() => {
     if (!isSearch || !activeQuery.trim()) return options;
     return options.filter((opt) =>
@@ -292,6 +333,9 @@ export const SelectMenu = ({
     );
   }, [options, isSearch, activeQuery]);
 
+  /**
+   * Checks if a value is currently selected.
+   */
   const isOptionSelected = (val: string | number) =>
     selectedValues.includes(val);
 
@@ -339,11 +383,6 @@ export const SelectMenu = ({
     FALLBACK_SELECT_MENU_CONFIG.size,
   );
 
-  // ─── 5. Portal Target ────────────────────────────────────────────────────
-
-  const resolvedPortalTarget =
-    portalTarget ?? (typeof document !== "undefined" ? document.body : null);
-
   if (!isOpen) return null;
 
   const menuContent = (
@@ -354,83 +393,78 @@ export const SelectMenu = ({
       returnFocus={returnFocus}>
       <div
         ref={setFloatingRef}
-        style={{ ...floatingStyles, zIndex: 999999 }}
-        className="w-full outline-none"
+        style={{ ...floatingStyles }}
+        className={cn(
+          "z-100 w-full outline-none max-h-60 shadow-xl bg-background border border-border p-1 flex flex-col gap-0.5 overflow-y-auto scrollable-hidden",
+          "animate-in fade-in-0 zoom-in-95 slide-in-from-top-1 duration-150 ease-out",
+          menuProps?.className,
+        )}
         {...getFloatingProps()}>
-        <div
-          className={cn(
-            "max-h-60 shadow-xl bg-background border border-border p-1 flex flex-col gap-0.5 overflow-y-auto scrollable-hidden",
-            "animate-in fade-in-0 zoom-in-95 slide-in-from-top-1 duration-150 ease-out",
-            dropdownClassName,
-          )}>
-          {/* Search Input Bar */}
-          {isSearch && (
-            <div className="w-full p-1 mb-1 sticky top-0 z-10 border-b border-border">
-              <Input
-                name={searchInputName}
-                type="text"
-                variant="bordered"
-                radius={resolvedRadiusKey}
-                color={resolvedItemColor}
-                size={resolvedSize}
-                value={activeQuery}
-                onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                  handleQueryChange(e.target.value)
-                }
-                startContent={
-                  <SearchIcon className="w-3.5 h-3.5 text-foreground/70" />
-                }
-                placeholder={searchPlaceholder}
-                autoFocus
-                className="w-full pl-8 h-8 text-xs bg-secondary/30 border-none focus-visible:ring-0"
-              />
-            </div>
-          )}
-
-          {/* Options List */}
-          {filteredOptions.length === 0 ? (
-            <div className="px-3 py-4 text-xs text-foreground/70 text-center">
-              No options found
-            </div>
-          ) : (
-            filteredOptions.map((option) => {
-              const selected = isOptionSelected(option.value);
-
-              if (renderOption) {
-                return renderOption(option, selected);
+        {/* Search Input Bar */}
+        {isSearch && (
+          <div className="w-full p-1 mb-1 sticky top-0 z-10 border-b border-border">
+            <Input
+              name={searchInputName}
+              type="text"
+              variant="bordered"
+              radius={resolvedRadiusKey}
+              color={resolvedItemColor}
+              size={resolvedSize}
+              value={activeQuery}
+              onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                handleQueryChange(e.target.value)
               }
+              startContent={
+                <SearchIcon className="w-3.5 h-3.5 text-foreground/70" />
+              }
+              placeholder={searchPlaceholder}
+              autoFocus
+              className="w-full pl-8 h-8 text-xs bg-secondary/30 border-none focus-visible:ring-0"
+            />
+          </div>
+        )}
 
-              return (
-                <Button
-                  key={String(option.value)}
-                  variant={
-                    selected ? resolvedActiveVariant : resolvedItemVariant
-                  }
-                  color={selected ? resolvedActiveColor : resolvedItemColor}
-                  radius={resolvedRadiusKey}
-                  size={resolvedSize}
-                  isDisabled={option.disabled}
-                  onClick={() => onSelectMenuOption(option)}
-                  className="w-full justify-between font-normal text-left transition-colors truncate">
-                  <span>{option.label}</span>
-                  {selected && (
-                    <CheckIcon className="w-3.5 h-3.5 shrink-0 ml-2" />
-                  )}
-                </Button>
-              );
-            })
-          )}
+        {/* Options List */}
+        {filteredOptions.length === 0 ? (
+          <div className="px-3 py-4 text-xs text-foreground/70 text-center">
+            No options found
+          </div>
+        ) : (
+          filteredOptions.map((option) => {
+            const selected = isOptionSelected(option.value);
 
-          {belowList && (
-            <div className="border-t border-border pt-1 mt-1">{belowList}</div>
-          )}
-        </div>
+            if (renderOption) {
+              return renderOption(option, selected);
+            }
+
+            return (
+              <Button
+                key={String(option.value)}
+                variant={selected ? resolvedActiveVariant : resolvedItemVariant}
+                color={selected ? resolvedActiveColor : resolvedItemColor}
+                radius={resolvedRadiusKey}
+                size={resolvedSize}
+                isDisabled={option.disabled}
+                onClick={() => onSelectMenuOption(option)}
+                className="w-full justify-between font-normal text-left transition-colors truncate">
+                <span>{option.label}</span>
+                {selected && (
+                  <CheckIcon className="w-3.5 h-3.5 shrink-0 ml-2" />
+                )}
+              </Button>
+            );
+          })
+        )}
+
+        {belowList && (
+          <div className="border-t border-border pt-1 mt-1">{belowList}</div>
+        )}
       </div>
     </FloatingFocusManager>
   );
 
-  // Render with or without portal based on portal prop and portalTarget availability
-  if (portal && resolvedPortalTarget) {
+  // Render with or without portal based on resolved portal and portalTarget
+  if (resolvedPortal && resolvedPortalTarget) {
     return createPortal(menuContent, resolvedPortalTarget);
   }
 

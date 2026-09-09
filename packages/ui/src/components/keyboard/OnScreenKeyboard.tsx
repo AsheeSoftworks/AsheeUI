@@ -9,16 +9,15 @@
 
 import { FloatingPortal } from "@floating-ui/react";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { useAsheeConfig } from "../../libs/context";
-import type { Color } from "../../shared";
+import type { Color, Radius, Variant } from "../../shared";
 import { cn } from "../../utils";
 import { Button } from "../button/Button";
-import {
-  FALLBACK_KEYBOARD_CONFIG,
-  type KeyboardConfig,
-  type LayoutName,
+import type { KeyboardElement } from "./KeyboardContext";
+import type {
+  KeyboardConfig,
+  KeyboardSizeKey,
+  LayoutName,
 } from "./keyboard-config";
-import { type KeyboardElement, useKeyboard } from "./keyboard-context";
 import {
   KEYBOARD_KEY_SIZE_CLASS,
   KEYBOARD_SIZE_CLASS,
@@ -95,16 +94,66 @@ function insertAtCursor(char: string) {
 /**
  * Props for the OnScreenKeyboard component.
  */
-export interface OnScreenKeyboardProps extends KeyboardConfig {
+export interface OnScreenKeyboardProps {
+  /**
+   * Whether the keyboard is open.
+   */
+  isOpen: boolean;
+
+  /**
+   * The currently active input element.
+   */
+  activeElement: KeyboardElement | null;
+
+  /**
+   * The keyboard configuration.
+   */
+  config: KeyboardConfig;
+
+  /**
+   * The current layout name.
+   */
+  currentLayout: LayoutName;
+
+  /**
+   * Function to set the layout.
+   */
+  setLayout: (layout: LayoutName) => void;
+
+  /**
+   * Function to force close the keyboard.
+   */
+  forceClose: () => void;
+
+  /**
+   * Size scale for keyboard keys.
+   */
+  size: KeyboardSizeKey;
+
+  /**
+   * Visual variant for keys.
+   */
+  variant: Variant;
+
+  /**
+   * Theme color for keys.
+   */
+  color: Color;
+
+  /**
+   * Corner rounding for keys.
+   */
+  radius: Radius;
+
+  /**
+   * Whether to render the keyboard in a portal.
+   */
+  portal: boolean;
+
   /**
    * Extra CSS classes for the keyboard container.
    */
   className?: string;
-
-  /**
-   * Initial layout to show when the keyboard opens.
-   */
-  initialLayout?: LayoutName;
 
   /**
    * Extra CSS classes for individual keys.
@@ -112,11 +161,9 @@ export interface OnScreenKeyboardProps extends KeyboardConfig {
   keyClassName?: string;
 
   /**
-   * Whether to render the keyboard in a Floating UI portal.
-   * When true, the keyboard is rendered at the document body level.
-   * Defaults to true.
+   * Whether the keyboard is globally disabled.
    */
-  portal?: boolean;
+  disabled?: boolean;
 }
 
 /**
@@ -128,118 +175,76 @@ export interface OnScreenKeyboardProps extends KeyboardConfig {
  * management, physical keyboard synchronization, and visual feedback
  * for pressed keys.
  *
- * The component is controlled by the KeyboardContext and should be
- * placed inside a KeyboardProvider. It automatically shows and hides
- * based on the context state.
- *
- * By default, the keyboard uses FloatingPortal to render at the document
- * body level. This ensures the keyboard appears at the bottom of the screen
- * regardless of where the input is in the DOM tree, escaping CSS containment,
- * overflow clipping, and stacking context issues. The portal can be disabled
- * via the `portal` prop or `components.keyboard.portal` in the config if the
- * keyboard needs to stay within a specific parent container.
+ * The component is controlled by the KeyboardProvider and should not be
+ * used directly. It automatically shows and hides based on the provider state.
  *
  * @param props - OnScreenKeyboard configuration options.
- * @param props.className - Extra CSS classes for the container.
- * @param props.heightClass - CSS height class for the keyboard (deprecated).
- * @param props.size - Size scale for keyboard keys. Defaults to "md".
- * @param props.initialLayout - Initial layout name.
- * @param props.keyClassName - Extra CSS classes for keys.
+ * @param props.isOpen - Whether the keyboard is open.
+ * @param props.activeElement - The active input element.
+ * @param props.config - The keyboard configuration.
+ * @param props.currentLayout - The current layout name.
+ * @param props.setLayout - Function to set the layout.
+ * @param props.forceClose - Function to force close the keyboard.
+ * @param props.size - Size scale for keys.
  * @param props.variant - Visual variant for keys.
  * @param props.color - Theme color for keys.
  * @param props.radius - Corner rounding for keys.
- * @param props.portal - Whether to render the keyboard in a portal. Defaults to true.
+ * @param props.portal - Whether to render in a portal.
+ * @param props.className - Extra CSS classes.
+ * @param props.keyClassName - Extra CSS classes for keys.
+ * @param props.disabled - Whether the keyboard is disabled.
  *
- * @example
- * ```tsx
- * import { KeyboardProvider, OnScreenKeyboard, Input } from "asheeui";
- *
- * export function App() {
- *   return (
- *     <KeyboardProvider size="lg">
- *       <Input label="Search" enableVirtualKeyboard />
- *       <OnScreenKeyboard />
- *     </KeyboardProvider>
- *   );
- * }
- * ```
- *
- * @see KeyboardProvider - The provider that controls the keyboard state.
- * @see useKeyboardField - Hook for connecting inputs to the keyboard.
+ * @internal This component is used internally by KeyboardProvider.
  */
 export function OnScreenKeyboard({
+  isOpen,
+  activeElement,
+  config,
+  currentLayout,
+  setLayout,
+  forceClose,
+  size,
+  variant,
+  color,
+  radius,
+  portal,
   className,
-  initialLayout,
-  size: sizeProp,
-  variant: variantProp,
-  color: colorProp,
-  radius: radiusProp,
   keyClassName,
-  portal: portalProp,
+  disabled = false,
 }: OnScreenKeyboardProps) {
-  const keyboardContext = useKeyboard();
-  if (!keyboardContext) return null;
-
-  const { isOpen, activeElement, config, forceClose } = keyboardContext;
-  const globalConfig = useAsheeConfig();
-
   const activeLayouts = config.layouts ?? {};
   const activeDisplay = config.display ?? {};
-  const defaultLayoutName =
-    config.defaultLayout ?? FALLBACK_KEYBOARD_CONFIG.defaultLayout;
+  const defaultLayoutName = config.defaultLayout ?? "default";
+  const autoShiftBack = config.autoShiftBack ?? true;
 
-  const resolvedSizeKey =
-    sizeProp ?? config.size ?? FALLBACK_KEYBOARD_CONFIG.size;
-
-  // Use heightClass if provided (backward compatibility), otherwise use size-based class
-  const resolvedHeightClass = KEYBOARD_SIZE_CLASS[resolvedSizeKey];
-
-  const resolvedVariantKey =
-    variantProp ??
-    config.variant ??
-    globalConfig.defaultVariant ??
-    FALLBACK_KEYBOARD_CONFIG.variant;
-  const resolvedColorKey =
-    colorProp ??
-    config.color ??
-    globalConfig.defaultColor ??
-    FALLBACK_KEYBOARD_CONFIG.color;
-  const resolvedRadiusKey = radiusProp ?? config.radius;
-  const resolvedPortal =
-    portalProp ?? config.portal ?? FALLBACK_KEYBOARD_CONFIG.portal;
-
-  // Resolve key size class based on the keyboard size
-  const keySizeClass = KEYBOARD_KEY_SIZE_CLASS[resolvedSizeKey];
-
-  const [layout, setLayout] = useState<LayoutName>(
-    initialLayout ?? defaultLayoutName,
-  );
   const [pressedKeys, setPressedKeys] = useState<Set<string>>(new Set());
   const [hoveredToken, setHoveredToken] = useState<string | null>(null);
 
+  // Reset layout when keyboard opens
   useEffect(() => {
     if (isOpen) {
-      setLayout(initialLayout ?? defaultLayoutName);
+      setLayout(defaultLayoutName);
     }
-  }, [isOpen, initialLayout, defaultLayoutName]);
+  }, [isOpen, defaultLayoutName, setLayout]);
 
   const parsedRows = useMemo(() => {
     const rawRows =
-      activeLayouts[layout] || activeLayouts[defaultLayoutName] || [];
+      activeLayouts[currentLayout] || activeLayouts[defaultLayoutName] || [];
 
     return rawRows.map((rowStr, rIdx) => ({
-      id: `${layout}-row-${rIdx}`,
+      id: `${currentLayout}-row-${rIdx}`,
       keys: rowStr.split(" ").map((token, kIdx) => ({
-        id: `${layout}-r${rIdx}-k${kIdx}-${token}`,
+        id: `${currentLayout}-r${rIdx}-k${kIdx}-${token}`,
         token,
       })),
     }));
-  }, [activeLayouts, layout, defaultLayoutName]);
+  }, [activeLayouts, currentLayout, defaultLayoutName]);
 
+  // Physical keyboard synchronization
   useEffect(() => {
-    if (!isOpen) return;
+    if (!isOpen || disabled) return;
 
-    const currentLayoutRows = activeLayouts[layout] || [];
+    const currentLayoutRows = activeLayouts[currentLayout] || [];
     const flatKeys = currentLayoutRows.join(" ").split(" ");
 
     const physicalKeyToToken = (key: string): string | null => {
@@ -277,7 +282,7 @@ export function OnScreenKeyboard({
       window.removeEventListener("keydown", handleKeyDown);
       window.removeEventListener("keyup", handleKeyUp);
     };
-  }, [isOpen, layout, activeLayouts, forceClose]);
+  }, [isOpen, currentLayout, activeLayouts, forceClose, disabled]);
 
   const applyEdit = useCallback(
     (
@@ -301,14 +306,18 @@ export function OnScreenKeyboard({
 
   const handleKeyPress = useCallback(
     (token: string) => {
+      if (disabled) return;
+
       if (token === "{shift}") {
-        setLayout((l) =>
-          l === "shift"
+        // Toggle between shift and default using the currentLayout prop
+        const newLayout =
+          currentLayout === "shift"
             ? defaultLayoutName
-            : l === defaultLayoutName
+            : currentLayout === defaultLayoutName
               ? "shift"
-              : l,
-        );
+              : currentLayout;
+
+        setLayout(newLayout);
         return;
       }
       if (token === "{symbols}") {
@@ -339,16 +348,27 @@ export function OnScreenKeyboard({
       const char = token === "{space}" ? " " : token;
       applyEdit(insertAtCursor(char));
 
-      if (layout === "shift" && config.autoShiftBack) {
+      if (currentLayout === "shift" && autoShiftBack) {
         setLayout(defaultLayoutName);
       }
     },
-    [activeElement, applyEdit, layout, config.autoShiftBack, defaultLayoutName],
+    [
+      activeElement,
+      applyEdit,
+      currentLayout,
+      autoShiftBack,
+      defaultLayoutName,
+      disabled,
+      setLayout,
+    ],
   );
 
-  if (!isOpen) return null;
+  if (!isOpen || disabled) return null;
 
-  // ─── Render Keyboard Content ─────────────────────────────────────────────
+  const resolvedHeightClass =
+    KEYBOARD_SIZE_CLASS[size] || KEYBOARD_SIZE_CLASS.md;
+  const keySizeClass =
+    KEYBOARD_KEY_SIZE_CLASS[size] || KEYBOARD_KEY_SIZE_CLASS.md;
 
   const keyboardContent = (
     <section
@@ -371,16 +391,16 @@ export function OnScreenKeyboard({
                 const keyLabel = activeDisplay[token] ?? token;
 
                 const currentKeyColor: Color = isKeyActive
-                  ? resolvedColorKey
+                  ? color
                   : "secondary";
 
                 return (
                   <Button
                     key={id}
-                    variant={resolvedVariantKey}
+                    variant={variant}
                     color={currentKeyColor}
-                    radius={resolvedRadiusKey}
-                    size={resolvedSizeKey}
+                    radius={radius}
+                    size={size}
                     onClick={() => handleKeyPress(token)}
                     onMouseEnter={() => setHoveredToken(token)}
                     onMouseLeave={() => setHoveredToken(null)}
@@ -401,7 +421,7 @@ export function OnScreenKeyboard({
     </section>
   );
 
-  return resolvedPortal ? (
+  return portal ? (
     <FloatingPortal>{keyboardContent}</FloatingPortal>
   ) : (
     keyboardContent

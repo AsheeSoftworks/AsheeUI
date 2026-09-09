@@ -1,9 +1,9 @@
 /**
  * Switch component for AsheeUI.
  * This file provides the main Switch component implementation, which renders
- * a toggle switch with label, description, and validation support. It supports
+ * a toggle switch with label and description support. It supports
  * both controlled and uncontrolled usage, and integrates with the FieldShell
- * for consistent layout and validation handling. Visual tokens resolve through
+ * for consistent layout handling. Visual tokens resolve through
  * the standard AsheeUI cascade system.
  */
 "use client";
@@ -28,7 +28,6 @@ import { FieldShell } from "../field/FieldShell";
 import type { FieldSizeKey, LabelAlign } from "../field/field-config";
 import { FALLBACK_SWITCH_CONFIG, type SwitchConfig } from "./switch-config";
 import {
-  SWITCH_STATUS_BORDER_CLASS,
   SWITCH_THUMB_SIZE_CLASS,
   SWITCH_THUMB_TRANSLATE_CLASS,
   SWITCH_TRACK_SIZE_CLASS,
@@ -36,7 +35,7 @@ import {
 
 // ─── Component Interface ──────────────────────────────────────────────────────
 
-type BaseSwitchProps = SwitchConfig &
+type BaseSwitchProps = Omit<SwitchConfig, "status"> &
   Omit<
     InputHTMLAttributes<HTMLInputElement>,
     "size" | "onChange" | "children" | "color"
@@ -57,12 +56,6 @@ export interface SwitchProps extends BaseSwitchProps {
    * Provides additional context for the switch.
    */
   description?: string;
-
-  /**
-   * Validation message shown below the switch.
-   * Color is determined by the status prop.
-   */
-  message?: string;
 
   /**
    * Whether the field is required.
@@ -102,23 +95,20 @@ export interface SwitchProps extends BaseSwitchProps {
 // ─── Component Implementation ─────────────────────────────────────────────────
 
 /**
- * A toggle switch with label, description, and validation support.
+ * A toggle switch with label and description support.
  *
  * Switch renders a toggle input that can be checked or unchecked. It
- * supports controlled and uncontrolled usage, validation states, and
- * the standard AsheeUI cascade for visual tokens. The component
- * integrates with FieldShell for label, description, and message
- * handling.
+ * supports controlled and uncontrolled usage, and the standard AsheeUI
+ * cascade for visual tokens. The component integrates with FieldShell for
+ * label and description handling.
  *
  * The component automatically handles accessibility attributes including
- * role="switch", aria-checked, aria-invalid, and aria-busy for loading
- * states. It also supports proper focus management through the native
- * input element.
+ * role="switch", aria-checked, and aria-busy for loading states. It also
+ * supports proper focus management through the native input element.
  *
  * @param props - Switch configuration options.
  * @param props.label - Label text for the switch.
  * @param props.description - Description text.
- * @param props.message - Validation message.
  * @param props.required - Whether the field is required. Defaults to false.
  * @param props.isLoading - Loading state. Defaults to false.
  * @param props.checked - Controlled checked state.
@@ -127,7 +117,6 @@ export interface SwitchProps extends BaseSwitchProps {
  * @param props.size - Size scale. Defaults to "md".
  * @param props.color - Theme accent color. Defaults to "primary".
  * @param props.radius - Corner rounding. Defaults to "full".
- * @param props.status - Validation status. Defaults to "default".
  * @param props.labelAlign - Alignment of the label. Defaults to "left".
  * @param props.disabled - Whether the switch is disabled.
  * @param props.className - Extra CSS classes for the switch.
@@ -142,29 +131,14 @@ export interface SwitchProps extends BaseSwitchProps {
  *   const [checked, setChecked] = useState(false);
  *
  *   return (
- *     <Switch
- *       label="Enable notifications"
- *       description="Receive email notifications for updates"
- *       checked={checked}
- *       onChange={(checked) => setChecked(checked)}
+ *     <Switch * checked="{checked}" description="Receive email notifications for updates" label="Enable notifications" onChange="{(checked)"> setChecked(checked)}
  *     />
  *   );
  * }
  * ```
  *
- * @example
- * ```tsx
- * // With validation
- * <Switch
- *   label="Terms accepted"
- *   status="error"
- *   message="You must accept the terms to continue"
- *   required
- * />
- * ```
- *
  * @see SwitchConfig - The configuration type for component defaults.
- * @see FieldShell - The wrapper component for label and validation.
+ * @see FieldShell - The wrapper component for label and layout.
  * @see useAsheeConfig - Hook for accessing the global configuration.
  */
 export const Switch = forwardRef<HTMLInputElement, SwitchProps>(
@@ -173,11 +147,9 @@ export const Switch = forwardRef<HTMLInputElement, SwitchProps>(
       size,
       color,
       radius,
-      status,
       label,
       labelAlign,
       description,
-      message,
       required,
       isLoading,
       id,
@@ -202,7 +174,7 @@ export const Switch = forwardRef<HTMLInputElement, SwitchProps>(
       useState(defaultChecked);
     const isChecked = controlledChecked ?? uncontrolledChecked;
 
-    // ─── 1. Token Resolvers (4-Tier Cascade) ──────────────────────────────────
+    // ─── Token Resolvers (4-Tier Cascade) ──────────────────────────────────
 
     const resolvedSizeKey = resolveCascade<FieldSizeKey>(
       size,
@@ -224,8 +196,6 @@ export const Switch = forwardRef<HTMLInputElement, SwitchProps>(
       undefined,
       FALLBACK_SWITCH_CONFIG.radius,
     );
-
-    const resolvedStatus = status ?? FALLBACK_SWITCH_CONFIG.status;
 
     const resolvedLabelAlign = resolveCascade<LabelAlign>(
       labelAlign,
@@ -258,10 +228,6 @@ export const Switch = forwardRef<HTMLInputElement, SwitchProps>(
       FALLBACK_SWITCH_CONFIG.radius,
     );
 
-    const statusBorderClass =
-      SWITCH_STATUS_BORDER_CLASS[resolvedStatus] ??
-      SWITCH_STATUS_BORDER_CLASS.default;
-
     const checkedColorClass = resolveVariantClass("solid", resolvedColorKey);
     const isInteractionDisabled = disabled || isLoading;
 
@@ -283,8 +249,6 @@ export const Switch = forwardRef<HTMLInputElement, SwitchProps>(
         label={label}
         labelAlign={resolvedLabelAlign}
         description={description}
-        message={message}
-        status={resolvedStatus}
         required={required}
         isLoading={isLoading}>
         <label
@@ -309,7 +273,6 @@ export const Switch = forwardRef<HTMLInputElement, SwitchProps>(
               disabled={isInteractionDisabled}
               required={required}
               aria-checked={isChecked}
-              aria-invalid={resolvedStatus === "error"}
               aria-busy={isLoading}
               onChange={handleChange}
               className="sr-only peer"
@@ -319,11 +282,10 @@ export const Switch = forwardRef<HTMLInputElement, SwitchProps>(
             {/* Track Background */}
             <div
               className={cn(
-                "absolute inset-0 border transition-colors duration-200 shrink-0",
+                "absolute inset-0 border border-border/60 transition-colors duration-200 shrink-0",
                 "peer-focus-visible:ring-2 peer-focus-visible:ring-primary peer-focus-visible:ring-offset-2",
-                statusBorderClass,
                 radiusClass,
-                isChecked ? checkedColorClass : "bg-secondary/60",
+                isChecked ? checkedColorClass : "bg-secondary",
                 className,
               )}
               style={style}

@@ -28,9 +28,9 @@ import {
   resolveRadiusKey,
 } from "../../utils/resolve-token";
 import { Image } from "../image/Image";
-import type { ImageFit, ImageRatioKey } from "../image/image-config";
 import {
   type CardConfig,
+  type CardImageConfig,
   type CardImageLoading,
   type CardImagePosition,
   type CardVariant,
@@ -43,8 +43,34 @@ import {
   CARD_VARIANT_CLASS,
 } from "./card-styles";
 
-type BaseCardProps = CardConfig &
+type BaseCardProps = Omit<CardConfig, "image"> &
   Omit<HTMLAttributes<HTMLDivElement>, "title" | "children">;
+
+/**
+ * Configuration options for the card image.
+ * Extends CardImageConfig with source and alt text properties.
+ */
+export interface CardImageProps extends CardImageConfig {
+  /**
+   * Source URL of the card image.
+   * When provided, displays an image in the card.
+   */
+  src?: string;
+
+  /**
+   * Alternative text for the card image.
+   * Important for accessibility.
+   *
+   * @default ""
+   */
+  alt?: string;
+
+  /**
+   * Custom image component to render the card image with instead of
+   * the native `<img>` tag (e.g. `next/image`).
+   */
+  component?: ElementType;
+}
 
 /**
  * Configuration options for the Card component.
@@ -104,55 +130,10 @@ export interface CardProps extends BaseCardProps {
   footer?: ReactNode;
 
   /**
-   * Source URL of the card image.
-   * When provided, displays an image in the card.
+   * Image configuration for the card.
+   * Includes src, alt, position, ratio, fit, and loading options.
    */
-  imageSrc?: string;
-
-  /**
-   * Alternative text for the card image.
-   * Important for accessibility.
-   *
-   * @default ""
-   */
-  imageAlt?: string;
-
-  /**
-   * Placement of the image relative to the content.
-   * Determines whether the image appears at the top, bottom, or as a background.
-   *
-   * @default "top"
-   */
-  imagePosition?: CardImagePosition;
-
-  /**
-   * Aspect ratio of the positioned image.
-   * Controls the proportional dimensions of the image container.
-   *
-   * @default "video"
-   */
-  imageRatio?: ImageRatioKey;
-
-  /**
-   * Object-fit strategy of the positioned image.
-   * Controls how the image fills its container.
-   *
-   * @default "cover"
-   */
-  imageFit?: ImageFit;
-
-  /**
-   * Native loading strategy of the positioned image.
-   *
-   * @default "lazy"
-   */
-  imageLoading?: CardImageLoading;
-
-  /**
-   * Custom image component to render the card image with instead of
-   * the native `<img>` tag (e.g. `next/image`).
-   */
-  imageComponent?: ElementType;
+  image?: CardImageProps;
 
   /**
    * Additional props forwarded to `imageComponent`
@@ -193,16 +174,15 @@ export interface CardProps extends BaseCardProps {
  * @param props.header - Custom header node.
  * @param props.body - Explicit body content.
  * @param props.footer - Footer node.
- * @param props.imageSrc - Image source URL.
- * @param props.imageAlt - Image alternative text.
- * @param props.imagePosition - Image placement.
- * @param props.imageRatio - Image aspect ratio.
- * @param props.imageFit - Image object-fit.
- * @param props.imageLoading - Image loading strategy.
- * @param props.imageComponent - Custom image component.
+ * @param props.image - Image configuration object containing src, alt, position, ratio, fit, and loading.
  * @param props.imageProps - Props forwarded to the image component.
  * @param props.children - Card body content.
  * @param props.className - Extra CSS classes for the card.
+ * @param props.id - HTML id attribute.
+ * @param props.style - Inline styles.
+ * @param props.onClick - Click event handler.
+ * @param props.onKeyDown - Keyboard event handler.
+ * @param props.rest - Additional HTML div element props.
  *
  * @example
  * ```tsx
@@ -229,11 +209,33 @@ export interface CardProps extends BaseCardProps {
  * <Card
  *   isClickable
  *   href="/blog/post-1"
- *   imageSrc="/images/post-1.jpg"
- *   imageAlt="Blog post cover"
+ *   image={{
+ *     src: "/images/post-1.jpg",
+ *     alt: "Blog post cover",
+ *     position: "top",
+ *     ratio: "video"
+ *   }}
  *   title="Blog Post Title"
  *   description="A brief description of the blog post."
  * />
+ * ```
+ *
+ * @example
+ * ```tsx
+ * // Card with background image
+ * <Card
+ *   image={{
+ *     src: "/images/hero.jpg",
+ *     alt: "Hero background",
+ *     position: "background",
+ *     fit: "cover"
+ *   }}
+ *   variant="flat"
+ *   title="Hero Title"
+ *   description="Content overlays the background image"
+ * >
+ *   <p>This content appears on top of the background image.</p>
+ * </Card>
  * ```
  *
  * @see CardConfig - The configuration type for component defaults.
@@ -254,13 +256,7 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(
       header,
       body,
       footer,
-      imageSrc,
-      imageAlt = "",
-      imagePosition,
-      imageRatio,
-      imageFit,
-      imageLoading = "lazy",
-      imageComponent,
+      image,
       imageProps,
       className,
       children,
@@ -300,10 +296,10 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(
     );
 
     const resolvedImagePos = resolveCascade<CardImagePosition>(
-      imagePosition,
-      sectionConfig?.imagePosition,
+      image?.position,
+      sectionConfig?.image.position,
       undefined,
-      FALLBACK_CARD_CONFIG.imagePosition,
+      FALLBACK_CARD_CONFIG.image.position,
     );
 
     const resolvedClickable = isClickable ?? Boolean(href || onClick);
@@ -339,15 +335,19 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(
     );
 
     const resolvedLoading = resolveCascade<CardImageLoading>(
-      imageLoading,
-      sectionConfig?.imageLoading,
+      image?.loading,
+      sectionConfig?.image.loading,
       undefined,
-      FALLBACK_CARD_CONFIG.imageLoading,
+      FALLBACK_CARD_CONFIG.image.loading,
     );
 
     const variantClass =
       CARD_VARIANT_CLASS[resolvedVariantKey] ?? CARD_VARIANT_CLASS.bordered;
 
+    /**
+     * Handles click events on the card.
+     * Prevents interaction when disabled and navigates to href if provided.
+     */
     const handleClick = (e: MouseEvent<HTMLDivElement>) => {
       if (isDisabled) {
         e.preventDefault();
@@ -359,6 +359,10 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(
       }
     };
 
+    /**
+     * Handles keyboard events on the card.
+     * Enables Enter and Space keys to trigger click behavior when interactive.
+     */
     const handleKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
       onKeyDown?.(e);
       if (
@@ -372,8 +376,12 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(
     };
 
     // ─── Render helper for top/bottom images ──────────────────────────────
+    /**
+     * Renders a positioned image (top or bottom) with appropriate styling.
+     * Forces eager loading for custom image components to avoid rendering issues.
+     */
     const renderPositionedImage = (position: CardImagePosition) => {
-      if (!imageSrc || resolvedImagePos !== position) return null;
+      if (!image?.src || resolvedImagePos !== position) return null;
 
       const positionStyles = {
         top: "w-full shrink-0 rounded-b-none",
@@ -386,7 +394,7 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(
       // when used with AsheeUIProvider. Force eager loading as a safeguard.
       let finalImageProps = { ...(imageProps ?? {}) };
 
-      if (imageComponent) {
+      if (image?.component) {
         // Check if user set loading="lazy" or priority
         const hasLazy = imageProps?.loading === "lazy";
         const hasPriority = imageProps?.priority === true;
@@ -411,12 +419,12 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(
 
       return (
         <Image
-          src={imageSrc}
-          alt={imageAlt}
-          ratio={imageRatio ?? "video"}
-          fit={imageFit ?? "cover"}
+          src={image.src}
+          alt={image.alt}
+          ratio={image?.ratio ?? "video"}
+          fit={image.fit ?? "cover"}
           className={positionStyles}
-          imageComponent={imageComponent}
+          imageComponent={image.component}
           imageProps={finalImageProps}
           loading={resolvedLoading}
         />
@@ -424,15 +432,19 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(
     };
 
     // ─── Render background image directly (no Image wrapper) ──────────────
+    /**
+     * Renders a background image that fills the entire card.
+     * Uses the custom image component directly without the Image wrapper.
+     */
     const renderBackgroundImage = () => {
-      if (!imageSrc || resolvedImagePos !== "background") return null;
+      if (!image?.src || resolvedImagePos !== "background") return null;
 
-      const ImageComponent = imageComponent || "img";
+      const ImageComponent = image.component || "img";
 
       // ─── FIX: Force eager loading for background images too ──────────────
       let finalImageProps = { ...(imageProps ?? {}) };
 
-      if (imageComponent) {
+      if (image?.component) {
         const hasLazy = imageProps?.loading === "lazy";
         const hasPriority = imageProps?.priority === true;
 
@@ -455,8 +467,8 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(
       return (
         <div className="absolute inset-0 z-0 pointer-events-none">
           <ImageComponent
-            src={imageSrc}
-            alt={imageAlt}
+            src={image.src}
+            alt={image?.alt}
             className="h-full w-full object-cover"
             {...finalImageProps}
           />
