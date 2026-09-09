@@ -1,5 +1,17 @@
 # asheeui
 
+## 0.6.10
+
+### Patch Changes
+
+- ### Toast
+  
+  - Fixed toast placement bug where all toasts rendered at `top-right` regardless of the configured or per-toast `placement`
+  - `ToastProvider` now groups active toasts by their resolved placement and renders one positioned container per placement, instead of a single container using the provider-level placement
+  - Increased toast container `z-index` (`z-50` → `z-99999`) so toasts render above other portaled components
+  - Added `PLACEMENT_CLASSES` to `toast-styles.ts`, mapping each `ToastPlacement` to its fixed-position and alignment classes
+  - Added JSDoc comment to `PLACEMENT_CLASSES` documenting its purpose and usage
+
 ## 0.6.9
 
 ### Patch Changes

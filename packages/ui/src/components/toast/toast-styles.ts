@@ -38,6 +38,22 @@ export const TOAST_FONT_CLASS: Record<Size, string> = {
 };
 
 /**
+ * CSS classes for toast container placement on screen.
+ * Maps each placement to its fixed-position corner/edge classes and
+ * flex alignment (items-*), which controls the stacking edge for
+ * multiple toasts at that placement. Used by ToastProvider to position
+ * the per-placement container sections.
+ */
+export const PLACEMENT_CLASSES: Record<ToastPlacement, string> = {
+  "top-right": "top-0 right-0 items-end",
+  "top-left": "top-0 left-0 items-start",
+  "bottom-right": "bottom-0 right-0 items-end",
+  "bottom-left": "bottom-0 left-0 items-start",
+  "top-center": "top-0 left-1/2 -translate-x-1/2 items-center",
+  "bottom-center": "bottom-0 left-1/2 -translate-x-1/2 items-center",
+};
+
+/**
  * CSS classes for toast title font size.
  * Maps size keys to Tailwind text size and weight classes.
  */

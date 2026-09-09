@@ -566,6 +566,7 @@ export const MultiSelect = forwardRef<HTMLButtonElement, MultiSelectProps>(
               isDisabled={disabled}
               isLoading={isLoading}
               fullWidth
+              animate={false}
               aria-expanded={isOpen}
               aria-haspopup="listbox"
               aria-invalid={resolvedStatus === "error"}

@@ -6,11 +6,8 @@
  */
 
 import { registerComponentDefaults } from "../../libs/registry";
-import {
-  defaultFieldConfig,
-  FALLBACK_FIELD_CONFIG,
-  type FieldConfig,
-} from "../field/field-config";
+import { FALLBACK_FIELD_CONFIG } from "../field/field-config";
+import { defaultInputConfig, type InputConfig } from "../input";
 import type { MenuConfig } from "../select-menu";
 
 /**
@@ -20,7 +17,7 @@ import type { MenuConfig } from "../select-menu";
  * and dropdown-menu overrides. Set under `components.autocomplete` in
  * the AsheeUI config.
  */
-export interface AutocompleteConfig extends FieldConfig {
+export interface AutocompleteConfig extends InputConfig {
   /**
    * Configuration for the dropdown menu that displays suggestions.
    * Controls the menu's visual appearance and behavior.
@@ -34,7 +31,7 @@ export interface AutocompleteConfig extends FieldConfig {
  * Inherits field label defaults from `FALLBACK_FIELD_CONFIG`.
  */
 export const defaultAutocompleteConfig: AutocompleteConfig = {
-  ...defaultFieldConfig,
+  ...defaultInputConfig,
 };
 
 /**

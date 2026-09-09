@@ -21,6 +21,7 @@ import {
   type ToastPlacement,
   type ToastShowOptions,
 } from "./toast-config";
+import { PLACEMENT_CLASSES } from "./toast-styles";
 
 // ─── Component Props ──────────────────────────────────────────────────────────
 
@@ -355,34 +356,45 @@ export function ToastProvider({
 
   // ─── Render Toast Container ───────────────────────────────────────────────
 
+  const toastsByPlacement = useMemo(() => {
+    const groups: Partial<Record<ToastPlacement, ToastItemData[]>> = {};
+    for (const t of toasts) {
+      const p = t.placement ?? resolvedPlacement;
+      const group = groups[p] ?? [];
+      groups[p] = group;
+      group.push(t);
+    }
+    return groups;
+  }, [toasts, resolvedPlacement]);
+
   const toastContainer = (
-    <section
-      aria-label="Notifications"
-      className={cn(
-        "fixed z-50 flex flex-col gap-3 pointer-events-none p-4 max-h-screen overflow-clip",
-        resolvedPlacement === "top-right" && "top-0 right-0 items-end",
-        resolvedPlacement === "top-left" && "top-0 left-0 items-start",
-        resolvedPlacement === "bottom-right" && "bottom-0 right-0 items-end",
-        resolvedPlacement === "bottom-left" && "bottom-0 left-0 items-start",
-        resolvedPlacement === "top-center" &&
-          "top-0 left-1/2 -translate-x-1/2 items-center",
-        resolvedPlacement === "bottom-center" &&
-          "bottom-0 left-1/2 -translate-x-1/2 items-center",
-        className,
-      )}>
-      {toasts.map((toastItem) => (
-        <ToastItem
-          key={toastItem.id}
-          {...toastItem}
-          onDismiss={removeToast}
-          placement={toastItem.placement ?? resolvedPlacement}
-          size={toastItem.size ?? resolvedSizeKey}
-          variant={toastItem.variant ?? resolvedVariantKey}
-          radius={toastItem.radius ?? resolvedRadiusKey}
-          animated={toastItem.animated ?? resolvedAnimated}
-        />
+    <>
+      {(
+        Object.entries(toastsByPlacement) as [ToastPlacement, ToastItemData[]][]
+      ).map(([placementKey, items]) => (
+        <section
+          key={placementKey}
+          aria-label="Notifications"
+          className={cn(
+            "fixed z-99999 flex flex-col gap-3 pointer-events-none p-4 max-h-screen overflow-clip",
+            PLACEMENT_CLASSES[placementKey],
+            className,
+          )}>
+          {items.map((toastItem) => (
+            <ToastItem
+              key={toastItem.id}
+              {...toastItem}
+              onDismiss={removeToast}
+              placement={placementKey}
+              size={toastItem.size ?? resolvedSizeKey}
+              variant={toastItem.variant ?? resolvedVariantKey}
+              radius={toastItem.radius ?? resolvedRadiusKey}
+              animated={toastItem.animated ?? resolvedAnimated}
+            />
+          ))}
+        </section>
       ))}
-    </section>
+    </>
   );
 
   return (
