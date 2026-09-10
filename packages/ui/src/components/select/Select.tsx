@@ -10,12 +10,6 @@
 "use client";
 
 import {
-  useClick,
-  useDismiss,
-  useInteractions,
-  useRole,
-} from "@floating-ui/react";
-import {
   forwardRef,
   type ReactNode,
   useCallback,
@@ -363,21 +357,18 @@ export const Select = forwardRef<HTMLButtonElement, SelectProps>(
 
     // ─── Floating UI ─────────────────────────────────────────────────────
 
-    const { refs, floatingStyles, context, isPositioned } =
-      useSelectFloating<HTMLButtonElement>({
-        isOpen,
-        onOpenChange: setIsOpen,
-        disabled,
-      });
-
-    const click = useClick(context, { enabled: !disabled });
-    const dismiss = useDismiss(context);
-    const role = useRole(context, { role: "listbox" });
-    const { getReferenceProps, getFloatingProps } = useInteractions([
-      click,
-      dismiss,
-      role,
-    ]);
+    const {
+      refs,
+      context,
+      floatingStyles,
+      isPositioned,
+      getReferenceProps,
+      getFloatingProps,
+    } = useSelectFloating<HTMLButtonElement>({
+      isOpen,
+      onOpenChange: setIsOpen,
+      disabled,
+    });
 
     // ─── Handlers ────────────────────────────────────────────────────────
 
@@ -417,7 +408,6 @@ export const Select = forwardRef<HTMLButtonElement, SelectProps>(
 
     // ─── Render ─────────────────────────────────────────────────────────
 
-    // Get reference props from Floating UI, excluding any that conflict with buttonProps
     const referenceProps = getReferenceProps();
 
     return (

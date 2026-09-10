@@ -441,7 +441,7 @@ export const MultiSelect = forwardRef<HTMLButtonElement, MultiSelectProps>(
 
     // ─── Floating UI ─────────────────────────────────────────────────────
 
-    const { refs, floatingStyles, context, isPositioned } =
+    const { refs, context, isPositioned, floatingStyles } =
       useSelectFloating<HTMLButtonElement>({
         isOpen,
         onOpenChange: setIsOpen,
@@ -610,8 +610,8 @@ export const MultiSelect = forwardRef<HTMLButtonElement, MultiSelectProps>(
             {/* Floating SelectMenu */}
             <SelectMenu
               isOpen={isOpen}
-              context={context}
               floatingStyles={floatingStyles}
+              context={context}
               getFloatingProps={getFloatingProps}
               setFloatingRef={refs.setFloating}
               isPositioned={isPositioned}

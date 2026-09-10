@@ -55,13 +55,15 @@ export interface DatePickerConfig extends InputConfig {
  */
 export interface PickerConfig {
   /**
-   * Whether to render the calendar popover in a React portal.
+   * Whether to render the calendar popover through Floating UI's
+   * `FloatingPortal`.
    * When true, the popover is rendered at the document body level,
    * escaping any parent DOM hierarchy. This prevents CSS containment
    * and stacking context issues. Defaults to true because popovers
    * should always appear above other content.
    *
    * @default true
+   * @see FloatingPortal - https://floating-ui.com/docs/FloatingPortal
    */
   portal?: boolean;
 
@@ -71,6 +73,16 @@ export interface PickerConfig {
    * Defaults to document.body.
    */
   portalTarget?: HTMLElement | null;
+
+  /**
+   * Whether to lock page scroll while the calendar popover is open.
+   * When true, the page behind the popover cannot scroll. Uses
+   * scroll-position-compensated `position: fixed` on `<body>` so locking
+   * does not jump the page back to the top.
+   *
+   * @default true
+   */
+  lockScroll?: boolean;
 }
 
 /**

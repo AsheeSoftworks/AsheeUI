@@ -115,7 +115,6 @@ class ThemeController {
    * - Never writes to storage (only `setTheme` persists user intent).
    */
   configure({ defaultTheme, themes }: ThemeConfigInput): void {
-    console.log("[Theme] configure called with:", { defaultTheme, themes });
     this.defaultTheme = defaultTheme;
     this.availableThemes = themes;
 
@@ -127,11 +126,9 @@ class ThemeController {
     }
 
     const stored = window.localStorage.getItem(THEME_STORAGE_KEY);
-    console.log("[Theme] Retrieved from localStorage:", stored);
 
     const hasValidStored =
       stored !== null && this.isValid(stored as ThemeSelection);
-    console.log("[Theme] Is stored theme valid?", hasValidStored);
 
     if (!hasValidStored) {
       if (stored !== null) {
@@ -143,15 +140,12 @@ class ThemeController {
     }
 
     this.selection = hasValidStored ? (stored as ThemeSelection) : defaultTheme;
-    console.log("[Theme] Final selection:", this.selection);
 
     this.applySelection();
-    console.log("[Theme] Applied selection.");
 
     this.listeners.forEach((l) => {
       l();
     });
-    console.log("[Theme] Notified all listeners.");
   }
 
   /**

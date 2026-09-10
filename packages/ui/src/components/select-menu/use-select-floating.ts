@@ -1,30 +1,35 @@
+// useSelectFloating.ts
+
 /**
- * Shared Floating UI positioning hook for dropdowns and menus.
- * This file provides a reusable hook that configures Floating UI for
- * dropdown components like Select, MultiSelect, and Autocomplete.
- * It handles positioning, flipping, shifting, and size management
- * with consistent defaults across the library. Dropdowns are positioned
- * with `strategy: "fixed"` and tracked with Floating UI's event-driven
- * `autoUpdate` (ancestor scroll/resize), keeping body-portaled menus
- * aligned while the page scrolls without per-frame re-rendering cost.
+ * Shared Floating UI positioning and interaction hook for dropdowns and
+ * menus. This file provides a reusable hook that configures Floating UI
+ * for dropdown components like Select, MultiSelect, and Autocomplete.
+ * It handles positioning, flipping, shifting, size management, and the
+ * standard click/dismiss/role interaction wiring, with consistent
+ * defaults across the library.
  */
 
 "use client";
 
+import type { UseInteractionsReturn } from "@floating-ui/react";
 import {
   autoUpdate,
   flip,
-  size as floatingSize,
   offset,
   type Placement,
   shift,
-  type UseFloatingReturn,
+  size,
+  useClick,
+  useDismiss,
   useFloating,
+  useInteractions,
+  useRole,
 } from "@floating-ui/react";
 
 /**
  * Configuration options for the useSelectFloating hook.
- * Controls the floating element's behavior, positioning, and size.
+ * Controls the floating element's behavior, positioning, size, and
+ * interaction wiring (click-to-open, dismiss, and ARIA role).
  */
 export interface UseSelectFloatingProps {
   /**
@@ -41,7 +46,8 @@ export interface UseSelectFloatingProps {
 
   /**
    * Whether the floating element is disabled.
-   * When true, the floating element does not open.
+   * When true, the floating element does not open and click interaction
+   * is disabled.
    *
    * @default false
    */
@@ -77,18 +83,42 @@ export interface UseSelectFloatingProps {
    * @default true
    */
   matchReferenceWidth?: boolean;
+
+  /**
+   * ARIA role applied to the floating element via useRole.
+   * "listbox" fits Select/MultiSelect/Autocomplete; a component like
+   * DatePicker reusing this hook can pass "dialog" instead.
+   *
+   * @default "listbox"
+   */
+  role?: "listbox" | "menu" | "dialog" | "tooltip" | "grid" | "tree";
 }
 
 /**
- * Shared Floating UI positioning hook for dropdowns and menus.
- * Generic `T` allows passing `HTMLButtonElement`, `HTMLInputElement`, etc.
+ * Return value of useSelectFloating. Combines Floating UI's positioning
+ * context with the resolved interaction prop-getters, so consumers don't
+ * need to wire useClick/useDismiss/useRole/useInteractions themselves.
+ */
+export interface UseSelectFloatingReturn<T extends HTMLElement> {
+  refs: ReturnType<typeof useFloating<T>>["refs"];
+  context: ReturnType<typeof useFloating<T>>["context"];
+  floatingStyles: React.CSSProperties;
+  isPositioned: boolean;
+  getReferenceProps: UseInteractionsReturn["getReferenceProps"];
+  getFloatingProps: UseInteractionsReturn["getFloatingProps"];
+}
+
+/**
+ * Shared Floating UI positioning and interaction hook for dropdowns and
+ * menus. Generic `T` allows passing `HTMLButtonElement`, `HTMLInputElement`,
+ * etc.
  *
  * This hook configures Floating UI with sensible defaults for dropdown
- * components. It handles automatic position updates, viewport edge detection
- * via flip and shift middleware, and optional width matching of the
- * reference element. Positioning uses `strategy: "fixed"` with Floating
- * UI's event-driven `autoUpdate` tracking so portaled menus stay aligned
- * while the page scrolls without paying per-frame re-render cost.
+ * components: viewport edge detection via flip and shift middleware,
+ * optional width matching of the reference element, and the standard
+ * click-to-open / dismiss / ARIA role interaction set via useInteractions.
+ * Consumers get back ready-to-spread `getReferenceProps`/`getFloatingProps`
+ * instead of wiring useClick/useDismiss/useRole themselves.
  *
  * @param props - Configuration options for the floating element.
  * @param props.isOpen - Whether the floating element is open.
@@ -98,22 +128,24 @@ export interface UseSelectFloatingProps {
  * @param props.offsetDistance - Distance from reference in pixels. Defaults to 4.
  * @param props.padding - Viewport padding for shift middleware. Defaults to 8.
  * @param props.matchReferenceWidth - Whether to match reference width. Defaults to true.
- * @returns The Floating UI context including refs, styles, middleware, and
- * the `isPositioned` flag for gating initial-render visibility.
+ * @param props.role - ARIA role for the floating element. Defaults to "listbox".
+ * @returns Floating UI refs/context/styles plus `isPositioned` and the
+ * resolved `getReferenceProps`/`getFloatingProps` prop-getters.
  *
  * @example
  * ```tsx
- * const { refs, floatingStyles, context } = useSelectFloating({
- *   isOpen,
- *   onOpenChange: setIsOpen,
- *   disabled: props.disabled,
- * });
+ * const { refs, context, floatingStyles, getReferenceProps, getFloatingProps } =
+ *   useSelectFloating({
+ *     isOpen,
+ *     onOpenChange: setIsOpen,
+ *     disabled: props.disabled,
+ *   });
  *
  * return (
  *   <>
- *     <button ref={refs.setReference}>Toggle</button>
+ *     <button ref={refs.setReference} {...getReferenceProps()}>Toggle</button>
  *     {isOpen && (
- *       <div ref={refs.setFloating} style={floatingStyles}>
+ *       <div ref={refs.setFloating} style={floatingStyles} {...getFloatingProps()}>
  *         Content
  *       </div>
  *     )}
@@ -132,24 +164,19 @@ export function useSelectFloating<T extends HTMLElement = HTMLElement>({
   offsetDistance = 4,
   padding = 8,
   matchReferenceWidth = true,
-}: UseSelectFloatingProps): UseFloatingReturn<T> {
-  return useFloating<T>({
+  role = "listbox",
+}: UseSelectFloatingProps): UseSelectFloatingReturn<T> {
+  const floating = useFloating<T>({
     open: isOpen,
     onOpenChange: (open) => !disabled && onOpenChange(open),
     placement,
     strategy: "fixed",
-    // Event-driven tracking (ancestorScroll + ancestorResize, both on by
-    // default) is sufficient to keep a fixed-strategy floating element
-    // aligned during scroll, and far cheaper than polling every animation
-    // frame. animationFrame:true doesn't fix scroll lag on its own — the
-    // actual cost was re-rendering the option list on every tick; see
-    // SelectMenuOptionsList in SelectMenu.tsx.
     whileElementsMounted: autoUpdate,
     middleware: [
       offset(offsetDistance),
       flip(),
       shift({ padding }),
-      floatingSize({
+      size({
         apply({ availableHeight, elements }) {
           Object.assign(elements.floating.style, {
             maxHeight: `${availableHeight}px`,
@@ -161,4 +188,24 @@ export function useSelectFloating<T extends HTMLElement = HTMLElement>({
       }),
     ],
   });
+
+  const { context } = floating;
+
+  const click = useClick(context, { enabled: !disabled });
+  const dismiss = useDismiss(context);
+  const roleInteraction = useRole(context, { role });
+  const { getReferenceProps, getFloatingProps } = useInteractions([
+    click,
+    dismiss,
+    roleInteraction,
+  ]);
+
+  return {
+    refs: floating.refs,
+    context,
+    floatingStyles: floating.floatingStyles,
+    isPositioned: floating.isPositioned,
+    getReferenceProps,
+    getFloatingProps,
+  };
 }

@@ -92,19 +92,23 @@ export interface MenuConfig {
 
   /**
    * Whether to lock body scroll when the dropdown is open.
-   * When true, the page behind the dropdown cannot scroll.
-   * This prevents the page from scrolling while interacting with the dropdown.
+   * When true, the page behind the dropdown cannot scroll, using
+   * scroll-position-compensated `position: fixed` on `<body>` so the
+   * page doesn't jump. This prevents the page from scrolling while
+   * interacting with the dropdown.
    *
-   * @default false
+   * @default true
    */
   lockScroll?: boolean;
 
   /**
-   * Whether to render the menu in a React portal.
+   * Whether to render the menu through Floating UI's `FloatingPortal`.
    * When true, the menu is rendered at the document body level.
    * Defaults to true. This is typically controlled by the parent
    * component (Select, MultiSelect, Autocomplete) via their own
    * config or props.
+   *
+   * @see FloatingPortal - https://floating-ui.com/docs/FloatingPortal
    */
   portal?: boolean;
 
@@ -128,6 +132,6 @@ export const FALLBACK_SELECT_MENU_CONFIG = {
   itemColor: "primary" as Color,
   activeItemVariant: "faded" as Variant,
   activeItemColor: "primary" as Color,
-  lockScroll: false,
+  lockScroll: true,
   portal: true,
 };
