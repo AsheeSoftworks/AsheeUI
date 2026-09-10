@@ -193,15 +193,3 @@ If component styles are missing or provider errors occur:
 ## License
 
 MIT. See [LICENSE](./LICENSE).
-
----
-
-### Key changes from your draft
-
-- **Added an Installation section** — your draft jumped straight from the intro to "Usage" with a single `npx` example. npm readers scan for install instructions first, so making the two install paths (on-demand vs. dev dependency) explicit helps.
-- **Pulled the full command reference into the README** — your CLI docs file had all the options, aliases, and "what it does/fixes" details. Since `@asheeui/cli` is its own npm package, that content belongs here too, not just on the docs site.
-- **Converted the CLI Reference's `<PackageManagerTabs>` component** into plain `bash` code blocks — React components don't render on npm, so the install instructions now show up as text.
-- **Added the "Generated config" section** — readers want to see what the CLI actually writes before running it.
-- **Brought over the Troubleshooting section** — this is the kind of thing npm readers search for when something breaks, and it was missing from your draft.
-- **Made the docs links absolute** (`https://asheeui.com/docs/...`) — relative links like `/docs/configuration` break on npm's markdown renderer, which doesn't know your site's base URL.
-- **Minor copy fixes** — "and import the `config`" → "and imports the `config`" in the init steps; kept your existing intro and links intact since they were already clear.
