@@ -13,8 +13,8 @@ body:
     id: description
     attributes:
       label: Description
-      description: What happened, and what did you expect to happen?
-      placeholder: Describe the bug and the expected behavior.
+      description: A clear description of the bug.
+      placeholder: Describe what is wrong.
     validations:
       required: true
   - type: textarea
@@ -29,6 +29,22 @@ body:
       render: markdown
     validations:
       required: true
+  - type: textarea
+    id: expected-behavior
+    attributes:
+      label: Expected behavior
+      description: What did you expect to happen?
+      placeholder: The button should render with the solid primary styles.
+    validations:
+      required: true
+  - type: textarea
+    id: actual-behavior
+    attributes:
+      label: Actual behavior
+      description: What actually happened? Include screenshots or error output when useful.
+      placeholder: The button renders with no background color.
+    validations:
+      required: true
   - type: input
     id: reproduction-link
     attributes:
@@ -37,18 +53,27 @@ body:
       placeholder: https://codesandbox.io/...
     validations:
       required: false
-  - type: textarea
-    id: environment
+  - type: input
+    id: asheeui-version
     attributes:
-      label: Environment
-      description: Share your runtime environment details.
-      placeholder: |
-        OS: macOS 15
-        Browser: Chrome 126
-        asheeui version: 0.5.0
-        React version: 19.0.0
-        Package manager: pnpm 11
-      render: markdown
+      label: AsheeUI version
+      description: The version of `asheeui` you are using, for example from your lockfile or `package.json`.
+      placeholder: 0.6.13
+    validations:
+      required: true
+  - type: input
+    id: react-version
+    attributes:
+      label: React version
+      placeholder: 19.2.8
+    validations:
+      required: true
+  - type: input
+    id: browser-environment
+    attributes:
+      label: Browser or environment
+      description: Where did you see the bug? Include your OS and browser when relevant.
+      placeholder: Chrome 126 on macOS 15
     validations:
       required: true
   - type: checkboxes

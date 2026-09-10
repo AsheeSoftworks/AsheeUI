@@ -6,7 +6,7 @@
   "author": "Ashee Softworks asheesoftworks@gmail.com",
   "repository": {
     "type": "git",
-    "url": "https://github.com/AsheeSoftworks/asheeui.git"
+    "url": "git+https://github.com/AsheeSoftworks/AsheeUI.git"
   },
   "homepage": "https://asheeui.com",
   "publishConfig": {
@@ -15,7 +15,6 @@
   },
   "scripts": {
     "build": "turbo run build",
-    "dev": "turbo run dev",
     "lint": "biome lint",
     "check": "biome check",
     "format": "biome format --write",

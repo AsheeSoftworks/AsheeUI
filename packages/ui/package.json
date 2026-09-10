@@ -1,10 +1,34 @@
 {
   "name": "asheeui",
-  "version": "0.6.13",
+  "version": "0.6.14",
+  "description": "Accessible and customizable React primitives engineered with Tailwind CSS.",
+  "author": "Ashee Softworks <asheesoftworks@gmail.com>",
+  "homepage": "https://asheeui.com",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AsheeSoftworks/AsheeUI.git",
+    "directory": "packages/ui"
+  },
+  "bugs": {
+    "url": "https://github.com/AsheeSoftworks/AsheeUI/issues"
+  },
+  "keywords": [
+    "react",
+    "react-components",
+    "component-library",
+    "design-system",
+    "ui-kit",
+    "tailwindcss",
+    "tailwind",
+    "typescript",
+    "accessible",
+    "a11y",
+    "floating-ui",
+    "headless"
+  ],
   "type": "module",
   "main": "./src/index.ts",
   "types": "./src/index.ts",
-  "style": "./src/index.css",
   "exports": {
     ".": {
       "types": "./src/index.ts",
@@ -19,6 +43,7 @@
     "./src/*": "./src/*"
   },
   "publishConfig": {
+    "provenance": true,
     "main": "./dist/index.js",
     "module": "./dist/index.js",
     "types": "./dist/index.d.ts",

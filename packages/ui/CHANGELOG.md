@@ -1,5 +1,18 @@
 # asheeui
 
+## 0.6.14
+
+### Patch Changes
+
+- ### asheeui
+  
+  - Removed the stale top level `style` field from package.json. Style resolution is handled through the `exports` field, and the removed field pointed at a path that does not exist in the published package.
+  
+  ### Docs
+  
+  - Removed references to a local playground app that is not part of the published repository.
+  - Added a short section to CONTRIBUTING.md explaining how to test local changes by building the package and linking it into a separate project.
+
 ## 0.6.13
 
 ### Patch Changes

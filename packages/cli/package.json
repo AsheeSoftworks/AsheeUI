@@ -1,6 +1,29 @@
 {
   "name": "@asheeui/cli",
   "version": "0.6.4",
+  "description": "Scaffold and maintain AsheeUI in an existing React app, with framework detection, provider wiring, and a doctor command.",
+  "author": "Ashee Softworks <asheesoftworks@gmail.com>",
+  "homepage": "https://asheeui.com",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AsheeSoftworks/AsheeUI.git",
+    "directory": "packages/cli"
+  },
+  "bugs": {
+    "url": "https://github.com/AsheeSoftworks/AsheeUI/issues"
+  },
+  "keywords": [
+    "asheeui",
+    "cli",
+    "scaffold",
+    "codegen",
+    "react",
+    "tailwindcss",
+    "nextjs",
+    "vite",
+    "tanstack-start",
+    "setup"
+  ],
   "bin": {
     "asheeui": "./dist/index.mjs"
   },
@@ -14,6 +37,7 @@
     }
   },
   "publishConfig": {
+    "provenance": true,
     "main": "./dist/index.mjs",
     "types": "./dist/index.d.mts",
     "exports": {
