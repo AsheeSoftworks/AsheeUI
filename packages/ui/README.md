@@ -208,16 +208,3 @@ See the [Theming docs](/docs/theming) for the full token list.
 ## License
 
 MIT
-
----
-
-### Key changes from your draft
-
-- **Added a title and tagline** — npm shows this at the top, so a proper `# asheeui` heading and one-line description is important.
-- **Added a Features section** — npm readers skim; highlighting the key selling points (config-driven, Tailwind v4, theming, TypeScript) helps them decide quickly.
-- **Folded the framework-specific installation guides into a "Framework guides" list** — the full TanStack/Vite/Next installation content belongs in the docs site, not the npm README. Linking out keeps the README scannable.
-- **Added a real "Configuration" section** — your draft mentioned config-driven but never showed it. I pulled the precedence rules and an example from your Configuration docs.
-- **Added a "Theming" section** — same reasoning. The `useTheme` hook and custom theme example are the library's headline features, so they belong on the front page.
-- **Added License and Links sections** — standard npm README conventions.
-- **Tightened the Quick start** — kept the CLI-first flow but made the manual setup explicit so readers without the CLI aren't stranded.
-- **Preserved all `<PackageManagerTabs>` references** where they belong (docs site) but replaced them with plain `bash` blocks in the README, since npm's markdown renderer won't execute your React components.

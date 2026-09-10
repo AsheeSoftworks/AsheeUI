@@ -1,5 +1,11 @@
 # asheeui
 
+## 0.6.15
+
+### Patch Changes
+
+- update(doc): Remove unwanted section from Readme.md
+
 ## 0.6.14
 
 ### Patch Changes
