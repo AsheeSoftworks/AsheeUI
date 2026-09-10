@@ -1,5 +1,11 @@
 # @asheeui/cli
 
+## 0.6.5
+
+### Patch Changes
+
+- Omitted the `select-menu` and `field` folders from the `asheeui list` output and its component count. The hidden folders are now controlled by a single `IGNORED_COMPONENTS` list, so more components can be excluded by adding their folder name.
+
 ## 0.6.4
 
 ### Patch Changes

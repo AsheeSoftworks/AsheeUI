@@ -35,6 +35,9 @@ async function scaffoldPackage(componentsDir: string) {
   await write(join(base, "date-picker", "index.ts"), "export {};");
   // No source files → should be excluded.
   await write(join(base, "legacy", "README.md"), "docs only");
+  // Listed in IGNORED_COMPONENTS → should be excluded.
+  await write(join(base, "select-menu", "index.tsx"), "export {};");
+  await write(join(base, "field", "index.tsx"), "export {};");
   // Nested folder is not a top-level component.
   await write(join(base, "button", "sub", "x.ts"), "export {};");
 }
@@ -45,6 +48,16 @@ describe("discoverComponentFolders", () => {
 
     const components = await discoverComponentFolders(join(dir, "asheeui-pkg"));
 
+    expect(components).toEqual(["button", "date-picker", "modal"]);
+  });
+
+  it("omits components listed in IGNORED_COMPONENTS", async () => {
+    await scaffoldPackage("src/components");
+
+    const components = await discoverComponentFolders(join(dir, "asheeui-pkg"));
+
+    expect(components).not.toContain("select-menu");
+    expect(components).not.toContain("field");
     expect(components).toEqual(["button", "date-picker", "modal"]);
   });
 

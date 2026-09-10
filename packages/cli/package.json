@@ -1,6 +1,6 @@
 {
   "name": "@asheeui/cli",
-  "version": "0.6.4",
+  "version": "0.6.5",
   "description": "Scaffold and maintain AsheeUI in an existing React app, with framework detection, provider wiring, and a doctor command.",
   "author": "Ashee Softworks <asheesoftworks@gmail.com>",
   "homepage": "https://asheeui.com",
