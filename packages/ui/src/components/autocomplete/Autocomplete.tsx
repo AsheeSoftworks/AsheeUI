@@ -261,7 +261,7 @@ export const Autocomplete = forwardRef<HTMLInputElement, AutocompleteProps>(
 
     // ─── Floating UI ─────────────────────────────────────────────────────
 
-    const { refs, floatingStyles, context, isPositioned } =
+    const { refs, context, isPositioned, floatingStyles } =
       useSelectFloating<HTMLInputElement>({
         isOpen,
         onOpenChange: setIsOpen,
@@ -355,8 +355,8 @@ export const Autocomplete = forwardRef<HTMLInputElement, AutocompleteProps>(
         {/* Floating SelectMenu */}
         <SelectMenu
           isOpen={isOpen}
-          context={context}
           floatingStyles={floatingStyles}
+          context={context}
           getFloatingProps={getFloatingProps}
           setFloatingRef={refs.setFloating}
           isPositioned={isPositioned}

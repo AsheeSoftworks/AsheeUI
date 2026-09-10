@@ -56,14 +56,14 @@ export interface SelectMenuProps {
   isOpen: boolean;
 
   /**
-   * Floating UI context from the parent component.
-   */
-  context: FloatingContext;
-
-  /**
    * CSS styles for positioning from Floating UI.
    */
   floatingStyles: React.CSSProperties;
+
+  /**
+   * Floating UI context from the parent component.
+   */
+  context: FloatingContext;
 
   /**
    * Props getter for floating element from Floating UI.
@@ -170,9 +170,9 @@ export interface SelectMenuProps {
 
 /**
  * Props for the memoized options list rendered inside SelectMenu.
- * Isolated so Floating UI's per-scroll position updates (which re-render
- * SelectMenu via a changing `floatingStyles` prop) don't force the entire
- * option list to re-render along with it.
+ * Isolated so SelectMenu's other re-renders (open/close, search typing,
+ * the one-time `isPositioned` flip) don't force the entire option list to
+ * re-render along with it.
  */
 interface SelectMenuOptionsListProps {
   filteredOptions: SelectMenuOption[];
@@ -190,12 +190,10 @@ interface SelectMenuOptionsListProps {
 /**
  * Renders the selectable option list.
  *
- * Kept as a separate memoized component from SelectMenu's positioning
- * wrapper. Without this split, every scroll-driven position recalculation
- * (which updates `floatingStyles` on the parent) would re-create every
- * option `Button` even though nothing about the options themselves
- * changed — the visible cause of lag when scrolling with the menu open.
- * React.memo lets this subtree bail out unless its own props change.
+ * Kept as a separate memoized component so SelectMenu's positioning wrapper
+ * and other state changes (open/close, search, selection) don't re-create
+ * every option `Button` even though nothing about the options themselves
+ * changed. React.memo lets this subtree bail out unless its own props change.
  */
 const SelectMenuOptionsList = memo(function SelectMenuOptionsList({
   filteredOptions,
@@ -268,7 +266,6 @@ const SelectMenuOptionsList = memo(function SelectMenuOptionsList({
  * @param props - SelectMenu configuration options.
  * @param props.isOpen - Whether the menu is open.
  * @param props.context - Floating UI context.
- * @param props.floatingStyles - CSS styles for positioning.
  * @param props.getFloatingProps - Props getter for the floating element.
  * @param props.setFloatingRef - Ref setter for the floating element.
  * @param props.isPositioned - Whether the floating element has been positioned by Floating UI. Defaults to true.
@@ -289,12 +286,11 @@ const SelectMenuOptionsList = memo(function SelectMenuOptionsList({
  *
  * @example
  * ```tsx
- * const { refs, floatingStyles, context } = useFloating(...);
+ * const { refs, context } = useFloating(...);
  *
  * <SelectMenu
  *   isOpen={isOpen}
  *   context={context}
- *   floatingStyles={floatingStyles}
  *   getFloatingProps={getFloatingProps}
  *   setFloatingRef={refs.setFloating}
  *   options={options}
@@ -309,7 +305,6 @@ const SelectMenuOptionsList = memo(function SelectMenuOptionsList({
  * <SelectMenu
  *   isOpen={isOpen}
  *   context={context}
- *   floatingStyles={floatingStyles}
  *   getFloatingProps={getFloatingProps}
  *   setFloatingRef={refs.setFloating}
  *   options={options}
@@ -329,8 +324,8 @@ const SelectMenuOptionsList = memo(function SelectMenuOptionsList({
  */
 export const SelectMenu = ({
   isOpen,
-  context,
   floatingStyles,
+  context,
   getFloatingProps,
   setFloatingRef,
   isPositioned = true,
@@ -399,22 +394,48 @@ export const SelectMenu = ({
 
   // ─── 2. Scroll Lock ──────────────────────────────────────────────────────
 
-  // Lock body scroll when the dropdown is open
+  // Lock body scroll when the dropdown is open.
   useEffect(() => {
     if (!isOpen || !resolvedLockScroll) return;
 
-    const originalOverflow = document.body.style.overflow;
-    const originalPosition = document.body.style.position;
-    const originalWidth = document.body.style.width;
+    // Capture the current scroll offset before locking. Setting
+    // `position: fixed` on <body> makes it ignore the page's scroll
+    // position entirely — without compensating with `top: -scrollY`, the
+    // page visually snaps to the very top the instant the lock applies.
+    // That jump moves the trigger button out from under the menu (which
+    // was already positioned based on its pre-lock location), and since
+    // the jump isn't a real scroll/resize event, Floating UI's autoUpdate
+    // never notices to reposition — leaving the menu visibly detached
+    // from a now off-screen trigger.
+    const scrollY = window.scrollY;
 
-    document.body.style.overflow = "hidden";
+    const originalPosition = document.body.style.position;
+    const originalTop = document.body.style.top;
+    const originalLeft = document.body.style.left;
+    const originalRight = document.body.style.right;
+    const originalWidth = document.body.style.width;
+    const originalOverflow = document.body.style.overflow;
+
     document.body.style.position = "fixed";
+    document.body.style.top = `-${scrollY}px`;
+    document.body.style.left = "0";
+    document.body.style.right = "0";
     document.body.style.width = "100%";
+    document.body.style.overflow = "hidden";
 
     return () => {
-      document.body.style.overflow = originalOverflow;
       document.body.style.position = originalPosition;
+      document.body.style.top = originalTop;
+      document.body.style.left = originalLeft;
+      document.body.style.right = originalRight;
       document.body.style.width = originalWidth;
+      document.body.style.overflow = originalOverflow;
+
+      // Restore the actual scroll position. Simply clearing the styles
+      // above leaves the browser at scrollY 0 (where the fixed-position
+      // trick visually left it) — this scrolls back to where the user
+      // actually was.
+      window.scrollTo(0, scrollY);
     };
   }, [isOpen, resolvedLockScroll]);
 
@@ -488,6 +509,15 @@ export const SelectMenu = ({
         style={{ ...floatingStyles }}
         className={cn(
           "z-30 w-full outline-none max-h-60 shadow-xl bg-background border border-border p-1 flex flex-col gap-0.5 overflow-y-auto scrollable-hidden",
+          // Explicitly disable transitions on the floating element. Floating UI
+          // positions this node via a `transform` written on every scroll tick
+          // (through floatingStyles). If any transition — global, inherited, or
+          // otherwise — applies to `transform` on this element, the browser eases
+          // toward each new position instead of snapping to it, which compounds
+          // under rapid scroll ticks into a visible spring/bounce effect that
+          // worsens with scroll speed. transition-none guarantees position
+          // updates apply instantly.
+          "transition-none",
           isPositioned
             ? "animate-in fade-in-0 zoom-in-95 slide-in-from-top-1 duration-150 ease-out"
             : "invisible opacity-0 pointer-events-none",

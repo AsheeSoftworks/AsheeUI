@@ -1,5 +1,34 @@
 # asheeui
 
+## 0.6.13
+
+### Patch Changes
+
+- ### SelectMenu
+  
+  - Fixed dropdown lag when scrolling with the menu open by adding a `lockScroll` option (now enabled by default) that locks page scroll while the menu is open, using scroll-position-compensated `position: fixed` so the page doesn't jump
+  - Fixed visible flash-then-snap on first open by gating the menu's enter animation on Floating UI's `isPositioned` state
+  - Replaced manual `react-dom` `createPortal` usage with `@floating-ui/react`'s `FloatingPortal` for consistent focus-trap and nested-floating-element support
+  - Extracted the option list into a memoized `SelectMenuOptionsList` component so position and other unrelated re-renders no longer re-create every option button
+  - Fixed all toast/menu placements rendering at a single fixed corner by resolving placement per-instance instead of using one shared container (carried over from the Toast fix, applies to menu positioning generally)
+  
+  ### useSelectFloating
+  
+  - Set `strategy: "fixed"`, correct for elements portaled to `document.body`
+  - Consolidated `useClick`, `useDismiss`, `useRole`, and `useInteractions` into the hook itself, so consumers (Select, and now DatePicker) no longer wire these individually
+  - Hook now returns `getReferenceProps`/`getFloatingProps` directly alongside `refs`, `context`, `floatingStyles`, and `isPositioned`
+  
+  ### Select
+  
+  - Simplified to use the consolidated interaction props (`getReferenceProps`/`getFloatingProps`) from `useSelectFloating` instead of wiring `useClick`/`useDismiss`/`useRole`/`useInteractions` directly
+  - Threaded `isPositioned` and `floatingStyles` through to `SelectMenu` to support the new anti-flash and positioning behavior
+  
+  ### DatePicker
+  
+  - Applied the same Floating UI fixes as SelectMenu: `FloatingPortal` in place of manual `createPortal`, `isPositioned`-gated enter animation, and scroll-position-compensated `lockScroll` (now enabled by default via `picker.lockScroll`)
+  - Simplified the popover to use the consolidated `getReferenceProps`/`getFloatingProps` from `useSelectFloating` (with `role: "dialog"`) and spread `floatingStyles` on the floating node
+  - Memoized the calendar grid (`Calendar`) so position and input re-renders no longer rebuild the month grid
+
 ## 0.6.12
 
 ### Patch Changes

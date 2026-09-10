@@ -7,14 +7,7 @@
  */
 "use client";
 
-import {
-  FloatingFocusManager,
-  FloatingPortal,
-  useClick,
-  useDismiss,
-  useInteractions,
-  useRole,
-} from "@floating-ui/react";
+import { FloatingFocusManager, FloatingPortal } from "@floating-ui/react";
 import {
   forwardRef,
   useCallback,
@@ -142,7 +135,7 @@ export interface DatePickerProps extends BaseDatePickerProps {
  * @param props.radius - Corner rounding. Defaults to "md".
  * @param props.color - Theme accent color. Defaults to "primary".
  * @param props.disabled - Whether the input is disabled. Defaults to false.
- * @param props.picker - Picker configuration overrides including className, portal, and portalTarget.
+ * @param props.picker - Picker configuration overrides including className, portal, portalTarget, and lockScroll.
  * @param props.label - Field label text.
  * @param props.description - Description text.
  * @param props.message - Validation message.
@@ -240,6 +233,13 @@ export const DatePicker = forwardRef<HTMLInputElement, DatePickerProps>(
       null,
     );
 
+    const resolvedLockScroll = resolveCascade<boolean>(
+      picker?.lockScroll,
+      sectionConfig?.picker?.lockScroll,
+      undefined,
+      true,
+    );
+
     const resolvedSizeKey = resolveCascade<FieldSizeKey>(
       size,
       sectionConfig?.size,
@@ -271,27 +271,57 @@ export const DatePicker = forwardRef<HTMLInputElement, DatePickerProps>(
 
     // ─── Floating UI ─────────────────────────────────────────────────────
 
-    const { refs, floatingStyles, context, isPositioned } =
-      useSelectFloating<HTMLInputElement>({
-        isOpen,
-        onOpenChange: setIsOpen,
-        disabled,
-        matchReferenceWidth: false, // Allow calendar to size naturally side-by-side
-      });
-
-    const click = useClick(context, { enabled: !disabled });
-    const dismiss = useDismiss(context, {
-      enabled: !disabled,
-      outsidePress: true,
-      outsidePressEvent: "mousedown",
-      escapeKey: true,
+    const {
+      refs,
+      context,
+      floatingStyles,
+      isPositioned,
+      getReferenceProps,
+      getFloatingProps,
+    } = useSelectFloating<HTMLInputElement>({
+      isOpen,
+      onOpenChange: setIsOpen,
+      disabled,
+      matchReferenceWidth: false, // Allow calendar to size naturally side-by-side
+      role: "dialog",
     });
-    const role = useRole(context, { role: "dialog" });
-    const { getReferenceProps, getFloatingProps } = useInteractions([
-      click,
-      dismiss,
-      role,
-    ]);
+
+    // ─── Scroll Lock ────────────────────────────────────────────────────────
+
+    // Lock body scroll while the calendar popover is open. Setting
+    // `position: fixed` on <body> makes it ignore the page's scroll position,
+    // so compensate with `top: -scrollY` and restore the offset on cleanup —
+    // otherwise the page would jump to the top the moment the lock applies.
+    useEffect(() => {
+      if (!isOpen || !resolvedLockScroll) return;
+
+      const scrollY = window.scrollY;
+
+      const originalPosition = document.body.style.position;
+      const originalTop = document.body.style.top;
+      const originalLeft = document.body.style.left;
+      const originalRight = document.body.style.right;
+      const originalWidth = document.body.style.width;
+      const originalOverflow = document.body.style.overflow;
+
+      document.body.style.position = "fixed";
+      document.body.style.top = `-${scrollY}px`;
+      document.body.style.left = "0";
+      document.body.style.right = "0";
+      document.body.style.width = "100%";
+      document.body.style.overflow = "hidden";
+
+      return () => {
+        document.body.style.position = originalPosition;
+        document.body.style.top = originalTop;
+        document.body.style.left = originalLeft;
+        document.body.style.right = originalRight;
+        document.body.style.width = originalWidth;
+        document.body.style.overflow = originalOverflow;
+
+        window.scrollTo(0, scrollY);
+      };
+    }, [isOpen, resolvedLockScroll]);
 
     // ─── Input value sync with selected date ─────────────────────────────
 
@@ -419,13 +449,14 @@ export const DatePicker = forwardRef<HTMLInputElement, DatePickerProps>(
         returnFocus={false}>
         <div
           ref={refs.setFloating}
-          style={{
-            ...floatingStyles,
-            width: "max-content",
-            minWidth: "fit-content",
-          }}
+          style={{ ...floatingStyles }}
           className={cn(
-            "z-100 outline-none",
+            "z-100 outline-none w-max",
+            // Disable transitions on the floating node. Floating UI applies
+            // position via `transform` on every scroll tick, and any inherited
+            // transform transition would ease toward each new position instead
+            // of snapping, producing a spring/bounce effect.
+            "transition-none",
             isPositioned
               ? "animate-in fade-in-0 zoom-in-95 duration-150 ease-out"
               : "invisible opacity-0 pointer-events-none",

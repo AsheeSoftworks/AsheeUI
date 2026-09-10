@@ -5,7 +5,7 @@
  * the DatePicker component.
  */
 
-import { useMemo, useState } from "react";
+import { memo, useMemo, useState } from "react";
 import { ChevronLeftIcon } from "../../icons/ChevronLeftIcon";
 import { ChevronRightIcon } from "../../icons/ChevronRightIcon";
 import type { Color } from "../../shared";
@@ -72,8 +72,13 @@ interface CalendarProps {
 
 /**
  * Calendar popover component with month navigation and date selection.
+ *
+ * Memoized so parent-driven renders (the DatePicker popover's one-time
+ * `isPositioned` flip, input typing, open/close) do not rebuild the month
+ * grid. Every prop is a primitive or a stable callback, so React.memo can
+ * skip those renders.
  */
-export function Calendar({
+export const Calendar = memo(function Calendar({
   selected,
   mode,
   isClearable,
@@ -339,4 +344,4 @@ export function Calendar({
       )}
     </div>
   );
-}
+});
