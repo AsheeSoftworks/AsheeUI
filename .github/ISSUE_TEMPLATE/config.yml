@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Usage questions
+    url: https://github.com/AsheeSoftworks/AsheeUI/discussions
+    about: Ask how to use AsheeUI, or share what you built. Please do not file usage questions as issues.
+  - name: Documentation
+    url: https://asheeui.com
+    about: Read the full documentation, including the component reference and theming guide.

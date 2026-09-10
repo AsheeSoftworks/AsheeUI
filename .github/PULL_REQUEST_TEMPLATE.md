@@ -1,17 +1,16 @@
-## Description
+## What this changes
 
-Briefly describe the changes made in this PR.
+Briefly describe what this pull request changes and why.
 
-## Type of Change
+## Related issue
 
-- [ ] Bug fix (non-breaking change fixing an issue)
-- [ ] New feature (non-breaking change adding functionality)
-- [ ] Breaking change (fix or feature causing existing code to fail)
-- [ ] Documentation update
+Link the issue this pull request closes or relates to, for example "Closes #123". Write "None" if there is no related issue.
 
 ## Checklist
 
-- [ ] I have executed `pnpm test` and all tests pass locally.
-- [ ] I have generated a changeset via `pnpm changeset` (if updating package code).
-- [ ] I have updated corresponding component documentation or story files.
-- [ ] My code adheres to the project code style and JSDoc guidelines.
+- [ ] This pull request stays focused on a single change.
+- [ ] A changeset is included via `pnpm changeset` when the change affects a published package (`asheeui` or `@asheeui/cli`).
+- [ ] `pnpm test` passes locally.
+- [ ] `pnpm lint` passes locally.
+- [ ] I updated the relevant JSDoc or documentation when public API changed.
+

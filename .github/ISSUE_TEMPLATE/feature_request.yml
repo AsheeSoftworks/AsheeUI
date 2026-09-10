@@ -9,26 +9,34 @@ body:
         Thanks for suggesting a new feature. Describe the problem you are
         solving and, when possible, sketch the API you have in mind.
   - type: textarea
-    id: proposal
+    id: problem
     attributes:
-      label: Proposed component or feature
+      label: What problem does this solve?
+      description: Describe the problem or gap this feature addresses, and who it helps.
+      placeholder: Users have to compose several primitives to render a star rating.
+    validations:
+      required: true
+  - type: textarea
+    id: proposed-solution
+    attributes:
+      label: Proposed solution
       description: Describe the new component, prop, or behavior you would like to see.
       placeholder: A new `<Rating />` component that accepts a `value` and `onValueChange`.
     validations:
       required: true
   - type: textarea
-    id: problem-statement
+    id: alternatives
     attributes:
-      label: Problem solved / Use case
-      description: What problem does this feature solve, and who benefits from it?
-      placeholder: Users currently have to compose several primitives to render a star rating.
+      label: Alternatives considered
+      description: Describe any workarounds or other approaches you considered.
+      placeholder: Composing icon buttons works today but does not handle keyboard or ARIA semantics.
     validations:
       required: true
   - type: textarea
     id: api-design
     attributes:
-      label: Design / API ideas or code examples
-      description: Sketch the props, types, or usage examples you have in mind.
+      label: Design or API ideas
+      description: Sketch the props, types, or usage examples you have in mind. This is optional.
       placeholder: |
         ```tsx
         import { Rating } from "asheeui";

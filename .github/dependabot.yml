@@ -1,0 +1,68 @@
+# Dependabot configuration for the AsheeUI pnpm + Turborepo monorepo.
+# Reference: https://docs.github.com/en/code-security/dependabot/dependabot-version-updates/configuration-options-for-the-dependabot.yml-file
+version: 2
+updates:
+  # pnpm workspace. The single root pnpm-lock.yaml covers packages/ui,
+  # packages/cli, and apps/playground, so one entry at "/" reaches all of
+  # them. If Dependabot ever misses a workspace manifest, add an entry per
+  # package directory with the same schedule and groups.
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "06:00"
+      timezone: "Etc/UTC"
+    open-pull-requests-limit: 10
+    labels:
+      - "dependencies"
+    commit-message:
+      prefix: "chore(deps)"
+      prefix-development: "chore(deps-dev)"
+      include: "scope"
+    groups:
+      # React lives in a group of its own because the runtime and its types
+      # must move together.
+      react:
+        patterns:
+          - "react"
+          - "react-dom"
+          - "@types/react"
+          - "@types/react-dom"
+      # Routine minor and patch bumps arrive as one PR per dependency type.
+      # Major bumps stay ungrouped so they get individual review.
+      production-dependencies:
+        dependency-type: "production"
+        update-types:
+          - "minor"
+          - "patch"
+      development-dependencies:
+        dependency-type: "development"
+        update-types:
+          - "minor"
+          - "patch"
+    ignore:
+      # React and React DOM majors are breaking and are pinned through the
+      # pnpm overrides in the root package.json. Upgrade them by hand.
+      - dependency-name: "react"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "react-dom"
+        update-types: ["version-update:semver-major"]
+
+  # Keep the actions used by the CI and release workflows current.
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "06:00"
+      timezone: "Etc/UTC"
+    labels:
+      - "dependencies"
+      - "github-actions"
+    commit-message:
+      prefix: "chore(ci)"
+    groups:
+      github-actions:
+        patterns:
+          - "*"
