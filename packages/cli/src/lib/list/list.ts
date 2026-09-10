@@ -14,6 +14,18 @@ export const COMPONENT_SOURCE_DIRS = [
   "dist/components",
 ] as const;
 
+/**
+ * Component folder names that are hidden from `asheeui list`.
+ *
+ * These folders are internal building blocks rather than standalone public
+ * components, so they are omitted from both the rendered list and the reported
+ * component count (including the `--json` output).
+ *
+ * To hide another component, add its folder name here; remove one to show it
+ * again. Names must match the folder name exactly.
+ */
+export const IGNORED_COMPONENTS: readonly string[] = ["select-menu", "field"];
+
 /** File extensions considered source for the purpose of component discovery. */
 const SOURCE_EXTENSIONS = [".ts", ".tsx", ".js", ".jsx", ".mjs", ".cjs"];
 
@@ -104,8 +116,9 @@ export async function resolveComponentsDirectory(
  * of an installed/local `asheeui` package.
  *
  * Only directories that actually contain source files
- * (`.ts`/`.tsx`/`.js`/`.jsx`/`.mjs`/`.cjs`) are reported. The result is
- * sorted alphabetically.
+ * (`.ts`/`.tsx`/`.js`/`.jsx`/`.mjs`/`.cjs`) are reported. Folders listed in
+ * {@link IGNORED_COMPONENTS} are skipped so they do not appear in the list or
+ * its component count. The result is sorted alphabetically.
  *
  * @param packageRoot - Absolute path of an `asheeui` package root.
  * @returns Sorted array of component folder names.
@@ -132,6 +145,7 @@ export async function discoverComponentFolders(
 
   for (const entry of entries) {
     if (!entry.isDirectory()) continue;
+    if (IGNORED_COMPONENTS.includes(entry.name)) continue;
     if (await containsSourceFiles(join(componentsDir, entry.name))) {
       components.push(entry.name);
     }
