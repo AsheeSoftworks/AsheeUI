@@ -3,7 +3,7 @@
 ## Reporting a vulnerability
 
 Please do not open a public GitHub issue for security problems. Instead, email
-`asheeui@gmail.com` with the details.
+`asheesoftworks@gmail.com` with the details.
 
 We will acknowledge your report within a few days and keep you updated while we
 work on a fix. Please give us a reasonable window to release a patch before you
