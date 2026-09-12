@@ -508,7 +508,9 @@ export const SelectMenu = ({
         ref={setFloatingRef}
         style={{ ...floatingStyles }}
         className={cn(
-          "z-30 w-full outline-none max-h-60 shadow-xl bg-background border border-border p-1 flex flex-col gap-0.5 overflow-y-auto scrollable-hidden",
+          // z-index is applied through `floatingStyles`, derived from the
+          // trigger's stacking context by the shared `useSelectFloating` hook.
+          "w-full outline-none max-h-60 shadow-xl bg-background border border-border p-1 flex flex-col gap-0.5 overflow-y-auto scrollable-hidden",
           // Explicitly disable transitions on the floating element. Floating UI
           // positions this node via a `transform` written on every scroll tick
           // (through floatingStyles). If any transition — global, inherited, or

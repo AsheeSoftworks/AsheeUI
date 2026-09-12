@@ -27,11 +27,8 @@ import { FieldShell } from "../field/FieldShell";
 import type { FieldSizeKey, LabelAlign } from "../field/field-config";
 import type { InputProps } from "../input/Input";
 import { useSelectFloating } from "../select-menu";
-import { SelectMenu } from "../select-menu/SelectMenu";
-import type {
-  MenuConfig,
-  SelectMenuOption,
-} from "../select-menu/select-menu-config";
+import { type MenuProps, SelectMenu } from "../select-menu/SelectMenu";
+import type { SelectMenuOption } from "../select-menu/select-menu-config";
 import { FALLBACK_SELECT_CONFIG, type SelectConfig } from "./select-config";
 import { SELECT_STATUS_BORDER_CLASS } from "./select-styles";
 
@@ -153,7 +150,7 @@ export interface SelectProps
    * Menu configuration overrides including portal, portalTarget, className, and visual styles.
    * All menu-related props should be passed through this object.
    */
-  menu?: MenuConfig;
+  menu?: MenuProps;
 }
 
 /**

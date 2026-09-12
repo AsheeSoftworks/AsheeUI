@@ -13,6 +13,32 @@ import { defaultInputConfig, type InputConfig } from "../input";
 import type { MenuConfig } from "../select-menu";
 
 /**
+ * Configuration for selected value chips.
+ * Controls the appearance of chips in the selected values section.
+ */
+export interface MultiSelectChipConfig {
+  /**
+   * Visual style variant for chips.
+   */
+  variant?: Variant;
+
+  /**
+   * Theme accent color for chips.
+   */
+  color?: Color;
+
+  /**
+   * Corner rounding for chips.
+   */
+  radius?: Radius;
+
+  /**
+   * Size scale for chips.
+   */
+  size?: Size;
+}
+
+/**
  * Theme configuration options for the MultiSelect component.
  *
  * Set under `components.multiSelect` in the AsheeUI config. Values feed the
@@ -29,27 +55,7 @@ export interface MultiSelectConfig extends InputConfig {
    * Configuration for selected value chips.
    * Controls the appearance of chips in the selected values section.
    */
-  chip?: {
-    /**
-     * Visual style variant for chips.
-     */
-    variant?: Variant;
-
-    /**
-     * Theme accent color for chips.
-     */
-    color?: Color;
-
-    /**
-     * Corner rounding for chips.
-     */
-    radius?: Radius;
-
-    /**
-     * Size scale for chips.
-     */
-    size?: Size;
-  };
+  chip?: MultiSelectChipConfig;
 }
 
 /**

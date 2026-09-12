@@ -144,7 +144,7 @@ From `components/card/card-config.ts`:
  *
  * @default "top"
  */
-imagePosition?: CardImagePosition;
+imagePosition?: InternalImagePosition;
 ```
 
 ### Prop with global theme fallback

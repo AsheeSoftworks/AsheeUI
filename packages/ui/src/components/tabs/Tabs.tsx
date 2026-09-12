@@ -30,6 +30,7 @@ import {
   FALLBACK_TABS_CONFIG,
   type TabItem,
   type TabsConfig,
+  type TabsOptionsConfig,
   type TabsVariant,
 } from "./tabs-config";
 import {
@@ -40,7 +41,18 @@ import {
 
 // ─── Props Interface ──────────────────────────────────────────────────────────
 
-type BaseTabsProps = TabsConfig &
+/**
+ * Options props for the tab items.
+ * Extends the options config with instance-only props.
+ */
+export interface TabsOptionProps extends TabsOptionsConfig {
+  /**
+   * Class name for individual tab trigger buttons.
+   */
+  tabClassName?: string;
+}
+
+type BaseTabsProps = Omit<TabsConfig, "options"> &
   Omit<React.HTMLAttributes<HTMLDivElement>, "color" | "onChange">;
 
 /**
@@ -85,9 +97,10 @@ export interface TabsProps extends BaseTabsProps {
   tabListClassName?: string;
 
   /**
-   * Class name for individual tab trigger buttons.
+   * Options configuration for the tab items (active/inactive styling),
+   * plus the instance-only tab class override.
    */
-  tabClassName?: string;
+  options?: TabsOptionProps;
 
   /**
    * Class name for the tab content panel wrapper.
@@ -119,11 +132,8 @@ export interface TabsProps extends BaseTabsProps {
  * @param props.variant - Visual style variant. Defaults to "underline".
  * @param props.size - Density scale. Defaults to "md".
  * @param props.radius - Corner rounding of the container. Defaults to "md".
- * @param props.activeRadius - Corner rounding of the active tab. Defaults to "md".
- * @param props.activeVariant - Visual variant for the active tab. Defaults to "solid".
- * @param props.activeColor - Theme color for the active tab. Defaults to "primary".
+ * @param props.options - Tab item options (active/inactive radius, variant and color) plus tabClassName.
  * @param props.tabListClassName - Extra classes for the tablist.
- * @param props.tabClassName - Extra classes for individual tabs.
  * @param props.tabPanelClassName - Extra classes for the content panel.
  *
  * @example
@@ -175,12 +185,9 @@ export const Tabs = forwardRef<HTMLDivElement, TabsProps>(
       variant,
       size,
       radius,
-      activeRadius,
-      activeVariant,
-      activeColor,
+      options,
       fullWidth = false,
       tabListClassName,
-      tabClassName,
       tabPanelClassName,
       className,
       style,
@@ -221,17 +228,31 @@ export const Tabs = forwardRef<HTMLDivElement, TabsProps>(
     );
 
     const resolvedActiveVariant = resolveCascade<Variant>(
-      activeVariant,
-      sectionConfig?.activeVariant,
+      options?.active?.variant,
+      sectionConfig?.options?.active?.variant,
       config.defaultVariant,
-      FALLBACK_TABS_CONFIG.activeVariant,
+      FALLBACK_TABS_CONFIG.options.active.variant,
     );
 
     const resolvedActiveColorKey = resolveCascade<Color>(
-      activeColor,
-      sectionConfig?.activeColor,
+      options?.active?.color,
+      sectionConfig?.options?.active?.color,
       config.defaultColor,
-      FALLBACK_TABS_CONFIG.activeColor,
+      FALLBACK_TABS_CONFIG.options.active.color,
+    );
+
+    const resolvedInactiveVariant = resolveCascade<Variant>(
+      options?.inactive?.variant,
+      sectionConfig?.options?.inactive?.variant,
+      undefined,
+      FALLBACK_TABS_CONFIG.options.inactive.variant,
+    );
+
+    const resolvedInactiveColorKey = resolveCascade<Color>(
+      options?.inactive?.color,
+      sectionConfig?.options?.inactive?.color,
+      undefined,
+      FALLBACK_TABS_CONFIG.options.inactive.color,
     );
 
     const resolvedRadiusKey = resolveRadiusKey(
@@ -242,10 +263,17 @@ export const Tabs = forwardRef<HTMLDivElement, TabsProps>(
     );
 
     const resolvedActiveRadiusKey = resolveRadiusKey(
-      activeRadius,
-      sectionConfig?.activeRadius,
+      options?.active?.radius,
+      sectionConfig?.options?.active?.radius,
       config.defaultRadius,
-      FALLBACK_TABS_CONFIG.activeRadius,
+      FALLBACK_TABS_CONFIG.options.active.radius,
+    );
+
+    const resolvedInactiveRadiusKey = resolveRadiusKey(
+      options?.inactive?.radius,
+      sectionConfig?.options?.inactive?.radius,
+      resolvedRadiusKey,
+      FALLBACK_TABS_CONFIG.options.inactive.radius,
     );
 
     // ─── 2. Class Maps ────────────────────────────────────────────────────────
@@ -383,7 +411,9 @@ export const Tabs = forwardRef<HTMLDivElement, TabsProps>(
                 aria-controls={panelId}
                 aria-disabled={tab.disabled}
                 tabIndex={isActive ? 0 : -1}
-                radius={isActive ? resolvedActiveRadiusKey : resolvedRadiusKey}
+                radius={
+                  isActive ? resolvedActiveRadiusKey : resolvedInactiveRadiusKey
+                }
                 isDisabled={tab.disabled}
                 size={resolvedSizeKey}
                 variant={
@@ -391,9 +421,9 @@ export const Tabs = forwardRef<HTMLDivElement, TabsProps>(
                     ? resolvedVariantKey === "underline"
                       ? "underlined"
                       : activeVariant
-                    : "ghost"
+                    : resolvedInactiveVariant
                 }
-                color={isActive ? activeColor : "none"}
+                color={isActive ? activeColor : resolvedInactiveColorKey}
                 onClick={() => handleTabChange(tab.id)}
                 onKeyDown={(e) => handleKeyDown(e, index)}
                 className={cn(
@@ -402,7 +432,7 @@ export const Tabs = forwardRef<HTMLDivElement, TabsProps>(
                   paddingXClass,
                   fontClass,
                   fullWidth && "flex-1",
-                  tabClassName,
+                  options?.tabClassName,
                 )}>
                 {tab.icon && <span className="shrink-0">{tab.icon}</span>}
                 <span>{tabTitle}</span>

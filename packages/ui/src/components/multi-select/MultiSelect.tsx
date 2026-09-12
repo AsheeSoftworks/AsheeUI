@@ -43,6 +43,7 @@ import { type SelectMenuOption, useSelectFloating } from "../select-menu";
 import { type MenuProps, SelectMenu } from "../select-menu/SelectMenu";
 import {
   FALLBACK_MULTI_SELECT_CONFIG,
+  type MultiSelectChipConfig,
   type MultiSelectConfig,
 } from "./multi-select-config";
 import {
@@ -78,6 +79,17 @@ type MultiSelectFieldProps = Pick<
 type MultiSelectContentProps = Pick<InputProps, "startContent" | "endContent">;
 
 /**
+ * Props for the selected value chips.
+ * Extends the chip config with instance-only props.
+ */
+export interface MultiSelectChipProps extends MultiSelectChipConfig {
+  /**
+   * Class override applied to every selected value chip.
+   */
+  className?: string;
+}
+
+/**
  * Configuration options for the MultiSelect component.
  * Extends field and content props from Input, and MultiSelectConfig for
  * component-specific options. Uses Button for trigger styling.
@@ -85,7 +97,7 @@ type MultiSelectContentProps = Pick<InputProps, "startContent" | "endContent">;
 export interface MultiSelectProps
   extends MultiSelectFieldProps,
     MultiSelectContentProps,
-    Omit<MultiSelectConfig, "menu"> {
+    Omit<MultiSelectConfig, "menu" | "chip"> {
   /**
    * Available options to select from.
    * Each option must have a label and a unique value.
@@ -190,6 +202,13 @@ export interface MultiSelectProps
    * All menu-related props should be passed through this object.
    */
   menu?: MenuProps;
+
+  /**
+   * Chip configuration overrides including color, size and radius,
+   * plus the instance-only chip class override.
+   * All chip-related props should be passed through this object.
+   */
+  chip?: MultiSelectChipProps;
 }
 
 /**
@@ -375,6 +394,9 @@ export const MultiSelect = forwardRef<HTMLButtonElement, MultiSelectProps>(
     );
 
     // Chip Token Resolvers (chip override bag → component config → resolved tokens)
+    // Hoisted because the chip list uses `chip` as its map callback parameter.
+    const chipClassName = chip?.className;
+
     const resolvedChipColor = resolveCascade<Color>(
       chip?.color,
       sectionConfig?.chip?.color,
@@ -653,6 +675,7 @@ export const MultiSelect = forwardRef<HTMLButtonElement, MultiSelectProps>(
                       className={cn(
                         "inline-flex items-center gap-1.5 font-medium shadow-xs",
                         chipRadiusClass,
+                        chipClassName,
                       )}>
                       <span>{chip.label}</span>
                       <button

@@ -41,8 +41,10 @@ import type {
   SidebarConfig,
   SidebarItem,
   SidebarItems,
+  SidebarOptionsConfig,
   SidebarSection,
   SidebarSizeKey,
+  SidebarTooltipConfig,
   SidebarVariant,
 } from "./sidebar-config";
 import { FALLBACK_SIDEBAR_CONFIG } from "./sidebar-config";
@@ -65,8 +67,37 @@ function isSidebarSection<T>(
   return "items" in item && Array.isArray(item.items);
 }
 
-type BaseSidebarProps = SidebarConfig &
+type BaseSidebarProps = Omit<SidebarConfig, "options"> &
   Omit<HTMLAttributes<HTMLElement>, "color" | "size" | "onSelect" | "title">;
+
+/**
+ * Options props for the sidebar's navigation items.
+ * Extends the options config with sidebar-local props.
+ */
+export interface SidebarOptionProps extends SidebarOptionsConfig {
+  /**
+   * Class override applied to every navigation item.
+   */
+  itemClassName?: string;
+}
+
+/**
+ * Props for the sidebar's navigation links.
+ * Holds the instance-only link component and its props.
+ */
+export interface SidebarLinkProps {
+  /**
+   * Custom link component (e.g., Next.js Link, TanStack Router Link).
+   * When provided, this component is used instead of the native <a> tag.
+   */
+  component?: ElementType;
+
+  /**
+   * Additional props to pass to the custom link component (e.g. { prefetch: true }).
+   * These take precedence over the component's own props.
+   */
+  props?: Record<string, unknown>;
+}
 
 /**
  * Configuration options for the Sidebar component.
@@ -142,9 +173,15 @@ export interface SidebarProps<T = string> extends BaseSidebarProps {
   bodyClassName?: string;
 
   /**
-   * Individual navigation item class override.
+   * Options configuration for the sidebar's navigation items
+   * (radius and active/inactive styling), plus item-local props.
    */
-  itemClassName?: string;
+  options?: SidebarOptionProps;
+
+  /**
+   * Tooltip configuration for collapsed sidebar items.
+   */
+  tooltip?: SidebarTooltipConfig;
 
   /**
    * Section label class override.
@@ -165,16 +202,10 @@ export interface SidebarProps<T = string> extends BaseSidebarProps {
   >;
 
   /**
-   * Custom link component (e.g., Next.js Link, TanStack Router Link).
-   * When provided, this component is used instead of the native <a> tag.
+   * Link configuration for navigation items.
+   * Provides the custom link component and props forwarded to it.
    */
-  linkComponent?: ElementType;
-
-  /**
-   * Additional props to pass to the custom link component (e.g., { prefetch: true }).
-   * These take precedence over the component's own props.
-   */
-  linkProps?: Record<string, unknown>;
+  link?: SidebarLinkProps;
 }
 
 /**
@@ -204,16 +235,11 @@ export interface SidebarProps<T = string> extends BaseSidebarProps {
  * @param props.size - Size scale. Defaults to "md".
  * @param props.variant - Visual style variant. Defaults to "default".
  * @param props.radius - Corner rounding of the sidebar.
- * @param props.itemRadius - Corner rounding of navigation items.
- * @param props.itemVariant - Visual variant for inactive items.
- * @param props.activeItemVariant - Visual variant for active items.
- * @param props.activeItemColor - Theme color for active items.
- * @param props.showTooltips - Whether tooltips are shown. Defaults to true.
- * @param props.tooltipPlacement - Placement of tooltips. Defaults to "right".
+ * @param props.options - Navigation item options (radius, active/inactive variant and color).
+ * @param props.tooltip - Tooltip configuration for collapsed items (show, placement, variant, color).
  * @param props.showCollapseButton - Whether the collapse button is shown. Defaults to true.
  * @param props.collapsible - Whether the sidebar can be collapsed. Defaults to true.
- * @param props.linkComponent - Custom link component for routing.
- * @param props.linkProps - Props for the custom link component.
+ * @param props.link - Link configuration for navigation items (component and props).
  *
  * @example
  * ```tsx
@@ -247,7 +273,7 @@ export interface SidebarProps<T = string> extends BaseSidebarProps {
  *     { id: "main", label: "Main", items: mainItems },
  *     { id: "admin", label: "Admin", items: adminItems },
  *   ]}
- *   linkComponent={NextLink}
+ *   link={{ component: NextLink }}
  *   userRole="admin"
  * />
  * ```
@@ -269,23 +295,17 @@ export function Sidebar<T = string>({
   variant,
   size,
   radius,
-  itemRadius,
-  itemVariant,
-  activeItemVariant,
-  activeItemColor,
+  options,
   showCollapseButton: showCollapseButtonProp,
   collapsible: collapsibleProp,
   defaultCollapsed: defaultCollapsedProp,
-  showTooltips,
-  tooltipPlacement,
+  tooltip,
   headerClassName,
   bodyClassName,
-  itemClassName,
   sectionLabelClassName,
   footerClassName,
   anchorProps,
-  linkComponent,
-  linkProps: linkPropsProp,
+  link,
   className,
   style,
   ...props
@@ -369,32 +389,39 @@ export function Sidebar<T = string>({
   );
 
   const resolvedItemRadiusKey = resolveRadiusKey(
-    filterRadius(itemRadius),
-    filterRadius(sectionConfig?.itemRadius),
+    filterRadius(options?.radius),
+    filterRadius(sectionConfig?.options?.radius),
     config.defaultRadius,
-    FALLBACK_SIDEBAR_CONFIG.itemRadius,
+    FALLBACK_SIDEBAR_CONFIG.options.radius,
   );
 
-  // Item variant and active item variant
+  // Item option variants and colors (inactive / active)
   const resolvedItemVariant = resolveCascade<Variant>(
-    itemVariant,
-    sectionConfig?.itemVariant,
+    options?.inactive?.variant,
+    sectionConfig?.options?.inactive?.variant,
     config.defaultVariant,
-    FALLBACK_SIDEBAR_CONFIG.itemVariant,
+    FALLBACK_SIDEBAR_CONFIG.options.inactive.variant,
+  );
+
+  const resolvedItemColor = resolveCascade<Color>(
+    options?.inactive?.color,
+    sectionConfig?.options?.inactive?.color,
+    undefined,
+    FALLBACK_SIDEBAR_CONFIG.options.inactive.color,
   );
 
   const resolvedActiveItemVariant = resolveCascade<Variant>(
-    activeItemVariant,
-    sectionConfig?.activeItemVariant,
+    options?.active?.variant,
+    sectionConfig?.options?.active?.variant,
     config.defaultVariant,
-    FALLBACK_SIDEBAR_CONFIG.activeItemVariant,
+    FALLBACK_SIDEBAR_CONFIG.options.active.variant,
   );
 
   const resolvedActiveItemColor = resolveCascade<Color>(
-    activeItemColor,
-    sectionConfig?.activeItemColor,
+    options?.active?.color,
+    sectionConfig?.options?.active?.color,
     config.defaultColor,
-    FALLBACK_SIDEBAR_CONFIG.activeItemColor,
+    FALLBACK_SIDEBAR_CONFIG.options.active.color,
   );
 
   const activeVariantClasses = resolveVariantClass(
@@ -404,22 +431,36 @@ export function Sidebar<T = string>({
 
   const inactiveVariantClasses = resolveVariantClass(
     resolvedItemVariant,
-    "none" as Color,
+    resolvedItemColor,
   );
 
   // Tooltip Resolvers
   const resolvedShowTooltips = resolveCascade<boolean>(
-    showTooltips,
-    sectionConfig?.showTooltips,
+    tooltip?.show,
+    sectionConfig?.tooltip?.show,
     undefined,
-    FALLBACK_SIDEBAR_CONFIG.showTooltips,
+    FALLBACK_SIDEBAR_CONFIG.tooltip.show,
   );
 
   const resolvedTooltipPlacement = resolveCascade<TooltipPlacement>(
-    tooltipPlacement,
-    sectionConfig?.tooltipPlacement,
+    tooltip?.placement,
+    sectionConfig?.tooltip?.placement,
     undefined,
-    FALLBACK_SIDEBAR_CONFIG.tooltipPlacement,
+    FALLBACK_SIDEBAR_CONFIG.tooltip.placement,
+  );
+
+  const resolvedTooltipVariant = resolveCascade<Variant>(
+    tooltip?.variant,
+    sectionConfig?.tooltip?.variant,
+    undefined,
+    FALLBACK_SIDEBAR_CONFIG.tooltip.variant,
+  );
+
+  const resolvedTooltipColor = resolveCascade<Color>(
+    tooltip?.color,
+    sectionConfig?.tooltip?.color,
+    undefined,
+    FALLBACK_SIDEBAR_CONFIG.tooltip.color,
   );
 
   const rawItems = itemsProp;
@@ -494,12 +535,12 @@ export function Sidebar<T = string>({
       resolveClassKey(
         resolvedItemVariant === "underlined" ? "none" : resolvedItemRadiusKey,
         RADIUS_CLASS,
-        FALLBACK_SIDEBAR_CONFIG.itemRadius,
+        FALLBACK_SIDEBAR_CONFIG.options.radius,
       ),
-      itemClassName,
+      options?.itemClassName,
     );
 
-    const LinkComponent = linkComponent || "a";
+    const LinkComponent = link?.component || "a";
     const linkProps = {
       href: item.disabled ? undefined : item.href,
       target: item.target,
@@ -508,7 +549,7 @@ export function Sidebar<T = string>({
         handleItemClick(e, item),
       className: linkClassName,
       ...anchorProps,
-      ...(linkPropsProp || {}),
+      ...(link?.props ?? {}),
     };
 
     const anchorElement = (
@@ -538,13 +579,8 @@ export function Sidebar<T = string>({
           key={String(item.id)}
           content={item.label}
           placement={resolvedTooltipPlacement}
-          variant={
-            sectionConfig?.tooltipVariant ??
-            FALLBACK_SIDEBAR_CONFIG.tooltipVariant
-          }
-          color={
-            sectionConfig?.tooltipColor ?? FALLBACK_SIDEBAR_CONFIG.tooltipColor
-          }
+          variant={resolvedTooltipVariant}
+          color={resolvedTooltipColor}
           radius={resolvedItemRadiusKey}>
           {anchorElement}
         </Tooltip>

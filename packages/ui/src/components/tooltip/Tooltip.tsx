@@ -33,6 +33,7 @@ import {
   useState,
 } from "react";
 import { useAsheeConfig } from "../../libs/context";
+import { useFloatingZIndex } from "../../libs/use-floating-z-index";
 import {
   type Color,
   RADIUS_CLASS,
@@ -108,6 +109,11 @@ export interface TooltipProps extends BaseTooltipProps {
  * @param props.offset - Offset from the trigger. Defaults to 8.
  * @param props.radius - Corner rounding. Defaults to "md".
  * @param props.showArrow - Whether to show a pointer arrow. Defaults to false.
+ * @param props.portal - Whether to render the tooltip through `FloatingPortal`
+ * at the document body level. Defaults to false, which renders the tooltip in
+ * place so it follows the trigger's stacking context.
+ * @param props.zIndex - Layer delta added to the trigger's detected stacking
+ * context z-index. Defaults to `ASHEE_LAYER.tooltip`.
  * @param props.className - Extra classes for the tooltip.
  *
  * @example
@@ -152,6 +158,8 @@ export const Tooltip = forwardRef<HTMLDivElement, TooltipProps>(
       offset: offsetProp,
       radius,
       showArrow,
+      portal,
+      zIndex,
       isDisabled = false,
       className,
     },
@@ -209,6 +217,20 @@ export const Tooltip = forwardRef<HTMLDivElement, TooltipProps>(
       sectionConfig?.showArrow,
       undefined,
       FALLBACK_TOOLTIP_CONFIG.showArrow,
+    );
+
+    const resolvedPortal = resolveCascade<boolean>(
+      portal,
+      sectionConfig?.portal,
+      undefined,
+      FALLBACK_TOOLTIP_CONFIG.portal,
+    );
+
+    const resolvedZIndex = resolveCascade<number>(
+      zIndex,
+      sectionConfig?.zIndex,
+      undefined,
+      FALLBACK_TOOLTIP_CONFIG.zIndex,
     );
 
     const resolvedRadiusKey = resolveRadiusKey(
@@ -279,6 +301,12 @@ export const Tooltip = forwardRef<HTMLDivElement, TooltipProps>(
       role,
     ]);
 
+    const floatingZIndex = useFloatingZIndex(
+      refs.reference,
+      isOpen && resolvedPortal,
+      resolvedZIndex,
+    );
+
     const trigger = isValidElement(children) ? (
       cloneElement(
         children,
@@ -300,43 +328,57 @@ export const Tooltip = forwardRef<HTMLDivElement, TooltipProps>(
       return <>{children}</>;
     }
 
+    // Shared by both rendering modes below. When `portal` is enabled the node is
+    // appended to `document.body` and needs a `z-index` derived from the
+    // trigger's stacking context, so it stays above its own container (for
+    // example a navbar) without outranking the rest of the app. When rendering
+    // in place, no `z-index` is applied: the node already follows the trigger's
+    // stacking context.
+    const floatingNode = (
+      <div
+        ref={(node) => {
+          refs.setFloating(node);
+          if (typeof ref === "function") ref(node);
+          else if (ref) ref.current = node;
+        }}
+        style={
+          resolvedPortal
+            ? { ...floatingStyles, zIndex: floatingZIndex }
+            : floatingStyles
+        }
+        className="pointer-events-none"
+        {...getFloatingProps()}>
+        <div
+          className={cn(
+            "font-medium border whitespace-nowrap select-none bg-background shadow-md transition-all duration-150 ease-out animate-in fade-in-0 zoom-in-95",
+            paddingXClass,
+            paddingYClass,
+            fontClass,
+            radiusClass,
+            resolveVariantClass(resolvedVariantKey, resolvedColorKey),
+            sectionConfig?.className,
+            className,
+          )}>
+          {content}
+          {resolvedShowArrow && (
+            <FloatingArrow
+              ref={arrowRef}
+              context={context}
+              className="fill-current text-border"
+            />
+          )}
+        </div>
+      </div>
+    );
+
     return (
       <>
         {trigger}
-        <FloatingPortal>
-          {isOpen && (
-            <div
-              ref={(node) => {
-                refs.setFloating(node);
-                if (typeof ref === "function") ref(node);
-                else if (ref) ref.current = node;
-              }}
-              style={floatingStyles}
-              className="z-50 pointer-events-none"
-              {...getFloatingProps()}>
-              <div
-                className={cn(
-                  "font-medium border whitespace-nowrap select-none bg-background shadow-md transition-all duration-150 ease-out animate-in fade-in-0 zoom-in-95",
-                  paddingXClass,
-                  paddingYClass,
-                  fontClass,
-                  radiusClass,
-                  resolveVariantClass(resolvedVariantKey, resolvedColorKey),
-                  sectionConfig?.className,
-                  className,
-                )}>
-                {content}
-                {resolvedShowArrow && (
-                  <FloatingArrow
-                    ref={arrowRef}
-                    context={context}
-                    className="fill-current text-border"
-                  />
-                )}
-              </div>
-            </div>
-          )}
-        </FloatingPortal>
+        {resolvedPortal ? (
+          <FloatingPortal>{isOpen && floatingNode}</FloatingPortal>
+        ) : (
+          isOpen && floatingNode
+        )}
       </>
     );
   },

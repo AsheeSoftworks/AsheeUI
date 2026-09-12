@@ -70,6 +70,34 @@ export interface CardImageProps extends CardImageConfig {
    * the native `<img>` tag (e.g. `next/image`).
    */
   component?: ElementType;
+
+  /**
+   * Additional props forwarded to the image component
+   * (e.g. `{ priority: true, sizes: "..." }`).
+   * These take precedence over the component's own props.
+   */
+  props?: Record<string, unknown>;
+}
+
+// biome-ignore lint/suspicious/noEmptyInterface: Config type kept so link props can extend it
+export interface CardLinkConfig {}
+
+export interface CardLinkProps extends CardLinkConfig {
+  /**
+   * Custom link component used to render the card as a link instead of the
+   * native `<a>` tag (e.g. `next/link`, TanStack Router `Link`).
+   *
+   * When provided, the card root becomes this component and `props` are
+   * forwarded to it.
+   */
+  component?: ElementType;
+
+  /**
+   * Additional props forwarded to the link component
+   * (e.g. `{ href: "/blog/post-1" }`).
+   * These take precedence over the component's own props.
+   */
+  props?: Record<string, unknown>;
 }
 
 /**
@@ -79,7 +107,7 @@ export interface CardProps extends BaseCardProps {
   /**
    * Whether the card is clickable.
    * When true, the card becomes interactive with hover and focus states.
-   * This is automatically enabled when href or onClick is provided.
+   * This is automatically enabled when link or onClick is provided.
    *
    * @default false
    */
@@ -94,10 +122,11 @@ export interface CardProps extends BaseCardProps {
   isDisabled?: boolean;
 
   /**
-   * Renders the card as a link when provided with `isClickable`.
-   * Clicking the card navigates to this URL.
+   * Link configuration for the card.
+   * When provided, the card root renders as the given link component
+   * (e.g. `next/link`) with `props` forwarded to it.
    */
-  href?: string;
+  link?: CardLinkProps;
 
   /**
    * Heading content rendered above the body.
@@ -131,15 +160,10 @@ export interface CardProps extends BaseCardProps {
 
   /**
    * Image configuration for the card.
-   * Includes src, alt, position, ratio, fit, and loading options.
+   * Includes src, alt, position, ratio, fit, loading, the custom image
+   * component, and props forwarded to it.
    */
   image?: CardImageProps;
-
-  /**
-   * Additional props forwarded to `imageComponent`
-   * (e.g. `{ priority: true, sizes: "..." }`).
-   */
-  imageProps?: Record<string, unknown>;
 
   /**
    * Card body content, used when `body` is not provided.
@@ -155,7 +179,7 @@ export interface CardProps extends BaseCardProps {
  * footer regions. Visual tokens (`variant`, `size`, `radius`,
  * `animate`, `isClickable`) resolve through the standard AsheeUI
  * cascade. When `isClickable` is enabled, the card becomes keyboard
- * accessible and adopts link or button semantics based on `href`.
+ * accessible and adopts link or button semantics based on `link`.
  *
  * The component automatically handles accessibility attributes including
  * role, tabIndex, aria-disabled, and proper keyboard interaction with
@@ -168,14 +192,13 @@ export interface CardProps extends BaseCardProps {
  * @param props.animate - Press animation. Defaults to true.
  * @param props.isClickable - Interactive behaviour. Defaults to false.
  * @param props.isDisabled - Disabled state. Defaults to false.
- * @param props.href - Optional link destination.
+ * @param props.link - Link configuration for the card (component and props).
  * @param props.title - Heading content.
  * @param props.description - Supporting text.
  * @param props.header - Custom header node.
  * @param props.body - Explicit body content.
  * @param props.footer - Footer node.
- * @param props.image - Image configuration object containing src, alt, position, ratio, fit, and loading.
- * @param props.imageProps - Props forwarded to the image component.
+ * @param props.image - Image configuration object containing src, alt, position, ratio, fit, loading, component and props.
  * @param props.children - Card body content.
  * @param props.className - Extra CSS classes for the card.
  * @param props.id - HTML id attribute.
@@ -205,10 +228,10 @@ export interface CardProps extends BaseCardProps {
  *
  * @example
  * ```tsx
- * // Clickable card with image
+ * // Clickable card with image and a custom link component
  * <Card
  *   isClickable
- *   href="/blog/post-1"
+ *   link={{ component: NextLink, props: { href: "/blog/post-1" } }}
  *   image={{
  *     src: "/images/post-1.jpg",
  *     alt: "Blog post cover",
@@ -250,14 +273,13 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(
       animate,
       isClickable,
       isDisabled = false,
-      href,
+      link,
       title,
       description,
       header,
       body,
       footer,
       image,
-      imageProps,
       className,
       children,
       onClick,
@@ -302,7 +324,13 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(
       FALLBACK_CARD_CONFIG.image.position,
     );
 
-    const resolvedClickable = isClickable ?? Boolean(href || onClick);
+    // Mirrors the Sidebar's link handling: a custom link component renders the
+    // card root, falling back to a native anchor when only link props are given.
+    const isLink = Boolean(link);
+    const LinkComponent: ElementType =
+      link?.component ?? (isLink ? "a" : "div");
+
+    const resolvedClickable = isClickable ?? Boolean(isLink || onClick);
 
     const resolvedAnimate = resolveAnimate<boolean>(
       animate,
@@ -344,9 +372,16 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(
     const variantClass =
       CARD_VARIANT_CLASS[resolvedVariantKey] ?? CARD_VARIANT_CLASS.bordered;
 
+    // The link's own `onClick` is invoked from `handleClick` instead of being
+    // spread onto the root, so the card's disabled guard and its `onClick` prop
+    // still run — and the link handler still fires — when both are provided.
+    const { onClick: linkOnClick, ...linkRestProps } = (link?.props ??
+      {}) as Record<string, unknown>;
+
     /**
      * Handles click events on the card.
-     * Prevents interaction when disabled and navigates to href if provided.
+     * Prevents interaction when disabled; navigation is left to the rendered
+     * link component (native `<a>` or a custom link).
      */
     const handleClick = (e: MouseEvent<HTMLDivElement>) => {
       if (isDisabled) {
@@ -354,9 +389,9 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(
         return;
       }
       onClick?.(e);
-      if (href && !e.defaultPrevented) {
-        window.location.href = href;
-      }
+      (
+        linkOnClick as ((event: MouseEvent<HTMLDivElement>) => void) | undefined
+      )?.(e);
     };
 
     /**
@@ -365,6 +400,10 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(
      */
     const handleKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
       onKeyDown?.(e);
+      // Link cards keep the native activation behaviour of the element they
+      // render (e.g. Enter on an anchor); only button-like cards synthesise a
+      // click from Enter/Space.
+      if (isLink) return;
       if (
         resolvedClickable &&
         !isDisabled &&
@@ -389,15 +428,14 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(
         background: "",
       }[position];
 
-      // ─── FIX: Force eager loading for custom image components ────────────
       // Next.js Image with priority or lazy loading can cause script errors
       // when used with AsheeUIProvider. Force eager loading as a safeguard.
-      let finalImageProps = { ...(imageProps ?? {}) };
+      let finalImageProps = { ...(image?.props ?? {}) };
 
       if (image?.component) {
         // Check if user set loading="lazy" or priority
-        const hasLazy = imageProps?.loading === "lazy";
-        const hasPriority = imageProps?.priority === true;
+        const hasLazy = image?.props?.loading === "lazy";
+        const hasPriority = image?.props?.priority === true;
 
         if (hasLazy || hasPriority) {
           console.warn(
@@ -424,8 +462,8 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(
           ratio={image?.ratio ?? "video"}
           fit={image.fit ?? "cover"}
           className={positionStyles}
-          imageComponent={image.component}
-          imageProps={finalImageProps}
+          component={image.component}
+          props={finalImageProps}
           loading={resolvedLoading}
         />
       );
@@ -441,12 +479,11 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(
 
       const ImageComponent = image.component || "img";
 
-      // ─── FIX: Force eager loading for background images too ──────────────
-      let finalImageProps = { ...(imageProps ?? {}) };
+      let finalImageProps = { ...(image?.props ?? {}) };
 
       if (image?.component) {
-        const hasLazy = imageProps?.loading === "lazy";
-        const hasPriority = imageProps?.priority === true;
+        const hasLazy = image?.props?.loading === "lazy";
+        const hasPriority = image?.props?.priority === true;
 
         if (hasLazy || hasPriority) {
           console.warn(
@@ -479,11 +516,11 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(
     const bodyContent = body ?? children;
 
     return (
-      <div
+      <LinkComponent
         ref={ref}
         id={cardId}
         tabIndex={resolvedClickable && !isDisabled ? 0 : -1}
-        role={resolvedClickable ? (href ? "link" : "button") : undefined}
+        role={resolvedClickable ? (isLink ? "link" : "button") : undefined}
         aria-disabled={isDisabled}
         onClick={handleClick}
         onKeyDown={handleKeyDown}
@@ -502,7 +539,8 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(
           className,
         )}
         style={style}
-        {...rest}>
+        {...rest}
+        {...linkRestProps}>
         {/* Top image */}
         {renderPositionedImage("top")}
 
@@ -550,7 +588,7 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(
 
         {/* Bottom image */}
         {renderPositionedImage("bottom")}
-      </div>
+      </LinkComponent>
     );
   },
 );

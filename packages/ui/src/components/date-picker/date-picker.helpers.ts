@@ -39,7 +39,7 @@ export const MONTHS = [
  * - `time`: Select only a time.
  * - `datetime`: Select both date and time.
  */
-export type PickerMode = "date" | "time" | "datetime";
+export type DatePickerMode = "date" | "time" | "datetime";
 
 // ─── Formatting Functions ───────────────────────────────────────────────────
 
@@ -75,7 +75,7 @@ export function pad2(n: number): string {
  * formatDisplay(date, "datetime") // "15/01/2024 14:30:45"
  * ```
  */
-export function formatDisplay(date: Date, mode: PickerMode): string {
+export function formatDisplay(date: Date, mode: DatePickerMode): string {
   const d = pad2(date.getDate());
   const mo = pad2(date.getMonth() + 1);
   const y = date.getFullYear();
@@ -99,7 +99,7 @@ export function formatDisplay(date: Date, mode: PickerMode): string {
  * @param mode - The picker mode.
  * @returns The placeholder text.
  */
-export function getDefaultPlaceholder(mode: PickerMode): string {
+export function getDefaultPlaceholder(mode: DatePickerMode): string {
   switch (mode) {
     case "date":
       return "Select date...";
@@ -159,7 +159,7 @@ export function buildDayCells(year: number, month: number): (number | null)[] {
  */
 export function parseDateString(
   input: string,
-  mode: PickerMode,
+  mode: DatePickerMode,
   fallbackDate?: Date,
 ): Date | null {
   const digits = input.replace(/\D/g, "");

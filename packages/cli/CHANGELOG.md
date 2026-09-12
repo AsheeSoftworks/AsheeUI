@@ -1,5 +1,11 @@
 # @asheeui/cli
 
+## 0.6.7
+
+### Patch Changes
+
+- Update all dependencies to latest versions
+
 ## 0.6.6
 
 ### Patch Changes

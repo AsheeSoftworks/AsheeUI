@@ -18,6 +18,7 @@ import {
 import { useAsheeConfig } from "../../libs/context";
 import { cn } from "../../utils";
 import { resolveCascade, resolveClassKey } from "../../utils/resolve-token";
+import { ASHEE_GLOBAL_LAYER } from "../../utils/stacking";
 import {
   type DrawerConfig,
   type DrawerPlacement,
@@ -32,7 +33,28 @@ import {
   DRAWER_WIDTH_CLASS,
 } from "./drawer-styles";
 
-type BaseDrawerProps = DrawerConfig & HTMLAttributes<HTMLDivElement>;
+type BaseDrawerProps = DrawerConfig &
+  Omit<HTMLAttributes<HTMLDivElement>, "content">;
+
+/**
+ * Props for the drawer's backdrop overlay.
+ */
+export interface DrawerOverlayProps {
+  /**
+   * Extra classes applied to the overlay.
+   */
+  className?: string;
+}
+
+/**
+ * Props for the drawer's content panel.
+ */
+export interface DrawerContentProps {
+  /**
+   * Extra classes applied to the drawer content.
+   */
+  className?: string;
+}
 
 /**
  * Configuration options for the Drawer component.
@@ -51,14 +73,14 @@ export interface DrawerProps extends BaseDrawerProps {
   onClose?: () => void;
 
   /**
-   * Extra classes applied to the overlay.
+   * Backdrop overlay overrides, including its class override.
    */
-  overlayClassName?: string;
+  overlay?: DrawerOverlayProps;
 
   /**
-   * Extra classes applied to the drawer content.
+   * Content panel overrides, including its class override.
    */
-  contentClassName?: string;
+  content?: DrawerContentProps;
 
   /**
    * The content to display inside the drawer.
@@ -87,8 +109,8 @@ export interface DrawerProps extends BaseDrawerProps {
  * @param props.animated - Whether the drawer has slide animations. Defaults to true.
  * @param props.closeOnOverlayClick - Whether clicking the overlay closes the drawer. Defaults to true.
  * @param props.closeOnEsc - Whether pressing Escape closes the drawer. Defaults to true.
- * @param props.overlayClassName - Extra classes for the overlay.
- * @param props.contentClassName - Extra classes for the drawer content.
+ * @param props.overlay - Backdrop overlay overrides (className).
+ * @param props.content - Content panel overrides (className).
  * @param props.children - The content to display inside the drawer.
  * @param props.className - Extra classes for the container.
  *
@@ -128,7 +150,7 @@ export interface DrawerProps extends BaseDrawerProps {
  *   onClose={onClose}
  *   placement="bottom"
  *   size="full"
- *   overlayClassName="bg-black/50"
+ *   overlay={{ className: "bg-black/50" }}
  * >
  *   <div className="p-6 max-h-[80vh] overflow-y-auto">
  *     {content}
@@ -149,8 +171,8 @@ export const Drawer = forwardRef<HTMLDivElement, DrawerProps>(
       animated: animatedProp,
       closeOnOverlayClick: closeOnOverlayClickProp,
       closeOnEsc: closeOnEscProp,
-      overlayClassName: overlayClassNameProp,
-      contentClassName: contentClassNameProp,
+      overlay,
+      content,
       className,
       children,
       style,
@@ -220,9 +242,9 @@ export const Drawer = forwardRef<HTMLDivElement, DrawerProps>(
     );
 
     const overlayClassName =
-      overlayClassNameProp ?? "bg-black/70 backdrop-blur-md";
+      overlay?.className ?? "bg-black/70 backdrop-blur-md";
 
-    const contentClassName = contentClassNameProp ?? "bg-secondary";
+    const contentClassName = content?.className ?? "bg-secondary";
 
     // ─── 2. Class Maps ────────────────────────────────────────────────────────
 
@@ -291,10 +313,11 @@ export const Drawer = forwardRef<HTMLDivElement, DrawerProps>(
         role="dialog"
         aria-modal="true"
         className={cn(
-          "fixed inset-0 z-50 flex w-full h-full",
+          "fixed inset-0 flex w-full h-full",
           containerPlacementClass,
           className,
         )}
+        style={{ zIndex: ASHEE_GLOBAL_LAYER.overlay }}
         {...props}>
         {/* Backdrop Overlay */}
         <button

@@ -19,7 +19,7 @@ import { defaultInputConfig, type InputConfig } from "../input";
  * - `time`: Select only a time.
  * - `datetime`: Select both date and time.
  */
-export type PickerMode = "date" | "time" | "datetime";
+export type DatePickerMode = "date" | "time" | "datetime";
 
 /**
  * Size key for the date picker.
@@ -40,20 +40,20 @@ export interface DatePickerConfig extends InputConfig {
    *
    * @default "date"
    */
-  mode?: PickerMode;
+  mode?: DatePickerMode;
 
   /**
    * Picker configuration for the calendar popover.
    * Controls portal behavior and other picker-specific settings.
    */
-  picker?: PickerConfig;
+  picker?: DatePickerPickerConfig;
 }
 
 /**
  * Picker configuration for the DatePicker component.
  * Extends DatePickerConfig to allow override of portal settings.
  */
-export interface PickerConfig {
+export interface DatePickerPickerConfig {
   /**
    * Whether to render the calendar popover through Floating UI's
    * `FloatingPortal`.

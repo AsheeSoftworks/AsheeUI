@@ -120,6 +120,85 @@ export interface SidebarSection<T = string> {
 export type SidebarItems<T = string> = SidebarItem<T>[] | SidebarSection<T>[];
 
 /**
+ * Visual styling of the active navigation item.
+ */
+export interface SidebarActiveOptionConfig {
+  /**
+   * Visual variant of the active item.
+   */
+  variant?: Variant;
+
+  /**
+   * Theme color of the active item.
+   */
+  color?: Color;
+}
+
+/**
+ * Visual styling of inactive navigation items.
+ */
+export interface SidebarInactiveOptionConfig {
+  /**
+   * Visual variant of inactive items.
+   */
+  variant?: Variant;
+
+  /**
+   * Theme color of inactive items.
+   */
+  color?: Color;
+}
+
+/**
+ * Options configuration for the sidebar's navigation items.
+ */
+export interface SidebarOptionsConfig {
+  /**
+   * Corner rounding of individual navigation items.
+   */
+  radius?: Radius;
+
+  /**
+   * Styling of the active navigation item.
+   */
+  active?: SidebarActiveOptionConfig;
+
+  /**
+   * Styling of inactive navigation items.
+   */
+  inactive?: SidebarInactiveOptionConfig;
+}
+
+/**
+ * Tooltip configuration for collapsed sidebar items.
+ */
+export interface SidebarTooltipConfig {
+  /**
+   * Whether tooltips are shown for collapsed items.
+   *
+   * @default true
+   */
+  show?: boolean;
+
+  /**
+   * Placement of tooltips relative to the item.
+   *
+   * @default "right"
+   */
+  placement?: TooltipPlacement;
+
+  /**
+   * Visual variant for tooltips.
+   */
+  variant?: Variant;
+
+  /**
+   * Theme color for tooltips.
+   */
+  color?: Color;
+}
+
+/**
  * Theme configuration options for the Sidebar component.
  *
  * Set under `components.sidebar` in the AsheeUI config. Values feed the
@@ -146,52 +225,20 @@ export interface SidebarConfig {
   radius?: Radius;
 
   /**
-   * Corner rounding of individual navigation items.
+   * Options configuration for the sidebar's navigation items.
    */
-  itemRadius?: Radius;
+  options?: SidebarOptionsConfig;
 
   /**
-   * Visual variant for inactive navigation items.
+   * Tooltip configuration for collapsed sidebar items.
    */
-  itemVariant?: Variant;
-
-  /**
-   * Visual variant for the active navigation item.
-   */
-  activeItemVariant?: Variant;
-
-  /**
-   * Theme color for the active navigation item.
-   */
-  activeItemColor?: Color;
+  tooltip?: SidebarTooltipConfig;
 
   /**
    * Whether the collapse button is shown.
    * @default true
    */
   showCollapseButton?: boolean;
-
-  /**
-   * Whether tooltips are shown for collapsed items.
-   * @default true
-   */
-  showTooltips?: boolean;
-
-  /**
-   * Placement of tooltips relative to the item.
-   * @default "right"
-   */
-  tooltipPlacement?: TooltipPlacement;
-
-  /**
-   * Visual variant for tooltips.
-   */
-  tooltipVariant?: Variant;
-
-  /**
-   * Theme color for tooltips.
-   */
-  tooltipColor?: Color;
 
   /**
    * Whether the sidebar has animations.
@@ -217,15 +264,18 @@ export interface SidebarConfig {
  */
 export const defaultSidebarConfig: SidebarConfig = {
   size: "md",
-  showTooltips: true,
-  tooltipPlacement: "right",
   animated: true,
   defaultCollapsed: false,
   collapsible: true,
   showCollapseButton: true,
-  itemVariant: "ghost",
-  activeItemVariant: "solid",
-  activeItemColor: "primary",
+  options: {
+    inactive: { variant: "ghost" },
+    active: { variant: "solid", color: "primary" },
+  },
+  tooltip: {
+    show: true,
+    placement: "right",
+  },
 };
 
 /**
@@ -233,18 +283,21 @@ export const defaultSidebarConfig: SidebarConfig = {
  * These values are used when instance props, component config,
  * and global defaults are all undefined.
  */
-export const FALLBACK_SIDEBAR_CONFIG: Required<SidebarConfig> = {
+export const FALLBACK_SIDEBAR_CONFIG = {
   size: "md",
   variant: "default",
   radius: "none",
-  itemRadius: "md",
-  itemVariant: "ghost",
-  activeItemVariant: "solid",
-  activeItemColor: "primary",
-  showTooltips: true,
-  tooltipPlacement: "right",
-  tooltipVariant: "solid",
-  tooltipColor: "secondary",
+  options: {
+    radius: "md",
+    active: { variant: "solid", color: "primary" },
+    inactive: { variant: "ghost", color: "none" },
+  },
+  tooltip: {
+    show: true,
+    placement: "right",
+    variant: "solid",
+    color: "secondary",
+  },
   animated: true,
   defaultCollapsed: false,
   collapsible: true,

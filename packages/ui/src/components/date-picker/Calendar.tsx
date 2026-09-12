@@ -12,7 +12,7 @@ import type { Color } from "../../shared";
 import { cn } from "../../utils";
 import type { FieldSizeKey } from "../field/field-config";
 import { buildDayCells, DAYS_OF_WEEK, MONTHS } from "./date-picker.helpers";
-import type { PickerMode } from "./date-picker-config";
+import type { DatePickerMode } from "./date-picker-config";
 import {
   CALENDAR_COLOR_CLASSES,
   DATE_PICKER_CELL_SIZE_CLASS,
@@ -31,7 +31,7 @@ interface CalendarProps {
    * Selection mode of the picker.
    * Controls whether the calendar, time spinners, or both are shown.
    */
-  mode: PickerMode;
+  mode: DatePickerMode;
   /**
    * Whether a clear button is shown in the footer.
    */

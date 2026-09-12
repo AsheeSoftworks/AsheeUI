@@ -85,6 +85,32 @@ export interface TabItem {
 }
 
 /**
+ * Visual styling of the active tab.
+ */
+export interface TabsActiveOptionConfig {
+  radius?: Radius;
+  variant?: Variant;
+  color?: Color;
+}
+
+/**
+ * Visual styling of inactive tabs.
+ */
+export interface TabsInactiveOptionConfig {
+  radius?: Radius;
+  variant?: Variant;
+  color?: Color;
+}
+
+/**
+ * Options configuration for the tab items.
+ */
+export interface TabsOptionsConfig {
+  active?: TabsActiveOptionConfig;
+  inactive?: TabsInactiveOptionConfig;
+}
+
+/**
  * Theme configuration options for the Tabs component.
  *
  * Set under `components.tabs` in the AsheeUI config. Values feed the
@@ -116,28 +142,9 @@ export interface TabsConfig {
   radius?: Radius;
 
   /**
-   * Corner rounding of the active tab button.
-   * Controls the border-radius of the selected tab trigger.
-   *
-   * @default "md"
+   * Options configuration for the tab items.
    */
-  activeRadius?: Radius;
-
-  /**
-   * Visual variant for the active tab button.
-   * Controls the style of the selected tab trigger.
-   *
-   * @default "solid"
-   */
-  activeVariant?: Variant;
-
-  /**
-   * Theme color for the active tab button.
-   * Controls the color of the selected tab trigger.
-   *
-   * @default "primary"
-   */
-  activeColor?: Color;
+  options?: TabsOptionsConfig;
 }
 
 /**
@@ -147,7 +154,9 @@ export const defaultTabsConfig: TabsConfig = {
   size: "md",
   variant: "underline",
   radius: "md",
-  activeRadius: "md",
+  options: {
+    active: { radius: "md" },
+  },
 };
 
 /**
@@ -155,13 +164,14 @@ export const defaultTabsConfig: TabsConfig = {
  * These values are used when instance props, component config,
  * and global defaults are all undefined.
  */
-export const FALLBACK_TABS_CONFIG: Required<TabsConfig> = {
+export const FALLBACK_TABS_CONFIG = {
   size: "md",
   variant: "underline",
   radius: "md",
-  activeRadius: "md",
-  activeVariant: "solid",
-  activeColor: "primary",
+  options: {
+    active: { radius: "md", variant: "solid", color: "primary" },
+    inactive: { radius: "md", variant: "ghost", color: "none" },
+  },
 } as const;
 
 declare module "../../libs/registry" {

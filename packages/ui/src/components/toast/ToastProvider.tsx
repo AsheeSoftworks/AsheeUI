@@ -12,6 +12,7 @@ import { useAsheeConfig } from "../../libs/context";
 import type { Size, Variant } from "../../shared";
 import { cn } from "../../utils";
 import { resolveCascade, resolveRadiusKey } from "../../utils/resolve-token";
+import { ASHEE_GLOBAL_LAYER } from "../../utils/stacking";
 import { ToastContext } from "./ToastContext";
 import { ToastItem } from "./ToastItem";
 import {
@@ -376,10 +377,11 @@ export function ToastProvider({
           key={placementKey}
           aria-label="Notifications"
           className={cn(
-            "fixed z-99999 flex flex-col gap-3 pointer-events-none p-4 max-h-screen scrollbar-hide overflow-hidden",
+            "fixed flex flex-col gap-3 pointer-events-none p-4 max-h-screen scrollbar-hide overflow-hidden",
             PLACEMENT_CLASSES[placementKey],
             className,
-          )}>
+          )}
+          style={{ zIndex: ASHEE_GLOBAL_LAYER.toast }}>
           {items.map((toastItem) => (
             <ToastItem
               key={toastItem.id}
