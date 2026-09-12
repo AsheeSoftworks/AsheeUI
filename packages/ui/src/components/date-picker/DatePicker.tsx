@@ -27,6 +27,7 @@ import {
   resolveClassKey,
   resolveRadiusKey,
 } from "../../utils/resolve-token";
+import { ASHEE_LAYER } from "../../utils/stacking";
 import type { FieldSizeKey } from "../field/field-config";
 import { Input, type InputProps } from "../input/Input";
 import { FALLBACK_SELECT_MENU_CONFIG, useSelectFloating } from "../select-menu";
@@ -39,16 +40,16 @@ import {
 } from "./date-picker.helpers";
 import {
   type DatePickerConfig,
+  type DatePickerMode,
+  type DatePickerPickerConfig,
   FALLBACK_DATE_PICKER_CONFIG,
-  type PickerConfig,
-  type PickerMode,
 } from "./date-picker-config";
 
 /**
- * Picker menu configuration that extends PickerConfig with className.
- * Used for styling the calendar popover.
+ * Props for the picker (calendar popover).
+ * Extends DatePickerPickerConfig with instance-only props.
  */
-export interface PickerMenu extends PickerConfig {
+export interface DatePickerPickerProps extends DatePickerPickerConfig {
   /**
    * Extra CSS classes for the calendar popover.
    */
@@ -89,7 +90,7 @@ export interface DatePickerProps extends BaseDatePickerProps {
    * Picker configuration overrides including portal, portalTarget, and className.
    * All picker-related props should be passed through this object.
    */
-  picker?: PickerMenu;
+  picker?: DatePickerPickerProps;
 
   /**
    * Whether a clear button is shown in the input.
@@ -212,7 +213,7 @@ export const DatePicker = forwardRef<HTMLInputElement, DatePickerProps>(
 
     // ─── Token Resolvers ──────────────────────────────────────────────────
 
-    const resolvedMode = resolveCascade<PickerMode>(
+    const resolvedMode = resolveCascade<DatePickerMode>(
       mode,
       sectionConfig?.mode,
       undefined,
@@ -284,6 +285,7 @@ export const DatePicker = forwardRef<HTMLInputElement, DatePickerProps>(
       disabled,
       matchReferenceWidth: false, // Allow calendar to size naturally side-by-side
       role: "dialog",
+      zIndex: ASHEE_LAYER.popover,
     });
 
     // ─── Scroll Lock ────────────────────────────────────────────────────────
@@ -451,7 +453,7 @@ export const DatePicker = forwardRef<HTMLInputElement, DatePickerProps>(
           ref={refs.setFloating}
           style={{ ...floatingStyles }}
           className={cn(
-            "z-100 outline-none w-max",
+            "outline-none w-max",
             // Disable transitions on the floating node. Floating UI applies
             // position via `transform` on every scroll tick, and any inherited
             // transform transition would ease toward each new position instead

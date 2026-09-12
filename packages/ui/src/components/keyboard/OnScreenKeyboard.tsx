@@ -11,6 +11,7 @@ import { FloatingPortal } from "@floating-ui/react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import type { Color, Radius, Variant } from "../../shared";
 import { cn } from "../../utils";
+import { ASHEE_GLOBAL_LAYER } from "../../utils/stacking";
 import { Button } from "../button/Button";
 import type { KeyboardElement } from "./KeyboardContext";
 import type {
@@ -373,7 +374,8 @@ export function OnScreenKeyboard({
   const keyboardContent = (
     <section
       aria-label="Virtual Keyboard"
-      className="fixed inset-x-0 bottom-0 z-9999 pointer-events-auto"
+      className="fixed inset-x-0 bottom-0 pointer-events-auto"
+      style={{ zIndex: ASHEE_GLOBAL_LAYER.docked }}
       onMouseDown={(e) => e.preventDefault()}>
       <div
         className={cn(

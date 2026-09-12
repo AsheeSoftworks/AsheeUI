@@ -1,6 +1,6 @@
 {
   "name": "@asheeui/cli",
-  "version": "0.6.6",
+  "version": "0.6.7",
   "description": "Scaffold and maintain AsheeUI in an existing React app, with framework detection, provider wiring, and a doctor command.",
   "author": "Ashee Softworks <asheesoftworks@gmail.com>",
   "homepage": "https://asheeui.com",
@@ -57,13 +57,13 @@
     "test:watch": "vitest"
   },
   "dependencies": {
-    "@clack/prompts": "^1.7.0",
+    "@clack/prompts": "^1.8.0",
     "commander": "^15.0.0",
-    "tsx": "^4.23.12"
+    "tsx": "^4.23.13"
   },
   "devDependencies": {
-    "tsdown": "^0.22.14",
-    "vitest": "^3.2.7"
+    "tsdown": "^0.23.0",
+    "vitest": "^5.0.0"
   },
   "license": "MIT"
 }

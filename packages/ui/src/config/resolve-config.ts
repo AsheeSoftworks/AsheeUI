@@ -37,20 +37,37 @@ import { resolveColorConfig } from "./resolve-color";
  * ```
  */
 export function resolveConfig(externalConfig: ExternalConfig): Config {
-  const registeredDefaults = getAllComponentDefaults() as Config["components"];
-
   // No explicit `<Config>` type argument: `mergeObject` infers `T` from
   // `defaultConfig` and treats the override object as its own type parameter,
   // avoiding a forced full `DeepPartial<Config>` instantiation at the call
   // site while still validating each override against `Config`.
-  const configWithDefaults = mergeObject(defaultConfig, {
-    components: registeredDefaults,
-  });
-  const merged = mergeObject(configWithDefaults, externalConfig);
+  const merged = mergeObject(defaultConfig, externalConfig);
 
   // generic mergeObject can't fall back keys it has no default for (custom themes) -
   // re-resolve color specifically so unfilled fields inherit from `light` or `dark`
   merged.color = resolveColorConfig(defaultColorConfig, externalConfig.color);
+
+  // Component defaults live in a module-level registry that each component's
+  // config module populates as an import side effect (`registerComponentDefaults`).
+  // Bundlers are free to evaluate those modules *after* the provider first
+  // resolves the config — code-split client chunks and per-route module graphs
+  // make this common — which would freeze a partially populated registry into
+  // the config. A component would then fall back to the global defaults while
+  // the server, which evaluates the whole graph before rendering, used its
+  // registered defaults, producing a hydration mismatch on the rendered classes.
+  //
+  // Resolving `components` lazily guarantees every access reflects the registry
+  // at the moment a component renders, and a component always imports its own
+  // config module, so its entry is guaranteed to be registered by then.
+  Object.defineProperty(merged, "components", {
+    enumerable: true,
+    configurable: true,
+    get: () =>
+      mergeObject(
+        getAllComponentDefaults() as Record<string, unknown>,
+        externalConfig.components as Record<string, unknown> | undefined,
+      ) as Config["components"],
+  });
 
   return merged;
 }

@@ -21,6 +21,7 @@ import {
   resolveClassKey,
   resolveRadiusKey,
 } from "../../utils/resolve-token";
+import { ASHEE_GLOBAL_LAYER } from "../../utils/stacking";
 import {
   FALLBACK_MODAL_CONFIG,
   type ModalConfig,
@@ -30,7 +31,27 @@ import {
 import { MODAL_MAX_WIDTH_CLASS, MODAL_POSITION_CLASS } from "./modal-styles";
 
 type BaseModalProps = ModalConfig &
-  Omit<HTMLAttributes<HTMLDivElement>, "size">;
+  Omit<HTMLAttributes<HTMLDivElement>, "size" | "content">;
+
+/**
+ * Props for the modal's backdrop overlay.
+ */
+export interface ModalOverlayProps {
+  /**
+   * Extra classes applied to the backdrop element.
+   */
+  className?: string;
+}
+
+/**
+ * Props for the modal's content container.
+ */
+export interface ModalContentProps {
+  /**
+   * Extra classes applied to the modal content container.
+   */
+  className?: string;
+}
 
 /**
  * Configuration options for the Modal component.
@@ -68,16 +89,14 @@ export interface ModalProps extends BaseModalProps {
   height?: string;
 
   /**
-   * Backdrop overlay custom class name.
-   * Extra classes applied to the backdrop element.
+   * Backdrop overlay overrides, including its class override.
    */
-  overlayClassName?: string;
+  overlay?: ModalOverlayProps;
 
   /**
-   * Content container custom class name.
-   * Extra classes applied to the modal content container.
+   * Content container overrides, including its class override.
    */
-  contentClassName?: string;
+  content?: ModalContentProps;
 }
 
 /**
@@ -106,8 +125,8 @@ export interface ModalProps extends BaseModalProps {
  * @param props.closeOnEscape - Whether pressing Escape closes the modal. Defaults to true.
  * @param props.width - Width override for the modal.
  * @param props.height - Height override for the modal.
- * @param props.overlayClassName - Extra classes for the backdrop.
- * @param props.contentClassName - Extra classes for the content container.
+ * @param props.overlay - Backdrop overlay overrides (className).
+ * @param props.content - Content container overrides (className).
  * @param props.children - The modal content.
  *
  * @example
@@ -168,8 +187,8 @@ export function Modal({
   animated: animatedProp,
   closeOnBackdropClick: closeOnBackdropClickProp,
   closeOnEscape: closeOnEscapeProp,
-  overlayClassName: overlayClassNameProp,
-  contentClassName: contentClassNameProp,
+  overlay,
+  content,
   className,
   style,
   ...props
@@ -246,14 +265,16 @@ export function Modal({
 
   // ─── 3. Animation Handling ──────────────────────────────────────────────
 
-  // Handle open/close with animation
+  // Handle open/close with animation. The closing flag is reset in the same
+  // batch as the mount so the first painted frame already uses the enter
+  // animation. Resetting it from a `requestAnimationFrame` callback painted one
+  // frame with `animate-modal-out` first, and because that keyframe starts at
+  // `opacity: 1` the modal flashed fully visible before `animate-modal-in`
+  // restarted from `opacity: 0` — the flicker seen on every re-open.
   useEffect(() => {
     if (isOpen) {
+      setIsClosing(false);
       setShouldRender(true);
-      // Reset closing state after a microtask to trigger enter animation
-      requestAnimationFrame(() => {
-        setIsClosing(false);
-      });
     } else if (animated) {
       // Start exit animation
       setIsClosing(true);
@@ -297,16 +318,17 @@ export function Modal({
       role="dialog"
       aria-modal="true"
       className={cn(
-        "fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 h-screen w-screen scrollbar-hide",
+        "fixed inset-0 flex items-center justify-center p-4 sm:p-6 h-screen w-screen scrollbar-hide",
         getBackdropAnimation(),
-      )}>
+      )}
+      style={{ zIndex: ASHEE_GLOBAL_LAYER.overlay }}>
       {/* Backdrop Overlay */}
       <button
         type="button"
         onClick={closeOnBackdropClick ? onClose : undefined}
         className={cn(
           "fixed inset-0 bg-background/80 backdrop-blur-xs dark:bg-black/70",
-          overlayClassNameProp,
+          overlay?.className,
           getBackdropAnimation(),
         )}
       />
@@ -318,7 +340,7 @@ export function Modal({
           positionClass,
           widthClass,
           radiusClass,
-          contentClassNameProp,
+          content?.className,
           getModalAnimation(),
           className,
         )}

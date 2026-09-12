@@ -9,7 +9,12 @@
  */
 "use client";
 
-import { forwardRef, type MouseEvent, type ReactNode } from "react";
+import {
+  type ElementType,
+  forwardRef,
+  type MouseEvent,
+  type ReactNode,
+} from "react";
 import { useAsheeConfig } from "../../libs/context";
 import type { Size } from "../../shared";
 import {
@@ -37,6 +42,24 @@ import { BUTTON_ICON_SIZE_CLASS, BUTTON_SIZE_CLASS } from "./button-styles";
  */
 type BaseButtonProps = ButtonConfig &
   Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, "color" | "disabled">;
+
+/**
+ * Props for the button's link behaviour.
+ * Holds the instance-only link component and its props.
+ */
+export interface ButtonLinkProps {
+  /**
+   * Custom link component (e.g. `next/link`, TanStack Router `Link`).
+   * When provided, this component is used instead of the native `<a>` tag.
+   */
+  component?: ElementType;
+
+  /**
+   * Additional props to pass to the link component (e.g. `{ prefetch: true }`).
+   * These take precedence over the button's own props.
+   */
+  props?: Record<string, unknown>;
+}
 
 /**
  * Configuration options for the Button component.
@@ -87,6 +110,18 @@ export interface ButtonProps extends BaseButtonProps {
    * Typically an icon, badge, or adornment.
    */
   endContent?: ReactNode;
+
+  /**
+   * Renders the button as a link to this URL.
+   * The root element becomes an `<a>`, or `link.component` when provided.
+   */
+  href?: string;
+
+  /**
+   * Link configuration for the button.
+   * Provides the custom link component and props forwarded to it.
+   */
+  link?: ButtonLinkProps;
 }
 
 /**
@@ -115,6 +150,8 @@ export interface ButtonProps extends BaseButtonProps {
  * @param props.icon - Icon-only compact layout. Defaults to false.
  * @param props.startContent - Content at the start of the button.
  * @param props.endContent - Content at the end of the button.
+ * @param props.href - Renders the button as a link to this URL.
+ * @param props.link - Link configuration (custom component and props).
  * @param props.children - Button label content.
  * @param props.className - Extra CSS classes for the button.
  *
@@ -182,6 +219,8 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       onClick,
       startContent,
       endContent,
+      href,
+      link,
       ...rest
     } = props;
 
@@ -236,12 +275,29 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
 
     const isInteractionDisabled = isDisabled || isLoading;
 
+    // When `href` or `link` is provided the button renders as a link instead of
+    // a <button>, mirroring the Card's `link` part.
+    const isLink = Boolean(href || link);
+    const LinkComponent: ElementType =
+      link?.component ?? (isLink ? "a" : "button");
+
+    // The link's own `onClick` is invoked from `handleClick` instead of being
+    // spread onto the root, so the disabled guard and the button's `onClick`
+    // prop still run — and the link handler still fires — when both are given.
+    const { onClick: linkOnClick, ...linkRestProps } = (link?.props ??
+      {}) as Record<string, unknown>;
+
     const handleClick = (e: MouseEvent<HTMLButtonElement>) => {
       if (isInteractionDisabled) {
         e.preventDefault();
         return;
       }
       onClick?.(e);
+      (
+        linkOnClick as
+          | ((event: MouseEvent<HTMLButtonElement>) => void)
+          | undefined
+      )?.(e);
     };
 
     const sharedClassName = cn(
@@ -263,21 +319,21 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     );
 
     return (
-      <button
+      <LinkComponent
         ref={ref}
-        type={type}
-        disabled={isInteractionDisabled}
+        {...(isLink ? { href } : { type, disabled: isInteractionDisabled })}
         aria-disabled={isInteractionDisabled}
         aria-busy={isLoading}
         onClick={handleClick}
         className={sharedClassName}
-        {...rest}>
+        {...rest}
+        {...linkRestProps}>
         {isLoading && <Spinner className={resolvedSizeKey} />}
         {isLoading && <span className="sr-only">Loading</span>}
         {!isLoading && startContent}
         {!isLoading && children}
         {!isLoading && endContent}
-      </button>
+      </LinkComponent>
     );
   },
 );

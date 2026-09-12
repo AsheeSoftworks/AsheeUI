@@ -9,6 +9,7 @@
 
 import { registerComponentDefaults } from "../../libs/registry";
 import type { Color, Radius, Size, Variant } from "../../shared";
+import { ASHEE_LAYER } from "../../utils/stacking";
 
 /**
  * Placement of the tooltip relative to the trigger element.
@@ -103,6 +104,33 @@ export interface TooltipConfig {
   showArrow?: boolean;
 
   /**
+   * Whether to render the tooltip through Floating UI's `FloatingPortal`.
+   * When true, the tooltip is appended to `document.body`, which escapes
+   * clipping and stacking contexts but also always paints above app-level
+   * overlays such as sticky navbars.
+   *
+   * When false, the tooltip renders in place next to the trigger and follows
+   * the trigger's own stacking context: a tooltip on a sticky navbar appears
+   * above the page, while a tooltip on a page element stays underneath the
+   * navbar. Enable `portal` for triggers inside scrollable or clipped
+   * containers (for example a Modal panel or an overflow-hidden card).
+   *
+   * @default false
+   * @see FloatingPortal - https://floating-ui.com/docs/FloatingPortal
+   */
+  portal?: boolean;
+
+  /**
+   * Layer delta added to the trigger's detected stacking-context z-index to
+   * resolve the tooltip's final `z-index`. Anchored tooltips stay above their
+   * own container (for example a sticky navbar) without outranking unrelated
+   * app chrome.
+   *
+   * @default ASHEE_LAYER.tooltip
+   */
+  zIndex?: number;
+
+  /**
    * Extra classes applied to every tooltip instance.
    *
    * @default ""
@@ -119,6 +147,8 @@ export const defaultTooltipConfig: TooltipConfig = {
   delay: 200,
   offset: 8,
   showArrow: false,
+  portal: false,
+  zIndex: ASHEE_LAYER.tooltip,
 };
 
 /**
@@ -135,6 +165,8 @@ export const FALLBACK_TOOLTIP_CONFIG: Required<TooltipConfig> = {
   offset: 8,
   radius: "md" as Radius,
   showArrow: false,
+  portal: false,
+  zIndex: ASHEE_LAYER.tooltip,
   className: "",
 } as const;
 

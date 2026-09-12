@@ -25,6 +25,8 @@ import {
   useInteractions,
   useRole,
 } from "@floating-ui/react";
+import { useFloatingZIndex } from "../../libs/use-floating-z-index";
+import { ASHEE_LAYER } from "../../utils/stacking";
 
 /**
  * Configuration options for the useSelectFloating hook.
@@ -92,6 +94,16 @@ export interface UseSelectFloatingProps {
    * @default "listbox"
    */
   role?: "listbox" | "menu" | "dialog" | "tooltip" | "grid" | "tree";
+
+  /**
+   * Layer delta added to the trigger's detected stacking-context z-index to
+   * resolve the floating element's final `z-index`. Keeps anchored popups
+   * above their own container (for example a navbar) while staying underneath
+   * unrelated app chrome.
+   *
+   * @default ASHEE_LAYER.dropdown
+   */
+  zIndex?: number;
 }
 
 /**
@@ -129,6 +141,7 @@ export interface UseSelectFloatingReturn<T extends HTMLElement> {
  * @param props.padding - Viewport padding for shift middleware. Defaults to 8.
  * @param props.matchReferenceWidth - Whether to match reference width. Defaults to true.
  * @param props.role - ARIA role for the floating element. Defaults to "listbox".
+ * @param props.zIndex - Layer delta for the floating element. Defaults to `ASHEE_LAYER.dropdown`.
  * @returns Floating UI refs/context/styles plus `isPositioned` and the
  * resolved `getReferenceProps`/`getFloatingProps` prop-getters.
  *
@@ -165,6 +178,7 @@ export function useSelectFloating<T extends HTMLElement = HTMLElement>({
   padding = 8,
   matchReferenceWidth = true,
   role = "listbox",
+  zIndex = ASHEE_LAYER.dropdown,
 }: UseSelectFloatingProps): UseSelectFloatingReturn<T> {
   const floating = useFloating<T>({
     open: isOpen,
@@ -189,6 +203,12 @@ export function useSelectFloating<T extends HTMLElement = HTMLElement>({
     ],
   });
 
+  const floatingZIndex = useFloatingZIndex(
+    floating.refs.reference,
+    isOpen,
+    zIndex,
+  );
+
   const { context } = floating;
 
   const click = useClick(context, { enabled: !disabled });
@@ -203,7 +223,9 @@ export function useSelectFloating<T extends HTMLElement = HTMLElement>({
   return {
     refs: floating.refs,
     context,
-    floatingStyles: floating.floatingStyles,
+    // The layer delta is combined with the trigger's detected stacking-context
+    // z-index so the floating element layers correctly against client chrome.
+    floatingStyles: { ...floating.floatingStyles, zIndex: floatingZIndex },
     isPositioned: floating.isPositioned,
     getReferenceProps,
     getFloatingProps,

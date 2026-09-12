@@ -1,5 +1,87 @@
 # asheeui
 
+## 0.7.0
+
+### Minor Changes
+
+- ### Floating layer standard (new)
+  
+  - Introduced a single floating-layer standard so portaled popups layer correctly against both AsheeUI components and arbitrary client components (including custom navbars), with no manual `z-index` configuration required.
+  - Added `utils/stacking.ts`: `ASHEE_LAYER` (small per-layer deltas: `dropdown: 10`, `popover: 20`, `tooltip: 30`), `ASHEE_GLOBAL_LAYER` (fixed app-level rungs: `overlay: 1000`, `docked: 1500`, `toast: 2000`), `establishesStackingContext`, `resolveBaseZIndex`, and `resolveFloatingZIndex`. `establishesStackingContext` covers the full CSS stacking-context list (fixed/sticky, positioned + `z-index`, `opacity`, `transform`, `filter`, `backdrop-filter`, `perspective`, `clip-path`, `mix-blend-mode`, `isolation`, `will-change`, `contain`) and the ancestor walk crosses shadow DOM hosts. These are re-exported from the `utils` barrel.
+  - Added the `useFloatingZIndex` hook (`libs/use-floating-z-index.ts`): derives a portaled element's `z-index` as `outermost stacking-context z-index of the trigger + layer delta`, measured in a layout effect so the corrected value lands before paint (no flash at the wrong layer). Floating UI virtual elements are ignored.
+  - Anchored popups (Select, MultiSelect, Autocomplete, SelectMenu, DatePicker, Tooltip) now derive their `z-index` from the trigger's stacking context. A popup opened from a navbar renders above that navbar, while a popup opened from the page stays underneath it, regardless of the numeric `z-index` a client assigns to their chrome.
+  - Removed the hardcoded floating `z-index` classes that the standard replaces: `z-30` (SelectMenu), `z-100` (DatePicker), `z-50` (Modal/Drawer), `z-9999` (OnScreenKeyboard), `z-99999` (Toast), and the tooltip's `z-99999` escape hatch.
+  - App-level overlays now use the fixed `ASHEE_GLOBAL_LAYER` rungs instead of ad-hoc classes: Modal/Drawer `1000`, OnScreenKeyboard `1500`, Toast `2000`. Modal and Drawer now render above high `z-index` navbars.
+  
+  ### Tooltip
+  
+  - Added a `portal` option (default `false`). When `false` the tooltip renders in place next to the trigger and follows the trigger's own stacking context; when `true` it is appended to `document.body` via `FloatingPortal` for triggers inside scrollable or clipped containers. This is a behavior change from the previous always-portaled implementation.
+  - Added a `zIndex` option (layer delta, defaults to `ASHEE_LAYER.tooltip`).
+  - Portaled tooltips apply the derived `z-index`; in-place tooltips apply none, because they already follow the trigger's stacking context.
+  
+  ### SelectMenu / useSelectFloating
+  
+  - Added a `zIndex` option (defaults to `ASHEE_LAYER.dropdown`); the derived value is merged into the returned `floatingStyles`, so Select, MultiSelect, Autocomplete, and DatePicker layer correctly with no per-component wiring.
+  - SelectMenu no longer hardcodes `z-30`; the value now arrives through `floatingStyles`.
+  
+  ### DatePicker
+  
+  - Passes `zIndex: ASHEE_LAYER.popover` to the shared floating hook and no longer hardcodes `z-100`.
+  
+  ### Modal / Drawer / OnScreenKeyboard / Toast
+  
+  - Switched to the shared `ASHEE_GLOBAL_LAYER` rungs (Modal/Drawer `overlay: 1000`, OnScreenKeyboard `docked: 1500`, Toast `toast: 2000`), replacing the per-component `z-50` / `z-9999` / `z-99999` classes so the overlay tiers are defined in one place.
+  
+  ### Modal (opening flicker fix)
+  
+  - Fixed the modal flickering when opening. The exit-animation flag was reset in a `requestAnimationFrame` callback, so the modal painted one frame with `animate-modal-out` before switching to `animate-modal-in`. Because `modalPopOut` starts at `opacity: 1` while `modalPopIn` starts at `opacity: 0`, the modal flashed fully visible, then disappeared, then faded in again on every re-open. The flag is now reset in the same batch as the mount, so the first painted frame already uses the enter animation.
+  
+  ### Card
+  
+  - Standardized the card's extended configuration into nested config/prop pairs with parent-prefixed names — `CardImageConfig` / `CardImageProps` for the embedded image and `CardLinkConfig` / `CardLinkProps` for the embedded link (config types live in `card-config.ts`, prop types extend them in `Card.tsx`). `CardConfig` holds `image: CardImageConfig`; `BaseCardProps` omits `image` from the config and `CardProps` re-adds it as `image?: CardImageProps`, plus `link?: CardLinkProps`.
+  - Removed the flat `href`, `linkComponent`, `linkProps`, `imageComponent` and `imageProps` props (removed, not deprecated): `href` performed a full-page `window.location` navigation, which is incompatible with client-side routers. The image part is now `image={{ src, alt, component, props }}` and the link part is `link={{ component: NextLink, props: { href: "/pricing" } }}` (or pass only `props` to render a native `<a>`). Part `props` are spread last, so they take precedence over the component's own props.
+  - Link cards keep the native activation behaviour of the element they render (e.g. Enter on an anchor); only button-like cards synthesise Enter/Space clicks.
+  - `onClick` and a `link.props.onClick` now both run: the link handler is invoked from the card's own click handler instead of being spread onto the root, so the disabled guard and the card's `onClick` are never bypassed by link props.
+  
+  ### Button
+  
+  - Added `href` and `link` (`ButtonLinkProps` — `{ component?, props? }`) so the button can render as a link: when `href` or `link` is provided the root becomes an `<a>`, or `link.component` when given (e.g. `next/link`), instead of `<button>`. `type` and `disabled` are only applied to the `<button>` form — the link form uses `aria-disabled` and the disabled guard still blocks navigation. Link `props` are spread last so they take precedence, and a `link.props.onClick` runs alongside the button's own `onClick`.
+  
+  ### Image
+  
+  - Renamed the flat `imageComponent` / `imageProps` props to `component` / `props` (removed, not deprecated) so the Image component's embedded-component props match the nested part shape used by parents (`CardImageProps` exposes the same `component` / `props`).
+  
+  
+  ### Sidebar
+  
+  - Standardized the sidebar's extended configuration into nested config/prop pairs:
+    - `SidebarOptionsConfig` — `radius`, plus `active` (`SidebarActiveOptionConfig`) and `inactive` (`SidebarInactiveOptionConfig`), each carrying `variant` and `color`. `SidebarOptionProps extends SidebarOptionsConfig` and adds the sidebar-local `itemClassName`.
+    - `SidebarTooltipConfig` — `show`, `placement`, `variant`, `color`. It carries no instance-only props, so no props type is created for it.
+  - `SidebarConfig` now exposes `options?: SidebarOptionsConfig` and `tooltip?: SidebarTooltipConfig`. `BaseSidebarProps` omits `options` from the config and `SidebarProps` re-adds it as `options?: SidebarOptionProps`, plus `tooltip?: SidebarTooltipConfig`.
+  - Removed the flat `itemRadius`, `itemVariant`, `activeItemVariant`, `activeItemColor`, `showTooltips`, `tooltipPlacement`, `tooltipVariant`, `tooltipColor` and `itemClassName` props (removed, not deprecated). Migrate e.g. `itemRadius="lg" activeItemColor="danger"` to `options={{ radius: "lg", active: { color: "danger" } }}`, and `showTooltips={false} tooltipPlacement="top"` to `tooltip={{ show: false, placement: "top" }}`.
+  - Link handling is now a nested part too: `link?: SidebarLinkProps` (`{ component?, props? }`) replaces the flat `linkComponent` / `linkProps` props (removed, not deprecated) — e.g. `link={{ component: NextLink, props: { prefetch: true } }}`. `anchorProps` remains a flat typed passthrough.
+  
+  ### Modal / Drawer (slot props)
+  
+  - Nested the slot class overrides into part objects: `overlay?: { className }` and `content?: { className }` (`ModalOverlayProps` / `ModalContentProps`, `DrawerOverlayProps` / `DrawerContentProps`), replacing the flat `overlayClassName` / `contentClassName` props (removed, not deprecated). The base props now omit the DOM `content` attribute to make room for the `content` part.
+  
+  ### Select / Autocomplete / MultiSelect / DatePicker
+  
+  - Standardized the embedded-part types: each part now has a config type in its `*-config.ts` and a props type that extends it with instance-only props in the component file, exposed through the same key (omitted from the config-derived base props):
+    - Select: `menu?: MenuProps` (was `MenuConfig`), so `menu.className` is now accepted.
+    - MultiSelect: new `MultiSelectChipConfig` + `MultiSelectChipProps` (adds `className`), exposed as `chip?: MultiSelectChipProps`; `chip` is omitted from `MultiSelectConfig` in the base props. Chips now apply `chip.className`. `menu` keeps `MenuProps`.
+    - Autocomplete: already used the pair (`menu?: MenuProps`) — uncovered by the standard.
+    - DatePicker: `PickerConfig` → `DatePickerPickerConfig`, `PickerProps` → `DatePickerPickerProps` (adds `className`) and `PickerMode` → `DatePickerMode`; exposed as `picker?: DatePickerPickerProps`.
+  
+  ### Tabs
+  
+  - Standardized the tab item styling into `TabsOptionsConfig` — `active` (`TabsActiveOptionConfig`) and `inactive` (`TabsInactiveOptionConfig`), each carrying `radius`, `variant` and `color` — with `TabsOptionProps extends TabsOptionsConfig` adding `tabClassName`. `TabsConfig` exposes `options?: TabsOptionsConfig`; `BaseTabsProps` omits it and `TabsProps` re-adds `options?: TabsOptionProps`.
+  - Removed the flat `activeRadius`, `activeVariant`, `activeColor` and `tabClassName` props (removed, not deprecated). Migrate `activeColor="danger"` to `options={{ active: { color: "danger" } }}` and `tabClassName="…"` to `options={{ tabClassName: "…" }}`. Inactive tabs are now configurable via `options.inactive`; the defaults preserve the previous `ghost` / `none` / container-radius look.
+  
+  ### Config resolution (hydration fix)
+  
+  - Fixed a server/client hydration mismatch where component `className` output differed. `resolveConfig` took a **snapshot** of the component-defaults registry while the provider resolved the config, so any component whose config module registered its defaults *after* that first resolve (common with code-split client chunks and per-route module graphs) fell back to the global defaults on the client while the server used its registered defaults — for example Chip `radius: "full"` registered vs `defaultRadius: "md"`, or the field-based `variant: "bordered"` registered vs `defaultVariant: "solid"`. `config.components` is now resolved lazily, so every access reflects the registry at the moment a component actually renders.
+
 ## 0.6.15
 
 ### Patch Changes
