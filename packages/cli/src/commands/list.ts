@@ -3,12 +3,12 @@
  *
  * This module provides the `registerListCommand` function that registers
  * the `list` subcommand on the commander program. The list command discovers
- * the asheeui package and prints all available component folders.
+ * the asheeui package and prints its public component inventory.
  */
 
 import type { Command } from "commander";
 import {
-  discoverComponentFolders,
+  discoverPublicComponents,
   renderComponentList,
   resolveAsheeuiPackage,
 } from "../lib/list/list";
@@ -20,8 +20,8 @@ import {
  *
  * Discovers the `asheeui` package either inside the project's
  * `node_modules`, in a monorepo `packages/ui` sibling, or at a path
- * supplied via `--path`, then prints every component folder found in
- * the package's components directory.
+ * supplied via `--path`, then prints every component exposed by the
+ * package's public export surface. Internal helpers are never listed.
  *
  * Flags:
  * - `-d, --dir <path>`: project directory used to locate the package.
@@ -66,7 +66,7 @@ export function registerListCommand(program: Command) {
         process.exit(1);
       }
 
-      const components = await discoverComponentFolders(pkgRoot);
+      const components = await discoverPublicComponents(pkgRoot);
 
       if (opts.json) {
         console.log(JSON.stringify(components, null, 2));

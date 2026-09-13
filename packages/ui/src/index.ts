@@ -18,6 +18,11 @@ export { AsheeUIProvider } from "./AsheeUIProvider";
 /**
  * All component exports.
  * Each component is exported from its respective directory.
+ *
+ * Internal building blocks (`field` and `menu`) are deliberately not
+ * exported. They are implementation details shared by the components that
+ * use them, so they are not part of the public component surface and must
+ * not be listed as components.
  */
 export * from "./components/accordion";
 export * from "./components/autocomplete";
@@ -27,7 +32,6 @@ export * from "./components/carousel";
 export * from "./components/chip";
 export * from "./components/date-picker";
 export * from "./components/drawer";
-export * from "./components/field";
 export * from "./components/image";
 export * from "./components/input";
 export * from "./components/keyboard";
@@ -38,7 +42,6 @@ export * from "./components/multi-select";
 export * from "./components/radio";
 export * from "./components/resizable-screen";
 export * from "./components/select";
-export type { SelectMenuOption } from "./components/select-menu";
 export * from "./components/sidebar";
 export * from "./components/spinner";
 export * from "./components/switch";
