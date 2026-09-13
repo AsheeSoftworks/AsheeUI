@@ -1,33 +1,54 @@
-import type { Dirent } from "node:fs";
 import { promises as fs } from "node:fs";
-import { basename, dirname, join, parse, resolve } from "node:path";
+import { dirname, join, parse, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { pathExists, readJson } from "../common/file-utils";
 
+/** Directory that holds AsheeUI component modules. */
+const COMPONENTS_DIRECTORY = "components";
+
 /**
- * Conventional directory names that may contain component source code
- * inside an `asheeui` package.
+ * `package.json` fields consulted for the public entry module, in priority
+ * order. `exports` is handled separately because it may be a conditional map.
  */
-export const COMPONENT_SOURCE_DIRS = [
-  "src/components",
-  "components",
-  "dist/components",
+const ENTRY_FIELDS = ["exports", "types", "module", "main"] as const;
+
+/**
+ * Entry module locations tried when `package.json` declares no usable entry.
+ */
+const FALLBACK_ENTRY_PATHS = [
+  "src/index.ts",
+  "src/index.tsx",
+  "dist/index.js",
+  "dist/index.mjs",
+] as const;
+
+/** Extensions tried when resolving an extension-less module path. */
+const RESOLVABLE_EXTENSIONS = [
+  ".ts",
+  ".tsx",
+  ".mts",
+  ".cts",
+  ".js",
+  ".jsx",
+  ".mjs",
+  ".cjs",
 ] as const;
 
 /**
- * Component folder names that are hidden from `asheeui list`.
- *
- * These folders are internal building blocks rather than standalone public
- * components, so they are omitted from both the rendered list and the reported
- * component count (including the `--json` output).
- *
- * To hide another component, add its folder name here; remove one to show it
- * again. Names must match the folder name exactly.
+ * Matches a re-export statement and captures whether it is type-only plus
+ * the module specifier it re-exports.
  */
-export const IGNORED_COMPONENTS: readonly string[] = ["select-menu", "field"];
+const EXPORT_FROM_PATTERN =
+  /export\s+(type\s+)?(?:\*|\{[\s\S]*?\})\s*from\s*["']([^"']+)["']/g;
 
-/** File extensions considered source for the purpose of component discovery. */
-const SOURCE_EXTENSIONS = [".ts", ".tsx", ".js", ".jsx", ".mjs", ".cjs"];
+/**
+ * Matches an import statement and captures whether it is type-only plus the
+ * module specifier it imports.
+ *
+ * Used only as a fallback for a built entry module, where re-exports are
+ * emitted as one local `export { ... }` statement with no module specifier.
+ */
+const IMPORT_FROM_PATTERN = /import\s+(type\s+)?[^;]*?from\s*["']([^"']+)["']/g;
 
 /** Options accepted by {@link resolveAsheeuiPackage}. */
 export interface ResolvePackageOptions {
@@ -50,28 +71,6 @@ async function isDirectory(p: string): Promise<boolean> {
     return false;
   }
 }
-
-/**
- * Test whether `directory` contains at least one file with a recognised
- * source extension.
- *
- * @param directory - Directory to scan.
- * @returns `true` when a source file is present, `false` otherwise.
- */
-async function containsSourceFiles(directory: string): Promise<boolean> {
-  let entries: Dirent[];
-  try {
-    entries = await fs.readdir(directory, { withFileTypes: true });
-  } catch {
-    return false;
-  }
-  return entries.some(
-    (entry) =>
-      entry.isFile() &&
-      SOURCE_EXTENSIONS.some((ext) => entry.name.endsWith(ext)),
-  );
-}
-
 /**
  * Test whether `p` points at the root of a package whose name is
  * exactly `asheeui`.
@@ -85,72 +84,208 @@ async function isAsheeuiPackageRoot(p: string): Promise<boolean> {
   return pkg?.name === "asheeui";
 }
 
+
 /**
- * Return the absolute path of the `components` directory inside a
- * package root, or `null` if none of the conventional locations exist.
+ * Collect the candidate entry-module paths declared by a parsed
+ * `package.json`.
  *
- * If `packageRoot` already points at a directory named `components`,
- * it is returned as-is.
+ * Only the root entry (`exports["."]`) is considered, because the public
+ * component surface is exposed there. Subpath exports such as `./styles.css`
+ * are intentionally ignored.
  *
- * @param packageRoot - Absolute path of an `asheeui` package root.
- * @returns Absolute path of the components directory, or `null`.
+ * @param pkg - Parsed `package.json` contents.
+ * @returns Candidate paths relative to the package root, in priority order.
  */
-export async function resolveComponentsDirectory(
+function collectEntryCandidates(pkg: Record<string, unknown>): string[] {
+  const candidates: string[] = [];
+
+  const pushModulePaths = (value: unknown): void => {
+    if (typeof value === "string") {
+      candidates.push(value);
+      return;
+    }
+    if (Array.isArray(value)) {
+      for (const item of value) pushModulePaths(item);
+      return;
+    }
+    if (value && typeof value === "object") {
+      for (const item of Object.values(value)) pushModulePaths(item);
+    }
+  };
+
+  const exportsField = pkg.exports;
+  if (Array.isArray(exportsField)) {
+    pushModulePaths(exportsField);
+  } else if (typeof exportsField === "string") {
+    pushModulePaths(exportsField);
+  } else if (exportsField && typeof exportsField === "object") {
+    pushModulePaths((exportsField as Record<string, unknown>)["."]);
+  }
+
+  for (const field of ENTRY_FIELDS) {
+    if (field === "exports") continue;
+    pushModulePaths(pkg[field]);
+  }
+
+  for (const fallback of FALLBACK_ENTRY_PATHS) candidates.push(fallback);
+
+  return candidates;
+}
+
+/**
+ * Resolve the first existing file for a candidate module path, tolerating
+ * extension-less paths and directory entry points.
+ *
+ * @param packageRoot - Absolute path of the package root.
+ * @param candidate - Module path declared by `package.json` or a fallback.
+ * @returns Absolute file path, or `null` when nothing resolves.
+ */
+async function resolveModulePath(
   packageRoot: string,
+  candidate: string,
 ): Promise<string | null> {
-  if (
-    basename(packageRoot) === "components" &&
-    (await isDirectory(packageRoot))
-  ) {
-    return packageRoot;
+  const base = resolve(packageRoot, candidate);
+  const attempts = [
+    base,
+    ...RESOLVABLE_EXTENSIONS.map((ext) => `${base}${ext}`),
+    ...RESOLVABLE_EXTENSIONS.map((ext) => join(base, `index${ext}`)),
+  ];
+
+  for (const attempt of attempts) {
+    try {
+      if ((await fs.stat(attempt)).isFile()) return attempt;
+    } catch {
+      // Not a file; try the next candidate.
+    }
   }
-  for (const candidate of COMPONENT_SOURCE_DIRS) {
-    const full = join(packageRoot, candidate);
-    if (await isDirectory(full)) return full;
-  }
+
   return null;
 }
 
 /**
- * Discover component folder names by scanning the components directory
- * of an installed/local `asheeui` package.
- *
- * Only directories that actually contain source files
- * (`.ts`/`.tsx`/`.js`/`.jsx`/`.mjs`/`.cjs`) are reported. Folders listed in
- * {@link IGNORED_COMPONENTS} are skipped so they do not appear in the list or
- * its component count. The result is sorted alphabetically.
+ * Resolve the public entry module of an `asheeui` package.
  *
  * @param packageRoot - Absolute path of an `asheeui` package root.
- * @returns Sorted array of component folder names.
+ * @returns Absolute path of the entry module, or `null` when none exists.
+ */
+async function resolvePublicEntry(packageRoot: string): Promise<string | null> {
+  const pkg = await readJson(join(packageRoot, "package.json"));
+  const candidates = pkg
+    ? collectEntryCandidates(pkg)
+    : [...FALLBACK_ENTRY_PATHS];
+
+  for (const candidate of candidates) {
+    const resolved = await resolveModulePath(packageRoot, candidate);
+    if (resolved) return resolved;
+  }
+
+  return null;
+}
+
+/**
+ * Derive a component name from a module specifier that re-exports a
+ * component, for example `"./components/date-picker"` to `"date-picker"`.
+ *
+ * @param specifier - Module specifier taken from an export statement.
+ * @returns The component name, or `null` when the specifier does not
+ *   reference a module inside the `components/` directory.
+ */
+export function componentNameFromSpecifier(specifier: string): string | null {
+  const normalized = specifier.replaceAll("\\", "/");
+  const marker = `/${COMPONENTS_DIRECTORY}/`;
+  const markerIndex = normalized.lastIndexOf(marker);
+  if (markerIndex === -1) return null;
+
+  const remainder = normalized.slice(markerIndex + marker.length);
+  const name = remainder.split("/")[0];
+  if (!name || name === "." || name === "..") return null;
+  return name;
+}
+
+/**
+ * Add every component name referenced by the matches of `pattern` to
+ * `names`, skipping type-only statements.
+ *
+ * @param pattern - Global pattern with `specifier` in the second capture.
+ * @param source - Source text to scan.
+ * @param names - Accumulator of component names.
+ */
+function collectComponentNames(
+  pattern: RegExp,
+  source: string,
+  names: Set<string>,
+): void {
+  pattern.lastIndex = 0;
+
+  let match = pattern.exec(source);
+  while (match !== null) {
+    const isTypeOnly = Boolean(match[1]);
+    const name = componentNameFromSpecifier(match[2]);
+    if (!isTypeOnly && name) {
+      names.add(name);
+    }
+    match = pattern.exec(source);
+  }
+}
+
+/**
+ * Extract the public component names declared by the source of a package
+ * entry module.
+ *
+ * A component is public only when the entry module exposes it at runtime. For
+ * a source entry module that means a runtime re-export (`export * from ...` or
+ * `export { X } from ...`). A built entry module instead imports each
+ * component chunk and emits a single local `export { ... }` statement with no
+ * module specifier, so for that shape the runtime imports are the faithful
+ * representation of the public surface. Type-only statements never contribute
+ * a component, and modules outside `components/` are not components.
+ *
+ * @param entrySource - Source text of the public entry module.
+ * @returns Sorted, de-duplicated component names.
+ */
+export function parsePublicComponentNames(entrySource: string): string[] {
+  const names = new Set<string>();
+  collectComponentNames(EXPORT_FROM_PATTERN, entrySource, names);
+
+  if (names.size === 0) {
+    collectComponentNames(IMPORT_FROM_PATTERN, entrySource, names);
+  }
+
+  return [...names].sort();
+}
+
+/**
+ * Discover the public component names of an installed or local `asheeui`
+ * package.
+ *
+ * The inventory is derived from the package's public export surface, not from
+ * the `components/` directory tree. A component appears in the list only when
+ * the package entry module exposes it at runtime, so internal helpers are
+ * excluded by construction and a non-component configuration module (such as
+ * `scrollbar`) can never be reported as a component. Both a source entry
+ * module and a built entry module are supported.
+ *
+ * @param packageRoot - Absolute path of an `asheeui` package root.
+ * @returns Sorted array of public component names.
  *
  * @example
  * ```ts
- * const components = await discoverComponentFolders("/proj/node_modules/asheeui");
- * console.log(components); // ["Accordian", "Button", "Card", ...]
+ * const components = await discoverPublicComponents("/proj/node_modules/asheeui");
+ * console.log(components); // ["accordion", "autocomplete", "button", ...]
  * ```
  */
-export async function discoverComponentFolders(
+export async function discoverPublicComponents(
   packageRoot: string,
 ): Promise<string[]> {
-  const componentsDir = await resolveComponentsDirectory(packageRoot);
-  if (!componentsDir) return [];
+  const entry = await resolvePublicEntry(packageRoot);
+  if (!entry) return [];
 
-  const components: string[] = [];
-  let entries: Dirent[];
   try {
-    entries = await fs.readdir(componentsDir, { withFileTypes: true });
+    const source = await fs.readFile(entry, "utf8");
+    return parsePublicComponentNames(source);
   } catch {
-    return components;
+    return [];
   }
-
-  for (const entry of entries) {
-    if (!entry.isDirectory()) continue;
-    if (IGNORED_COMPONENTS.includes(entry.name)) continue;
-    if (await containsSourceFiles(join(componentsDir, entry.name))) {
-      components.push(entry.name);
-    }
-  }
-  return components.sort();
 }
 
 /**
