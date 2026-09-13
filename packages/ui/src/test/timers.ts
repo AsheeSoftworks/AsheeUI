@@ -16,6 +16,16 @@ export interface TimerControl {
   restore: () => void;
 }
 
+/** Options for {@link useFakeTimers}. */
+export interface FakeTimerOptions {
+  /**
+   * Let fake time advance with the real clock. Required when the test also
+   * awaits testing-library utilities while fake timers are installed,
+   * otherwise those awaits wait on a clock only the test advances.
+   */
+  shouldAdvanceTime?: boolean;
+}
+
 /**
  * Install fake timers for the current test.
  *
@@ -23,10 +33,13 @@ export interface TimerControl {
  * `createUser({ advanceTimers: vi.advanceTimersByTime })`, because user-event
  * needs to advance the same fake clock.
  *
+ * @param options - Fake timer options.
  * @returns A {@link TimerControl} for advancing and restoring time.
  */
-export function useFakeTimers(): TimerControl {
-  vi.useFakeTimers();
+export function useFakeTimers(options: FakeTimerOptions = {}): TimerControl {
+  vi.useFakeTimers({
+    shouldAdvanceTime: options.shouldAdvanceTime ?? false,
+  });
 
   return {
     advance(milliseconds: number): void {
