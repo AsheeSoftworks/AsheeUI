@@ -12,6 +12,11 @@
  * - Theme utilities: themeController, useTheme, THEME_STORAGE_KEY
  */
 
+// Structural scrollbar theming is configuration rather than a component: it is
+// imported for its registration side effect and deliberately not re-exported,
+// so it never appears in the public component inventory.
+import "./components/scrollbar/scrollbar-config";
+
 export type { AsheeUIProviderProps } from "./AsheeUIProvider";
 export { AsheeUIProvider } from "./AsheeUIProvider";
 

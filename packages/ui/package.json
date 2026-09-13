@@ -65,11 +65,11 @@
     "dist"
   ],
   "scripts": {
-    "build:registry": "tsx src/scripts/build-registry.ts",
     "build": "vite build"
   },
   "sideEffects": [
-    "*.css"
+    "*.css",
+    "**/*-config*"
   ],
   "dependencies": {
     "@floating-ui/react": "^0.27.20",
