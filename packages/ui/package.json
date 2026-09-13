@@ -65,7 +65,9 @@
     "dist"
   ],
   "scripts": {
-    "build": "vite build"
+    "build": "vite build",
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "sideEffects": [
     "*.css",
@@ -83,17 +85,22 @@
   },
   "devDependencies": {
     "@floating-ui/react": "^0.27.20",
+    "@testing-library/jest-dom": "^7.0.1",
+    "@testing-library/react": "^16.3.3",
+    "@testing-library/user-event": "^14.6.7",
     "@types/node": "^26.5.0",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
     "@typescript/typescript6": "^6.0.2",
     "@vitejs/plugin-react": "^6.1.1",
+    "jsdom": "^30.0.1",
     "react": "^19.3.0",
     "react-dom": "^19.3.0",
     "tsx": "^4.23.13",
     "typescript": "^7.0.2",
     "vite": "^8.3.0",
-    "vite-plugin-dts": "^5.1.0"
+    "vite-plugin-dts": "^5.1.0",
+    "vitest": "^5.0.0"
   },
   "module": "./src/index.ts",
   "license": "MIT"
