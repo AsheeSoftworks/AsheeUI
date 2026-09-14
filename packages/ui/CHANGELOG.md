@@ -1,5 +1,170 @@
 # asheeui
 
+## 0.8.0
+
+### Minor Changes
+
+- 96da722: Conform the interactive components to the accessibility baseline.
+  
+  **Dialogs.** `Modal` and `Drawer` render in a portal, take their accessible name from the `aria-label` or
+  `aria-labelledby` a consumer passes, move focus into the dialog when it opens, keep focus inside it while it is open,
+  return focus to the element that was focused before it opened, expose the backdrop as decoration only (hidden from
+  assistive technology and out of the tab order), and lock body scroll while they are open.
+  
+  **Selection family.** `Dropmenu`, `MultiSelect` and `Autocomplete` expose their suggestion list as a listbox of
+  options with selection state and disabled state, name each option with its label, take the trigger's accessible name
+  from the field label, and link the description and the validation message to the trigger. The whole family is now
+  operable from the keyboard: arrow keys open and move, Home and End jump to the list edges, Enter selects, Escape
+  dismisses, typing matches an option, and focus returns to the trigger when the list closes. `MultiSelect` keeps an
+  accumulated selection while it is uncontrolled and reports that it accepts more than one selection.
+  
+  **Calendar.** The month is a grid of labelled day cells that expose the selected day, today, and the day the keyboard
+  is on. Arrow keys move by day and by week, PageUp and PageDown move by month, and Escape closes the popover.
+  
+  **Forms and structure.** `Switch` links its description to the control. A radio group is named by its label, links
+  its description and message, and selects an uncontrolled value from `defaultValue`. A collapsed `Accordion` panel is
+  inert and hidden from assistive technology. `Sidebar` exposes the active item with `aria-current` and follows its own
+  collapsed state while it is uncontrolled.
+  
+  **Motion.** `Marquee` and `Carousel` stop their automatic motion when the operating system asks for reduced motion.
+- 9adecc8: Add the `Alert` component.
+  
+  Alert renders an inline message or validation summary whose colour, variant and radius resolve through the framework
+  cascade. Its intent selects the colour and the urgency of the announcement: `error` and `warning` are exposed as an
+  alert, `info` and `success` as a status, and `role` overrides either. An alert never takes or moves focus, and its
+  optional dismiss control carries an accessible name.
+- c9f0b4c: Add the `Avatar` component.
+  
+  Avatar represents a person or an entity with a picture, and falls back to that entity's initials when there is no
+  picture or the picture fails to load. The picture is rendered through the framework's `Image` primitive, so a
+  consumer keeps its own image component by passing `component`. The avatar carries the entity's name as a single
+  labelled image role, and is hidden from assistive technology when it names nothing. Diameter, radius and the fallback
+  colour resolve through the framework cascade.
+- 3818f85: Add the `Badge` component.
+  
+  Badge renders a compact status or label indicator, with the framework's colour, variant, size and radius axes and a
+  configuration section under `components.badge`. An icon-only badge carries its text through the `label` prop, which is
+  what assistive technology reads, and an icon beside it is decoration.
+- 165f299: Add the `Breadcrumb` component.
+  
+  Breadcrumb renders a hierarchical navigation trail as a named navigation landmark over an ordered list. The current
+  location is presented as text with `aria-current` rather than as a link, separators are decoration, and the linked
+  steps are rendered through the framework's `Link` primitive, so a consumer keeps its router link. The trail's scale
+  and link colour resolve through the framework cascade.
+- 02aee6f: Change the built-in default radius and variant.
+  
+  Components now default to a boxy corner radius (`xs`) and a faded fill, matching the framework's confirmed visual
+  language. The previous built-in defaults were `md` and `solid`.
+  
+  Consumers who prefer the previous look set `defaultRadius: "md"` and `defaultVariant: "solid"` in their
+  configuration, or set them per component under `components`.
+- 42e8f99: Rename `Select` to `Dropmenu`, `DatePicker` to `Calendar`, and `TextArea` to `Textarea`.
+  
+  These are pre-1.0 breaking renames: the old names are gone, and no compatibility alias is provided before 1.0.
+  
+  | Before | After | Migration |
+  |---|---|---|
+  | `Select`, `SelectProps` | `Dropmenu`, `DropmenuProps` | Rename the import, the element, and the props type. |
+  | `DatePicker`, `DatePickerProps` | `Calendar`, `CalendarProps` | Rename the import, the element, and the props type. |
+  | `TextArea`, `TextAreaProps` | `Textarea`, `TextareaProps` | Rename the import, the element, and the props type. |
+  
+  Configuration keys follow the component names, so `components.select` becomes `components.dropmenu`,
+  `components.datePicker` becomes `components.calendar`, and the `datePicker` sub-keys inside it become `calendar`
+  (`calendar.mode`, `calendar.picker`). `components.textarea` is unchanged.
+  
+  Internal naming changed with them, which consumers do not import: the shared menu helper `select-menu` (with
+  `SelectMenu`, `SelectMenuOption`, `useSelectFloating`, and `FALLBACK_SELECT_MENU_CONFIG`) is now `Menu`
+  (`Menu`, `MenuOption`, `useMenuFloating`, and `FALLBACK_MENU_CONFIG`), and the internal date grid is `DateGrid` so it
+  can no longer be confused with the public `Calendar`. Component directories are `components/dropmenu` and
+  `components/calendar`.
+- 58722fd: Add the `Form` component.
+  
+  Form is a deliberately thin wrapper over the native form element, in the same way `Link` wraps the anchor and `Image`
+  wraps the picture. It preserves native submission and validation: `action`, `method`, `encType`, `target`,
+  `noValidate` and the submit event pass through unchanged, and the forwarded ref reaches the element itself, so a form
+  library binds to it exactly as it binds to a plain form. A `legend` groups the fields, and `submitLabel` renders an
+  AsheeUI `Button` as the submit control, with `isPending` showing a submission in progress. The component introduces no
+  form state of its own, and the substitution API for a framework-specific form is left to the decision that resolves
+  it.
+- 274cb07: The public component inventory is now derived from the public export surface.
+  
+  `asheeui`: the internal form-field helper (`field`, including `FieldShell`) and the internal `MenuOption` type
+  from the menu helper are no longer re-exported from the package entry point. They were always implementation details
+  shared by the components that use them, and exposing them made internal building blocks look like public components.
+  This is a breaking change for code that imported them from `asheeui`. Migration: stop importing internal helpers and
+  use the public components instead (`Input`, `Textarea`, `Radio`, `Switch`, `MultiSelect`, `Dropmenu`,
+  `Autocomplete`). This is a pre-1.0 breaking change and no compatibility alias is provided.
+  
+  `@asheeui/cli`: `asheeui list` now derives the component inventory from the package's public export surface instead
+  of scanning the `components/` directory tree. Internal helpers can no longer appear, and the `scrollbar`
+  configuration module is no longer reported as a component. The reported inventory follows the public export
+  surface. Both a source entry module and a built entry module are supported.
+- a9c3f7d: Add the `Pagination` component.
+  
+  Pagination renders controls for moving through a paged collection: a named navigation landmark over an ordered list,
+  the current page marked with `aria-current`, the first and last pages always offered, and a longer range collapsed
+  into a gap. The controls are links when the consumer supplies `hrefForPage` and buttons reporting `onPageChange`
+  otherwise, and their size, variant, colour and radius resolve through the framework cascade.
+- 98ddb88: Add the `Skeleton` component.
+  
+  Skeleton renders a loading placeholder whose radius and shimmer resolve through the framework cascade. It is hidden
+  from assistive technology by default, becomes a labelled busy status when `isBusy` marks it as standing in for a
+  loading region, and shimmers through a reduced-motion-safe class so the animation stops for a consumer who asked for
+  less motion.
+- 6e9dee5: Add the typography system: semantic roles, token maps and a `Typography` component.
+  
+  `Typography` renders the semantic element a role implies and applies that role's complete, static class string.
+  Eleven roles are provided (`display`, `heading-xl`, `heading-lg`, `heading-md`, `heading-sm`, `body-lg`, `body-md`,
+  `body-sm`, `label`, `caption`, `overline`), together with size, weight, leading, tracking, tone and alignment tokens.
+  
+  - Colour is applied through `tone`, which resolves framework colour tokens, so standard text needs no Tailwind colour
+    utilities.
+  - Any part of a role's treatment can be overridden per instance (`size`, `weight`, `leading`, `tracking`), and
+    `components.typography.roles` retunes a role application-wide without changing its meaning.
+  - The ARIA `role` attribute is not forwarded, because `role` is the typography role.
+  - `as` selects the element without changing the treatment.
+  
+  Additive and pre-1.0: no existing component, default, or dependency is affected. The public component inventory grows
+  from 26 to 27.
+
+### Patch Changes
+
+- eca0778: Keep a busy control's name.
+  
+  A button that is loading used to replace its label with the word "Loading", so assistive technology announced
+  "Loading" without saying which action was running. The label now stays in the accessible name while the control is
+  busy, and the busy state is carried by `aria-busy`.
+- 60f2456: Fix: the structural scrollbar configuration is now registered with the component registry.
+  
+  The scrollbar configuration module was not imported anywhere, so its defaults were never registered and
+  `config.components.scrollbar` could not be resolved. The package entry point now imports it for its registration
+  side effect, matching how every other component config module registers. The module is still not exported, so it
+  remains outside the public component inventory.
+  
+  Tooling: the dangling `build:registry` script was removed from `packages/ui/package.json`; it pointed at
+  `src/scripts/build-registry.ts`, which no longer exists.
+  
+  Packaging: `sideEffects` now also lists the component config modules (`**/*-config*`). The previous value (`*.css`)
+  told bundlers that every JavaScript module was free of side effects, so registration imports that exist only for
+  their side effect were silently dropped from bundles. This was observed in the published build, where the scrollbar
+  registration was removed until the field was corrected.
+- Prove server rendering and hydration for the part 1 components.
+  
+  `Badge`, `Skeleton`, `Alert`, `Avatar`, `Breadcrumb`, `Pagination` and `Form` are rendered on the server by any
+  framework that server-renders its client components, so each one now has a server-rendering test that runs with no DOM
+  present and a hydration check that fails if the first client render differs from the server markup. No public API
+  changed: this is evidence, not behaviour.
+- fe10bd6: Ignore a stored theme the configuration does not define.
+  
+  The pre-paint theme script applied whatever theme name it found in local storage, even when the configuration
+  defined no CSS block for it, which could leave the page unstyled until the theme controller corrected it after
+  hydration. The script now validates the stored value against the configured themes and never applies a theme class
+  that has no generated CSS. The theme controller already behaved this way.
+- 9e8f7af: Announce notifications to assistive technology.
+  
+  Toast notifications now carry a status role, so assistive technology announces them politely when they appear. The
+  container that stacks them was already a labelled region, which is what lets an announcement be placed in context.
+
 ## 0.7.0
 
 ### Minor Changes
