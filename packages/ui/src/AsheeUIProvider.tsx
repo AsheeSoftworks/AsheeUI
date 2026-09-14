@@ -11,6 +11,7 @@
 import { type ReactNode, useMemo } from "react";
 import type { ExternalConfig } from "./config/config";
 import { resolveConfig } from "./config/resolve-config";
+import { assertValidConfig } from "./config/validate-config";
 import { AsheeConfigContext } from "./libs/context";
 import { useIsomorphicLayoutEffect } from "./libs/use-isomorphic-layout-effect";
 import { AsheeThemeScript } from "./scripts/AsheeThemeScript";
@@ -85,7 +86,12 @@ export function AsheeUIProvider({
   config = {},
   children,
 }: AsheeUIProviderProps) {
-  const resolvedConfig = useMemo(() => resolveConfig(config), [config]);
+  const resolvedConfig = useMemo(() => {
+    // Validated once per configuration object (M3, `U-4`): invalid values throw
+    // while rendering the provider, unknown keys warn in development only.
+    assertValidConfig(config);
+    return resolveConfig(config);
+  }, [config]);
 
   useIsomorphicLayoutEffect(() => {
     themeController.configure({
