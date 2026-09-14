@@ -17,6 +17,7 @@ describe("public entry point", () => {
   it("exports the shipped component surface", () => {
     const components = [
       "Accordion",
+      "Alert",
       "Autocomplete",
       "Badge",
       "Button",
