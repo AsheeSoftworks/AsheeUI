@@ -13,7 +13,9 @@ import { cleanup } from "@testing-library/react";
 import { afterEach } from "vitest";
 
 afterEach(() => {
-  cleanup();
+  if (typeof document !== "undefined") {
+    cleanup();
+  }
 });
 
 /** Minimal `ResizeObserver` stand-in; jsdom does not implement it. */
@@ -46,7 +48,10 @@ globalWithObservers.ResizeObserver ??=
 globalWithObservers.IntersectionObserver ??=
   IntersectionObserverStub as unknown as typeof IntersectionObserver;
 
-if (typeof window.matchMedia !== "function") {
+if (
+  typeof window !== "undefined" &&
+  typeof window.matchMedia !== "function"
+) {
   const matchMediaStub = (query: string) =>
     ({
       matches: false,
@@ -62,6 +67,9 @@ if (typeof window.matchMedia !== "function") {
   window.matchMedia = matchMediaStub as unknown as typeof window.matchMedia;
 }
 
-if (typeof Element.prototype.scrollIntoView !== "function") {
+if (
+  typeof Element !== "undefined" &&
+  typeof Element.prototype.scrollIntoView !== "function"
+) {
   Element.prototype.scrollIntoView = () => {};
 }
