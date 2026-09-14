@@ -289,7 +289,7 @@ export function ToastItem({
           type="button"
           onClick={() => onDismiss(id)}
           aria-label="Dismiss notification"
-          className="shrink-0 p-1 rounded-md opacity-70 hover:opacity-100 hover:bg-black/10 dark:hover:bg-white/10 transition-all cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-current">
+          className="shrink-0 p-1 rounded-md opacity-70 hover:opacity-100 hover:bg-foreground/10 transition-all cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-current">
           <CloseIcon className="w-4 h-4" />
         </button>
       )}

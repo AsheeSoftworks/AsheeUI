@@ -327,7 +327,7 @@ export function Modal({
         type="button"
         onClick={closeOnBackdropClick ? onClose : undefined}
         className={cn(
-          "fixed inset-0 bg-background/80 backdrop-blur-xs dark:bg-black/70",
+          "fixed inset-0 bg-background/80 backdrop-blur-xs",
           overlay?.className,
           getBackdropAnimation(),
         )}

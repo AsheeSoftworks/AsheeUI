@@ -189,3 +189,65 @@ function isPartialUtilityToken(token: string): boolean {
   );
 }
 
+
+/** Names in Tailwind's default palette, which AsheeUI theming must never use. */
+const PALETTE_NAMES: readonly string[] = [
+  "red",
+  "orange",
+  "amber",
+  "yellow",
+  "lime",
+  "green",
+  "emerald",
+  "teal",
+  "cyan",
+  "sky",
+  "blue",
+  "indigo",
+  "violet",
+  "purple",
+  "fuchsia",
+  "pink",
+  "rose",
+  "slate",
+  "gray",
+  "grey",
+  "zinc",
+  "neutral",
+  "stone",
+  "black",
+  "white",
+];
+
+/**
+ * Colour utility carrying a default-palette name, with or without a shade and
+ * with any number of sub-property segments (`ring-offset-white`, `border-x-slate-200`).
+ */
+const PALETTE_COLOUR = new RegExp(
+  String.raw`\b(?:bg|text|border|ring|divide|outline|decoration|fill|stroke|caret|accent|shadow|from|to|via|placeholder)(?:-[a-z]+)*?-(?:${PALETTE_NAMES.join("|")})(?:-\d{2,3})?\b`,
+);
+
+/**
+ * Find default-palette colour utilities in a source string.
+ *
+ * AsheeUI routes every themed colour through the colour engine, so a palette
+ * name (`bg-red-500`, `border-white/10`) is always a defect: it ignores the
+ * theme and cannot follow light/dark mode. Semantic tokens (`bg-background`,
+ * `text-foreground/70`, `border-border`, `bg-danger/10`) are the only spelling.
+ *
+ * @param source - Source text to scan.
+ * @returns Each palette utility found, empty when the source is clean.
+ */
+export function scanForRawPaletteColours(source: string): string[] {
+  const findings: string[] = [];
+  const pattern = new RegExp(PALETTE_COLOUR.source, "g");
+  let match = pattern.exec(source);
+
+  while (match) {
+    findings.push(match[0]);
+    match = pattern.exec(source);
+  }
+
+  return findings;
+}
+

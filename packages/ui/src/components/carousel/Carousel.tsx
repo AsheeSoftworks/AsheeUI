@@ -504,7 +504,7 @@ export const Carousel = forwardRef<HTMLDivElement, CarouselProps>(
 
         {resolvedShowIndicators && slides.length > 1 && (
           <div className="absolute bottom-3 inset-x-0 z-20 flex justify-center items-center gap-1.5 pointer-events-none">
-            <div className="flex items-center gap-1.5 p-1.5 rounded-full bg-background/40 backdrop-blur-md pointer-events-auto border border-white/10">
+            <div className="flex items-center gap-1.5 p-1.5 rounded-full bg-background/40 backdrop-blur-md pointer-events-auto border border-foreground/10">
               {slides.map((slide, idx) => (
                 <button
                   key={slide.id || idx}

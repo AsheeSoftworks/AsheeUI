@@ -11,7 +11,10 @@ import { promises as fs } from "node:fs";
 import { join, relative } from "node:path";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
-import { scanForDynamicUtilityClasses } from "./index";
+import {
+  scanForDynamicUtilityClasses,
+  scanForRawPaletteColours,
+} from "./index";
 
 const SOURCE_ROOT = fileURLToPath(new URL("..", import.meta.url));
 
@@ -33,6 +36,25 @@ async function listSourceFiles(directory: string): Promise<string[]> {
   }
 
   return files;
+}
+
+/** Run a scanner over every library source file and report the findings. */
+async function findOffenders(
+  scan: (source: string) => string[],
+): Promise<string[]> {
+  const files = await listSourceFiles(SOURCE_ROOT);
+  const offenders: string[] = [];
+
+  expect(files.length).toBeGreaterThan(50);
+
+  for (const file of files) {
+    const source = await fs.readFile(file, "utf8");
+    for (const finding of scan(source)) {
+      offenders.push(`${relative(SOURCE_ROOT, file)}: ${finding}`);
+    }
+  }
+
+  return offenders;
 }
 
 describe("dynamic utility class scanner", () => {
@@ -83,18 +105,43 @@ describe("dynamic utility class scanner", () => {
   });
 
   it("finds no dynamically constructed utility names in the library source", async () => {
-    const files = await listSourceFiles(SOURCE_ROOT);
-    const offenders: string[] = [];
+    expect(await findOffenders(scanForDynamicUtilityClasses)).toEqual([]);
+  });
+});
 
-    expect(files.length).toBeGreaterThan(50);
+describe("raw palette colour scanner", () => {
+  it("flags palette utilities with and without a shade", () => {
+    expect(scanForRawPaletteColours('className="bg-red-500"')).toEqual([
+      "bg-red-500",
+    ]);
+    expect(scanForRawPaletteColours('className="border-white/10"')).toEqual([
+      "border-white",
+    ]);
+    expect(
+      scanForRawPaletteColours(
+        'className="hover:bg-black/20 dark:hover:bg-white/20"',
+      ),
+    ).toHaveLength(2);
+  });
 
-    for (const file of files) {
-      const source = await fs.readFile(file, "utf8");
-      for (const finding of scanForDynamicUtilityClasses(source)) {
-        offenders.push(`${relative(SOURCE_ROOT, file)}: ${finding}`);
-      }
-    }
+  it("flags palette utilities behind sub-property segments", () => {
+    expect(scanForRawPaletteColours('className="ring-offset-white"')).toEqual([
+      "ring-offset-white",
+    ]);
+    expect(scanForRawPaletteColours('className="border-x-slate-200"')).toEqual([
+      "border-x-slate-200",
+    ]);
+  });
 
-    expect(offenders).toEqual([]);
+  it("accepts AsheeUI colour tokens", () => {
+    expect(
+      scanForRawPaletteColours(
+        'className="bg-background/80 text-foreground/70 border-border bg-danger/10 text-primary"',
+      ),
+    ).toEqual([]);
+  });
+
+  it("finds no raw palette colours in the library source", async () => {
+    expect(await findOffenders(scanForRawPaletteColours)).toEqual([]);
   });
 });
