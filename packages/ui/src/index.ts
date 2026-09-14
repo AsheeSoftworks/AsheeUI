@@ -42,6 +42,7 @@ export * from "./components/chip";
 export * from "./components/calendar";
 export * from "./components/drawer";
 export * from "./components/dropmenu";
+export * from "./components/form";
 export * from "./components/image";
 export * from "./components/input";
 export * from "./components/keyboard";
