@@ -31,6 +31,7 @@ export { AsheeUIProvider } from "./AsheeUIProvider";
  */
 export * from "./components/accordion";
 export * from "./components/autocomplete";
+export * from "./components/badge";
 export * from "./components/button";
 export * from "./components/card";
 export * from "./components/carousel";
