@@ -106,10 +106,22 @@ describe("Toast", () => {
     }
   });
 
-  // Defect register (M1, D-20): no element in the toast module carries a live
-  // region or a status role, so notifications are never announced to assistive
-  // technology, although `COMP-037` requires polite announcement.
-  it.todo(
-    "announces notifications politely to assistive technology (defect register D-20)",
-  );
+  it("announces notifications politely to assistive technology", async () => {
+    const user = createUser();
+    renderWithProvider(
+      <ToastProvider>
+        <NotifyButton />
+      </ToastProvider>,
+    );
+
+    await user.click(screen.getByRole("button", { name: "Notify" }));
+
+    // The notification is a polite live region, and the stack it lives in is a
+    // labelled region so assistive technology can place the announcement.
+    const notification = await screen.findByRole("status");
+    expect(notification).toHaveTextContent("Saved successfully");
+    expect(
+      screen.getByRole("region", { name: "Notifications" }),
+    ).toContainElement(notification);
+  });
 });
