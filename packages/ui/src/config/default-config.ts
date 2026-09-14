@@ -21,9 +21,13 @@ export const defaultConfig: Config = {
 
   /**
    * Default border radius for components.
-   * @default "md"
+   *
+   * `xs` is deliberate: AsheeUI's visual language is boxy by design. Components
+   * inherit this value rather than pinning their own, so a consumer can restyle
+   * the whole library through this one key.
+   * @default "xs"
    */
-  defaultRadius: "md",
+  defaultRadius: "xs",
 
   /**
    * Default theme setting following system preference.
@@ -33,9 +37,12 @@ export const defaultConfig: Config = {
 
   /**
    * Default variant for components.
-   * @default "solid"
+   *
+   * Components whose design requires a different treatment (for example a
+   * bordered card or an underlined tab) set their own value.
+   * @default "faded"
    */
-  defaultVariant: "solid",
+  defaultVariant: "faded",
 
   /**
    * Default color for components.

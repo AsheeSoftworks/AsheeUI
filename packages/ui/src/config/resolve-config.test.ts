@@ -92,16 +92,31 @@ describe("resolveConfig", () => {
     });
   });
 
-  it("locks the current default baseline", () => {
-    // Recorded divergence: the confirmed baseline in `REQ-057` is
-    // `defaultRadius: "xs"`, `defaultVariant: "faded"` and `color: undefined`.
-    // The implementation resolves "md" and "solid" plus the built-in colour
-    // config. Changing defaults is a visual behaviour change, so it is
-    // reported as a finding rather than adjusted by a test (M1 defect
-    // register).
+  it("resolves the confirmed default baseline", () => {
+    // Design section 4.2 (`DES-041`) and `REQ-057` confirm the baseline: boxy
+    // corners and faded fills, with the built-in colour themes.
     const resolved = resolveConfig({});
 
-    expect(resolved.defaultRadius).toBe("md");
-    expect(resolved.defaultVariant).toBe("solid");
+    expect(resolved.defaultRadius).toBe("xs");
+    expect(resolved.defaultVariant).toBe("faded");
+    expect(resolved.defaultColor).toBe("primary");
+    expect(resolved.defaultTheme).toBe("system");
+  });
+
+  it("lets a global value override the built-in baseline", () => {
+    expect(resolveConfig({ defaultRadius: "lg" }).defaultRadius).toBe("lg");
+    expect(resolveConfig({ defaultVariant: "solid" }).defaultVariant).toBe(
+      "solid",
+    );
+  });
+
+  it("lets a component key override a global value for that component only", () => {
+    const resolved = resolveConfig({
+      defaultRadius: "lg",
+      components: { button: { radius: "full" } },
+    });
+
+    expect(resolved.defaultRadius).toBe("lg");
+    expect(resolved.components?.button?.radius).toBe("full");
   });
 });
