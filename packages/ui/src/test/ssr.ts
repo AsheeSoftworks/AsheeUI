@@ -10,9 +10,10 @@
  * browser globals only inside effects is covered by this helper; a component
  * that touches browser globals during render fails here.
  *
- * Note: jsdom globals remain installed in this environment, so this helper
- * proves the server render path works rather than simulating a fully
- * browserless process.
+ * Note: this helper runs in the configured test environment, which is jsdom for
+ * the component suite. Use a file-level `// @vitest-environment node` docblock
+ * when the proof must be that no DOM globals exist at all, as the Typography
+ * server-rendering test does.
  */
 
 import { createElement, type ReactElement } from "react";
