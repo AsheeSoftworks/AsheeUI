@@ -19,6 +19,7 @@ describe("public entry point", () => {
       "Accordion",
       "Alert",
       "Autocomplete",
+      "Avatar",
       "Badge",
       "Button",
       "Card",
