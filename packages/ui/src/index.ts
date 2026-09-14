@@ -49,6 +49,7 @@ export * from "./components/link";
 export * from "./components/marquee";
 export * from "./components/modal";
 export * from "./components/multi-select";
+export * from "./components/pagination";
 export * from "./components/radio";
 export * from "./components/resizable-screen";
 export * from "./components/sidebar";

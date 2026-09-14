@@ -35,6 +35,7 @@ describe("public entry point", () => {
       "Modal",
       "MultiSelect",
       "OnScreenKeyboard",
+      "Pagination",
       "PasswordInput",
       "Radio",
       "RadioGroup",
