@@ -49,6 +49,7 @@ export * from "./components/multi-select";
 export * from "./components/radio";
 export * from "./components/resizable-screen";
 export * from "./components/sidebar";
+export * from "./components/skeleton";
 export * from "./components/spinner";
 export * from "./components/switch";
 export * from "./components/table";

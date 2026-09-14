@@ -38,6 +38,7 @@ describe("public entry point", () => {
       "ResizableScreen",
       "Dropmenu",
       "Sidebar",
+      "Skeleton",
       "Spinner",
       "Switch",
       "Table",
