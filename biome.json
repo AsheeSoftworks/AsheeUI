@@ -6,7 +6,13 @@
     "useIgnoreFile": true
   },
   "files": {
-    "includes": ["**", "!!**/dist"]
+    "includes": [
+      "**",
+      "!!**/dist",
+      "!!**/.next",
+      "!!**/routeTree.gen.ts",
+      "!!**/next-env.d.ts"
+    ]
   },
   "formatter": {
     "enabled": true,

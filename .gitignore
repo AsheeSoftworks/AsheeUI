@@ -22,12 +22,15 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
-.clineignore
-.clinerules
 next-hero-template
 commit.sh
 *.tgz
 .turbo/*
 .turbo
-apps
-apps/*
+
+# Build output of the playground applications (`apps/`).
+.next
+next-env.d.ts
+.output
+.tanstack
+*.tsbuildinfo

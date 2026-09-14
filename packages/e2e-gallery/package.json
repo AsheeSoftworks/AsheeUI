@@ -1,0 +1,33 @@
+{
+  "name": "@asheeui/e2e-gallery",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "The gallery of AsheeUI components that every playground application renders, together with the framework-agnostic contract each playground's end-to-end test asserts. Internal verification infrastructure: it is never published.",
+  "exports": {
+    ".": "./src/index.ts",
+    "./setup": "./src/setup.ts"
+  },
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "asheeui": "workspace:*"
+  },
+  "peerDependencies": {
+    "react": "^18.0.0 || ^19.0.0",
+    "react-dom": "^18.0.0 || ^19.0.0"
+  },
+  "devDependencies": {
+    "@testing-library/react": "^16.3.3",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@vitejs/plugin-react": "^6.1.1",
+    "jsdom": "^30.0.1",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0",
+    "typescript": "^7.0.2",
+    "vitest": "^5.0.0"
+  }
+}
