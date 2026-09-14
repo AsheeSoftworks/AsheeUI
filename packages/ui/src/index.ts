@@ -34,6 +34,7 @@ export * from "./components/alert";
 export * from "./components/autocomplete";
 export * from "./components/avatar";
 export * from "./components/badge";
+export * from "./components/breadcrumb";
 export * from "./components/button";
 export * from "./components/card";
 export * from "./components/carousel";

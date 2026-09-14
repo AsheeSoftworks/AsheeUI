@@ -21,6 +21,7 @@ describe("public entry point", () => {
       "Autocomplete",
       "Avatar",
       "Badge",
+      "Breadcrumb",
       "Button",
       "Card",
       "Carousel",
