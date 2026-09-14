@@ -30,6 +30,7 @@ export { AsheeUIProvider } from "./AsheeUIProvider";
  * not be listed as components.
  */
 export * from "./components/accordion";
+export * from "./components/alert";
 export * from "./components/autocomplete";
 export * from "./components/badge";
 export * from "./components/button";
