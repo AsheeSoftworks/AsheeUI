@@ -246,6 +246,7 @@ export function ToastItem({
 
   return (
     <div
+      role="status"
       onMouseEnter={pause}
       onMouseLeave={resume}
       className={cn(
