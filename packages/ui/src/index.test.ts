@@ -44,6 +44,7 @@ describe("public entry point", () => {
       "TextArea",
       "ToastProvider",
       "Tooltip",
+      "Typography",
     ];
 
     for (const component of components) {
