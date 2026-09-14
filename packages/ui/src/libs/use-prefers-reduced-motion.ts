@@ -2,8 +2,8 @@
  * Reduced-motion preference for AsheeUI.
  *
  * Continuous or automatic motion (a marquee loop, carousel autoplay and
- * transitions) must yield to the operating system's reduced-motion preference
- * (`REQ-089`). Components read the preference through this hook instead of each
+ * transitions) must yield to the operating system's reduced-motion preference.
+ * Components read the preference through this hook instead of each
  * one querying the media query themselves, so the behaviour is defined once and
  * is observable in a test.
  */
