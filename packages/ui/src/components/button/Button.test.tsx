@@ -117,7 +117,7 @@ describe("Button", () => {
     expect(onClick).not.toHaveBeenCalled();
   });
 
-  it("exposes a busy state, hides children and blocks interaction while loading", async () => {
+  it("exposes a busy state, keeps its name and blocks interaction while loading", async () => {
     const user = createUser();
     const onClick = vi.fn();
     const { getByRole, queryByText } = renderWithProvider(
@@ -128,7 +128,9 @@ describe("Button", () => {
     const button = getByRole("button");
 
     expect(button).toHaveAttribute("aria-busy", "true");
-    expect(queryByText("Save")).toBeNull();
+    // The label stays in the accessible name while the control is busy, so a
+    // reader still hears which action is running.
+    expect(button).toHaveAccessibleName(/Save/);
     expect(queryByText("Loading")).not.toBeNull();
 
     await user.click(button);
