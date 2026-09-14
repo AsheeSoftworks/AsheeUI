@@ -1,6 +1,6 @@
 /**
- * Select component styles for AsheeUI.
- * This file provides CSS class mappings for the Select component's
+ * Dropmenu component styles for AsheeUI.
+ * This file provides CSS class mappings for the Dropmenu component's
  * size and status options.
  */
 

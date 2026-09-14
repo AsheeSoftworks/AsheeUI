@@ -38,9 +38,9 @@ import { Chip } from "../chip/Chip";
 import { FieldShell } from "../field/FieldShell";
 import type { FieldSizeKey, LabelAlign } from "../field/field-config";
 import type { InputProps } from "../input/Input";
-import type { MenuConfig } from "../select-menu";
-import { type SelectMenuOption, useSelectFloating } from "../select-menu";
-import { type MenuProps, SelectMenu } from "../select-menu/SelectMenu";
+import type { MenuConfig } from "../menu";
+import { type MenuOption, useMenuFloating } from "../menu";
+import { type MenuProps, Menu } from "../menu/Menu";
 import {
   FALLBACK_MULTI_SELECT_CONFIG,
   type MultiSelectChipConfig,
@@ -102,7 +102,7 @@ export interface MultiSelectProps
    * Available options to select from.
    * Each option must have a label and a unique value.
    */
-  options: SelectMenuOption[];
+  options: MenuOption[];
 
   /**
    * Controlled selected values.
@@ -119,7 +119,7 @@ export interface MultiSelectProps
   /**
    * Label shown in the trigger when no items are selected.
    *
-   * @default "Select Options..."
+   * @default "Dropmenu Options..."
    */
   InputLabel?: string;
 
@@ -154,7 +154,7 @@ export interface MultiSelectProps
    * Custom chip options for legacy or external control.
    * When provided, this overrides the derived chips from value.
    */
-  chipOptions?: SelectMenuOption[];
+  chipOptions?: MenuOption[];
 
   /**
    * Custom handler for removing a chip.
@@ -166,7 +166,7 @@ export interface MultiSelectProps
    * Custom handler for adding a chip.
    * For legacy or external control patterns.
    */
-  handleAddChip?: (item: SelectMenuOption) => void;
+  handleAddChip?: (item: MenuOption) => void;
 
   /**
    * Label shown above the chip list.
@@ -235,7 +235,7 @@ export interface MultiSelectProps
  * @param props.options - Available options to select from.
  * @param props.value - Controlled selected values.
  * @param props.onChange - Callback fired when selection changes.
- * @param props.InputLabel - Label shown in trigger. Defaults to "Select Options...".
+ * @param props.InputLabel - Label shown in trigger. Defaults to "Dropmenu Options...".
  * @param props.isSearch - Whether search is enabled. Defaults to true.
  * @param props.searchPlaceholder - Search placeholder. Defaults to "Search...".
  * @param props.searchInputName - Name attribute for the search input. Defaults to "multiselect-search".
@@ -283,7 +283,7 @@ export interface MultiSelectProps
  *       options={options}
  *       value={values}
  *       onChange={setValues}
- *       label="Select Frameworks"
+ *       label="Dropmenu Frameworks"
  *       InputLabel="Choose frameworks..."
  *     />
  *   );
@@ -312,7 +312,7 @@ export interface MultiSelectProps
  * @see MultiSelectConfig - The configuration type for component defaults.
  * @see Input - The input component that provides field capabilities.
  * @see Button - The button component used as the trigger.
- * @see SelectMenu - The dropdown menu component.
+ * @see Menu - The dropdown menu component.
  * @see Chip - The chip component for selected items.
  * @see FieldShell - The wrapper component for label and validation.
  */
@@ -322,7 +322,7 @@ export const MultiSelect = forwardRef<HTMLButtonElement, MultiSelectProps>(
       options = [],
       value,
       onChange,
-      InputLabel = "Select Options...",
+      InputLabel = "Dropmenu Options...",
       isSearch = true,
       searchPlaceholder = "Search...",
       searchInputName = "multiselect-search",
@@ -464,7 +464,7 @@ export const MultiSelect = forwardRef<HTMLButtonElement, MultiSelectProps>(
     // ─── Floating UI ─────────────────────────────────────────────────────
 
     const { refs, context, isPositioned, floatingStyles } =
-      useSelectFloating<HTMLButtonElement>({
+      useMenuFloating<HTMLButtonElement>({
         isOpen,
         onOpenChange: setIsOpen,
         disabled,
@@ -505,8 +505,8 @@ export const MultiSelect = forwardRef<HTMLButtonElement, MultiSelectProps>(
      * Handles option selection from the dropdown.
      * Toggles the selection state and updates the value.
      */
-    const handleSelectMenuOption = useCallback(
-      (option: SelectMenuOption) => {
+    const handleOptionSelect = useCallback(
+      (option: MenuOption) => {
         const selected = isOptionSelected(option.value);
 
         if (handleAddChip || handleRemoveChip) {
@@ -629,8 +629,8 @@ export const MultiSelect = forwardRef<HTMLButtonElement, MultiSelectProps>(
               </span>
             </Button>
 
-            {/* Floating SelectMenu */}
-            <SelectMenu
+            {/* Floating Menu */}
+            <Menu
               isOpen={isOpen}
               floatingStyles={floatingStyles}
               context={context}
@@ -639,7 +639,7 @@ export const MultiSelect = forwardRef<HTMLButtonElement, MultiSelectProps>(
               isPositioned={isPositioned}
               options={options}
               selectedValues={selectedValues}
-              onSelectMenuOption={handleSelectMenuOption}
+              onOptionSelect={handleOptionSelect}
               isSearch={isSearch}
               searchPlaceholder={searchPlaceholder}
               searchInputName={searchInputName}

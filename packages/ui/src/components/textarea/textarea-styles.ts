@@ -1,6 +1,6 @@
 /**
- * TextArea component styles for AsheeUI.
- * This file provides CSS class mappings for the TextArea component's
+ * Textarea component styles for AsheeUI.
+ * This file provides CSS class mappings for the Textarea component's
  * size and status border options.
  */
 

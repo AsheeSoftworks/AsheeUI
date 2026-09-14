@@ -6,7 +6,7 @@ import {
   screen,
   waitFor,
 } from "../../test";
-import { Select } from "./Select";
+import { Dropmenu } from "./Dropmenu";
 
 const OPTIONS = [
   { label: "One", value: "one" },
@@ -14,10 +14,10 @@ const OPTIONS = [
   { label: "Three", value: "three" },
 ];
 
-describe("Select", () => {
+describe("Dropmenu", () => {
   it("starts closed with its placeholder and advertises a popup", () => {
     const { getByRole, queryByText } = renderWithProvider(
-      <Select label="Choice" options={OPTIONS} />,
+      <Dropmenu label="Choice" options={OPTIONS} />,
     );
     const trigger = getByRole("combobox");
 
@@ -30,7 +30,7 @@ describe("Select", () => {
     const user = createUser();
     const onValueChange = vi.fn();
     const { getByRole } = renderWithProvider(
-      <Select label="Choice" options={OPTIONS} onValueChange={onValueChange} />,
+      <Dropmenu label="Choice" options={OPTIONS} onValueChange={onValueChange} />,
     );
     const trigger = getByRole("combobox");
 
@@ -48,7 +48,7 @@ describe("Select", () => {
 
   it("links its description and message to the trigger", () => {
     const { getByRole, getByText } = renderWithProvider(
-      <Select
+      <Dropmenu
         label="Choice"
         options={OPTIONS}
         description="Pick one option"
@@ -62,7 +62,7 @@ describe("Select", () => {
 
   // Defect register (M1, D-30): only the description is linked through
   // `aria-describedby`; the validation message id is omitted, unlike Input and
-  // TextArea which link both.
+  // Textarea which link both.
   it.todo(
     "links its validation message to the trigger (defect register D-30)",
   );
@@ -70,7 +70,7 @@ describe("Select", () => {
   it("filters options when search is enabled", async () => {
     const user = createUser();
     const { getByRole, getByPlaceholderText } = renderWithProvider(
-      <Select label="Choice" options={OPTIONS} isSearch />,
+      <Dropmenu label="Choice" options={OPTIONS} isSearch />,
     );
 
     await user.click(getByRole("combobox"));
@@ -83,7 +83,7 @@ describe("Select", () => {
   it("does not open while disabled", async () => {
     const user = createUser();
     const { getByRole, queryByText } = renderWithProvider(
-      <Select label="Choice" options={OPTIONS} disabled />,
+      <Dropmenu label="Choice" options={OPTIONS} disabled />,
     );
     const trigger = getByRole("combobox");
 

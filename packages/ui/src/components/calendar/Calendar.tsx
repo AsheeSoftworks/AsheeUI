@@ -1,6 +1,6 @@
 /**
- * DatePicker component for AsheeUI.
- * This file provides the main DatePicker component implementation, which renders
+ * Calendar component for AsheeUI.
+ * This file provides the main Calendar component implementation, which renders
  * a date/time picker with calendar popover, time spinner, and input field.
  * It integrates with Floating UI for popover positioning and supports the
  * standard AsheeUI cascade for visual tokens.
@@ -30,26 +30,26 @@ import {
 import { ASHEE_LAYER } from "../../utils/stacking";
 import type { FieldSizeKey } from "../field/field-config";
 import { Input, type InputProps } from "../input/Input";
-import { FALLBACK_SELECT_MENU_CONFIG, useSelectFloating } from "../select-menu";
-import { Calendar } from "./Calendar";
+import { FALLBACK_MENU_CONFIG, useMenuFloating } from "../menu";
+import { DateGrid } from "./DateGrid";
 import {
   formatDisplay,
   getDefaultPlaceholder,
   getNewCursorPosition,
   parseDateString,
-} from "./date-picker.helpers";
+} from "./calendar.helpers";
 import {
-  type DatePickerConfig,
-  type DatePickerMode,
-  type DatePickerPickerConfig,
+  type CalendarConfig,
+  type CalendarMode,
+  type CalendarPickerConfig,
   FALLBACK_DATE_PICKER_CONFIG,
-} from "./date-picker-config";
+} from "./calendar-config";
 
 /**
  * Props for the picker (calendar popover).
- * Extends DatePickerPickerConfig with instance-only props.
+ * Extends CalendarPickerConfig with instance-only props.
  */
-export interface DatePickerPickerProps extends DatePickerPickerConfig {
+export interface CalendarPickerProps extends CalendarPickerConfig {
   /**
    * Extra CSS classes for the calendar popover.
    */
@@ -59,21 +59,21 @@ export interface DatePickerPickerProps extends DatePickerPickerConfig {
 // ─── Component Interface ──────────────────────────────────────────────────────
 
 /**
- * Base DatePicker props excluding the picker configuration.
- * Combines DatePickerConfig (minus picker) with InputProps (minus value-related props).
+ * Base Calendar props excluding the picker configuration.
+ * Combines CalendarConfig (minus picker) with InputProps (minus value-related props).
  */
-export type BaseDatePickerProps = Omit<DatePickerConfig, "picker"> &
+export type BaseCalendarProps = Omit<CalendarConfig, "picker"> &
   Omit<
     InputProps,
     "onChange" | "value" | "defaultValue" | "endContent" | "startContent"
   >;
 
 /**
- * Configuration options for the DatePicker component.
+ * Configuration options for the Calendar component.
  * Extends InputProps but omits value-related props that are replaced
  * with date-specific equivalents.
  */
-export interface DatePickerProps extends BaseDatePickerProps {
+export interface CalendarProps extends BaseCalendarProps {
   /**
    * The currently selected date.
    * Pass null for no selection.
@@ -90,7 +90,7 @@ export interface DatePickerProps extends BaseDatePickerProps {
    * Picker configuration overrides including portal, portalTarget, and className.
    * All picker-related props should be passed through this object.
    */
-  picker?: DatePickerPickerProps;
+  picker?: CalendarPickerProps;
 
   /**
    * Whether a clear button is shown in the input.
@@ -112,7 +112,7 @@ export interface DatePickerProps extends BaseDatePickerProps {
 /**
  * A date/time picker component with calendar popover and time selection.
  *
- * DatePicker renders an input field with a calendar popover that allows
+ * Calendar renders an input field with a calendar popover that allows
  * selecting dates and/or times. It supports date, time, and datetime modes,
  * clearable selection, and future date restrictions. The component integrates
  * with Floating UI for popover positioning and follows the standard AsheeUI
@@ -122,10 +122,10 @@ export interface DatePickerProps extends BaseDatePickerProps {
  * render at the document body level. This ensures the popover escapes CSS
  * containment, overflow clipping, and stacking context issues. The portal
  * can be disabled via the `picker.portal` prop or
- * `components.datePicker.picker.portal` in the config if the popover needs
+ * `components.calendar.picker.portal` in the config if the popover needs
  * to stay within a specific parent container.
  *
- * @param props - DatePicker configuration options.
+ * @param props - Calendar configuration options.
  * @param props.selected - Currently selected date or null.
  * @param props.onChange - Callback fired when the date changes.
  * @param props.mode - Selection mode: "date", "time", or "datetime". Defaults to "date".
@@ -147,17 +147,17 @@ export interface DatePickerProps extends BaseDatePickerProps {
  *
  * @example
  * ```tsx
- * import { DatePicker } from "asheeui";
+ * import { Calendar } from "asheeui";
  * import { useState } from "react";
  *
  * export function Example() {
  *   const [selected, setSelected] = useState<Date | null>(null);
  *
  *   return (
- *     <DatePicker
+ *     <Calendar
  *       selected={selected}
  *       onChange={setSelected}
- *       label="Select Date"
+ *       label="Dropmenu Date"
  *       isClearable
  *     />
  *   );
@@ -167,9 +167,9 @@ export interface DatePickerProps extends BaseDatePickerProps {
  * @example
  * ```tsx
  * // With datetime mode and custom picker configuration
- * <DatePicker
+ * <Calendar
  *   mode="datetime"
- *   label="Select Date and Time"
+ *   label="Dropmenu Date and Time"
  *   isClearable
  *   picker={{
  *     className: "custom-calendar",
@@ -178,11 +178,11 @@ export interface DatePickerProps extends BaseDatePickerProps {
  * />
  * ```
  *
- * @see DatePickerConfig - The configuration type for component defaults.
+ * @see CalendarConfig - The configuration type for component defaults.
  * @see Input - The underlying input component.
- * @see Calendar - The calendar popover component.
+ * @see DateGrid - The calendar popover component.
  */
-export const DatePicker = forwardRef<HTMLInputElement, DatePickerProps>(
+export const Calendar = forwardRef<HTMLInputElement, CalendarProps>(
   (
     {
       selected,
@@ -201,8 +201,8 @@ export const DatePicker = forwardRef<HTMLInputElement, DatePickerProps>(
     ref,
   ) => {
     const config = useAsheeConfig();
-    const sectionConfig = config.components?.datePicker as
-      | DatePickerConfig
+    const sectionConfig = config.components?.calendar as
+      | CalendarConfig
       | undefined;
 
     const generatedId = useId();
@@ -213,7 +213,7 @@ export const DatePicker = forwardRef<HTMLInputElement, DatePickerProps>(
 
     // ─── Token Resolvers ──────────────────────────────────────────────────
 
-    const resolvedMode = resolveCascade<DatePickerMode>(
+    const resolvedMode = resolveCascade<CalendarMode>(
       mode,
       sectionConfig?.mode,
       undefined,
@@ -224,7 +224,7 @@ export const DatePicker = forwardRef<HTMLInputElement, DatePickerProps>(
       picker?.portal,
       sectionConfig?.picker?.portal,
       undefined,
-      FALLBACK_SELECT_MENU_CONFIG.portal,
+      FALLBACK_MENU_CONFIG.portal,
     );
 
     const resolvedPortalTarget = resolveCascade<HTMLElement | null>(
@@ -279,7 +279,7 @@ export const DatePicker = forwardRef<HTMLInputElement, DatePickerProps>(
       isPositioned,
       getReferenceProps,
       getFloatingProps,
-    } = useSelectFloating<HTMLInputElement>({
+    } = useMenuFloating<HTMLInputElement>({
       isOpen,
       onOpenChange: setIsOpen,
       disabled,
@@ -465,7 +465,7 @@ export const DatePicker = forwardRef<HTMLInputElement, DatePickerProps>(
             picker?.className,
           )}
           {...getFloatingProps()}>
-          <Calendar
+          <DateGrid
             selected={selected}
             mode={resolvedMode}
             isClearable={isClearable}
@@ -535,4 +535,4 @@ export const DatePicker = forwardRef<HTMLInputElement, DatePickerProps>(
   },
 );
 
-DatePicker.displayName = "DatePicker";
+Calendar.displayName = "Calendar";

@@ -88,19 +88,19 @@ describe("MultiSelect", () => {
     expect(queryByText("One")).toBeNull();
   });
 
-  // Defect register (M1, D-28): shared with Select. The field label is not
+  // Defect register (M1, D-28): shared with Dropmenu. The field label is not
   // associated with the combobox trigger, so the trigger has no accessible name.
   it.todo(
     "takes its accessible name from the field label (defect register D-28)",
   );
 
-  // Defect register (M1, D-23): shared with Select. The menu has no listbox or
+  // Defect register (M1, D-23): shared with Dropmenu. The menu has no listbox or
   // option semantics.
   it.todo(
     "exposes listbox and option semantics for its option list (defect register D-23)",
   );
 
-  // Defect register (M1, D-26): shared with Select. Only chip removal handles a
+  // Defect register (M1, D-26): shared with Dropmenu. Only chip removal handles a
   // key (Enter or Space); opening, navigating, selecting and dismissing the menu
   // have no keyboard path.
   it.todo(

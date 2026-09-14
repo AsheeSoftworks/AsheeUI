@@ -23,9 +23,9 @@
  * leapfrog unrelated app chrome such as a high `z-index` navbar.
  */
 export const ASHEE_LAYER = {
-  /** Select, MultiSelect, Autocomplete, and the shared SelectMenu. */
+  /** Dropmenu, MultiSelect, Autocomplete, and the shared Menu. */
   dropdown: 10,
-  /** DatePicker and other floating panels. */
+  /** Calendar and other floating panels. */
   popover: 20,
   /** Tooltips. */
   tooltip: 30,

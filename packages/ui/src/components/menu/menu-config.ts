@@ -1,6 +1,6 @@
 /**
- * SelectMenu component configuration for AsheeUI.
- * This file defines the configuration types for the SelectMenu dropdown
+ * Menu component configuration for AsheeUI.
+ * This file defines the configuration types for the Menu dropdown
  * component, including option structure and visual configuration for
  * menu items. It provides fallback values for the cascade resolution system.
  */
@@ -11,7 +11,7 @@ import type { Color, Radius, Size, Variant } from "../../shared";
  * A single option in the select menu.
  * Each option must have a label and a unique value.
  */
-export interface SelectMenuOption {
+export interface MenuOption {
   /**
    * Text displayed in the input and in the options list.
    */
@@ -38,7 +38,7 @@ export interface SelectMenuOption {
 }
 
 /**
- * Theme configuration options for the SelectMenu component.
+ * Theme configuration options for the Menu component.
  * Controls the visual appearance of the dropdown menu and its items.
  */
 export interface MenuConfig {
@@ -105,7 +105,7 @@ export interface MenuConfig {
    * Whether to render the menu through Floating UI's `FloatingPortal`.
    * When true, the menu is rendered at the document body level.
    * Defaults to true. This is typically controlled by the parent
-   * component (Select, MultiSelect, Autocomplete) via their own
+   * component (Dropmenu, MultiSelect, Autocomplete) via their own
    * config or props.
    *
    * @see FloatingPortal - https://floating-ui.com/docs/FloatingPortal
@@ -125,7 +125,7 @@ export interface MenuConfig {
  * These values are used when instance props, component config,
  * and global defaults are all undefined.
  */
-export const FALLBACK_SELECT_MENU_CONFIG = {
+export const FALLBACK_MENU_CONFIG = {
   radius: "md" as Radius,
   size: "md" as Size,
   itemVariant: "ghost" as Variant,

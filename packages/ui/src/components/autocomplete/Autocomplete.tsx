@@ -27,8 +27,8 @@ import type { Color, Variant } from "../../shared";
 import { resolveCascade, resolveRadiusKey } from "../../utils/resolve-token";
 import type { FieldSizeKey } from "../field/field-config";
 import { Input, type InputProps } from "../input/Input";
-import { type SelectMenuOption, useSelectFloating } from "../select-menu";
-import { type MenuProps, SelectMenu } from "../select-menu/SelectMenu";
+import { type MenuOption, useMenuFloating } from "../menu";
+import { type MenuProps, Menu } from "../menu/Menu";
 import {
   type AutocompleteConfig,
   FALLBACK_AUTOCOMPLETE_CONFIG,
@@ -50,7 +50,7 @@ export interface AutocompleteProps
    *
    * @default []
    */
-  options: SelectMenuOption[];
+  options: MenuOption[];
 
   /**
    * Controlled selected value, shown as its option label.
@@ -62,7 +62,7 @@ export interface AutocompleteProps
    * Callback fired with the selected value and option.
    * Called when a suggestion is selected from the dropdown.
    */
-  onValueChange?: (value: string | number, option?: SelectMenuOption) => void;
+  onValueChange?: (value: string | number, option?: MenuOption) => void;
 
   /**
    * Callback fired whenever the raw input text changes.
@@ -98,7 +98,7 @@ export interface AutocompleteProps
  * A text input with a filterable suggestion dropdown.
  *
  * Autocomplete combines an {@link Input} trigger with a floating
- * {@link SelectMenu}. Suggestions are filtered as the user types, the
+ * {@link Menu}. Suggestions are filtered as the user types, the
  * selected value is reported through `onValueChange`, and free-form
  * values are supported via `allowCustomValue`. Menu tokens resolve
  * through the standard AsheeUI cascade.
@@ -176,7 +176,7 @@ export interface AutocompleteProps
  *
  * @see AutocompleteConfig - The configuration type for component defaults.
  * @see Input - The underlying input component for the trigger.
- * @see SelectMenu - The dropdown component used for suggestions.
+ * @see Menu - The dropdown component used for suggestions.
  * @see useAsheeConfig - Hook for accessing the global configuration.
  */
 export const Autocomplete = forwardRef<HTMLInputElement, AutocompleteProps>(
@@ -262,7 +262,7 @@ export const Autocomplete = forwardRef<HTMLInputElement, AutocompleteProps>(
     // ─── Floating UI ─────────────────────────────────────────────────────
 
     const { refs, context, isPositioned, floatingStyles } =
-      useSelectFloating<HTMLInputElement>({
+      useMenuFloating<HTMLInputElement>({
         isOpen,
         onOpenChange: setIsOpen,
         disabled,
@@ -309,8 +309,8 @@ export const Autocomplete = forwardRef<HTMLInputElement, AutocompleteProps>(
      * Handles option selection from the dropdown.
      * Updates the input value and closes the dropdown.
      */
-    const handleSelectMenuOption = useCallback(
-      (option: SelectMenuOption) => {
+    const handleOptionSelect = useCallback(
+      (option: MenuOption) => {
         setInputValue(option.label);
         onValueChange?.(option.value, option);
         setIsOpen(false);
@@ -352,8 +352,8 @@ export const Autocomplete = forwardRef<HTMLInputElement, AutocompleteProps>(
           {...getReferenceProps(inputProps)}
         />
 
-        {/* Floating SelectMenu */}
-        <SelectMenu
+        {/* Floating Menu */}
+        <Menu
           isOpen={isOpen}
           floatingStyles={floatingStyles}
           context={context}
@@ -362,7 +362,7 @@ export const Autocomplete = forwardRef<HTMLInputElement, AutocompleteProps>(
           isPositioned={isPositioned}
           options={filteredOptions}
           selectedValues={selectedValues}
-          onSelectMenuOption={handleSelectMenuOption}
+          onOptionSelect={handleOptionSelect}
           isSearch={false}
           belowList={belowList}
           menuProps={menu}

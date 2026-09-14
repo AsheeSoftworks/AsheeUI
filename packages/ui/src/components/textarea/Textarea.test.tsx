@@ -1,13 +1,13 @@
 import { describe, expect, it, vi } from "vitest";
 import { createUser, expectDescribedBy, renderWithProvider } from "../../test";
-import { TextArea } from "./Textarea";
+import { Textarea } from "./Textarea";
 
 describe("Textarea", () => {
   it("associates its label and accepts multi-line typing", async () => {
     const user = createUser();
     const onChange = vi.fn();
     const { getByLabelText } = renderWithProvider(
-      <TextArea label="Notes" onChange={onChange} />,
+      <Textarea label="Notes" onChange={onChange} />,
     );
     const textarea = getByLabelText("Notes") as HTMLTextAreaElement;
 
@@ -18,14 +18,14 @@ describe("Textarea", () => {
   });
 
   it("uses the documented number of visible rows", () => {
-    const { getByLabelText } = renderWithProvider(<TextArea label="Notes" />);
+    const { getByLabelText } = renderWithProvider(<Textarea label="Notes" />);
 
     expect(getByLabelText("Notes")).toHaveAttribute("rows", "4");
   });
 
   it("honours an explicit rows value", () => {
     const { getByLabelText } = renderWithProvider(
-      <TextArea label="Notes" rows={8} />,
+      <Textarea label="Notes" rows={8} />,
     );
 
     expect(getByLabelText("Notes")).toHaveAttribute("rows", "8");
@@ -33,7 +33,7 @@ describe("Textarea", () => {
 
   it("links its description and error message and marks the field invalid", () => {
     const { getByLabelText, getByText } = renderWithProvider(
-      <TextArea
+      <Textarea
         label="Notes"
         description="Optional"
         message="Too long"
@@ -50,7 +50,7 @@ describe("Textarea", () => {
   it("is disabled and rejects typing", async () => {
     const user = createUser();
     const { getByLabelText } = renderWithProvider(
-      <TextArea label="Notes" disabled />,
+      <Textarea label="Notes" disabled />,
     );
     const textarea = getByLabelText("Notes") as HTMLTextAreaElement;
 
@@ -63,7 +63,7 @@ describe("Textarea", () => {
 
   it("forwards native textarea attributes", () => {
     const { getByLabelText } = renderWithProvider(
-      <TextArea label="Notes" name="notes" placeholder="Write here" />,
+      <Textarea label="Notes" name="notes" placeholder="Write here" />,
     );
     const textarea = getByLabelText("Notes");
 

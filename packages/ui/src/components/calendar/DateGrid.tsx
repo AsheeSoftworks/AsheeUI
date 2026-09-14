@@ -1,8 +1,8 @@
 /**
- * Calendar component for AsheeUI.
- * This file provides the Calendar popover implementation, which renders
+ * DateGrid component for AsheeUI.
+ * This file provides the DateGrid popover implementation, which renders
  * a month grid with day selection and optional time spinners for
- * the DatePicker component.
+ * the Calendar component.
  */
 
 import { memo, useMemo, useState } from "react";
@@ -11,17 +11,17 @@ import { ChevronRightIcon } from "../../icons/ChevronRightIcon";
 import type { Color } from "../../shared";
 import { cn } from "../../utils";
 import type { FieldSizeKey } from "../field/field-config";
-import { buildDayCells, DAYS_OF_WEEK, MONTHS } from "./date-picker.helpers";
-import type { DatePickerMode } from "./date-picker-config";
+import { buildDayCells, DAYS_OF_WEEK, MONTHS } from "./calendar.helpers";
+import type { CalendarMode } from "./calendar-config";
 import {
   CALENDAR_COLOR_CLASSES,
   DATE_PICKER_CELL_SIZE_CLASS,
-} from "./date-picker-styles";
+} from "./calendar-styles";
 import { TimeSpinner } from "./TimeSpinner";
 
 // ─── Component Interface ──────────────────────────────────────────────────────
 
-interface CalendarProps {
+interface DateGridProps {
   /**
    * The currently selected date.
    * Used to highlight the selected day and initialize time values.
@@ -31,7 +31,7 @@ interface CalendarProps {
    * Selection mode of the picker.
    * Controls whether the calendar, time spinners, or both are shown.
    */
-  mode: DatePickerMode;
+  mode: CalendarMode;
   /**
    * Whether a clear button is shown in the footer.
    */
@@ -71,14 +71,14 @@ interface CalendarProps {
 }
 
 /**
- * Calendar popover component with month navigation and date selection.
+ * DateGrid popover component with month navigation and date selection.
  *
- * Memoized so parent-driven renders (the DatePicker popover's one-time
+ * Memoized so parent-driven renders (the Calendar popover's one-time
  * `isPositioned` flip, input typing, open/close) do not rebuild the month
  * grid. Every prop is a primitive or a stable callback, so React.memo can
  * skip those renders.
  */
-export const Calendar = memo(function Calendar({
+export const DateGrid = memo(function DateGrid({
   selected,
   mode,
   isClearable,
@@ -88,7 +88,7 @@ export const Calendar = memo(function Calendar({
   onSelect,
   onClose,
   disableFuture = false,
-}: CalendarProps) {
+}: DateGridProps) {
   const today = new Date();
 
   const [viewYear, setViewYear] = useState<number>(
@@ -197,7 +197,7 @@ export const Calendar = memo(function Calendar({
         radiusClass,
       )}>
       <div className="flex flex-row">
-        {/* Calendar Picker */}
+        {/* DateGrid Picker */}
         {showCalendar && (
           <div className="flex flex-col w-[264px]">
             {/* Month/Year Header */}

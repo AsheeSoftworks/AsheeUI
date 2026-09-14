@@ -31,10 +31,10 @@ const ENTRY_SOURCE = [
   'export * from "./components/button";',
   'export { Chip } from "./components/chip";',
   'export * from "./components/card";',
-  'export * from "./components/date-picker";',
+  'export * from "./components/calendar";',
   'export * from "./components/modal";',
   // Type-only exports do not create a public component.
-  'export type { SelectMenuOption } from "./components/select-menu";',
+  'export type { MenuOption } from "./components/menu";',
   'export type { ExternalConfig } from "./config";',
   // Modules outside components/ are not components.
   'export * from "./libs/registry";',
@@ -46,11 +46,11 @@ const BUNDLED_ENTRY_SOURCE = [
   'import { Button as a } from "./components/button/Button.js";',
   'import { Card as b } from "./components/card/Card.js";',
   'import { Chip as c } from "./components/chip/Chip.js";',
-  'import { DatePicker as d } from "./components/date-picker/DatePicker.js";',
+  'import { Calendar as d } from "./components/calendar/Calendar.js";',
   'import { Modal as e } from "./components/modal/Modal.js";',
-  'import type { SelectMenuOption } from "./components/select-menu/index.js";',
+  'import type { MenuOption } from "./components/menu/index.js";',
   'import { registerComponentDefaults } from "./libs/registry.js";',
-  "export { a as Button, b as Card, c as Chip, d as DatePicker, e as Modal };",
+  "export { a as Button, b as Card, c as Chip, d as Calendar, e as Modal };",
   "",
 ].join("\n");
 
@@ -84,7 +84,7 @@ async function scaffoldPackage(
     "export {};",
   );
   await write(
-    join("asheeui-pkg", "src", "components", "select-menu", "index.tsx"),
+    join("asheeui-pkg", "src", "components", "menu", "index.tsx"),
     "export {};",
   );
   await write(
@@ -111,9 +111,9 @@ describe("discoverPublicComponents", () => {
 
     expect(components).toEqual([
       "button",
+      "calendar",
       "card",
       "chip",
-      "date-picker",
       "modal",
     ]);
   });
@@ -126,7 +126,7 @@ describe("discoverPublicComponents", () => {
     );
 
     expect(components).not.toContain("field");
-    expect(components).not.toContain("select-menu");
+    expect(components).not.toContain("menu");
     expect(components).not.toContain("scrollbar");
     expect(components).not.toContain("legacy");
   });
@@ -176,12 +176,12 @@ describe("discoverPublicComponents", () => {
 
     expect(components).toEqual([
       "button",
+      "calendar",
       "card",
       "chip",
-      "date-picker",
       "modal",
     ]);
-    expect(components).not.toContain("select-menu");
+    expect(components).not.toContain("menu");
     expect(components).not.toContain("registry");
   });
 
@@ -272,7 +272,7 @@ describe("parsePublicComponentNames", () => {
   it("ignores type-only exports, non-component modules, and duplicates", () => {
     const names = parsePublicComponentNames(
       [
-        'export type { SelectMenuOption } from "./components/select-menu";',
+        'export type { MenuOption } from "./components/menu";',
         'export type { ExternalConfig } from "./config";',
         'export * from "./libs/registry";',
         'export { THEME_STORAGE_KEY } from "./theme/controller";',
@@ -303,9 +303,9 @@ describe("parsePublicComponentNames", () => {
   it("derives the surface of a built entry module from its imports", () => {
     expect(parsePublicComponentNames(BUNDLED_ENTRY_SOURCE)).toEqual([
       "button",
+      "calendar",
       "card",
       "chip",
-      "date-picker",
       "modal",
     ]);
   });
@@ -313,8 +313,8 @@ describe("parsePublicComponentNames", () => {
 
 describe("componentNameFromSpecifier", () => {
   it("maps a component module specifier to the component name", () => {
-    expect(componentNameFromSpecifier("./components/date-picker")).toBe(
-      "date-picker",
+    expect(componentNameFromSpecifier("./components/calendar")).toBe(
+      "calendar",
     );
     expect(componentNameFromSpecifier("./components/toast/index")).toBe("toast");
   });
@@ -335,11 +335,12 @@ const PUBLIC_COMPONENT_INVENTORY = [
   "accordion",
   "autocomplete",
   "button",
+  "calendar",
   "card",
   "carousel",
   "chip",
-  "date-picker",
   "drawer",
+  "dropmenu",
   "image",
   "input",
   "keyboard",
@@ -349,7 +350,6 @@ const PUBLIC_COMPONENT_INVENTORY = [
   "multi-select",
   "radio",
   "resizable-screen",
-  "select",
   "sidebar",
   "spinner",
   "switch",
@@ -382,7 +382,7 @@ describe("public component inventory", () => {
     const components = await discoverPublicComponents(packageRoot);
 
     expect(components).not.toContain("field");
-    expect(components).not.toContain("select-menu");
+    expect(components).not.toContain("menu");
     expect(components).not.toContain("menu");
     expect(components).not.toContain("scrollbar");
   });

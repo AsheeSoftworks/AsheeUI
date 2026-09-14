@@ -61,14 +61,14 @@ describe("Autocomplete", () => {
     expect(onInputChange).toHaveBeenCalled();
   });
 
-  // Defect register (M1, D-23): shared with Select. The suggestion list has no
+  // Defect register (M1, D-23): shared with Dropmenu. The suggestion list has no
   // listbox or option semantics, and the input exposes no
   // `aria-activedescendant`, so the active suggestion is not conveyed.
   it.todo(
     "exposes listbox, option and active-suggestion semantics (defect register D-23)",
   );
 
-  // Defect register (M1, D-26): shared with Select. No arrow navigation, Enter
+  // Defect register (M1, D-26): shared with Dropmenu. No arrow navigation, Enter
   // selection or Escape dismissal exists.
   it.todo(
     "navigates and selects suggestions with the keyboard (defect register D-26)",

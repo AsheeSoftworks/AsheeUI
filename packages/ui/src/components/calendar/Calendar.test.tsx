@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 import { createUser, renderWithProvider, screen, waitFor } from "../../test";
-import { DatePicker } from "./DatePicker";
+import { Calendar } from "./Calendar";
 
 /** Click the first enabled day button in the rendered calendar grid. */
 async function clickFirstDay(user: ReturnType<typeof createUser>) {
@@ -12,10 +12,10 @@ async function clickFirstDay(user: ReturnType<typeof createUser>) {
   await user.click(dayButtons[0]);
 }
 
-describe("DatePicker", () => {
+describe("Calendar", () => {
   it("starts closed and advertises a popup", () => {
     const { getByRole, queryByRole } = renderWithProvider(
-      <DatePicker label="Date" />,
+      <Calendar label="Date" />,
     );
     const input = getByRole("textbox");
 
@@ -26,7 +26,7 @@ describe("DatePicker", () => {
 
   it("opens a calendar with month navigation", async () => {
     const user = createUser();
-    const { getByRole } = renderWithProvider(<DatePicker label="Date" />);
+    const { getByRole } = renderWithProvider(<Calendar label="Date" />);
 
     await user.click(getByRole("textbox"));
 
@@ -38,7 +38,7 @@ describe("DatePicker", () => {
     const user = createUser();
     const onChange = vi.fn();
     const { getByRole } = renderWithProvider(
-      <DatePicker label="Date" onChange={onChange} />,
+      <Calendar label="Date" onChange={onChange} />,
     );
 
     await user.click(getByRole("textbox"));
@@ -57,7 +57,7 @@ describe("DatePicker", () => {
   it("does not open while disabled", async () => {
     const user = createUser();
     const { getByRole, queryByRole } = renderWithProvider(
-      <DatePicker label="Date" disabled />,
+      <Calendar label="Date" disabled />,
     );
     const input = getByRole("textbox");
 

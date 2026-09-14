@@ -1,5 +1,5 @@
 /**
- * DatePicker helper functions for AsheeUI.
+ * Calendar helper functions for AsheeUI.
  * This file provides utility functions for date formatting, parsing,
  * calendar grid building, and input cursor management.
  */
@@ -35,11 +35,11 @@ export const MONTHS = [
 
 /**
  * The selection mode of the date picker.
- * - `date`: Select only a date.
- * - `time`: Select only a time.
- * - `datetime`: Select both date and time.
+ * - `date`: Dropmenu only a date.
+ * - `time`: Dropmenu only a time.
+ * - `datetime`: Dropmenu both date and time.
  */
-export type DatePickerMode = "date" | "time" | "datetime";
+export type CalendarMode = "date" | "time" | "datetime";
 
 // ─── Formatting Functions ───────────────────────────────────────────────────
 
@@ -75,7 +75,7 @@ export function pad2(n: number): string {
  * formatDisplay(date, "datetime") // "15/01/2024 14:30:45"
  * ```
  */
-export function formatDisplay(date: Date, mode: DatePickerMode): string {
+export function formatDisplay(date: Date, mode: CalendarMode): string {
   const d = pad2(date.getDate());
   const mo = pad2(date.getMonth() + 1);
   const y = date.getFullYear();
@@ -99,14 +99,14 @@ export function formatDisplay(date: Date, mode: DatePickerMode): string {
  * @param mode - The picker mode.
  * @returns The placeholder text.
  */
-export function getDefaultPlaceholder(mode: DatePickerMode): string {
+export function getDefaultPlaceholder(mode: CalendarMode): string {
   switch (mode) {
     case "date":
-      return "Select date...";
+      return "Dropmenu date...";
     case "time":
-      return "Select time...";
+      return "Dropmenu time...";
     case "datetime":
-      return "Select date & time...";
+      return "Dropmenu date & time...";
   }
 }
 
@@ -159,7 +159,7 @@ export function buildDayCells(year: number, month: number): (number | null)[] {
  */
 export function parseDateString(
   input: string,
-  mode: DatePickerMode,
+  mode: CalendarMode,
   fallbackDate?: Date,
 ): Date | null {
   const digits = input.replace(/\D/g, "");

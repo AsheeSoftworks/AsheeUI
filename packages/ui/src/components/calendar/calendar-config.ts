@@ -1,6 +1,6 @@
 /**
- * DatePicker component configuration for AsheeUI.
- * This file defines the configuration types and defaults for the DatePicker
+ * Calendar component configuration for AsheeUI.
+ * This file defines the configuration types and defaults for the Calendar
  * component, including mode, size, and field configuration options.
  * It extends the FieldConfig for label handling and registers defaults
  * with the component registry.
@@ -15,45 +15,45 @@ import { defaultInputConfig, type InputConfig } from "../input";
 
 /**
  * The selection mode of the date picker.
- * - `date`: Select only a date.
- * - `time`: Select only a time.
- * - `datetime`: Select both date and time.
+ * - `date`: Dropmenu only a date.
+ * - `time`: Dropmenu only a time.
+ * - `datetime`: Dropmenu both date and time.
  */
-export type DatePickerMode = "date" | "time" | "datetime";
+export type CalendarMode = "date" | "time" | "datetime";
 
 /**
  * Size key for the date picker.
  * Maps to the FieldSizeKey type: "sm", "md", or "lg".
  */
-export type DatePickerSizeKey = FieldSizeKey;
+export type CalendarSizeKey = FieldSizeKey;
 
 /**
- * Theme configuration options for the DatePicker component.
+ * Theme configuration options for the Calendar component.
  *
- * Set under `components.datePicker` in the AsheeUI config. Values feed the
+ * Set under `components.calendar` in the AsheeUI config. Values feed the
  * component-level fallback tier of the theme cascade.
  */
-export interface DatePickerConfig extends InputConfig {
+export interface CalendarConfig extends InputConfig {
   /**
    * The selection mode of the picker.
    * Controls whether the picker shows date, time, or both.
    *
    * @default "date"
    */
-  mode?: DatePickerMode;
+  mode?: CalendarMode;
 
   /**
    * Picker configuration for the calendar popover.
    * Controls portal behavior and other picker-specific settings.
    */
-  picker?: DatePickerPickerConfig;
+  picker?: CalendarPickerConfig;
 }
 
 /**
- * Picker configuration for the DatePicker component.
- * Extends DatePickerConfig to allow override of portal settings.
+ * Picker configuration for the Calendar component.
+ * Extends CalendarConfig to allow override of portal settings.
  */
-export interface DatePickerPickerConfig {
+export interface CalendarPickerConfig {
   /**
    * Whether to render the calendar popover through Floating UI's
    * `FloatingPortal`.
@@ -86,10 +86,10 @@ export interface DatePickerPickerConfig {
 }
 
 /**
- * Default config values registered for the DatePicker component.
+ * Default config values registered for the Calendar component.
  * Inherits field label defaults and sets the default mode to "date".
  */
-export const defaultDatePickerConfig: DatePickerConfig = {
+export const defaultCalendarConfig: CalendarConfig = {
   ...defaultInputConfig,
   mode: "date",
 };
@@ -106,8 +106,8 @@ export const FALLBACK_DATE_PICKER_CONFIG = {
 
 declare module "../../libs/registry" {
   interface ComponentTypeConfigRegistry {
-    datePicker: DatePickerConfig;
+    calendar: CalendarConfig;
   }
 }
 
-registerComponentDefaults("datePicker", defaultDatePickerConfig);
+registerComponentDefaults("calendar", defaultCalendarConfig);

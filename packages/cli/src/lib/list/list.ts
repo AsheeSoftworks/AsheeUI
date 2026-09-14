@@ -184,7 +184,7 @@ async function resolvePublicEntry(packageRoot: string): Promise<string | null> {
 
 /**
  * Derive a component name from a module specifier that re-exports a
- * component, for example `"./components/date-picker"` to `"date-picker"`.
+ * component, for example `"./components/calendar"` to `"calendar"`.
  *
  * @param specifier - Module specifier taken from an export statement.
  * @returns The component name, or `null` when the specifier does not
