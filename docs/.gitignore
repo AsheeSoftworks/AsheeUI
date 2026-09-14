@@ -1,4 +1,16 @@
-# Internal development and AI documentation.
-# This directory is deliberately NOT committed: the repository is public.
-# The committed public documentation lives in the parent docs/ directory.
-/docs/
+# Internal development documentation: ignore file.
+#
+# The repository is public. This directory holds the project's working
+# documentation: planning, process and local state. None of it is published and
+# none of it is referenced by the product, so none of it may be committed.
+#
+# The published documentation lives directly in this directory (commenting.md)
+# and the consumer-facing documentation lives on the website.
+#
+# The rule below ignores everything in this directory and then re-admits the
+# files that are meant to be public. A document that is meant to be published
+# must be re-admitted here in the same way.
+
+*
+!.gitignore
+!commenting.md
