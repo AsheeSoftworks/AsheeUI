@@ -3,7 +3,7 @@
  * This file provides the static classes the Form component is built from.
  *
  * The list is deliberately short: a form groups and submits, and page layout
- * belongs to the consumer's Tailwind classes (`REQ-054`). Nothing here styles
+ * belongs to the consumer's Tailwind classes. Nothing here styles
  * a field, because fields are the framework's field components.
  */
 

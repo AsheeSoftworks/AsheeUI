@@ -81,14 +81,14 @@ export interface FormProps extends BaseFormProps {
  * Fields keep their own presentation through the framework's field
  * components, and the component renders an AsheeUI `Button` as the submit
  * control when a label is given for it. Page layout stays with the consumer's
- * Tailwind classes (`REQ-054`).
+ * Tailwind classes.
  *
  * The form never moves focus, on mount or on a rejected submission: where a
  * consumer sends focus after a failed validation is a consumer decision.
  *
  * A framework-specific underlying form implementation is not part of this
- * component yet. The API for substituting one is unresolved (`DES-036`) and is
- * decided before 1.0, so the component does not invent it.
+ * component yet. The substitution API is not settled yet and is decided before
+ * 1.0, so the component does not invent it.
  *
  * @param props - Form configuration options and native form attributes.
  * @param props.children - The fields and other content of the form.

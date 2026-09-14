@@ -16,6 +16,6 @@ export const SKELETON_BASE_CLASS =
  *
  * It is applied through the `motion-safe` variant rather than from a script, so
  * a consumer who asked for reduced motion sees a static placeholder and the
- * media query decides before hydration (`REQ-089`).
+ * media query decides before hydration.
  */
 export const SKELETON_ANIMATION_CLASS = "motion-safe:animate-pulse";

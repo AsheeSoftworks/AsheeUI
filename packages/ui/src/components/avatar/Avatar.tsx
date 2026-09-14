@@ -59,8 +59,7 @@ export interface AvatarProps extends BaseAvatarProps {
 
   /**
    * Custom image component, passed to {@link Image}.
-   * This is how a consumer keeps a framework image working inside an avatar
-   * (`DES-035`).
+   * This is how a consumer keeps a framework image working inside an avatar.
    */
   component?: ElementType;
 
