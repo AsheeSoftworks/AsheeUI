@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  expectHydrationClean,
   fireEvent,
   makeComponentConfig,
   renderWithProvider,
@@ -99,5 +100,10 @@ describe("Avatar", () => {
     expect(overriddenAvatar.className).toContain("size-8");
     expect(overriddenAvatar.className).toContain("rounded-full");
     expect(overridden.container.innerHTML).toContain("success");
+  });
+
+  it("hydrates its server markup without a mismatch", () => {
+    expectHydrationClean(<Avatar name="Ada Lovelace" />);
+    expectHydrationClean(<Avatar name="Ada Lovelace" src="/ada.png" />);
   });
 });

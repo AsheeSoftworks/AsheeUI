@@ -1,5 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { makeComponentConfig, renderWithProvider, within } from "../../test";
+import {
+  expectHydrationClean,
+  makeComponentConfig,
+  renderWithProvider,
+  within,
+} from "../../test";
 import { Badge } from "./Badge";
 
 describe("Badge", () => {
@@ -92,5 +97,10 @@ describe("Badge", () => {
 
     expect(badge.className).toContain("ml-2");
     expect(badge.className).toContain("font-medium");
+  });
+
+  it("hydrates its server markup without a mismatch", () => {
+    expectHydrationClean(<Badge color="success">Active</Badge>);
+    expectHydrationClean(<Badge label="Active" />);
   });
 });

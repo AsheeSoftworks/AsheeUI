@@ -2,6 +2,7 @@ import { createRef } from "react";
 import { describe, expect, it, vi } from "vitest";
 import {
   createUser,
+  expectHydrationClean,
   fireEvent,
   makeComponentConfig,
   renderWithProvider,
@@ -141,6 +142,14 @@ describe("Form", () => {
 
     expect(container.querySelector("form")?.className).toContain(
       "flex flex-col gap-4",
+    );
+  });
+
+  it("hydrates its server markup without a mismatch", () => {
+    expectHydrationClean(
+      <Form legend="Invoice details" submitLabel="Save" action="/invoices">
+        <input name="reference" />
+      </Form>,
     );
   });
 });

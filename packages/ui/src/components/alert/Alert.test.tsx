@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 import {
   createUser,
+  expectHydrationClean,
   makeComponentConfig,
   renderWithProvider,
   within,
@@ -117,6 +118,19 @@ describe("Alert", () => {
     );
     expect(container.querySelector("#square")?.className).toContain(
       "rounded-none",
+    );
+  });
+
+  it("hydrates its server markup without a mismatch", () => {
+    expectHydrationClean(
+      <Alert type="error" title="Payment failed">
+        The card was declined.
+      </Alert>,
+    );
+    expectHydrationClean(
+      <Alert isClosable onClose={() => {}} title="Update">
+        A new version is available.
+      </Alert>,
     );
   });
 });
