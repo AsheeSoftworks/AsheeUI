@@ -82,7 +82,7 @@ npx asheeui init
 **3. Use the components** anywhere in your app:
 
 ```tsx
-import { Select } from "asheeui";
+import { Dropmenu } from "asheeui";
 import { useState } from "react";
 
 export function Example() {
@@ -95,7 +95,7 @@ export function Example() {
   ];
 
   return (
-    <Select
+    <Dropmenu
       options={options}
       value={value}
       onValueChange={setValue}
