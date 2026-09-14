@@ -327,7 +327,11 @@ describe("componentNameFromSpecifier", () => {
 
 /**
  * The public inventory asserted here is the reconciled framework inventory:
- * 33 public components. A change to the public export surface must update this
+<<<<<<< HEAD
+ * 34 public components. A change to the public export surface must update this
+=======
+ * 34 public components. A change to the public export surface must update this
+>>>>>>> 4201f4e (feat(form): add the Form component)
  * list in the same change, so the CLI cannot drift silently from the real
  * inventory.
  */
@@ -345,6 +349,7 @@ const PUBLIC_COMPONENT_INVENTORY = [
   "chip",
   "drawer",
   "dropmenu",
+  "form",
   "image",
   "input",
   "keyboard",
