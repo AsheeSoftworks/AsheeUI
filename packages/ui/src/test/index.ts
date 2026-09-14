@@ -9,5 +9,6 @@ export * from "./config";
 export * from "./interactions";
 export * from "./overlay";
 export * from "./render";
+export * from "./source-scan";
 export * from "./ssr";
 export * from "./timers";
