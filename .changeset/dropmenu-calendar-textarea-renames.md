@@ -4,8 +4,7 @@
 
 Rename `Select` to `Dropmenu`, `DatePicker` to `Calendar`, and `TextArea` to `Textarea`.
 
-These are the ratified pre-1.0 renames (`REQ-051`, `REQ-142`, `REQ-048`). They are breaking: the old names are gone,
-and no compatibility alias is provided before 1.0 (`REQ-039`).
+These are pre-1.0 breaking renames: the old names are gone, and no compatibility alias is provided before 1.0.
 
 | Before | After | Migration |
 |---|---|---|
