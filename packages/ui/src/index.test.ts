@@ -18,6 +18,7 @@ describe("public entry point", () => {
     const components = [
       "Accordion",
       "Autocomplete",
+      "Badge",
       "Button",
       "Card",
       "Carousel",
