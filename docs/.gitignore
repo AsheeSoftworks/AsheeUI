@@ -1,0 +1,4 @@
+# Internal development and AI documentation.
+# This directory is deliberately NOT committed: the repository is public.
+# The committed public documentation lives in the parent docs/ directory.
+/docs/
