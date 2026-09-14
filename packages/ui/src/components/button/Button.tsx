@@ -329,9 +329,12 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         {...rest}
         {...linkRestProps}>
         {isLoading && <Spinner className={resolvedSizeKey} />}
-        {isLoading && <span className="sr-only">Loading</span>}
+        {/* A busy control keeps its own name: "Loading" on its own does not say
+            which action is running, so the state is carried by `aria-busy` and
+            the label stays in the name. */}
+        {isLoading && <span className="sr-only">Loading </span>}
+        {isLoading ? <span className="sr-only">{children}</span> : children}
         {!isLoading && startContent}
-        {!isLoading && children}
         {!isLoading && endContent}
       </LinkComponent>
     );
