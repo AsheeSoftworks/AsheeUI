@@ -110,7 +110,13 @@ export function AsheeThemeScript({ config }: { config: Config }) {
       } catch (e) {}
       
       var selection = stored || defaultTheme;
+      if (selection !== 'system' && themes.indexOf(selection) === -1) {
+        selection = defaultTheme;
+      }
       var resolved = selection === 'system' ? (systemDark ? 'dark' : 'light') : selection;
+      if (themes.indexOf(resolved) === -1) {
+        resolved = themes.indexOf(defaultTheme) !== -1 ? defaultTheme : (themes[0] || resolved);
+      }
       
       var prefix = 'theme-';
       for (var i = el.classList.length - 1; i >= 0; i--) {
