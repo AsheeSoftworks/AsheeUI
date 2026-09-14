@@ -7,13 +7,18 @@
  */
 "use client";
 
+import { FloatingFocusManager, FloatingPortal } from "@floating-ui/react";
 import {
   type HTMLAttributes,
   type ReactNode,
+  useCallback,
   useEffect,
+  useRef,
   useState,
 } from "react";
 import { useAsheeConfig } from "../../libs/context";
+import { useBodyScrollLock } from "../../libs/use-body-scroll-lock";
+import { useDialogOverlay } from "../../libs/use-dialog-overlay";
 import { RADIUS_CLASS, type Radius } from "../../shared";
 import { cn } from "../../utils";
 import {
@@ -104,8 +109,13 @@ export interface ModalProps extends BaseModalProps {
  *
  * Modal renders a dialog that appears over the page content with a backdrop.
  * It supports size, position, radius, animation, and behavior options. The
- * component automatically locks body scroll when open, handles Escape key
+ * dialog renders in a portal, locks body scroll while open, handles Escape key
  * dismissal, and supports click-outside-to-close functionality.
+ *
+ * While the dialog is open, focus moves into it, cannot leave it, and returns
+ * to the element that was focused before it opened. The dialog element is the
+ * content box, so a consumer names the dialog with the standard `aria-label` or
+ * `aria-labelledby` attribute.
  *
  * The modal manages its own animation states using a two-phase rendering
  * approach: it renders the modal with an enter animation when opened, and
@@ -244,6 +254,23 @@ export function Modal({
     FALLBACK_MODAL_CONFIG.animated,
   );
 
+  // Overlay behaviour: the dialog renders in a portal, manages focus while it
+  // is open, and stops the page behind it from scrolling (`COMP-035`).
+  const { context, setDialogRef } = useDialogOverlay(isOpen);
+  const dialogRef = useRef<HTMLDivElement | null>(null);
+
+  // The focus manager needs the dialog element as a ref for the initial focus
+  // target, and the dialog context needs the same element in state.
+  const registerDialog = useCallback(
+    (node: HTMLDivElement | null) => {
+      dialogRef.current = node;
+      setDialogRef(node);
+    },
+    [setDialogRef],
+  );
+
+  useBodyScrollLock(isOpen);
+
   // ─── 2. Class Maps ────────────────────────────────────────────────────────
 
   const widthClass = width
@@ -314,45 +341,61 @@ export function Modal({
   };
 
   return (
-    <div
-      role="dialog"
-      aria-modal="true"
-      className={cn(
-        "fixed inset-0 flex items-center justify-center p-4 sm:p-6 h-screen w-screen scrollbar-hide",
-        getBackdropAnimation(),
-      )}
-      style={{ zIndex: ASHEE_GLOBAL_LAYER.overlay }}>
-      {/* Backdrop Overlay */}
-      <button
-        type="button"
-        onClick={closeOnBackdropClick ? onClose : undefined}
-        className={cn(
-          "fixed inset-0 bg-background/80 backdrop-blur-xs",
-          overlay?.className,
-          getBackdropAnimation(),
-        )}
-      />
+    <FloatingPortal>
+      <FloatingFocusManager
+        context={context}
+        modal
+        initialFocus={dialogRef}
+        returnFocus
+        closeOnFocusOut={false}>
+        <div
+          className={cn(
+            "fixed inset-0 flex items-center justify-center p-4 sm:p-6 h-screen w-screen scrollbar-hide",
+            getBackdropAnimation(),
+          )}
+          style={{ zIndex: ASHEE_GLOBAL_LAYER.overlay }}>
+          {/* Backdrop Overlay. It is decorative: it dismisses the dialog on a
+              pointer press and carries no accessible name, so it stays out of
+              the accessibility tree and out of the tab order. */}
+          <div
+            data-ashee-backdrop=""
+            aria-hidden="true"
+            onClick={closeOnBackdropClick ? onClose : undefined}
+            className={cn(
+              "fixed inset-0 bg-background/80 backdrop-blur-xs",
+              overlay?.className,
+              getBackdropAnimation(),
+            )}
+          />
 
-      {/* Modal Content Box */}
-      <div
-        className={cn(
-          "relative z-10 w-full bg-background text-foreground overflow-y-auto max-h-[90vh]",
-          positionClass,
-          widthClass,
-          radiusClass,
-          content?.className,
-          getModalAnimation(),
-          className,
-        )}
-        style={{
-          width,
-          height,
-          ...style,
-        }}
-        {...props}>
-        {children}
-      </div>
-    </div>
+          {/* Modal Content Box. The dialog element is the content box itself, so
+              an `aria-label` or `aria-labelledby` passed by the consumer names
+              the dialog rather than a wrapper or the backdrop. */}
+          <div
+            ref={registerDialog}
+            role="dialog"
+            aria-modal="true"
+            tabIndex={-1}
+            className={cn(
+              "relative z-10 w-full bg-background text-foreground overflow-y-auto max-h-[90vh] outline-none",
+              positionClass,
+              widthClass,
+              radiusClass,
+              content?.className,
+              getModalAnimation(),
+              className,
+            )}
+            style={{
+              width,
+              height,
+              ...style,
+            }}
+            {...props}>
+            {children}
+          </div>
+        </div>
+      </FloatingFocusManager>
+    </FloatingPortal>
   );
 }
 

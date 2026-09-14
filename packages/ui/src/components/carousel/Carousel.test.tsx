@@ -1,5 +1,11 @@
 import { describe, expect, it, vi } from "vitest";
-import { createUser, expectState, renderWithProvider } from "../../test";
+import {
+  createUser,
+  expectState,
+  renderWithProvider,
+  stubReducedMotion,
+  useFakeTimers,
+} from "../../test";
 import { Carousel } from "./Carousel";
 
 const ITEMS = [
@@ -82,11 +88,62 @@ describe("Carousel", () => {
     expect(container.firstElementChild).not.toBeNull();
   });
 
-  // Defect register (M1, D-13): transitions and autoplay are applied with plain
-  // `transition-*` classes and timers. There is no reduced-motion handling, so
+  // Defect register (M1, D-13): transitions and autoplay were applied with plain
+  // `transition-*` classes and timers, with no reduced-motion handling, so
   // `COMP-047` ("autoplay, where supported, is pausable and respects reduced
-  // motion") and `TEST-033` are unmet for this component.
-  it.todo(
-    "stops autoplay and transitions when the user prefers reduced motion (defect register D-13)",
-  );
+  // motion") and `TEST-033` were unmet.
+  it("advances on autoplay while the user allows motion", () => {
+    stubReducedMotion(false);
+
+    const onIndexChange = vi.fn();
+    const timers = useFakeTimers();
+
+    try {
+      renderWithProvider(
+        <Carousel
+          items={ITEMS}
+          autoPlay
+          autoPlayInterval={1000}
+          onIndexChange={onIndexChange}
+        />,
+      );
+
+      timers.advance(1000);
+
+      expect(onIndexChange).toHaveBeenCalledWith(1);
+    } finally {
+      timers.restore();
+    }
+  });
+
+  it("stops autoplay and transitions when the user prefers reduced motion", () => {
+    stubReducedMotion(true);
+
+    const onIndexChange = vi.fn();
+    const timers = useFakeTimers();
+
+    try {
+      const { container } = renderWithProvider(
+        <Carousel
+          items={ITEMS}
+          autoPlay
+          autoPlayInterval={1000}
+          onIndexChange={onIndexChange}
+        />,
+      );
+
+      timers.advance(3000);
+
+      expect(onIndexChange).not.toHaveBeenCalled();
+
+      const track = container.querySelector(
+        '[style*="translate3d"]',
+      ) as HTMLElement | null;
+
+      expect(track).not.toBeNull();
+      expect(track?.className).not.toContain("transition-transform");
+    } finally {
+      timers.restore();
+    }
+  });
 });

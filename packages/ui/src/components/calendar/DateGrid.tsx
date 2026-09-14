@@ -5,7 +5,7 @@
  * the Calendar component.
  */
 
-import { memo, useMemo, useState } from "react";
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ChevronLeftIcon } from "../../icons/ChevronLeftIcon";
 import { ChevronRightIcon } from "../../icons/ChevronRightIcon";
 import type { Color } from "../../shared";
@@ -101,6 +101,87 @@ export const DateGrid = memo(function DateGrid({
   const [minutes, setMinutes] = useState<number>(selected?.getMinutes() ?? 0);
   const [seconds, setSeconds] = useState<number>(selected?.getSeconds() ?? 0);
 
+  // The day the grid's keyboard navigation acts on. It starts at the selected
+  // day, or at today when nothing is selected (`D-26`).
+  const [navigatedDate, setNavigatedDate] = useState<Date>(
+    () => selected ?? today,
+  );
+
+  const dayButtons = useRef<Record<string, HTMLButtonElement | null>>({});
+  const shouldMoveFocus = useRef(false);
+
+  /**
+   * Identifies a day independently of the rendered month, so the focused day
+   * can be found after the view has changed.
+   */
+  const dateKey = (date: Date): string =>
+    `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`;
+
+  /**
+   * Moves the navigated day, follows it across month boundaries, and moves
+   * focus to its button once the new month has rendered.
+   */
+  const moveNavigatedDate = useCallback(
+    (days: number) => {
+      setNavigatedDate((current) => {
+        const next = new Date(
+          current.getFullYear(),
+          current.getMonth(),
+          current.getDate() + days,
+        );
+
+        setViewYear(next.getFullYear());
+        setViewMonth(next.getMonth());
+        shouldMoveFocus.current = true;
+
+        return next;
+      });
+    },
+    [],
+  );
+
+  useEffect(() => {
+    if (!shouldMoveFocus.current) return;
+
+    shouldMoveFocus.current = false;
+    dayButtons.current[dateKey(navigatedDate)]?.focus();
+  });
+
+  /**
+   * Keyboard navigation for the day grid (defect register D-26): the arrow keys
+   * move by day and by week, Home and End move to the ends of the week, and
+   * PageUp and PageDown move by month.
+   */
+  function handleGridKeyDown(event: React.KeyboardEvent<HTMLDivElement>): void {
+    switch (event.key) {
+      case "ArrowLeft":
+        event.preventDefault();
+        moveNavigatedDate(-1);
+        return;
+      case "ArrowRight":
+        event.preventDefault();
+        moveNavigatedDate(1);
+        return;
+      case "ArrowUp":
+        event.preventDefault();
+        moveNavigatedDate(-7);
+        return;
+      case "ArrowDown":
+        event.preventDefault();
+        moveNavigatedDate(7);
+        return;
+      case "PageUp":
+        event.preventDefault();
+        moveNavigatedDate(-30);
+        return;
+      case "PageDown":
+        event.preventDefault();
+        moveNavigatedDate(30);
+        return;
+      default:
+    }
+  }
+
   const colorStyles =
     CALENDAR_COLOR_CLASSES[resolvedColor] ?? CALENDAR_COLOR_CLASSES.primary;
 
@@ -190,6 +271,18 @@ export const DateGrid = memo(function DateGrid({
     }));
   }, [cells]);
 
+  // The grid is exposed as rows of seven cells, which is the structure the
+  // `grid` role describes.
+  const weeks = useMemo(() => {
+    const rows: Array<typeof memoizedCells> = [];
+
+    for (let index = 0; index < memoizedCells.length; index += 7) {
+      rows.push(memoizedCells.slice(index, index + 7));
+    }
+
+    return rows;
+  }, [memoizedCells]);
+
   return (
     <div
       className={cn(
@@ -232,47 +325,94 @@ export const DateGrid = memo(function DateGrid({
               </button>
             </div>
 
-            {/* Day Grid */}
-            <div className="grid grid-cols-7 gap-1 text-center">
-              {DAYS_OF_WEEK.map((d) => (
-                <div
-                  key={d}
-                  className="text-[11px] font-bold tracking-wider text-foreground/50 uppercase py-1 mb-1">
-                  {d}
-                </div>
-              ))}
-              {memoizedCells.map(({ key, day }) =>
-                day === null ? (
-                  <div key={key} />
-                ) : (
-                  <button
-                    key={day}
-                    type="button"
-                    onClick={() => handleDayClick(day)}
-                    disabled={isDisabled(day)}
-                    className={cn(
-                      "w-full flex items-center justify-center font-medium transition-all duration-200",
-                      DATE_PICKER_CELL_SIZE_CLASS[resolvedSizeKey],
-                      radiusClass,
-                      isDisabled(day)
-                        ? "opacity-30 cursor-not-allowed text-foreground/50"
-                        : "active:scale-90",
-                      !isDisabled(day) &&
-                        !isSelected(day) &&
-                        !isToday(day) &&
-                        colorStyles.hover,
-                      isSelected(day) &&
-                        cn(colorStyles.bg, "font-semibold shadow-sm"),
-                      isToday(day) &&
-                        !isSelected(day) &&
-                        cn("border", colorStyles.border, colorStyles.text),
-                      !isSelected(day) && !isToday(day) && "text-foreground",
-                    )}>
-                    {day}
-                  </button>
-                ),
-              )}
-            </div>
+            {/* Day Grid. A table carries the month structure, so it reaches
+                assistive technology as rows of cells, and the calendar is a
+                single tab stop: only the navigated day is in the tab order and
+                the arrow keys move it (`COMP-049`). */}
+            <table
+              // biome-ignore lint/a11y/noNoninteractiveElementToInteractiveRole: an interactive month is exposed as a grid, which is the structure the date picker pattern asks for.
+              role="grid"
+              aria-label={`${MONTHS[viewMonth]} ${viewYear}`}
+              tabIndex={-1}
+              onKeyDown={handleGridKeyDown}
+              className="w-full table-fixed border-separate border-spacing-1 text-center">
+              <thead>
+                <tr>
+                  {DAYS_OF_WEEK.map((weekday) => (
+                    <th
+                      key={weekday}
+                      scope="col"
+                      className="text-[11px] font-bold tracking-wider text-foreground/50 uppercase py-1 mb-1">
+                      {weekday}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+
+              <tbody>
+                {weeks.map((week, weekIndex) => (
+                  <tr key={week[0]?.key ?? `week-${weekIndex}`}>
+                    {week.map(({ key, day }) =>
+                      day === null ? (
+                        <td key={key} />
+                      ) : (
+                        <td
+                          key={key}
+                          // biome-ignore lint/a11y/noNoninteractiveElementToInteractiveRole: a day is exposed as a grid cell, and the calendar is the grid its cells belong to.
+                          role="gridcell"
+                          tabIndex={-1}
+                          aria-selected={isSelected(day)}
+                          aria-current={isToday(day) ? "date" : undefined}>
+                          <button
+                            ref={(node) => {
+                              dayButtons.current[
+                                dateKey(new Date(viewYear, viewMonth, day))
+                              ] = node;
+                            }}
+                            type="button"
+                            tabIndex={
+                              navigatedDate.getFullYear() === viewYear &&
+                              navigatedDate.getMonth() === viewMonth &&
+                              navigatedDate.getDate() === day
+                                ? 0
+                                : -1
+                            }
+                            aria-label={`${day} ${MONTHS[viewMonth]} ${viewYear}`}
+                            onClick={() => handleDayClick(day)}
+                            disabled={isDisabled(day)}
+                            className={cn(
+                              "w-full flex items-center justify-center font-medium transition-all duration-200",
+                              DATE_PICKER_CELL_SIZE_CLASS[resolvedSizeKey],
+                              radiusClass,
+                              isDisabled(day)
+                                ? "opacity-30 cursor-not-allowed text-foreground/50"
+                                : "active:scale-90",
+                              !isDisabled(day) &&
+                                !isSelected(day) &&
+                                !isToday(day) &&
+                                colorStyles.hover,
+                              isSelected(day) &&
+                                cn(colorStyles.bg, "font-semibold shadow-sm"),
+                              isToday(day) &&
+                                !isSelected(day) &&
+                                cn(
+                                  "border",
+                                  colorStyles.border,
+                                  colorStyles.text,
+                                ),
+                              !isSelected(day) &&
+                                !isToday(day) &&
+                                "text-foreground",
+                            )}>
+                            {day}
+                          </button>
+                        </td>
+                      ),
+                    )}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         )}
 

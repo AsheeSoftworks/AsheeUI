@@ -374,6 +374,12 @@ export const Accordion = forwardRef<HTMLDivElement, AccordionProps>(
                 id={contentId}
                 aria-labelledby={headerId}
                 data-state={isOpen ? "open" : "closed"}
+                // A collapsed panel is only visually collapsed. `inert` is what
+                // takes its content out of the tab order and out of the
+                // accessibility tree, so a collapsed panel cannot be reached
+                // (`COMP-041`).
+                aria-hidden={isOpen ? undefined : true}
+                inert={!isOpen}
                 className={cn(
                   "w-full grid transition-[grid-template-rows,opacity] duration-250 ease-[cubic-bezier(0.16,1,0.3,1)]",
                   disableAnimation ? "transition-none" : "",

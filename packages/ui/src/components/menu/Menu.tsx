@@ -15,15 +15,20 @@ import {
 } from "@floating-ui/react";
 import {
   type ChangeEvent,
+  type KeyboardEvent,
   memo,
+  type MutableRefObject,
   type ReactNode,
+  useCallback,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from "react";
 import { CheckIcon } from "../../icons/CheckIcon";
 import { SearchIcon } from "../../icons/SearchIcon";
 import { useAsheeConfig } from "../../libs/context";
+import { useBodyScrollLock } from "../../libs/use-body-scroll-lock";
 import type { Color, Radius, Size, Variant } from "../../shared";
 import { cn } from "../../utils";
 import { resolveCascade, resolveRadiusKey } from "../../utils/resolve-token";
@@ -34,6 +39,11 @@ import {
   type MenuConfig,
   type MenuOption,
 } from "./menu-config";
+import {
+  edgeOptionIndex,
+  matchingOptionIndex,
+  nextOptionIndex,
+} from "./menu-navigation";
 
 /**
  * Menu props that extend MenuConfig with className.
@@ -166,6 +176,27 @@ export interface MenuComponentProps {
    * @default false
    */
   returnFocus?: boolean;
+
+  /**
+   * Index of the option that keyboard navigation treats as current.
+   * When omitted, the menu tracks the current option itself.
+   */
+  activeIndex?: number | null;
+
+  /**
+   * Called when the current option changes through keyboard navigation.
+   * A consumer that keeps focus in its own trigger uses this to mirror the
+   * current option in `aria-activedescendant`.
+   */
+  onActiveIndexChange?: (index: number | null) => void;
+
+  /**
+   * Whether the listbox accepts more than one selection.
+   * Exposed as `aria-multiselectable` on the option list.
+   *
+   * @default false
+   */
+  isMultiSelectable?: boolean;
 }
 
 /**
@@ -185,6 +216,27 @@ interface MenuOptionsListProps {
   activeItemColor: Color;
   radius: Radius;
   size: Size;
+  optionRefs: MutableRefObject<Array<HTMLButtonElement | null>>;
+  listboxId: string | undefined;
+  onOptionFocus: (index: number) => void;
+}
+
+/**
+ * Identifier of one option inside a menu listbox.
+ *
+ * The listbox id comes from the floating element, so the identifier a consumer
+ * publishes through `aria-activedescendant` and the identifier the option
+ * carries are built the same way from the same id.
+ *
+ * @param listboxId - Id of the option list container.
+ * @param index - Position of the option in the rendered list.
+ * @returns The option id, or `undefined` when the list has no id yet.
+ */
+export function menuOptionId(
+  listboxId: string | undefined,
+  index: number,
+): string | undefined {
+  return listboxId ? `${listboxId}-option-${index}` : undefined;
 }
 
 /**
@@ -206,13 +258,18 @@ const MenuOptionsList = memo(function MenuOptionsList({
   activeItemColor,
   radius,
   size,
+  optionRefs,
+  listboxId,
+  onOptionFocus,
 }: MenuOptionsListProps) {
   const isOptionSelected = (val: string | number) =>
     selectedValues.includes(val);
 
   if (filteredOptions.length === 0) {
     return (
-      <div className="px-3 py-4 text-xs text-foreground/70 text-center">
+      <div
+        role="status"
+        className="px-3 py-4 text-xs text-foreground/70 text-center">
         No options found
       </div>
     );
@@ -220,7 +277,7 @@ const MenuOptionsList = memo(function MenuOptionsList({
 
   return (
     <>
-      {filteredOptions.map((option) => {
+      {filteredOptions.map((option, index) => {
         const selected = isOptionSelected(option.value);
 
         if (renderOption) {
@@ -230,6 +287,14 @@ const MenuOptionsList = memo(function MenuOptionsList({
         return (
           <Button
             key={String(option.value)}
+            ref={(node) => {
+              optionRefs.current[index] = node;
+            }}
+            id={menuOptionId(listboxId, index)}
+            role="option"
+            aria-selected={selected}
+            aria-disabled={option.disabled ? true : undefined}
+            onFocus={() => onOptionFocus(index)}
             variant={selected ? activeItemVariant : itemVariant}
             color={selected ? activeItemColor : itemColor}
             radius={radius}
@@ -283,6 +348,9 @@ const MenuOptionsList = memo(function MenuOptionsList({
  * @param props.renderOption - Custom render function for options.
  * @param props.initialFocus - Initial focus target for the FloatingFocusManager.
  * @param props.returnFocus - Whether to return focus to the trigger after closing. Defaults to false.
+ * @param props.activeIndex - Index the menu treats as the current option. Defaults to the menu tracking it itself.
+ * @param props.onActiveIndexChange - Called when the current option changes through keyboard navigation.
+ * @param props.isMultiSelectable - Whether the option list accepts more than one selection. Defaults to false.
  *
  * @example
  * ```tsx
@@ -343,6 +411,9 @@ export const Menu = ({
   renderOption,
   initialFocus,
   returnFocus,
+  activeIndex: activeIndexProp,
+  onActiveIndexChange,
+  isMultiSelectable = false,
 }: MenuComponentProps) => {
   const config = useAsheeConfig();
   const [internalQuery, setInternalQuery] = useState("");
@@ -392,52 +463,10 @@ export const Menu = ({
     typeof document !== "undefined" ? document.body : null,
   );
 
-  // ─── 2. Scroll Lock ──────────────────────────────────────────────────────
-
-  // Lock body scroll when the dropdown is open.
-  useEffect(() => {
-    if (!isOpen || !resolvedLockScroll) return;
-
-    // Capture the current scroll offset before locking. Setting
-    // `position: fixed` on <body> makes it ignore the page's scroll
-    // position entirely — without compensating with `top: -scrollY`, the
-    // page visually snaps to the very top the instant the lock applies.
-    // That jump moves the trigger button out from under the menu (which
-    // was already positioned based on its pre-lock location), and since
-    // the jump isn't a real scroll/resize event, Floating UI's autoUpdate
-    // never notices to reposition — leaving the menu visibly detached
-    // from a now off-screen trigger.
-    const scrollY = window.scrollY;
-
-    const originalPosition = document.body.style.position;
-    const originalTop = document.body.style.top;
-    const originalLeft = document.body.style.left;
-    const originalRight = document.body.style.right;
-    const originalWidth = document.body.style.width;
-    const originalOverflow = document.body.style.overflow;
-
-    document.body.style.position = "fixed";
-    document.body.style.top = `-${scrollY}px`;
-    document.body.style.left = "0";
-    document.body.style.right = "0";
-    document.body.style.width = "100%";
-    document.body.style.overflow = "hidden";
-
-    return () => {
-      document.body.style.position = originalPosition;
-      document.body.style.top = originalTop;
-      document.body.style.left = originalLeft;
-      document.body.style.right = originalRight;
-      document.body.style.width = originalWidth;
-      document.body.style.overflow = originalOverflow;
-
-      // Restore the actual scroll position. Simply clearing the styles
-      // above leaves the browser at scrollY 0 (where the fixed-position
-      // trick visually left it) — this scrolls back to where the user
-      // actually was.
-      window.scrollTo(0, scrollY);
-    };
-  }, [isOpen, resolvedLockScroll]);
+  // Scroll Lock. The lock lives in the shared overlay mechanism so that a
+  // dropdown opened on top of another overlay joins that overlay's lock,
+  // instead of capturing and restoring the body styles on its own.
+  useBodyScrollLock(isOpen && resolvedLockScroll);
 
   // ─── 3. Filter Options ──────────────────────────────────────────────────
 
@@ -451,6 +480,175 @@ export const Menu = ({
       opt.label.toLowerCase().includes(activeQuery.toLowerCase()),
     );
   }, [options, isSearch, activeQuery]);
+
+  // Current option and keyboard navigation. The current option is the option
+  // arrow keys act on; it is separate from the selection, and a consumer that
+  // keeps focus in its own trigger mirrors it through
+  // `aria-activedescendant`.
+
+  const optionRefs = useRef<Array<HTMLButtonElement | null>>([]);
+  const listNodeRef = useRef<HTMLDivElement | null>(null);
+  const typeaheadBuffer = useRef("");
+  const typeaheadTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [internalActiveIndex, setInternalActiveIndex] = useState<number | null>(
+    null,
+  );
+
+  /**
+   * The option list container is also the floating element, so the ref the
+   * parent supplied for positioning and the ref used to decide whether focus
+   * is inside the list are attached to the same node.
+   */
+  const setListNode = useCallback(
+    (node: HTMLDivElement | null) => {
+      listNodeRef.current = node;
+      setFloatingRef(node);
+    },
+    [setFloatingRef],
+  );
+
+  const trackedActiveIndex =
+    activeIndexProp !== undefined ? activeIndexProp : internalActiveIndex;
+
+  // An index left over from a longer list must not point at a different option
+  // once the search query has narrowed the list.
+  const currentIndex =
+    trackedActiveIndex !== null &&
+    trackedActiveIndex >= 0 &&
+    trackedActiveIndex < filteredOptions.length
+      ? trackedActiveIndex
+      : null;
+
+  const setCurrentIndex = useCallback(
+    (index: number | null) => {
+      setInternalActiveIndex(index);
+      onActiveIndexChange?.(index);
+    },
+    [onActiveIndexChange],
+  );
+
+  /**
+   * Keeps the current option and the focused option the same option.
+   *
+   * Focus can arrive on an option without a key press (the list takes focus
+   * when it opens, or a pointer hovers and focuses an option), and arrow keys
+   * must continue from wherever focus is.
+   */
+  const handleOptionFocus = useCallback(
+    (index: number) => {
+      setCurrentIndex(index);
+    },
+    [setCurrentIndex],
+  );
+
+  /**
+   * Moves focus together with the current option, but only while focus is
+   * already inside the list. A consumer that keeps focus in its trigger reads
+   * the current option from `aria-activedescendant`, so focus must stay there.
+   */
+  const focusCurrentOption = useCallback((index: number) => {
+    const node = optionRefs.current[index];
+    if (node && listNodeRef.current?.contains(document.activeElement)) {
+      node.focus();
+    }
+  }, []);
+
+  /**
+   * Makes an option the current one, and moves focus with it while focus is
+   * already inside the list.
+   */
+  const applyCurrentIndex = useCallback(
+    (index: number | null) => {
+      if (index === null) return;
+
+      setCurrentIndex(index);
+      focusCurrentOption(index);
+    },
+    [focusCurrentOption, setCurrentIndex],
+  );
+
+  const moveCurrent = useCallback(
+    (delta: number) => {
+      applyCurrentIndex(nextOptionIndex(filteredOptions, currentIndex, delta));
+    },
+    [applyCurrentIndex, currentIndex, filteredOptions],
+  );
+
+  const moveCurrentToEdge = useCallback(
+    (edge: "first" | "last") => {
+      applyCurrentIndex(edgeOptionIndex(filteredOptions, edge));
+    },
+    [applyCurrentIndex, filteredOptions],
+  );
+
+  const runTypeahead = useCallback(
+    (key: string) => {
+      typeaheadBuffer.current += key;
+
+      applyCurrentIndex(
+        matchingOptionIndex(filteredOptions, typeaheadBuffer.current),
+      );
+
+      if (typeaheadTimer.current) clearTimeout(typeaheadTimer.current);
+      typeaheadTimer.current = setTimeout(() => {
+        typeaheadBuffer.current = "";
+      }, 500);
+    },
+    [applyCurrentIndex, filteredOptions],
+  );
+
+  useEffect(() => {
+    return () => {
+      if (typeaheadTimer.current) clearTimeout(typeaheadTimer.current);
+    };
+  }, []);
+
+  /**
+   * Keyboard interaction for the option list (defect register D-26).
+   *
+   * Arrow keys move the current option and wrap around, Home and End jump to
+   * the list edges, and typed characters match an option by its label.
+   * Keys typed into the search field belong to the search field, except for
+   * the arrow keys that move into the list.
+   */
+  const handleListKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
+    const target = event.target as HTMLElement;
+    const isTypingField =
+      target.tagName === "INPUT" || target.tagName === "TEXTAREA";
+
+    if (isTypingField && event.key !== "ArrowDown" && event.key !== "ArrowUp") {
+      return;
+    }
+
+    switch (event.key) {
+      case "ArrowDown":
+        event.preventDefault();
+        moveCurrent(1);
+        return;
+      case "ArrowUp":
+        event.preventDefault();
+        moveCurrent(-1);
+        return;
+      case "Home":
+        event.preventDefault();
+        moveCurrentToEdge("first");
+        return;
+      case "End":
+        event.preventDefault();
+        moveCurrentToEdge("last");
+        return;
+      default:
+        if (
+          !isTypingField &&
+          event.key.length === 1 &&
+          !event.metaKey &&
+          !event.ctrlKey &&
+          !event.altKey
+        ) {
+          runTypeahead(event.key);
+        }
+    }
+  };
 
   // ─── 4. Resolve Visual Config Values ────────────────────────────────────
 
@@ -496,6 +694,12 @@ export const Menu = ({
     FALLBACK_MENU_CONFIG.size,
   );
 
+  // The list keyboard handler is chained with the dismissal handler that the
+  // interaction hooks contribute, so Escape still closes the dropdown.
+  const floatingProps = getFloatingProps({ onKeyDown: handleListKeyDown });
+  const listboxId =
+    typeof floatingProps.id === "string" ? floatingProps.id : undefined;
+
   if (!isOpen) return null;
 
   const menuContent = (
@@ -505,7 +709,7 @@ export const Menu = ({
       initialFocus={initialFocus}
       returnFocus={returnFocus}>
       <div
-        ref={setFloatingRef}
+        ref={setListNode}
         style={{ ...floatingStyles }}
         className={cn(
           // z-index is applied through `floatingStyles`, derived from the
@@ -525,7 +729,11 @@ export const Menu = ({
             : "invisible opacity-0 pointer-events-none",
           menuProps?.className,
         )}
-        {...getFloatingProps()}>
+        // The option list is always a listbox. The interaction hook supplies
+        // the same role; stating it here keeps the list markup self-describing.
+        role="listbox"
+        aria-multiselectable={isMultiSelectable ? true : undefined}
+        {...floatingProps}>
         {/* Search Input Bar */}
         {isSearch && (
           <div className="w-full p-1 mb-1 sticky top-0 z-10 border-b border-border">
@@ -562,6 +770,9 @@ export const Menu = ({
           activeItemColor={resolvedActiveColor}
           radius={resolvedRadiusKey}
           size={resolvedSize}
+          optionRefs={optionRefs}
+          listboxId={listboxId}
+          onOptionFocus={handleOptionFocus}
         />
 
         {belowList && (

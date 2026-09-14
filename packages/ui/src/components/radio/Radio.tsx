@@ -6,7 +6,7 @@
  */
 "use client";
 
-import { forwardRef, type ReactNode, useId } from "react";
+import { forwardRef, type ReactNode, useCallback, useId, useState } from "react";
 import { useAsheeConfig } from "../../libs/context";
 import type { Color } from "../../shared";
 import { cn } from "../../utils";
@@ -189,6 +189,7 @@ export const RadioGroup = forwardRef<HTMLDivElement, RadioGroupProps>(
       children,
       name,
       value,
+      defaultValue,
       onChange,
       size,
       color,
@@ -211,6 +212,29 @@ export const RadioGroup = forwardRef<HTMLDivElement, RadioGroupProps>(
     const generatedId = useId();
     const groupName = name ?? generatedId;
 
+    // Controlled and uncontrolled selection: a `value` prop owns the selection,
+    // and without one the group keeps the selected value itself so that an
+    // uncontrolled group with a `defaultValue` can still select (`REQ-087`).
+    const [uncontrolledValue, setUncontrolledValue] = useState(defaultValue);
+    const isSelectionControlled = value !== undefined;
+    const groupValue = isSelectionControlled ? value : uncontrolledValue;
+
+    const handleValueChange = useCallback(
+      (nextValue: string) => {
+        if (!isSelectionControlled) setUncontrolledValue(nextValue);
+        onChange?.(nextValue);
+      },
+      [isSelectionControlled, onChange],
+    );
+
+    const labelId = label ? `${generatedId}-label` : undefined;
+    const descriptionId = description
+      ? `${generatedId}-description`
+      : undefined;
+    const messageId = message ? `${generatedId}-message` : undefined;
+    const describedBy =
+      [descriptionId, messageId].filter(Boolean).join(" ") || undefined;
+
     const resolvedStatus = status ?? FALLBACK_RADIO_CONFIG.status;
 
     const resolvedLabelAlign = resolveCascade<LabelAlign>(
@@ -223,17 +247,21 @@ export const RadioGroup = forwardRef<HTMLDivElement, RadioGroupProps>(
     return (
       <FieldShell
         id={generatedId}
+        htmlFor={null}
+        labelId={labelId}
         label={label}
         labelAlign={resolvedLabelAlign}
         description={description}
+        descriptionId={descriptionId}
         message={message}
+        messageId={messageId}
         status={resolvedStatus}
         required={required}>
         <RadioContext.Provider
           value={{
             name: groupName,
-            value,
-            onChange,
+            value: groupValue,
+            onChange: handleValueChange,
             size,
             color,
             variant,
@@ -243,6 +271,8 @@ export const RadioGroup = forwardRef<HTMLDivElement, RadioGroupProps>(
           <div
             ref={ref}
             role="radiogroup"
+            aria-labelledby={labelId}
+            aria-describedby={describedBy}
             className={cn(
               "flex",
               orientation === "vertical"

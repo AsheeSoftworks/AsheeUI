@@ -7,15 +7,19 @@
  */
 "use client";
 
+import { FloatingFocusManager, FloatingPortal } from "@floating-ui/react";
 import {
   forwardRef,
   type HTMLAttributes,
   type ReactNode,
   useCallback,
   useEffect,
+  useRef,
   useState,
 } from "react";
 import { useAsheeConfig } from "../../libs/context";
+import { useBodyScrollLock } from "../../libs/use-body-scroll-lock";
+import { useDialogOverlay } from "../../libs/use-dialog-overlay";
 import { cn } from "../../utils";
 import { resolveCascade, resolveClassKey } from "../../utils/resolve-token";
 import { ASHEE_GLOBAL_LAYER } from "../../utils/stacking";
@@ -97,9 +101,13 @@ export interface DrawerProps extends BaseDrawerProps {
  * the standard AsheeUI cascade: prop, component config, global theme
  * defaults, and the built-in fallback.
  *
- * The component automatically handles accessibility attributes including
- * role="dialog", aria-modal, and proper focus management. It manages
- * its own animation states to prevent transition flashes.
+ * The drawer renders in a portal with dialog semantics and locks body scroll
+ * while it is open. Focus moves into the drawer, cannot leave it, and returns
+ * to the element that was focused before it opened. The dialog element is the
+ * container that receives the consumer's attributes, so a consumer names the
+ * drawer with the standard `aria-label` or `aria-labelledby` attribute.
+ * The component manages its own animation states to prevent transition
+ * flashes.
  *
  * @param props - Drawer configuration options and HTML div props.
  * @param props.isOpen - Whether the drawer is open.
@@ -203,6 +211,28 @@ export const Drawer = forwardRef<HTMLDivElement, DrawerProps>(
         return () => clearTimeout(timer);
       }
     }, [isOpen]);
+
+    // Overlay behaviour: the dialog renders in a portal, manages focus while it
+    // is open, and stops the page behind it from scrolling (`COMP-036`).
+    const { context, setDialogRef } = useDialogOverlay(isOpen);
+    const dialogRef = useRef<HTMLDivElement | null>(null);
+
+    // The forwarded ref stays on the dialog container for consumers, while the
+    // same element also feeds the dialog context and the initial focus target.
+    const registerDialog = useCallback(
+      (node: HTMLDivElement | null) => {
+        dialogRef.current = node;
+        setDialogRef(node);
+        if (typeof ref === "function") {
+          ref(node);
+        } else if (ref) {
+          ref.current = node;
+        }
+      },
+      [ref, setDialogRef],
+    );
+
+    useBodyScrollLock(isOpen);
 
     // ─── 1. Token Resolvers ──────────────────────────────────────────────────
 
@@ -308,42 +338,55 @@ export const Drawer = forwardRef<HTMLDivElement, DrawerProps>(
     if (renderState === "unmounted") return null;
 
     return (
-      <div
-        ref={ref}
-        role="dialog"
-        aria-modal="true"
-        className={cn(
-          "fixed inset-0 flex w-full h-full",
-          containerPlacementClass,
-          className,
-        )}
-        style={{ zIndex: ASHEE_GLOBAL_LAYER.overlay }}
-        {...props}>
-        {/* Backdrop Overlay */}
-        <button
-          type="button"
-          onClick={shouldCloseOnOverlay ? onClose : undefined}
-          className={cn(
-            "absolute inset-0",
-            overlayClassName,
-            backdropAnimationClass,
-          )}
-        />
+      <FloatingPortal>
+        <FloatingFocusManager
+          context={context}
+          modal
+          initialFocus={dialogRef}
+          returnFocus
+          closeOnFocusOut={false}>
+          <div
+            ref={registerDialog}
+            role="dialog"
+            aria-modal="true"
+            tabIndex={-1}
+            className={cn(
+              "fixed inset-0 flex w-full h-full outline-none",
+              containerPlacementClass,
+              className,
+            )}
+            style={{ zIndex: ASHEE_GLOBAL_LAYER.overlay }}
+            {...props}>
+            {/* Backdrop Overlay. It is decorative: it dismisses the drawer on a
+                pointer press and carries no accessible name, so it stays out of
+                the accessibility tree and out of the tab order. */}
+            <div
+              data-ashee-backdrop=""
+              aria-hidden="true"
+              onClick={shouldCloseOnOverlay ? onClose : undefined}
+              className={cn(
+                "absolute inset-0",
+                overlayClassName,
+                backdropAnimationClass,
+              )}
+            />
 
-        {/* Drawer Content */}
-        <div
-          style={style}
-          className={cn(
-            "relative z-10 flex flex-col text-foreground shadow-2xl border-border",
-            borderPlacementClass,
-            widthClass,
-            heightClass,
-            contentClassName,
-            animationClass,
-          )}>
-          {children}
-        </div>
-      </div>
+            {/* Drawer Content */}
+            <div
+              style={style}
+              className={cn(
+                "relative z-10 flex flex-col text-foreground shadow-2xl border-border",
+                borderPlacementClass,
+                widthClass,
+                heightClass,
+                contentClassName,
+                animationClass,
+              )}>
+              {children}
+            </div>
+          </div>
+        </FloatingFocusManager>
+      </FloatingPortal>
     );
   },
 );

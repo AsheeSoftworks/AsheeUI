@@ -44,6 +44,20 @@ export interface FieldShellProps {
   id: string;
 
   /**
+   * ID for the label element.
+   * A container that groups several controls (a radio group, for example)
+   * references the visible label with `aria-labelledby` instead of `htmlFor`.
+   */
+  labelId?: string;
+
+  /**
+   * ID of the control the label describes.
+   * Defaults to `id`. Pass `null` when the label describes a group of controls
+   * rather than one control, so no reference is emitted.
+   */
+  htmlFor?: string | null;
+
+  /**
    * The label text for the field.
    */
   label?: string;
@@ -144,6 +158,8 @@ export interface FieldShellProps {
  */
 export function FieldShell({
   id,
+  labelId,
+  htmlFor,
   label,
   labelAlign = "left",
   description,
@@ -155,11 +171,14 @@ export function FieldShell({
   isLoading,
   children,
 }: FieldShellProps) {
+  const labelTarget = htmlFor === null ? undefined : (htmlFor ?? id);
+
   return (
     <div className="flex flex-col gap-1.5">
       {label && (
         <label
-          htmlFor={id}
+          id={labelId}
+          htmlFor={labelTarget}
           className={cn(
             "text-sm font-medium text-foreground",
             LABEL_ALIGN_CLASS[labelAlign],

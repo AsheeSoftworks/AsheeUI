@@ -106,7 +106,8 @@ export interface MultiSelectProps
 
   /**
    * Controlled selected values.
-   * Array of selected option values.
+   * Array of selected option values. When omitted, the component keeps the
+   * accumulated selection itself and reports every change through `onChange`.
    */
   value?: (string | number)[];
 
@@ -363,6 +364,15 @@ export const MultiSelect = forwardRef<HTMLButtonElement, MultiSelectProps>(
     const [isOpen, setIsOpen] = useState(false);
     const [searchQuery, setSearchQuery] = useState("");
 
+    // Controlled and uncontrolled selection: a `value` prop owns the selection,
+    // and without one the component keeps the accumulated selection itself and
+    // reports every change through `onChange` (`REQ-087`).
+    const [internalValues, setInternalValues] = useState<(string | number)[]>(
+      [],
+    );
+    const isSelectionControlled = value !== undefined;
+    const selectionValues = value ?? internalValues;
+
     // ─── Token Resolvers ──────────────────────────────────────────────────
 
     const resolvedSizeKey = resolveCascade<FieldSizeKey>(
@@ -484,11 +494,8 @@ export const MultiSelect = forwardRef<HTMLButtonElement, MultiSelectProps>(
     // Controlled or Custom Chip Selection Determination
     const activeChips = useMemo(() => {
       if (chipOptions !== undefined) return chipOptions;
-      if (Array.isArray(value)) {
-        return options.filter((opt) => value.includes(opt.value));
-      }
-      return [];
-    }, [chipOptions, value, options]);
+      return options.filter((opt) => selectionValues.includes(opt.value));
+    }, [chipOptions, selectionValues, options]);
 
     /**
      * Checks if an option is currently selected.
@@ -512,15 +519,24 @@ export const MultiSelect = forwardRef<HTMLButtonElement, MultiSelectProps>(
         if (handleAddChip || handleRemoveChip) {
           if (selected) handleRemoveChip?.(option.value);
           else handleAddChip?.(option);
-        } else if (onChange) {
-          const currentValues = value ?? [];
-          const nextValues = selected
-            ? currentValues.filter((v) => v !== option.value)
-            : [...currentValues, option.value];
-          onChange(nextValues);
+          return;
         }
+
+        const nextValues = selected
+          ? selectionValues.filter((v) => v !== option.value)
+          : [...selectionValues, option.value];
+
+        if (!isSelectionControlled) setInternalValues(nextValues);
+        onChange?.(nextValues);
       },
-      [isOptionSelected, handleAddChip, handleRemoveChip, onChange, value],
+      [
+        isOptionSelected,
+        handleAddChip,
+        handleRemoveChip,
+        isSelectionControlled,
+        onChange,
+        selectionValues,
+      ],
     );
 
     /**
@@ -531,11 +547,20 @@ export const MultiSelect = forwardRef<HTMLButtonElement, MultiSelectProps>(
       (val: string | number) => {
         if (handleRemoveChip) {
           handleRemoveChip(val);
-        } else if (onChange && Array.isArray(value)) {
-          onChange(value.filter((v) => v !== val));
+          return;
         }
+
+        const nextValues = selectionValues.filter((v) => v !== val);
+
+        if (!isSelectionControlled) setInternalValues(nextValues);
+        onChange?.(nextValues);
       },
-      [handleRemoveChip, onChange, value],
+      [
+        handleRemoveChip,
+        isSelectionControlled,
+        onChange,
+        selectionValues,
+      ],
     );
 
     const selectedValues = useMemo(
@@ -550,10 +575,36 @@ export const MultiSelect = forwardRef<HTMLButtonElement, MultiSelectProps>(
       return InputLabel;
     }, [activeChips.length, InputLabel]);
 
+    // The field label, the description and the validation message all belong to
+    // the trigger, which is the control the label describes (`TEST-026`).
+    const descriptionId = description ? `${fieldId}-description` : undefined;
+    const messageId = message ? `${fieldId}-message` : undefined;
+    const describedBy =
+      [descriptionId, messageId].filter(Boolean).join(" ") || undefined;
+
+    /**
+     * Handles keys pressed on the trigger. Arrow keys open the popup, which is
+     * the keyboard entry point for a listbox; Enter and Space open it through
+     * the button's own activation.
+     */
+    const handleTriggerKeyDown = useCallback(
+      (event: React.KeyboardEvent<HTMLButtonElement>) => {
+        if (disabled) return;
+
+        if (event.key === "ArrowDown" || event.key === "ArrowUp") {
+          event.preventDefault();
+          setIsOpen(true);
+        }
+      },
+      [disabled],
+    );
+
     // ─── Render ─────────────────────────────────────────────────────────
 
     // Get reference props from Floating UI
-    const referenceProps = getReferenceProps();
+    const referenceProps = getReferenceProps({
+      onKeyDown: handleTriggerKeyDown,
+    });
 
     return (
       <FieldShell
@@ -561,9 +612,9 @@ export const MultiSelect = forwardRef<HTMLButtonElement, MultiSelectProps>(
         label={label}
         labelAlign={resolvedLabelAlign}
         description={description}
-        descriptionId={description ? `${fieldId}-description` : undefined}
+        descriptionId={descriptionId}
         message={message}
-        messageId={message ? `${fieldId}-message` : undefined}
+        messageId={messageId}
         status={resolvedStatus}
         required={required}
         isLoading={isLoading}>
@@ -581,6 +632,7 @@ export const MultiSelect = forwardRef<HTMLButtonElement, MultiSelectProps>(
                     node;
               }}
               type="button"
+              id={fieldId}
               variant={resolvedVariantKey}
               color={resolvedStatusColor}
               size={resolvedSizeKey}
@@ -592,11 +644,7 @@ export const MultiSelect = forwardRef<HTMLButtonElement, MultiSelectProps>(
               aria-expanded={isOpen}
               aria-haspopup="listbox"
               aria-invalid={resolvedStatus === "error"}
-              aria-describedby={
-                [description ? `${fieldId}-description` : undefined]
-                  .filter(Boolean)
-                  .join(" ") || undefined
-              }
+              aria-describedby={describedBy}
               className={cn(
                 "font-normal text-left justify-between",
                 STATUS_BORDER_CLASS[resolvedStatus],
@@ -637,6 +685,8 @@ export const MultiSelect = forwardRef<HTMLButtonElement, MultiSelectProps>(
               getFloatingProps={getFloatingProps}
               setFloatingRef={refs.setFloating}
               isPositioned={isPositioned}
+              isMultiSelectable
+              returnFocus
               options={options}
               selectedValues={selectedValues}
               onOptionSelect={handleOptionSelect}

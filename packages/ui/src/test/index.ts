@@ -7,6 +7,7 @@
 export * from "./a11y";
 export * from "./config";
 export * from "./interactions";
+export * from "./motion";
 export * from "./overlay";
 export * from "./render";
 export * from "./source-scan";

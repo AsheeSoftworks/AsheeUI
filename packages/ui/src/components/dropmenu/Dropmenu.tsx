@@ -403,9 +403,35 @@ export const Dropmenu = forwardRef<HTMLButtonElement, DropmenuProps>(
       [value],
     );
 
+    // The field label, the description and the validation message all belong to
+    // the trigger, which is the control the label describes (`TEST-026`).
+    const descriptionId = description ? `${fieldId}-description` : undefined;
+    const messageId = message ? `${fieldId}-message` : undefined;
+    const describedBy =
+      [descriptionId, messageId].filter(Boolean).join(" ") || undefined;
+
+    /**
+     * Handles keys pressed on the trigger. Arrow keys open the popup, which is
+     * the keyboard entry point for a listbox; Enter and Space open it through
+     * the button's own activation.
+     */
+    const handleTriggerKeyDown = useCallback(
+      (event: React.KeyboardEvent<HTMLButtonElement>) => {
+        if (disabled) return;
+
+        if (event.key === "ArrowDown" || event.key === "ArrowUp") {
+          event.preventDefault();
+          setIsOpen(true);
+        }
+      },
+      [disabled],
+    );
+
     // ─── Render ─────────────────────────────────────────────────────────
 
-    const referenceProps = getReferenceProps();
+    const referenceProps = getReferenceProps({
+      onKeyDown: handleTriggerKeyDown,
+    });
 
     return (
       <FieldShell
@@ -413,9 +439,9 @@ export const Dropmenu = forwardRef<HTMLButtonElement, DropmenuProps>(
         label={label}
         labelAlign={resolvedLabelAlign}
         description={description}
-        descriptionId={description ? `${fieldId}-description` : undefined}
+        descriptionId={descriptionId}
         message={message}
-        messageId={message ? `${fieldId}-message` : undefined}
+        messageId={messageId}
         status={resolvedStatus}
         required={required}
         isLoading={isLoading}>
@@ -429,6 +455,7 @@ export const Dropmenu = forwardRef<HTMLButtonElement, DropmenuProps>(
                 (ref as React.RefObject<HTMLButtonElement | null>).current =
                   node;
             }}
+            id={fieldId}
             type="button"
             variant={resolvedVariantKey}
             color={resolvedColorKey}
@@ -441,11 +468,7 @@ export const Dropmenu = forwardRef<HTMLButtonElement, DropmenuProps>(
             aria-expanded={isOpen}
             aria-haspopup="listbox"
             aria-invalid={resolvedStatus === "error"}
-            aria-describedby={
-              [description ? `${fieldId}-description` : undefined]
-                .filter(Boolean)
-                .join(" ") || undefined
-            }
+            aria-describedby={describedBy}
             className={cn(
               "font-normal text-left justify-between",
               statusClass,
@@ -484,6 +507,7 @@ export const Dropmenu = forwardRef<HTMLButtonElement, DropmenuProps>(
             getFloatingProps={getFloatingProps}
             setFloatingRef={refs.setFloating}
             isPositioned={isPositioned}
+            returnFocus
             options={options}
             selectedValues={selectedValues}
             onOptionSelect={handleOptionSelect}

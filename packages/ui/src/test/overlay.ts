@@ -44,6 +44,26 @@ export function expectNotPortalled(
 }
 
 /**
+ * Query the decorative backdrop of the overlay that is currently open.
+ *
+ * A backdrop carries no accessible role, because it is hidden from assistive
+ * technology, so it is located through the data attribute the overlay
+ * components mark it with instead of through a role query.
+ *
+ * @returns The rendered backdrop element.
+ * @throws When no overlay backdrop is rendered.
+ */
+export function getOverlayBackdrop(): HTMLElement {
+  const backdrop = document.querySelector<HTMLElement>("[data-ashee-backdrop]");
+
+  if (!backdrop) {
+    throw new Error("No overlay backdrop is rendered.");
+  }
+
+  return backdrop;
+}
+
+/**
  * Query overlay content by accessible role anywhere in the document.
  *
  * @param role - Accessible role (or an options object).

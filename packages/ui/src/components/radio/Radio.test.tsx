@@ -1,12 +1,16 @@
 import { useState } from "react";
 import { describe, expect, it, vi } from "vitest";
-import { createUser, expectState, pressKey, renderWithProvider } from "../../test";
+import {
+  createUser,
+  expectDescribedBy,
+  expectState,
+  pressKey,
+  renderWithProvider,
+} from "../../test";
 import { Radio, RadioGroup } from ".";
 
 /**
- * Controlled harness, which is the usage the component documents. An
- * uncontrolled group cannot select anything (defect register D-16), so
- * selection is only observable with a controlled parent.
+ * Controlled harness, which is the usage the component documents.
  */
 function ControlledGroup({ onChange }: { onChange?: (value: string) => void }) {
   const [value, setValue] = useState("basic");
@@ -96,19 +100,53 @@ describe("Radio", () => {
   });
 
   // Defect register (M1, D-16): `defaultValue` is documented as the
-  // uncontrolled initial value, but the group keeps no internal selection
-  // state, so an uncontrolled group can never select anything.
-  it.todo(
-    "selects from an uncontrolled defaultValue without a controlled parent (defect register D-16)",
-  );
+  // uncontrolled initial value, and the group now keeps the selection itself.
+  it("selects from an uncontrolled defaultValue without a controlled parent", async () => {
+    const user = createUser();
+    const onChange = vi.fn();
+    const { getByRole } = renderWithProvider(
+      <RadioGroup
+        label="Plan"
+        name="plan"
+        defaultValue="basic"
+        onChange={onChange}>
+        <Radio value="basic" label="Basic" />
+        <Radio value="pro" label="Pro" />
+      </RadioGroup>,
+    );
+
+    expect(getByRole("radio", { name: "Basic" })).toBeChecked();
+
+    await user.click(getByRole("radio", { name: "Pro" }));
+
+    expect(onChange).toHaveBeenCalledWith("pro");
+    expect(getByRole("radio", { name: "Pro" })).toBeChecked();
+    expect(getByRole("radio", { name: "Basic" })).not.toBeChecked();
+
+    await user.click(getByRole("radio", { name: "Basic" }));
+
+    expect(getByRole("radio", { name: "Basic" })).toBeChecked();
+  });
 
   // Defect register (M1, D-15): the group label is rendered by `FieldShell` as a
-  // `label` element, but the `radiogroup` container carries no `aria-label` or
-  // `aria-labelledby`, so assistive technology sees an unnamed group.
+  // `label` element, and the `radiogroup` container now references it.
   // Note also that arrow-key navigation between radios is not asserted here:
   // jsdom does not implement native radio group arrow navigation, which is a
   // DOM-emulator limitation rather than a framework behaviour (`TEST-031`).
-  it.todo(
-    "exposes the group label as the radiogroup accessible name (defect register D-15)",
-  );
+  it("exposes the group label as the radiogroup accessible name", () => {
+    const { getByRole, getByText } = renderWithProvider(
+      <RadioGroup
+        label="Plan"
+        name="plan"
+        description="Choose a plan"
+        message="Required">
+        <Radio value="basic" label="Basic" />
+      </RadioGroup>,
+    );
+    const group = getByRole("radiogroup");
+
+    expect(group).toHaveAccessibleName("Plan");
+    expectDescribedBy(group, getByText("Choose a plan"));
+    expectDescribedBy(group, getByText("Required"));
+  });
 });

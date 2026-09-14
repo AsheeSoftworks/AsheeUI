@@ -1,5 +1,11 @@
 import { describe, expect, it, vi } from "vitest";
-import { createUser, expectState, pressKey, renderWithProvider } from "../../test";
+import {
+  createUser,
+  expectState,
+  pressKey,
+  renderWithProvider,
+  screen,
+} from "../../test";
 import { Accordion } from "./Accordion";
 
 const ITEMS = [
@@ -108,11 +114,40 @@ describe("Accordion", () => {
     expect(trigger).toHaveAttribute("aria-expanded", "false");
   });
 
-  // Defect register (M1, D-10): a collapsed panel keeps its content mounted
+  // Defect register (M1, D-10): a collapsed panel kept its content mounted
   // with only `grid-rows-[0fr] opacity-0 pointer-events-none`, so interactive
-  // content inside a collapsed panel stays in the focus order and in the
+  // content inside a collapsed panel stayed in the focus order and in the
   // accessibility tree.
-  it.todo(
-    "removes collapsed panel content from the focus order and the accessibility tree (defect register D-10)",
-  );
+  it("removes collapsed panel content from the accessibility tree", async () => {
+    const user = createUser();
+    const { getByRole, container } = renderWithProvider(
+      <Accordion
+        items={[
+          {
+            id: "first",
+            title: "First",
+            content: <button type="button">Inside the panel</button>,
+          },
+        ]}
+      />,
+    );
+
+    expect(screen.queryByRole("button", { name: "Inside the panel" })).toBeNull();
+
+    const collapsedPanel = container.querySelector('[data-state="closed"]');
+
+    expect(collapsedPanel).toHaveAttribute("inert");
+    expect(collapsedPanel).toHaveAttribute("aria-hidden", "true");
+
+    await user.click(getByRole("button", { name: /First/ }));
+
+    expect(
+      screen.getByRole("button", { name: "Inside the panel" }),
+    ).toBeInTheDocument();
+
+    const openPanel = container.querySelector('[data-state="open"]');
+
+    expect(openPanel).not.toHaveAttribute("inert");
+    expect(openPanel).not.toHaveAttribute("aria-hidden");
+  });
 });

@@ -10,6 +10,7 @@
 
 import { forwardRef, isValidElement, type ReactNode, useMemo } from "react";
 import { useAsheeConfig } from "../../libs/context";
+import { usePrefersReducedMotion } from "../../libs/use-prefers-reduced-motion";
 import { cn } from "../../utils";
 import { resolveCascade } from "../../utils/resolve-token";
 import {
@@ -180,6 +181,10 @@ export const Marquee = forwardRef<HTMLDivElement, MarqueeProps>(
 
     const isVertical = resolvedAxis === "y";
 
+    // The loop is continuous motion, so it yields to the reduced-motion
+    // preference and the content is then shown standing still (`REQ-089`).
+    const prefersReducedMotion = usePrefersReducedMotion();
+
     const renderedSets = useMemo(
       () =>
         [children, children].map((set, setIndex) => {
@@ -242,12 +247,16 @@ export const Marquee = forwardRef<HTMLDivElement, MarqueeProps>(
           )}
           style={{
             gap: resolvedGap,
-            animationName: isVertical ? "marquee-y" : "marquee-x",
-            animationDuration: `${durationSeconds}s`,
-            animationTimingFunction: "linear",
-            animationIterationCount: "infinite",
-            animationDirection:
-              resolvedDirection === "reverse" ? "reverse" : "normal",
+            ...(prefersReducedMotion
+              ? { animation: "none" }
+              : {
+                  animationName: isVertical ? "marquee-y" : "marquee-x",
+                  animationDuration: `${durationSeconds}s`,
+                  animationTimingFunction: "linear",
+                  animationIterationCount: "infinite",
+                  animationDirection:
+                    resolvedDirection === "reverse" ? "reverse" : "normal",
+                }),
           }}>
           {renderedSets}
         </div>
