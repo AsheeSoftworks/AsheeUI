@@ -1,6 +1,6 @@
 /**
- * TextArea component for AsheeUI.
- * This file provides the main TextArea component implementation, which renders
+ * Textarea component for AsheeUI.
+ * This file provides the main Textarea component implementation, which renders
  * a multi-line text input with label, description, validation message, and
  * virtual keyboard support. It integrates with the FieldShell for consistent
  * field layout and supports the standard AsheeUI cascade for visual tokens.
@@ -43,16 +43,16 @@ import {
 
 // ─── Component Interface ──────────────────────────────────────────────────────
 
-type BaseTextAreaProps = TextAreaConfig &
+type BaseTextareaProps = TextAreaConfig &
   Omit<
     TextareaHTMLAttributes<HTMLTextAreaElement>,
     "size" | "color" | "children"
   >;
 
 /**
- * Configuration options for the TextArea component.
+ * Configuration options for the Textarea component.
  */
-export interface TextAreaProps extends BaseTextAreaProps {
+export interface TextareaProps extends BaseTextareaProps {
   /**
    * Label text for the textarea.
    * Displayed above the input field.
@@ -105,7 +105,7 @@ export interface TextAreaProps extends BaseTextAreaProps {
  * A multi-line text input with label, description, validation message,
  * and virtual keyboard support.
  *
- * TextArea renders a textarea with consistent styling and field layout.
+ * Textarea renders a textarea with consistent styling and field layout.
  * It supports validation states, loading state, configurable rows, and
  * the standard AsheeUI cascade for visual tokens. The component integrates
  * with FieldShell for label, description, and message handling.
@@ -114,7 +114,7 @@ export interface TextAreaProps extends BaseTextAreaProps {
  * aria-invalid, aria-describedby, and proper focus management. It also
  * supports mobile virtual keyboard control via the enableVirtualKeyboard prop.
  *
- * @param props - TextArea configuration options and native textarea props.
+ * @param props - Textarea configuration options and native textarea props.
  * @param props.label - Label text for the textarea.
  * @param props.isLoading - Loading state. Defaults to false.
  * @param props.description - Description text.
@@ -135,14 +135,14 @@ export interface TextAreaProps extends BaseTextAreaProps {
  *
  * @example
  * ```tsx
- * import { TextArea } from "asheeui";
+ * import { Textarea } from "asheeui";
  * import { useState } from "react";
  *
  * export function Example() {
  *   const [value, setValue] = useState("");
  *
  *   return (
- *     <TextArea
+ *     <Textarea
  *       label="Message"
  *       description="Write your message here"
  *       placeholder="Type your message..."
@@ -157,7 +157,7 @@ export interface TextAreaProps extends BaseTextAreaProps {
  * @example
  * ```tsx
  * // With validation state
- * <TextArea
+ * <Textarea
  *   label="Feedback"
  *   status="error"
  *   message="Feedback must be at least 10 characters"
@@ -168,7 +168,7 @@ export interface TextAreaProps extends BaseTextAreaProps {
  * @example
  * ```tsx
  * // With virtual keyboard configuration
- * <TextArea
+ * <Textarea
  *   label="Numeric Input"
  *   enableVirtualKeyboard={{
  *     layout: "numeric",
@@ -183,7 +183,7 @@ export interface TextAreaProps extends BaseTextAreaProps {
  * @see useAsheeConfig - Hook for accessing the global configuration.
  * @see useKeyboardField - Hook for connecting inputs to the virtual keyboard.
  */
-export const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
+export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
   (
     {
       size,
@@ -370,4 +370,4 @@ export const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
   },
 );
 
-TextArea.displayName = "TextArea";
+Textarea.displayName = "Textarea";

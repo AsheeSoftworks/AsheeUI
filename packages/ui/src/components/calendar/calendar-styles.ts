@@ -1,6 +1,6 @@
 /**
- * DatePicker component styles for AsheeUI.
- * This file provides CSS class mappings for the DatePicker component's
+ * Calendar component styles for AsheeUI.
+ * This file provides CSS class mappings for the Calendar component's
  * size, status, and calendar color options.
  */
 

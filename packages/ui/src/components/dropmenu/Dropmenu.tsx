@@ -1,6 +1,6 @@
 /**
- * Select component for AsheeUI.
- * This file provides the main Select component implementation, which renders
+ * Dropmenu component for AsheeUI.
+ * This file provides the main Dropmenu component implementation, which renders
  * a dropdown selector with search, label, validation, and configurable styles.
  * It supports both controlled and uncontrolled selection state, integrates
  * with FieldShell for consistent label and validation handling, and uses
@@ -26,16 +26,16 @@ import { Button } from "../button/Button";
 import { FieldShell } from "../field/FieldShell";
 import type { FieldSizeKey, LabelAlign } from "../field/field-config";
 import type { InputProps } from "../input/Input";
-import { useSelectFloating } from "../select-menu";
-import { type MenuProps, SelectMenu } from "../select-menu/SelectMenu";
-import type { SelectMenuOption } from "../select-menu/select-menu-config";
-import { FALLBACK_SELECT_CONFIG, type SelectConfig } from "./select-config";
-import { SELECT_STATUS_BORDER_CLASS } from "./select-styles";
+import { useMenuFloating } from "../menu";
+import { type MenuProps, Menu } from "../menu/Menu";
+import type { MenuOption } from "../menu/menu-config";
+import { FALLBACK_SELECT_CONFIG, type DropmenuConfig } from "./dropmenu-config";
+import { SELECT_STATUS_BORDER_CLASS } from "./dropmenu-styles";
 
 // ─── Component Interface ──────────────────────────────────────────────────────
 
 /**
- * Field-related props that Select inherits from Input.
+ * Field-related props that Dropmenu inherits from Input.
  * Picked to avoid conflicts with Button-specific props.
  */
 type SelectFieldProps = Pick<
@@ -53,18 +53,18 @@ type SelectFieldProps = Pick<
 >;
 
 /**
- * Configuration options for the Select component.
- * Extends field props from Input, and SelectConfig for
+ * Configuration options for the Dropmenu component.
+ * Extends field props from Input, and DropmenuConfig for
  * component-specific options. Uses Button for trigger styling.
  */
-export interface SelectProps
+export interface DropmenuProps
   extends SelectFieldProps,
-    Omit<SelectConfig, "menu"> {
+    Omit<DropmenuConfig, "menu"> {
   /**
    * Available options to select from.
    * Each option must have a label and a unique value.
    */
-  options: SelectMenuOption[];
+  options: MenuOption[];
 
   /**
    * Controlled selected value.
@@ -118,7 +118,7 @@ export interface SelectProps
   /**
    * Placeholder text shown when no value is selected.
    *
-   * @default "Select..."
+   * @default "Dropmenu..."
    */
   placeholder?: string;
 
@@ -156,7 +156,7 @@ export interface SelectProps
 /**
  * A dropdown selector with search, label, validation, and configurable styles.
  *
- * Select renders a dropdown that allows selecting a single option from a list.
+ * Dropmenu renders a dropdown that allows selecting a single option from a list.
  * It supports search filtering, controlled and uncontrolled selection state,
  * validation states, custom menu and trigger styles, and start/end content
  * slots. Visual tokens resolve through the standard AsheeUI cascade system.
@@ -169,10 +169,10 @@ export interface SelectProps
  * By default, the dropdown menu uses Floating UI's FloatingPortal to render
  * at the document body level. This ensures the menu escapes CSS containment,
  * overflow clipping, and stacking context issues. The portal can be disabled
- * via the `menu.portal` prop or `components.select.menu.portal` in the config
+ * via the `menu.portal` prop or `components.dropmenu.menu.portal` in the config
  * if the menu needs to stay within a specific parent container.
  *
- * @param props - Select configuration options.
+ * @param props - Dropmenu configuration options.
  * @param props.options - Available options to select from.
  * @param props.value - Controlled selected value.
  * @param props.onChange - Native change event handler.
@@ -188,7 +188,7 @@ export interface SelectProps
  * @param props.searchInputName - Name attribute for the search input. Defaults to "select-search".
  * @param props.initialValue - Initial value for uncontrolled usage.
  * @param props.belowList - Content below the options list.
- * @param props.placeholder - Placeholder text. Defaults to "Select...".
+ * @param props.placeholder - Placeholder text. Defaults to "Dropmenu...".
  * @param props.size - Size of the trigger. Defaults to "md".
  * @param props.radius - Corner rounding. Defaults to "md".
  * @param props.variant - Visual style variant. Defaults to "bordered".
@@ -204,7 +204,7 @@ export interface SelectProps
  *
  * @example
  * ```tsx
- * import { Select } from "asheeui";
+ * import { Dropmenu } from "asheeui";
  * import { useState } from "react";
  *
  * export function Example() {
@@ -217,11 +217,11 @@ export interface SelectProps
  *   ];
  *
  *   return (
- *     <Select
+ *     <Dropmenu
  *       options={options}
  *       value={value}
  *       onValueChange={setValue}
- *       label="Select Framework"
+ *       label="Dropmenu Framework"
  *       placeholder="Choose a framework..."
  *     />
  *   );
@@ -231,7 +231,7 @@ export interface SelectProps
  * @example
  * ```tsx
  * // With search, validation, and menu configuration
- * <Select
+ * <Dropmenu
  *   options={fruits}
  *   label="Favorite Fruit"
  *   isSearch
@@ -248,13 +248,13 @@ export interface SelectProps
  * />
  * ```
  *
- * @see SelectConfig - The configuration type for component defaults.
+ * @see DropmenuConfig - The configuration type for component defaults.
  * @see Input - The input component that provides field capabilities.
  * @see Button - The button component used as the trigger.
- * @see SelectMenu - The dropdown menu component.
+ * @see Menu - The dropdown menu component.
  * @see FieldShell - The wrapper component for label and validation.
  */
-export const Select = forwardRef<HTMLButtonElement, SelectProps>(
+export const Dropmenu = forwardRef<HTMLButtonElement, DropmenuProps>(
   (
     {
       options = [],
@@ -278,7 +278,7 @@ export const Select = forwardRef<HTMLButtonElement, SelectProps>(
       searchInputName = "select-search",
       initialValue,
       belowList,
-      placeholder = "Select...",
+      placeholder = "Dropmenu...",
       className,
       id,
       name,
@@ -290,7 +290,7 @@ export const Select = forwardRef<HTMLButtonElement, SelectProps>(
     ref,
   ) => {
     const config = useAsheeConfig();
-    const sectionConfig = config.components?.select as SelectConfig | undefined;
+    const sectionConfig = config.components?.dropmenu as DropmenuConfig | undefined;
 
     const generatedId = useId();
     const fieldId = id ?? generatedId;
@@ -361,7 +361,7 @@ export const Select = forwardRef<HTMLButtonElement, SelectProps>(
       isPositioned,
       getReferenceProps,
       getFloatingProps,
-    } = useSelectFloating<HTMLButtonElement>({
+    } = useMenuFloating<HTMLButtonElement>({
       isOpen,
       onOpenChange: setIsOpen,
       disabled,
@@ -373,8 +373,8 @@ export const Select = forwardRef<HTMLButtonElement, SelectProps>(
      * Handles option selection from the dropdown.
      * Updates the value, triggers onChange, and closes the dropdown.
      */
-    const handleSelectMenuOption = useCallback(
-      (option: SelectMenuOption) => {
+    const handleOptionSelect = useCallback(
+      (option: MenuOption) => {
         onValueChange?.(option.value);
         if (onChange) {
           const event = {
@@ -476,8 +476,8 @@ export const Select = forwardRef<HTMLButtonElement, SelectProps>(
             </span>
           </Button>
 
-          {/* Floating SelectMenu */}
-          <SelectMenu
+          {/* Floating Menu */}
+          <Menu
             isOpen={isOpen}
             context={context}
             floatingStyles={floatingStyles}
@@ -486,7 +486,7 @@ export const Select = forwardRef<HTMLButtonElement, SelectProps>(
             isPositioned={isPositioned}
             options={options}
             selectedValues={selectedValues}
-            onSelectMenuOption={handleSelectMenuOption}
+            onOptionSelect={handleOptionSelect}
             isSearch={isSearch}
             searchPlaceholder={searchPlaceholder}
             searchInputName={searchInputName}
@@ -502,4 +502,4 @@ export const Select = forwardRef<HTMLButtonElement, SelectProps>(
   },
 );
 
-Select.displayName = "Select";
+Dropmenu.displayName = "Dropmenu";

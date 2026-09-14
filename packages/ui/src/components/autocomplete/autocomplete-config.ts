@@ -8,7 +8,7 @@
 import { registerComponentDefaults } from "../../libs/registry";
 import { FALLBACK_FIELD_CONFIG } from "../field/field-config";
 import { defaultInputConfig, type InputConfig } from "../input";
-import type { MenuConfig } from "../select-menu";
+import type { MenuConfig } from "../menu";
 
 /**
  * Theme configuration options for the Autocomplete component.

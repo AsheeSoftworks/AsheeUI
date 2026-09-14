@@ -1,9 +1,9 @@
 /**
- * SelectMenu component for AsheeUI.
- * This file provides the SelectMenu component, a reusable dropdown menu
+ * Menu component for AsheeUI.
+ * This file provides the Menu component, a reusable dropdown menu
  * for selecting options from a list. It supports search filtering, custom
  * option rendering, and configurable styles. The component is used by
- * Select, MultiSelect, and Autocomplete components as their dropdown
+ * Dropmenu, MultiSelect, and Autocomplete components as their dropdown
  * implementation.
  */
 "use client";
@@ -30,10 +30,10 @@ import { resolveCascade, resolveRadiusKey } from "../../utils/resolve-token";
 import { Button } from "../button/Button";
 import { Input } from "../input/Input";
 import {
-  FALLBACK_SELECT_MENU_CONFIG,
+  FALLBACK_MENU_CONFIG,
   type MenuConfig,
-  type SelectMenuOption,
-} from "./select-menu-config";
+  type MenuOption,
+} from "./menu-config";
 
 /**
  * Menu props that extend MenuConfig with className.
@@ -47,9 +47,9 @@ export type MenuProps = MenuConfig & {
 };
 
 /**
- * Props for the SelectMenu component.
+ * Props for the Menu component.
  */
-export interface SelectMenuProps {
+export interface MenuComponentProps {
   /**
    * Whether the menu is open.
    */
@@ -92,7 +92,7 @@ export interface SelectMenuProps {
   /**
    * Available options to display in the menu.
    */
-  options: SelectMenuOption[];
+  options: MenuOption[];
 
   /**
    * Currently selected values.
@@ -104,7 +104,7 @@ export interface SelectMenuProps {
    * Callback fired when an option is selected.
    * Receives the selected option object.
    */
-  onSelectMenuOption: (option: SelectMenuOption) => void;
+  onOptionSelect: (option: MenuOption) => void;
 
   /**
    * Whether search input is shown in the menu.
@@ -120,7 +120,7 @@ export interface SelectMenuProps {
 
   /**
    * Name attribute for the search input.
-   * @default "select-menu-search"
+   * @default "menu-search"
    */
   searchInputName?: string;
 
@@ -154,7 +154,7 @@ export interface SelectMenuProps {
    * Custom render function for each option.
    * Receives the option and a boolean indicating if it's selected.
    */
-  renderOption?: (option: SelectMenuOption, isSelected: boolean) => ReactNode;
+  renderOption?: (option: MenuOption, isSelected: boolean) => ReactNode;
 
   /**
    * Initial focus target for the FloatingFocusManager.
@@ -169,16 +169,16 @@ export interface SelectMenuProps {
 }
 
 /**
- * Props for the memoized options list rendered inside SelectMenu.
- * Isolated so SelectMenu's other re-renders (open/close, search typing,
+ * Props for the memoized options list rendered inside Menu.
+ * Isolated so Menu's other re-renders (open/close, search typing,
  * the one-time `isPositioned` flip) don't force the entire option list to
  * re-render along with it.
  */
-interface SelectMenuOptionsListProps {
-  filteredOptions: SelectMenuOption[];
+interface MenuOptionsListProps {
+  filteredOptions: MenuOption[];
   selectedValues: (string | number)[];
-  onSelectMenuOption: (option: SelectMenuOption) => void;
-  renderOption?: (option: SelectMenuOption, isSelected: boolean) => ReactNode;
+  onOptionSelect: (option: MenuOption) => void;
+  renderOption?: (option: MenuOption, isSelected: boolean) => ReactNode;
   itemVariant: Variant;
   itemColor: Color;
   activeItemVariant: Variant;
@@ -190,15 +190,15 @@ interface SelectMenuOptionsListProps {
 /**
  * Renders the selectable option list.
  *
- * Kept as a separate memoized component so SelectMenu's positioning wrapper
+ * Kept as a separate memoized component so Menu's positioning wrapper
  * and other state changes (open/close, search, selection) don't re-create
  * every option `Button` even though nothing about the options themselves
  * changed. React.memo lets this subtree bail out unless its own props change.
  */
-const SelectMenuOptionsList = memo(function SelectMenuOptionsList({
+const MenuOptionsList = memo(function MenuOptionsList({
   filteredOptions,
   selectedValues,
-  onSelectMenuOption,
+  onOptionSelect,
   renderOption,
   itemVariant,
   itemColor,
@@ -206,7 +206,7 @@ const SelectMenuOptionsList = memo(function SelectMenuOptionsList({
   activeItemColor,
   radius,
   size,
-}: SelectMenuOptionsListProps) {
+}: MenuOptionsListProps) {
   const isOptionSelected = (val: string | number) =>
     selectedValues.includes(val);
 
@@ -235,7 +235,7 @@ const SelectMenuOptionsList = memo(function SelectMenuOptionsList({
             radius={radius}
             size={size}
             isDisabled={option.disabled}
-            onClick={() => onSelectMenuOption(option)}
+            onClick={() => onOptionSelect(option)}
             className="w-full justify-between font-normal text-left transition-colors truncate">
             <span>{option.label}</span>
             {selected && <CheckIcon className="w-3.5 h-3.5 shrink-0 ml-2" />}
@@ -249,9 +249,9 @@ const SelectMenuOptionsList = memo(function SelectMenuOptionsList({
 /**
  * A reusable dropdown menu for selecting options from a list.
  *
- * SelectMenu renders a floating dropdown with search, option list, and
+ * Menu renders a floating dropdown with search, option list, and
  * selection state management. It is designed to be used as the dropdown
- * implementation for Select, MultiSelect, and Autocomplete components.
+ * implementation for Dropmenu, MultiSelect, and Autocomplete components.
  *
  * The component uses Floating UI for positioning and accessibility, and
  * supports custom option rendering, search filtering, and configurable
@@ -263,7 +263,7 @@ const SelectMenuOptionsList = memo(function SelectMenuOptionsList({
  * the `menuProps.portal` prop if the menu needs to stay within a specific
  * parent container. This is typically controlled by the parent component.
  *
- * @param props - SelectMenu configuration options.
+ * @param props - Menu configuration options.
  * @param props.isOpen - Whether the menu is open.
  * @param props.context - Floating UI context.
  * @param props.getFloatingProps - Props getter for the floating element.
@@ -271,10 +271,10 @@ const SelectMenuOptionsList = memo(function SelectMenuOptionsList({
  * @param props.isPositioned - Whether the floating element has been positioned by Floating UI. Defaults to true.
  * @param props.options - Available options to display.
  * @param props.selectedValues - Currently selected values.
- * @param props.onSelectMenuOption - Callback fired when an option is selected.
+ * @param props.onOptionSelect - Callback fired when an option is selected.
  * @param props.isSearch - Whether search is enabled. Defaults to true.
  * @param props.searchPlaceholder - Search placeholder. Defaults to "Search...".
- * @param props.searchInputName - Name attribute for the search input. Defaults to "select-menu-search".
+ * @param props.searchInputName - Name attribute for the search input. Defaults to "menu-search".
  * @param props.searchQuery - Controlled search query value.
  * @param props.onSearchChange - Callback fired when the search query changes.
  * @param props.belowList - Content below the options list.
@@ -288,28 +288,28 @@ const SelectMenuOptionsList = memo(function SelectMenuOptionsList({
  * ```tsx
  * const { refs, context } = useFloating(...);
  *
- * <SelectMenu
+ * <Menu
  *   isOpen={isOpen}
  *   context={context}
  *   getFloatingProps={getFloatingProps}
  *   setFloatingRef={refs.setFloating}
  *   options={options}
  *   selectedValues={selectedValues}
- *   onSelectMenuOption={handleSelect}
+ *   onOptionSelect={handleSelect}
  * />
  * ```
  *
  * @example
  * ```tsx
  * // With custom menu configuration
- * <SelectMenu
+ * <Menu
  *   isOpen={isOpen}
  *   context={context}
  *   getFloatingProps={getFloatingProps}
  *   setFloatingRef={refs.setFloating}
  *   options={options}
  *   selectedValues={selectedValues}
- *   onSelectMenuOption={handleSelect}
+ *   onOptionSelect={handleSelect}
  *   menuProps={{
  *     className: "custom-dropdown",
  *     portal: false,
@@ -322,7 +322,7 @@ const SelectMenuOptionsList = memo(function SelectMenuOptionsList({
  * @see MenuConfig - The configuration type for menu items.
  * @see Button - The button component used for menu items.
  */
-export const SelectMenu = ({
+export const Menu = ({
   isOpen,
   floatingStyles,
   context,
@@ -331,10 +331,10 @@ export const SelectMenu = ({
   isPositioned = true,
   options = [],
   selectedValues = [],
-  onSelectMenuOption,
+  onOptionSelect,
   isSearch = true,
   searchPlaceholder = "Search...",
-  searchInputName = "select-menu-search",
+  searchInputName = "menu-search",
   searchQuery,
   onSearchChange,
   belowList,
@@ -343,7 +343,7 @@ export const SelectMenu = ({
   renderOption,
   initialFocus,
   returnFocus,
-}: SelectMenuProps) => {
+}: MenuComponentProps) => {
   const config = useAsheeConfig();
   const [internalQuery, setInternalQuery] = useState("");
 
@@ -371,7 +371,7 @@ export const SelectMenu = ({
     menuProps?.lockScroll,
     menuConfig?.lockScroll,
     undefined,
-    FALLBACK_SELECT_MENU_CONFIG.lockScroll,
+    FALLBACK_MENU_CONFIG.lockScroll,
   );
 
   // Resolve portal configuration
@@ -379,7 +379,7 @@ export const SelectMenu = ({
     menuProps?.portal,
     menuConfig?.portal,
     undefined,
-    FALLBACK_SELECT_MENU_CONFIG.portal,
+    FALLBACK_MENU_CONFIG.portal,
   );
 
   // Resolve portal target configuration
@@ -458,42 +458,42 @@ export const SelectMenu = ({
     menuProps?.itemVariant,
     menuConfig?.itemVariant,
     undefined,
-    FALLBACK_SELECT_MENU_CONFIG.itemVariant,
+    FALLBACK_MENU_CONFIG.itemVariant,
   );
 
   const resolvedItemColor = resolveCascade<Color>(
     menuProps?.itemColor,
     menuConfig?.itemColor,
     config.defaultColor,
-    FALLBACK_SELECT_MENU_CONFIG.itemColor,
+    FALLBACK_MENU_CONFIG.itemColor,
   );
 
   const resolvedActiveVariant = resolveCascade<Variant>(
     menuProps?.activeItemVariant,
     menuConfig?.activeItemVariant,
     config.defaultVariant,
-    FALLBACK_SELECT_MENU_CONFIG.activeItemVariant,
+    FALLBACK_MENU_CONFIG.activeItemVariant,
   );
 
   const resolvedActiveColor = resolveCascade<Color>(
     menuProps?.activeItemColor,
     menuConfig?.activeItemColor,
     config.defaultColor,
-    FALLBACK_SELECT_MENU_CONFIG.activeItemColor,
+    FALLBACK_MENU_CONFIG.activeItemColor,
   );
 
   const resolvedRadiusKey = resolveRadiusKey(
     menuProps?.radius,
     menuConfig?.radius,
     config.defaultRadius,
-    FALLBACK_SELECT_MENU_CONFIG.radius,
+    FALLBACK_MENU_CONFIG.radius,
   );
 
   const resolvedSize = resolveCascade<Size>(
     menuProps?.size,
     menuConfig?.size,
     undefined,
-    FALLBACK_SELECT_MENU_CONFIG.size,
+    FALLBACK_MENU_CONFIG.size,
   );
 
   if (!isOpen) return null;
@@ -509,7 +509,7 @@ export const SelectMenu = ({
         style={{ ...floatingStyles }}
         className={cn(
           // z-index is applied through `floatingStyles`, derived from the
-          // trigger's stacking context by the shared `useSelectFloating` hook.
+          // trigger's stacking context by the shared `useMenuFloating` hook.
           "w-full outline-none max-h-60 shadow-xl bg-background border border-border p-1 flex flex-col gap-0.5 overflow-y-auto scrollable-hidden",
           // Explicitly disable transitions on the floating element. Floating UI
           // positions this node via a `transform` written on every scroll tick
@@ -551,10 +551,10 @@ export const SelectMenu = ({
         )}
 
         {/* Options List */}
-        <SelectMenuOptionsList
+        <MenuOptionsList
           filteredOptions={filteredOptions}
           selectedValues={selectedValues}
-          onSelectMenuOption={onSelectMenuOption}
+          onOptionSelect={onOptionSelect}
           renderOption={renderOption}
           itemVariant={resolvedItemVariant}
           itemColor={resolvedItemColor}
@@ -582,4 +582,4 @@ export const SelectMenu = ({
   return menuContent;
 };
 
-SelectMenu.displayName = "SelectMenu";
+Menu.displayName = "Menu";

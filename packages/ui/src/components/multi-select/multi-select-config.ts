@@ -10,7 +10,7 @@ import { registerComponentDefaults } from "../../libs/registry";
 import type { Color, Radius, Size, Variant } from "../../shared";
 import { FALLBACK_FIELD_CONFIG } from "../field/field-config";
 import { defaultInputConfig, type InputConfig } from "../input";
-import type { MenuConfig } from "../select-menu";
+import type { MenuConfig } from "../menu";
 
 /**
  * Configuration for selected value chips.

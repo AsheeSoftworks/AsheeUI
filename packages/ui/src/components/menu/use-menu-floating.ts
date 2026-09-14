@@ -1,9 +1,9 @@
-// useSelectFloating.ts
+// useMenuFloating.ts
 
 /**
  * Shared Floating UI positioning and interaction hook for dropdowns and
  * menus. This file provides a reusable hook that configures Floating UI
- * for dropdown components like Select, MultiSelect, and Autocomplete.
+ * for dropdown components like Dropmenu, MultiSelect, and Autocomplete.
  * It handles positioning, flipping, shifting, size management, and the
  * standard click/dismiss/role interaction wiring, with consistent
  * defaults across the library.
@@ -29,11 +29,11 @@ import { useFloatingZIndex } from "../../libs/use-floating-z-index";
 import { ASHEE_LAYER } from "../../utils/stacking";
 
 /**
- * Configuration options for the useSelectFloating hook.
+ * Configuration options for the useMenuFloating hook.
  * Controls the floating element's behavior, positioning, size, and
  * interaction wiring (click-to-open, dismiss, and ARIA role).
  */
-export interface UseSelectFloatingProps {
+export interface UseMenuFloatingProps {
   /**
    * Whether the floating element is open.
    * Controls visibility and triggers positioning calculations.
@@ -88,8 +88,8 @@ export interface UseSelectFloatingProps {
 
   /**
    * ARIA role applied to the floating element via useRole.
-   * "listbox" fits Select/MultiSelect/Autocomplete; a component like
-   * DatePicker reusing this hook can pass "dialog" instead.
+   * "listbox" fits Dropmenu/MultiSelect/Autocomplete; a component like
+   * Calendar reusing this hook can pass "dialog" instead.
    *
    * @default "listbox"
    */
@@ -107,11 +107,11 @@ export interface UseSelectFloatingProps {
 }
 
 /**
- * Return value of useSelectFloating. Combines Floating UI's positioning
+ * Return value of useMenuFloating. Combines Floating UI's positioning
  * context with the resolved interaction prop-getters, so consumers don't
  * need to wire useClick/useDismiss/useRole/useInteractions themselves.
  */
-export interface UseSelectFloatingReturn<T extends HTMLElement> {
+export interface UseMenuFloatingReturn<T extends HTMLElement> {
   refs: ReturnType<typeof useFloating<T>>["refs"];
   context: ReturnType<typeof useFloating<T>>["context"];
   floatingStyles: React.CSSProperties;
@@ -148,7 +148,7 @@ export interface UseSelectFloatingReturn<T extends HTMLElement> {
  * @example
  * ```tsx
  * const { refs, context, floatingStyles, getReferenceProps, getFloatingProps } =
- *   useSelectFloating({
+ *   useMenuFloating({
  *     isOpen,
  *     onOpenChange: setIsOpen,
  *     disabled: props.disabled,
@@ -167,9 +167,9 @@ export interface UseSelectFloatingReturn<T extends HTMLElement> {
  * ```
  *
  * @see useFloating - The underlying Floating UI hook.
- * @see Select - The select component that uses this hook.
+ * @see Dropmenu - The select component that uses this hook.
  */
-export function useSelectFloating<T extends HTMLElement = HTMLElement>({
+export function useMenuFloating<T extends HTMLElement = HTMLElement>({
   isOpen,
   onOpenChange,
   disabled = false,
@@ -179,7 +179,7 @@ export function useSelectFloating<T extends HTMLElement = HTMLElement>({
   matchReferenceWidth = true,
   role = "listbox",
   zIndex = ASHEE_LAYER.dropdown,
-}: UseSelectFloatingProps): UseSelectFloatingReturn<T> {
+}: UseMenuFloatingProps): UseMenuFloatingReturn<T> {
   const floating = useFloating<T>({
     open: isOpen,
     onOpenChange: (open) => !disabled && onOpenChange(open),

@@ -1,7 +1,7 @@
 /**
  * Field configuration types for AsheeUI form components.
  * This file defines the shared configuration options for form field components
- * like Input, Select, and DatePicker. It provides the FieldConfig interface
+ * like Input, Dropmenu, and Calendar. It provides the FieldConfig interface
  * that components extend, along with default values and registry registration.
  * These types establish the common visual and behavioral properties that
  * form fields share across the library.

@@ -2,15 +2,15 @@
  * TimeSpinner component for AsheeUI.
  * This file provides the TimeSpinner implementation, which renders
  * a spinner control for selecting hours, minutes, or seconds in
- * the DatePicker component.
+ * the Calendar component.
  */
 
 import { useEffect, useState } from "react";
 import { ChevronDownIcon, ChevronUpIcon } from "../../icons";
 import type { Color } from "../../shared";
 import { cn } from "../../utils";
-import { pad2 } from "./date-picker.helpers";
-import { CALENDAR_COLOR_CLASSES } from "./date-picker-styles";
+import { pad2 } from "./calendar.helpers";
+import { CALENDAR_COLOR_CLASSES } from "./calendar-styles";
 
 // ─── Component Interface ──────────────────────────────────────────────────────
 

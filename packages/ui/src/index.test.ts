@@ -22,7 +22,7 @@ describe("public entry point", () => {
       "Card",
       "Carousel",
       "Chip",
-      "DatePicker",
+      "Calendar",
       "Drawer",
       "Image",
       "Input",
@@ -35,13 +35,13 @@ describe("public entry point", () => {
       "Radio",
       "RadioGroup",
       "ResizableScreen",
-      "Select",
+      "Dropmenu",
       "Sidebar",
       "Spinner",
       "Switch",
       "Table",
       "Tabs",
-      "TextArea",
+      "Textarea",
       "ToastProvider",
       "Tooltip",
       "Typography",
@@ -54,8 +54,8 @@ describe("public entry point", () => {
 
   it("keeps internal helpers and the configuration-only module out of the public surface", () => {
     expect(AsheeUI).not.toHaveProperty("FieldShell");
-    expect(AsheeUI).not.toHaveProperty("SelectMenu");
-    expect(AsheeUI).not.toHaveProperty("useSelectFloating");
+    expect(AsheeUI).not.toHaveProperty("Menu");
+    expect(AsheeUI).not.toHaveProperty("useMenuFloating");
     expect(AsheeUI).not.toHaveProperty("defaultScrollbarConfig");
   });
 

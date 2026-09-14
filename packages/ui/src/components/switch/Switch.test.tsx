@@ -122,7 +122,7 @@ describe("Switch", () => {
 
   // Defect register (M1): `FieldShell` renders the description and message
   // elements, but Switch never links them to the control with
-  // `aria-describedby`, unlike Input, Textarea, Select and MultiSelect. The
+  // `aria-describedby`, unlike Input, Textarea, Dropmenu and MultiSelect. The
   // behaviour is recorded here rather than asserted, because M1 does not change
   // component implementations.
   it.todo(
