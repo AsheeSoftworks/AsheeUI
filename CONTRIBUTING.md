@@ -45,6 +45,11 @@ The repository is a pnpm + Turborepo monorepo with these publishable packages:
 | `asheeui` | React component library (`packages/ui`) |
 | `@asheeui/cli` | Scaffolding and doctor/fix CLI (`packages/cli`) |
 
+The workspace also contains private packages that are never published: the
+end-to-end gallery (`packages/e2e-gallery`) and the three playground
+applications that render it (see
+[Testing Local Changes](#testing-local-changes)).
+
 ## Development Workflow
 
 1. Create a feature branch off `main` (see
@@ -61,8 +66,9 @@ pnpm fix     # lint and format, writing fixes in place
 ```
 
 There is no separate `typecheck` script. TypeScript is checked while packages
-build, so run `pnpm build` before pushing. `pnpm test` currently runs the
-Vitest suite in `packages/cli`.
+build, so run `pnpm build` before pushing. `pnpm test` runs every package's
+Vitest suite through Turborepo, which includes the CLI, the component library,
+the end-to-end gallery and the three playground applications.
 
 4. Add or update tests for any behavior change. New exported APIs must ship
    with TSDoc/JSDoc annotations and an `@example`, per the
@@ -71,9 +77,30 @@ Vitest suite in `packages/cli`.
 
 ## Testing Local Changes
 
-There is no playground app committed to this repository. To try a change in a
-real project, build the package and link it into a separate scratch project
-with pnpm:
+Three playground applications are committed to this repository, one per
+supported framework:
+
+| Playground | Framework | Test |
+| --- | --- | --- |
+| `apps/vite-playground` | Vite, with a client and a server entry | `pnpm --filter @asheeui/vite-playground test` |
+| `apps/next-playground` | Next.js App Router | `pnpm --filter @asheeui/next-playground test` |
+| `apps/tanstack-playground` | TanStack Start with TanStack Router | `pnpm --filter @asheeui/tanstack-playground test` |
+
+All three render the same gallery from `packages/e2e-gallery` and assert the same
+contract: the markup the framework served, the same tree after hydration, and the
+interactions a consumer performs. A change to a component is therefore verified
+across every supported framework with:
+
+```bash
+pnpm --filter @asheeui/e2e-gallery test
+pnpm --filter @asheeui/vite-playground test
+pnpm --filter @asheeui/next-playground test
+pnpm --filter @asheeui/tanstack-playground test
+```
+
+To try a change by hand, run a playground's development server, for example
+`pnpm --filter @asheeui/vite-playground dev`. To try it outside this repository,
+build the package and link it into a separate scratch project with pnpm:
 
 ```bash
 pnpm --filter asheeui build
@@ -204,24 +231,24 @@ The shape used across the library looks like this:
 
 ````tsx
 /**
- * Select component for AsheeUI.
- * This file provides the main Select component implementation, which renders
+ * Dropmenu component for AsheeUI.
+ * This file provides the main Dropmenu component implementation, which renders
  * a dropdown selector with search, label, validation, and configurable styles.
  */
 
 /**
  * A dropdown selector with search, label, validation, and configurable styles.
  *
- * @param props - Select configuration options.
+ * @param props - Dropmenu configuration options.
  * @param props.options - Available options to select from.
  * @param props.value - Controlled selected value.
  *
  * @example
  * ```tsx
- * <Select options={options} value={value} onValueChange={setValue} />
+ * <Dropmenu options={options} value={value} onValueChange={setValue} />
  * ```
  *
- * @see SelectConfig - The configuration type for component defaults.
+ * @see DropmenuConfig - The configuration type for component defaults.
  * @see Button - The button component used as the trigger.
  */
 ````

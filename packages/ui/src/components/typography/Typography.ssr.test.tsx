@@ -4,8 +4,7 @@
  *
  * This file opts out of jsdom entirely, so any access to `window`, `document`
  * or another browser global during render fails the test rather than passing
- * silently against jsdom stubs. It is the browserless evidence for `TEST-034`
- * and for the SSR claim in the Milestone M2 report.
+ * silently against jsdom stubs. It is the browserless evidence for `TEST-034`.
  */
 
 import { describe, expect, it } from "vitest";

@@ -1,8 +1,8 @@
 /**
  * Configuration validation for AsheeUI.
  *
- * Owner decision (Milestone M3, resolving `U-4`): configuration is validated
- * once per `AsheeUIProvider` mount. Invalid values throw, so a mistake is never
+ * Configuration is validated once per `AsheeUIProvider` mount. Invalid values
+ * throw, so a mistake is never
  * silently replaced by a default; unknown keys warn in development and stay
  * silent in production, because a stray key is usually a typo rather than a
  * reason to take a running application down.
