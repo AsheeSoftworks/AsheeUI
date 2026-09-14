@@ -1,5 +1,12 @@
 import { describe, expect, it, vi } from "vitest";
-import { createUser, renderWithProvider, screen, waitFor } from "../../test";
+import {
+  createUser,
+  pressKey,
+  renderWithProvider,
+  screen,
+  waitFor,
+  within,
+} from "../../test";
 import { Calendar } from "./Calendar";
 
 /** Click the first enabled day button in the rendered calendar grid. */
@@ -68,23 +75,109 @@ describe("Calendar", () => {
     expect(queryByRole("button", { name: "Next month" })).toBeNull();
   });
 
-  // Defect register (M1, D-24): the calendar grid has no `grid` or `gridcell`
-  // roles, so its structure is not conveyed to assistive technology.
-  it.todo(
-    "exposes the calendar grid structure for assistive technology (defect register D-24)",
-  );
+  // Defect register (M1, D-24): the calendar grid had no `grid` or `gridcell`
+  // roles, so its structure was not conveyed to assistive technology.
+  it("exposes the calendar grid structure", async () => {
+    const user = createUser();
+    const { getByRole } = renderWithProvider(<Calendar label="Date" />);
 
-  // Defect register (M1, D-25): day buttons have no accessible label and no
-  // `aria-selected` or `aria-current`, so today and the selected day are
+    await user.click(getByRole("textbox"));
+
+    const grid = screen.getByRole("grid");
+
+    expect(within(grid).getAllByRole("columnheader")).toHaveLength(7);
+    expect(within(grid).getAllByRole("row").length).toBeGreaterThan(1);
+    expect(
+      within(grid).getAllByRole("gridcell").length,
+    ).toBeGreaterThanOrEqual(28);
+    expect(grid).toHaveAccessibleName(
+      new RegExp(String(new Date().getFullYear())),
+    );
+  });
+
+  // Defect register (M1, D-25): day buttons had no accessible label and no
+  // `aria-selected` or `aria-current`, so today and the selected day were
   // conveyed by classes alone.
-  it.todo(
-    "exposes the selected and current day states (defect register D-25)",
-  );
+  it("exposes the selected day and labels every day it renders", async () => {
+    const user = createUser();
+    const { getByRole } = renderWithProvider(
+      <Calendar label="Date" mode="datetime" selected={new Date(2026, 4, 14)} />,
+    );
+
+    await user.click(getByRole("textbox"));
+
+    const selectedCell = screen.getByRole("gridcell", { selected: true });
+
+    expect(selectedCell).toHaveAttribute("aria-selected", "true");
+    expect(within(selectedCell).getByRole("button")).toHaveAccessibleName(
+      "14 May 2026",
+    );
+
+    for (const button of within(screen.getByRole("grid")).getAllByRole(
+      "button",
+    )) {
+      expect(button).toHaveAccessibleName(/^\d{1,2} [A-Za-z]+ \d{4}$/);
+    }
+  });
+
+  it("marks today with aria-current when today is in the rendered month", async () => {
+    const user = createUser();
+    const { getByRole } = renderWithProvider(<Calendar label="Date" />);
+
+    await user.click(getByRole("textbox"));
+
+    const today = new Date();
+    const todayCell = screen.getByRole("gridcell", { current: "date" });
+
+    expect(todayCell).toHaveAttribute("aria-current", "date");
+    expect(within(todayCell).getByRole("button")).toHaveAccessibleName(
+      new RegExp(`^${today.getDate()} `),
+    );
+  });
 
   // Defect register (M1, D-26): shared with the selection family. The calendar
-  // has no keyboard navigation (day, week or month movement) and Escape does
-  // not close it.
-  it.todo(
-    "navigates the calendar grid with the keyboard and dismisses with Escape (defect register D-26)",
-  );
+  // had no keyboard navigation (day, week or month movement) and Escape did not
+  // close it.
+  it("navigates the grid with the keyboard and dismisses with Escape", async () => {
+    const user = createUser();
+    const { getByRole } = renderWithProvider(
+      <Calendar label="Date" mode="datetime" />,
+    );
+
+    await user.click(getByRole("textbox"));
+
+    const grid = screen.getByRole("grid");
+
+    /** The day the grid's keyboard navigation is currently on. */
+    function navigatedDay(): HTMLButtonElement | null {
+      for (const cell of within(grid).getAllByRole("gridcell")) {
+        const button = cell.querySelector("button");
+
+        if (button?.tabIndex === 0) return button;
+      }
+
+      return null;
+    }
+
+    const start = navigatedDay();
+
+    expect(start).not.toBeNull();
+    start?.focus();
+    expect(start).toHaveFocus();
+
+    const startLabel = start?.getAttribute("aria-label");
+
+    await pressKey(user, "ArrowRight");
+
+    const nextDay = navigatedDay();
+
+    expect(nextDay?.getAttribute("aria-label")).not.toBe(startLabel);
+    expect(nextDay).toHaveFocus();
+
+    await pressKey(user, "Escape");
+
+    await waitFor(() => {
+      expect(screen.queryByRole("grid")).toBeNull();
+    });
+  });
 });

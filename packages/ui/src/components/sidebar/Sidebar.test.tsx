@@ -83,18 +83,45 @@ describe("Sidebar", () => {
   });
 
   // Defect register (M1, D-12): when `onCollapseChange` is provided without a
-  // controlled `isCollapsed`, the collapse control reports the request but the
-  // sidebar never updates its own state, so an uncontrolled consumer that
-  // listens for the change can never collapse it.
-  it.todo(
-    "updates its own collapsed state when a change callback is provided without a controlled value (defect register D-12)",
-  );
+  // controlled `isCollapsed`, the collapse control reported the request but the
+  // sidebar never updated its own state.
+  it("updates its own collapsed state when a change callback is provided without a controlled value", async () => {
+    const user = createUser();
+    const onCollapseChange = vi.fn();
+    const { getByRole } = renderWithProvider(
+      <Sidebar items={ITEMS} onCollapseChange={onCollapseChange} />,
+    );
 
-  // Defect register (M1, D-11): the active item is marked only by classes
-  // (`font-medium` plus the active variant classes). `COMP-044` requires the
-  // active-item state to be exposed, and the testing matrix expects
-  // `aria-current` on the active navigation item.
-  it.todo(
-    "exposes the active item with aria-current (defect register D-11)",
-  );
+    await user.click(getByRole("button", { name: "Collapse sidebar" }));
+
+    expect(onCollapseChange).toHaveBeenCalledWith(true);
+    // The sidebar followed its own state, so the control now offers to expand.
+    expect(
+      getByRole("button", { name: "Expand sidebar" }),
+    ).toBeInTheDocument();
+  });
+
+  // Defect register (M1, D-11): the active item was marked only by classes.
+  // `COMP-044` requires the active-item state to be exposed, and the testing
+  // matrix expects `aria-current` on the active navigation item.
+  it("exposes the active item with aria-current", () => {
+    const { getByRole } = renderWithProvider(
+      <Sidebar
+        items={[
+          { id: "home", label: "Home", href: "/home" },
+          { id: "settings", label: "Settings", href: "/settings" },
+        ]}
+        title="Workspace"
+        activeKey="settings"
+      />,
+    );
+
+    expect(getByRole("link", { name: "Settings" })).toHaveAttribute(
+      "aria-current",
+      "page",
+    );
+    expect(getByRole("link", { name: "Home" })).not.toHaveAttribute(
+      "aria-current",
+    );
+  });
 });

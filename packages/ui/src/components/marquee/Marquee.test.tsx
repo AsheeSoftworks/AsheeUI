@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { renderWithProvider } from "../../test";
+import { renderWithProvider, stubReducedMotion } from "../../test";
 import { Marquee } from "./Marquee";
 
 const ITEMS = [
@@ -66,10 +66,30 @@ describe("Marquee", () => {
     expect(container.querySelector("div")).not.toBeNull();
   });
 
-  // Defect register (M1, D-8): the animation is applied unconditionally. There
-  // is no reduced-motion handling, so `COMP-048` ("motion respects
-  // reduced-motion preference") and `TEST-033` are not met for this component.
-  it.todo(
-    "stops the animation when the user prefers reduced motion (defect register D-8)",
-  );
+  // Defect register (M1, D-8): the animation was applied unconditionally, so
+  // `COMP-048` ("motion respects reduced-motion preference") and `TEST-033`
+  // were unmet for this component.
+  it("stops the animation when the user prefers reduced motion", () => {
+    stubReducedMotion(true);
+
+    const { container } = renderWithProvider(<Marquee>{ITEMS}</Marquee>);
+    const track = container.querySelector(
+      '[style*="animation"]',
+    ) as HTMLElement | null;
+
+    expect(track).not.toBeNull();
+    expect(track?.style.animation).toBe("none");
+    expect(track?.style.animationName).toBe("");
+  });
+
+  it("keeps the animation when the user allows motion", () => {
+    stubReducedMotion(false);
+
+    const { container } = renderWithProvider(<Marquee>{ITEMS}</Marquee>);
+    const track = container.querySelector(
+      '[style*="animation"]',
+    ) as HTMLElement | null;
+
+    expect(track?.style.animationName).toBe("marquee-x");
+  });
 });

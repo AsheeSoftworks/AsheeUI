@@ -2,6 +2,7 @@ import { describe, expect, it, vi } from "vitest";
 import {
   createUser,
   expectAccessibleName,
+  expectDescribedBy,
   expectState,
   makeComponentConfig,
   pressKey,
@@ -120,12 +121,15 @@ describe("Switch", () => {
     expect(track?.className).toContain("rounded-full");
   });
 
-  // Defect register (M1): `FieldShell` renders the description and message
-  // elements, but Switch never links them to the control with
-  // `aria-describedby`, unlike Input, Textarea, Dropmenu and MultiSelect. The
-  // behaviour is recorded here rather than asserted, because M1 does not change
-  // component implementations.
-  it.todo(
-    "associates its description and error message with the control via aria-describedby (defect register)",
-  );
+  // Defect register (M1): `FieldShell` renders the description element, and the
+  // control now links it with `aria-describedby`, as Input, Textarea, Dropmenu
+  // and MultiSelect do. Switch exposes no validation message to link.
+  it("associates its description with the control", () => {
+    const { getByRole, getByText } = renderWithProvider(
+      <Switch label="Notifications" description="Send me a digest" />,
+    );
+    const control = getByRole("switch");
+
+    expectDescribedBy(control, getByText("Send me a digest"));
+  });
 });

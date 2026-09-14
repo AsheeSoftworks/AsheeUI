@@ -23,6 +23,7 @@ import {
 import { ChevronLeftIcon } from "../../icons/ChevronLeftIcon";
 import { ChevronRightIcon } from "../../icons/ChevronRightIcon";
 import { useAsheeConfig } from "../../libs/context";
+import { usePrefersReducedMotion } from "../../libs/use-prefers-reduced-motion";
 import type { Size } from "../../shared";
 import { RADIUS_CLASS } from "../../shared";
 import { cn } from "../../utils";
@@ -361,9 +362,14 @@ export const Carousel = forwardRef<HTMLDivElement, CarouselProps>(
       [activeIndex, slides.length, isControlled, onIndexChange],
     );
 
+    // Autoplay and the slide transition are motion the user can decline
+    // (`COMP-047`, `REQ-089`).
+    const prefersReducedMotion = usePrefersReducedMotion();
+
     useEffect(() => {
       if (
         !resolvedAutoPlay ||
+        prefersReducedMotion ||
         (resolvedPauseOnHover && isHovered) ||
         isDragging ||
         slides.length <= 1
@@ -381,6 +387,7 @@ export const Carousel = forwardRef<HTMLDivElement, CarouselProps>(
       resolvedPauseOnHover,
       isHovered,
       isDragging,
+      prefersReducedMotion,
       slides.length,
       paginate,
     ]);
@@ -441,6 +448,7 @@ export const Carousel = forwardRef<HTMLDivElement, CarouselProps>(
               "flex w-full h-full",
               !isDragging &&
                 !disableAnimation &&
+                !prefersReducedMotion &&
                 "transition-transform duration-300 ease-out",
             )}
             style={{

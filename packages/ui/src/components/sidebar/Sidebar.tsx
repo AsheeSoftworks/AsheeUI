@@ -351,12 +351,15 @@ export function Sidebar<T = string>({
     if (!resolvedCollapsible) return;
 
     const newState = !isCollapsed;
-    if (onCollapseChange) {
-      onCollapseChange(newState);
-    } else {
+
+    // A controlled sidebar reports the request and lets its owner decide; an
+    // uncontrolled one updates itself as well, so the control works without an
+    // owner that feeds the state back (`REQ-087`).
+    if (isCollapsedProp === undefined) {
       setInternalCollapsed(newState);
     }
-  }, [isCollapsed, onCollapseChange, resolvedCollapsible]);
+    onCollapseChange?.(newState);
+  }, [isCollapsed, isCollapsedProp, onCollapseChange, resolvedCollapsible]);
 
   // Size & Variant Cascading
   const resolvedSizeKey = resolveCascade<SidebarSizeKey>(
@@ -545,6 +548,9 @@ export function Sidebar<T = string>({
       href: item.disabled ? undefined : item.href,
       target: item.target,
       rel: item.rel,
+      // The active item is the page the consumer is on, which is what
+      // `aria-current` conveys (`COMP-044`).
+      "aria-current": isActive ? "page" : undefined,
       onClick: (e: React.MouseEvent<HTMLAnchorElement>) =>
         handleItemClick(e, item),
       className: linkClassName,

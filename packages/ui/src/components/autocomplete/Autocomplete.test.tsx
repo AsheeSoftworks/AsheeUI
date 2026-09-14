@@ -1,5 +1,12 @@
 import { describe, expect, it, vi } from "vitest";
-import { createUser, renderWithProvider, screen } from "../../test";
+import {
+  createUser,
+  pressKey,
+  renderWithProvider,
+  screen,
+  waitFor,
+  within,
+} from "../../test";
 import { Autocomplete } from "./Autocomplete";
 
 const OPTIONS = [
@@ -61,22 +68,92 @@ describe("Autocomplete", () => {
     expect(onInputChange).toHaveBeenCalled();
   });
 
-  // Defect register (M1, D-23): shared with Dropmenu. The suggestion list has no
-  // listbox or option semantics, and the input exposes no
-  // `aria-activedescendant`, so the active suggestion is not conveyed.
-  it.todo(
-    "exposes listbox, option and active-suggestion semantics (defect register D-23)",
-  );
+  // Defect register (M1, D-23): shared with Dropmenu. The suggestion list now
+  // carries listbox and option semantics, and the input reports the current
+  // suggestion through `aria-activedescendant`.
+  it("exposes listbox, option and active-suggestion semantics", async () => {
+    const user = createUser();
+    const { getByRole } = renderWithProvider(<Autocomplete options={OPTIONS} />);
+    const input = getByRole("combobox");
 
-  // Defect register (M1, D-26): shared with Dropmenu. No arrow navigation, Enter
-  // selection or Escape dismissal exists.
-  it.todo(
-    "navigates and selects suggestions with the keyboard (defect register D-26)",
-  );
+    await user.click(input);
+    await pressKey(user, "ArrowDown");
 
-  // Defect register (M1, D-27): there is no empty or no-results state to
-  // announce when a query matches nothing (`COMP-128`, `TEST-011`).
-  it.todo(
-    "announces clearly when a query matches no suggestions (defect register D-27)",
-  );
+    const listbox = screen.getByRole("listbox");
+    const options = within(listbox).getAllByRole("option");
+
+    expect(options).toHaveLength(OPTIONS.length);
+    expect(input).toHaveAttribute("aria-controls", listbox.id);
+    expect(input).toHaveAttribute("aria-autocomplete", "list");
+
+    const activeId = input.getAttribute("aria-activedescendant");
+
+    expect(activeId).toBe(options[0].id);
+    expect(document.getElementById(activeId as string)).toBe(options[0]);
+  });
+
+  // Defect register (M1, D-26): shared with Dropmenu. There was no arrow
+  // navigation, Enter selection or Escape dismissal.
+  it("navigates and selects suggestions with the keyboard", async () => {
+    const user = createUser();
+    const onValueChange = vi.fn();
+    const { getByRole } = renderWithProvider(
+      <Autocomplete options={OPTIONS} onValueChange={onValueChange} />,
+    );
+    const input = getByRole("combobox");
+
+    await user.click(input);
+    await user.type(input, "a");
+
+    await pressKey(user, "ArrowDown");
+    await pressKey(user, "ArrowDown");
+
+    const options = within(screen.getByRole("listbox")).getAllByRole("option");
+
+    expect(input.getAttribute("aria-activedescendant")).toBe(options[1].id);
+
+    await pressKey(user, "Enter");
+
+    expect(onValueChange).toHaveBeenCalledWith(
+      "beta",
+      expect.objectContaining({ value: "beta" }),
+    );
+    expect(input).toHaveValue("Beta");
+  });
+
+  it("dismisses the suggestions with Escape and keeps the typed text", async () => {
+    const user = createUser();
+    const { getByRole } = renderWithProvider(<Autocomplete options={OPTIONS} />);
+    const input = getByRole("combobox");
+
+    await user.click(input);
+    await user.type(input, "be");
+
+    expect(screen.getByRole("listbox")).toBeInTheDocument();
+
+    await pressKey(user, "Escape");
+
+    await waitFor(() => {
+      expect(screen.queryByRole("listbox")).toBeNull();
+    });
+
+    expect(input).toHaveValue("be");
+  });
+
+  // Defect register (M1, D-27): there was no empty or no-results state to
+  // announce when a query matched nothing (`COMP-128`, `TEST-011`).
+  it("announces clearly when a query matches no suggestions", async () => {
+    const user = createUser();
+    const { getByRole } = renderWithProvider(<Autocomplete options={OPTIONS} />);
+    const input = getByRole("combobox");
+
+    await user.click(input);
+    await user.type(input, "zzz");
+
+    expect(screen.queryByRole("option")).toBeNull();
+
+    const status = screen.getByRole("status");
+
+    expect(status).toHaveTextContent("No options found");
+  });
 });

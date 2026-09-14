@@ -27,7 +27,8 @@ import type { Color, Variant } from "../../shared";
 import { resolveCascade, resolveRadiusKey } from "../../utils/resolve-token";
 import type { FieldSizeKey } from "../field/field-config";
 import { Input, type InputProps } from "../input/Input";
-import { type MenuOption, useMenuFloating } from "../menu";
+import { type MenuOption, menuOptionId, useMenuFloating } from "../menu";
+import { edgeOptionIndex, nextOptionIndex } from "../menu/menu-navigation";
 import { type MenuProps, Menu } from "../menu/Menu";
 import {
   type AutocompleteConfig,
@@ -195,6 +196,7 @@ export const Autocomplete = forwardRef<HTMLInputElement, AutocompleteProps>(
       size,
       endContent,
       onClick,
+      onKeyDown: consumerKeyDown,
       disabled,
       placeholder = "Type to search...",
       className,
@@ -249,6 +251,7 @@ export const Autocomplete = forwardRef<HTMLInputElement, AutocompleteProps>(
     const [inputValue, setInputValue] = useState(() =>
       selectedOption ? selectedOption.label : String(value ?? ""),
     );
+    const [activeIndex, setActiveIndex] = useState<number | null>(null);
 
     // Sync input text when value prop changes externally
     useEffect(() => {
@@ -297,6 +300,9 @@ export const Autocomplete = forwardRef<HTMLInputElement, AutocompleteProps>(
         setInputValue(text);
         onInputChange?.(text);
         setIsOpen(true);
+        // A new query produces a different suggestion list, so no suggestion
+        // stays current between keystrokes.
+        setActiveIndex(null);
 
         if (allowCustomValue) {
           onValueChange?.(text);
@@ -314,9 +320,90 @@ export const Autocomplete = forwardRef<HTMLInputElement, AutocompleteProps>(
         setInputValue(option.label);
         onValueChange?.(option.value, option);
         setIsOpen(false);
+        setActiveIndex(null);
       },
       [onValueChange],
     );
+
+    /**
+     * Handles keys pressed in the input.
+     *
+     * The input keeps focus for the whole interaction, which is the combobox
+     * pattern: the suggestion list is published through the input's
+     * `aria-activedescendant` rather than receiving focus itself (defect
+     * register D-23, D-26).
+     */
+    const handleInputKeyDown = useCallback(
+      (event: React.KeyboardEvent<HTMLInputElement>) => {
+        consumerKeyDown?.(event);
+
+        if (event.defaultPrevented || disabled) return;
+
+        const delta =
+          event.key === "ArrowDown" ? 1 : event.key === "ArrowUp" ? -1 : 0;
+
+        if (delta !== 0) {
+          event.preventDefault();
+
+          if (!isOpen) {
+            setIsOpen(true);
+            return;
+          }
+
+          setActiveIndex((current) =>
+            nextOptionIndex(filteredOptions, current, delta),
+          );
+          return;
+        }
+
+        if (event.key === "Home" || event.key === "End") {
+          if (!isOpen) return;
+
+          event.preventDefault();
+          setActiveIndex(
+            edgeOptionIndex(
+              filteredOptions,
+              event.key === "Home" ? "first" : "last",
+            ),
+          );
+          return;
+        }
+
+        if (event.key === "Enter" && isOpen) {
+          const option =
+            activeIndex === null ? undefined : filteredOptions[activeIndex];
+
+          if (option && !option.disabled) {
+            event.preventDefault();
+            handleOptionSelect(option);
+          }
+          return;
+        }
+
+        if (event.key === "Escape" && isOpen) {
+          setIsOpen(false);
+          setActiveIndex(null);
+        }
+      },
+      [
+        activeIndex,
+        consumerKeyDown,
+        disabled,
+        filteredOptions,
+        handleOptionSelect,
+        isOpen,
+      ],
+    );
+
+    const activeOptionId =
+      activeIndex === null
+        ? undefined
+        : menuOptionId(context.floatingId, activeIndex);
+
+    const referenceProps = getReferenceProps({
+      ...inputProps,
+      onKeyDown: handleInputKeyDown,
+    });
 
     const selectedValues = useMemo(
       () => (value !== undefined && value !== null ? [value] : []),
@@ -346,10 +433,11 @@ export const Autocomplete = forwardRef<HTMLInputElement, AutocompleteProps>(
             onClick?.(e);
           }}
           aria-expanded={isOpen}
-          aria-autocomplete="none"
+          aria-autocomplete="list"
+          aria-activedescendant={activeOptionId}
           endContent={endContent}
           className={className}
-          {...getReferenceProps(inputProps)}
+          {...referenceProps}
         />
 
         {/* Floating Menu */}
@@ -360,6 +448,8 @@ export const Autocomplete = forwardRef<HTMLInputElement, AutocompleteProps>(
           getFloatingProps={getFloatingProps}
           setFloatingRef={refs.setFloating}
           isPositioned={isPositioned}
+          activeIndex={activeIndex}
+          onActiveIndexChange={setActiveIndex}
           options={filteredOptions}
           selectedValues={selectedValues}
           onOptionSelect={handleOptionSelect}

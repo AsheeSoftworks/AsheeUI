@@ -73,3 +73,9 @@ if (
 ) {
   Element.prototype.scrollIntoView = () => {};
 }
+
+if (typeof window !== "undefined") {
+  // jsdom defines `scrollTo` but reports it as unimplemented, so restoring a
+  // scroll position would produce console noise instead of a no-op.
+  window.scrollTo = () => {};
+}

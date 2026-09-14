@@ -231,6 +231,11 @@ export const Switch = forwardRef<HTMLInputElement, SwitchProps>(
     const checkedColorClass = resolveVariantClass("solid", resolvedColorKey);
     const isInteractionDisabled = disabled || isLoading;
 
+    // The description belongs to the control that receives focus, which is the
+    // switch input (`TEST-026`). Switch exposes no validation message, so only
+    // the description is linked.
+    const descriptionId = description ? `${fieldId}-description` : undefined;
+
     const handleChange = useCallback(
       (e: ChangeEvent<HTMLInputElement>) => {
         if (isInteractionDisabled) return;
@@ -249,6 +254,7 @@ export const Switch = forwardRef<HTMLInputElement, SwitchProps>(
         label={label}
         labelAlign={resolvedLabelAlign}
         description={description}
+        descriptionId={descriptionId}
         required={required}
         isLoading={isLoading}>
         <label
@@ -274,6 +280,7 @@ export const Switch = forwardRef<HTMLInputElement, SwitchProps>(
               required={required}
               aria-checked={isChecked}
               aria-busy={isLoading}
+              aria-describedby={descriptionId}
               onChange={handleChange}
               className="sr-only peer"
               {...rest}
