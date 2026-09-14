@@ -119,8 +119,8 @@ export interface ResizableScreenProps extends BaseResizableScreenProps {
  *       maxSize={70}
  *       orientation="horizontal"
  *     >
- *       <div className="bg-blue-100 p-4">Left Panel</div>
- *       <div className="bg-green-100 p-4">Right Panel</div>
+ *       <div className="bg-primary/10 p-4">Left Panel</div>
+ *       <div className="bg-success/10 p-4">Right Panel</div>
  *     </ResizableScreen>
  *   );
  * }
@@ -138,8 +138,8 @@ export interface ResizableScreenProps extends BaseResizableScreenProps {
  *   minSize={25}
  *   maxSize={75}
  * >
- *   <div className="bg-red-100 p-4">Top Panel</div>
- *   <div className="bg-blue-100 p-4">Bottom Panel</div>
+ *   <div className="bg-danger/10 p-4">Top Panel</div>
+ *   <div className="bg-primary/10 p-4">Bottom Panel</div>
  * </ResizableScreen>
  * ```
  *

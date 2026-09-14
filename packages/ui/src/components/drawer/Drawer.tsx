@@ -150,7 +150,7 @@ export interface DrawerProps extends BaseDrawerProps {
  *   onClose={onClose}
  *   placement="bottom"
  *   size="full"
- *   overlay={{ className: "bg-black/50" }}
+ *   overlay={{ className: "bg-background/80" }}
  * >
  *   <div className="p-6 max-h-[80vh] overflow-y-auto">
  *     {content}
@@ -242,7 +242,7 @@ export const Drawer = forwardRef<HTMLDivElement, DrawerProps>(
     );
 
     const overlayClassName =
-      overlay?.className ?? "bg-black/70 backdrop-blur-md";
+      overlay?.className ?? "bg-background/80 backdrop-blur-md";
 
     const contentClassName = content?.className ?? "bg-secondary";
 

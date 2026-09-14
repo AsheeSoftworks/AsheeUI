@@ -695,7 +695,7 @@ export const MultiSelect = forwardRef<HTMLButtonElement, MultiSelectProps>(
                           }
                         }}
                         aria-label={`Remove ${chip.label}`}
-                        className="inline-flex items-center justify-center h-3.5 w-3.5 rounded-full hover:bg-black/20 dark:hover:bg-white/20 transition-colors cursor-pointer shrink-0">
+                        className="inline-flex items-center justify-center h-3.5 w-3.5 rounded-full hover:bg-foreground/20 transition-colors cursor-pointer shrink-0">
                         <CloseIcon className="w-3 h-3" />
                       </button>
                     </Chip>
