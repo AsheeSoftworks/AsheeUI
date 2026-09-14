@@ -1,5 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { makeComponentConfig, renderWithProvider } from "../../test";
+import {
+  expectHydrationClean,
+  makeComponentConfig,
+  renderWithProvider,
+} from "../../test";
 import { Skeleton } from "./Skeleton";
 
 describe("Skeleton", () => {
@@ -78,5 +82,10 @@ describe("Skeleton", () => {
 
     expect(placeholder.className).toContain("h-24");
     expect(placeholder.className).toContain("w-64");
+  });
+
+  it("hydrates its server markup without a mismatch", () => {
+    expectHydrationClean(<Skeleton className="h-4 w-40" />);
+    expectHydrationClean(<Skeleton isBusy label="Loading invoices" />);
   });
 });

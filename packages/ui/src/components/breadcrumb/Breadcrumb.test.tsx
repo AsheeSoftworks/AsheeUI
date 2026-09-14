@@ -1,6 +1,11 @@
 import type { ReactNode } from "react";
 import { describe, expect, it } from "vitest";
-import { makeComponentConfig, renderWithProvider, within } from "../../test";
+import {
+  expectHydrationClean,
+  makeComponentConfig,
+  renderWithProvider,
+  within,
+} from "../../test";
 import { Breadcrumb } from "./Breadcrumb";
 
 const TRAIL = [
@@ -121,5 +126,12 @@ describe("Breadcrumb", () => {
 
     expect(nav.className).toContain("text-base");
     expect(nav.innerHTML).toContain("danger");
+  });
+
+  it("hydrates its server markup without a mismatch", () => {
+    expectHydrationClean(<Breadcrumb items={TRAIL} />);
+    expectHydrationClean(
+      <Breadcrumb items={TRAIL} separator={<span>/</span>} />,
+    );
   });
 });

@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 import {
   createUser,
+  expectHydrationClean,
   makeComponentConfig,
   renderWithProvider,
   within,
@@ -160,6 +161,17 @@ describe("Pagination", () => {
 
     expect(getByRole("button", { name: "Page 2" }).className).toContain(
       "danger",
+    );
+  });
+
+  it("hydrates its server markup without a mismatch", () => {
+    expectHydrationClean(<Pagination page={5} pageCount={20} />);
+    expectHydrationClean(
+      <Pagination
+        page={2}
+        pageCount={3}
+        hrefForPage={(target) => `/invoices?page=${target}`}
+      />,
     );
   });
 });
