@@ -131,7 +131,7 @@ export function AsheeUIProvider({
     // parsed. A client-only render never runs it, so they are applied here
     // instead, still before the first paint. This is a no-op once the script has
     // done it.
-    ensureThemeVarsStyle(resolvedConfig.color);
+    ensureThemeVarsStyle(resolvedConfig);
   }, [resolvedConfig]);
 
   // The pre-paint script only pays off where the HTML it sits in is parsed by a
