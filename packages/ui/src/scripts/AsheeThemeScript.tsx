@@ -75,6 +75,75 @@ function buildThemeCss(colors: ColorConfig): string {
 }
 
 /**
+ * Mapping from the structural scrollbar configuration to the CSS variables
+ * `index.css` reads them from.
+ */
+const SCROLLBAR_VAR_MAP = {
+  width: "--ashee-scrollbar-width",
+  radius: "--ashee-scrollbar-radius",
+  trackRadius: "--ashee-scrollbar-track-radius",
+  thumbBorder: "--ashee-scrollbar-thumb-border",
+  gutter: "--ashee-scrollbar-gutter",
+} as const;
+
+/** The structural scrollbar configuration once it is resolved into the config. */
+type ResolvedScrollbarConfig = NonNullable<
+  NonNullable<Config["components"]>["scrollbar"]
+>;
+
+/**
+ * Build the CSS for the structural scrollbar configuration.
+ *
+ * `index.css` styles every scrollbar through `--ashee-scrollbar-*`, so those
+ * values have to be emitted for `components.scrollbar` to have any effect.
+ * `trackRadius` falls back to `radius`, which is what the configuration
+ * documents.
+ *
+ * @param scrollbar - The resolved scrollbar configuration, when there is one.
+ * @returns The CSS block, or an empty string when there is nothing to emit.
+ */
+function buildScrollbarCss(
+  scrollbar: ResolvedScrollbarConfig | undefined,
+): string {
+  if (!scrollbar) return "";
+
+  const values: Record<keyof typeof SCROLLBAR_VAR_MAP, string | undefined> = {
+    width: scrollbar.width,
+    radius: scrollbar.radius,
+    trackRadius: scrollbar.trackRadius ?? scrollbar.radius,
+    thumbBorder: scrollbar.thumbBorder,
+    gutter: scrollbar.gutter,
+  };
+
+  const declarations = Object.entries(SCROLLBAR_VAR_MAP)
+    .map(([key, variable]) => {
+      const value = values[key as keyof typeof SCROLLBAR_VAR_MAP];
+      return value ? `  ${variable}: ${value};` : null;
+    })
+    .filter((declaration): declaration is string => declaration !== null);
+
+  return declarations.length > 0
+    ? `:root {\n${declarations.join("\n")}\n}`
+    : "";
+}
+
+/**
+ * Build the complete content of the theme style element.
+ *
+ * @param config - The resolved configuration.
+ * @returns The colour variables for every theme, followed by the structural
+ *   scrollbar variables.
+ */
+export function buildThemeVarsCss(config: Config): string {
+  return [
+    buildThemeCss(config.color),
+    buildScrollbarCss(config.components?.scrollbar),
+  ]
+    .filter((block) => block !== "")
+    .join("\n\n");
+}
+
+/**
  * Ensure the theme CSS variables are present in the document.
  *
  * The pre-paint script injects them while the server HTML is parsed. A
@@ -83,17 +152,17 @@ function buildThemeCss(colors: ColorConfig): string {
  * nothing when the element is already there, which is the case once the script
  * has run.
  *
- * @param colors - The complete color configuration with all themes.
+ * @param config - The resolved configuration.
  *
  * @see THEME_VARS_STYLE_ID - The id of the element this creates.
  */
-export function ensureThemeVarsStyle(colors: ColorConfig): void {
+export function ensureThemeVarsStyle(config: Config): void {
   if (typeof document === "undefined") return;
   if (document.getElementById(THEME_VARS_STYLE_ID)) return;
 
   const style = document.createElement("style");
   style.id = THEME_VARS_STYLE_ID;
-  style.textContent = buildThemeCss(colors);
+  style.textContent = buildThemeVarsCss(config);
   document.head.appendChild(style);
 }
 
@@ -126,7 +195,7 @@ export function AsheeThemeScript({ config }: { config: Config }) {
   const themes = Object.keys(config.color ?? {});
   const defaultTheme = config.defaultTheme ?? "system";
   const storageKey = THEME_STORAGE_KEY;
-  const css = buildThemeCss(config.color);
+  const css = buildThemeVarsCss(config);
 
   const script = `
     (function() {

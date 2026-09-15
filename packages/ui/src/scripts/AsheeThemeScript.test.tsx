@@ -124,6 +124,21 @@ describe("AsheeThemeScript", () => {
     expect(themeClasses()).toEqual(["theme-dark"]);
   });
 
+  it("emits the structural scrollbar variables from the configuration", () => {
+    // `index.css` styles every scrollbar through `--ashee-scrollbar-*`, so the
+    // configuration only has an effect when the values are emitted.
+    const script = emitScript({
+      components: {
+        scrollbar: { width: "12px", radius: "6px", thumbBorder: "2px" },
+      },
+    });
+
+    expect(script).toContain("--ashee-scrollbar-width: 12px");
+    expect(script).toContain("--ashee-scrollbar-thumb-border: 2px");
+    // The track radius falls back to the radius when it is not configured.
+    expect(script).toContain("--ashee-scrollbar-track-radius: 6px");
+  });
+
   it("never applies a theme that has no CSS block", () => {
     localStorage.setItem(THEME_STORAGE_KEY, "legacy-theme");
 
