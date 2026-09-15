@@ -205,6 +205,19 @@ rather than the pull request path. The action's branch is pushed either way, so 
 maintainer can also open the version pull request from `changeset-release/main` by
 hand.
 
+Whichever path publishes, the workflow verifies the result rather than the exit
+code:
+
+```bash
+pnpm verify:released
+```
+
+It reads every non-private manifest and asks the registry for that version,
+retrying a few times, because a version can take a minute or two to become readable
+after it is published. A run that reports success while the registry has no such
+version fails there with the version named — the state that is otherwise a green
+tick, a tag and nothing to install.
+
 A good changeset is short and specific. The front matter lists the packages and
 the bump type, and the body describes the change in the same style used in
 [CHANGELOG.md](packages/ui/CHANGELOG.md):

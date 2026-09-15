@@ -18,6 +18,7 @@
     "lint": "biome lint",
     "check": "biome check",
     "verify:distribution": "node scripts/verify-distribution.mjs",
+    "verify:released": "node scripts/verify-released.mjs",
     "check:changesets": "node scripts/check-changesets.mjs",
     "format": "biome format --write",
     "fix": "biome check --write",

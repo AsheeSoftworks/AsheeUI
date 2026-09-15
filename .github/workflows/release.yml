@@ -66,6 +66,13 @@ jobs:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
+      - name: Verify the registry carries every released version
+        # A run that reports success while publishing nothing leaves a green tick, a
+        # tag and no version. This reads the workspace manifests and asks the
+        # registry, so that state fails here with the version named.
+        if: steps.changesets.outcome == 'success'
+        run: pnpm verify:released
+
       - name: Explain a failed release step
         if: failure() && steps.changesets.outcome == 'failure'
         run: |
