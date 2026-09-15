@@ -5,7 +5,8 @@
  * its end-to-end test in a browser environment installs the same stand-ins the
  * framework's own component tests use (`TEST-019`): they cover only what the
  * environment cannot provide, and nothing about a component is mocked. A
- * playground imports this module as `@asheeui/e2e-gallery/setup`.
+ * playground imports this module from its own test setup, beside the application
+ * it renders.
  */
 
 import { cleanup } from "@testing-library/react";

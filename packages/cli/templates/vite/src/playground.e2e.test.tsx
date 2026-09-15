@@ -7,15 +7,15 @@
  * The three steps together are what "the library works on Vite" means.
  */
 
-import { describe, expect, it } from "vitest";
-import { App } from "./app";
-import { renderServer } from "./entry-server";
 import {
   hydrateMarkup,
   inspectGallery,
   parseMarkup,
   runGalleryInteractions,
-} from "./playground";
+} from "./playground/testing";
+import { describe, expect, it } from "vitest";
+import { App } from "./app";
+import { renderServer } from "./entry-server";
 
 describe("Vite playground", () => {
   it("server-renders the gallery through its SSR entry", () => {

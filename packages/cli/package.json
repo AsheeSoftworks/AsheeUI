@@ -56,6 +56,7 @@
   "scripts": {
     "build": "tsdown src/index.ts --format esm --clean",
     "prepublishOnly": "pnpm build",
+    "sync:playground-templates": "node scripts/sync-playground-templates.mjs",
     "test": "vitest run",
     "test:watch": "vitest"
   },

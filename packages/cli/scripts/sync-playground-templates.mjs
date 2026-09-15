@@ -4,13 +4,22 @@
  * A template is generated rather than written by hand, so the project a client
  * receives is the project the repository verifies: the shell that makes it that
  * framework, plus the shared playground application it renders. Generating it
- * keeps one source of truth, and `tests/playground.test.ts` fails when a template
- * is missing a file its playground depends on.
+ * keeps one source of truth. `tests/playground.test.ts` fails when a template is
+ * missing a file its playground depends on, and again when a shipped file is not
+ * byte for byte the file this repository verifies, which is what stops a generated
+ * template from going stale between runs of this script.
  *
  * Run from the repository root:
  *
  * ```sh
  * node packages/cli/scripts/sync-playground-templates.mjs
+ * ```
+ *
+ * Pass a directory to generate somewhere else, which is how the test compares a
+ * fresh generation with what is committed:
+ *
+ * ```sh
+ * node packages/cli/scripts/sync-playground-templates.mjs /tmp/generated
  * ```
  */
 
@@ -61,16 +70,24 @@ const TARGETS = [
 
 /**
  * The shared application modules a distributable project contains.
- * The contract helpers and the browser stand-ins travel with them because a
- * section states its own contract, which is what makes the copied project able to
- * check itself with `pnpm test`.
+ *
+ * The closure is what makes the copied project self-sufficient: `index.ts` is the
+ * application surface a shell imports, `testing.ts` is the verification surface a
+ * test imports, and the modules each of them reaches for travel with them. The
+ * contract helpers travel because a section states its own contract, which is what
+ * lets the copied project check itself with `pnpm test`.
  */
 const SHARED_MODULES = [
+  "index.ts",
   "app.tsx",
   "gallery.tsx",
   "sections.tsx",
   "types.ts",
   "playground-config.ts",
+  "testing.ts",
+  "harness.ts",
+  "inspect.ts",
+  "interactions.ts",
   "dom.ts",
   "events.ts",
 ];
@@ -80,6 +97,69 @@ const SHARED_PACKAGE = "@asheeui/e2e-gallery";
 
 /** The published range a copied project depends on. */
 const ASHEEUI_RANGE = "^2.0.0";
+
+/**
+ * Compiler options that exist to publish a library rather than to compile a
+ * project, so they are not inlined into a copied project.
+ */
+const PUBLISHING_OPTIONS = [
+  "declaration",
+  "declarationMap",
+  "sourceMap",
+  "composite",
+];
+
+/**
+ * Read a manifest from the repository.
+ *
+ * @param path - Absolute path of the manifest.
+ * @returns The parsed manifest.
+ */
+async function readManifest(path) {
+  return JSON.parse(await fs.readFile(path, "utf8"));
+}
+
+/**
+ * The compiler options a copied project inherits.
+ *
+ * A playground's TypeScript configuration extends the repository's, which a
+ * project generated outside the repository cannot do, because the file it extends
+ * is not part of the project. The options are inlined instead so a copied project
+ * compiles exactly as the playground does without reaching outside itself.
+ */
+const BASE_COMPILER_OPTIONS_SOURCE = (
+  await readManifest(join(repositoryRoot, "tsconfig.json"))
+).compilerOptions;
+
+const BASE_COMPILER_OPTIONS = (() => {
+  const options = { ...BASE_COMPILER_OPTIONS_SOURCE };
+  for (const option of PUBLISHING_OPTIONS) delete options[option];
+  return options;
+})();
+
+/**
+ * The ranges a copied project installs for the type packages a playground asks
+ * for, read from the repository so a project compiles against the same types this
+ * repository verifies.
+ */
+const TYPE_RANGES = await readTypeRanges();
+
+/**
+ * Read the repository's own type packages.
+ *
+ * @returns Ranges by type name, without the `@types/` prefix.
+ */
+async function readTypeRanges() {
+  const manifest = await readManifest(join(repositoryRoot, "package.json"));
+  const ranges = {};
+
+  for (const [name, range] of Object.entries(manifest.devDependencies ?? {})) {
+    if (name.startsWith("@types/"))
+      ranges[name.slice("@types/".length)] = range;
+  }
+
+  return ranges;
+}
 
 /**
  * Walk a directory, skipping what a client's project must not carry.
@@ -119,9 +199,10 @@ async function walk(root, base = root) {
  *
  * @param content - The playground's `package.json` content.
  * @param name - Package name the template carries.
+ * @param types - Type packages its TypeScript configuration asks for.
  * @returns The rewritten content.
  */
-function rewriteManifest(content, name) {
+function rewriteManifest(content, name, types) {
   const manifest = JSON.parse(content);
   manifest.name = name;
   manifest.version = "0.1.0";
@@ -140,6 +221,22 @@ function rewriteManifest(content, name) {
 
     manifest[field] = entries;
   }
+
+  // A project that asks TypeScript for a type package has to install it. Inside
+  // the repository those types are hoisted to the workspace root, which a copied
+  // project does not have, so a configuration that asks for Node's types without
+  // declaring them fails its own `tsc` run.
+  const devDependencies = manifest.devDependencies ?? {};
+
+  for (const type of types) {
+    const range = TYPE_RANGES[type];
+
+    if (range !== undefined) devDependencies[`@types/${type}`] ??= range;
+  }
+
+  manifest.devDependencies = Object.fromEntries(
+    Object.entries(devDependencies).sort(([a], [b]) => a.localeCompare(b)),
+  );
 
   // The playground is a project, so it keeps the framework as a dependency and
   // nothing points back at the repository it was generated from.
@@ -203,22 +300,16 @@ function rewriteImports(content, file, project) {
   const specifier = relative(from, to).replaceAll("\\\\", "/");
   const prefix = specifier.startsWith(".") ? specifier : `./${specifier}`;
 
-  let rewritten = content
+  const rewritten = content
     // The application surface, by package name.
     .replaceAll(`"${SHARED_PACKAGE}"`, `"${prefix}"`)
     .replaceAll(`'${SHARED_PACKAGE}'`, `'${prefix}'`)
     // The verification surface the sections and their tests share.
-    .replaceAll(`"${SHARED_PACKAGE}/testing"`, `"${prefix}"`)
-    .replaceAll(`'${SHARED_PACKAGE}/testing'`, `'${prefix}'`)
+    .replaceAll(`"${SHARED_PACKAGE}/testing"`, `"${prefix}/testing"`)
+    .replaceAll(`'${SHARED_PACKAGE}/testing'`, `'${prefix}/testing'`)
     // The browser stand-ins, which travel as a module of their own.
     .replaceAll(`"${SHARED_PACKAGE}/setup"`, `"${prefix}/setup.ts"`)
     .replaceAll(`'${SHARED_PACKAGE}/setup'`, `'${prefix}/setup.ts'`);
-
-  // A generated project's own test imports the local verification surface.
-  rewritten = rewritten.replaceAll(
-    new RegExp(`\\./${project.playground}/testing`, "g"),
-    prefix,
-  );
 
   return rewritten;
 }
@@ -229,22 +320,77 @@ function rewriteImports(content, file, project) {
  * @param project - Target description.
  * @param templateRoot - Directory to write the template into.
  */
+/**
+ * The type packages a playground's TypeScript configuration asks for.
+ *
+ * @param app - The playground's directory.
+ * @param files - Files the playground contains.
+ * @returns The names in its `types` array, or nothing when it declares none.
+ */
+async function declaredTypes(app, files) {
+  if (!files.includes("tsconfig.json")) return [];
+
+  const tsconfig = await readManifest(join(app, "tsconfig.json"));
+
+  return tsconfig.compilerOptions?.types ?? [];
+}
+
+/**
+ * Make a playground's TypeScript configuration stand on its own.
+ *
+ * @param content - The playground's `tsconfig.json` content.
+ * @returns The rewritten content.
+ */
+function rewriteTsconfig(content) {
+  const tsconfig = JSON.parse(content);
+
+  if (
+    typeof tsconfig.extends === "string" &&
+    tsconfig.extends.startsWith("..")
+  ) {
+    tsconfig.compilerOptions = {
+      ...BASE_COMPILER_OPTIONS,
+      ...tsconfig.compilerOptions,
+    };
+    delete tsconfig.extends;
+  }
+
+  return `${JSON.stringify(tsconfig, null, 2)}\n`;
+}
+
+/**
+ * Decide the content one copied file carries.
+ *
+ * @param content - The file's content in the playground.
+ * @param file - Path of the file inside the project.
+ * @param project - Project being generated.
+ * @param types - Type packages the playground asks for.
+ * @returns The content the copied project receives.
+ */
+function rewriteFile(content, file, project, types) {
+  if (file === "package.json") {
+    return rewriteManifest(content, `asheeui-playground-${project.id}`, types);
+  }
+
+  if (file === "tsconfig.json") return rewriteTsconfig(content);
+
+  return rewriteImports(content, file, project);
+}
+
 async function generateTarget(project, templateRoot) {
   await fs.rm(templateRoot, { recursive: true, force: true });
 
   const files = await walk(project.app);
+  const types = await declaredTypes(project.app, files);
 
   for (const file of files) {
     const content = await fs.readFile(join(project.app, file), "utf8");
     const target = join(templateRoot, file);
-    const isManifest = file === "package.json";
 
     await fs.mkdir(dirname(target), { recursive: true });
     await fs.writeFile(
       target,
-      isManifest
-        ? rewriteManifest(content, `asheeui-playground-${project.id}`)
-        : rewriteImports(content, file, project),
+      rewriteFile(content, file, project, types),
       "utf8",
     );
   }
@@ -277,6 +423,13 @@ async function generateTarget(project, templateRoot) {
   console.log(`generated ${project.id} (${files.length} shell files)`);
 }
 
+/**
+ * Where the templates are written. The package's own directory is the default,
+ * because that is what ships; a caller may name another directory so a generation
+ * can be compared with what is committed without writing into the package.
+ */
+const outputRoot = process.argv[2] ? resolve(process.argv[2]) : packageRoot;
+
 for (const project of TARGETS) {
-  await generateTarget(project, join(packageRoot, "templates", project.id));
+  await generateTarget(project, join(outputRoot, "templates", project.id));
 }

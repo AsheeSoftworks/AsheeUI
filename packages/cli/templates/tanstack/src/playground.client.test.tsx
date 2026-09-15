@@ -13,11 +13,14 @@
  * because the DOM a test owns is not the DOM of a page.
  */
 
+import {
+  inspectGallery,
+  runGalleryInteractions,
+} from "./playground/testing";
 import { createMemoryHistory, RouterProvider } from "@tanstack/react-router";
 import { act } from "@testing-library/react";
 import { createRoot } from "react-dom/client";
 import { describe, expect, it } from "vitest";
-import { inspectGallery, runGalleryInteractions } from "./playground";
 import { getRouter } from "./router";
 
 /** Routes take longer than a component render, because the router loads them. */

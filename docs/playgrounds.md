@@ -87,9 +87,25 @@ repository:
 
 The templates are generated from the playgrounds in this repository rather than
 written twice, so the project a client receives is the project the repository
-verifies. A test asserts what each template may and may not contain: no dependency
-tree, no build output, no cache, no repository build stamp, and no package that
-exists only inside the monorepo.
+verifies:
+
+```bash
+pnpm --filter @asheeui/cli sync:playground-templates   # regenerate all three
+```
+
+Two tests hold that. One requires every template's application modules to be the
+exact files this repository verifies. The other regenerates all three templates
+into a directory of its own and requires every committed file — shell,
+application, manifest and README — to be the file the generator produces today, so
+a shell that changed without a regeneration is a failing test rather than a
+silently stale project. A further test asserts what a template may and may not
+contain: no dependency tree, no build output, no cache, no repository build stamp,
+and no package that exists only inside the monorepo.
+
+The templates are excluded from the repository's format check for the same reason
+build output is: they are generated, and the parity test is what asserts their
+content. What the generator copies is already formatted, because it is copied from
+sources that are checked.
 
 A distribution is safe by default: if the destination already holds any of the
 project's files, the command writes nothing and says which files it found. Pass
