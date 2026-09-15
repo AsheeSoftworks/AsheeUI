@@ -55,11 +55,11 @@ Three kinds of change produce a compile error, and each is mechanical.
 | `DatePicker`, `DatePickerProps` | `Calendar`, `CalendarProps` | `components.datePicker` becomes `components.calendar`, and its `datePicker` sub-keys become `calendar` |
 | `TextArea`, `TextAreaProps` | `Textarea`, `TextareaProps` | `components.textarea` is unchanged |
 
-### One substitution API instead of four names
+### One substitution API instead of a name per component
 
-`Link`, `Image` and `Form` now take the same two props: `component` names the
-component that replaces the native element, and `componentProps` carries its
-props.
+`Link`, `Image` and `Form` take the same two props: `component` names the
+component that replaces the native element, and `componentProps` carries the props
+that component needs.
 
 | Before | After |
 | --- | --- |
@@ -68,7 +68,9 @@ props.
 | `Avatar`: `imageProps` | `componentProps` (`component` unchanged) |
 | `Breadcrumb` step: `linkComponent`, `linkProps` | `component`, `componentProps` |
 | `Card` image and link configuration: `props` | `componentProps` (`component` unchanged) |
-| `Form` | New: it now accepts `component` and `componentProps` too |
+
+`Form` is new, so it ships with `component` and `componentProps` from the start
+rather than renaming anything.
 
 ### Internal helpers no longer exported
 
