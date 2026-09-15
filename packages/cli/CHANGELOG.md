@@ -1,5 +1,21 @@
 # @asheeui/cli
 
+## 0.7.0
+
+### Minor Changes
+
+- Added the `playground` command: `asheeui playground next ./invoices` creates a
+  working AsheeUI playground application in the directory you name, for Next.js,
+  Vite or TanStack Start. The copied project contains the shared playground
+  application and depends only on the published `asheeui` package, so it installs,
+  runs, verifies itself and builds on its own. Each project is generated from the
+  playgrounds this repository verifies, and a test requires every shipped file to
+  be the file the generator produces, so a copy can never be an older playground.
+  `expo` is listed and refused with its reason until the native package carries the
+  components the application renders. The command writes nothing into a directory
+  that already holds the project's files unless `--force` is passed. See
+  `docs/playgrounds.md`.
+
 ## 0.6.11
 
 ### Patch Changes
