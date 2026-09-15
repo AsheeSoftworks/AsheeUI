@@ -94,7 +94,9 @@ repository:
 
 The templates are generated from the playgrounds in this repository rather than
 written twice, so the project a client receives is the project the repository
-verifies:
+verifies — which is to say the files the repository tracks, because a build leaves
+files of its own in an application directory and none of them belong to a client's
+project:
 
 ```bash
 pnpm --filter @asheeui/cli sync:playground-templates   # regenerate all three
