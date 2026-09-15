@@ -57,17 +57,22 @@ jobs:
           pr-title: "chore: publish package updates"
           create-github-releases: true
           push-git-tags: true
-
-      - name: Explain a version pull request that could not be opened
-        if: failure() && steps.changesets.outcome == 'failure'
-        run: |
-          echo "::error title=Version pull request::changesets/action could not open the version pull request."
-          echo "It versions the packages and pushes the branch, and then needs permission to open a pull request."
-          echo "Enable it in this repository:"
-          echo "  Settings -> Actions -> General -> Workflow permissions"
-          echo "  -> Allow GitHub Actions to create and approve pull requests"
-          echo "Until it is enabled, a push to main that carries a changeset fails here instead of opening the pull request."
+        # The registry credentials belong to this step and to no other: the action is
+        # what publishes, and without them npm sends the request unauthenticated and
+        # the registry answers 404 for a scoped package, which reads like a missing
+        # package rather than a missing token.
         env:
           PNPM_CONFIG_PROVENANCE: "true"
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Explain a failed release step
+        if: failure() && steps.changesets.outcome == 'failure'
+        run: |
+          echo "::error title=Release step::changesets/action failed. Two causes account for this."
+          echo "1. It could not open the version pull request, which GitHub blocks until the repository"
+          echo "   allows it: Settings -> Actions -> General -> Workflow permissions"
+          echo "   -> Allow GitHub Actions to create and approve pull requests."
+          echo "2. It could not publish. The registry answers 404 for a scoped package when the request is"
+          echo "   unauthenticated, so check that this step carries NPM_TOKEN and that the token may publish"
+          echo "   the @asheeui packages."

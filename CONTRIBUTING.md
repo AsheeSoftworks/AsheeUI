@@ -191,7 +191,8 @@ in the same run instead; this repository reviews the version, so the setting is 
 opened the path.
 
 The same release can be prepared without the setting, and that is how this
-repository released `asheeui` 2.0.0, `@asheeui/cli` 0.7.0 and 0.7.1:
+repository released `asheeui` 2.0.0 and `@asheeui/cli` 0.7.0 (its version is what
+`pnpm version-packages` prepares; publishing it is the workflow's publish path):
 
 ```bash
 pnpm version-packages                      # consumes the changesets, bumps, writes changelogs
