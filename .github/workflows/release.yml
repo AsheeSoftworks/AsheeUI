@@ -57,6 +57,16 @@ jobs:
           pr-title: "chore: publish package updates"
           create-github-releases: true
           push-git-tags: true
+
+      - name: Explain a version pull request that could not be opened
+        if: failure() && steps.changesets.outcome == 'failure'
+        run: |
+          echo "::error title=Version pull request::changesets/action could not open the version pull request."
+          echo "It versions the packages and pushes the branch, and then needs permission to open a pull request."
+          echo "Enable it in this repository:"
+          echo "  Settings -> Actions -> General -> Workflow permissions"
+          echo "  -> Allow GitHub Actions to create and approve pull requests"
+          echo "Until it is enabled, a push to main that carries a changeset fails here instead of opening the pull request."
         env:
           PNPM_CONFIG_PROVENANCE: "true"
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}

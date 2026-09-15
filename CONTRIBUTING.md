@@ -174,6 +174,22 @@ version bump, a release commit, or tooling that no package publishes — say so
 explicitly with `ALLOW_MISSING_CHANGESET=1` rather than leaving the rule to
 memory.
 
+### What happens to a changeset after it is merged
+
+The `Release` workflow runs `changeset version` when `main` receives a commit that
+carries a changeset, pushes the result to a `changeset-release/main` branch, and
+opens the version pull request that a maintainer merges to publish. Opening that
+pull request needs a repository setting, because GitHub blocks it by default:
+
+**Settings → Actions → General → Workflow permissions → Allow GitHub Actions to
+create and approve pull requests.**
+
+With the setting off, the run versions the packages and pushes the branch, and then
+fails at the pull request rather than opening it, and the failure says so. A
+repository that prefers to publish without a review step would version and publish
+in the same run instead; this repository reviews the version, so the setting is what
+opened the path.
+
 A good changeset is short and specific. The front matter lists the packages and
 the bump type, and the body describes the change in the same style used in
 [CHANGELOG.md](packages/ui/CHANGELOG.md):
