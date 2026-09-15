@@ -136,6 +136,7 @@ npx asheeui list     # list the components this version exports
 | Document | Covers |
 | --- | --- |
 | [Installation](docs/installation.md) | Requirements, the stylesheet import, wrapping the root, where the root is per framework, troubleshooting |
+| [Release 1.0.0](docs/release-1.0.0.md) | The upgrade guide from 0.7.0: what breaks a build, what changed in behaviour, what is new |
 | [Configuration](docs/configuration.md) | The cascade, the global and per-component keys, the theme system, scrollbars, validation |
 | [Components](docs/components.md) | The component set, the shared prop axes, the substitution API, the field contract |
 | [Accessibility](docs/accessibility.md) | The conformance target, keyboard behaviour, structure, known limits |

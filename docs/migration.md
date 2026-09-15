@@ -28,6 +28,12 @@ release notes.
 
 ## Breaking changes before 1.0
 
+`0.8.0` was versioned internally but never published, and the `0.9.x` release stage
+the plan described was folded into `1.0.0`, so a consumer on the previous release
+upgrades from `0.7.0` straight to `1.0.0`. The
+[1.0.0 upgrade guide](./release-1.0.0.md) is the complete picture of that jump;
+the tables below are the per-version record.
+
 The 0.x releases stabilized the API, and each breaking change arrived with the
 migration it needed. They are listed here so an upgrade from an earlier release
 is a documentation exercise rather than an investigation.
