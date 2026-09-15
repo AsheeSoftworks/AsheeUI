@@ -190,6 +190,20 @@ repository that prefers to publish without a review step would version and publi
 in the same run instead; this repository reviews the version, so the setting is what
 opened the path.
 
+The same release can be prepared without the setting, and that is how this
+repository released `asheeui` 2.0.0, `@asheeui/cli` 0.7.0 and 0.7.1:
+
+```bash
+pnpm version-packages                      # consumes the changesets, bumps, writes changelogs
+git add -A && git commit -m "chore(release): version ..."
+git push origin main
+```
+
+The push carries no pending changesets, so the workflow takes the publish path
+rather than the pull request path. The action's branch is pushed either way, so a
+maintainer can also open the version pull request from `changeset-release/main` by
+hand.
+
 A good changeset is short and specific. The front matter lists the packages and
 the bump type, and the body describes the change in the same style used in
 [CHANGELOG.md](packages/ui/CHANGELOG.md):
