@@ -72,7 +72,9 @@
     }
   },
   "files": [
-    "dist"
+    "dist",
+    "LICENSE",
+    "NOTICE"
   ],
   "scripts": {
     "build": "vite build",
@@ -120,5 +122,5 @@
     "vitest": "^5.0.0"
   },
   "module": "./src/index.ts",
-  "license": "MIT"
+  "license": "Apache-2.0"
 }
