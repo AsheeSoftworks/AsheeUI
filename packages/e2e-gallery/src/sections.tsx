@@ -175,7 +175,7 @@ function AvatarSection({ imageComponent, imageProps }: GallerySectionProps) {
           name="Grace Hopper"
           src="/avatars/grace.png"
           component={imageComponent}
-          imageProps={imageProps}
+          componentProps={imageProps}
         />
       </span>
       <span data-check="unnamed">
@@ -189,7 +189,7 @@ function AvatarSection({ imageComponent, imageProps }: GallerySectionProps) {
 function LinkSection({ linkComponent, linkProps }: GallerySectionProps) {
   return (
     <div className="flex flex-wrap items-center gap-4">
-      <Link href="/invoices" linkComponent={linkComponent} linkProps={linkProps}>
+      <Link href="/invoices" component={linkComponent} componentProps={linkProps}>
         All invoices
       </Link>
       <Link href="https://asheeui.com" isExternal>
@@ -208,15 +208,15 @@ function BreadcrumbSection({ linkComponent, linkProps }: GallerySectionProps) {
           id: "invoices",
           label: "Invoices",
           href: "/invoices",
-          linkComponent,
-          linkProps,
+          component: linkComponent,
+          componentProps: linkProps,
         },
         {
           id: "month",
           label: "March",
           href: "/invoices/2026-03",
-          linkComponent,
-          linkProps,
+          component: linkComponent,
+          componentProps: linkProps,
         },
         { id: "current", label: "INV-0042" },
       ]}

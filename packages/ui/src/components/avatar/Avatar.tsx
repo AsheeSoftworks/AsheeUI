@@ -58,15 +58,16 @@ export interface AvatarProps extends BaseAvatarProps {
   alt?: string;
 
   /**
-   * Custom image component, passed to {@link Image}.
-   * This is how a consumer keeps a framework image working inside an avatar.
+   * Component that replaces the picture inside the avatar, passed to
+   * {@link Image}. This is how a consumer keeps a framework image working
+   * inside an avatar.
    */
   component?: ElementType;
 
   /**
-   * Additional props for the custom image component, passed to {@link Image}.
+   * Additional props for that component, passed to {@link Image}.
    */
-  imageProps?: Record<string, unknown>;
+  componentProps?: Record<string, unknown>;
 
   /**
    * Content shown in place of the initials when there is no picture.
@@ -98,7 +99,7 @@ export interface AvatarProps extends BaseAvatarProps {
  * @param props.src - The picture's source.
  * @param props.alt - Name for assistive technology, instead of `name`.
  * @param props.component - Custom image component, passed to `Image`.
- * @param props.imageProps - Additional props for that image component.
+ * @param props.componentProps - Additional props for that component.
  * @param props.fallback - Content shown when there is no picture.
  * @param props.size - Diameter scale. Defaults to "md".
  * @param props.radius - Corner rounding. Defaults to "full".
@@ -127,7 +128,7 @@ export const Avatar = forwardRef<HTMLDivElement, AvatarProps>(
       src,
       alt,
       component,
-      imageProps,
+      componentProps,
       fallback,
       size,
       radius,
@@ -198,7 +199,7 @@ export const Avatar = forwardRef<HTMLDivElement, AvatarProps>(
             // decoration and must not repeat the name.
             alt=""
             component={component}
-            props={imageProps}
+            componentProps={componentProps}
             fit="cover"
             radius={resolvedRadiusKey as Radius}
             showSkeleton={false}

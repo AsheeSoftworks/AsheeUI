@@ -7,6 +7,7 @@
 "use client";
 
 import {
+  type ElementType,
   type FormHTMLAttributes,
   forwardRef,
   type ReactNode,
@@ -61,6 +62,20 @@ export interface FormProps extends BaseFormProps {
    * @default false
    */
   isPending?: boolean;
+
+  /**
+   * Component that replaces the native `form` element, such as a framework
+   * form primitive.
+   *
+   * The substitution API is shared with `Link` and `Image`: `component` names
+   * the component and `componentProps` carries the props it needs.
+   */
+  component?: ElementType;
+
+  /**
+   * Additional props for `component`.
+   */
+  componentProps?: Record<string, unknown>;
 }
 
 /**
@@ -86,15 +101,17 @@ export interface FormProps extends BaseFormProps {
  * The form never moves focus, on mount or on a rejected submission: where a
  * consumer sends focus after a failed validation is a consumer decision.
  *
- * A framework-specific underlying form implementation is not part of this
- * component yet. The substitution API is not settled yet and is decided before
- * 1.0, so the component does not invent it.
+ * The form element itself can be replaced, the way `Link` replaces the anchor
+ * and `Image` replaces the picture: pass `component` to name a form component
+ * and `componentProps` for the props it needs.
  *
  * @param props - Form configuration options and native form attributes.
  * @param props.children - The fields and other content of the form.
  * @param props.legend - Legend that groups the fields.
  * @param props.submitLabel - Label of the submit control the component renders.
  * @param props.isPending - Whether a submission is in progress. Defaults to false.
+ * @param props.component - Component that replaces the native form element.
+ * @param props.componentProps - Additional props for that component.
  * @param props.submitVariant - Style of the submit control. Defaults to the configured value.
  * @param props.submitColor - Colour of the submit control. Defaults to the configured value.
  * @param props.submitSize - Size of the submit control. Defaults to "md".
@@ -127,6 +144,8 @@ export const Form = forwardRef<HTMLFormElement, FormProps>(
       legend,
       submitLabel,
       isPending = false,
+      component,
+      componentProps: componentPropsProp,
       submitVariant,
       submitColor,
       submitSize,
@@ -187,8 +206,15 @@ export const Form = forwardRef<HTMLFormElement, FormProps>(
       </>
     );
 
+    // Choose the element: the substitution component or the native form
+    const FormComponent = component || "form";
+
     return (
-      <form ref={ref} className={cn(FORM_BASE_CLASS, className)} {...props}>
+      <FormComponent
+        ref={ref}
+        className={cn(FORM_BASE_CLASS, className)}
+        {...props}
+        {...componentPropsProp}>
         {legend ? (
           <fieldset className={FORM_FIELD_GROUP_CLASS}>
             <legend className={FORM_LEGEND_CLASS}>{legend}</legend>
@@ -197,7 +223,7 @@ export const Form = forwardRef<HTMLFormElement, FormProps>(
         ) : (
           content
         )}
-      </form>
+      </FormComponent>
     );
   },
 );

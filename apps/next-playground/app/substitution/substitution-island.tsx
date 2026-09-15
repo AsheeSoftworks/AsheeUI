@@ -23,8 +23,8 @@ export function SubstitutionIsland() {
             id: "gallery",
             label: "Gallery",
             href: "/",
-            linkComponent: NextLink,
-            linkProps: { "data-next-link": "true" },
+            component: NextLink,
+            componentProps: { "data-next-link": "true" },
           },
           { id: "current", label: "Substitution" },
         ]}
@@ -33,8 +33,8 @@ export function SubstitutionIsland() {
       <div className="flex items-center gap-4">
         <Link
           href="/"
-          linkComponent={NextLink}
-          linkProps={{ "data-next-link": "true" }}>
+          component={NextLink}
+          componentProps={{ "data-next-link": "true" }}>
           Back to the gallery
         </Link>
 
@@ -42,7 +42,7 @@ export function SubstitutionIsland() {
           name="Grace Hopper"
           src="/avatars/grace.png"
           component={NextImage}
-          imageProps={{ "data-next-image": "true", width: 40, height: 40 }}
+          componentProps={{ "data-next-image": "true", width: 40, height: 40 }}
         />
       </div>
     </div>

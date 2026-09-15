@@ -76,16 +76,18 @@ export interface LinkProps extends BaseLinkProps {
   children?: ReactNode;
 
   /**
-   * Custom link component to use instead of the native <a> tag.
-   * Useful for framework routing components like Next.js Link or TanStack Router Link.
+   * Component that replaces the native anchor, such as a framework router link.
+   *
+   * The substitution API is shared with `Image` and `Form`: `component` names
+   * the component and `componentProps` carries the props it needs.
    */
-  linkComponent?: ElementType;
+  component?: ElementType;
 
   /**
-   * Additional props to pass to the custom link component (e.g., { prefetch: true }).
-   * These take precedence over the component's own props.
+   * Additional props for `component` (for example `{ prefetch: true }`).
+   * These take precedence over the props the framework passes itself.
    */
-  linkProps?: Record<string, unknown>;
+  componentProps?: Record<string, unknown>;
 }
 
 /**
@@ -115,8 +117,8 @@ export interface LinkProps extends BaseLinkProps {
  * @param props.startIcon - Icon rendered before the link text.
  * @param props.endIcon - Icon rendered after the link text.
  * @param props.children - The link text content.
- * @param props.linkComponent - Custom link component for framework routing.
- * @param props.linkProps - Additional props for the custom link component.
+ * @param props.component - Component that replaces the native anchor.
+ * @param props.componentProps - Additional props for that component.
  * @param props.className - Extra CSS classes for the link.
  * @param props.target - Native target attribute.
  * @param props.rel - Native rel attribute.
@@ -145,8 +147,8 @@ export interface LinkProps extends BaseLinkProps {
  *
  * <Link
  *   href="/blog/post-1"
- *   linkComponent={NextLink}
- *   linkProps={{ prefetch: true }}
+ *   component={NextLink}
+ *   componentProps={{ prefetch: true }}
  *   isExternal={false}
  * >
  *   Read Post
@@ -186,8 +188,8 @@ export const Link = forwardRef<HTMLAnchorElement, LinkProps>(
       target,
       rel,
       onClick,
-      linkComponent,
-      linkProps: linkPropsProp,
+      component,
+      componentProps: componentPropsProp,
       ...props
     },
     ref,
@@ -306,19 +308,19 @@ export const Link = forwardRef<HTMLAnchorElement, LinkProps>(
       ...props, // any other native anchor attributes
     };
 
-    // Merge with user‑supplied linkProps (take precedence)
+    // Merge with user-supplied componentProps (they take precedence)
     const mergedLinkProps = {
       ...baseLinkProps,
-      ...(linkPropsProp || {}),
+      ...(componentPropsProp || {}),
     };
 
-    // Choose the component: custom or native <a>
-    const LinkComponent = linkComponent || "a";
+    // Choose the component: the substitution component or the native anchor
+    const Component = component || "a";
 
     // ─── 4. Render ──────────────────────────────────────────────────────────
 
     return (
-      <LinkComponent {...mergedLinkProps}>
+      <Component {...mergedLinkProps}>
         {startIcon && (
           <span
             className={cn(
@@ -346,7 +348,7 @@ export const Link = forwardRef<HTMLAnchorElement, LinkProps>(
             />
           )
         )}
-      </LinkComponent>
+      </Component>
     );
   },
 );

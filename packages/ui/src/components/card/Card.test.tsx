@@ -45,7 +45,7 @@ describe("Card", () => {
 
   it("exposes link semantics when a link is configured", () => {
     const { getByRole } = renderWithProvider(
-      <Card isClickable link={{ props: { href: "/blog/post-1" } }}>
+      <Card isClickable link={{ componentProps: { href: "/blog/post-1" } }}>
         Linked
       </Card>,
     );
