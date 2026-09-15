@@ -31,6 +31,7 @@ import {
   SIDEBAR_LAYOUT_ASIDE_STICKY_CLASS,
   SIDEBAR_LAYOUT_CLASS,
   SIDEBAR_LAYOUT_CONTENT_CLASS,
+  SIDEBAR_LAYOUT_ROW_CLASS,
   SIDEBAR_LAYOUT_WIDTH_CLASS,
 } from "./sidebar-layout-styles";
 
@@ -140,7 +141,7 @@ export const SidebarLayout = forwardRef<HTMLDivElement, SidebarLayoutProps>(
         className={cn(SIDEBAR_LAYOUT_CLASS, className)}
         {...rest}>
         {header}
-        <div className="flex w-full flex-1 flex-col lg:flex-row">
+        <div className={SIDEBAR_LAYOUT_ROW_CLASS}>
           <aside
             aria-label={sidebarLabel}
             className={cn(

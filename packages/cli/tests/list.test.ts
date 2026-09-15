@@ -305,10 +305,10 @@ describe("componentNameFromSpecifier", () => {
 
 /**
  * The public inventory asserted here is the reconciled framework inventory:
- * 51 public components, of which 34 shipped at 1.0 and 17 are the layout,
- * pattern and utility additions of 1.1. A change to the public export surface
- * must update this list in the same change, so the CLI cannot drift silently
- * from the real inventory.
+ * 61 public components, of which 34 shipped at 1.0, 17 are the layout, pattern
+ * and utility additions of 1.1, and 10 are the layout, composition and component
+ * additions of 2.0. A change to the public export surface must update this list in
+ * the same change, so the CLI cannot drift silently from the real inventory.
  */
 const PUBLIC_COMPONENT_INVENTORY = [
   "accordion",
@@ -322,14 +322,19 @@ const PUBLIC_COMPONENT_INVENTORY = [
   "calendar",
   "card",
   "carousel",
+  "centered",
   "chip",
   "clipboard",
   "container",
   "cta",
+  "data-table",
+  "docs-layout",
   "drawer",
   "dropmenu",
   "empty-state",
+  "error-state",
   "feature-grid",
+  "file-upload",
   "footer",
   "form",
   "grid",
@@ -338,6 +343,8 @@ const PUBLIC_COMPONENT_INVENTORY = [
   "input",
   "keyboard",
   "link",
+  "loading-state",
+  "marketing-layout",
   "marquee",
   "modal",
   "multi-select",
@@ -348,12 +355,15 @@ const PUBLIC_COMPONENT_INVENTORY = [
   "pricing-card",
   "radio",
   "resizable-screen",
+  "search-input",
   "section",
   "sidebar",
   "sidebar-layout",
   "skeleton",
   "spinner",
+  "split",
   "stack",
+  "stepper",
   "switch",
   "table",
   "tabs",

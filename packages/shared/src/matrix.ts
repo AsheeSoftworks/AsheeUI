@@ -102,6 +102,11 @@ export const COMPONENT_SUPPORT: readonly ComponentSupport[] = [
     native: "Carousel",
     note: "Native scrolls with the platform's own paging",
   },
+  {
+    name: "Centered",
+    module: "centered",
+    support: "shared",
+  },
   { name: "Chip", module: "chip", support: "shared" },
   {
     name: "Clipboard",
@@ -119,6 +124,20 @@ export const COMPONENT_SUPPORT: readonly ComponentSupport[] = [
   },
   { name: "CTA", module: "cta", support: "shared-api", native: "CTA" },
   {
+    name: "DataTable",
+    module: "data-table",
+    support: "shared-api",
+    native: "RowList",
+    note: "Native lists its rows instead of presenting a table, for the same reason Table does",
+  },
+  {
+    name: "DocsLayout",
+    module: "docs-layout",
+    support: "shared-api",
+    native: "Screen shell",
+    note: "Native shows a titled screen whose sections are stacked, because a three-column reading layout is a large-window web arrangement",
+  },
+  {
     name: "Drawer",
     module: "drawer",
     support: "shared-api",
@@ -134,11 +153,24 @@ export const COMPONENT_SUPPORT: readonly ComponentSupport[] = [
   },
   { name: "EmptyState", module: "empty-state", support: "shared" },
   {
+    name: "ErrorState",
+    module: "error-state",
+    support: "shared",
+    note: "Composes the framework's empty presentation with the error tone and a retry",
+  },
+  {
     name: "FeatureGrid",
     module: "feature-grid",
     support: "shared-api",
     native: "FeatureGrid",
     note: "Native wraps a row of cards instead of using a column grid",
+  },
+  {
+    name: "FileUpload",
+    module: "file-upload",
+    support: "shared-api",
+    native: "File picker",
+    note: "Native opens the platform's document picker, so a drop zone has no equivalent",
   },
   {
     name: "Footer",
@@ -170,6 +202,19 @@ export const COMPONENT_SUPPORT: readonly ComponentSupport[] = [
     support: "shared-api",
     native: "Link",
     note: "Native opens a URL or navigates through the application's navigator",
+  },
+  {
+    name: "LoadingState",
+    module: "loading-state",
+    support: "shared",
+    note: "Composes the framework's spinner, and claims room so a screen does not jump",
+  },
+  {
+    name: "MarketingLayout",
+    module: "marketing-layout",
+    support: "shared-api",
+    native: "Screen",
+    note: "Native stacks the sections in a scroll view and keeps the same landmarks",
   },
   {
     name: "Marquee",
@@ -227,6 +272,12 @@ export const COMPONENT_SUPPORT: readonly ComponentSupport[] = [
     support: "web-only",
     note: "A draggable split is a desktop idiom; native split views come from the platform",
   },
+  {
+    name: "SearchInput",
+    module: "search-input",
+    support: "shared",
+    note: "Composes the shared input contract with a search landmark and a clear control",
+  },
   { name: "Section", module: "section", support: "shared" },
   {
     name: "Sidebar",
@@ -244,7 +295,20 @@ export const COMPONENT_SUPPORT: readonly ComponentSupport[] = [
   },
   { name: "Skeleton", module: "skeleton", support: "shared" },
   { name: "Spinner", module: "spinner", support: "shared" },
+  {
+    name: "Split",
+    module: "split",
+    support: "shared-api",
+    native: "Stack",
+    note: "Native stacks the panes and lets the platform supply a split view where it has one",
+  },
   { name: "Stack", module: "stack", support: "shared" },
+  {
+    name: "Stepper",
+    module: "stepper",
+    support: "shared",
+    note: "A native stepper is the same ordered list, with touch-sized steps",
+  },
   { name: "Switch", module: "switch", support: "shared" },
   {
     name: "Table",

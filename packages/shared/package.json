@@ -1,6 +1,6 @@
 {
   "name": "@asheeui/shared",
-  "version": "0.1.0",
+  "version": "2.0.0",
   "private": true,
   "description": "Platform-neutral design language, component contracts and cascade helpers shared by the AsheeUI web and native packages.",
   "author": "Ashee Softworks <asheesoftworks@gmail.com>",

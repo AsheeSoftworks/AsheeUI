@@ -6,11 +6,20 @@
 import type { SidebarLayoutWidth } from "./sidebar-layout-config";
 
 /**
- * The shell: a full-height column that becomes a row from the `lg` breakpoint,
- * where the navigation column and the content sit beside each other.
+ * The shell: a full-height column of the header, the two-column row and the
+ * footer. The shell itself stays a column at every width, so the header and the
+ * footer always span the page rather than sitting beside the columns.
  */
 export const SIDEBAR_LAYOUT_CLASS =
-  "flex min-h-dvh w-full flex-col bg-background lg:flex-row";
+  "flex min-h-dvh w-full flex-col bg-background";
+
+/**
+ * The row that holds the navigation column and the content column.
+ * It stacks the two columns on a narrow screen and places them side by side
+ * from the `lg` breakpoint, which is where the shell becomes two columns.
+ */
+export const SIDEBAR_LAYOUT_ROW_CLASS =
+  "flex w-full flex-1 flex-col lg:flex-row";
 
 /** The navigation column, stacked above the content on a narrow screen. */
 export const SIDEBAR_LAYOUT_ASIDE_CLASS =

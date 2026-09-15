@@ -72,6 +72,14 @@ export interface EmptyStateProps extends BaseEmptyStateProps {
    */
   as?: ElementType;
 
+  /**
+   * Actions that carry a React handler.
+   * A configured action describes a destination rather than a callback, so an
+   * action that runs one (a retry, a dismissal) is passed here and rendered in
+   * the same group as the configured actions.
+   */
+  actions?: ReactNode;
+
   /** Content below the actions. */
   children?: ReactNode;
 }
@@ -108,8 +116,19 @@ export interface EmptyStateProps extends BaseEmptyStateProps {
  *   icon={<SearchIcon />}
  *   title="No campaigns match that filter"
  *   description="Try a different name, or clear the filter to see everything."
- *   primaryAction={{ label: "Clear filters", onClick: clearFilters }}
+ *   primaryAction={{ label: "See all campaigns", href: "/campaigns" }}
  * />
+ * ```
+ *
+ * A configured action describes a destination, so an action that runs a handler
+ * is passed as a child instead:
+ *
+ * ```tsx
+ * <EmptyState title="No campaigns match that filter">
+ *   <Button variant="solid" onClick={clearFilters}>
+ *     Clear filters
+ *   </Button>
+ * </EmptyState>
  * ```
  *
  * @see Skeleton - The loading presentation of the same region.
@@ -129,6 +148,7 @@ export const EmptyState = forwardRef<HTMLDivElement, EmptyStateProps>(
       role,
       as,
       className,
+      actions,
       children,
       ...rest
     },
@@ -178,8 +198,9 @@ export const EmptyState = forwardRef<HTMLDivElement, EmptyStateProps>(
         <ActionGroup
           primaryAction={primaryAction}
           secondaryAction={secondaryAction}
-          align="center"
-        />
+          align="center">
+          {actions}
+        </ActionGroup>
 
         {children}
       </Component>

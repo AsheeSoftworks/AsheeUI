@@ -72,3 +72,20 @@ export const SPACE_PADDING_X_CLASS: Record<Space, string> = {
   xl: "px-6 sm:px-8 lg:px-12",
   "2xl": "px-8 sm:px-12 lg:px-16",
 };
+
+/**
+ * Minimum height classes for a region that claims space before it places its
+ * content.
+ * The scale is deliberately coarse: it exists so a layout can claim a region of
+ * the page (a centred block, a loading region), not so it can express every
+ * height Tailwind supports.
+ */
+export const SPACE_MIN_HEIGHT_CLASS: Record<Space, string> = {
+  none: "",
+  xs: "min-h-16",
+  sm: "min-h-24",
+  md: "min-h-48",
+  lg: "min-h-72",
+  xl: "min-h-96",
+  "2xl": "min-h-screen",
+};

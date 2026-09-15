@@ -44,10 +44,15 @@ describe("SidebarLayout", () => {
       </SidebarLayout>,
     );
     const shell = container.firstElementChild as HTMLElement;
+    const row = shell.firstElementChild as HTMLElement;
     const aside = container.querySelector("aside") as HTMLElement;
 
+    // The shell stays a column at every width, so the header and the footer span
+    // the page; the row inside it is what becomes two columns.
     expect(shell.className).toContain("flex-col");
-    expect(shell.className).toContain("lg:flex-row");
+    expect(shell.className).not.toContain("lg:flex-row");
+    expect(row.className).toContain("flex-col");
+    expect(row.className).toContain("lg:flex-row");
     expect(aside.className).toContain("lg:w-64");
     expect(aside.className).toContain("lg:sticky");
     expect(aside.className).toContain("lg:border-r");
