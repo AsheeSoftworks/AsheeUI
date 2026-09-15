@@ -18,6 +18,11 @@ import { RADIUS_CLASS, resolveVariantClass } from "../../shared";
 import { cn } from "../../utils";
 import { resolveCascade, resolveClassKey } from "../../utils/resolve-token";
 import {
+  type AlertConfig,
+  type AlertType,
+  FALLBACK_ALERT_CONFIG,
+} from "./alert-config";
+import {
   ALERT_BASE_CLASS,
   ALERT_DISMISS_CLASS,
   ALERT_ICON_CLASS,
@@ -25,11 +30,6 @@ import {
   ALERT_TYPE_ICON_CLASS,
   ALERT_TYPE_ROLE,
 } from "./alert-styles";
-import {
-  type AlertConfig,
-  type AlertType,
-  FALLBACK_ALERT_CONFIG,
-} from "./alert-config";
 
 type BaseAlertProps = AlertConfig &
   Omit<HTMLAttributes<HTMLDivElement>, "color" | "title" | "content">;

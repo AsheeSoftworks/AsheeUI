@@ -17,7 +17,12 @@ export type TypographySize = "xs" | "sm" | "md" | "lg" | "xl" | "2xl" | "3xl";
 export type TypographyWeight = "normal" | "medium" | "semibold" | "bold";
 
 /** The available line-height tokens. */
-export type TypographyLeading = "tight" | "snug" | "normal" | "relaxed" | "loose";
+export type TypographyLeading =
+  | "tight"
+  | "snug"
+  | "normal"
+  | "relaxed"
+  | "loose";
 
 /** The available letter-spacing tokens. */
 export type TypographyTracking =
@@ -145,65 +150,77 @@ export const TYPOGRAPHY_ALIGN_CLASS: Record<TypographyAlign, string> = {
  * This table is the documentation source for {@link TYPOGRAPHY_ROLE_CLASS};
  * a test asserts the two can never drift.
  */
-export const TYPOGRAPHY_ROLE_TOKEN: Record<TypographyRole, TypographyRoleTokens> =
-  {
-    display: { size: "3xl", weight: "semibold", leading: "tight", tracking: "tight" },
-    "heading-xl": {
-      size: "2xl",
-      weight: "semibold",
-      leading: "tight",
-      tracking: "tight",
-    },
-    "heading-lg": {
-      size: "xl",
-      weight: "semibold",
-      leading: "snug",
-      tracking: "normal",
-    },
-    "heading-md": {
-      size: "lg",
-      weight: "semibold",
-      leading: "snug",
-      tracking: "normal",
-    },
-    "heading-sm": {
-      size: "md",
-      weight: "semibold",
-      leading: "snug",
-      tracking: "normal",
-    },
-    "body-lg": {
-      size: "lg",
-      weight: "normal",
-      leading: "relaxed",
-      tracking: "normal",
-    },
-    "body-md": {
-      size: "md",
-      weight: "normal",
-      leading: "normal",
-      tracking: "normal",
-    },
-    "body-sm": {
-      size: "sm",
-      weight: "normal",
-      leading: "normal",
-      tracking: "normal",
-    },
-    label: { size: "sm", weight: "medium", leading: "normal", tracking: "normal" },
-    caption: {
-      size: "xs",
-      weight: "normal",
-      leading: "normal",
-      tracking: "normal",
-    },
-    overline: {
-      size: "xs",
-      weight: "semibold",
-      leading: "normal",
-      tracking: "wider",
-    },
-  };
+export const TYPOGRAPHY_ROLE_TOKEN: Record<
+  TypographyRole,
+  TypographyRoleTokens
+> = {
+  display: {
+    size: "3xl",
+    weight: "semibold",
+    leading: "tight",
+    tracking: "tight",
+  },
+  "heading-xl": {
+    size: "2xl",
+    weight: "semibold",
+    leading: "tight",
+    tracking: "tight",
+  },
+  "heading-lg": {
+    size: "xl",
+    weight: "semibold",
+    leading: "snug",
+    tracking: "normal",
+  },
+  "heading-md": {
+    size: "lg",
+    weight: "semibold",
+    leading: "snug",
+    tracking: "normal",
+  },
+  "heading-sm": {
+    size: "md",
+    weight: "semibold",
+    leading: "snug",
+    tracking: "normal",
+  },
+  "body-lg": {
+    size: "lg",
+    weight: "normal",
+    leading: "relaxed",
+    tracking: "normal",
+  },
+  "body-md": {
+    size: "md",
+    weight: "normal",
+    leading: "normal",
+    tracking: "normal",
+  },
+  "body-sm": {
+    size: "sm",
+    weight: "normal",
+    leading: "normal",
+    tracking: "normal",
+  },
+  label: {
+    size: "sm",
+    weight: "medium",
+    leading: "normal",
+    tracking: "normal",
+  },
+  caption: {
+    size: "xs",
+    weight: "normal",
+    leading: "normal",
+    tracking: "normal",
+  },
+  overline: {
+    size: "xs",
+    weight: "semibold",
+    leading: "normal",
+    tracking: "wider",
+  },
+};
 
 /**
  * The semantic element each role renders by default.
@@ -244,4 +261,3 @@ export const TYPOGRAPHY_ROLE_CLASS: Record<TypographyRole, string> = {
   caption: "text-xs font-normal leading-normal tracking-normal",
   overline: "text-xs font-semibold leading-normal tracking-wider",
 };
-

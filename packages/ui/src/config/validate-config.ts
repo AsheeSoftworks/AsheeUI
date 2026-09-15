@@ -242,7 +242,9 @@ function checkTypographyConfig(
     }
 
     const acceptedKeys = [
-      ...Object.keys(TYPOGRAPHY_ROLE_TOKEN[role as keyof typeof TYPOGRAPHY_ROLE_TOKEN]),
+      ...Object.keys(
+        TYPOGRAPHY_ROLE_TOKEN[role as keyof typeof TYPOGRAPHY_ROLE_TOKEN],
+      ),
       ...ROLE_OVERRIDE_EXTRA_KEYS,
     ];
 
@@ -365,8 +367,7 @@ export function assertValidConfig(
   const warnings = issues.filter((issue) => issue.severity === "warning");
 
   if (warnings.length > 0 && process.env.NODE_ENV !== "production") {
-    const warn =
-      options.warn ?? ((message: string) => console.warn(message));
+    const warn = options.warn ?? ((message: string) => console.warn(message));
     for (const issue of warnings) {
       warn(`[asheeui] ${formatIssue(issue)}`);
     }

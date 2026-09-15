@@ -23,7 +23,12 @@ export {
 } from "./dom";
 export { click, focus, press, settle, waitFor } from "./events";
 export { Gallery, type GalleryProps } from "./gallery";
-export { hydrateMarkup, parseMarkup, renderServerMarkup, type HydrationResult } from "./harness";
+export {
+  type HydrationResult,
+  hydrateMarkup,
+  parseMarkup,
+  renderServerMarkup,
+} from "./harness";
 export { gallerySectionIds, inspectGallery } from "./inspect";
 export { GALLERY_INTERACTIONS, runGalleryInteractions } from "./interactions";
 export { GALLERY_SECTIONS } from "./sections";

@@ -96,9 +96,7 @@ describe("Sidebar", () => {
 
     expect(onCollapseChange).toHaveBeenCalledWith(true);
     // The sidebar followed its own state, so the control now offers to expand.
-    expect(
-      getByRole("button", { name: "Expand sidebar" }),
-    ).toBeInTheDocument();
+    expect(getByRole("button", { name: "Expand sidebar" })).toBeInTheDocument();
   });
 
   // Defect register (M1, D-11): the active item was marked only by classes.

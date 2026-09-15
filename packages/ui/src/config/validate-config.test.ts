@@ -172,9 +172,9 @@ describe("assertValidConfig", () => {
       assertValidConfig(asConfig({ bogus: true }), { warn });
       expect(warn).not.toHaveBeenCalled();
 
-      expect(() => assertValidConfig(asConfig({ defaultColor: "royal" }))).toThrow(
-        Error,
-      );
+      expect(() =>
+        assertValidConfig(asConfig({ defaultColor: "royal" })),
+      ).toThrow(Error);
     } finally {
       vi.unstubAllEnvs();
     }

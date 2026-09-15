@@ -60,10 +60,7 @@ describe("Next.js playground", () => {
   });
 
   it("hydrates the island markup and keeps every contract", () => {
-    const result = hydrateMarkup(
-      renderServerMarkup(appTree()),
-      appTree(),
-    );
+    const result = hydrateMarkup(renderServerMarkup(appTree()), appTree());
 
     try {
       expect(result.errors).toEqual([]);
@@ -74,10 +71,7 @@ describe("Next.js playground", () => {
   });
 
   it("performs the interactions a consumer performs", async () => {
-    const result = hydrateMarkup(
-      renderServerMarkup(appTree()),
-      appTree(),
-    );
+    const result = hydrateMarkup(renderServerMarkup(appTree()), appTree());
 
     try {
       expect(await runGalleryInteractions(result.container)).toEqual([]);

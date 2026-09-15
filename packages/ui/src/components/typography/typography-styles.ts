@@ -25,7 +25,9 @@ import { cn } from "../../utils";
  * @param tokens - Complete size/style tokens.
  * @returns A space-separated class string of static utilities.
  */
-export function composeTypographyRoleClass(tokens: TypographyRoleTokens): string {
+export function composeTypographyRoleClass(
+  tokens: TypographyRoleTokens,
+): string {
   return cn(
     TYPOGRAPHY_SIZE_CLASS[tokens.size],
     TYPOGRAPHY_WEIGHT_CLASS[tokens.weight],

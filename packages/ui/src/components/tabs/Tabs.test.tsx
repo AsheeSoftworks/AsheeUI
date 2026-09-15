@@ -1,5 +1,10 @@
 import { describe, expect, it, vi } from "vitest";
-import { createUser, pressArrow, pressKey, renderWithProvider } from "../../test";
+import {
+  createUser,
+  pressArrow,
+  pressKey,
+  renderWithProvider,
+} from "../../test";
 import { Tabs } from "./Tabs";
 
 const TABS = [
@@ -16,7 +21,9 @@ describe("Tabs", () => {
   });
 
   it("selects the first tab by default and keeps only it focusable", () => {
-    const { getByRole, getAllByRole } = renderWithProvider(<Tabs tabs={TABS} />);
+    const { getByRole, getAllByRole } = renderWithProvider(
+      <Tabs tabs={TABS} />,
+    );
     const first = getByRole("tab", { name: "First" });
     const second = getByRole("tab", { name: "Second" });
 

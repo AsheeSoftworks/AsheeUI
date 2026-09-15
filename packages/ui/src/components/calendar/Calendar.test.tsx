@@ -37,8 +37,12 @@ describe("Calendar", () => {
 
     await user.click(getByRole("textbox"));
 
-    expect(screen.getByRole("button", { name: "Previous month" })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Next month" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Previous month" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Next month" }),
+    ).toBeInTheDocument();
   });
 
   it("reports the selected day and closes", async () => {
@@ -55,9 +59,7 @@ describe("Calendar", () => {
     expect(onChange.mock.calls.at(-1)?.[0]).toBeInstanceOf(Date);
 
     await waitFor(() => {
-      expect(
-        screen.queryByRole("button", { name: "Next month" }),
-      ).toBeNull();
+      expect(screen.queryByRole("button", { name: "Next month" })).toBeNull();
     });
   });
 
@@ -87,9 +89,9 @@ describe("Calendar", () => {
 
     expect(within(grid).getAllByRole("columnheader")).toHaveLength(7);
     expect(within(grid).getAllByRole("row").length).toBeGreaterThan(1);
-    expect(
-      within(grid).getAllByRole("gridcell").length,
-    ).toBeGreaterThanOrEqual(28);
+    expect(within(grid).getAllByRole("gridcell").length).toBeGreaterThanOrEqual(
+      28,
+    );
     expect(grid).toHaveAccessibleName(
       new RegExp(String(new Date().getFullYear())),
     );
@@ -101,7 +103,11 @@ describe("Calendar", () => {
   it("exposes the selected day and labels every day it renders", async () => {
     const user = createUser();
     const { getByRole } = renderWithProvider(
-      <Calendar label="Date" mode="datetime" selected={new Date(2026, 4, 14)} />,
+      <Calendar
+        label="Date"
+        mode="datetime"
+        selected={new Date(2026, 4, 14)}
+      />,
     );
 
     await user.click(getByRole("textbox"));

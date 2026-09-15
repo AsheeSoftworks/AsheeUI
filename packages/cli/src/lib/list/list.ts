@@ -84,7 +84,6 @@ async function isAsheeuiPackageRoot(p: string): Promise<boolean> {
   return pkg?.name === "asheeui";
 }
 
-
 /**
  * Collect the candidate entry-module paths declared by a parsed
  * `package.json`.

@@ -24,7 +24,9 @@ function NotifyButton() {
 function OutsideProviderProbe() {
   const { success, toasts } = useToast();
 
-  return <span data-testid="probe">{`${success("ignored")}|${toasts.length}`}</span>;
+  return (
+    <span data-testid="probe">{`${success("ignored")}|${toasts.length}`}</span>
+  );
 }
 
 describe("Toast", () => {

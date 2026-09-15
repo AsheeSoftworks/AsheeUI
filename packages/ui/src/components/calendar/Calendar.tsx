@@ -31,7 +31,6 @@ import { ASHEE_LAYER } from "../../utils/stacking";
 import type { FieldSizeKey } from "../field/field-config";
 import { Input, type InputProps } from "../input/Input";
 import { FALLBACK_MENU_CONFIG, useMenuFloating } from "../menu";
-import { DateGrid } from "./DateGrid";
 import {
   formatDisplay,
   getDefaultPlaceholder,
@@ -44,6 +43,7 @@ import {
   type CalendarPickerConfig,
   FALLBACK_DATE_PICKER_CONFIG,
 } from "./calendar-config";
+import { DateGrid } from "./DateGrid";
 
 /**
  * Props for the picker (calendar popover).

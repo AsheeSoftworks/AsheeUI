@@ -16,8 +16,7 @@ describe("Link", () => {
       <Link
         href="https://example.com"
         target="_blank"
-        rel="noopener noreferrer"
-      >
+        rel="noopener noreferrer">
         External
       </Link>,
     );
@@ -70,8 +69,7 @@ describe("Link", () => {
       <Link
         href="/docs"
         startIcon={<span>start-icon</span>}
-        endIcon={<span>end-icon</span>}
-      >
+        endIcon={<span>end-icon</span>}>
         Docs
       </Link>,
     );

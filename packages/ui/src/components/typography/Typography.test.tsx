@@ -8,7 +8,9 @@ import { Typography } from "./Typography";
 
 describe("Typography", () => {
   it("renders the default role as a paragraph with the body treatment", () => {
-    const { getByText } = renderWithProvider(<Typography>Body copy</Typography>);
+    const { getByText } = renderWithProvider(
+      <Typography>Body copy</Typography>,
+    );
     const element = getByText("Body copy");
 
     expect(element.tagName).toBe("P");
@@ -83,7 +85,9 @@ describe("Typography", () => {
 
     const overridden = renderWithProvider(
       <Typography role="heading-md">Overridden</Typography>,
-      { config: makeConfig({ components: { typography: { role: "caption" } } }) },
+      {
+        config: makeConfig({ components: { typography: { role: "caption" } } }),
+      },
     );
     expect(overridden.getByText("Overridden").className).toContain("text-lg");
   });

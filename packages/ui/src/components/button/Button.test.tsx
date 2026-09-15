@@ -53,7 +53,9 @@ describe("Button", () => {
       { config: makeConfig({ defaultVariant: "solid" }) },
     );
 
-    expect(hasClass(getByRole("button").className, "bg-transparent")).toBe(true);
+    expect(hasClass(getByRole("button").className, "bg-transparent")).toBe(
+      true,
+    );
   });
 
   it("inherits the global default variant when no prop is given", () => {
@@ -65,15 +67,12 @@ describe("Button", () => {
   });
 
   it("lets component configuration override the global default", () => {
-    const { getByRole } = renderWithProvider(
-      <Button>Configured</Button>,
-      {
-        config: makeConfig({
-          defaultVariant: "ghost",
-          components: { button: { variant: "solid" } },
-        }),
-      },
-    );
+    const { getByRole } = renderWithProvider(<Button>Configured</Button>, {
+      config: makeConfig({
+        defaultVariant: "ghost",
+        components: { button: { variant: "solid" } },
+      }),
+    });
 
     expect(hasClass(getByRole("button").className, "bg-primary")).toBe(true);
   });
@@ -89,7 +88,9 @@ describe("Button", () => {
 
   it("honours the animate option", () => {
     const animated = renderWithProvider(<Button>Animated</Button>);
-    const staticButton = renderWithProvider(<Button animate={false}>Static</Button>);
+    const staticButton = renderWithProvider(
+      <Button animate={false}>Static</Button>,
+    );
 
     expect(
       animated.getByRole("button", { name: "Animated" }).className,

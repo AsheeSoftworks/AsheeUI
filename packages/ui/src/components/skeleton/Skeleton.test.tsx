@@ -30,9 +30,7 @@ describe("Skeleton", () => {
   });
 
   it("shimmers only through the reduced-motion-safe class", () => {
-    const animated = renderWithProvider(
-      <Skeleton id="animated" />,
-    );
+    const animated = renderWithProvider(<Skeleton id="animated" />);
     const still = renderWithProvider(
       <Skeleton id="still" isAnimated={false} />,
     );
@@ -51,9 +49,7 @@ describe("Skeleton", () => {
     const { container } = renderWithProvider(<Skeleton id="configured" />, {
       config: makeComponentConfig("skeleton", { isAnimated: false }),
     });
-    const placeholder = container.querySelector(
-      "#configured",
-    ) as HTMLElement;
+    const placeholder = container.querySelector("#configured") as HTMLElement;
 
     expect(placeholder.className).not.toContain("animate-pulse");
   });

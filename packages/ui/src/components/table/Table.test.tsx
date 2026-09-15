@@ -21,7 +21,11 @@ const DATA: Row[] = [
 describe("Table", () => {
   it("renders a semantic table with header association", () => {
     const { getByRole, getByText } = renderWithProvider(
-      <Table data={DATA} columns={COLUMNS} rowKeyAccessor={(row: Row) => row.id} />,
+      <Table
+        data={DATA}
+        columns={COLUMNS}
+        rowKeyAccessor={(row: Row) => row.id}
+      />,
     );
 
     expect(getByRole("table")).toBeInTheDocument();
@@ -46,7 +50,11 @@ describe("Table", () => {
 
   it("keeps rows inert unless they are interactive", () => {
     const { getByText } = renderWithProvider(
-      <Table data={DATA} columns={COLUMNS} rowKeyAccessor={(row: Row) => row.id} />,
+      <Table
+        data={DATA}
+        columns={COLUMNS}
+        rowKeyAccessor={(row: Row) => row.id}
+      />,
     );
     const row = getByText("Ada").closest("tr");
 

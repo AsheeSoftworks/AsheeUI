@@ -7,11 +7,7 @@
 
 "use client";
 
-import {
-  forwardRef,
-  type HTMLAttributes,
-  type ReactNode,
-} from "react";
+import { forwardRef, type HTMLAttributes, type ReactNode } from "react";
 import { ChevronLeftIcon } from "../../icons/ChevronLeftIcon";
 import { ChevronRightIcon } from "../../icons/ChevronRightIcon";
 import { useAsheeConfig } from "../../libs/context";
@@ -21,16 +17,16 @@ import { cn } from "../../utils";
 import { resolveCascade, resolveRadiusKey } from "../../utils/resolve-token";
 import { Button } from "../button";
 import { Link } from "../link";
+import { getPaginationRange } from "./pagination.helpers";
 import {
-  type PaginationConfig,
   FALLBACK_PAGINATION_CONFIG,
+  type PaginationConfig,
 } from "./pagination-config";
 import {
   PAGINATION_BASE_CLASS,
   PAGINATION_GAP_CLASS,
   PAGINATION_LIST_CLASS,
 } from "./pagination-styles";
-import { getPaginationRange } from "./pagination.helpers";
 
 type BasePaginationProps = PaginationConfig &
   Omit<HTMLAttributes<HTMLElement>, "color" | "onChange">;
@@ -292,7 +288,12 @@ export const Pagination = forwardRef<HTMLElement, PaginationProps>(
               </li>
             ) : (
               <li key={item}>
-                {renderControl(item, `Page ${item}`, item, item === currentPage)}
+                {renderControl(
+                  item,
+                  `Page ${item}`,
+                  item,
+                  item === currentPage,
+                )}
               </li>
             ),
           )}

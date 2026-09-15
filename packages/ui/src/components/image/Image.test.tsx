@@ -1,5 +1,9 @@
 import { describe, expect, it, vi } from "vitest";
-import { fireEvent, renderToServerString, renderWithProvider } from "../../test";
+import {
+  fireEvent,
+  renderToServerString,
+  renderWithProvider,
+} from "../../test";
 import { Image } from "./Image";
 
 describe("Image", () => {
@@ -53,9 +57,7 @@ describe("Image", () => {
   });
 
   it("renders to markup on the server without browser access", () => {
-    const html = renderToServerString(
-      <Image src="/photo.jpg" alt="A photo" />,
-    );
+    const html = renderToServerString(<Image src="/photo.jpg" alt="A photo" />);
 
     expect(html).toContain('src="/photo.jpg"');
     expect(html).toContain('alt="A photo"');

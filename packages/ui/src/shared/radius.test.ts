@@ -6,9 +6,7 @@ const RADIUS_TOKENS: Radius[] = ["none", "xs", "sm", "md", "lg", "xl", "full"];
 
 describe("RADIUS_CLASS", () => {
   it("maps every radius token to a static Tailwind class", () => {
-    expect(Object.keys(RADIUS_CLASS).sort()).toEqual(
-      [...RADIUS_TOKENS].sort(),
-    );
+    expect(Object.keys(RADIUS_CLASS).sort()).toEqual([...RADIUS_TOKENS].sort());
 
     for (const token of RADIUS_TOKENS) {
       expect(RADIUS_CLASS[token]).toMatch(

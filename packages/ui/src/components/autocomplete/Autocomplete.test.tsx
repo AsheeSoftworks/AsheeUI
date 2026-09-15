@@ -28,7 +28,9 @@ describe("Autocomplete", () => {
 
   it("filters suggestions as the user types", async () => {
     const user = createUser();
-    const { getByRole } = renderWithProvider(<Autocomplete options={OPTIONS} />);
+    const { getByRole } = renderWithProvider(
+      <Autocomplete options={OPTIONS} />,
+    );
     const input = getByRole("combobox");
 
     await user.click(input);
@@ -73,7 +75,9 @@ describe("Autocomplete", () => {
   // suggestion through `aria-activedescendant`.
   it("exposes listbox, option and active-suggestion semantics", async () => {
     const user = createUser();
-    const { getByRole } = renderWithProvider(<Autocomplete options={OPTIONS} />);
+    const { getByRole } = renderWithProvider(
+      <Autocomplete options={OPTIONS} />,
+    );
     const input = getByRole("combobox");
 
     await user.click(input);
@@ -123,7 +127,9 @@ describe("Autocomplete", () => {
 
   it("dismisses the suggestions with Escape and keeps the typed text", async () => {
     const user = createUser();
-    const { getByRole } = renderWithProvider(<Autocomplete options={OPTIONS} />);
+    const { getByRole } = renderWithProvider(
+      <Autocomplete options={OPTIONS} />,
+    );
     const input = getByRole("combobox");
 
     await user.click(input);
@@ -144,7 +150,9 @@ describe("Autocomplete", () => {
   // announce when a query matched nothing (`COMP-128`, `TEST-011`).
   it("announces clearly when a query matches no suggestions", async () => {
     const user = createUser();
-    const { getByRole } = renderWithProvider(<Autocomplete options={OPTIONS} />);
+    const { getByRole } = renderWithProvider(
+      <Autocomplete options={OPTIONS} />,
+    );
     const input = getByRole("combobox");
 
     await user.click(input);

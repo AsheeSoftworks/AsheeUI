@@ -15,9 +15,9 @@ describe("cn", () => {
   });
 
   it("supports conditional objects and arrays", () => {
-    expect(cn(["flex", { "items-center": true, "justify-between": false }])).toBe(
-      "flex items-center",
-    );
+    expect(
+      cn(["flex", { "items-center": true, "justify-between": false }]),
+    ).toBe("flex items-center");
   });
 
   it("treats utilities in the same group as conflicting, last one wins", () => {

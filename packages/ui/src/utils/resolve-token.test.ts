@@ -12,7 +12,9 @@ describe("resolveCascade", () => {
   });
 
   it("falls back through component config, global default and hard fallback", () => {
-    expect(resolveCascade(undefined, "solid", "faded", "bordered")).toBe("solid");
+    expect(resolveCascade(undefined, "solid", "faded", "bordered")).toBe(
+      "solid",
+    );
     expect(resolveCascade(undefined, undefined, "faded", "bordered")).toBe(
       "faded",
     );

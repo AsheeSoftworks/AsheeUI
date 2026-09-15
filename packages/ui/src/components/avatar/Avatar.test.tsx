@@ -58,13 +58,13 @@ describe("Avatar", () => {
       <Avatar name="Ada Lovelace" alt="Signed in as Ada" />,
     );
 
-    expect(
-      getByRole("img", { name: "Signed in as Ada" }),
-    ).toBeInTheDocument();
+    expect(getByRole("img", { name: "Signed in as Ada" })).toBeInTheDocument();
   });
 
   it("hides an avatar that names nothing from assistive technology", () => {
-    const { container } = renderWithProvider(<Avatar id="mark" src="/logo.png" />);
+    const { container } = renderWithProvider(
+      <Avatar id="mark" src="/logo.png" />,
+    );
     const avatar = container.querySelector("#mark") as HTMLElement;
 
     expect(avatar).toHaveAttribute("aria-hidden", "true");
@@ -73,15 +73,24 @@ describe("Avatar", () => {
   });
 
   it("resolves the configured size, colour and radius and honours overrides", () => {
-    const configured = renderWithProvider(<Avatar id="configured" name="Ada" />, {
-      config: makeComponentConfig("avatar", {
-        size: "lg",
-        color: "danger",
-        radius: "none",
-      }),
-    });
+    const configured = renderWithProvider(
+      <Avatar id="configured" name="Ada" />,
+      {
+        config: makeComponentConfig("avatar", {
+          size: "lg",
+          color: "danger",
+          radius: "none",
+        }),
+      },
+    );
     const overridden = renderWithProvider(
-      <Avatar id="overridden" name="Ada" size="sm" color="success" radius="full" />,
+      <Avatar
+        id="overridden"
+        name="Ada"
+        size="sm"
+        color="success"
+        radius="full"
+      />,
       {
         config: makeComponentConfig("avatar", {
           size: "lg",

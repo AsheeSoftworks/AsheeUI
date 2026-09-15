@@ -20,6 +20,10 @@ import { cn } from "../../utils";
 import { resolveCascade, resolveClassKey } from "../../utils/resolve-token";
 import { Link } from "../link";
 import {
+  type BreadcrumbConfig,
+  FALLBACK_BREADCRUMB_CONFIG,
+} from "./breadcrumb-config";
+import {
   BREADCRUMB_BASE_CLASS,
   BREADCRUMB_CURRENT_CLASS,
   BREADCRUMB_FONT_CLASS,
@@ -27,10 +31,6 @@ import {
   BREADCRUMB_LIST_CLASS,
   BREADCRUMB_SEPARATOR_ICON_CLASS,
 } from "./breadcrumb-styles";
-import {
-  type BreadcrumbConfig,
-  FALLBACK_BREADCRUMB_CONFIG,
-} from "./breadcrumb-config";
 
 /**
  * One step of a breadcrumb trail.
@@ -148,7 +148,15 @@ export interface BreadcrumbProps extends BaseBreadcrumbProps {
  */
 export const Breadcrumb = forwardRef<HTMLElement, BreadcrumbProps>(
   (
-    { items, separator, label = "Breadcrumb", size, color, className, ...props },
+    {
+      items,
+      separator,
+      label = "Breadcrumb",
+      size,
+      color,
+      className,
+      ...props
+    },
     ref,
   ) => {
     const config = useAsheeConfig();
@@ -206,7 +214,8 @@ export const Breadcrumb = forwardRef<HTMLElement, BreadcrumbProps>(
         <ol className={cn(BREADCRUMB_LIST_CLASS, gapClass)}>
           {items.map((item, index) => {
             const isCurrent =
-              item.isCurrent ?? (!hasMarkedCurrent && index === items.length - 1);
+              item.isCurrent ??
+              (!hasMarkedCurrent && index === items.length - 1);
 
             return (
               <li

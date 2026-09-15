@@ -1,5 +1,5 @@
 import { Gallery } from "@asheeui/e2e-gallery";
-import { Link, createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 
 /**
  * The gallery route, which is the application's home page.

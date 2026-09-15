@@ -121,24 +121,21 @@ export const DateGrid = memo(function DateGrid({
    * Moves the navigated day, follows it across month boundaries, and moves
    * focus to its button once the new month has rendered.
    */
-  const moveNavigatedDate = useCallback(
-    (days: number) => {
-      setNavigatedDate((current) => {
-        const next = new Date(
-          current.getFullYear(),
-          current.getMonth(),
-          current.getDate() + days,
-        );
+  const moveNavigatedDate = useCallback((days: number) => {
+    setNavigatedDate((current) => {
+      const next = new Date(
+        current.getFullYear(),
+        current.getMonth(),
+        current.getDate() + days,
+      );
 
-        setViewYear(next.getFullYear());
-        setViewMonth(next.getMonth());
-        shouldMoveFocus.current = true;
+      setViewYear(next.getFullYear());
+      setViewMonth(next.getMonth());
+      shouldMoveFocus.current = true;
 
-        return next;
-      });
-    },
-    [],
-  );
+      return next;
+    });
+  }, []);
 
   useEffect(() => {
     if (!shouldMoveFocus.current) return;

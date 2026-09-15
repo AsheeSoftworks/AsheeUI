@@ -8,10 +8,7 @@
  */
 
 import type { Command } from "commander";
-import {
-  hasBlockingFailure,
-  runDoctorChecks,
-} from "../lib/doctor/doctor";
+import { hasBlockingFailure, runDoctorChecks } from "../lib/doctor/doctor";
 import { renderDoctorReport } from "../lib/doctor/render-report";
 
 /**

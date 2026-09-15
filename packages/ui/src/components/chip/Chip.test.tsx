@@ -1,5 +1,10 @@
 import { describe, expect, it, vi } from "vitest";
-import { createUser, expectState, renderWithProvider, within } from "../../test";
+import {
+  createUser,
+  expectState,
+  renderWithProvider,
+  within,
+} from "../../test";
 import { Chip } from "./Chip";
 
 describe("Chip", () => {

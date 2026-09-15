@@ -189,7 +189,6 @@ function isPartialUtilityToken(token: string): boolean {
   );
 }
 
-
 /** Names in Tailwind's default palette, which AsheeUI theming must never use. */
 const PALETTE_NAMES: readonly string[] = [
   "red",
@@ -250,4 +249,3 @@ export function scanForRawPaletteColours(source: string): string[] {
 
   return findings;
 }
-

@@ -10,7 +10,10 @@ const PANELS = [
 describe("ResizableScreen", () => {
   it("exposes a focusable separator with its value range", () => {
     const { getByRole } = renderWithProvider(
-      <ResizableScreen>{PANELS[0]}{PANELS[1]}</ResizableScreen>,
+      <ResizableScreen>
+        {PANELS[0]}
+        {PANELS[1]}
+      </ResizableScreen>,
     );
     const separator = getByRole("separator", { name: "Resize panel split" });
 
@@ -25,7 +28,8 @@ describe("ResizableScreen", () => {
     const onSizeChange = vi.fn();
     const { getByRole } = renderWithProvider(
       <ResizableScreen step={5} onSizeChange={onSizeChange}>
-        {PANELS[0]}{PANELS[1]}
+        {PANELS[0]}
+        {PANELS[1]}
       </ResizableScreen>,
     );
     const separator = getByRole("separator");
@@ -43,7 +47,10 @@ describe("ResizableScreen", () => {
   it("clamps keyboard resizing to the maximum size", async () => {
     const user = createUser();
     const { getByRole } = renderWithProvider(
-      <ResizableScreen maxSize={60}>{PANELS[0]}{PANELS[1]}</ResizableScreen>,
+      <ResizableScreen maxSize={60}>
+        {PANELS[0]}
+        {PANELS[1]}
+      </ResizableScreen>,
     );
     const separator = getByRole("separator");
 
@@ -56,7 +63,10 @@ describe("ResizableScreen", () => {
   it("uses vertical keys when the orientation is vertical", async () => {
     const user = createUser();
     const { getByRole } = renderWithProvider(
-      <ResizableScreen orientation="vertical">{PANELS[0]}{PANELS[1]}</ResizableScreen>,
+      <ResizableScreen orientation="vertical">
+        {PANELS[0]}
+        {PANELS[1]}
+      </ResizableScreen>,
     );
     const separator = getByRole("separator");
 
@@ -70,7 +80,10 @@ describe("ResizableScreen", () => {
 
   it("renders both panels", () => {
     const { getByText } = renderWithProvider(
-      <ResizableScreen>{PANELS[0]}{PANELS[1]}</ResizableScreen>,
+      <ResizableScreen>
+        {PANELS[0]}
+        {PANELS[1]}
+      </ResizableScreen>,
     );
 
     expect(getByText("Primary")).toBeInTheDocument();
