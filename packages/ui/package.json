@@ -78,6 +78,7 @@
   ],
   "scripts": {
     "build": "vite build",
+    "prepublishOnly": "pnpm build",
     "test": "vitest run",
     "test:watch": "vitest"
   },
