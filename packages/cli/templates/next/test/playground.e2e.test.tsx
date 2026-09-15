@@ -10,16 +10,16 @@
  */
 
 import { readFileSync } from "node:fs";
-import { describe, expect, it } from "vitest";
-import { GalleryIsland } from "../app/gallery-island";
+import { PlaygroundProvider } from "../app/playground";
 import {
   hydrateMarkup,
   inspectGallery,
-  PlaygroundProvider,
   parseMarkup,
   renderServerMarkup,
   runGalleryInteractions,
-} from "../app/playground";
+} from "../app/playground/testing";
+import { describe, expect, it } from "vitest";
+import { GalleryIsland } from "../app/gallery-island";
 import { SubstitutionLink } from "../app/substitution-link";
 
 /** The page Next.js prerenders, and the substitution page beside it. */

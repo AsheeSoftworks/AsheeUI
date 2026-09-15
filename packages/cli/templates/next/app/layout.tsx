@@ -1,6 +1,6 @@
+import { PlaygroundProvider } from "./playground";
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
-import { PlaygroundProvider } from "./playground";
 import "./globals.css";
 
 /** Page metadata, as any Next.js application declares it. */

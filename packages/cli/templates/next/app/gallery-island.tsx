@@ -1,8 +1,8 @@
 "use client";
 
+import { PlaygroundApp } from "./playground";
 import NextImage from "next/image";
 import NextLink from "next/link";
-import { PlaygroundApp } from "./playground";
 
 /**
  * The gallery as a client component, which is what an AsheeUI component is in

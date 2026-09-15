@@ -77,6 +77,24 @@ function whose inheritance rule is tested at every breakpoint. See
 [React Native](./native.md) for what is shared, what is not, and what is still to
 come.
 
+### The playgrounds, and getting one
+
+The playgrounds are the release's evidence that the system works where a consumer
+uses it. They were four applications each keeping its own copy of the same screens;
+they are now **one application with four doors**:
+
+| Property | How it holds |
+| --- | --- |
+| One application | The screens, the demonstration data, the interaction state, the provider and the contract every screen satisfies live in one place. A framework shell holds only its document, its routing and its platform adapters |
+| Written in AsheeUI | No authored HTML and no utility classes: a page is `Container`, a band is `Section`, a group is `Stack`, `HStack` or `VStack`, a deck is `Grid`, a paragraph is `Typography` |
+| Configured with nothing | The configuration is an empty object, so running a playground is the proof that the framework's own defaults are complete |
+| Reachable from the CLI | `npx asheeui playground next ./invoices` creates a project that installs on its own and carries no repository-only code |
+
+The distributed project is generated from the playgrounds in the repository rather
+than maintained as a second copy, and a test requires every shipped file to be the
+file that generator produces. See [Playgrounds](./playgrounds.md) for the boundary
+between the application and a framework shell.
+
 ## Corrections in this release
 
 | Correction | Why it matters |
@@ -106,6 +124,7 @@ breaking change and its path.
 | A dedicated `CommandMenu` | `Modal` plus `Autocomplete` already compose one, and the arrangement is documented in [Components](./components.md). A second implementation would duplicate the first. | A component only if a real requirement appears |
 | An off-canvas navigation drawer for the page compositions | Hiding navigation behind a drawer needs a focus trap and a way back, which is a component rather than a layout detail | The first consumer that needs it |
 | Native `Switch`, `Alert`, `Sheet`, `Tabs`, `Avatar`, `Skeleton`, `Separator`, `EmptyState` | The native contract of each is decided and recorded in the compatibility matrix, but the implementations are not in this release | `ROAD-046` M18 continuation |
+| An Expo playground | The native package is not published, and it does not yet carry every component the shared application renders, so a copied Expo project would promise something the framework cannot yet keep | The increment that ships the remaining native components, recorded in [React Native](./native.md) |
 | Rebuilding the website | The website is a separate project that will be rebuilt from this architecture, not adapted to it | The website milestone |
 
 ## Validation
@@ -115,8 +134,9 @@ breaking change and its path.
 | Web tests | 93 files, 678 tests, green |
 | Shared tests | 16 tests, green, with the matrix covering the 61 component inventory |
 | Native tests | 8 suites, 61 tests, green |
-| CLI tests | Green, with the inventory list matching the exported surface |
+| CLI tests | 141 tests, green, with the inventory list matching the exported surface |
 | Gallery and playgrounds | The gallery grew four sections for the new components (22 in total, 7 interactive), and the same contract passes in the gallery and in all three playground applications: Next.js, Vite and TanStack Start, on the server and again after hydration |
+| Distribution | `asheeui playground` copies a project into a clean directory that depends on the published package alone: no `workspace:` range, no repository-only package and no build output. Every shipped file is asserted to be the file the generator produces from the playgrounds, and a copied project installs with the package as the registry serves it, runs its own tests and builds — verified on Vite, TanStack Start and Next.js |
 | Build | The workspace builds: the library, the CLI and the three playground applications |
 | Version | `2.0.0` in the workspace manifests, the shared package and the native package |
 

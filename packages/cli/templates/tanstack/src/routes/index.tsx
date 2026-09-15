@@ -1,5 +1,5 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
 import { PlaygroundApp } from "../playground";
+import { createFileRoute, Link } from "@tanstack/react-router";
 
 /**
  * The gallery route, which is the application's home page.

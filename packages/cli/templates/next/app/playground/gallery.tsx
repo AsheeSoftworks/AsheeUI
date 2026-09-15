@@ -3,10 +3,10 @@
  *
  * The contract that markup must satisfy, the interactions a consumer performs and
  * the harness that renders and hydrates a tree are deliberately not here: they
- * belong to the verification surface, which a playground's test imports from
- * `@asheeui/e2e-gallery/testing`. An application renders the gallery, and reaching
- * the test harness from an application would pull a browser and a test renderer
- * into the application's graph.
+ * belong to the verification surface, which a playground's test imports and an
+ * application never does. An application renders the gallery, and reaching the
+ * test harness from the application would pull a browser and a test renderer into
+ * the application's own graph, which is what a copied project cannot carry.
  */
 
 "use client";
