@@ -1,0 +1,16 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "rootDir": "./src",
+    "outDir": "./dist",
+    "jsx": "react-jsx",
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "types": ["jest", "node"],
+    "lib": ["es2022"],
+    "paths": {
+      "@asheeui/shared": ["../shared/src/index.ts"]
+    }
+  },
+  "include": ["src"]
+}
