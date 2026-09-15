@@ -18,7 +18,6 @@
  * `Link` reaches the components that render links.
  */
 
-import { useState } from "react";
 import {
   Accordion,
   Alert,
@@ -26,12 +25,19 @@ import {
   Badge,
   Breadcrumb,
   Button,
+  Card,
   Chip,
+  Container,
+  EmptyState,
   Form,
+  Grid,
+  HStack,
   Input,
   Link,
   Modal,
+  Navbar,
   Pagination,
+  Section,
   Skeleton,
   Spinner,
   Switch,
@@ -39,6 +45,7 @@ import {
   Tooltip,
   Typography,
 } from "asheeui";
+import { useState } from "react";
 import {
   createSectionReport,
   requireAbsent,
@@ -189,7 +196,10 @@ function AvatarSection({ imageComponent, imageProps }: GallerySectionProps) {
 function LinkSection({ linkComponent, linkProps }: GallerySectionProps) {
   return (
     <div className="flex flex-wrap items-center gap-4">
-      <Link href="/invoices" component={linkComponent} componentProps={linkProps}>
+      <Link
+        href="/invoices"
+        component={linkComponent}
+        componentProps={linkProps}>
         All invoices
       </Link>
       <Link href="https://asheeui.com" isExternal>
@@ -346,6 +356,60 @@ function TooltipSection() {
  * the same tree after hydration, so a section that only becomes correct in a
  * browser fails the playground's end-to-end test.
  */
+/**
+ * The layout layer and the page sections it carries.
+ *
+ * The section renders the composition the framework is for: a band whose rhythm
+ * and width come from the layout components, a card deck whose column count
+ * changes at a breakpoint, an empty state, and a navigation bar whose mobile
+ * panel is a disclosure. Nothing here is styled by hand.
+ */
+function LayoutSection({ linkComponent, linkProps }: GallerySectionProps) {
+  return (
+    <div className="space-y-6">
+      <Navbar
+        brand="Ashee SMS"
+        brandHref="/"
+        align="center"
+        link={{ component: linkComponent, props: linkProps }}
+        links={[
+          { label: "Campaigns", href: "/campaigns", isActive: true },
+          { label: "Contacts", href: "/contacts" },
+        ]}
+        mobileLabel="Open the playground navigation"
+      />
+
+      <Section spacing="sm" as="div" background="muted">
+        <Container size="md">
+          <HStack justify="between" align="center">
+            <Typography role="heading-md" data-check="band-heading">
+              Layout showcase
+            </Typography>
+            <Badge color="success">Covered</Badge>
+          </HStack>
+
+          <Grid
+            columns={1}
+            columnsMd={2}
+            gap="sm"
+            className="mt-4"
+            data-check="deck">
+            <Card title="Sent" description="348 this month" />
+            <Card title="Drafts" description="3 unfinished" />
+          </Grid>
+        </Container>
+      </Section>
+
+      <EmptyState
+        title="No campaigns match that filter"
+        description="Try a different name."
+        panel
+        data-check="empty-state"
+      />
+    </div>
+  );
+}
+
 export const GALLERY_SECTIONS: GallerySection[] = [
   {
     id: "typography",
@@ -386,8 +450,20 @@ export const GALLERY_SECTIONS: GallerySection[] = [
     inspect: (root) => {
       const { report, scope } = createSectionReport(root, "buttons");
 
-      requireAnyText(report, scope, "button", "Save invoice", "the primary action");
-      requireAnyText(report, scope, "button", "Delete", "the destructive action");
+      requireAnyText(
+        report,
+        scope,
+        "button",
+        "Save invoice",
+        "the primary action",
+      );
+      requireAnyText(
+        report,
+        scope,
+        "button",
+        "Delete",
+        "the destructive action",
+      );
       requireAnyText(
         report,
         scope,
@@ -734,7 +810,14 @@ export const GALLERY_SECTIONS: GallerySection[] = [
         "/invoices/INV-0042/payments",
         "the form's submission target",
       );
-      requireAttribute(report, scope, "form", "method", "post", "the form's method");
+      requireAttribute(
+        report,
+        scope,
+        "form",
+        "method",
+        "post",
+        "the form's method",
+      );
       requireText(
         report,
         scope,
@@ -788,9 +871,9 @@ export const GALLERY_SECTIONS: GallerySection[] = [
       run: async (container) => {
         const problems: string[] = [];
         const scope = container.querySelector('[data-gallery-section="tabs"]');
-        const tab = Array.from(scope?.querySelectorAll('[role="tab"]') ?? []).find(
-          (candidate) => textOf(candidate) === "Overdue",
-        );
+        const tab = Array.from(
+          scope?.querySelectorAll('[role="tab"]') ?? [],
+        ).find((candidate) => textOf(candidate) === "Overdue");
 
         if (!scope || !tab) {
           return ["tabs: no tab labelled Overdue"];
@@ -1013,6 +1096,143 @@ export const GALLERY_SECTIONS: GallerySection[] = [
         "button",
         "Copy the reference",
         "the tooltip trigger",
+      );
+
+      return report.problems;
+    },
+  },
+  {
+    id: "layout",
+    title: "Layout and page sections",
+    Component: LayoutSection,
+    isInteractive: true,
+    interaction: {
+      description: "opens the mobile navigation panel and reports its state",
+      run: async (container) => {
+        const problems: string[] = [];
+        const toggle = container.querySelector<HTMLButtonElement>(
+          '[data-gallery-section="layout"] button[aria-label="Open the playground navigation"]',
+        );
+
+        if (!toggle) return ["layout: no navigation toggle control"];
+
+        if (toggle.getAttribute("aria-expanded") !== "false") {
+          problems.push(
+            `layout: the navigation toggle starts at aria-expanded="${toggle.getAttribute("aria-expanded")}"`,
+          );
+        }
+
+        await click(toggle);
+
+        const panelId = toggle.getAttribute("aria-controls");
+        const panel = await waitFor(
+          () =>
+            panelId
+              ? document.getElementById(panelId)
+              : container.querySelector(
+                  '[data-gallery-section="layout"] nav[aria-label="Main"] ~ nav',
+                ),
+          "the navigation panel to appear",
+        );
+
+        if (typeof panel === "string") {
+          problems.push(`layout: ${panel}`);
+          return problems;
+        }
+
+        if (toggle.getAttribute("aria-expanded") !== "true") {
+          problems.push("layout: the toggle did not report the panel as open");
+        }
+
+        await click(toggle);
+
+        if (toggle.getAttribute("aria-expanded") !== "false") {
+          problems.push(
+            "layout: the toggle did not report the panel as closed",
+          );
+        }
+
+        return problems;
+      },
+    },
+    inspect: (root) => {
+      const { report, scope } = createSectionReport(root, "layout");
+
+      // The layout components supply the width and the breakpoint, so the deck
+      // is asserted through their classes rather than through styling.
+      const container = requireElement(
+        report,
+        scope,
+        ".max-w-4xl",
+        "the container width from the layout layer",
+      );
+
+      if (container && !container.className.includes("mx-auto")) {
+        report.problems.push("layout: the container is not centred");
+      }
+
+      const deck = requireElement(
+        report,
+        scope,
+        '[data-check="deck"]',
+        "the card deck",
+      );
+
+      if (deck && !deck.className.includes("md:grid-cols-2")) {
+        report.problems.push(
+          "layout: the deck does not state its column count for the md breakpoint",
+        );
+      }
+
+      requireText(
+        report,
+        scope,
+        '[data-check="deck"]',
+        "Sent",
+        "the card deck",
+      );
+      requireText(
+        report,
+        scope,
+        '[data-check="deck"]',
+        "Drafts",
+        "the card deck",
+      );
+      requireText(
+        report,
+        scope,
+        '[data-check="deck"]',
+        "348 this month",
+        "a card description",
+      );
+      requireText(
+        report,
+        scope,
+        '[data-check="band-heading"]',
+        "Layout showcase",
+        "the band heading",
+      );
+      requireText(
+        report,
+        scope,
+        '[data-check="empty-state"]',
+        "No campaigns match that filter",
+        "the empty state heading",
+      );
+      requireName(
+        report,
+        scope,
+        'nav[aria-label="Main"]',
+        "Main",
+        "the navigation landmark",
+      );
+      requireAttribute(
+        report,
+        scope,
+        'button[aria-label="Open the playground navigation"]',
+        "aria-expanded",
+        "false",
+        "the navigation toggle, closed",
       );
 
       return report.problems;

@@ -18,43 +18,79 @@ describe("public entry point", () => {
     const components = [
       "Accordion",
       "Alert",
+      "AuthLayout",
       "Autocomplete",
       "Avatar",
       "Badge",
       "Breadcrumb",
       "Button",
+      "CTA",
       "Card",
       "Carousel",
       "Chip",
       "Calendar",
+      "Clipboard",
+      "Container",
+      "CopyButton",
       "Drawer",
+      "EmptyState",
+      "FeatureGrid",
+      "Footer",
+      "Grid",
+      "HStack",
+      "Hero",
       "Image",
       "Input",
       "Link",
       "Marquee",
       "Modal",
       "MultiSelect",
+      "Navbar",
       "OnScreenKeyboard",
+      "Page",
+      "PageContent",
+      "PageFooter",
+      "PageHeader",
       "Pagination",
       "PasswordInput",
+      "PinInput",
+      "PricingCard",
       "Radio",
       "RadioGroup",
       "ResizableScreen",
       "Dropmenu",
+      "Section",
       "Sidebar",
+      "SidebarLayout",
       "Skeleton",
       "Spinner",
+      "Stack",
       "Switch",
       "Table",
       "Tabs",
+      "Testimonials",
       "Textarea",
       "ToastProvider",
       "Tooltip",
       "Typography",
+      "VStack",
     ];
 
     for (const component of components) {
       expect(AsheeUI).toHaveProperty(component);
+    }
+  });
+
+  it("exports the shared configuration vocabulary the patterns use", () => {
+    const values = [
+      "FALLBACK_CONTAINER_CONFIG",
+      "FALLBACK_STACK_CONFIG",
+      "defaultHeroConfig",
+      "defaultNavbarConfig",
+    ];
+
+    for (const value of values) {
+      expect(AsheeUI).toHaveProperty(value);
     }
   });
 
@@ -75,11 +111,23 @@ describe("public entry point", () => {
     expect(AsheeUI).not.toHaveProperty("useRadioGroupContext");
   });
 
+  it("keeps the section kit and the Puck configuration off the main entry point", () => {
+    // The kit is an implementation detail the patterns share, and the Puck
+    // configuration is deliberately behind its own subpath (`asheeui/puck`),
+    // so an application that does not build pages never loads it.
+    expect(AsheeUI).not.toHaveProperty("SectionHeading");
+    expect(AsheeUI).not.toHaveProperty("ActionGroup");
+    expect(AsheeUI).not.toHaveProperty("asheePuckConfig");
+  });
+
   it("registers component defaults, including the configuration-only scrollbar module", () => {
     const defaults = getAllComponentDefaults();
 
     expect(defaults.button).toBeDefined();
     expect(defaults.accordion).toBeDefined();
     expect(defaults.scrollbar).toBeDefined();
+    expect(defaults.container).toBeDefined();
+    expect(defaults.hero).toBeDefined();
+    expect(defaults.navbar).toBeDefined();
   });
 });

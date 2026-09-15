@@ -105,25 +105,15 @@ describe("discoverPublicComponents", () => {
   it("lists only the components re-exported by the public entry module", async () => {
     await scaffoldPackage();
 
-    const components = await discoverPublicComponents(
-      join(dir, "asheeui-pkg"),
-    );
+    const components = await discoverPublicComponents(join(dir, "asheeui-pkg"));
 
-    expect(components).toEqual([
-      "button",
-      "calendar",
-      "card",
-      "chip",
-      "modal",
-    ]);
+    expect(components).toEqual(["button", "calendar", "card", "chip", "modal"]);
   });
 
   it("never lists internal helpers or unexported directories", async () => {
     await scaffoldPackage();
 
-    const components = await discoverPublicComponents(
-      join(dir, "asheeui-pkg"),
-    );
+    const components = await discoverPublicComponents(join(dir, "asheeui-pkg"));
 
     expect(components).not.toContain("field");
     expect(components).not.toContain("menu");
@@ -134,9 +124,7 @@ describe("discoverPublicComponents", () => {
   it("ignores type-only exports and modules outside components/", async () => {
     await scaffoldPackage();
 
-    const components = await discoverPublicComponents(
-      join(dir, "asheeui-pkg"),
-    );
+    const components = await discoverPublicComponents(join(dir, "asheeui-pkg"));
 
     expect(components).not.toContain("config");
     expect(components).not.toContain("registry");
@@ -156,9 +144,7 @@ describe("discoverPublicComponents", () => {
       },
     });
 
-    const components = await discoverPublicComponents(
-      join(dir, "asheeui-pkg"),
-    );
+    const components = await discoverPublicComponents(join(dir, "asheeui-pkg"));
 
     expect(components).toContain("button");
     expect(components).toContain("modal");
@@ -170,17 +156,9 @@ describe("discoverPublicComponents", () => {
       entrySource: BUNDLED_ENTRY_SOURCE,
     });
 
-    const components = await discoverPublicComponents(
-      join(dir, "asheeui-pkg"),
-    );
+    const components = await discoverPublicComponents(join(dir, "asheeui-pkg"));
 
-    expect(components).toEqual([
-      "button",
-      "calendar",
-      "card",
-      "chip",
-      "modal",
-    ]);
+    expect(components).toEqual(["button", "calendar", "card", "chip", "modal"]);
     expect(components).not.toContain("menu");
     expect(components).not.toContain("registry");
   });
@@ -191,9 +169,7 @@ describe("discoverPublicComponents", () => {
       JSON.stringify({ name: "asheeui" }),
     );
 
-    const components = await discoverPublicComponents(
-      join(dir, "asheeui-pkg"),
-    );
+    const components = await discoverPublicComponents(join(dir, "asheeui-pkg"));
 
     expect(components).toEqual([]);
   });
@@ -316,7 +292,9 @@ describe("componentNameFromSpecifier", () => {
     expect(componentNameFromSpecifier("./components/calendar")).toBe(
       "calendar",
     );
-    expect(componentNameFromSpecifier("./components/toast/index")).toBe("toast");
+    expect(componentNameFromSpecifier("./components/toast/index")).toBe(
+      "toast",
+    );
   });
 
   it("returns null for specifiers outside the components directory", () => {
@@ -327,17 +305,15 @@ describe("componentNameFromSpecifier", () => {
 
 /**
  * The public inventory asserted here is the reconciled framework inventory:
-<<<<<<< HEAD
- * 34 public components. A change to the public export surface must update this
-=======
- * 34 public components. A change to the public export surface must update this
->>>>>>> 4201f4e (feat(form): add the Form component)
- * list in the same change, so the CLI cannot drift silently from the real
- * inventory.
+ * 51 public components, of which 34 shipped at 1.0 and 17 are the layout,
+ * pattern and utility additions of 1.1. A change to the public export surface
+ * must update this list in the same change, so the CLI cannot drift silently
+ * from the real inventory.
  */
 const PUBLIC_COMPONENT_INVENTORY = [
   "accordion",
   "alert",
+  "auth-layout",
   "autocomplete",
   "avatar",
   "badge",
@@ -347,9 +323,17 @@ const PUBLIC_COMPONENT_INVENTORY = [
   "card",
   "carousel",
   "chip",
+  "clipboard",
+  "container",
+  "cta",
   "drawer",
   "dropmenu",
+  "empty-state",
+  "feature-grid",
+  "footer",
   "form",
+  "grid",
+  "hero",
   "image",
   "input",
   "keyboard",
@@ -357,15 +341,23 @@ const PUBLIC_COMPONENT_INVENTORY = [
   "marquee",
   "modal",
   "multi-select",
+  "navbar",
+  "page",
   "pagination",
+  "pin-input",
+  "pricing-card",
   "radio",
   "resizable-screen",
+  "section",
   "sidebar",
+  "sidebar-layout",
   "skeleton",
   "spinner",
+  "stack",
   "switch",
   "table",
   "tabs",
+  "testimonials",
   "textarea",
   "toast",
   "tooltip",
@@ -394,7 +386,8 @@ describe("public component inventory", () => {
 
     expect(components).not.toContain("field");
     expect(components).not.toContain("menu");
-    expect(components).not.toContain("menu");
     expect(components).not.toContain("scrollbar");
+    expect(components).not.toContain("section-kit");
+    expect(components).not.toContain("puck");
   });
 });

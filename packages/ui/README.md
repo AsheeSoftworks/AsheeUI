@@ -1,210 +1,105 @@
 # asheeui
 
-A config-driven React component library built on Tailwind CSS v4. Accessible, styled components with a unified configuration system — set defaults once, override them anywhere.
+A React UI framework built on Tailwind CSS v4. Accessible, config-driven
+components, a layout system, the sections a page is made of, and a Puck
+integration behind their own entry point.
 
 ## Features
 
-- **Config-driven** — Define theme, variant, color, and radius defaults in one place (`asheeui.config.ts`) and override at the component or instance level.
-- **Tailwind CSS v4** — Built on the latest Tailwind with CSS-variable-driven theming.
-- **Light & dark themes** — Ships with built-in `light`, `dark`, and `system` themes, plus full support for custom themes.
-- **Accessible components** — Every component is designed with accessibility in mind.
-- **Runtime theming** — Switch themes on the fly with the `useTheme` hook; preferences persist via `localStorage`.
-- **TypeScript-first** — Fully typed config, theme registry, and component props.
+- **Config-driven** — theme, variant, color, radius and spacing defaults resolve
+  through one cascade, so a value can be set globally, per component or per
+  instance.
+- **A layout system** — `Container`, `Section`, `Stack`/`HStack`/`VStack`,
+  `Grid`, `Page`/`PageHeader`/`PageContent`/`PageFooter`, plus `SidebarLayout`
+  and `AuthLayout` for application pages.
+- **Page sections** — `Navbar`, `Hero`, `FeatureGrid`, `CTA`, `Testimonials`,
+  `PricingCard` and `Footer`, each taking its actions as configuration.
+- **Puck integration** — `asheeui/puck` exposes the same components as builder
+  blocks, so an application, an editor and a published page share one
+  implementation. `@puckeditor/core` is an optional peer dependency.
+- **Tailwind CSS v4** — class names are static and complete, and colours resolve
+  through CSS custom properties.
+- **Light and dark themes** — built-in `light`, `dark` and `system` themes, plus
+  custom themes.
+- **Accessible** — landmarks, names, keyboard behaviour and announced state are
+  part of each component's contract, with tests that state them.
+- **TypeScript-first** — fully typed configuration, theme registry and component
+  props, with JSDoc on every exported symbol.
 
 ## Requirements
 
 - React 18 or newer
 - Tailwind CSS v4
-- Node.js 18 or newer
+- Node.js 22.12 or newer for development
 
 ## Installation
 
-The fastest way to get started is with the CLI. Run this in your project root:
-
 ```bash
-npx asheeui@latest init
+npm install asheeui
 ```
 
-The CLI detects your framework, installs dependencies, adds the provider to your root layout, and configures Tailwind.
-
-### Manual setup
-
-Install the package:
-
-```bash
-npm install asheeui@latest
-```
-
-Add the styles import to your global CSS file (must come **after** the Tailwind import):
+Import the stylesheet once and wrap your root in the provider:
 
 ```css
 @import "tailwindcss";
 @import "asheeui/styles";
 ```
 
-Wrap your app with `AsheeUIProvider`:
-
-```jsx
+```tsx
 import { AsheeUIProvider } from "asheeui";
-
-export default function RootLayout({ children }) {
-  return (
-    <html suppressHydrationWarning>
-      <body>
-        <AsheeUIProvider>{children}</AsheeUIProvider>
-      </body>
-    </html>
-  );
-}
 ```
 
-> **Note:** `suppressHydrationWarning` is required on the `<html>` element to prevent hydration mismatches from theme switching.
+The optional `@asheeui/cli` package can scaffold that setup and check it, but it
+is not required: the two steps above are the whole setup.
 
-### Framework guides
+## Documentation
 
-- [Next.js](/docs/installation/nextjs) — App Router and Pages Router
-- [TanStack Start](/docs/installation/tanstack-start) — Full-stack React with TanStack Router
-- [Vite + React](/docs/installation/vite) — Lightweight React SPA
+The framework documentation lives in the repository:
+
+- [Installation](https://github.com/AsheeSoftworks/AsheeUI/blob/main/docs/installation.md)
+- [Configuration](https://github.com/AsheeSoftworks/AsheeUI/blob/main/docs/configuration.md)
+- [Components](https://github.com/AsheeSoftworks/AsheeUI/blob/main/docs/components.md)
+- [Puck](https://github.com/AsheeSoftworks/AsheeUI/blob/main/docs/puck.md)
+- [Accessibility](https://github.com/AsheeSoftworks/AsheeUI/blob/main/docs/accessibility.md)
+- [Migration](https://github.com/AsheeSoftworks/AsheeUI/blob/main/docs/migration.md)
 
 ## Quick start
 
-Render a component:
+```tsx
+import { Button, Page, PageContent, Hero } from "asheeui";
 
-```jsx
-import { Button } from "asheeui";
-
-function App() {
-  return <Button>Hello AsheeUI</Button>;
-}
-```
-
-You should see a styled button using the default theme.
-
-## Configuration
-
-AsheeUI is configured through an optional `asheeui.config.ts` file at your project root. Sensible defaults apply with no config at all.
-
-```ts
-// asheeui.config.ts
-import type { ExternalConfig } from "asheeui";
-
-export const config: ExternalConfig = {
-  defaultTheme: "system",   // "light" | "dark" | "system"
-  defaultVariant: "solid",  // "solid" | "ghost" | "bordered" | "faded" | "underlined"
-  defaultColor: "primary",  // "none" | "default" | "primary" | "secondary" | "danger" | "warning" | "success"
-  defaultRadius: "md",      // "none" | "xs" | "sm" | "md" | "lg" | "xl" | "full"
-};
-```
-
-Values are resolved in this order (highest priority first):
-
-1. **Instance prop** — `<Button variant="solid" />`
-2. **Component config** — `components.button.variant`
-3. **Theme default** — top-level `defaultVariant`, `defaultColor`, etc.
-4. **Built-in fallback** — the library's internal default
-
-### Per-component defaults
-
-Set defaults for specific components while keeping global defaults for everything else:
-
-```ts
-export const config: ExternalConfig = {
-  defaultVariant: "bordered",       // applies to all components
-  components: {
-    button: { variant: "solid" },   // overrides for Button only
-    input:  { variant: "bordered", radius: "sm" },
-    toast:  { variant: "bordered", placement: "bottom-right" },
-  },
-};
-```
-
-See the [Configuration docs](/docs/configuration) for the full reference.
-
-## Theming
-
-AsheeUI's theming system is CSS-variable-driven. It ships with `light`, `dark`, and `system` themes, and you can override tokens or define entirely custom themes.
-
-### Switch themes at runtime
-
-```jsx
-import { useTheme } from "asheeui";
-
-function ThemeSwitcher() {
-  const { theme, setTheme, toggleTheme } = useTheme();
-
+export function App() {
   return (
-    <div>
-      <p>Current theme: {theme}</p>
-      <button onClick={() => setTheme("dark")}>Dark</button>
-      <button onClick={() => setTheme("light")}>Light</button>
-      <button onClick={toggleTheme}>Toggle</button>
-    </div>
+    <Page>
+      <PageContent>
+        <Hero
+          title="Run your campaigns from one place"
+          primaryAction={{ label: "Start free", href: "/signup" }}
+        />
+        <Button>Hello AsheeUI</Button>
+      </PageContent>
+    </Page>
   );
 }
 ```
 
-`useTheme` returns:
+A complete page is `Navbar`, a band or two, and `Footer`, all of them composing
+through `Page`, `Section`, `Container` and `Grid`.
 
-| Property | Type | Description |
-|---|---|---|
-| `theme` | `ThemeSelection` | Current selected theme (`"light"` \| `"dark"` \| `"system"`) |
-| `resolvedTheme` | `ThemeName` | Actual resolved theme (after system fallback) |
-| `setTheme` | `(theme: ThemeSelection) => void` | Set the active theme |
-| `toggleTheme` | `() => void` | Cycle to the next theme in sequence |
-| `availableThemes` | `readonly string[]` | All registered theme names |
+## Theming
 
-Theme preference persists across page reloads via `localStorage`.
-
-### Override a built-in theme
-
-```ts
-export const config: ExternalConfig = {
-  color: {
-    light: { primary: "#7c3aed", background: "#faf5ff" },
-    dark:  { primary: "#8b5cf6", border: "#3b3b3b" },
-  },
-};
-```
-
-Only the tokens you specify are overridden — everything else stays at the built-in default.
-
-### Add a custom theme
-
-Extend `light` or `dark` and override only what you need:
-
-```ts
-export const config: ExternalConfig = {
-  defaultTheme: "company-red",
-  color: {
-    "company-red": {
-      extends: "dark",
-      background: "#1a0505",
-      foreground: "#fef2f2",
-      primary: "#dc2626",
-      // ...other tokens inherit from dark
-    },
-  },
-};
-```
-
-> **TypeScript:** Register custom theme names so `useTheme` and `setTheme` recognize them:
->
-> ```ts
-> declare module "asheeui" {
->   interface AsheeColorRegistry {
->     "company-red": true;
->   }
-> }
-> ```
-
-See the [Theming docs](/docs/theming) for the full token list.
+Themes are CSS custom properties (`--ashee-background`, `--ashee-primary`, and
+so on), applied by the provider before the first paint. `useTheme` switches the
+theme at runtime and records the preference, `themeController` does the same
+outside React, and a theme is defined as a block in the configuration.
 
 ## Links
 
-- [Documentation](/docs)
-- [Configuration reference](/docs/configuration)
-- [Theming reference](/docs/theming)
+- Documentation: https://asheeui.com
+- Repository: https://github.com/AsheeSoftworks/AsheeUI
+- Issues: https://github.com/AsheeSoftworks/AsheeUI/issues
 
 ## License
 
 MIT
+
