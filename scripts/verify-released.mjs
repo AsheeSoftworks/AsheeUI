@@ -42,10 +42,10 @@ function argumentValue(name, fallback) {
   return index === -1 ? fallback : args[index + 1];
 }
 
-const registry = argumentValue("--registry", "https://registry.npmjs.org/").replace(
-  /\/?$/,
-  "/",
-);
+const registry = argumentValue(
+  "--registry",
+  "https://registry.npmjs.org/",
+).replace(/\/?$/, "/");
 const attempts = Number(argumentValue("--attempts", "6"));
 const delay = Number(argumentValue("--delay", "15000"));
 
