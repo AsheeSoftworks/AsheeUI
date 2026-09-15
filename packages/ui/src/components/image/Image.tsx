@@ -53,14 +53,13 @@ export interface ImageProps extends BaseImageProps {
   component?: ElementType;
 
   /**
-   * Additional props to pass to the custom image component
-   * (e.g. `{ priority: true, sizes: "..." }`).
+   * Additional props for `component` (for example `{ priority: true }`).
    *
    * If `component` is set and neither `width`/`height` nor `fill`
    * are provided here, `fill: true` is applied automatically since
    * this component is container/ratio driven.
    */
-  props?: Record<string, unknown>;
+  componentProps?: Record<string, unknown>;
 }
 
 /**
@@ -96,7 +95,7 @@ function isValidSrc(value: unknown): value is string {
  * @param props.showSkeleton - Loading placeholder. Defaults to true.
  * @param props.className - Extra classes for the image element.
  * @param props.component - Custom image component.
- * @param props.props - Props forwarded to the image component.
+ * @param props.componentProps - Props forwarded to the image component.
  * @param props.src - The image source URL.
  * @param props.onLoad - Callback fired when the image loads.
  * @param props.onError - Callback fired when the image fails to load.
@@ -128,7 +127,7 @@ function isValidSrc(value: unknown): value is string {
  *   src="/hero.png"
  *   alt="Hero image"
  *   component={NextImage}
- *   props={{ priority: true, sizes: "100vw" }}
+ *   componentProps={{ priority: true, sizes: "100vw" }}
  * />
  * ```
  *
@@ -150,7 +149,7 @@ export const Image = forwardRef<HTMLImageElement, ImageProps>(
       onLoad,
       onError,
       component,
-      props: propsProp,
+      componentProps: componentPropsProp,
       ...rest
     },
     ref,
@@ -267,9 +266,9 @@ export const Image = forwardRef<HTMLImageElement, ImageProps>(
     const hasValidSrc = isValidSrc(currentSrc);
 
     const hasExplicitSizing =
-      propsProp?.width !== undefined ||
-      propsProp?.height !== undefined ||
-      propsProp?.fill !== undefined;
+      componentPropsProp?.width !== undefined ||
+      componentPropsProp?.height !== undefined ||
+      componentPropsProp?.fill !== undefined;
 
     const autoFillProps =
       isCustomComponent && !hasExplicitSizing
@@ -287,12 +286,12 @@ export const Image = forwardRef<HTMLImageElement, ImageProps>(
     // ─── FIX: Force eager loading for custom image components ──────────────
     // Next.js Image with priority or lazy loading can cause script errors
     // when used with AsheeUIProvider. Force eager loading as a safeguard.
-    let finalImageProps = { ...(propsProp ?? {}) };
+    let finalImageProps = { ...(componentPropsProp ?? {}) };
 
     if (isCustomComponent) {
       // Check if user set loading="lazy" or priority
-      const hasLazy = propsProp?.loading === "lazy";
-      const hasPriority = propsProp?.priority === true;
+      const hasLazy = componentPropsProp?.loading === "lazy";
+      const hasPriority = componentPropsProp?.priority === true;
 
       if (hasLazy || hasPriority) {
         console.warn(

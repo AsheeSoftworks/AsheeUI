@@ -43,7 +43,7 @@ describe("Link", () => {
     }
 
     const { getByTestId } = renderWithProvider(
-      <Link href="/docs" linkComponent={CustomLink}>
+      <Link href="/docs" component={CustomLink}>
         Docs
       </Link>,
     );

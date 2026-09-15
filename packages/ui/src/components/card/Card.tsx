@@ -74,9 +74,9 @@ export interface CardImageProps extends CardImageConfig {
   /**
    * Additional props forwarded to the image component
    * (e.g. `{ priority: true, sizes: "..." }`).
-   * These take precedence over the component's own props.
+   * These take precedence over the props the framework passes itself.
    */
-  props?: Record<string, unknown>;
+  componentProps?: Record<string, unknown>;
 }
 
 // biome-ignore lint/suspicious/noEmptyInterface: Config type kept so link props can extend it
@@ -87,17 +87,17 @@ export interface CardLinkProps extends CardLinkConfig {
    * Custom link component used to render the card as a link instead of the
    * native `<a>` tag (e.g. `next/link`, TanStack Router `Link`).
    *
-   * When provided, the card root becomes this component and `props` are
-   * forwarded to it.
+   * When provided, the card root becomes this component and `componentProps`
+   * are forwarded to it.
    */
   component?: ElementType;
 
   /**
    * Additional props forwarded to the link component
    * (e.g. `{ href: "/blog/post-1" }`).
-   * These take precedence over the component's own props.
+   * These take precedence over the props the framework passes itself.
    */
-  props?: Record<string, unknown>;
+  componentProps?: Record<string, unknown>;
 }
 
 /**
@@ -375,7 +375,7 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(
     // The link's own `onClick` is invoked from `handleClick` instead of being
     // spread onto the root, so the card's disabled guard and its `onClick` prop
     // still run — and the link handler still fires — when both are provided.
-    const { onClick: linkOnClick, ...linkRestProps } = (link?.props ??
+    const { onClick: linkOnClick, ...linkRestProps } = (link?.componentProps ??
       {}) as Record<string, unknown>;
 
     /**
@@ -430,12 +430,12 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(
 
       // Next.js Image with priority or lazy loading can cause script errors
       // when used with AsheeUIProvider. Force eager loading as a safeguard.
-      let finalImageProps = { ...(image?.props ?? {}) };
+      let finalImageProps = { ...(image?.componentProps ?? {}) };
 
       if (image?.component) {
         // Check if user set loading="lazy" or priority
-        const hasLazy = image?.props?.loading === "lazy";
-        const hasPriority = image?.props?.priority === true;
+        const hasLazy = image?.componentProps?.loading === "lazy";
+        const hasPriority = image?.componentProps?.priority === true;
 
         if (hasLazy || hasPriority) {
           console.warn(
@@ -463,7 +463,7 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(
           fit={image.fit ?? "cover"}
           className={positionStyles}
           component={image.component}
-          props={finalImageProps}
+          componentProps={finalImageProps}
           loading={resolvedLoading}
         />
       );
@@ -479,11 +479,11 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(
 
       const ImageComponent = image.component || "img";
 
-      let finalImageProps = { ...(image?.props ?? {}) };
+      let finalImageProps = { ...(image?.componentProps ?? {}) };
 
       if (image?.component) {
-        const hasLazy = image?.props?.loading === "lazy";
-        const hasPriority = image?.props?.priority === true;
+        const hasLazy = image?.componentProps?.loading === "lazy";
+        const hasPriority = image?.componentProps?.priority === true;
 
         if (hasLazy || hasPriority) {
           console.warn(

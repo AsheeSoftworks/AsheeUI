@@ -72,15 +72,15 @@ export interface BreadcrumbItem {
   isExternal?: boolean;
 
   /**
-   * Custom link component for this step, such as a framework router link.
-   * Passed to {@link Link}.
+   * Component that replaces the anchor for this step, such as a framework
+   * router link. Passed to {@link Link} as its `component`.
    */
-  linkComponent?: ElementType;
+  component?: ElementType;
 
   /**
-   * Additional props for that link component, passed to {@link Link}.
+   * Additional props for that component, passed to {@link Link}.
    */
-  linkProps?: Record<string, unknown>;
+  componentProps?: Record<string, unknown>;
 }
 
 type BaseBreadcrumbProps = BreadcrumbConfig &
@@ -121,7 +121,7 @@ export interface BreadcrumbProps extends BaseBreadcrumbProps {
  * leads nowhere.
  *
  * Linked steps are rendered through the framework's {@link Link} primitive, so
- * a consumer keeps its router link by passing `linkComponent` on the step (or
+ * a consumer keeps its router link by passing `component` on the step (or
  * on the whole trail through the framework's substitution pattern).
  *
  * @param props - Breadcrumb configuration options and navigation attributes.
@@ -238,8 +238,8 @@ export const Breadcrumb = forwardRef<HTMLElement, BreadcrumbProps>(
                     color={resolvedColorKey}
                     size={resolvedSizeKey}
                     isExternal={item.isExternal}
-                    linkComponent={item.linkComponent}
-                    linkProps={item.linkProps}
+                    component={item.component}
+                    componentProps={item.componentProps}
                     startIcon={item.icon}
                     className={cn(fontClass, "min-w-0 truncate")}>
                     {item.label}

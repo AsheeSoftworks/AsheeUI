@@ -106,7 +106,7 @@ describe("Breadcrumb", () => {
     const { container } = renderWithProvider(
       <Breadcrumb
         items={[
-          { label: "Home", href: "/", linkComponent: RouterLink },
+          { label: "Home", href: "/", component: RouterLink },
           { label: "Leaf" },
         ]}
       />,
