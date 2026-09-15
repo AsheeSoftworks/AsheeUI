@@ -21,7 +21,9 @@ All community members are expected to follow it in every interaction.
 
 ## Prerequisites
 
-- [Node.js](https://nodejs.org) 20 or newer.
+- [Node.js](https://nodejs.org) 22.12 or newer. The playground applications in
+  this workspace include TanStack Start, whose packages require Node 22.12 or
+  later.
 - [pnpm](https://pnpm.io) 9 or newer. The repository pins an exact version
   through the `packageManager` field, and `corepack enable` is recommended so
   the correct pnpm version is used automatically.
