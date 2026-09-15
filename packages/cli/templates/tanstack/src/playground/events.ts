@@ -5,9 +5,14 @@
  * performs, so they live beside the contract rather than in each application.
  * The helpers use native DOM events and React's `act`, which every framework's
  * hydrated tree responds to, instead of a testing framework's simulation layer.
+ *
+ * `act` comes from React itself rather than from a testing library, and that is
+ * deliberate: a section imports these helpers to state which interactions it
+ * expects, so an application that imported a testing library here would carry one
+ * in its own bundle. React owns `act`, so the contract stays free of them.
  */
 
-import { act } from "@testing-library/react";
+import { act } from "react";
 
 /**
  * Lets React finish the work a dispatched event started.
