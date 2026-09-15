@@ -48,9 +48,20 @@ The repository is a pnpm + Turborepo monorepo with these publishable packages:
 | `@asheeui/cli` | Scaffolding and doctor/fix CLI (`packages/cli`) |
 
 The workspace also contains private packages that are never published: the
-end-to-end gallery (`packages/e2e-gallery`) and the three playground
-applications that render it (see
-[Testing Local Changes](#testing-local-changes)).
+end-to-end gallery (`packages/e2e-gallery`), the three playground applications
+that render it (see [Testing Local Changes](#testing-local-changes)), and the shared
+contracts and native packages (`packages/shared`, `packages/native`), which are
+published in the increment that completes the native component set — the reason and
+the work it takes are in [React Native](docs/native.md).
+
+A published package may depend only on published packages. `asheeui` depends on
+`@floating-ui/react`, `clsx` and `tailwind-merge` and on nothing from this
+workspace, so a consumer's install resolves without this repository. Check it
+against the released manifest rather than the local one when a dependency changes:
+
+```bash
+npm pack asheeui && tar -xzOf asheeui-*.tgz package/package.json | grep -A 6 dependencies
+```
 
 Workspace-wide pnpm settings live in `pnpm-workspace.yaml`. Dependency overrides
 belong there too, because pnpm does not read the `overrides` field of a
