@@ -97,9 +97,16 @@ export default defineConfig({
   ],
   build: {
     lib: {
-      entry: resolve(__dirname, "src/index.ts"),
+      // Two entries: the framework itself, and the Puck integration behind its
+      // own subpath (`asheeui/puck`). Rollup only emits a module that the graph
+      // reaches, and the main entry deliberately does not import the Puck layer,
+      // so the subpath has to be an entry of its own or it would ship
+      // declarations without an implementation.
+      entry: {
+        index: resolve(__dirname, "src/index.ts"),
+        "puck/index": resolve(__dirname, "src/puck/index.ts"),
+      },
       formats: ["es"],
-      fileName: "index",
     },
     rollupOptions: {
       external: [
@@ -107,6 +114,7 @@ export default defineConfig({
         "react-dom",
         "react/jsx-runtime",
         "@floating-ui/react",
+        "@puckeditor/core",
         "clsx",
         "tailwind-merge",
       ],

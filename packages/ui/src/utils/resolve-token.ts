@@ -6,6 +6,8 @@
  * values like variant, color, size, and radius.
  */
 
+import type { DeepPartial } from "./types";
+
 /**
  * Resolves a value using the standard cascade precedence order.
  * Follows the hierarchy: instance prop > component config > global default > hard fallback.
@@ -93,6 +95,57 @@ export function resolveRadiusKey<TKey>(
   hardFallback: TKey = "md" as TKey,
 ): TKey {
   return instanceProp ?? sectionConfig ?? globalDefaultRadius ?? hardFallback;
+}
+
+/**
+ * Resolve every option of a component's configuration in one step.
+ *
+ * A layout or pattern component usually exposes its whole configuration as a
+ * set of optional props that resolve through the same cascade. Calling
+ * {@link resolveCascade} once per key repeats the same precedence rule and the
+ * same fallback argument for every option, which is where drift creeps in. This
+ * helper applies the rule to every key of the hard fallback in one call, so a
+ * component states its options once and the precedence is guaranteed to be
+ * identical for all of them.
+ *
+ * The fallback object defines the shape: every key it declares is resolved and
+ * returned, and a key it omits has no fallback at all (which is how optional
+ * responsive keys stay undefined).
+ *
+ * @param instance - The props passed to the component instance.
+ * @param section - The component's configuration section, if any.
+ * @param fallback - The hard fallback for every option.
+ * @returns A complete set of resolved values.
+ *
+ * @example
+ * ```tsx
+ * const resolved = resolveConfigCascade<HeroConfig, Required<HeroConfig>>(
+ *   { align, spacing, background },
+ *   config.components?.hero,
+ *   FALLBACK_HERO_CONFIG,
+ * );
+ * // resolved.align is the prop, then components.hero.align, then the fallback
+ * ```
+ */
+export function resolveConfigCascade<C extends object, F extends Required<C>>(
+  instance: Partial<C>,
+  section: DeepPartial<C> | undefined,
+  fallback: F,
+): F {
+  const resolved: Record<string, unknown> = { ...fallback };
+  const sectionValues = section as Record<string, unknown> | undefined;
+
+  for (const key of Object.keys(fallback)) {
+    const instanceValue = (instance as Record<string, unknown>)[key];
+    const sectionValue = sectionValues?.[key];
+
+    resolved[key] =
+      instanceValue ??
+      sectionValue ??
+      (fallback as Record<string, unknown>)[key];
+  }
+
+  return resolved as F;
 }
 
 /**

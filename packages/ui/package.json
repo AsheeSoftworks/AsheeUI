@@ -40,6 +40,11 @@
       "default": "./src/index.css"
     },
     "./styles.css": "./src/index.css",
+    "./puck": {
+      "types": "./src/puck/index.ts",
+      "import": "./src/puck/index.ts",
+      "default": "./src/puck/index.ts"
+    },
     "./src/*": "./src/*"
   },
   "publishConfig": {
@@ -58,7 +63,12 @@
         "style": "./dist/index.css",
         "default": "./dist/index.css"
       },
-      "./styles.css": "./dist/index.css"
+      "./styles.css": "./dist/index.css",
+      "./puck": {
+        "types": "./dist/puck/index.d.ts",
+        "import": "./dist/puck/index.js",
+        "default": "./dist/puck/index.js"
+      }
     }
   },
   "files": [
@@ -79,12 +89,19 @@
     "tailwind-merge": "^3.6.0"
   },
   "peerDependencies": {
+    "@puckeditor/core": "^0.23.0",
     "react": "^18.0.0 || ^19.0.0",
     "react-dom": "^18.0.0 || ^19.0.0",
     "tailwindcss": ">=4.0.0"
   },
+  "peerDependenciesMeta": {
+    "@puckeditor/core": {
+      "optional": true
+    }
+  },
   "devDependencies": {
     "@floating-ui/react": "^0.27.20",
+    "@puckeditor/core": "^0.23.0",
     "@testing-library/jest-dom": "^7.0.1",
     "@testing-library/react": "^16.3.3",
     "@testing-library/user-event": "^14.6.7",
