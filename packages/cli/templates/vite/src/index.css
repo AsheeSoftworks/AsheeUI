@@ -1,0 +1,8 @@
+/**
+ * Playground styles.
+ *
+ * The order matters: Tailwind first, then the library's global styles, which is
+ * the order the consumer documentation states.
+ */
+@import "tailwindcss";
+@import "asheeui/styles";

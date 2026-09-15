@@ -10,27 +10,37 @@
  */
 
 import { readFileSync } from "node:fs";
+import { PlaygroundProvider } from "@asheeui/e2e-gallery";
 import {
   hydrateMarkup,
   inspectGallery,
   parseMarkup,
   renderServerMarkup,
   runGalleryInteractions,
-} from "@asheeui/e2e-gallery";
+} from "@asheeui/e2e-gallery/testing";
 import { describe, expect, it } from "vitest";
 import { GalleryIsland } from "../app/gallery-island";
-import { Providers } from "../app/providers";
+import { SubstitutionLink } from "../app/substitution-link";
 
 /** The page Next.js prerenders, and the substitution page beside it. */
 const PRERENDERED_PAGE = ".next/server/app/index.html";
 const PRERENDERED_SUBSTITUTION = ".next/server/app/substitution.html";
 
-/** The tree the application renders, which is the island inside its provider. */
+/**
+ * The tree the application renders.
+ *
+ * It mirrors the application exactly: the root layout mounts the provider, and the
+ * page renders its client islands inside it. Keeping the two in step is what makes
+ * the hydration check meaningful.
+ *
+ * @returns The application tree.
+ */
 function appTree() {
   return (
-    <Providers>
+    <PlaygroundProvider>
       <GalleryIsland />
-    </Providers>
+      <SubstitutionLink />
+    </PlaygroundProvider>
   );
 }
 

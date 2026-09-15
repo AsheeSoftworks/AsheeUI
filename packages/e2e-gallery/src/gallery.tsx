@@ -1,12 +1,17 @@
 /**
- * The gallery component a playground renders.
+ * The gallery that every playground application renders.
  *
- * It frames every section in a labelled landmark and forwards the playground's
- * link and image components, so the only framework-specific markup in a
- * playground is the entry point that mounts this component.
+ * The contract that markup must satisfy, the interactions a consumer performs and
+ * the harness that renders and hydrates a tree are deliberately not here: they
+ * belong to the verification surface, which a playground's test imports from
+ * `@asheeui/e2e-gallery/testing`. An application renders the gallery, and reaching
+ * the test harness from an application would pull a browser and a test renderer
+ * into the application's graph.
  */
 
-import { Typography } from "asheeui";
+"use client";
+
+import { Container, Section, Typography, VStack } from "asheeui";
 import { GALLERY_SECTIONS } from "./sections";
 import type { GallerySectionProps } from "./types";
 
@@ -36,35 +41,39 @@ export function Gallery({
   imageProps,
 }: GalleryProps) {
   return (
-    <main data-gallery className="mx-auto w-full max-w-3xl space-y-8 p-6">
-      <header className="space-y-2">
-        <Typography as="h1" role="heading-lg">
-          {title}
-        </Typography>
-        <Typography role="body-md">
-          Every section below is rendered by this playground and checked by its
-          end-to-end test, on the server and again after hydration.
-        </Typography>
-      </header>
-
-      {GALLERY_SECTIONS.map((section) => (
-        <section
-          key={section.id}
-          id={section.id}
-          data-gallery-section={section.id}
-          aria-label={section.title}
-          className="space-y-3">
-          <Typography as="h2" role="body-md">
-            {section.title}
+    <Container as="main" data-gallery size="md">
+      <VStack gap="xl">
+        <VStack gap="sm">
+          <Typography as="h1" role="heading-lg">
+            {title}
           </Typography>
-          <section.Component
-            linkComponent={linkComponent}
-            imageComponent={imageComponent}
-            linkProps={linkProps}
-            imageProps={imageProps}
-          />
-        </section>
-      ))}
-    </main>
+          <Typography role="body-md">
+            Every section below is rendered by this playground and checked by
+            its end-to-end test, on the server and again after hydration.
+          </Typography>
+        </VStack>
+
+        {GALLERY_SECTIONS.map((section) => (
+          <Section
+            key={section.id}
+            id={section.id}
+            data-gallery-section={section.id}
+            aria-label={section.title}
+            spacing="none">
+            <VStack gap="md">
+              <Typography as="h2" role="body-md">
+                {section.title}
+              </Typography>
+              <section.Component
+                linkComponent={linkComponent}
+                imageComponent={imageComponent}
+                linkProps={linkProps}
+                imageProps={imageProps}
+              />
+            </VStack>
+          </Section>
+        ))}
+      </VStack>
+    </Container>
   );
 }

@@ -21,6 +21,7 @@ import { registerDoctorCommand } from "./commands/doctor";
 import { registerFixCommand } from "./commands/fix";
 import { registerInitCommand } from "./commands/init";
 import { registerListCommand } from "./commands/list";
+import { registerPlaygroundCommand } from "./commands/playground";
 
 /**
  * Root `commander` program instance shared by every CLI subcommand.
@@ -39,6 +40,7 @@ registerInitCommand(program);
 registerDoctorCommand(program);
 registerListCommand(program);
 registerFixCommand(program);
+registerPlaygroundCommand(program);
 
 program.parseAsync(process.argv).catch((error: unknown) => {
   // A command that fails should report one clear line, not a stack trace, and

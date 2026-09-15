@@ -49,6 +49,7 @@
   },
   "files": [
     "dist",
+    "templates",
     "LICENSE",
     "NOTICE"
   ],

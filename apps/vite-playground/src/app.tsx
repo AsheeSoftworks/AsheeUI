@@ -1,6 +1,4 @@
-import { Gallery } from "@asheeui/e2e-gallery";
-import { AsheeUIProvider } from "asheeui";
-import { playgroundConfig } from "./playground-config";
+import { PlaygroundApp } from "@asheeui/e2e-gallery";
 import { AppLink } from "./router-link";
 
 /**
@@ -10,17 +8,19 @@ import { AppLink } from "./router-link";
  * server markup and the client's first render describe the same tree, which is
  * what makes the hydration check in the end-to-end test meaningful.
  *
- * @returns The application, wrapped in the provider.
+ * The application is the shared playground application: this file supplies the
+ * playground's own link adapter and nothing else, and the configuration, the
+ * screens and the provider come from the shared package.
+ *
+ * @returns The application.
  */
 export function App() {
   return (
-    <AsheeUIProvider config={playgroundConfig}>
-      <Gallery
-        title="AsheeUI on Vite"
-        linkComponent={AppLink}
-        linkProps={{ "data-vite-link": "true" }}
-        imageProps={{ "data-vite-image": "true" }}
-      />
-    </AsheeUIProvider>
+    <PlaygroundApp
+      title="AsheeUI on Vite"
+      linkComponent={AppLink}
+      linkProps={{ "data-vite-link": "true" }}
+      imageProps={{ "data-vite-image": "true" }}
+    />
   );
 }

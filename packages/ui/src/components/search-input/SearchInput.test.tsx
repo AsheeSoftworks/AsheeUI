@@ -22,15 +22,11 @@ import { SearchInput } from "./SearchInput";
 /**
  * Read the field's search landmark.
  *
- * The landmark is queried by element rather than by role, because the test DOM's
- * role mapping does not yet know the `search` element; every current browser
- * does, and the name is what the component promises.
- *
  * @param container - The render result's container.
  * @returns The search landmark.
  */
 function searchRegion(container: HTMLElement): HTMLElement {
-  return container.querySelector("search") as HTMLElement;
+  return container.querySelector('[role="search"]') as HTMLElement;
 }
 
 describe("SearchInput", () => {

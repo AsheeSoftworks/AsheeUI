@@ -1,6 +1,6 @@
 "use client";
 
-import { Avatar, Breadcrumb, Link } from "asheeui";
+import { Avatar, Breadcrumb, Container, HStack, Link, VStack } from "asheeui";
 import NextImage from "next/image";
 import NextLink from "next/link";
 
@@ -16,35 +16,41 @@ import NextLink from "next/link";
  */
 export function SubstitutionIsland() {
   return (
-    <div className="mx-auto w-full max-w-3xl space-y-6 p-6">
-      <Breadcrumb
-        items={[
-          {
-            id: "gallery",
-            label: "Gallery",
-            href: "/",
-            component: NextLink,
-            componentProps: { "data-next-link": "true" },
-          },
-          { id: "current", label: "Substitution" },
-        ]}
-      />
-
-      <div className="flex items-center gap-4">
-        <Link
-          href="/"
-          component={NextLink}
-          componentProps={{ "data-next-link": "true" }}>
-          Back to the gallery
-        </Link>
-
-        <Avatar
-          name="Grace Hopper"
-          src="/avatars/grace.png"
-          component={NextImage}
-          componentProps={{ "data-next-image": "true", width: 40, height: 40 }}
+    <Container size="md">
+      <VStack gap="2xl">
+        <Breadcrumb
+          items={[
+            {
+              id: "gallery",
+              label: "Gallery",
+              href: "/",
+              component: NextLink,
+              componentProps: { "data-next-link": "true" },
+            },
+            { id: "current", label: "Substitution" },
+          ]}
         />
-      </div>
-    </div>
+
+        <HStack gap="lg">
+          <Link
+            href="/"
+            component={NextLink}
+            componentProps={{ "data-next-link": "true" }}>
+            Back to the gallery
+          </Link>
+
+          <Avatar
+            name="Grace Hopper"
+            src="/avatars/grace.png"
+            component={NextImage}
+            componentProps={{
+              "data-next-image": "true",
+              width: 40,
+              height: 40,
+            }}
+          />
+        </HStack>
+      </VStack>
+    </Container>
   );
 }

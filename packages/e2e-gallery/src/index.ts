@@ -1,40 +1,21 @@
 /**
- * The end-to-end gallery shared by the playground applications.
+ * The playground package's application surface.
  *
- * A playground imports {@link Gallery}, renders it inside its own framework, and
- * then asserts the contract published here against its server markup and its
- * hydrated tree. See `packages/e2e-gallery/README.md` for how a playground is
- * wired and what it has to prove.
+ * A playground imports this module for everything it renders: the application, the
+ * configuration boundary, the gallery and the contract its sections satisfy. It
+ * deliberately exports nothing that reaches for a test environment, so an
+ * application bundle carries the playground and not the way it is verified; a
+ * playground's end-to-end test imports `@asheeui/e2e-gallery/testing` instead, and
+ * the browser stand-ins it needs are at `@asheeui/e2e-gallery/setup`.
  */
 
 export {
-  accessibleNameOf,
-  createReport,
-  createSectionReport,
-  requireAbsent,
-  requireAnyText,
-  requireAttribute,
-  requireAttributes,
-  requireElement,
-  requireName,
-  requireOwnText,
-  requireText,
-  textOf,
-} from "./dom";
-export { click, focus, press, settle, waitFor } from "./events";
+  PlaygroundApp,
+  type PlaygroundAppProps,
+  PlaygroundProvider,
+  type PlaygroundProviderProps,
+} from "./app";
 export { Gallery, type GalleryProps } from "./gallery";
-export {
-  type HydrationResult,
-  hydrateMarkup,
-  parseMarkup,
-  renderServerMarkup,
-} from "./harness";
-export { gallerySectionIds, inspectGallery } from "./inspect";
-export { GALLERY_INTERACTIONS, runGalleryInteractions } from "./interactions";
+export { playgroundConfig } from "./playground-config";
 export { GALLERY_SECTIONS } from "./sections";
-export type {
-  GalleryInteraction,
-  GallerySection,
-  GallerySectionProps,
-  Report,
-} from "./types";
+export type { GallerySection, GallerySectionProps } from "./types";

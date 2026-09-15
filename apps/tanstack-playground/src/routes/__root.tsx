@@ -1,14 +1,15 @@
 import { createRootRoute, Scripts } from "@tanstack/react-router";
-import { AsheeUIProvider } from "asheeui";
 import type { ReactNode } from "react";
-import { playgroundConfig } from "../playground-config";
 import appCss from "../styles.css?url";
 
 /**
  * The root route.
  *
- * Its shell is the document, which is where the provider lives: a consumer that
- * server-renders gets the provider in the same tree that the browser hydrates.
+ * Its shell is the document, and nothing else: the provider and the
+ * configuration belong to the shared playground application the route renders,
+ * so the root states only what the framework requires. The document arrives
+ * server-rendered and hydrates in the browser, which is what the playground's
+ * end-to-end tests assert.
  */
 export const Route = createRootRoute({
   head: () => ({
@@ -31,7 +32,7 @@ function RootDocument({ children }: { children: ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning>
       <body>
-        <AsheeUIProvider config={playgroundConfig}>{children}</AsheeUIProvider>
+        {children}
         <Scripts />
       </body>
     </html>

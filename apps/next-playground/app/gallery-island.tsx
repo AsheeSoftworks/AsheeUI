@@ -1,6 +1,6 @@
 "use client";
 
-import { Gallery } from "@asheeui/e2e-gallery";
+import { PlaygroundApp } from "@asheeui/e2e-gallery";
 import NextImage from "next/image";
 import NextLink from "next/link";
 
@@ -18,7 +18,7 @@ import NextLink from "next/link";
  */
 export function GalleryIsland() {
   return (
-    <Gallery
+    <PlaygroundApp
       title="AsheeUI on Next.js"
       linkComponent={NextLink}
       linkProps={{ "data-next-link": "true" }}

@@ -18,6 +18,8 @@
  * `Link` reaches the components that render links.
  */
 
+"use client";
+
 import type { ColumnDef } from "asheeui";
 import {
   Accordion,
@@ -50,6 +52,7 @@ import {
   Tabs,
   Tooltip,
   Typography,
+  VStack,
 } from "asheeui";
 import { useState } from "react";
 import {
@@ -72,38 +75,38 @@ import type { GallerySection, GallerySectionProps } from "./types";
  */
 function TypographySection() {
   return (
-    <div className="space-y-2">
-      <div data-check="heading">
+    <VStack gap="sm">
+      <VStack gap="none" data-check="heading">
         <Typography role="heading-lg">Invoice overview</Typography>
-      </div>
-      <div data-check="summary">
+      </VStack>
+      <VStack gap="sm" data-check="summary">
         <Typography role="body-md">
           Six invoices are awaiting payment this month.
         </Typography>
         <Typography role="body-sm">Updated four minutes ago</Typography>
-      </div>
-    </div>
+      </VStack>
+    </VStack>
   );
 }
 
 /** Button variants and its busy, disabled and destructive states. */
 function ButtonSection() {
   return (
-    <div className="flex flex-wrap items-center gap-3">
+    <HStack gap="md" wrap>
       <Button>Save invoice</Button>
       <Button variant="bordered" color="danger">
         Delete
       </Button>
       <Button isLoading>Syncing</Button>
       <Button isDisabled>Unavailable</Button>
-    </div>
+    </HStack>
   );
 }
 
 /** Badge colours and its icon-only labelling contract. */
 function BadgeSection() {
   return (
-    <div className="flex flex-wrap items-center gap-2">
+    <HStack gap="sm" wrap>
       <Badge color="success">Paid</Badge>
       <Badge color="danger" variant="faded">
         Overdue
@@ -111,54 +114,62 @@ function BadgeSection() {
       <Badge
         color="primary"
         label="Three unread"
-        startContent={<span aria-hidden="true">3</span>}
+        startContent={
+          <Typography as="span" role="label" aria-hidden="true">
+            3
+          </Typography>
+        }
       />
-    </div>
+    </HStack>
   );
 }
 
 /** Chip, including the remove control. */
 function ChipSection() {
   return (
-    <div className="flex flex-wrap items-center gap-2">
+    <HStack gap="sm" wrap>
       <Chip dot>finance</Chip>
       <Chip onClose={() => {}}>draft</Chip>
-    </div>
+    </HStack>
   );
 }
 
 /** The field and control primitives, with their labels and descriptions. */
 function FieldSection() {
   return (
-    <div className="space-y-3">
-      <div data-check="input">
+    <VStack gap="md">
+      <VStack gap="none" data-check="input">
         <Input label="Reference" description="Printed on the invoice" />
-      </div>
-      <div data-check="switch">
+      </VStack>
+      <VStack gap="none" data-check="switch">
         <Switch
           label="Send a reminder"
           description="Emails the customer when payment is due"
           defaultChecked
         />
-      </div>
-    </div>
+      </VStack>
+    </VStack>
   );
 }
 
 /** Skeleton in its decorative and labelled busy forms. */
 function SkeletonSection() {
   return (
-    <div className="space-y-2">
-      <Skeleton className="h-4 w-40" />
+    <VStack gap="sm">
+      {/* The placeholder's dimensions are the skeleton's only size axis, and the
+          library exposes no token for it yet, so the shared application sizes it
+          through the element's own `style` rather than through a utility class.
+          A sizing token is recorded as the deferral that removes this. */}
+      <Skeleton style={{ height: "1rem", width: "10rem" }} />
       <Skeleton isBusy label="Loading invoices" />
-    </div>
+    </VStack>
   );
 }
 
 /** Alert by urgency, including the dismiss control. */
 function AlertSection() {
   return (
-    <div className="space-y-3">
+    <VStack gap="md">
       <Alert type="error" title="Payment failed">
         The card was declined.
       </Alert>
@@ -173,36 +184,36 @@ function AlertSection() {
         closeLabel="Dismiss the overdue notice">
         Send a reminder to the customer.
       </Alert>
-    </div>
+    </VStack>
   );
 }
 
 /** Avatar initials, its picture and its unnamed form. */
 function AvatarSection({ imageComponent, imageProps }: GallerySectionProps) {
   return (
-    <div data-check="avatars" className="flex items-center gap-3">
-      <span data-check="initials">
+    <HStack gap="md" wrap data-check="avatars">
+      <VStack gap="none" data-check="initials">
         <Avatar name="Ada Lovelace" />
-      </span>
-      <span data-check="picture">
+      </VStack>
+      <VStack gap="none" data-check="picture">
         <Avatar
           name="Grace Hopper"
           src="/avatars/grace.png"
           component={imageComponent}
           componentProps={imageProps}
         />
-      </span>
-      <span data-check="unnamed">
+      </VStack>
+      <VStack gap="none" data-check="unnamed">
         <Avatar src="/avatars/unnamed.png" />
-      </span>
-    </div>
+      </VStack>
+    </HStack>
   );
 }
 
 /** Link, in its internal and external forms. */
 function LinkSection({ linkComponent, linkProps }: GallerySectionProps) {
   return (
-    <div className="flex flex-wrap items-center gap-4">
+    <HStack gap="lg" wrap>
       <Link
         href="/invoices"
         component={linkComponent}
@@ -212,7 +223,7 @@ function LinkSection({ linkComponent, linkProps }: GallerySectionProps) {
       <Link href="https://asheeui.com" isExternal>
         Documentation
       </Link>
-    </div>
+    </HStack>
   );
 }
 
@@ -258,9 +269,9 @@ function FormSection() {
 /** Spinner, which is decorative by design. */
 function SpinnerSection() {
   return (
-    <div data-check="spinner">
+    <VStack gap="none" data-check="spinner">
       <Spinner />
-    </div>
+    </VStack>
   );
 }
 
@@ -269,18 +280,18 @@ function PaginationSection() {
   const [page, setPage] = useState(2);
 
   return (
-    <div className="space-y-4">
-      <div data-check="interactive">
+    <VStack gap="lg">
+      <VStack gap="none" data-check="interactive">
         <Pagination page={page} pageCount={4} onPageChange={setPage} />
-      </div>
-      <div data-check="linked">
+      </VStack>
+      <VStack gap="none" data-check="linked">
         <Pagination
           page={1}
           pageCount={3}
           hrefForPage={(target) => `/invoices?page=${target}`}
         />
-      </div>
-    </div>
+      </VStack>
+    </VStack>
   );
 }
 
@@ -294,12 +305,16 @@ function TabsSection() {
         {
           id: "all",
           label: "All",
-          content: <p>Three invoices in total.</p>,
+          content: (
+            <Typography role="body-md">Three invoices in total.</Typography>
+          ),
         },
         {
           id: "overdue",
           label: "Overdue",
-          content: <p>One invoice is overdue.</p>,
+          content: (
+            <Typography role="body-md">One invoice is overdue.</Typography>
+          ),
         },
       ]}
       activeId={activeId}
@@ -316,12 +331,14 @@ function AccordionSection() {
         {
           id: "terms",
           title: "Terms",
-          content: <p>Payment is due in 30 days.</p>,
+          content: (
+            <Typography role="body-md">Payment is due in 30 days.</Typography>
+          ),
         },
         {
           id: "notes",
           title: "Notes",
-          content: <p>Approved by finance.</p>,
+          content: <Typography role="body-md">Approved by finance.</Typography>,
         },
       ]}
       defaultValue="terms"
@@ -340,7 +357,7 @@ function ModalSection() {
         isOpen={isOpen}
         onClose={() => setIsOpen(false)}
         aria-label="Record a payment">
-        <p>Paid today by card.</p>
+        <Typography role="body-md">Paid today by card.</Typography>
       </Modal>
     </>
   );
@@ -373,7 +390,7 @@ function TooltipSection() {
  */
 function LayoutSection({ linkComponent, linkProps }: GallerySectionProps) {
   return (
-    <div className="space-y-6">
+    <VStack gap="2xl">
       <Navbar
         brand="Ashee SMS"
         brandHref="/"
@@ -388,22 +405,19 @@ function LayoutSection({ linkComponent, linkProps }: GallerySectionProps) {
 
       <Section spacing="sm" as="div" background="muted">
         <Container size="md">
-          <HStack justify="between" align="center">
-            <Typography role="heading-md" data-check="band-heading">
-              Layout showcase
-            </Typography>
-            <Badge color="success">Covered</Badge>
-          </HStack>
+          <VStack gap="lg">
+            <HStack justify="between" align="center">
+              <Typography role="heading-md" data-check="band-heading">
+                Layout showcase
+              </Typography>
+              <Badge color="success">Covered</Badge>
+            </HStack>
 
-          <Grid
-            columns={1}
-            columnsMd={2}
-            gap="sm"
-            className="mt-4"
-            data-check="deck">
-            <Card title="Sent" description="348 this month" />
-            <Card title="Drafts" description="3 unfinished" />
-          </Grid>
+            <Grid columns={1} columnsMd={2} gap="sm" data-check="deck">
+              <Card title="Sent" description="348 this month" />
+              <Card title="Drafts" description="3 unfinished" />
+            </Grid>
+          </VStack>
         </Container>
       </Section>
 
@@ -413,7 +427,7 @@ function LayoutSection({ linkComponent, linkProps }: GallerySectionProps) {
         panel
         data-check="empty-state"
       />
-    </div>
+    </VStack>
   );
 }
 
@@ -422,17 +436,17 @@ function SearchInputSection() {
   const [query, setQuery] = useState("");
 
   return (
-    <div data-check="search" className="space-y-2">
+    <VStack gap="sm" data-check="search">
       <SearchInput
         label="Search invoices"
         placeholder="Search invoices"
         shortcut="Cmd K"
         onValueChange={setQuery}
       />
-      <p data-check="query" className="text-sm text-foreground/70">
+      <Typography data-check="query" role="body-sm" tone="muted">
         {query ? `Query: ${query}` : "No query yet"}
-      </p>
-    </div>
+      </Typography>
+    </VStack>
   );
 }
 
@@ -441,7 +455,7 @@ function StepperSection() {
   const [step, setStep] = useState(1);
 
   return (
-    <div data-check="stepper">
+    <VStack gap="none" data-check="stepper">
       <Stepper
         label="Checkout"
         currentStep={step}
@@ -452,7 +466,7 @@ function StepperSection() {
           { key: "payment", label: "Payment" },
         ]}
       />
-    </div>
+    </VStack>
   );
 }
 
@@ -461,7 +475,7 @@ function StateSection() {
   const [attempts, setAttempts] = useState(0);
 
   return (
-    <div className="space-y-4">
+    <VStack gap="lg">
       <LoadingState
         label="Loading invoices"
         description="This usually takes a moment."
@@ -474,10 +488,10 @@ function StateSection() {
         onRetry={() => setAttempts((count) => count + 1)}
         data-check="error"
       />
-      <p data-check="attempts" className="text-sm text-foreground/70">
+      <Typography data-check="attempts" role="body-sm" tone="muted">
         {attempts === 0 ? "No retry yet" : `Retried ${attempts} time`}
-      </p>
-    </div>
+      </Typography>
+    </VStack>
   );
 }
 
@@ -504,7 +518,7 @@ const GALLERY_INVOICE_COLUMNS: ColumnDef<GalleryInvoice>[] = [
 /** The table a list page is built from: search, a count and paging. */
 function DataTableSection() {
   return (
-    <div data-check="table">
+    <VStack gap="none" data-check="table">
       <DataTable
         title="Invoices"
         description="Everything issued this quarter."
@@ -514,7 +528,7 @@ function DataTableSection() {
         searchAccessor={(row) => `${row.number} ${row.customer}`}
         rowKeyAccessor={(row) => row.id}
       />
-    </div>
+    </VStack>
   );
 }
 
@@ -578,7 +592,7 @@ export const GALLERY_SECTIONS: GallerySection[] = [
     inspect: (root) => {
       const { report, scope } = createSectionReport(root, "search-input");
 
-      requireElement(report, scope, "search", "the search landmark");
+      requireElement(report, scope, '[role="search"]', "the search landmark");
       requireName(
         report,
         scope,
