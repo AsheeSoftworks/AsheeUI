@@ -13,4 +13,14 @@
 
 *
 !.gitignore
+
+# The published documentation of this repository. Everything else in this
+# directory is internal, and a document that is meant to be published has to be
+# re-admitted here explicitly.
 !commenting.md
+!installation.md
+!configuration.md
+!components.md
+!accessibility.md
+!cli.md
+!migration.md

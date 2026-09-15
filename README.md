@@ -5,10 +5,12 @@
 
 # AsheeUI
 
-`AsheeUI` is a modern React component library that combines accessibility,
-performance, and deep Tailwind CSS integration. Components ship with
-first-class TypeScript types, theme token inheritance, and zero-config setup
-for the most popular React frameworks.
+`AsheeUI` is a React UI framework built on Tailwind CSS v4. It gives an
+application one configuration cascade, one theme system and one accessibility
+baseline, so components, theming and behaviour stay consistent instead of being
+reassembled per project. Components ship with first-class TypeScript types, and
+the framework needs no bundler plugin, no build-time configuration file and no
+CLI.
 
 ## Features
 
@@ -128,6 +130,18 @@ npx asheeui doctor   # check styles, provider, dependencies and configuration
 npx asheeui fix      # apply the repairs doctor can make automatically
 npx asheeui list     # list the components this version exports
 ```
+
+## Documentation
+
+| Document | Covers |
+| --- | --- |
+| [Installation](docs/installation.md) | Requirements, the stylesheet import, wrapping the root, where the root is per framework, troubleshooting |
+| [Configuration](docs/configuration.md) | The cascade, the global and per-component keys, the theme system, scrollbars, validation |
+| [Components](docs/components.md) | The component set, the shared prop axes, the substitution API, the field contract |
+| [Accessibility](docs/accessibility.md) | The conformance target, keyboard behaviour, structure, known limits |
+| [CLI](docs/cli.md) | The optional scaffolding, checking and repair commands |
+| [Migration](docs/migration.md) | The deprecation policy in force from 1.0 and every breaking change with its migration |
+| [Commenting standard](docs/commenting.md) | How the source documents itself |
 
 ## LLM & AI Assistant Support
 
