@@ -140,5 +140,3 @@ export function expectHydrationClean(
     result.unmount();
   }
 }
-
-

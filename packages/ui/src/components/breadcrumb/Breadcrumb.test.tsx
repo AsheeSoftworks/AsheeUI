@@ -89,9 +89,9 @@ describe("Breadcrumb", () => {
       "Invoices",
       "March",
     ]);
-    expect(
-      container.querySelectorAll('span[aria-hidden="true"]').length,
-    ).toBe(2);
+    expect(container.querySelectorAll('span[aria-hidden="true"]').length).toBe(
+      2,
+    );
   });
 
   it("accepts a separator of its own", () => {

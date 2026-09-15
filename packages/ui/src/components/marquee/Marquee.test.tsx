@@ -2,10 +2,7 @@ import { describe, expect, it } from "vitest";
 import { renderWithProvider, stubReducedMotion } from "../../test";
 import { Marquee } from "./Marquee";
 
-const ITEMS = [
-  <span key="alpha">Alpha</span>,
-  <span key="beta">Beta</span>,
-];
+const ITEMS = [<span key="alpha">Alpha</span>, <span key="beta">Beta</span>];
 
 describe("Marquee", () => {
   it("renders every item in the primary track and the duplicate track", () => {

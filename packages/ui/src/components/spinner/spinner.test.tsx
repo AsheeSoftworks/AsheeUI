@@ -12,12 +12,12 @@ describe("Spinner", () => {
   });
 
   it("maps size and colour props to framework classes", () => {
-    const small = renderWithProvider(<Spinner size="sm" />).container.querySelector(
-      "svg",
-    );
-    const large = renderWithProvider(<Spinner size="lg" />).container.querySelector(
-      "svg",
-    );
+    const small = renderWithProvider(
+      <Spinner size="sm" />,
+    ).container.querySelector("svg");
+    const large = renderWithProvider(
+      <Spinner size="lg" />,
+    ).container.querySelector("svg");
     const danger = renderWithProvider(
       <Spinner color="danger" />,
     ).container.querySelector("svg");
@@ -45,7 +45,9 @@ describe("Spinner", () => {
   });
 
   it("lets consumer classes win over framework classes", () => {
-    const { container } = renderWithProvider(<Spinner className="text-danger" />);
+    const { container } = renderWithProvider(
+      <Spinner className="text-danger" />,
+    );
     const svg = container.querySelector("svg");
 
     expect(svg?.getAttribute("class")).toContain("text-danger");

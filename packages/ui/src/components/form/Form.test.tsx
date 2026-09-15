@@ -49,9 +49,7 @@ describe("Form", () => {
       </Form>,
     );
 
-    expect(
-      getByRole("group", { name: "Invoice details" }),
-    ).toBeInTheDocument();
+    expect(getByRole("group", { name: "Invoice details" })).toBeInTheDocument();
   });
 
   it("reports a submission through the native event", () => {

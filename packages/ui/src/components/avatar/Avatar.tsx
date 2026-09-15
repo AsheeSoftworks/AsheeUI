@@ -19,17 +19,14 @@ import { RADIUS_CLASS, resolveVariantClass } from "../../shared";
 import { cn } from "../../utils";
 import { resolveCascade, resolveClassKey } from "../../utils/resolve-token";
 import { Image } from "../image";
-import {
-  type AvatarConfig,
-  FALLBACK_AVATAR_CONFIG,
-} from "./avatar-config";
+import { getInitials } from "./avatar.helpers";
+import { type AvatarConfig, FALLBACK_AVATAR_CONFIG } from "./avatar-config";
 import {
   AVATAR_BASE_CLASS,
   AVATAR_FALLBACK_VARIANT,
   AVATAR_FONT_CLASS,
   AVATAR_SIZE_CLASS,
 } from "./avatar-styles";
-import { getInitials } from "./avatar.helpers";
 
 type BaseAvatarProps = AvatarConfig &
   Omit<HTMLAttributes<HTMLDivElement>, "color" | "children">;
@@ -212,10 +209,7 @@ export const Avatar = forwardRef<HTMLDivElement, AvatarProps>(
             className={cn(
               "inline-flex items-center justify-center size-full",
               fontClass,
-              resolveVariantClass(
-                AVATAR_FALLBACK_VARIANT,
-                resolvedColorKey,
-              ),
+              resolveVariantClass(AVATAR_FALLBACK_VARIANT, resolvedColorKey),
             )}>
             {fallback ?? getInitials(name ?? "")}
           </span>

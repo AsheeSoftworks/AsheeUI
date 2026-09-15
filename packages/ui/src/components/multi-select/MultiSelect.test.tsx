@@ -71,7 +71,9 @@ describe("MultiSelect", () => {
 
     await user.click(screen.getByRole("combobox"));
 
-    const option = within(screen.getByRole("listbox")).getAllByRole("option")[1];
+    const option = within(screen.getByRole("listbox")).getAllByRole(
+      "option",
+    )[1];
 
     await user.click(option);
     await user.click(option);

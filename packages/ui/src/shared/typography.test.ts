@@ -91,8 +91,12 @@ describe("typography token maps", () => {
 
 describe("typography roles", () => {
   it("defines a class, a token entry and a default element for every role", () => {
-    expect(Object.keys(TYPOGRAPHY_ROLE_CLASS).sort()).toEqual([...ROLES].sort());
-    expect(Object.keys(TYPOGRAPHY_ROLE_TOKEN).sort()).toEqual([...ROLES].sort());
+    expect(Object.keys(TYPOGRAPHY_ROLE_CLASS).sort()).toEqual(
+      [...ROLES].sort(),
+    );
+    expect(Object.keys(TYPOGRAPHY_ROLE_TOKEN).sort()).toEqual(
+      [...ROLES].sort(),
+    );
     expect(Object.keys(TYPOGRAPHY_ROLE_DEFAULT_ELEMENT).sort()).toEqual(
       [...ROLES].sort(),
     );

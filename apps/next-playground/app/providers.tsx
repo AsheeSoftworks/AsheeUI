@@ -1,7 +1,7 @@
 "use client";
 
-import type { ReactNode } from "react";
 import { AsheeUIProvider } from "asheeui";
+import type { ReactNode } from "react";
 import { config } from "../asheeui.config";
 
 /**

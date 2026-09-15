@@ -81,7 +81,9 @@ describe("dynamic utility class scanner", () => {
 
   it("accepts complete interpolations of pre-computed class strings", () => {
     expect(
-      scanForDynamicUtilityClasses(`className={\`\${sizeClass} \${toneClass}\`}`),
+      scanForDynamicUtilityClasses(
+        `className={\`\${sizeClass} \${toneClass}\`}`,
+      ),
     ).toEqual([]);
     expect(
       scanForDynamicUtilityClasses(

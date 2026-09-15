@@ -54,7 +54,8 @@ function setSystemDark(matches: boolean): void {
 }
 
 const root = () => document.documentElement;
-const themeClasses = () => Array.from(root().classList).filter((c) => c.startsWith("theme-"));
+const themeClasses = () =>
+  Array.from(root().classList).filter((c) => c.startsWith("theme-"));
 
 beforeEach(() => {
   localStorage.clear();

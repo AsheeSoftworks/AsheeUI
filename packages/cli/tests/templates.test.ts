@@ -25,9 +25,7 @@ describe("defaultConfigContent", () => {
     // The generated provider wiring does `import config from "./asheeui.config"`,
     // so a default export is what makes the scaffolded project compile.
     expect(source).toContain("export default config;");
-    expect(source).toContain(
-      'import type { ExternalConfig } from "asheeui";',
-    );
+    expect(source).toContain('import type { ExternalConfig } from "asheeui";');
     expect(source).not.toContain("export const config");
     expect(source).not.toContain("export default const");
   });
@@ -44,7 +42,9 @@ describe("defaultConfigContent", () => {
     const file = join(dir, "asheeui.config.js");
     await writeFile(file, source, "utf8");
 
-    await expect(run(process.execPath, ["--check", file])).resolves.toBeDefined();
+    await expect(
+      run(process.execPath, ["--check", file]),
+    ).resolves.toBeDefined();
   });
 
   it("documents the config type for JavaScript projects", () => {

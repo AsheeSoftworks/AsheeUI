@@ -9,7 +9,11 @@
 
 import { describe, expect, it } from "vitest";
 import { Badge } from "../components/badge";
-import { expectHydrationClean, renderHydrated, renderToServerString } from "./ssr";
+import {
+  expectHydrationClean,
+  renderHydrated,
+  renderToServerString,
+} from "./ssr";
 
 /** Renders a value that differs between the server and the client. */
 function UnstableMarkup() {

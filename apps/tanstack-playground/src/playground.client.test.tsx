@@ -13,8 +13,8 @@
  * because the DOM a test owns is not the DOM of a page.
  */
 
-import { RouterProvider, createMemoryHistory } from "@tanstack/react-router";
 import { inspectGallery, runGalleryInteractions } from "@asheeui/e2e-gallery";
+import { createMemoryHistory, RouterProvider } from "@tanstack/react-router";
 import { act } from "@testing-library/react";
 import { createRoot } from "react-dom/client";
 import { describe, expect, it } from "vitest";

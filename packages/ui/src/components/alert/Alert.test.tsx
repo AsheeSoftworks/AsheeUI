@@ -11,9 +11,7 @@ import { Alert } from "./Alert";
 describe("Alert", () => {
   it("renders its title and message", () => {
     const { getByText } = renderWithProvider(
-      <Alert title="Payment failed">
-        The card was declined.
-      </Alert>,
+      <Alert title="Payment failed">The card was declined.</Alert>,
     );
 
     expect(getByText("Payment failed")).toBeInTheDocument();
@@ -100,7 +98,9 @@ describe("Alert", () => {
     });
 
     expect(within(configured.container).getByRole("alert")).toBeInTheDocument();
-    expect(within(overridden.container).getByRole("status")).toBeInTheDocument();
+    expect(
+      within(overridden.container).getByRole("status"),
+    ).toBeInTheDocument();
   });
 
   it("uses the registered radius and honours a radius override", () => {

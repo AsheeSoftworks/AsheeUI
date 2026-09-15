@@ -12,10 +12,10 @@
  * The browser half of this playground lives in `playground.client.test.tsx`.
  */
 
+import { inspectGallery } from "@asheeui/e2e-gallery";
+import { createMemoryHistory, RouterProvider } from "@tanstack/react-router";
 import { JSDOM } from "jsdom";
 import { renderToString } from "react-dom/server";
-import { RouterProvider, createMemoryHistory } from "@tanstack/react-router";
-import { inspectGallery } from "@asheeui/e2e-gallery";
 import { describe, expect, it } from "vitest";
 import { getRouter } from "./router";
 

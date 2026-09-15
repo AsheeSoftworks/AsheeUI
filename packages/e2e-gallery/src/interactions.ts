@@ -13,9 +13,7 @@ import type { GalleryInteraction } from "./types";
 /** Every interaction a consumer performs in the gallery, in section order. */
 export const GALLERY_INTERACTIONS: GalleryInteraction[] =
   GALLERY_SECTIONS.flatMap((section) =>
-    section.interaction
-      ? [{ id: section.id, ...section.interaction }]
-      : [],
+    section.interaction ? [{ id: section.id, ...section.interaction }] : [],
   );
 
 /**
@@ -33,7 +31,10 @@ export async function runGalleryInteractions(
     const reported = await interaction.run(container);
 
     problems.push(
-      ...reported.map((problem) => `${interaction.id} (${interaction.description}): ${problem}`),
+      ...reported.map(
+        (problem) =>
+          `${interaction.id} (${interaction.description}): ${problem}`,
+      ),
     );
   }
 

@@ -23,7 +23,10 @@ const asOptions = (value: unknown) => ({
 describe("AsheeUIProvider configuration validation", () => {
   it("renders a valid configuration", () => {
     expect(() =>
-      renderToServerString(<span>ok</span>, asOptions({ defaultTheme: "dark" })),
+      renderToServerString(
+        <span>ok</span>,
+        asOptions({ defaultTheme: "dark" }),
+      ),
     ).not.toThrow();
   });
 
@@ -78,7 +81,9 @@ describe("AsheeUIProvider pre-paint theme", () => {
     expect(style).not.toBeNull();
     expect(style?.textContent).toContain("--ashee-background");
     expect(style?.textContent).toContain(".theme-dark");
-    expect(document.documentElement.classList.contains("theme-dark")).toBe(true);
+    expect(document.documentElement.classList.contains("theme-dark")).toBe(
+      true,
+    );
 
     unmount();
   });

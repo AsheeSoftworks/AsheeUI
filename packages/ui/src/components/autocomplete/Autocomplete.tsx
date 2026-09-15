@@ -28,8 +28,8 @@ import { resolveCascade, resolveRadiusKey } from "../../utils/resolve-token";
 import type { FieldSizeKey } from "../field/field-config";
 import { Input, type InputProps } from "../input/Input";
 import { type MenuOption, menuOptionId, useMenuFloating } from "../menu";
+import { Menu, type MenuProps } from "../menu/Menu";
 import { edgeOptionIndex, nextOptionIndex } from "../menu/menu-navigation";
-import { type MenuProps, Menu } from "../menu/Menu";
 import {
   type AutocompleteConfig,
   FALLBACK_AUTOCOMPLETE_CONFIG,

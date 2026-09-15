@@ -40,7 +40,7 @@ import type { FieldSizeKey, LabelAlign } from "../field/field-config";
 import type { InputProps } from "../input/Input";
 import type { MenuConfig } from "../menu";
 import { type MenuOption, useMenuFloating } from "../menu";
-import { type MenuProps, Menu } from "../menu/Menu";
+import { Menu, type MenuProps } from "../menu/Menu";
 import {
   FALLBACK_MULTI_SELECT_CONFIG,
   type MultiSelectChipConfig,
@@ -555,12 +555,7 @@ export const MultiSelect = forwardRef<HTMLButtonElement, MultiSelectProps>(
         if (!isSelectionControlled) setInternalValues(nextValues);
         onChange?.(nextValues);
       },
-      [
-        handleRemoveChip,
-        isSelectionControlled,
-        onChange,
-        selectionValues,
-      ],
+      [handleRemoveChip, isSelectionControlled, onChange, selectionValues],
     );
 
     const selectedValues = useMemo(

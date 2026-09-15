@@ -1,6 +1,6 @@
 import { createRootRoute, Scripts } from "@tanstack/react-router";
-import type { ReactNode } from "react";
 import { AsheeUIProvider } from "asheeui";
+import type { ReactNode } from "react";
 import { playgroundConfig } from "../playground-config";
 import appCss from "../styles.css?url";
 

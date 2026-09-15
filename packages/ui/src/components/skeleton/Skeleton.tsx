@@ -14,8 +14,8 @@ import { RADIUS_CLASS } from "../../shared";
 import { cn } from "../../utils";
 import { resolveCascade, resolveClassKey } from "../../utils/resolve-token";
 import {
-  type SkeletonConfig,
   FALLBACK_SKELETON_CONFIG,
+  type SkeletonConfig,
 } from "./skeleton-config";
 import {
   SKELETON_ANIMATION_CLASS,

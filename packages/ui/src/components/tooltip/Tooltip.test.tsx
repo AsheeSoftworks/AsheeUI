@@ -99,4 +99,3 @@ describe("Tooltip", () => {
     expectPortalled(tooltip, container);
   });
 });
-

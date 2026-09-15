@@ -86,7 +86,11 @@ describe("Accordion", () => {
     const user = createUser();
     const onValueChange = vi.fn();
     const { getByRole } = renderWithProvider(
-      <Accordion items={ITEMS} value={["first"]} onValueChange={onValueChange} />,
+      <Accordion
+        items={ITEMS}
+        value={["first"]}
+        onValueChange={onValueChange}
+      />,
     );
     const first = getByRole("button", { name: /First/ });
     const second = getByRole("button", { name: /Second/ });
@@ -102,7 +106,12 @@ describe("Accordion", () => {
   it("does not open a disabled item", async () => {
     const user = createUser();
     const items = [
-      { id: "locked", title: "Locked", content: <p>Locked content</p>, disabled: true },
+      {
+        id: "locked",
+        title: "Locked",
+        content: <p>Locked content</p>,
+        disabled: true,
+      },
     ];
     const { getByRole } = renderWithProvider(<Accordion items={items} />);
     const trigger = getByRole("button", { name: /Locked/ });
@@ -132,7 +141,9 @@ describe("Accordion", () => {
       />,
     );
 
-    expect(screen.queryByRole("button", { name: "Inside the panel" })).toBeNull();
+    expect(
+      screen.queryByRole("button", { name: "Inside the panel" }),
+    ).toBeNull();
 
     const collapsedPanel = container.querySelector('[data-state="closed"]');
 

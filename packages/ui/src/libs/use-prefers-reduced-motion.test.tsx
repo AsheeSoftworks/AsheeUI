@@ -23,10 +23,16 @@ function stubMatchMedia(matches: boolean) {
         onchange: null,
         addListener: () => {},
         removeListener: () => {},
-        addEventListener: (_type: string, listener: (event: MediaQueryListEvent) => void) => {
+        addEventListener: (
+          _type: string,
+          listener: (event: MediaQueryListEvent) => void,
+        ) => {
           listeners.add(listener);
         },
-        removeEventListener: (_type: string, listener: (event: MediaQueryListEvent) => void) => {
+        removeEventListener: (
+          _type: string,
+          listener: (event: MediaQueryListEvent) => void,
+        ) => {
           listeners.delete(listener);
         },
         dispatchEvent: () => false,

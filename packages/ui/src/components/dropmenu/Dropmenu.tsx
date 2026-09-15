@@ -27,9 +27,9 @@ import { FieldShell } from "../field/FieldShell";
 import type { FieldSizeKey, LabelAlign } from "../field/field-config";
 import type { InputProps } from "../input/Input";
 import { useMenuFloating } from "../menu";
-import { type MenuProps, Menu } from "../menu/Menu";
+import { Menu, type MenuProps } from "../menu/Menu";
 import type { MenuOption } from "../menu/menu-config";
-import { FALLBACK_SELECT_CONFIG, type DropmenuConfig } from "./dropmenu-config";
+import { type DropmenuConfig, FALLBACK_SELECT_CONFIG } from "./dropmenu-config";
 import { SELECT_STATUS_BORDER_CLASS } from "./dropmenu-styles";
 
 // ─── Component Interface ──────────────────────────────────────────────────────
@@ -290,7 +290,9 @@ export const Dropmenu = forwardRef<HTMLButtonElement, DropmenuProps>(
     ref,
   ) => {
     const config = useAsheeConfig();
-    const sectionConfig = config.components?.dropmenu as DropmenuConfig | undefined;
+    const sectionConfig = config.components?.dropmenu as
+      | DropmenuConfig
+      | undefined;
 
     const generatedId = useId();
     const fieldId = id ?? generatedId;

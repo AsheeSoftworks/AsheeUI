@@ -9,7 +9,11 @@
  */
 
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { THEME_STORAGE_KEY, type ThemeSelection, themeController } from "./controller";
+import {
+  THEME_STORAGE_KEY,
+  type ThemeSelection,
+  themeController,
+} from "./controller";
 
 const root = () => document.documentElement;
 const themeClasses = () =>

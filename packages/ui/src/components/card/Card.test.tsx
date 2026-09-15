@@ -16,7 +16,9 @@ describe("Card", () => {
   });
 
   it("is inert and not focusable by default", () => {
-    const { container } = renderWithProvider(<Card id="inert-card">Static</Card>);
+    const { container } = renderWithProvider(
+      <Card id="inert-card">Static</Card>,
+    );
     const card = container.querySelector("#inert-card");
 
     expect(card).toHaveAttribute("tabindex", "-1");

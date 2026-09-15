@@ -33,7 +33,11 @@ describe("Dropmenu", () => {
     const user = createUser();
     const onValueChange = vi.fn();
     const { getByRole } = renderWithProvider(
-      <Dropmenu label="Choice" options={OPTIONS} onValueChange={onValueChange} />,
+      <Dropmenu
+        label="Choice"
+        options={OPTIONS}
+        onValueChange={onValueChange}
+      />,
     );
     const trigger = getByRole("combobox");
 

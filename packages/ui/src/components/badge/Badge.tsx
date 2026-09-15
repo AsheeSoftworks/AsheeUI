@@ -7,11 +7,7 @@
 
 "use client";
 
-import {
-  forwardRef,
-  type HTMLAttributes,
-  type ReactNode,
-} from "react";
+import { forwardRef, type HTMLAttributes, type ReactNode } from "react";
 import { useAsheeConfig } from "../../libs/context";
 import type { Color, Radius, Size, Variant } from "../../shared";
 import { RADIUS_CLASS, resolveVariantClass } from "../../shared";
@@ -22,17 +18,17 @@ import {
   resolveRadiusKey,
 } from "../../utils/resolve-token";
 import {
+  type BadgeConfig,
+  type BadgeVariant,
+  FALLBACK_BADGE_CONFIG,
+} from "./badge-config";
+import {
   BADGE_FONT_CLASS,
   BADGE_GAP_CLASS,
   BADGE_HEIGHT_CLASS,
   BADGE_ICON_SIZE_CLASS,
   BADGE_PADDING_CLASS,
 } from "./badge-styles";
-import {
-  type BadgeConfig,
-  type BadgeVariant,
-  FALLBACK_BADGE_CONFIG,
-} from "./badge-config";
 
 type BaseBadgeProps = BadgeConfig &
   Omit<HTMLAttributes<HTMLSpanElement>, "color" | "content">;

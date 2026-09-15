@@ -17,7 +17,7 @@ import type { Color, Radius, Size, Variant } from "../../shared";
 import { cn } from "../../utils";
 import { resolveCascade, resolveRadiusKey } from "../../utils/resolve-token";
 import { Button } from "../button";
-import { type FormConfig, FALLBACK_FORM_CONFIG } from "./form-config";
+import { FALLBACK_FORM_CONFIG, type FormConfig } from "./form-config";
 import {
   FORM_BASE_CLASS,
   FORM_FIELD_GROUP_CLASS,
