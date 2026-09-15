@@ -18,8 +18,9 @@ import {
 } from "@asheeui/shared";
 import type { ReactNode } from "react";
 import type { PressableProps, StyleProp, ViewStyle } from "react-native";
-import { ActivityIndicator, Pressable, Text, View } from "react-native";
+import { ActivityIndicator, Pressable, Text } from "react-native";
 import { useAsheeNativeConfig } from "../../provider/AsheeNativeProvider";
+import { classNames } from "../../utils/class-names";
 import {
   FALLBACK_NATIVE_BUTTON_CONFIG,
   type NativeButtonConfig,
@@ -139,18 +140,16 @@ export function Button({
   // A busy button is also disabled: pressing it twice would send the action twice.
   const isInteractionDisabled = Boolean(isDisabled) || Boolean(isLoading);
 
-  const classes = [
+  const classes = classNames(
     BUTTON_BASE_CLASS,
     BUTTON_SIZE_CLASS[resolvedSize],
     BUTTON_RADIUS_CLASS[resolvedRadius],
     BUTTON_VARIANT_CLASS[resolvedVariant][resolvedColor],
     BUTTON_TEXT_CLASS[resolvedVariant][resolvedColor],
-    resolvedFullWidth ? BUTTON_FULL_WIDTH_CLASS : "",
-    isInteractionDisabled ? BUTTON_DISABLED_CLASS : "",
-    className ?? "",
-  ]
-    .filter(Boolean)
-    .join(" ");
+    resolvedFullWidth && BUTTON_FULL_WIDTH_CLASS,
+    isInteractionDisabled && BUTTON_DISABLED_CLASS,
+    className,
+  );
 
   return (
     <Pressable

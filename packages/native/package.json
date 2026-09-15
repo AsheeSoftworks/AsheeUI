@@ -1,6 +1,6 @@
 {
   "name": "@asheeui/native",
-  "version": "0.1.0",
+  "version": "2.0.0",
   "private": true,
   "description": "React Native components styled with NativeWind, sharing the AsheeUI design language and component contracts.",
   "author": "Ashee Softworks <asheesoftworks@gmail.com>",
