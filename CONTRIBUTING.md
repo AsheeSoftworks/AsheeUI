@@ -52,6 +52,17 @@ end-to-end gallery (`packages/e2e-gallery`) and the three playground
 applications that render it (see
 [Testing Local Changes](#testing-local-changes)).
 
+Workspace-wide pnpm settings live in `pnpm-workspace.yaml`. Dependency overrides
+belong there too, because pnpm does not read the `overrides` field of a
+`package.json` inside a workspace, and an override in the wrong file fails
+silently. The one override the repository carries is a security floor,
+documented beside it.
+
+A version that several packages share is declared in each manifest rather than
+pinned in an override, and the lockfile is what guarantees a single copy. React is
+the case that matters most: `pnpm why react` must report one version, and
+`@types/react` must match the major that is installed.
+
 ## Development Workflow
 
 1. Create a feature branch off `main` (see
