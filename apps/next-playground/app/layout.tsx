@@ -1,7 +1,7 @@
+import { PlaygroundProvider } from "@asheeui/e2e-gallery";
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import "./globals.css";
-import { Providers } from "./providers";
 
 /** Page metadata, as any Next.js application declares it. */
 export const metadata: Metadata = {
@@ -13,9 +13,13 @@ export const metadata: Metadata = {
 /**
  * The root layout, a server component.
  *
+ * The document and the framework's configuration boundary: the provider goes here
+ * because the page renders more than one client island, and because that is the
+ * setup the consumer documentation describes. The configuration itself comes from
+ * the shared playground application.
+ *
  * `suppressHydrationWarning` is on the `<html>` element because the pre-paint
- * theme script sets the theme class before the browser hydrates, which is the
- * setup the consumer documentation states.
+ * theme script sets the theme class before the browser hydrates.
  *
  * @param props - The layout props.
  * @param props.children - The page being rendered.
@@ -25,7 +29,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning>
       <body>
-        <Providers>{children}</Providers>
+        <PlaygroundProvider>{children}</PlaygroundProvider>
       </body>
     </html>
   );

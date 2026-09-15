@@ -18,6 +18,18 @@
     "enabled": true,
     "indentStyle": "space"
   },
+  "overrides": [
+    {
+      "includes": ["packages/ui/src/components/search-input/SearchInput.tsx"],
+      "linter": {
+        "rules": {
+          "a11y": {
+            "useSemanticElements": "off"
+          }
+        }
+      }
+    }
+  ],
   "javascript": {
     "formatter": {
       "quoteStyle": "double",

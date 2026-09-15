@@ -12,7 +12,7 @@ import {
   inspectGallery,
   parseMarkup,
   runGalleryInteractions,
-} from "@asheeui/e2e-gallery";
+} from "@asheeui/e2e-gallery/testing";
 import { describe, expect, it } from "vitest";
 import { App } from "./app";
 import { renderServer } from "./entry-server";

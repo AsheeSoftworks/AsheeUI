@@ -12,6 +12,7 @@ with no configuration file, and every command below has a manual equivalent.
 | `asheeui doctor` | `doc`, `dr` | Check the stylesheet import, the provider, the peer dependencies and the configuration |
 | `asheeui fix` | `f` | Apply the repairs `doctor` can make automatically, then report what is left |
 | `asheeui list` | `ls`, `l` | List the components this version of the package exports |
+| `asheeui playground` | `pg` | Create one of the official playground projects in a directory you choose |
 
 `init` is safe to re-run: it detects existing files, edits and dependencies and
 leaves them alone, so running it twice changes nothing the second time.
@@ -26,6 +27,27 @@ leaves them alone, so running it twice changes nothing the second time.
 | `-t, --template <name>` | `init` | Template to apply |
 | `--yes` | `init` | Skip the prompts and accept the defaults |
 | `--skip-install` | `fix` | Do not run a package-manager install; report the commands instead |
+| `--list` | `playground` | Print the playgrounds this version ships |
+| `--force` | `playground` | Replace the files the playground owns in a directory that already has files |
+
+## `asheeui playground`
+
+```bash
+npx asheeui playground --list
+npx asheeui playground next ./invoices
+```
+
+| Argument | Meaning |
+| --- | --- |
+| `[target]` | `next`, `vite` or `tanstack`. `expo` is listed and answered for, and refused with the reason it is not available yet |
+| `[directory]` | Where to create the project. Defaults to the current directory |
+
+The copied project depends on the published `asheeui` package and contains the
+shared playground application, so it installs and runs on its own. It writes
+nothing into a directory that already holds any of the project's files unless you
+pass `--force`, which is what keeps a copy from replacing work you have already
+done. See [Playgrounds](./playgrounds.md) for what a copied project contains.
+
 
 ## Exit codes
 

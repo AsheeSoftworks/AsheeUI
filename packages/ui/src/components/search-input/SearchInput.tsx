@@ -309,24 +309,33 @@ export const SearchInput = forwardRef<HTMLInputElement, SearchInputProps>(
 
     const regionClassName = cn(SEARCH_INPUT_REGION_CLASS, className);
 
-    // The region is the platform's own `search` element rather than a role on a
-    // container, so the landmark is the element every current browser maps. The
-    // form is rendered inside it when the field is submit-capable, which keeps
-    // Enter as the submit gesture without nesting two landmarks.
+    // The landmark is stated as a role rather than as the `search` element: React
+    // warns that `<search>` is an unrecognised tag in current versions, and a
+    // console warning in every consumer's application is worse than a redundant
+    // role on an element the browser maps. The role is what this component
+    // documents and tests.
+    if (!isForm) {
+      return (
+        <div
+          role="search"
+          aria-label={resolved.label}
+          className={regionClassName}>
+          {region}
+        </div>
+      );
+    }
+
     return (
-      <search aria-label={resolved.label} className={regionClassName}>
-        {isForm ? (
-          <form
-            onSubmit={(event) => {
-              event.preventDefault();
-              onSearch?.(query);
-            }}>
-            {region}
-          </form>
-        ) : (
-          region
-        )}
-      </search>
+      <form
+        role="search"
+        aria-label={resolved.label}
+        className={regionClassName}
+        onSubmit={(event) => {
+          event.preventDefault();
+          onSearch?.(query);
+        }}>
+        {region}
+      </form>
     );
   },
 );

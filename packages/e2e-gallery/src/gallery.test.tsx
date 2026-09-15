@@ -10,16 +10,16 @@
 
 import { AsheeUIProvider } from "asheeui";
 import { describe, expect, it } from "vitest";
+import { Gallery } from "./index";
 import {
   GALLERY_INTERACTIONS,
-  Gallery,
   gallerySectionIds,
   hydrateMarkup,
   inspectGallery,
   parseMarkup,
   renderServerMarkup,
   runGalleryInteractions,
-} from "./index";
+} from "./testing";
 
 /** The tree a playground renders, without any framework in it. */
 function galleryTree() {
