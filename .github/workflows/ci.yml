@@ -22,6 +22,10 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v7
+        with:
+          # The changeset check compares the branch with the base it left, which
+          # needs the history a shallow checkout does not carry.
+          fetch-depth: 0
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v6
@@ -34,6 +38,10 @@ jobs:
 
       - name: Install Dependencies
         run: pnpm install --frozen-lockfile
+
+      - name: Changeset
+        if: github.event_name == 'pull_request'
+        run: pnpm check:changesets --base origin/${{ github.base_ref }}
 
       - name: Lint
         run: pnpm lint

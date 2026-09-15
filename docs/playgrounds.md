@@ -116,6 +116,32 @@ build output is: they are generated, and the parity test is what asserts their
 content. What the generator copies is already formatted, because it is copied from
 sources that are checked.
 
+## Verifying a distribution
+
+Content checks cannot tell you whether a copied project works; only installing one
+can. Two defects reached `main` that every content check passed — a copied project
+whose TypeScript configuration reached back into this repository, and a template
+that carried a build artifact a build had left behind — and both were found by
+copying a project and building it. The repository has a command for exactly that,
+and CI runs it:
+
+```bash
+pnpm build
+pnpm verify:distribution                    # every target
+pnpm verify:distribution --targets vite     # one of them
+pnpm verify:distribution --published        # the released range, after a release
+```
+
+It packs the library the way the registry serves it (`pnpm pack` applies
+`publishConfig`), copies each playground with the CLI, points the copy at that
+package, installs it, runs the project's own test suite, and builds both of its
+entries. The copies are made outside the repository and removed again when
+everything passes; `--keep` leaves them for inspection, and a failure always does.
+
+`.github/workflows/distribution.yml` runs the same command on every push to `main`,
+nightly, and on request, so a distribution that stops working is a failed run
+rather than a report from a client.
+
 A distribution is safe by default: if the destination already holds any of the
 project's files, the command writes nothing and says which files it found. Pass
 `--force` to replace the files the playground owns, which leaves every other file
