@@ -215,6 +215,27 @@ git push origin feat/my-change
 - [ ] New or changed public APIs are documented with JSDoc and an `@example`.
 - [ ] Changes follow the existing code style enforced by Biome.
 - [ ] Commits are small, focused, and clearly described.
+- [ ] You agree your contribution is licensed under the project's license (see
+      [docs/licensing.md](docs/licensing.md)).
+
+## Licensing of contributions
+
+AsheeUI is licensed under the Apache License 2.0. By submitting a contribution you
+agree that it is licensed under the same terms (Apache-2.0 section 5), and you
+confirm that you have the right to submit it: the work is yours, or it comes from
+a source whose license permits it.
+
+Two consequences worth knowing before you start:
+
+- Do not paste code from a project whose license is incompatible with
+  Apache-2.0, and do not paste code whose origin you cannot state.
+- If your employer or another party owns your work, make sure you are allowed to
+  contribute it.
+
+You keep the copyright on what you contribute; nothing in the process transfers
+it. The project's attribution lives in the
+[NOTICE](NOTICE) file and in the license headers, and it is kept in every
+distributed copy.
 
 ## Commit Guidelines
 
