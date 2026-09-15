@@ -136,8 +136,53 @@ rather than silently replaced:
 - an unknown key warns in development and stays silent in production, because a
   stray key is usually a typo rather than a reason to take an application down.
 
+## Layout and pattern keys
+
+The layout and pattern components resolve their whole option set through the same
+cascade, so an application states its page structure once:
+
+```tsx
+config={{
+  components: {
+    container: { size: "xl" },
+    section: { spacing: "xl" },
+    stack: { gap: "lg" },
+    grid: { gap: "lg", align: "stretch" },
+    page: { containerSize: "xl", sticky: true },
+    navbar: { variant: "bordered", align: "center" },
+    hero: { align: "center", spacing: "xl" },
+    footer: { variant: "muted" },
+  },
+}}
+```
+
+| Key | Options |
+| --- | --- |
+| `container` | `size`, `gutter`, `centered` |
+| `section` | `spacing`, `background`, `contained`, `containerSize`, `divider` |
+| `stack` | `direction`, `gap`, `align`, `justify`, `wrap` |
+| `grid` | `columns`, `columnsMd`, `columnsLg`, `gap`, `align` |
+| `page` | `contained`, `containerSize`, `spacing`, `sticky`, `divider` |
+| `sidebarlayout` | `side`, `sidebarWidth`, `stickySidebar` |
+| `authlayout` | `panel`, `align`, `mediaPosition`, `contentSize` |
+| `hero` | `align`, `spacing`, `background`, `mediaPosition`, `containerSize`, `contained` |
+| `cta` | `align`, `spacing`, `background`, `panel`, `containerSize`, `contained` |
+| `featuregrid` | `columns`, `columnsMd`, `columnsLg`, `gap`, `spacing`, `background`, `align`, `containerSize`, `contained` |
+| `testimonials` | the same options as `featuregrid` |
+| `pricingcard` | `variant`, `size`, `highlighted` |
+| `navbar` | `position`, `variant`, `align`, `contained`, `containerSize` |
+| `footer` | `variant`, `spacing`, `contained`, `containerSize` |
+| `emptystate` | `type`, `size`, `panel` |
+| `pininput` | `length`, `mode`, `size`, `masked`, `radius`, `isDisabled`, `isInvalid` |
+| `clipboard` | `timeout`, `label`, `copiedLabel`, `variant`, `color`, `size`, `radius` |
+
+`grid` is the one entry where an unstated breakpoint is a deliberate value: a
+`columnsLg` you never set inherits `columnsMd`, which inherits `columns`, so a
+grid that never changes shape only states `columns`.
+
 ## Next
 
 - [Components](./components.md) for the shared prop axes and the substitution API.
 - [Accessibility](./accessibility.md) for the behaviour the framework guarantees.
+- [Puck](./puck.md) for the block configuration built on these keys.
 - [Migration](./migration.md) for the policy in force from 1.0.
