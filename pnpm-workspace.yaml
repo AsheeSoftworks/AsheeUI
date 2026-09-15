@@ -2,6 +2,11 @@ packages:
   - "packages/*"
   - "apps/*"
 allowBuilds:
+  # A file watcher that arrives with the native styling toolchain. Nothing in this
+  # workspace runs its build step, because the packages use it only through a
+  # consumer's bundler, so its native binding is denied explicitly rather than left
+  # unanswered (pnpm fails the install while a decision is missing).
+  '@parcel/watcher': false
   '@tailwindcss/oxide': true
   esbuild: true
   sharp: true
@@ -10,6 +15,11 @@ minimumReleaseAgeExclude:
   - '@tanstack/react-start-rsc@0.1.53'
   - '@tanstack/react-start@1.168.54'
   - '@tanstack/start-plugin-core@1.171.44'
+  # The native styling foundation: NativeWind and the CSS interop runtime it
+  # depends on. Both are newer than the workspace's minimum release age, and both
+  # are pinned to the versions the native package is verified against.
+  - nativewind@4.2.7
+  - react-native-css-interop@0.2.7
 # fast-uri carries four high advisories below 3.1.6. It reaches the tree only as a
 # development dependency (ajv, through the @microsoft/api-extractor peer that
 # auto-install-peers adds for vite-plugin-dts). The floor keeps every copy patched.
