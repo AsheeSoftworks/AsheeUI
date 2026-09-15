@@ -1,9 +1,9 @@
-name: CI
+name: Distribution
 
 on:
-  pull_request:
-    branches:
-      - main
+  workflow_dispatch:
+  schedule:
+    - cron: "0 3 * * *"
   push:
     branches:
       - main
@@ -16,16 +16,12 @@ permissions:
   contents: read
 
 jobs:
-  verify:
-    name: Lint, Test & Build
+  distribution:
+    name: Install, verify and build a copied playground
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v7
-        with:
-          # The changeset check compares the branch with the base it left, which
-          # needs the history a shallow checkout does not carry.
-          fetch-depth: 0
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v6
@@ -39,15 +35,8 @@ jobs:
       - name: Install Dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Changeset
-        if: github.event_name == 'pull_request'
-        run: pnpm check:changesets --base origin/${{ github.base_ref }}
-
-      - name: Lint
-        run: pnpm lint
-
-      - name: Run Tests
-        run: pnpm test
-
       - name: Build Packages
         run: pnpm build
+
+      - name: Copy Each Playground, Install It, Verify It and Build It
+        run: pnpm verify:distribution

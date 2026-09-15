@@ -149,6 +149,20 @@ The interactive prompt will ask you to:
 Commit the generated `.changeset/*.md` file together with your code changes.
 Do not remove changeset files that belong to other open pull requests.
 
+Pull requests are checked rather than trusted: a change to a published package that
+carries no changeset fails the `Changeset` step with the packages it would have
+released silently. Run the same check yourself before pushing:
+
+```bash
+pnpm check:changesets
+```
+
+A versioning commit is the exception, because it is what consumes the changesets and
+writes the changelogs. When a change deliberately ships nothing to a consumer — a
+version bump, a release commit, or tooling that no package publishes — say so
+explicitly with `ALLOW_MISSING_CHANGESET=1` rather than leaving the rule to
+memory.
+
 A good changeset is short and specific. The front matter lists the packages and
 the bump type, and the body describes the change in the same style used in
 [CHANGELOG.md](packages/ui/CHANGELOG.md):
