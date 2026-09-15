@@ -91,3 +91,30 @@ export async function waitFor<T>(
 
   return `timed out waiting for ${description}`;
 }
+
+/**
+ * Types a value into a field the way a consumer does.
+ *
+ * The value is written through the platform's own setter and an `input` event is
+ * dispatched, which is the path a controlled React field listens on. A field
+ * whose value the component owns and a field the application owns therefore both
+ * report the change, which a direct assignment would not.
+ *
+ * @param element - The field to type into.
+ * @param value - The text to enter.
+ */
+export async function typeInto(
+  element: HTMLInputElement,
+  value: string,
+): Promise<void> {
+  await act(async () => {
+    const setValue = Object.getOwnPropertyDescriptor(
+      HTMLInputElement.prototype,
+      "value",
+    )?.set;
+
+    setValue?.call(element, value);
+    element.dispatchEvent(new Event("input", { bubbles: true }));
+  });
+  await settle();
+}

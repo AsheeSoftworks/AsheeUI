@@ -116,6 +116,7 @@ breaking change and its path.
 | Shared tests | 16 tests, green, with the matrix covering the 61 component inventory |
 | Native tests | 8 suites, 61 tests, green |
 | CLI tests | Green, with the inventory list matching the exported surface |
-| Build | Both entry points, the stylesheet and the declarations emitted |
+| Gallery and playgrounds | The gallery grew four sections for the new components (22 in total, 7 interactive), and the same contract passes in the gallery and in all three playground applications: Next.js, Vite and TanStack Start, on the server and again after hydration |
+| Build | The workspace builds: the library, the CLI and the three playground applications |
 | Version | `2.0.0` in the workspace manifests, the shared package and the native package |
 

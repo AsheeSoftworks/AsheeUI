@@ -18,6 +18,7 @@
  * `Link` reaches the components that render links.
  */
 
+import type { ColumnDef } from "asheeui";
 import {
   Accordion,
   Alert,
@@ -28,18 +29,23 @@ import {
   Card,
   Chip,
   Container,
+  DataTable,
   EmptyState,
+  ErrorState,
   Form,
   Grid,
   HStack,
   Input,
   Link,
+  LoadingState,
   Modal,
   Navbar,
   Pagination,
+  SearchInput,
   Section,
   Skeleton,
   Spinner,
+  Stepper,
   Switch,
   Tabs,
   Tooltip,
@@ -47,6 +53,7 @@ import {
 } from "asheeui";
 import { useState } from "react";
 import {
+  accessibleNameOf,
   createSectionReport,
   requireAbsent,
   requireAnyText,
@@ -57,7 +64,7 @@ import {
   requireText,
   textOf,
 } from "./dom";
-import { click, focus, press, waitFor } from "./events";
+import { click, focus, press, typeInto, waitFor } from "./events";
 import type { GallerySection, GallerySectionProps } from "./types";
 
 /**
@@ -410,7 +417,406 @@ function LayoutSection({ linkComponent, linkProps }: GallerySectionProps) {
   );
 }
 
+/** The search field: a named region, a reported query and a clear control. */
+function SearchInputSection() {
+  const [query, setQuery] = useState("");
+
+  return (
+    <div data-check="search" className="space-y-2">
+      <SearchInput
+        label="Search invoices"
+        placeholder="Search invoices"
+        shortcut="Cmd K"
+        onValueChange={setQuery}
+      />
+      <p data-check="query" className="text-sm text-foreground/70">
+        {query ? `Query: ${query}` : "No query yet"}
+      </p>
+    </div>
+  );
+}
+
+/** The reader's progress through a sequence of steps. */
+function StepperSection() {
+  const [step, setStep] = useState(1);
+
+  return (
+    <div data-check="stepper">
+      <Stepper
+        label="Checkout"
+        currentStep={step}
+        onStepChange={setStep}
+        steps={[
+          { key: "cart", label: "Cart" },
+          { key: "address", label: "Address", description: "Where it ships" },
+          { key: "payment", label: "Payment" },
+        ]}
+      />
+    </div>
+  );
+}
+
+/** The loading, failed and retried presentations of one region. */
+function StateSection() {
+  const [attempts, setAttempts] = useState(0);
+
+  return (
+    <div className="space-y-4">
+      <LoadingState
+        label="Loading invoices"
+        description="This usually takes a moment."
+        data-check="loading"
+      />
+      <ErrorState
+        title="Invoices could not be loaded"
+        description="The request timed out."
+        detail="ECONNRESET at 10.0.0.4"
+        onRetry={() => setAttempts((count) => count + 1)}
+        data-check="error"
+      />
+      <p data-check="attempts" className="text-sm text-foreground/70">
+        {attempts === 0 ? "No retry yet" : `Retried ${attempts} time`}
+      </p>
+    </div>
+  );
+}
+
+/** One invoice, as the table section sees it. */
+interface GalleryInvoice {
+  id: string;
+  number: string;
+  customer: string;
+}
+
+/** The rows the table section shows. */
+const GALLERY_INVOICES: GalleryInvoice[] = [
+  { id: "1", number: "INV-0001", customer: "Ashee" },
+  { id: "2", number: "INV-0002", customer: "Northwind" },
+  { id: "3", number: "INV-0003", customer: "Contoso" },
+];
+
+/** The columns the table section shows. */
+const GALLERY_INVOICE_COLUMNS: ColumnDef<GalleryInvoice>[] = [
+  { id: "number", header: "Number", cell: (row) => row.number },
+  { id: "customer", header: "Customer", cell: (row) => row.customer },
+];
+
+/** The table a list page is built from: search, a count and paging. */
+function DataTableSection() {
+  return (
+    <div data-check="table">
+      <DataTable
+        title="Invoices"
+        description="Everything issued this quarter."
+        data={GALLERY_INVOICES}
+        columns={GALLERY_INVOICE_COLUMNS}
+        pageSize={2}
+        searchAccessor={(row) => `${row.number} ${row.customer}`}
+        rowKeyAccessor={(row) => row.id}
+      />
+    </div>
+  );
+}
+
 export const GALLERY_SECTIONS: GallerySection[] = [
+  {
+    id: "search-input",
+    title: "Search field",
+    Component: SearchInputSection,
+    isInteractive: true,
+    interaction: {
+      description:
+        "reports the query and empties the field through its control",
+      run: async (container) => {
+        const problems: string[] = [];
+        const scope = container.querySelector(
+          '[data-gallery-section="search-input"]',
+        );
+        const field = scope?.querySelector<HTMLInputElement>(
+          'input[type="search"]',
+        );
+
+        if (!scope || !field) {
+          return ["search-input: no search field"];
+        }
+
+        await typeInto(field, "northwind");
+
+        if (
+          textOf(scope.querySelector('[data-check="query"]')) !==
+          "Query: northwind"
+        ) {
+          problems.push("search-input: the typed query was not reported");
+        }
+
+        const clear = Array.from(scope.querySelectorAll("button")).find(
+          (candidate) => accessibleNameOf(scope, candidate) === "Clear search",
+        );
+
+        if (!clear) {
+          problems.push(
+            "search-input: no clear control appeared for a field with text",
+          );
+          return problems;
+        }
+
+        await click(clear);
+
+        if (field.value !== "") {
+          problems.push("search-input: the clear control left text behind");
+        }
+
+        if (
+          textOf(scope.querySelector('[data-check="query"]')) !== "No query yet"
+        ) {
+          problems.push("search-input: the emptied query was not reported");
+        }
+
+        return problems;
+      },
+    },
+    inspect: (root) => {
+      const { report, scope } = createSectionReport(root, "search-input");
+
+      requireElement(report, scope, "search", "the search landmark");
+      requireName(
+        report,
+        scope,
+        'input[type="search"]',
+        "Search invoices",
+        "the search field",
+      );
+      requireOwnText(
+        report,
+        scope,
+        "No query yet",
+        "the field's initial report",
+      );
+
+      return report.problems;
+    },
+  },
+  {
+    id: "stepper",
+    title: "Stepper",
+    Component: StepperSection,
+    isInteractive: true,
+    interaction: {
+      description: "makes the step a reader chooses the current one",
+      run: async (container) => {
+        const problems: string[] = [];
+        const scope = container.querySelector(
+          '[data-gallery-section="stepper"]',
+        );
+
+        if (!scope) {
+          return ["stepper: no stepper"];
+        }
+
+        const payment = Array.from(scope.querySelectorAll("button")).find(
+          (candidate) => textOf(candidate).includes("Payment"),
+        );
+
+        if (!payment) {
+          problems.push(
+            "stepper: the step a reader has not reached is not a control",
+          );
+          return problems;
+        }
+
+        await click(payment);
+
+        const current = scope.querySelector('[aria-current="step"]');
+
+        if (!textOf(current).includes("Payment")) {
+          problems.push("stepper: the chosen step did not become current");
+        }
+
+        return problems;
+      },
+    },
+    inspect: (root) => {
+      const { report, scope } = createSectionReport(root, "stepper");
+
+      requireElement(
+        report,
+        scope,
+        'ol[aria-label="Checkout"]',
+        "the ordered list of steps",
+      );
+      requireAttribute(
+        report,
+        scope,
+        '[aria-current="step"]',
+        "aria-current",
+        "step",
+        "the current step",
+      );
+      requireText(
+        report,
+        scope,
+        '[data-check="stepper"]',
+        "Completed:",
+        "the completed step's state in words",
+      );
+      requireText(
+        report,
+        scope,
+        '[data-check="stepper"]',
+        "Not started:",
+        "an upcoming step's state in words",
+      );
+
+      return report.problems;
+    },
+  },
+  {
+    id: "states",
+    title: "Loading and failed states",
+    Component: StateSection,
+    isInteractive: true,
+    interaction: {
+      description: "runs the retry a failed region offers",
+      run: async (container) => {
+        const problems: string[] = [];
+        const scope = container.querySelector(
+          '[data-gallery-section="states"]',
+        );
+        const retry = Array.from(scope?.querySelectorAll("button") ?? []).find(
+          (candidate) => textOf(candidate) === "Try again",
+        );
+
+        if (!scope || !retry) {
+          return ["states: no retry control"];
+        }
+
+        await click(retry);
+
+        if (
+          !textOf(scope.querySelector('[data-check="attempts"]')).startsWith(
+            "Retried",
+          )
+        ) {
+          problems.push("states: the retry control did not run the handler");
+        }
+
+        return problems;
+      },
+    },
+    inspect: (root) => {
+      const { report, scope } = createSectionReport(root, "states");
+
+      requireAttribute(
+        report,
+        scope,
+        '[data-check="loading"]',
+        "role",
+        "status",
+        "the loading region, announced as a status",
+      );
+      requireText(
+        report,
+        scope,
+        '[data-check="loading"]',
+        "Loading invoices",
+        "the loading label",
+      );
+      requireAttribute(
+        report,
+        scope,
+        '[data-check="error"]',
+        "role",
+        "alert",
+        "the failed region, announced as an alert",
+      );
+      requireText(
+        report,
+        scope,
+        '[data-check="error"]',
+        "Invoices could not be loaded",
+        "the failure heading",
+      );
+      requireText(
+        report,
+        scope,
+        '[data-check="error"]',
+        "Technical details",
+        "the disclosure of the technical message",
+      );
+
+      return report.problems;
+    },
+  },
+  {
+    id: "data-table",
+    title: "Table with search and paging",
+    Component: DataTableSection,
+    isInteractive: true,
+    interaction: {
+      description: "filters the rows and reports how many are left",
+      run: async (container) => {
+        const problems: string[] = [];
+        const scope = container.querySelector(
+          '[data-gallery-section="data-table"]',
+        );
+        const field = scope?.querySelector<HTMLInputElement>(
+          'input[type="search"]',
+        );
+        const count = () =>
+          textOf(scope?.querySelector('[role="status"]') ?? null);
+
+        if (!scope || !field) {
+          return ["data-table: no search field"];
+        }
+
+        await typeInto(field, "contoso");
+
+        if (!count().includes("Showing 1 to 1 of 1")) {
+          problems.push(
+            `data-table: the row count reads "${count()}" after a search`,
+          );
+        }
+
+        if (
+          scope
+            .querySelector('[data-check="table"] tbody')
+            ?.textContent?.includes("INV-0001")
+        ) {
+          problems.push("data-table: the filtered-out row is still shown");
+        }
+
+        return problems;
+      },
+    },
+    inspect: (root) => {
+      const { report, scope } = createSectionReport(root, "data-table");
+
+      requireElement(report, scope, "table", "the table");
+      requireText(
+        report,
+        scope,
+        '[data-check="table"]',
+        "Number",
+        "the first column heading",
+      );
+      requireText(
+        report,
+        scope,
+        '[data-check="table"]',
+        "INV-0001",
+        "the first row",
+      );
+      requireText(
+        report,
+        scope,
+        '[role="status"]',
+        "Showing 1 to 2 of 3",
+        "the row count, which reports the page and the total",
+      );
+
+      return report.problems;
+    },
+  },
   {
     id: "typography",
     title: "Typography",
