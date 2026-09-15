@@ -65,6 +65,16 @@ describe("public entry point", () => {
     expect(AsheeUI).not.toHaveProperty("defaultScrollbarConfig");
   });
 
+  it("keeps component-internal helpers and contexts out of the public surface", () => {
+    // Each of these serves one component only, and every other component keeps
+    // its equivalent private, so they were public by accident rather than by
+    // design. They are not documented as public API.
+    expect(AsheeUI).not.toHaveProperty("getInitials");
+    expect(AsheeUI).not.toHaveProperty("getPaginationRange");
+    expect(AsheeUI).not.toHaveProperty("RadioContext");
+    expect(AsheeUI).not.toHaveProperty("useRadioGroupContext");
+  });
+
   it("registers component defaults, including the configuration-only scrollbar module", () => {
     const defaults = getAllComponentDefaults();
 
