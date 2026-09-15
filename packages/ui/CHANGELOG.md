@@ -1,5 +1,71 @@
 # asheeui
 
+## 1.0.0
+
+### Major Changes
+
+- Release 1.0.0.
+  
+  The public API is frozen: the 34 components, the configuration cascade, the theme
+  system, the substitution API shared by `Link`, `Image` and `Form`, and the
+  accessibility behaviour the framework guarantees.
+  
+  From this release a breaking change follows the deprecation policy published in
+  the documentation: an API is deprecated for at least one minor release before it
+  is removed, and removal happens only in a major release.
+
+### Minor Changes
+
+- 7a9c44d: Remove internal helpers that were public by accident.
+  
+  The package root no longer exports `getInitials` (avatar), `getPaginationRange`
+  and the `PaginationRangeItem` type (pagination), or the radio group context
+  (`RadioContext`, `RadioContextValue`, `useRadioGroupContext`). Each of these
+  serves one component, is not documented as public API, and every other
+  component keeps its equivalent private.
+  
+  Migration: stop importing them from `asheeui`. The components use them
+  internally and no public API depends on them. This is a pre-1.0 breaking change,
+  so no compatibility alias is provided.
+- 384efcc: Give `Link`, `Image` and `Form` the same substitution API.
+  
+  The substitution capability is now decided once and applied identically to the
+  three primitives: `component` names the component that replaces the native
+  element, and `componentProps` carries the props it needs. The previous names
+  differed per component.
+  
+  | Before | After | Migration |
+  | --- | --- | --- |
+  | `Link`: `linkComponent`, `linkProps` | `component`, `componentProps` | Rename both props. |
+  | `Image`: `props` | `componentProps` | Rename the prop. `component` is unchanged. |
+  | `Avatar`: `imageProps` | `componentProps` | Rename the prop. `component` is unchanged. |
+  | `Breadcrumb` step: `linkComponent`, `linkProps` | `component`, `componentProps` | Rename both keys on the step. |
+  | `Card` image and link config: `props` | `componentProps` | Rename the key. `component` is unchanged. |
+  | `Form` | `component`, `componentProps` | New. A framework form primitive can replace the native element. |
+  
+  These are pre-1.0 breaking changes, so no compatibility alias is provided.
+
+### Patch Changes
+
+- 23987a5: Apply the structural scrollbar configuration.
+  
+  The scrollbar shape and behaviour set under `components.scrollbar` had no effect:
+  the stylesheet reads `--ashee-scrollbar-*`, and nothing emitted those variables.
+  They are now written into the theme style element alongside the theme colours, so
+  `width`, `radius`, `trackRadius`, `thumbBorder` and `gutter` apply as documented.
+  `trackRadius` still falls back to `radius` when it is not set.
+- 61c65be: Apply the theme variables on a client-only render.
+  
+  The pre-paint theme script applies the theme before the first paint, but a
+  browser only runs a script that arrives with the server markup. In a
+  client-rendered application the element was inert, so the theme CSS variables
+  were never injected and every component that resolves its colours through them
+  fell back to nothing.
+  
+  The provider now applies the variables before the first paint in that case, and
+  it no longer renders the script where it could not run. That last part also
+  removes the React warning about a script rendered on the client.
+
 ## 0.8.0
 
 ### Minor Changes
