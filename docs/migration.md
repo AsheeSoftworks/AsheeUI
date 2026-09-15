@@ -26,6 +26,21 @@ release notes.
 | The configuration keys and their defaults | Class names the framework applies |
 | The CLI's commands, flags and exit codes | The CLI's console output |
 
+## 2.0.0
+
+No public API was removed, renamed or restructured in 2.0.0: every component, prop,
+type and configuration key from 1.1.x still works, and every addition is opt-in.
+The release is major because the system it describes is substantially larger, not
+because a consumer has to change code.
+
+| Change | Kind | What to do |
+| --- | --- | --- |
+| `SidebarLayout` renders its shell as a column at every width, so its header and its footer span the page | Behavioural correction. The shell used to become a row at the `lg` breakpoint, which placed the header and the footer beside the columns instead of above and below them. | Check a page above 1024 pixels. If you compensated for the old behaviour with `className`, remove the compensation. |
+| `Chip` takes `closeLabel` for its remove control's accessible name | Additive. The default is still "Remove chip". | Nothing required. Pass `closeLabel` in a list of chips, so each remove control says what it removes. |
+| `EmptyState` takes `actions` for actions that carry a React handler | Additive. | Nothing required. Prefer it over putting a handler inside a configured action, which was never supported. |
+| Ten new components: `Centered`, `Split`, `MarketingLayout`, `DocsLayout`, `SearchInput`, `Stepper`, `DataTable`, `FileUpload`, `LoadingState`, `ErrorState` | Additive. | Nothing required. The layout layer and the compositions are documented in [Layouts](./layouts.md). |
+| The native package gains a layout kit and a component set | Additive, and in a package of its own. | Nothing required. The web package's API is untouched. |
+
 ## Breaking changes before 1.0
 
 `0.8.0` was versioned internally but never published, and the `0.9.x` release stage

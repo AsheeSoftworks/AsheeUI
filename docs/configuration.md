@@ -175,6 +175,16 @@ config={{
 | `emptystate` | `type`, `size`, `panel` |
 | `pininput` | `length`, `mode`, `size`, `masked`, `radius`, `isDisabled`, `isInvalid` |
 | `clipboard` | `timeout`, `label`, `copiedLabel`, `variant`, `color`, `size`, `radius` |
+| `centered` | `axis`, `minHeight`, `contained`, `containerSize` |
+| `split` | `stackAt`, `ratio`, `gap`, `align`, `divider`, `stickyEnd` |
+| `marketinglayout` | `skipLink`, `skipLinkLabel`, `background` |
+| `docslayout` | `navigationLabel`, `tocLabel`, `navigationWidth`, `stickyToc`, `skipLink`, `skipLinkLabel` |
+| `searchinput` | `size`, `color`, `clearable`, `label`, `hideLabel` |
+| `stepper` | `orientation`, `size`, `showDescriptions` |
+| `datatable` | `searchable`, `searchLabel`, `paginated`, `pageSize`, `showRowCount`, `emptyTitle`, `emptyDescription` |
+| `loadingstate` | `label`, `size`, `panel`, `minHeight` |
+| `errorstate` | `size`, `panel`, `role`, `retryLabel`, `detailLabel` |
+| `fileupload` | `buttonLabel`, `hint`, `size` |
 
 `grid` is the one entry where an unstated breakpoint is a deliberate value: a
 `columnsLg` you never set inherits `columnsMd`, which inherits `columns`, so a

@@ -26,14 +26,25 @@ names, and each platform behaves the way its users expect.
 
 ## Status
 
-The native package is in foundation: the shared layer, the provider, the
-configuration cascade and the first component (the native `Button`) are implemented
-and tested with the platform's own tooling. The remaining components, layout,
-responsiveness and accessibility work is planned and tracked in the roadmap.
+The native package has a component set. The shared layer, the provider, the
+configuration cascade, the layout kit and the components listed here are
+implemented and tested with the platform's own tooling.
 
-The native and shared packages are not published yet, on purpose: a package that
-cannot yet build a real screen is not a package a consumer should install. The
-publication happens when the priority component set is complete.
+| Area | Delivered |
+| --- | --- |
+| Layout | `Container`, `Stack`, `HStack`, `VStack`, `Grid`, `Section`, `Centered` |
+| Components | `Button`, `Text`, `Card`, `Badge`, `Input` |
+| Responsive | `useBreakpoint`, and the pure `resolveBreakpoint` and `resolveGridColumns` |
+| Configuration | Every component registers its defaults and resolves through the shared cascade |
+
+The components the matrix classifies but this release does not implement are
+listed at the end of this document, so platform support is a stated fact rather
+than something a developer discovers by trying.
+
+The native and shared packages are not published yet, on purpose: a package is
+published when a consumer can build a real screen with it, and the remaining
+components in the matrix decide when that is. The web package is published and
+unaffected: its version line, its tests and its public API are its own.
 
 ## Platform support, per component
 
@@ -42,13 +53,57 @@ classification:
 
 | Classification | Meaning | Examples |
 | --- | --- | --- |
-| Shared | One contract, a real implementation on both platforms | `Button`, `Card`, `Badge`, `Avatar`, `Input`, `Textarea`, `Switch`, `Chip`, `Spinner`, `Skeleton`, `PinInput`, `Form`, `Radio`, `Stack`, `Section`, `EmptyState`, `Alert` |
-| Shared API, separate implementation | The concept is shared and the platform behaviour differs, deliberately | `Modal` (platform modal), `Drawer` (bottom sheet), `Tooltip` (long press), `Tabs`, `Table` (rows, not a table), `Page` (screen with safe areas), `Pagination` (load more) |
+| Shared | One contract, and the platform implementation is the platform's | `Button`, `Text`, `Card`, `Badge`, `Input`, `Chip`, `Spinner`, `Skeleton`, `PinInput`, `Form`, `Radio`, `Switch`, `Stack`, `Section`, `Centered`, `Grid`, `EmptyState`, `Alert`, `LoadingState`, `ErrorState`, `SearchInput`, `Stepper` |
+| Shared API, separate implementation | The concept is shared and the platform behaviour differs, deliberately | `Modal` (platform modal), `Drawer` (bottom sheet), `Tooltip` (long press), `Tabs`, `Table` (rows, not a table), `DataTable` (a list), `Page` (screen with safe areas), `Pagination` (load more), `Split` (the platform's own split view), `FileUpload` (the document picker), `SidebarLayout` and `DocsLayout` (a stacked screen) |
 | Web only | The concept has no meaningful native equivalent | `Breadcrumb` (native uses a titled header), `ResizableScreen` (a desktop idiom) |
 | Not applicable | The component compensates for a browser constraint the platform solves itself | `Keyboard` (the platform has one) |
 
 The matrix is enforced by a test, so a component cannot be added to the framework
 without a platform decision being recorded for it.
+
+## The layout kit and responsiveness
+
+The portable half of the layout layer exists on native with the same props and
+the same configuration cascade as the web:
+
+| Primitive | What it decides natively |
+| --- | --- |
+| `Container` | A maximum width and a gutter, for a tablet or a desktop-sized window |
+| `Section` | Vertical rhythm and a background band |
+| `Stack`, `HStack`, `VStack` | One axis, a token gap, alignment, distribution and wrapping |
+| `Grid` | A column count per breakpoint, resolved from the window |
+| `Centered` | One block in the middle, on the axis you choose |
+
+Responsiveness is a value rather than a class prefix, because the platform reports
+the window rather than matching a media query:
+
+```tsx
+const { isAtLeast } = useBreakpoint();
+
+<Stack direction={isAtLeast("md") ? "row" : "column"} gap="lg">
+  <Card title="Inbox" description="12 unread" />
+  <Card title="Sent" description="348 this month" />
+</Stack>;
+```
+
+`Grid` uses the same vocabulary for its column count:
+
+```tsx
+<Grid columns={1} columnsMd={2} gap="lg">
+  <Card title="Inbox" description="12 unread" />
+  <Card title="Sent" description="348 this month" />
+</Grid>;
+```
+
+Two rules keep this honest. The breakpoints are the shared ones, so `md` means
+768 density-independent pixels on both platforms. And the inheritance rule is a
+pure function (`resolveGridColumns`), tested at every breakpoint, so a count
+stated at a smaller breakpoint carries to the larger ones exactly as it does on the
+web.
+
+The kit avoids responsive class prefixes on purpose. A prefix would depend on
+NativeWind's breakpoints happening to agree with the framework's, and the
+framework states its breakpoints as data, so a component reads them instead.
 
 
 ## Configuration
@@ -147,3 +202,4 @@ Accessibility is a property of each component rather than a later addition:
 | A framework-wide animation system | Motion belongs to the component that needs it, and a general layer would be speculation |
 | The web's table, breadcrumb and resizable-split components | Their native equivalents are lists, a titled header and a platform split view |
 | The web package's source | Sharing source would give one platform the other's behaviour, which is what this architecture exists to avoid |
+| `Switch`, `Alert`, `Sheet`, `Tabs`, `Avatar`, `Skeleton`, `Separator`, `EmptyState` | Decided and recorded in the matrix, but not implemented in the 2.0 release. Each is the next increment of the native component set, and none is blocked by an undecided contract. |
