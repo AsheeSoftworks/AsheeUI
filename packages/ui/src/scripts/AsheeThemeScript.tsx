@@ -36,6 +36,15 @@ const VAR_MAP: Record<keyof ColorVariant, string> = {
 export const THEME_VARS_STYLE_ID = "ashee-theme-vars";
 
 /**
+ * The ID used for the script element that applies the theme before paint.
+ *
+ * The provider renders that element into the server output, and again while
+ * that output is hydrated, because those are the only places where a browser
+ * runs it. A client-only render is covered by {@link ensureThemeVarsStyle}.
+ */
+export const THEME_SCRIPT_ID = "ashee-theme-script";
+
+/**
  * Builds CSS string for all theme color variables.
  * Generates CSS rules that define CSS custom properties for each theme.
  * The light theme uses both :root and .theme-light selectors for compatibility.
@@ -63,6 +72,29 @@ function buildThemeCss(colors: ColorConfig): string {
       return `${selector} {\n${decls}\n}`;
     })
     .join("\n\n");
+}
+
+/**
+ * Ensure the theme CSS variables are present in the document.
+ *
+ * The pre-paint script injects them while the server HTML is parsed. A
+ * client-only render never runs that script, because React does not execute a
+ * script it creates, so the provider calls this before the first paint. It does
+ * nothing when the element is already there, which is the case once the script
+ * has run.
+ *
+ * @param colors - The complete color configuration with all themes.
+ *
+ * @see THEME_VARS_STYLE_ID - The id of the element this creates.
+ */
+export function ensureThemeVarsStyle(colors: ColorConfig): void {
+  if (typeof document === "undefined") return;
+  if (document.getElementById(THEME_VARS_STYLE_ID)) return;
+
+  const style = document.createElement("style");
+  style.id = THEME_VARS_STYLE_ID;
+  style.textContent = buildThemeCss(colors);
+  document.head.appendChild(style);
 }
 
 /**
@@ -140,7 +172,7 @@ export function AsheeThemeScript({ config }: { config: Config }) {
 
   return (
     <script
-      id="ashee-theme-script"
+      id={THEME_SCRIPT_ID}
       dangerouslySetInnerHTML={{ __html: script }}
       suppressHydrationWarning
     />
