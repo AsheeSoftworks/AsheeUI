@@ -147,7 +147,7 @@ export interface AccordionProps extends BaseAccordionProps {
  *       variant="separated"
  *       items={[
  *         { title: "What is AsheeUI?", content: "A React component library." },
- *         { title: "Is it free?", content: "Yes, it is MIT licensed." },
+ *         { title: "Is it free?", content: "Yes, it is Apache-2.0 licensed." },
  *       ]}
  *     />
  *   );
