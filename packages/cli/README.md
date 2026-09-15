@@ -192,4 +192,4 @@ If component styles are missing or provider errors occur:
 
 ## License
 
-MIT. See [LICENSE](./LICENSE).
+Apache-2.0. See [LICENSE](./LICENSE).

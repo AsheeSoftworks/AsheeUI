@@ -1,5 +1,5 @@
 [![npm version](https://img.shields.io/npm/v/asheeui?style=flat-square&logo=npm)](https://www.npmjs.com/package/asheeui)
-[![license](https://img.shields.io/badge/license-MIT-blue?style=flat-square)](LICENSE)
+[![license](https://img.shields.io/badge/license-Apache--2.0-blue?style=flat-square)](LICENSE)
 [![build](https://img.shields.io/github/actions/workflow/status/AsheeSoftworks/AsheeUI/ci.yml?branch=main&style=flat-square&logo=github)](https://github.com/AsheeSoftworks/AsheeUI/actions/workflows/ci.yml)
 [![GitHub release](https://img.shields.io/github/v/release/AsheeSoftworks/AsheeUI?style=flat-square&logo=github)](https://github.com/AsheeSoftworks/AsheeUI/releases)
 
@@ -199,6 +199,7 @@ npx asheeui list     # list the components this version exports
 | [Configuration](docs/configuration.md) | The cascade, the global and per-component keys, the theme system, scrollbars, validation |
 | [Components](docs/components.md) | The component set, the shared prop axes, the substitution API, the field contract |
 | [Puck](docs/puck.md) | The block registry, the configuration boundary, the published-page path, what is deferred |
+| [Licensing](docs/licensing.md) | The Apache-2.0 terms, what redistribution requires, the trademark position, the MIT transition |
 | [Accessibility](docs/accessibility.md) | The conformance target, keyboard behaviour, structure, known limits |
 | [CLI](docs/cli.md) | The optional scaffolding, checking and repair commands |
 | [Migration](docs/migration.md) | The deprecation policy in force from 1.0 and every breaking change with its migration |
@@ -226,4 +227,10 @@ workflow, and the coding conventions. All participation follows our
 
 ## License
 
-AsheeUI is MIT licensed. See [LICENSE](LICENSE) for the full text.
+AsheeUI is licensed under the [Apache License 2.0](LICENSE). You may use, modify
+and distribute it, including commercially, provided the copyright, patent and
+attribution notices are kept; see [Licensing](docs/licensing.md) for what that
+means in practice, including the trademark position.
+
+The project is developed with the **AI Test Driven Development** methodology,
+created by Ashee Softworks and published openly for anyone to use.

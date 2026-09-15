@@ -101,5 +101,7 @@ outside React, and a theme is defined as a block in the configuration.
 
 ## License
 
-MIT
+AsheeUI is licensed under the [Apache License 2.0](../../LICENSE). Copyright and
+attribution notices are in the root [NOTICE](../../NOTICE) file; the repository's
+[licensing guide](../../docs/licensing.md) explains what redistribution requires.
 
