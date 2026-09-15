@@ -55,6 +55,27 @@ is a documentation exercise rather than an investigation.
 No public API was removed to reach 1.0. The API that ships with 1.0 is the
 frozen surface: from here on, the policy above applies.
 
+### `1.1.0`
+
+No public API changed. This release is additive:
+
+| Addition | Notes |
+| --- | --- |
+| 17 components across the layout, pattern, page and utility layers | New exports; every existing import keeps working |
+| New configuration sections (`container`, `section`, `stack`, `grid`, `page`, `sidebarLayout`, `authLayout`, `hero`, `cta`, `featureGrid`, `testimonials`, `pricingCard`, `navbar`, `footer`, `emptyState`, `pinInput`, `clipboard`) | New keys; an existing configuration needs no change |
+| The `asheeui/puck` entry point | New subpath export, and `@puckeditor/core` is an optional peer dependency, so it is only installed when the integration is imported |
+| A shared spacing scale (`Space` and its class maps) | New exports |
+| `resolveConfigCascade` | New utility export; `resolveCascade` is unchanged |
+
+Two behavioural notes, neither of which changes an existing component:
+
+- `PinInput` reports a dense code: deleting a character in the middle moves the
+  characters after it left, and a paste into a box beyond the filled characters
+  lands at the end of them. Both are documented in the component's own doc
+  comments.
+- `EmptyState` carries no live-region role by default. A consumer that renders it
+  in response to an asynchronous result passes `role="status"` or `role="alert"`.
+
 ## Upgrading
 
 1. Read the entry for your target version in this file and the package changelog.

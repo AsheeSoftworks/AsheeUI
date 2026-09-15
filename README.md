@@ -6,11 +6,11 @@
 # AsheeUI
 
 `AsheeUI` is a React UI framework built on Tailwind CSS v4. It gives an
-application one configuration cascade, one theme system and one accessibility
-baseline, so components, theming and behaviour stay consistent instead of being
-reassembled per project. Components ship with first-class TypeScript types, and
-the framework needs no bundler plugin, no build-time configuration file and no
-CLI.
+application one configuration cascade, one theme system, one layout system and
+one accessibility baseline, so structure, components, theming and behaviour stay
+consistent instead of being reassembled per project. Components ship with
+first-class TypeScript types, and the framework needs no bundler plugin, no
+build-time configuration file and no CLI.
 
 ## Features
 
@@ -19,8 +19,16 @@ CLI.
 - A cascade config system: instance props, then `components.<name>` config,
   then global defaults, then a hardcoded fallback, so you can theme at any
   level.
-- Native Tailwind CSS v4 token integration with variant, color, radius, and
-  size scales shared across every component.
+- A layout system (`Container`, `Section`, `Stack`, `Grid`, `Page`) and the
+  application shells (`SidebarLayout`, `AuthLayout`) needed to build a whole
+  page without a second layout library.
+- The sections a marketing page is made of (`Navbar`, `Hero`, `FeatureGrid`,
+  `CTA`, `Testimonials`, `PricingCard`, `Footer`), each taking its actions as
+  configuration.
+- A [Puck](docs/puck.md) integration behind its own entry point, so the same
+  components power a React application, a visual editor and a published page.
+- Native Tailwind CSS v4 token integration with variant, color, radius, size
+  and spacing scales shared across every component.
 - Portal-aware overlays. Menus, modals, drawers, toasts, and tooltips render
   through a portal by default, so they escape overflow and stacking contexts.
 - First-class TypeScript support with field-level JSDoc annotations and
@@ -118,6 +126,56 @@ export function Example() {
 }
 ```
 
+## Building a page
+
+The layout components and the page sections compose into a complete page, and
+the same components are available to a visual builder:
+
+```tsx
+import {
+  Container, CTA, FeatureGrid, Footer, Grid, Hero, Navbar,
+  Page, PageContent, Section, Typography,
+} from "asheeui";
+
+export function Home() {
+  return (
+    <Page>
+      <Navbar
+        brand="Ashee"
+        align="center"
+        links={[{ label: "Pricing", href: "/pricing" }]}
+        actions={<Button size="sm">Sign in</Button>}
+      />
+      <PageContent contained={false} spacing="none">
+        <Hero
+          title="Run your campaigns from one place"
+          primaryAction={{ label: "Start free", href: "/signup" }}
+        />
+        <Section spacing="xl" background="muted">
+          <Container>
+            <Typography role="heading-xl">Everything the campaign needs</Typography>
+            <Grid columns={1} columnsMd={2} columnsLg={3} gap="lg" className="mt-8">
+              <Card title="Templates" description="Reusable messages." />
+            </Grid>
+          </Container>
+        </Section>
+        <FeatureGrid title="Why teams switch" items={features} />
+        <CTA title="Send your first campaign today" />
+      </PageContent>
+      <Footer brand="Ashee" groups={groups} copyright="Ashee Softworks" />
+    </Page>
+  );
+}
+```
+
+A [Puck](docs/puck.md) editor builds the same page from the same components:
+
+```tsx
+import { asheePuckConfig } from "asheeui/puck";
+
+<Puck config={asheePuckConfig} data={page} onPublish={save} />;
+```
+
 ## Optional CLI
 
 `@asheeui/cli` is a convenience for setup and for checking an existing project.
@@ -136,9 +194,11 @@ npx asheeui list     # list the components this version exports
 | Document | Covers |
 | --- | --- |
 | [Installation](docs/installation.md) | Requirements, the stylesheet import, wrapping the root, where the root is per framework, troubleshooting |
+| [Release 1.1.0](docs/release-1.1.0.md) | What this release adds: the layout system, the page components and the Puck integration |
 | [Release 1.0.0](docs/release-1.0.0.md) | The upgrade guide from 0.7.0: what breaks a build, what changed in behaviour, what is new |
 | [Configuration](docs/configuration.md) | The cascade, the global and per-component keys, the theme system, scrollbars, validation |
 | [Components](docs/components.md) | The component set, the shared prop axes, the substitution API, the field contract |
+| [Puck](docs/puck.md) | The block registry, the configuration boundary, the published-page path, what is deferred |
 | [Accessibility](docs/accessibility.md) | The conformance target, keyboard behaviour, structure, known limits |
 | [CLI](docs/cli.md) | The optional scaffolding, checking and repair commands |
 | [Migration](docs/migration.md) | The deprecation policy in force from 1.0 and every breaking change with its migration |

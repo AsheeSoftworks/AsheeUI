@@ -1,8 +1,24 @@
 # Components
 
-AsheeUI ships 34 components. Every one of them resolves its appearance through
+AsheeUI ships 51 components. Every one of them resolves its appearance through
 the [configuration cascade](./configuration.md), composes with consumer
 `className` for layout, and renders on the server without a browser.
+
+The set is layered, so you can build at the level your page needs:
+
+```text
+primitive        Button, Input, Typography, Badge
+        ↓
+component        Modal, Tabs, Dropmenu, Calendar
+        ↓
+pattern          EmptyState, PricingCard, Testimonials
+        ↓
+layout           Container, Section, Stack, Grid, Page
+        ↓
+page             Navbar, Hero, FeatureGrid, CTA, Footer
+        ↓
+Puck block       any of the above, through asheeui/puck
+```
 
 ## Shared prop axes
 
@@ -78,6 +94,66 @@ an example.
 | `Form` | Native form element with framework styling |
 | `Image` | Picture with ratio locking and framework image substitution |
 
+### Layout
+
+The layout components own structure and nothing else. Each one adds a real
+layout behaviour (a maximum width, a rhythm, an axis, a breakpoint, a shell),
+so they compose instead of wrapping.
+
+| Component | Purpose |
+| --- | --- |
+| `Container` | Centred column with a maximum width and a responsive gutter |
+| `Section` | Full-width band with vertical rhythm, a background and an optional container |
+| `Stack`, `HStack`, `VStack` | One-axis layout with a token gap, alignment and wrapping |
+| `Grid` | Column grid whose column count can change at `md` and `lg` |
+| `Page`, `PageHeader`, `PageContent`, `PageFooter` | The application page shell: sticky header, `main`, footer |
+| `SidebarLayout` | Page shell with a persistent navigation column |
+| `AuthLayout` | Authentication page shell, with an optional media column |
+
+The layout components never couple to a router, to application state or to a
+particular product. `PageContent` is the one `main` landmark of a page, and the
+shells stack their regions on a narrow screen rather than hiding them.
+
+### Patterns
+
+A pattern is a reusable combination of components that is still free of any
+application's content.
+
+| Component | Purpose |
+| --- | --- |
+| `EmptyState` | A region with nothing in it, worded by the consumer |
+| `PricingCard` | One plan, its price, its feature lines and its actions |
+| `Testimonials` | A band of attributed customer quotes |
+| `CopyButton`, `Clipboard` | Copy a value, with the copied state and an announcement |
+
+### Pages and marketing sections
+
+| Component | Purpose |
+| --- | --- |
+| `Navbar` | Header with a brand, links, actions and a mobile disclosure |
+| `Hero` | The leading statement of a page |
+| `FeatureGrid` | A heading and a responsive grid of feature cards |
+| `CTA` | The closing call to action |
+| `Footer` | Brand column, navigation groups, social and legal links |
+| `PinInput` | One box per character of a verification code |
+
+Every one of these takes its actions as configuration:
+
+```tsx
+<Hero
+  eyebrow="Everything in one place"
+  title="Run your campaigns from a single workspace"
+  primaryAction={{ label: "Start free", href: "/signup" }}
+  secondaryAction={{ label: "Book a demo", href: "/demo", variant: "ghost" }}
+  media={<Image src="/dashboard.png" alt="The campaign dashboard" />}
+/>
+```
+
+An action is `{ label, href, variant, color, size, radius, icon, component,
+componentProps }`, which is the same set of choices a `Button` takes. Icons,
+custom link components and handlers stay in React rather than in configuration,
+which is what keeps the same props usable as a Puck field set.
+
 ## The substitution API
 
 `Link`, `Image` and `Form` each render a native element that a framework
@@ -140,4 +216,5 @@ and `clearToasts` for dismissing one or all of them.
 ## Next
 
 - [Accessibility](./accessibility.md) for keyboard behaviour and the announced state.
+- [Puck](./puck.md) for the same components in a visual builder.
 - [CLI](./cli.md) for listing the components a version exports.
