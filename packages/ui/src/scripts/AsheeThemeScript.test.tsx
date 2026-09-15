@@ -8,21 +8,30 @@
  * also what proves the emitted text is self-contained.
  */
 
+import { renderToString } from "react-dom/server";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { ExternalConfig } from "../config/config";
 import { resolveConfig } from "../config/resolve-config";
-import { render } from "../test";
 import { THEME_STORAGE_KEY } from "../theme/controller";
-import { AsheeThemeScript, THEME_VARS_STYLE_ID } from "./AsheeThemeScript";
+import {
+  AsheeThemeScript,
+  THEME_SCRIPT_ID,
+  THEME_VARS_STYLE_ID,
+} from "./AsheeThemeScript";
 
-const SCRIPT_ID = "ashee-theme-script";
-
-/** Render the script for a configuration and return the emitted script text. */
+/**
+ * Render the script for a configuration and return the emitted script text.
+ *
+ * The component exists to be emitted into server markup, so it is rendered to a
+ * string here. A client render of a script element is not a path it has, and
+ * React reports one.
+ */
 function emitScript(overrides: ExternalConfig = {}): string {
   const config = resolveConfig(overrides);
-  const { container } = render(<AsheeThemeScript config={config} />);
+  const container = document.createElement("div");
+  container.innerHTML = renderToString(<AsheeThemeScript config={config} />);
 
-  return container.querySelector(`#${SCRIPT_ID}`)?.innerHTML ?? "";
+  return container.querySelector(`#${THEME_SCRIPT_ID}`)?.innerHTML ?? "";
 }
 
 /** Run the emitted script the way the browser runs it during parsing. */

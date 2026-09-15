@@ -8,13 +8,16 @@
  */
 "use client";
 
-import { type ReactNode, useMemo } from "react";
+import { type ReactNode, useMemo, useSyncExternalStore } from "react";
 import type { ExternalConfig } from "./config/config";
 import { resolveConfig } from "./config/resolve-config";
 import { assertValidConfig } from "./config/validate-config";
 import { AsheeConfigContext } from "./libs/context";
 import { useIsomorphicLayoutEffect } from "./libs/use-isomorphic-layout-effect";
-import { AsheeThemeScript } from "./scripts/AsheeThemeScript";
+import {
+  AsheeThemeScript,
+  ensureThemeVarsStyle,
+} from "./scripts/AsheeThemeScript";
 import { themeController } from "./theme/controller";
 
 /**
@@ -34,6 +37,31 @@ export interface AsheeUIProviderProps {
    * The child components to render within the provider context.
    */
   children: ReactNode;
+}
+
+/**
+ * No-op subscription for {@link useRendersServerOutput}: the value it reads only
+ * differs between the server and the client, so nothing can change it later.
+ */
+const subscribeToHydration = () => () => {};
+
+/**
+ * Whether React is producing the server output, or hydrating that output,
+ * rather than mounting into a client that has no server markup behind it.
+ *
+ * React uses the server snapshot for both of those, so this is the signal the
+ * pre-paint theme script needs: a browser runs that script while it parses the
+ * server markup, and it is inert anywhere else.
+ *
+ * @returns `true` while rendering on the server or hydrating, `false` after
+ *   hydration completes and on a client-only mount.
+ */
+function useRendersServerOutput(): boolean {
+  return useSyncExternalStore(
+    subscribeToHydration,
+    () => false,
+    () => true,
+  );
 }
 
 /**
@@ -98,11 +126,23 @@ export function AsheeUIProvider({
       defaultTheme: resolvedConfig.defaultTheme ?? "system",
       themes: Object.keys(resolvedConfig.color),
     });
+
+    // The pre-paint script injects the theme variables while the server HTML is
+    // parsed. A client-only render never runs it, so they are applied here
+    // instead, still before the first paint. This is a no-op once the script has
+    // done it.
+    ensureThemeVarsStyle(resolvedConfig.color);
   }, [resolvedConfig]);
+
+  // The pre-paint script only pays off where the HTML it sits in is parsed by a
+  // browser, which is the server output and the hydration of that output. A
+  // client-only render cannot run a script React creates, so the element would
+  // be dead markup and React warns about it.
+  const renderPrePaintScript = useRendersServerOutput();
 
   return (
     <AsheeConfigContext.Provider value={resolvedConfig}>
-      <AsheeThemeScript config={resolvedConfig} />
+      {renderPrePaintScript && <AsheeThemeScript config={resolvedConfig} />}
       {children}
     </AsheeConfigContext.Provider>
   );
