@@ -1,12 +1,18 @@
 # Playgrounds
 
-AsheeUI ships official playground applications: Next.js, Vite and TanStack Start
-today, with Expo next. They are not four demo applications. They are four framework
-entry points into **one application**, and they exist so that every part of the
-framework is exercised the way a consumer uses it: server-rendered, hydrated, in a
-real build, in the framework's own router.
+AsheeUI ships official playground applications: Next.js, Vite and TanStack Start.
+They are not three demo applications. They are three framework entry points into
+**one application**, and they exist so that every part of the framework is
+exercised the way a consumer uses it: server-rendered, hydrated, in a real build,
+in the framework's own router.
 
-## One application, four doors
+Expo is the planned fourth entry point. It is not in this release, because the
+native package does not yet carry every component the shared application renders:
+a copied Expo project would be a promise the framework cannot keep. `asheeui
+playground expo` lists the target and refuses it with that reason, and the
+remaining native components are the increment that unblocks it.
+
+## One application, three doors
 
 ```text
                      shared playground application
@@ -15,10 +21,10 @@ real build, in the framework's own router.
         ┌───────────────┬───────┴───────┬───────────────┐
         │               │               │               │
       Next.js          Vite         TanStack          Expo
-      (router)       (router)        (router)        (router)
+      (router)       (router)        (router)        (planned)
         │               │               │               │
-   app/layout      entry-client     routes/index    app/…
-   app/page        entry-server     routes/__root   app/…
+   app/layout      entry-client     routes/index      app/…
+   app/page        entry-server     routes/__root     app/…
         │               │               │               │
         └───────────────┴───────┬───────┴───────────────┘
                                 │
@@ -41,8 +47,9 @@ A framework entry point owns only what its framework requires:
   component, which are passed into the shared application through AsheeUI's own
   [substitution API](./components.md).
 
-That boundary is why the four playgrounds cannot drift apart: there is one place
-where a screen, a label or a handler can change.
+That boundary is why the playgrounds cannot drift apart: there is one place where
+a screen, a label or a handler can change, and the distribution asserts that every
+shipped copy is byte for byte the file this repository verifies.
 
 ## Running a playground
 

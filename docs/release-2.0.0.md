@@ -80,8 +80,8 @@ come.
 ### The playgrounds, and getting one
 
 The playgrounds are the release's evidence that the system works where a consumer
-uses it. They were four applications each keeping its own copy of the same screens;
-they are now **one application with four doors**:
+uses it. They were separate applications each keeping its own copy of the same
+screens; they are now **one application with a door per framework**:
 
 | Property | How it holds |
 | --- | --- |
@@ -134,7 +134,7 @@ breaking change and its path.
 | Web tests | 93 files, 678 tests, green |
 | Shared tests | 16 tests, green, with the matrix covering the 61 component inventory |
 | Native tests | 8 suites, 61 tests, green |
-| CLI tests | 141 tests, green, with the inventory list matching the exported surface |
+| CLI tests | 144 tests, green, with the inventory list matching the exported surface |
 | Gallery and playgrounds | The gallery grew four sections for the new components (22 in total, 7 interactive), and the same contract passes in the gallery and in all three playground applications: Next.js, Vite and TanStack Start, on the server and again after hydration |
 | Distribution | `asheeui playground` copies a project into a clean directory that depends on the published package alone: no `workspace:` range, no repository-only package and no build output. Every shipped file is asserted to be the file the generator produces from the playgrounds, and a copied project installs with the package as the registry serves it, runs its own tests and builds — verified on Vite, TanStack Start and Next.js |
 | Build | The workspace builds: the library, the CLI and the three playground applications |
