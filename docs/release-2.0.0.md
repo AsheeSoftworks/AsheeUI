@@ -138,5 +138,5 @@ breaking change and its path.
 | Gallery and playgrounds | The gallery grew four sections for the new components (22 in total, 7 interactive), and the same contract passes in the gallery and in all three playground applications: Next.js, Vite and TanStack Start, on the server and again after hydration |
 | Distribution | `asheeui playground` copies a project into a clean directory that depends on the published package alone: no `workspace:` range, no repository-only package and no build output. Every shipped file is asserted to be the file the generator produces from the playgrounds, and a copied project installs with the package as the registry serves it, runs its own tests and builds — verified on Vite, TanStack Start and Next.js |
 | Build | The workspace builds: the library, the CLI and the three playground applications |
-| Version | `2.0.0` in the workspace manifests, the shared package and the native package |
+| Version | `2.0.0` in the workspace manifests, the shared package and the native package, and `@asheeui/cli` `0.7.0` for the playgrounds and their distribution |
 
