@@ -1,5 +1,50 @@
 # asheeui
 
+## 2.0.0
+
+### Major Changes
+
+- The library becomes a system. The component inventory grows from 51 to 61, the
+  layout layer gains the two primitives that were missing, four full-page
+  compositions make a whole page expressible without a second library, and the
+  native package gains a component set and a responsive vocabulary. Every
+  component, prop and configuration key from 1.1.x is still supported, so an
+  existing application upgrades by changing the version.
+
+- The layout layer is complete: `Centered` places one block in the space it is
+  given, with the axis, the room it claims and an optional container as options,
+  and `Split` puts two panes side by side from a chosen breakpoint, with a ratio, a
+  divider and a sticky second pane. Below the breakpoint the panes stack rather
+  than hide, so the content stays reachable with the keyboard.
+
+- Four full-page compositions: `MarketingLayout` (navigation, one `main` landmark
+  holding the sections, a footer, and the skip link as the first focusable
+  element), `DocsLayout` (a navigation column, an article and an optional table of
+  contents), `SidebarLayout` (the application shell) and `AuthLayout`.
+
+- Six components and patterns: `SearchInput`, `Stepper`, `DataTable`,
+  `LoadingState`, `ErrorState` and `FileUpload`, each composed from what the
+  library already had rather than from a new set of primitives. `Chip` takes a
+  `closeLabel`, so one remove control per chip says what it removes, and
+  `EmptyState` takes `actions` for actions that carry a React handler.
+
+- Corrections, all of which are behaviour rather than interface: `SidebarLayout` no
+  longer turns its whole shell into a row at the `lg` breakpoint, so a header and a
+  footer span the page at every width instead of sitting beside the columns, which
+  is the only visual change an existing application sees; the `EmptyState` example
+  no longer passes a handler inside a configured action, where it was dropped
+  silently; and `SearchInput`'s landmark is a search region whose shortcut hint is
+  read as part of the field.
+
+- The playgrounds, and getting one: the repository's four playground applications
+  became one application with a door per framework, written entirely in AsheeUI
+  with an empty configuration, and `@asheeui/cli` `0.7.0` gained
+  `asheeui playground`, which copies that application into a project that installs
+  on its own. See `docs/playgrounds.md`.
+
+The release notes, including what is deferred and why, are in
+`docs/release-2.0.0.md`.
+
 ## 1.1.1
 
 ### Patch Changes
