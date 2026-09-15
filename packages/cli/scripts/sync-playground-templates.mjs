@@ -23,15 +23,23 @@
  * ```
  */
 
+import { execFile } from "node:child_process";
 import { promises as fs } from "node:fs";
 import { dirname, join, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { promisify } from "node:util";
 
+const run = promisify(execFile);
 const scriptDirectory = dirname(fileURLToPath(import.meta.url));
 const packageRoot = resolve(scriptDirectory, "..");
 const repositoryRoot = resolve(packageRoot, "../..");
 
-/** Files and directories that never belong in a client's project. */
+/**
+ * Names that never belong in a client's project, whatever the repository tracks.
+ * The list is a safety net rather than the rule: the rule is that a copied
+ * project carries the files the repository tracks, which `projectFiles` asks git
+ * for. These are the names that would be wrong even if someone tracked one.
+ */
 const IGNORED = [
   "node_modules",
   ".next",
@@ -39,7 +47,6 @@ const IGNORED = [
   ".tanstack",
   "dist",
   "coverage",
-  "tsconfig.tsbuildinfo",
 ];
 
 /**
@@ -162,32 +169,39 @@ async function readTypeRanges() {
 }
 
 /**
- * Walk a directory, skipping what a client's project must not carry.
+ * The files one playground contributes to a copied project.
  *
- * @param root - Directory to walk.
- * @param base - Directory the returned paths are relative to.
- * @returns Relative file paths.
+ * The repository is the definition of what a project contains, not the working
+ * directory: a build writes files into a playground's own directory (Next writes
+ * `next-env.d.ts`, a type checker writes build info), and a copy that carried them
+ * would ship output whose source a client does not have. Asking git is what makes
+ * the difference between "the project" and "whatever is in the directory", and it
+ * is why the distribution behaves the same on a runner that builds before it
+ * verifies as it does on a machine that does not.
+ *
+ * @param app - The playground's directory.
+ * @returns Paths relative to the playground, sorted.
  */
-async function walk(root, base = root) {
-  const entries = await fs.readdir(root, { withFileTypes: true });
-  const files = [];
+async function projectFiles(app) {
+  const root = relative(repositoryRoot, app);
+  const { stdout } = await run(
+    "git",
+    ["-C", repositoryRoot, "ls-files", "-z", "--", root],
+    { maxBuffer: 32 * 1024 * 1024 },
+  );
+  const prefix = `${root}/`;
 
-  for (const entry of entries) {
-    const full = join(root, entry.name);
-
-    if (IGNORED.includes(entry.name)) continue;
-    // The template writes its own README, because the repository's describes the
-    // playground as repository infrastructure rather than as a project to start.
-    if (entry.name === "README.md") continue;
-
-    if (entry.isDirectory()) {
-      files.push(...(await walk(full, base)));
-    } else if (entry.isFile()) {
-      files.push(relative(base, full).replaceAll("\\\\", "/"));
-    }
-  }
-
-  return files;
+  return (
+    stdout
+      .split("\0")
+      .filter(Boolean)
+      .map((file) => file.slice(prefix.length))
+      // The template writes its own README, because the repository's describes the
+      // playground as repository infrastructure rather than as a project to start.
+      .filter((file) => file !== "README.md")
+      .filter((file) => !file.split("/").some((part) => IGNORED.includes(part)))
+      .sort()
+  );
 }
 
 /**
@@ -380,7 +394,7 @@ function rewriteFile(content, file, project, types) {
 async function generateTarget(project, templateRoot) {
   await fs.rm(templateRoot, { recursive: true, force: true });
 
-  const files = await walk(project.app);
+  const files = await projectFiles(project.app);
   const types = await declaredTypes(project.app, files);
 
   for (const file of files) {
