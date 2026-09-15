@@ -10,3 +10,8 @@ minimumReleaseAgeExclude:
   - '@tanstack/react-start-rsc@0.1.53'
   - '@tanstack/react-start@1.168.54'
   - '@tanstack/start-plugin-core@1.171.44'
+# fast-uri carries four high advisories below 3.1.6. It reaches the tree only as a
+# development dependency (ajv, through the @microsoft/api-extractor peer that
+# auto-install-peers adds for vite-plugin-dts). The floor keeps every copy patched.
+overrides:
+  fast-uri: ^3.1.6
