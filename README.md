@@ -71,12 +71,22 @@ deno add npm:asheeui
 @import "asheeui/styles";
 ```
 
-**2. Initialize the integration** from your project root. The CLI detects
-your framework, creates an `asheeui.config.*` file, and wraps your app in the
-runtime `AsheeUIProvider`:
+**2. Wrap your app root** in `AsheeUIProvider`:
 
-```bash
-npx asheeui init
+```tsx
+import { AsheeUIProvider } from "asheeui";
+import type { ReactNode } from "react";
+
+export function Root({ children }: { children: ReactNode }) {
+  return <AsheeUIProvider>{children}</AsheeUIProvider>;
+}
+```
+
+The `config` prop is optional, and so is an `asheeui.config.*` file. Pass a
+config to change the defaults:
+
+```tsx
+<AsheeUIProvider config={{ defaultTheme: "dark" }}>{children}</AsheeUIProvider>
 ```
 
 **3. Use the components** anywhere in your app:
@@ -104,6 +114,19 @@ export function Example() {
     />
   );
 }
+```
+
+## Optional CLI
+
+`@asheeui/cli` is a convenience for setup and for checking an existing project.
+It is not required: everything above is the whole setup, and the framework works
+without it.
+
+```bash
+npx asheeui init     # write an asheeui.config.* file and wrap your app root
+npx asheeui doctor   # check styles, provider, dependencies and configuration
+npx asheeui fix      # apply the repairs doctor can make automatically
+npx asheeui list     # list the components this version exports
 ```
 
 ## LLM & AI Assistant Support

@@ -32,7 +32,7 @@ export function providerWrapperContent(opts: {
     opts;
   return `import type { ReactNode } from "react";
 import { ${providerName} } from "asheeui";
-import { config } from "${configImport}";
+import config from "${configImport}";
 
 export interface ${componentName}Props {
   children: ReactNode;
@@ -51,9 +51,11 @@ export function ${componentName}({ children }: ${componentName}Props) {
 /**
  * Render the default contents of an `asheeui.config.ts` or `.js` file.
  *
- * The TypeScript variant uses an explicit `ExternalConfig` type; the
- * JavaScript variant uses a JSDoc typedef so editors still infer theming
- * options without a separate type step.
+ * Both variants export the configuration object as the module's default
+ * export, which is how the generated provider wiring imports it. The
+ * TypeScript variant uses an explicit `ExternalConfig` type; the JavaScript
+ * variant uses a JSDoc typedef so editors still infer theming options without
+ * a separate type step.
  *
  * @param language - Language variant to render.
  * @returns A complete configuration source string ready to write.
@@ -70,21 +72,29 @@ export function defaultConfigContent(
   if (language === "typescript") {
     return `import type { ExternalConfig } from "asheeui";
 
-export const config: ExternalConfig = {
+const config: ExternalConfig = {
   defaultTheme: "light",
   defaultVariant: "solid",
   defaultColor: "primary",
   components: {},
 };
+
+export default config;
 `;
   }
-  return `
-export default const config = {
+  return `/**
+ * AsheeUI configuration.
+ *
+ * @type {import("asheeui").ExternalConfig}
+ */
+const config = {
   defaultTheme: "light",
   defaultVariant: "solid",
   defaultColor: "primary",
   components: {},
 };
+
+export default config;
 `;
 }
 

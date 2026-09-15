@@ -28,11 +28,22 @@ import { registerListCommand } from "./commands/list";
  * @returns A configured `Command` representing the `asheeui` CLI.
  */
 const program = new Command();
-program.name("asheeui").description("Ashee UI CLI").version(version);
+program
+  .name("asheeui")
+  .description("Ashee UI CLI")
+  .version(version)
+  .showHelpAfterError()
+  .showSuggestionAfterError();
 
 registerInitCommand(program);
 registerDoctorCommand(program);
 registerListCommand(program);
 registerFixCommand(program);
 
-program.parseAsync(process.argv);
+program.parseAsync(process.argv).catch((error: unknown) => {
+  // A command that fails should report one clear line, not a stack trace, and
+  // should still leave a non-zero exit code for scripts and CI.
+  const message = error instanceof Error ? error.message : String(error);
+  console.error(`asheeui: ${message}`);
+  process.exitCode = 1;
+});

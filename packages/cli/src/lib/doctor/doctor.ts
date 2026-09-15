@@ -46,3 +46,22 @@ export async function runDoctorChecks(
     await checkThemeAugmentation(cwd),
   ];
 }
+
+/**
+ * Whether any check reported a project that does not work.
+ *
+ * Only `fail` counts. `warn` and `info` describe a project that still renders,
+ * so they must not fail a script or a CI job.
+ *
+ * @param results - Doctor check results to inspect.
+ * @returns `true` when at least one check failed.
+ *
+ * @example
+ * ```ts
+ * const results = await runDoctorChecks({ cwd: process.cwd() });
+ * if (hasBlockingFailure(results)) process.exitCode = 1;
+ * ```
+ */
+export function hasBlockingFailure(results: DoctorCheckResult[]): boolean {
+  return results.some((result) => result.status === "fail");
+}

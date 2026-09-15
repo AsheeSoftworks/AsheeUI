@@ -8,7 +8,10 @@
  */
 
 import type { Command } from "commander";
-import { runDoctorChecks } from "../lib/doctor/doctor";
+import {
+  hasBlockingFailure,
+  runDoctorChecks,
+} from "../lib/doctor/doctor";
 import { renderDoctorReport } from "../lib/doctor/render-report";
 
 /**
@@ -22,6 +25,9 @@ import { renderDoctorReport } from "../lib/doctor/render-report";
  *
  * Flags:
  * - `-d, --dir <path>`: directory to scan (default: current working dir).
+ *
+ * The process exits with code `1` when any check fails, so the command can be
+ * used directly as a CI gate.
  *
  * @param program - Root commander program receiving the new subcommand.
  * @returns The configured commander `Command` instance.
@@ -48,5 +54,11 @@ export function registerDoctorCommand(program: Command) {
     .action(async (opts) => {
       const results = await runDoctorChecks({ cwd: opts.dir });
       renderDoctorReport(results, opts.dir);
+
+      // A failed check means the project does not work, which a script or a CI
+      // job has to be able to see, so it is reported through the exit code.
+      if (hasBlockingFailure(results)) {
+        process.exitCode = 1;
+      }
     });
 }
