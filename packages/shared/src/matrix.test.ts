@@ -9,7 +9,7 @@
  * support nobody has decided.
  */
 
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it } from "vitest";
 import {
   COMPONENT_SUPPORT,
   findComponentSupport,
@@ -86,10 +86,10 @@ describe("the compatibility matrix", () => {
   });
 
   it("covers the component inventory", () => {
-    // The matrix describes the 51 components the web package publishes. A new
+    // The matrix describes the 61 components the web package publishes. A new
     // component must be classified here in the same change, so platform support is
     // never left undecided.
-    expect(COMPONENT_SUPPORT).toHaveLength(51);
+    expect(COMPONENT_SUPPORT).toHaveLength(61);
   });
 
   it("uses a classification the vocabulary explains", () => {

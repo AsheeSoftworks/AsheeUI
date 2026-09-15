@@ -90,6 +90,15 @@ export interface ChipProps extends BaseChipProps {
   closeIcon?: ReactNode;
 
   /**
+   * Accessible name of the remove control.
+   * A list of chips needs each remove control to say what it removes, so pass
+   * the chip's own subject, for example `"Remove invoice.pdf"`.
+   *
+   * @default "Remove chip"
+   */
+  closeLabel?: string;
+
+  /**
    * Chip content.
    * The label text to display inside the chip.
    */
@@ -171,6 +180,7 @@ export const Chip = forwardRef<HTMLDivElement, ChipProps>(
       dot,
       onClose,
       closeIcon,
+      closeLabel = "Remove chip",
       children,
       className,
       style,
@@ -371,7 +381,7 @@ export const Chip = forwardRef<HTMLDivElement, ChipProps>(
         {onClose && (
           <button
             type="button"
-            aria-label="Remove chip"
+            aria-label={closeLabel}
             disabled={isDisabled}
             onClick={handleClose}
             className={cn(

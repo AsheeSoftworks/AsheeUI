@@ -27,14 +27,19 @@ describe("public entry point", () => {
       "CTA",
       "Card",
       "Carousel",
+      "Centered",
       "Chip",
       "Calendar",
       "Clipboard",
       "Container",
       "CopyButton",
+      "DataTable",
+      "DocsLayout",
       "Drawer",
       "EmptyState",
+      "ErrorState",
       "FeatureGrid",
+      "FileUpload",
       "Footer",
       "Grid",
       "HStack",
@@ -42,7 +47,9 @@ describe("public entry point", () => {
       "Image",
       "Input",
       "Link",
+      "LoadingState",
       "Marquee",
+      "MarketingLayout",
       "Modal",
       "MultiSelect",
       "Navbar",
@@ -59,12 +66,15 @@ describe("public entry point", () => {
       "RadioGroup",
       "ResizableScreen",
       "Dropmenu",
+      "SearchInput",
       "Section",
       "Sidebar",
       "SidebarLayout",
       "Skeleton",
       "Spinner",
+      "Split",
       "Stack",
+      "Stepper",
       "Switch",
       "Table",
       "Tabs",
@@ -109,6 +119,18 @@ describe("public entry point", () => {
     expect(AsheeUI).not.toHaveProperty("getPaginationRange");
     expect(AsheeUI).not.toHaveProperty("RadioContext");
     expect(AsheeUI).not.toHaveProperty("useRadioGroupContext");
+    expect(AsheeUI).not.toHaveProperty("formatFileSize");
+    expect(AsheeUI).not.toHaveProperty("describeRejectedFiles");
+    expect(AsheeUI).not.toHaveProperty("SkipLink");
+  });
+
+  it("keeps every component's class maps out of the public surface", () => {
+    // Styles are the component's own business: a consumer restyles through the
+    // cascade, `className` or configuration, never by importing a class string.
+    expect(AsheeUI).not.toHaveProperty("CENTERED_AXIS_CLASS");
+    expect(AsheeUI).not.toHaveProperty("SPLIT_STACK_CLASS");
+    expect(AsheeUI).not.toHaveProperty("DATA_TABLE_CLASS");
+    expect(AsheeUI).not.toHaveProperty("STEPPER_LIST_CLASS");
   });
 
   it("keeps the section kit and the Puck configuration off the main entry point", () => {

@@ -10,6 +10,7 @@
  * component inventory.
  */
 
+import type { ReactNode } from "react";
 import type { ActionConfig } from "../../shared";
 import { cn } from "../../utils";
 import { Button } from "../button/Button";
@@ -42,6 +43,13 @@ export interface ActionGroupProps {
    * Additional classes for the wrapper.
    */
   className?: string;
+
+  /**
+   * Content rendered alongside the configured actions, inside the same group.
+   * It is the way a pattern places an action that carries a handler, because a
+   * configured action describes a destination rather than a React callback.
+   */
+  children?: ReactNode;
 }
 
 /**
@@ -67,8 +75,9 @@ export function ActionGroup({
   secondaryAction,
   align = "start",
   className,
+  children,
 }: ActionGroupProps) {
-  if (!primaryAction && !secondaryAction) {
+  if (!primaryAction && !secondaryAction && !children) {
     return null;
   }
 
@@ -85,6 +94,7 @@ export function ActionGroup({
       {secondaryAction && (
         <ConfiguredAction action={secondaryAction} defaultVariant="bordered" />
       )}
+      {children}
     </div>
   );
 }
