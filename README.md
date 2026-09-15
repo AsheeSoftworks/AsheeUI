@@ -19,9 +19,17 @@ build-time configuration file and no CLI.
 - A cascade config system: instance props, then `components.<name>` config,
   then global defaults, then a hardcoded fallback, so you can theme at any
   level.
-- A layout system (`Container`, `Section`, `Stack`, `Grid`, `Page`) and the
-  application shells (`SidebarLayout`, `AuthLayout`) needed to build a whole
-  page without a second layout library.
+- A layout system (`Container`, `Section`, `Stack`, `Grid`, `Centered`,
+  `Split`, `Page`) and the page compositions (`MarketingLayout`, `DocsLayout`,
+  `SidebarLayout`, `AuthLayout`) needed to build a whole page without a second
+  layout library.
+- The components an application page is built from (`SearchInput`, `Stepper`,
+  `DataTable`, `FileUpload`, `LoadingState`, `ErrorState`), each composed from
+  the primitives below it rather than reimplementing them.
+- A React Native package that shares the component vocabulary, the prop contracts
+  and the design language with the web package: the layout kit, `Text`, `Card`,
+  `Badge`, `Input`, `Button`, and a responsive vocabulary that reads the platform's
+  window.
 - The sections a marketing page is made of (`Navbar`, `Hero`, `FeatureGrid`,
   `CTA`, `Testimonials`, `PricingCard`, `Footer`), each taking its actions as
   configuration.
@@ -194,12 +202,14 @@ npx asheeui list     # list the components this version exports
 | Document | Covers |
 | --- | --- |
 | [Installation](docs/installation.md) | Requirements, the stylesheet import, wrapping the root, where the root is per framework, troubleshooting |
-| [Release 1.1.0](docs/release-1.1.0.md) | What this release adds: the layout system, the page components and the Puck integration |
+| [Release 2.0.0](docs/release-2.0.0.md) | What this release adds: the completed layout layer, the page compositions, the new components and the native component set |
+| [Layouts](docs/layouts.md) | The layout layer, the four compositions, the responsiveness rules and the native equivalents |
+| [Release 1.1.0](docs/release-1.1.0.md) | What the 1.1 release added: the layout system, the page components and the Puck integration |
 | [Release 1.0.0](docs/release-1.0.0.md) | The upgrade guide from 0.7.0: what breaks a build, what changed in behaviour, what is new |
 | [Configuration](docs/configuration.md) | The cascade, the global and per-component keys, the theme system, scrollbars, validation |
 | [Components](docs/components.md) | The component set, the shared prop axes, the substitution API, the field contract |
 | [Puck](docs/puck.md) | The block registry, the configuration boundary, the published-page path, what is deferred |
-| [React Native](docs/native.md) | The shared layer, what is shared and what is not, the platform matrix, native setup, testing and accessibility |
+| [React Native](docs/native.md) | The shared layer, what is shared and what is not, the layout kit, the responsive vocabulary, native setup, testing and accessibility |
 | [Licensing](docs/licensing.md) | The Apache-2.0 terms, what redistribution requires, the trademark position, the MIT transition |
 | [Accessibility](docs/accessibility.md) | The conformance target, keyboard behaviour, structure, known limits |
 | [CLI](docs/cli.md) | The optional scaffolding, checking and repair commands |
