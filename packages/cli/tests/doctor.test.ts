@@ -7,7 +7,7 @@ import {
   lowerBoundOf,
   satisfiesRange,
 } from "../src/lib/doctor/check-deps";
-import { runDoctorChecks } from "../src/lib/doctor/doctor";
+import { hasBlockingFailure, runDoctorChecks } from "../src/lib/doctor/doctor";
 
 let dir: string;
 
@@ -88,10 +88,29 @@ import { createRoot } from "react-dom/client";`,
       expect(result?.status).toBe("pass");
     });
 
-    it("fails when no config file exists and suggests init", async () => {
+    it("reports an informational result when no config file exists", async () => {
       const result = await resultOf("config");
-      expect(result?.status).toBe("fail");
-      expect(result?.fix).toContain("asheeui init");
+
+      // The file is optional: the provider falls back to the library defaults,
+      // so its absence must not look like a broken project.
+      expect(result?.status).toBe("info");
+      expect(result?.message).toContain("optional");
+    });
+
+    it("does not treat a project without a config file as broken", async () => {
+      await writePkg(
+        {
+          react: "^19.0.0",
+          "react-dom": "^19.0.0",
+        },
+        { tailwindcss: "^4.0.0" },
+      );
+      await write("src/index.css", '@import "asheeui/styles";');
+      await write("src/main.tsx", 'import { AsheeUIProvider } from "asheeui";');
+
+      const results = await runDoctorChecks({ cwd: dir });
+
+      expect(hasBlockingFailure(results)).toBe(false);
     });
   });
 

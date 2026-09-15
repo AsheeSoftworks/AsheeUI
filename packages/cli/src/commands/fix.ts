@@ -9,6 +9,7 @@
  */
 
 import type { Command } from "commander";
+import { hasBlockingFailure } from "../lib/doctor/doctor";
 import type { FixResult } from "../lib/fix/fix";
 import { runFix } from "../lib/fix/fix";
 
@@ -129,6 +130,9 @@ export function renderFixReport(result: FixResult): void {
  * - `--skip-install`: skip running package-manager installs; only file
  *   changes are applied and missing packages are reported.
  *
+ * The process exits with code `1` when a check still fails after fixing, so a
+ * script can tell an incomplete repair from a successful one.
+ *
  * @param program - Root commander program receiving the new subcommand.
  * @returns The configured commander `Command` instance.
  *
@@ -162,5 +166,11 @@ export function registerFixCommand(program: Command) {
         skipInstall: opts.skipInstall,
       });
       renderFixReport(result);
+
+      // Anything still failing needs a human, so it is reported through the
+      // exit code rather than only in the output.
+      if (hasBlockingFailure(result.remaining)) {
+        process.exitCode = 1;
+      }
     });
 }

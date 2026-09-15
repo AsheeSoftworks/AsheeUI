@@ -92,7 +92,7 @@ describe("runFix", () => {
     await scaffoldBrokenViteProject();
 
     const before = await runDoctorChecks({ cwd: dir });
-    expect(before.find((c) => c?.id === "config")?.status).toBe("fail");
+    expect(before.find((c) => c?.id === "config")?.status).toBe("info");
     expect(before.find((c) => c?.id === "css")?.status).toBe("fail");
     expect(before.find((c) => c?.id === "provider")?.status).toBe("fail");
     expect(before.find((c) => c?.id === "peer-deps")?.status).toBe("pass");
