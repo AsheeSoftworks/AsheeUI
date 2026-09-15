@@ -46,6 +46,22 @@ published when a consumer can build a real screen with it, and the remaining
 components in the matrix decide when that is. The web package is published and
 unaffected: its version line, its tests and its public API are its own.
 
+Publishing them is therefore an increment rather than a switch, and the reason is
+mechanical: both packages point their entry points at their TypeScript sources
+(`main` is `src/index.ts`), which is what this workspace compiles and what a
+published consumer could not; neither builds to a directory a package can ship; and
+`@asheeui/native` depends on `@asheeui/shared` through a `workspace:` range that
+exists only inside this repository. The increment that publishes them adds a build
+with declarations, a `publishConfig` whose entry points point at it, a `files`
+list, a released range in place of the workspace one, and a changeset — and it
+publishes both together, because one depends on the other.
+
+One rule holds meanwhile, and it is what keeps a consumer's install resolvable:
+a published package may depend only on published packages. `asheeui` depends on
+`@floating-ui/react`, `clsx` and `tailwind-merge` and on nothing from this
+workspace, which is checked by reading the manifest of the released tarball rather
+than the one in the repository.
+
 ## Platform support, per component
 
 The compatibility matrix is data, and every public component has exactly one
