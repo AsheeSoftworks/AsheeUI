@@ -1,0 +1,64 @@
+# Migration and deprecation policy
+
+## The policy in force from 1.0
+
+From 1.0 onward, AsheeUI follows semantic versioning for its public API, and a
+breaking change follows the process below rather than arriving unannounced.
+
+| Step | What happens |
+| --- | --- |
+| Deprecation | The API keeps working and carries a deprecation notice that names its replacement and appears in the changelog and in the editor |
+| Window | A deprecated API stays for **at least one minor release**, so a consumer always has a release to migrate in |
+| Removal | Removal happens only in a **major release**, and the release notes list every removed API with its replacement |
+| Documentation | Every deprecation and every removal is described here, in this file |
+
+Bug fixes, internal refactoring, non-breaking additions and behavioural
+corrections are not breaking changes and follow the ordinary release flow. A
+behavioural correction that a consumer could depend on is called out in the
+release notes.
+
+## What counts as the public API
+
+| Included | Not included |
+| --- | --- |
+| Everything exported from `asheeui` | Internal modules and helpers |
+| Props, types and component names | DOM structure that is not documented |
+| The configuration keys and their defaults | Class names the framework applies |
+| The CLI's commands, flags and exit codes | The CLI's console output |
+
+## Breaking changes before 1.0
+
+The 0.x releases stabilized the API, and each breaking change arrived with the
+migration it needed. They are listed here so an upgrade from an earlier release
+is a documentation exercise rather than an investigation.
+
+### `0.8.0`
+
+| Change | Migration |
+| --- | --- |
+| `Select` renamed to `Dropmenu` | Rename the import, the element and the props type |
+| `DatePicker` renamed to `Calendar` | Rename the import, the element and the props type |
+| `TextArea` renamed to `Textarea` | Rename the import, the element and the props type |
+| Renamed configuration sections: `components.select`, `components.datePicker` | Use `components.dropmenu` and `components.calendar` |
+| Built-in defaults changed to a boxy radius and a faded fill (`defaultRadius: "xs"`, `defaultVariant: "faded"`) | Pass the previous values in your configuration if you prefer the old look |
+| The substitution API unified on `component` and `componentProps` | Rename `linkComponent`/`linkProps` on `Link`, `props` on `Image`, `imageProps` on `Avatar`, and the same keys on a `Breadcrumb` step and in the `Card` image and link configuration. `Form` gained the pair. |
+| Internal helpers removed from the package root: `getInitials`, `getPaginationRange`, `RadioContext`, `RadioContextValue`, `useRadioGroupContext` | Stop importing them; the components use them internally |
+
+### `1.0.0`
+
+No public API was removed to reach 1.0. The API that ships with 1.0 is the
+frozen surface: from here on, the policy above applies.
+
+## Upgrading
+
+1. Read the entry for your target version in this file and the package changelog.
+2. Apply the migrations.
+3. Run your test suite.
+4. If the change involved the stylesheet import, the provider or the
+   configuration keys, run `npx asheeui doctor` to confirm the setup.
+
+## Reporting a problem with this policy
+
+If a documented migration does not work, or a change arrived without the
+migration it needed, open an issue. That is treated as a defect in the release,
+not as a documentation gap.
