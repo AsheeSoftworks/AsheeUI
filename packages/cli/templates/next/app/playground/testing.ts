@@ -9,9 +9,6 @@
  *
  * The browser stand-ins a test installs before any of this runs are the third
  * surface, beside this one.
- *
- * `@asheeui/e2e-gallery/setup` is the third surface: the browser stand-ins the
- * playground tests install before any of this runs.
  */
 
 export {
