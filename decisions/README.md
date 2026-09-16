@@ -59,3 +59,4 @@ message.
 | 0017 | The launch does not claim the method is published | Both sites, documentation | Accepted |
 | 0018 | A template is a one-page installation, a playground is a stress test | Documentation, CLI | Accepted |
 | 0019 | A failed deployment says what the platform refused | Both sites | Accepted |
+| 0020 | A dependency pull request generated against an older main is closed, not merged | Library | Accepted |
