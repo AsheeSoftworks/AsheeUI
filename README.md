@@ -12,6 +12,46 @@ consistent instead of being reassembled per project. Components ship with
 first-class TypeScript types, and the framework needs no bundler plugin, no
 build-time configuration file and no CLI.
 
+## See it running
+
+| What | Where |
+| --- | --- |
+| Documentation and the component reference | [asheeui.com](https://www.asheeui.com) |
+| What the framework cost to build, with the receipt | [asheeui.com/docs/build-cost](https://www.asheeui.com/docs/build-cost) |
+| The company that maintains it | [asheesoftworks.com](https://asheesoftworks.com) |
+| The web package | [npmjs.com/package/asheeui](https://www.npmjs.com/package/asheeui) |
+
+The playground applications in this repository render the same gallery, and each one's
+end-to-end test asserts it. They are the stress test rather than the brochure: a
+component that only looks right in one state is meant to fail there.
+
+## One install, then copy and paste
+
+```bash
+npx @asheeui/cli@latest init
+```
+
+The CLI writes a working application. After that, a component is either imported from
+the package or copied out of the documentation, and both work for the same reason: what
+a component needs comes from the theme rather than from the file it lives in.
+
+There is no build plugin and no configuration file to register. A component pasted into
+a project compiles, takes the theme that project declares, and inherits its defaults.
+
+## Platforms
+
+One theme, one set of components, declared in the same shape wherever the application
+runs:
+
+| Platform | How | State |
+| --- | --- | --- |
+| Web | `asheeui` on React, styled by Tailwind CSS v4 | Published, and what the documentation covers |
+| Mobile | `@asheeui/native` on React Native, through Expo | In this repository; the playground builds for it and exports to the web |
+| Desktop | The web application, framed by whatever packages it | Follows the web build |
+
+A colour is decided once and is the same colour on every platform, because a platform
+declares a theme rather than a set of styles.
+
 ## How AsheeUI is built
 
 AsheeUI is built with AI, using a written process rather than a prompt. The process
