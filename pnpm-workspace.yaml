@@ -20,6 +20,10 @@ minimumReleaseAgeExclude:
   # are pinned to the versions the native package is verified against.
   - nativewind@4.2.7
   - react-native-css-interop@0.2.7
+  - '@expo/cli@57.0.25'
+  - '@expo/router-server@57.0.10'
+  - babel-preset-expo@57.0.12
+  - expo@57.0.23
 # fast-uri carries four high advisories below 3.1.6. It reaches the tree only as a
 # development dependency (ajv, through the @microsoft/api-extractor peer that
 # auto-install-peers adds for vite-plugin-dts). The floor keeps every copy patched.

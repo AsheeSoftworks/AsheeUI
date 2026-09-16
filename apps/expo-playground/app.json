@@ -1,0 +1,19 @@
+{
+  "expo": {
+    "name": "AsheeUI playground",
+    "slug": "asheeui-expo-playground",
+    "version": "0.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
+    "platforms": [
+      "ios",
+      "android",
+      "web"
+    ],
+    "web": {
+      "bundler": "metro",
+      "output": "single"
+    }
+  }
+}
