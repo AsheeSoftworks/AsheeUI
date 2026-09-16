@@ -14,19 +14,35 @@ build-time configuration file and no CLI.
 
 ## How AsheeUI is built
 
-AsheeUI is built with AI, using a written process rather than a prompt: an
-objective and its acceptance criteria first, then a state, a plan, an
-implementation, verification by the project's own checks, a diagnosis of any
-failure before it is repaired, and a person reviewing the result. The automated
-part may inspect, plan, implement, test, repair and prepare a release for review;
-it stops before anything irreversible and before a change to a requirement or an
-architecture.
+AsheeUI is built with AI, using a written process rather than a prompt. The process
+runs as a loop, and each stage ends in a state a person can inspect:
 
-That process is described in full in [How AsheeUI is built](docs/published-process.md).
-It is maintained as a published specification, with the measurements of the
-experiments run against it, by [Ashee Softworks](https://asheesoftworks.com),
-where the algorithm, the standards position and the two public events are
-documented.
+```text
+objective  intent, constraints and acceptance criteria, written first
+state      requirements, decisions, tests and the current implementation, read together
+plan       steps small enough to test, each with the evidence that would satisfy it
+act        the implementation, written with the project's own tools and conventions
+verify     tests, types, builds and audits; not an opinion about the code
+diagnose   the class of a failure, decided before any repair
+repair     the correction, then verification again; two failures of a kind stop the loop
+review     the state, the evidence and the open questions, presented to a person
+```
+
+The automated part may inspect, plan, implement, test, classify a failure, repair
+it, refactor, document and prepare a release for review. It stops, and asks, before
+anything irreversible, before a change to the architecture or to the meaning of a
+requirement, before a conflict only the owner can settle, and before work outside
+the authority the project granted it. The boundary is part of the design rather than
+a property of the current model.
+
+The full statement, including what evidence a reader can check and what the process
+does not claim, is in [How AsheeUI is built](docs/published-process.md).
+
+The process is maintained as a published specification, with the measurements of the
+experiments run against it, by Ashee Softworks. The company's site is at
+[asheesoftworks.com](https://asheesoftworks.com): it is in its **opening state and
+announces nothing yet**, and it is where the algorithm, the standards position and
+the two events will be documented as the launch proceeds.
 
 ## Features
 
