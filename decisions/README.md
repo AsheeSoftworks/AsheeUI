@@ -57,3 +57,4 @@ message.
 | 0015 | The domains are split by product, and the previous branch stays out of production | Both sites | Accepted |
 | 0016 | Hosting is arranged by one script at the workspace root | Both sites | Accepted |
 | 0017 | The launch does not claim the method is published | Both sites, documentation | Accepted |
+| 0018 | A template is a one-page installation, a playground is a stress test | Documentation, CLI | Accepted |
