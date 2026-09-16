@@ -53,3 +53,4 @@ message.
 | 0011 | The package documentation carries the plans | Documentation | Accepted |
 | 0012 | Decisions live at the repository root | Documentation | Accepted |
 | 0013 | The autocomplete change is reverted | Library | Accepted |
+| 0014 | Search visibility is implemented, and its owner inputs are listed | Both sites | Accepted |
