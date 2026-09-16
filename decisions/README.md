@@ -56,3 +56,4 @@ message.
 | 0014 | Search visibility is implemented, and its owner inputs are listed | Both sites | Accepted |
 | 0015 | The domains are split by product, and the previous branch stays out of production | Both sites | Accepted |
 | 0016 | Hosting is arranged by one script at the workspace root | Both sites | Accepted |
+| 0017 | The launch does not claim the method is published | Both sites, documentation | Accepted |
