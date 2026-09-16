@@ -36,5 +36,8 @@ next-env.d.ts
 *.tsbuildinfo
 # The Expo playground builds into dist, which is output rather than source.
 apps/expo-playground/dist/
+# The Vercel CLI writes its project link and a local env file when it runs.
 .vercel
+.env.local
+.env*.local
 .env*
