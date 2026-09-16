@@ -14,7 +14,14 @@
 
 "use client";
 
-import { AsheeUIProvider } from "asheeui";
+import {
+  AsheeUIProvider,
+  Badge,
+  HStack,
+  Section,
+  Typography,
+  VStack,
+} from "asheeui";
 import type { ReactNode } from "react";
 import { Gallery } from "./gallery";
 import { playgroundConfig } from "./playground-config";
@@ -90,6 +97,29 @@ export function PlaygroundProvider({ children }: PlaygroundProviderProps) {
 export function PlaygroundApp({ title, ...substitution }: PlaygroundAppProps) {
   return (
     <PlaygroundProvider>
+      {/* The frame the gallery is presented in. It is the framework's own layout and
+          text components rather than markup with utility classes, because that is the
+          claim the page makes: an application is composed from these components.
+          The band carries no heading, because the gallery renders the page's title and
+          a second one would give the document two. */}
+      <Section spacing="xl" contained containerSize="md">
+        <VStack gap="md" align="center">
+          <Badge color="primary" variant="faded">
+            Playground
+          </Badge>
+          <Typography role="body-lg" tone="muted" align="center">
+            Every component the documentation claims, in every state it claims, in an
+            application composed from AsheeUI components and nothing else. A prop that
+            does not exist, a colour role that does not resolve or a layout that only
+            works in one direction is meant to fail here, before a consumer meets it.
+          </Typography>
+          <HStack gap="sm" justify="center" wrap>
+            <Badge color="secondary">Mobile</Badge>
+            <Badge color="secondary">Web</Badge>
+            <Badge color="secondary">Desktop</Badge>
+          </HStack>
+        </VStack>
+      </Section>
       <Gallery title={title} {...substitution} />
     </PlaygroundProvider>
   );
