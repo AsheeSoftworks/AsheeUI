@@ -28,6 +28,35 @@ import { resolveCascade, resolveRadiusKey } from "../../utils/resolve-token";
 import type { FieldSizeKey } from "../field/field-config";
 import { Input, type InputProps } from "../input/Input";
 import { type MenuOption, menuOptionId, useMenuFloating } from "../menu";
+
+/**
+ * One option an autocomplete offers.
+ *
+ * The menu's own option type is internal by design, so a public prop cannot name
+ * it: a consumer would have no way to type the handler the prop calls. This is that
+ * type's public shape, and the two are structurally identical.
+ */
+export interface AutocompleteOption {
+  /** Text displayed in the input and in the options list. */
+  label: string;
+
+  /** Stable identifier returned through `onValueChange`. */
+  value: string | number;
+
+  /**
+   * Disables the option when `true`.
+   * Disabled options cannot be selected.
+   *
+   * @default false
+   */
+  disabled?: boolean;
+
+  /**
+   * Allows arbitrary option metadata, such as an icon or a description.
+   * Additional properties are passed through for custom rendering.
+   */
+  [key: string]: unknown;
+}
 import { Menu, type MenuProps } from "../menu/Menu";
 import { edgeOptionIndex, nextOptionIndex } from "../menu/menu-navigation";
 import {
@@ -51,7 +80,7 @@ export interface AutocompleteProps
    *
    * @default []
    */
-  options: MenuOption[];
+  options: AutocompleteOption[];
 
   /**
    * Controlled selected value, shown as its option label.
@@ -63,7 +92,7 @@ export interface AutocompleteProps
    * Callback fired with the selected value and option.
    * Called when a suggestion is selected from the dropdown.
    */
-  onValueChange?: (value: string | number, option?: MenuOption) => void;
+  onValueChange?: (value: string | number, option?: AutocompleteOption) => void;
 
   /**
    * Callback fired whenever the raw input text changes.

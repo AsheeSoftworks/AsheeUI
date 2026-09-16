@@ -12,6 +12,22 @@ consistent instead of being reassembled per project. Components ship with
 first-class TypeScript types, and the framework needs no bundler plugin, no
 build-time configuration file and no CLI.
 
+## How AsheeUI is built
+
+AsheeUI is built with AI, using a written process rather than a prompt: an
+objective and its acceptance criteria first, then a state, a plan, an
+implementation, verification by the project's own checks, a diagnosis of any
+failure before it is repaired, and a person reviewing the result. The automated
+part may inspect, plan, implement, test, repair and prepare a release for review;
+it stops before anything irreversible and before a change to a requirement or an
+architecture.
+
+That process is described in full in [How AsheeUI is built](docs/published-process.md).
+It is maintained as a published specification, with the measurements of the
+experiments run against it, by [Ashee Softworks](https://asheesoftworks.com),
+where the algorithm, the standards position and the two public events are
+documented.
+
 ## Features
 
 - Accessible React components built on Floating UI for positioning, focus

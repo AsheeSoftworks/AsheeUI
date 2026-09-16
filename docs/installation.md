@@ -100,3 +100,7 @@ the common cases below.
 `@asheeui/cli` can write the stylesheet import, create a configuration file and
 wrap the application root for you, and it can check an existing setup. Nothing
 above requires it, and the framework works without it. See [CLI](./cli.md).
+
+---
+
+Built with AI, using the process described in [How AsheeUI is built](published-process.md).
