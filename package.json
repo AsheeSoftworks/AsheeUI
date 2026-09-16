@@ -27,7 +27,11 @@
     "release": "turbo run build && changeset publish",
     "release:notes": "node scripts/sync-release-notes.mjs",
     "publish": "changeset publish",
-    "test": "turbo run test"
+    "test": "turbo run test",
+    "playground:next": "pnpm --filter @asheeui/next-playground dev",
+    "playground:vite": "pnpm --filter @asheeui/vite-playground dev",
+    "playground:tanstack": "pnpm --filter @asheeui/tanstack-playground dev",
+    "playground:expo": "pnpm --filter @asheeui/expo-playground start"
   },
   "devDependencies": {
     "@biomejs/biome": "latest",
