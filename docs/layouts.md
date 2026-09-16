@@ -181,4 +181,4 @@ platform supplies split views and navigation itself. The compatibility matrix in
 
 ---
 
-Built with AI, using the process described in [How AsheeUI is built](published-process.md).
+Built with AI. See [Ashee Softworks](https://asheesoftworks.com).

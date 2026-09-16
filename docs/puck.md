@@ -146,4 +146,4 @@ blocks, and that every default value survives a JSON round trip.
 
 ---
 
-Built with AI, using the process described in [How AsheeUI is built](published-process.md).
+Built with AI. See [Ashee Softworks](https://asheesoftworks.com).

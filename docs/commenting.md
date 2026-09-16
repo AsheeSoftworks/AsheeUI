@@ -370,4 +370,4 @@ When reviewing new code, use this checklist to verify the commenting standard is
 
 ---
 
-Built with AI, using the process described in [How AsheeUI is built](published-process.md).
+Built with AI. See [Ashee Softworks](https://asheesoftworks.com).

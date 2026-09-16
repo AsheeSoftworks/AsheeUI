@@ -103,4 +103,4 @@ above requires it, and the framework works without it. See [CLI](./cli.md).
 
 ---
 
-Built with AI, using the process described in [How AsheeUI is built](published-process.md).
+Built with AI. See [Ashee Softworks](https://asheesoftworks.com).
