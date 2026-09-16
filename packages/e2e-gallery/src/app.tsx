@@ -17,7 +17,6 @@
 import {
   AsheeUIProvider,
   Badge,
-  Centered,
   HStack,
   Section,
   Typography,
@@ -103,25 +102,23 @@ export function PlaygroundApp({ title, ...substitution }: PlaygroundAppProps) {
           claim the page makes: an application is composed from these components.
           The band carries no heading, because the gallery renders the page's title and
           a second one would give the document two. */}
-      <Section spacing="xl">
-        <Centered axis="both">
-          <VStack gap="md" align="center" className="max-w-3xl text-center">
-            <Badge color="primary" variant="faded">
-              Playground
-            </Badge>
-            <Typography role="body-lg" tone="muted">
-              Every component the documentation claims, in every state it claims, in an
-              application composed from AsheeUI components and nothing else. A prop that
-              does not exist, a colour role that does not resolve or a layout that only
-              works in one direction is meant to fail here, before a consumer meets it.
-            </Typography>
-            <HStack gap="sm" justify="center" wrap>
-              <Badge color="secondary">Mobile</Badge>
-              <Badge color="secondary">Web</Badge>
-              <Badge color="secondary">Desktop</Badge>
-            </HStack>
-          </VStack>
-        </Centered>
+      <Section spacing="xl" contained containerSize="md">
+        <VStack gap="md" align="center">
+          <Badge color="primary" variant="faded">
+            Playground
+          </Badge>
+          <Typography role="body-lg" tone="muted" align="center">
+            Every component the documentation claims, in every state it claims, in an
+            application composed from AsheeUI components and nothing else. A prop that
+            does not exist, a colour role that does not resolve or a layout that only
+            works in one direction is meant to fail here, before a consumer meets it.
+          </Typography>
+          <HStack gap="sm" justify="center" wrap>
+            <Badge color="secondary">Mobile</Badge>
+            <Badge color="secondary">Web</Badge>
+            <Badge color="secondary">Desktop</Badge>
+          </HStack>
+        </VStack>
       </Section>
       <Gallery title={title} {...substitution} />
     </PlaygroundProvider>
