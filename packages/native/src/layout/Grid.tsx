@@ -82,7 +82,7 @@ export function Grid({
 
   const resolved = resolveConfigCascade<
     NativeGridConfig,
-    Required<NativeGridConfig>
+    Required<Pick<NativeGridConfig, "columns" | "gap">> & NativeGridConfig
   >(
     { columns, columnsMd, columnsLg, gap },
     config.components.grid,

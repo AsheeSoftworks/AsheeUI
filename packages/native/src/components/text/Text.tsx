@@ -33,7 +33,10 @@ import {
  */
 export interface TextProps
   extends NativeTextConfig,
-    Omit<PlatformTextProps, "children" | "style"> {
+    // The platform's `role` is the accessibility role; the framework's `role` is the
+    // typography role. The component states the typography role and does not expose
+    // the accessibility one, so the two are kept from colliding here.
+    Omit<PlatformTextProps, "children" | "style" | "role"> {
   /** The text to render. */
   children?: ReactNode;
 

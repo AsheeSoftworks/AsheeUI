@@ -151,8 +151,16 @@ export const FALLBACK_NATIVE_STACK_CONFIG: Required<NativeStackConfig> = {
   wrap: false,
 };
 
-/** The values the native Grid falls back to. */
-export const FALLBACK_NATIVE_GRID_CONFIG: Required<NativeGridConfig> = {
+/**
+ * The values the native Grid falls back to.
+ *
+ * The two breakpoint columns are absent on purpose: a grid that never changes
+ * shape only states `columns`, and `resolveGridColumns` reads an absent
+ * breakpoint as "inherit the one below it".
+ */
+export const FALLBACK_NATIVE_GRID_CONFIG: Required<
+  Pick<NativeGridConfig, "columns" | "gap">
+> = {
   columns: 1,
   gap: "md",
 };

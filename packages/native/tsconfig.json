@@ -6,7 +6,7 @@
     "jsx": "react-jsx",
     "module": "commonjs",
     "moduleResolution": "node",
-    "types": ["jest", "node"],
+    "types": ["jest", "node", "nativewind/types"],
     "lib": ["es2022"],
     "paths": {
       "@asheeui/shared": ["../shared/src/index.ts"]
