@@ -49,6 +49,7 @@ message.
 | 0007 | The documentation site is restored rather than rebuilt | Documentation site | Accepted |
 | 0008 | The validator reads the contract from the modules that own it | Documentation site | Accepted |
 | 0009 | The 2.0 component renames are applied to the demos | Documentation site | Accepted |
-| 0010 | The autocomplete gains a public option type | Library | Accepted |
+| 0010 | The autocomplete gains a public option type | Library | Superseded by 0013 |
 | 0011 | The package documentation carries the plans | Documentation | Accepted |
 | 0012 | Decisions live at the repository root | Documentation | Accepted |
+| 0013 | The autocomplete change is reverted | Library | Accepted |

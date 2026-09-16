@@ -69,9 +69,12 @@ inspected today:
 ## 5. The wider work
 
 The process is maintained as a published specification, with the measurements of
-the experiments run against it, by Ashee Softworks. That company, the algorithm,
-the standards position and the two public events are documented at
-[asheesoftworks.com](https://asheesoftworks.com).
+the experiments run against it, by Ashee Softworks.
+
+The company's site is at [asheesoftworks.com](https://asheesoftworks.com). It is in
+its opening state and announces nothing yet: the algorithm, the standards position
+and the two events are documented there as the launch proceeds, and each step of
+that reveal replaces the one before it rather than adding to it.
 
 The AsheeUI documentation states what is true of AsheeUI. It does not claim to
 document the specification, and it does not restate the company's positions.

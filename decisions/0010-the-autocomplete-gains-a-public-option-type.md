@@ -2,10 +2,16 @@
 
 | Field | Value |
 |---|---|
-| Status | Accepted |
+| Status | Superseded by 0013 |
 | Date | 2026-09-16 |
 | Area | Library |
-| Evidence | .changeset/autocomplete-option-type.md; packages/ui/src/components/autocomplete/Autocomplete.tsx |
+| Evidence | .changeset/autocomplete-option-type.md, now removed; packages/ui/src/components/autocomplete/Autocomplete.tsx |
+
+> **Superseded.** The owner reviewed this decision and preferred the library to ship
+> no public type for it now. The change and its changeset were removed, and the record
+> is left in place so that the reasoning and the rejected alternatives are still
+> readable. See `0013-the-autocomplete-change-is-reverted.md`.
+
 
 ## Context
 
