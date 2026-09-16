@@ -61,4 +61,5 @@ message.
 | 0019 | A failed deployment says what the platform refused | Both sites | Accepted |
 | 0020 | A dependency pull request generated against an older main is closed, not merged | Library | Accepted |
 | 0021 | The native package is compiled but never typechecked | Library | Accepted |
-| 0022 | A playground is deployed by its project, not from a shell | Documentation, hosting | Accepted |
+| 0022 | A playground is deployed by its project, not from a shell | Documentation, hosting | Superseded by 0023 |
+| 0023 | A playground is deployed by its project, and the project is linked to this repository | Documentation, hosting | Accepted, supersedes 0022 |

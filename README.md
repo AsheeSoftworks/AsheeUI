@@ -20,6 +20,9 @@ build-time configuration file and no CLI.
 | What the framework cost to build, with the receipt | [asheeui.com/docs/build-cost](https://www.asheeui.com/docs/build-cost) |
 | The company that maintains it | [asheesoftworks.com](https://asheesoftworks.com) |
 | The web package | [npmjs.com/package/asheeui](https://www.npmjs.com/package/asheeui) |
+| The Next.js playground | [next-playground-ashee-saids-projects.vercel.app](https://next-playground-ashee-saids-projects.vercel.app) |
+| The Vite playground | [vite-playground-ashee-saids-projects.vercel.app](https://vite-playground-ashee-saids-projects.vercel.app) |
+| The Expo playground, on a device and in a browser | [expo-playground-ashee-saids-projects.vercel.app](https://expo-playground-ashee-saids-projects.vercel.app) |
 
 The playground applications in this repository render the same gallery, and each one's
 end-to-end test asserts it. They are the stress test rather than the brochure: a
