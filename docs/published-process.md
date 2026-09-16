@@ -68,7 +68,7 @@ inspected today:
 
 ## 5. The wider work
 
-The process is maintained as a published specification, with the measurements of
+The process is maintained by Ashee Softworks, with the measurements of
 the experiments run against it, by Ashee Softworks.
 
 The company's site is at [asheesoftworks.com](https://asheesoftworks.com). It is in

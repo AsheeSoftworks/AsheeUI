@@ -38,8 +38,8 @@ a property of the current model.
 The full statement, including what evidence a reader can check and what the process
 does not claim, is in [How AsheeUI is built](docs/published-process.md).
 
-The process is maintained as a published specification, with the measurements of the
-experiments run against it, by Ashee Softworks. The company's site is at
+The process is maintained by Ashee Softworks, with the measurements of the experiments
+run against it. The company's site is at
 [asheesoftworks.com](https://asheesoftworks.com): it is in its **opening state and
 announces nothing yet**, and it is where the algorithm, the standards position and
 the two events will be documented as the launch proceeds.
@@ -276,4 +276,4 @@ attribution notices are kept; see [Licensing](docs/licensing.md) for what that
 means in practice, including the trademark position.
 
 The project is developed with the **AI Test Driven Development** methodology,
-created by Ashee Softworks and published openly for anyone to use.
+created by Ashee Softworks.
