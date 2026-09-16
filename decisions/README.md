@@ -60,3 +60,5 @@ message.
 | 0018 | A template is a one-page installation, a playground is a stress test | Documentation, CLI | Accepted |
 | 0019 | A failed deployment says what the platform refused | Both sites | Accepted |
 | 0020 | A dependency pull request generated against an older main is closed, not merged | Library | Accepted |
+| 0021 | The native package is compiled but never typechecked | Library | Accepted |
+| 0022 | A playground is deployed by its project, not from a shell | Documentation, hosting | Accepted |
