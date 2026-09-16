@@ -54,3 +54,5 @@ message.
 | 0012 | Decisions live at the repository root | Documentation | Accepted |
 | 0013 | The autocomplete change is reverted | Library | Accepted |
 | 0014 | Search visibility is implemented, and its owner inputs are listed | Both sites | Accepted |
+| 0015 | The domains are split by product, and the previous branch stays out of production | Both sites | Accepted |
+| 0016 | Hosting is arranged by one script at the workspace root | Both sites | Accepted |
