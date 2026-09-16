@@ -143,3 +143,7 @@ blocks, and that every default value survives a JSON round trip.
 - [Components](./components.md) for the component set the blocks are built from.
 - [Configuration](./configuration.md) for the cascade a block's props resolve through.
 - [Release 1.1.0](./release-1.1.0.md) for what this release adds.
+
+---
+
+Built with AI, using the process described in [How AsheeUI is built](published-process.md).

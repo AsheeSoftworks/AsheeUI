@@ -104,3 +104,7 @@ Two behavioural notes, neither of which changes an existing component:
 If a documented migration does not work, or a change arrived without the
 migration it needed, open an issue. That is treated as a defect in the release,
 not as a documentation gap.
+
+---
+
+Built with AI, using the process described in [How AsheeUI is built](published-process.md).

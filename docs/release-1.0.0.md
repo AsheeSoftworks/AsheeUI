@@ -219,3 +219,7 @@ can gate a script or a CI job.
 | [Components](./components.md) | The component set, the prop axes, the substitution API |
 | [Accessibility](./accessibility.md) | The conformance target and the keyboard behaviour |
 | [CLI](./cli.md) | The optional commands |
+
+---
+
+Built with AI, using the process described in [How AsheeUI is built](published-process.md).

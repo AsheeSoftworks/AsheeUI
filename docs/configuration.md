@@ -196,3 +196,7 @@ grid that never changes shape only states `columns`.
 - [Accessibility](./accessibility.md) for the behaviour the framework guarantees.
 - [Puck](./puck.md) for the block configuration built on these keys.
 - [Migration](./migration.md) for the policy in force from 1.0.
+
+---
+
+Built with AI, using the process described in [How AsheeUI is built](published-process.md).

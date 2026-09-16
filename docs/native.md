@@ -219,3 +219,7 @@ Accessibility is a property of each component rather than a later addition:
 | The web's table, breadcrumb and resizable-split components | Their native equivalents are lists, a titled header and a platform split view |
 | The web package's source | Sharing source would give one platform the other's behaviour, which is what this architecture exists to avoid |
 | `Switch`, `Alert`, `Sheet`, `Tabs`, `Avatar`, `Skeleton`, `Separator`, `EmptyState` | Decided and recorded in the matrix, but not implemented in the 2.0 release. Each is the next increment of the native component set, and none is blocked by an undecided contract. |
+
+---
+
+Built with AI, using the process described in [How AsheeUI is built](published-process.md).
