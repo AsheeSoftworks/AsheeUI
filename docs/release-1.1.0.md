@@ -130,3 +130,7 @@ Recorded rather than dropped:
 - [Configuration](./configuration.md) for the cascade and the new keys.
 - [Puck](./puck.md) for the visual builder integration.
 - [Migration](./migration.md) for the policy and the per-version record.
+
+---
+
+Built with AI, using the process described in [How AsheeUI is built](published-process.md).

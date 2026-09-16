@@ -289,3 +289,7 @@ the server and replace the rows.
 - [Accessibility](./accessibility.md) for keyboard behaviour and the announced state.
 - [Puck](./puck.md) for the same components in a visual builder.
 - [CLI](./cli.md) for listing the components a version exports.
+
+---
+
+Built with AI, using the process described in [How AsheeUI is built](published-process.md).

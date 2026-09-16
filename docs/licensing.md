@@ -104,3 +104,7 @@ repository's license applies to the software rather than to the methodology.
 
 If a planned use of AsheeUI is unclear under these terms, open an issue and ask.
 A question about licensing is cheaper than a mistake about it.
+
+---
+
+Built with AI, using the process described in [How AsheeUI is built](published-process.md).

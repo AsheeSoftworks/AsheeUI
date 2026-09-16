@@ -140,3 +140,18 @@ breaking change and its path.
 | Build | The workspace builds: the library, the CLI and the three playground applications |
 | Version | `2.0.0` in the workspace manifests, the shared package and the native package, and `@asheeui/cli` `0.7.0` for the playgrounds and their distribution |
 
+
+## Where this release sits
+
+`2.0.0` is the release the documentation site and the company's public work are published alongside.
+The documentation states that the library is built with AI, and how: the process, the standards
+position and the two public events are documented at
+[asheesoftworks.com](https://asheesoftworks.com).
+
+The release is also the first case study of that process. The evidence a reader can check is
+unchanged: the source, these release notes, and a component reference derived from the installed
+package rather than written beside it.
+
+---
+
+Built with AI, using the process described in [How AsheeUI is built](published-process.md).

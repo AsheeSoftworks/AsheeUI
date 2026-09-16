@@ -196,3 +196,6 @@ at the application, and each shell renders an island. A server component that
 imports `asheeui` directly fails the framework's build, which is the intended
 behaviour: the provider and the components that read it belong on the client.
 
+---
+
+Built with AI, using the process described in [How AsheeUI is built](published-process.md).

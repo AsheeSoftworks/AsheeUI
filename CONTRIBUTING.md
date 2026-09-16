@@ -418,3 +418,17 @@ To add one:
 
 If you have a question about contributing, open a discussion or reach out at
 `asheesoftworks@gmail.com`.
+
+## How work is produced
+
+Work in this repository is produced with AI assistance, and that is stated rather than
+hidden. It changes nothing about what a contribution has to satisfy, and everything
+about how it should be reviewed.
+
+A change is accepted on its evidence: the tests that cover it, the checks that pass
+(`pnpm verify`), the changeset or release note that explains it, and the judgement of
+a person who can defend it. A change whose author cannot say what it does and why is
+not ready, whether a person or a model produced it.
+
+The process this work follows is described in
+[How AsheeUI is built](docs/published-process.md).

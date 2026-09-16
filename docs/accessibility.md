@@ -101,3 +101,7 @@ hard-codes a palette colour: every colour resolves through the configuration.
 Open an issue with the component, the assistive technology or browser, and what
 you expected to happen. A reproduction that starts from one of the components in
 this documentation is the fastest path to a fix.
+
+---
+
+Built with AI, using the process described in [How AsheeUI is built](published-process.md).

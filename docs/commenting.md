@@ -367,3 +367,7 @@ When reviewing new code, use this checklist to verify the commenting standard is
 - [ ] No em dashes appear anywhere in comments.
 - [ ] No marketing language appears anywhere in comments.
 - [ ] Comments match existing codebase terminology.
+
+---
+
+Built with AI, using the process described in [How AsheeUI is built](published-process.md).

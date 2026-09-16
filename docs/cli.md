@@ -77,3 +77,7 @@ npx asheeui doctor || echo "the setup needs attention"
 object as the module's default export, and imports it into the provider it wires
 up. The file is a plain module: nothing reads it from disk, so it works with any
 bundler and can be replaced by an inline object on the provider.
+
+---
+
+Built with AI, using the process described in [How AsheeUI is built](published-process.md).
