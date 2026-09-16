@@ -178,3 +178,7 @@ composes differently: it is a scroll view with a header and a stack, and the
 platform supplies split views and navigation itself. The compatibility matrix in
 `@asheeui/shared` records what each component means on each platform. See
 [React Native](./native.md) for the details.
+
+---
+
+Built with AI, using the process described in [How AsheeUI is built](published-process.md).

@@ -96,11 +96,14 @@ contributor. You keep the copyright on your work.
 ## The methodology
 
 AsheeUI is developed with the **AI Test Driven Development** methodology, created
-by Ashee Softworks. The methodology is documented and published openly so that
-anyone can adopt, adapt and improve it; it is not a licensed product, and this
-repository's license applies to the software rather than to the methodology.
+by Ashee Softworks. This repository's license applies to the software rather than
+to the methodology.
 
 ## Questions
 
 If a planned use of AsheeUI is unclear under these terms, open an issue and ask.
 A question about licensing is cheaper than a mistake about it.
+
+---
+
+Built with AI, using the process described in [How AsheeUI is built](published-process.md).
