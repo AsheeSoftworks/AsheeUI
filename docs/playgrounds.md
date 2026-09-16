@@ -54,10 +54,17 @@ shipped copy is byte for byte the file this repository verifies.
 ## Running a playground
 
 ```bash
-pnpm --filter @asheeui/next-playground dev        # http://localhost:3000
-pnpm --filter @asheeui/vite-playground dev        # http://localhost:5173
-pnpm --filter @asheeui/tanstack-playground dev    # http://localhost:3000
+pnpm playground:next        # http://localhost:3000
+pnpm playground:vite        # http://localhost:5173
+pnpm playground:tanstack    # http://localhost:3000
+pnpm playground:expo        # the Expo dev server, for a device, a simulator or the web
 ```
+
+**A playground is run through pnpm, never bare.** `expo`, `next` and `vite` are
+project-local binaries, so they are on `PATH` inside a pnpm script and nowhere else: `expo
+start` typed in the app's directory is `command not found`, while `pnpm start` in the same
+directory is the same command with the binary on the path. That is true of every tool this
+workspace installs, not only the playgrounds.
 
 Each one also has a test command, and every test asserts the same contract:
 

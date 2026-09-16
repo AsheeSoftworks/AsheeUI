@@ -28,6 +28,10 @@ The playground applications in this repository render the same gallery, and each
 end-to-end test asserts it. They are the stress test rather than the brochure: a
 component that only looks right in one state is meant to fail there.
 
+Run them with `pnpm playground:next`, `pnpm playground:vite`, `pnpm playground:tanstack`
+or `pnpm playground:expo`. A playground's tools are project-local, so they are run through
+pnpm rather than typed bare.
+
 ## One install, then copy and paste
 
 ```bash
