@@ -10,7 +10,7 @@
 ## Context
 
 The owner stated the rule directly: the methodology the project is developed with is
-created by Ashee Softworks and published openly, and the launch must not say the second
+created by Ashee Softworks, and the launch must not say the second
 half yet. Two deployment failures arrived in the same session: the documentation site
 stopped while prerendering a page because the manifest it reads is generated and the
 build script never generated it, and the company site stopped before building because
