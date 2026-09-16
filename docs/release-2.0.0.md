@@ -143,10 +143,11 @@ breaking change and its path.
 
 ## Where this release sits
 
-`2.0.0` is the release the documentation site and the company's public work are published alongside.
-The documentation states that the library is built with AI, and how: the process, the standards
-position and the two public events are documented at
-[asheesoftworks.com](https://asheesoftworks.com).
+`2.0.0` is the release the documentation site was updated alongside.
+
+The documentation states that the library is built with AI. The company is at
+[asheesoftworks.com](https://asheesoftworks.com), and it describes the work as the launch
+proceeds.
 
 The release is also the first case study of that process. The evidence a reader can check is
 unchanged: the source, these release notes, and a component reference derived from the installed
@@ -154,4 +155,4 @@ package rather than written beside it.
 
 ---
 
-Built with AI, using the process described in [How AsheeUI is built](published-process.md).
+Built with AI. See [Ashee Softworks](https://asheesoftworks.com).

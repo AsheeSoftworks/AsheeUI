@@ -222,4 +222,4 @@ can gate a script or a CI job.
 
 ---
 
-Built with AI, using the process described in [How AsheeUI is built](published-process.md).
+Built with AI. See [Ashee Softworks](https://asheesoftworks.com).
