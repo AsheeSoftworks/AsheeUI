@@ -16,6 +16,9 @@ import {
   resolveClassKey,
   resolveRadiusKey,
   resolveVariantClass,
+  TOOLTIP_FONT_CLASS,
+  TOOLTIP_PADDING_X_CLASS,
+  TOOLTIP_PADDING_Y_CLASS,
   type Variant,
 } from "@asheeui/core";
 import {
@@ -50,11 +53,6 @@ import {
   type TooltipPlacement,
   type TooltipSizeKey,
 } from "./tooltip-config";
-import {
-  TOOLTIP_FONT_CLASS,
-  TOOLTIP_PADDING_X_CLASS,
-  TOOLTIP_PADDING_Y_CLASS,
-} from "./tooltip-styles";
 
 type BaseTooltipProps = TooltipConfig;
 

@@ -10,6 +10,8 @@
 import {
   ASHEE_GLOBAL_LAYER,
   cn,
+  MODAL_MAX_WIDTH_CLASS,
+  MODAL_POSITION_CLASS,
   RADIUS_CLASS,
   type Radius,
   resolveCascade,
@@ -34,7 +36,6 @@ import {
   type ModalPosition,
   type ModalSizeKey,
 } from "./modal-config";
-import { MODAL_MAX_WIDTH_CLASS, MODAL_POSITION_CLASS } from "./modal-styles";
 
 type BaseModalProps = ModalConfig &
   Omit<HTMLAttributes<HTMLDivElement>, "size" | "content">;
