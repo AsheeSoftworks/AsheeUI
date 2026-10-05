@@ -9,7 +9,16 @@
 "use client";
 
 import type { Color, Size } from "@asheeui/core";
-import { cn, resolveCascade, resolveClassKey } from "@asheeui/core";
+import {
+  cn,
+  LINK_COLOR_CLASS,
+  LINK_ICON_SIZE_CLASS,
+  LINK_SIZE_CLASS,
+  LINK_UNDERLINE_CLASS,
+  LINK_VARIANT_CLASS,
+  resolveCascade,
+  resolveClassKey,
+} from "@asheeui/core";
 import {
   type AnchorHTMLAttributes,
   type ElementType,
@@ -24,13 +33,6 @@ import {
   type LinkUnderline,
   type LinkVariant,
 } from "./link-config";
-import {
-  LINK_COLOR_CLASS,
-  LINK_ICON_SIZE_CLASS,
-  LINK_SIZE_CLASS,
-  LINK_UNDERLINE_CLASS,
-  LINK_VARIANT_CLASS,
-} from "./link-styles";
 
 type BaseLinkProps = LinkConfig &
   Omit<AnchorHTMLAttributes<HTMLAnchorElement>, "size">;

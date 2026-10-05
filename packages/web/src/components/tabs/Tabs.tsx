@@ -15,6 +15,9 @@ import {
   resolveCascade,
   resolveClassKey,
   resolveRadiusKey,
+  TABS_FONT_CLASS,
+  TABS_HEIGHT_CLASS,
+  TABS_PADDING_X_CLASS,
 } from "@asheeui/core";
 import {
   forwardRef,
@@ -33,11 +36,6 @@ import {
   type TabsOptionsConfig,
   type TabsVariant,
 } from "./tabs-config";
-import {
-  TABS_FONT_CLASS,
-  TABS_HEIGHT_CLASS,
-  TABS_PADDING_X_CLASS,
-} from "./tabs-styles";
 
 // ─── Props Interface ──────────────────────────────────────────────────────────
 

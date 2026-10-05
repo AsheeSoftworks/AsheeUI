@@ -10,6 +10,9 @@
 
 import type { Size } from "@asheeui/core";
 import {
+  CAROUSEL_HEIGHT_CLASS,
+  CAROUSEL_PADDING_CLASS,
+  CAROUSEL_VARIANT_CLASS,
   cn,
   RADIUS_CLASS,
   resolveCascade,
@@ -38,11 +41,6 @@ import {
   type CarouselVariant,
   FALLBACK_CAROUSEL_CONFIG,
 } from "./carousel-config";
-import {
-  CAROUSEL_HEIGHT_CLASS,
-  CAROUSEL_PADDING_CLASS,
-  CAROUSEL_VARIANT_CLASS,
-} from "./carousel-styles";
 
 /**
  * Minimum distance in pixels for a swipe to trigger a slide change.
