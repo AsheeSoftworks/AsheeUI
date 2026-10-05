@@ -335,8 +335,8 @@ export const COMPONENT_SUPPORT: readonly ComponentSupport[] = [
     name: "Toast",
     module: "toast",
     support: "shared-api",
-    native: "Toast",
-    note: "Native presents the platform snackbar where one exists",
+    native: "ToastProvider",
+    note: "Native stacks the messages in a layer above the screen and anchors them to the bottom by default, because the platform's own snackbar cannot carry the title, the action or the dismissal the contract names",
   },
   {
     name: "Tooltip",

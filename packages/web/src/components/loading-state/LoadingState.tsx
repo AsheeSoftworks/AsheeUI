@@ -12,6 +12,9 @@
 
 import {
   cn,
+  LOADING_STATE_CLASS,
+  LOADING_STATE_PANEL_CLASS,
+  LOADING_STATE_SIZE_CLASS,
   resolveConfigCascade,
   SPACE_MIN_HEIGHT_CLASS,
 } from "@asheeui/core";
@@ -28,11 +31,6 @@ import {
   FALLBACK_LOADING_STATE_CONFIG,
   type LoadingStateConfig,
 } from "./loading-state-config";
-import {
-  LOADING_STATE_CLASS,
-  LOADING_STATE_PANEL_CLASS,
-  LOADING_STATE_SIZE_CLASS,
-} from "./loading-state-styles";
 
 type BaseLoadingStateProps = LoadingStateConfig &
   Omit<HTMLAttributes<HTMLDivElement>, "color">;

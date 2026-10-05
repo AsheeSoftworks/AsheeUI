@@ -35,6 +35,7 @@ implemented and tested with the platform's own tooling.
 | Layout | `Container`, `Stack`, `HStack`, `VStack`, `Grid`, `Section`, `Centered` |
 | Components | `Button`, `Text`, `Card`, `Badge`, `Input`, `Spinner`, `Skeleton` |
 | The field family | `Textarea`, `SearchInput`, `PinInput`, `Switch`, `Radio` and `RadioGroup`, `Dropmenu`, `MultiSelect`, `Autocomplete`, `Form`, `Stepper`, `FileUpload`, `Calendar` |
+| Feedback and state | `Alert`, `EmptyState`, `ErrorState`, `LoadingState`, and the `ToastProvider` with `useToast` |
 | Responsive | `useBreakpoint`, and the pure `resolveBreakpoint` and `resolveGridColumns` |
 | Configuration | Every component registers its defaults and resolves through the shared cascade |
 
@@ -65,6 +66,40 @@ it. What is not the platform's is the framework's, and it is read from `@asheeui
 month grid, the written form of a chosen date, the two rules that decide which cells a
 reader may reach (`isFutureDay` and `canGoToNextMonth`), and the vocabulary that says what
 an empty field collects. A day the web refuses is a day native refuses.
+
+The feedback and state family arrived next, as one increment, for the same reason the field
+family did: an `Alert`, an `EmptyState`, an `ErrorState` and a `LoadingState` are four
+presentations of one question — what is this region telling the reader — and the
+`ToastProvider` is the same question raised above the screen. Three things are shared
+rather than restated:
+
+- **How a message is announced.** The framework names two levels, and the platform has no
+  `status` role, so `@asheeui/core` states the relation between the two vocabularies once
+  (`NATIVE_ANNOUNCEMENT_LIVE_REGION` and `resolveNativeAnnouncementRole`), and an alert, a
+  state and a toast all announce themselves through it. A failure interrupts on the
+  platform because it interrupts on the web.
+- **What a message looks like.** The treatments and colour roles a message surface can wear
+  are one pair of maps (`NATIVE_MESSAGE_SURFACE_CLASS`, `NATIVE_MESSAGE_TEXT_CLASS`), read
+  by the alert and by the toast, so retuning one retunes the other.
+- **How long a queue waits.** The toast's default timeout and its queue depth are stated
+  in `@asheeui/core` (`TOAST_FALLBACK_TIMEOUT_MS`, `TOAST_FALLBACK_MAX_TOASTS`), because
+  they are decisions about a reader's attention rather than about a platform.
+
+What the platform forces is drawn and recorded rather than quietly ignored. A decoration
+is a character rather than a drawing, because this package ships no icon set and its other
+components already draw their affordances from text. The toast stacks its messages in a
+layer of its own and anchors them to the **bottom centre** by default, because the
+platform's own snackbar cannot carry the title, the action or the dismissal the contract
+names — the same argument that keeps the native spinner a themed ring rather than an
+activity indicator. An `EmptyState` has no `as` prop, because the platform has one
+container. And the technical detail of an `ErrorState` is opened from the component's own
+state, because the platform has no `details` element and the detail is not application
+state.
+
+The rest is the framework's, read from the same place the web reads it: `resolveCascade`
+for every option, `NATIVE_RADIUS_CLASS` for corners, `SPACE_MIN_HEIGHT_CLASS` for the room a
+loading region claims, and one helper (`openDestination`) for the destination a configured
+action describes.
 
 The components the matrix classifies but this release does not implement are
 queued in `scripts/native-parity.json`, which is the list of record, so platform

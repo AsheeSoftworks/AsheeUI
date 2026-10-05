@@ -11,7 +11,15 @@
 "use client";
 
 import type { ActionConfig } from "@asheeui/core";
-import { cn, resolveConfigCascade } from "@asheeui/core";
+import {
+  cn,
+  EMPTY_STATE_CLASS,
+  EMPTY_STATE_ICON_CLASS,
+  EMPTY_STATE_ICON_SIZE_CLASS,
+  EMPTY_STATE_PANEL_CLASS,
+  EMPTY_STATE_SIZE_CLASS,
+  resolveConfigCascade,
+} from "@asheeui/core";
 import {
   type ElementType,
   forwardRef,
@@ -25,13 +33,6 @@ import {
   type EmptyStateConfig,
   FALLBACK_EMPTY_STATE_CONFIG,
 } from "./empty-state-config";
-import {
-  EMPTY_STATE_CLASS,
-  EMPTY_STATE_ICON_CLASS,
-  EMPTY_STATE_ICON_SIZE_CLASS,
-  EMPTY_STATE_PANEL_CLASS,
-  EMPTY_STATE_SIZE_CLASS,
-} from "./empty-state-styles";
 
 type BaseEmptyStateProps = EmptyStateConfig &
   Omit<HTMLAttributes<HTMLDivElement>, "color" | "title">;

@@ -11,7 +11,12 @@
 "use client";
 
 import type { ActionConfig } from "@asheeui/core";
-import { resolveConfigCascade } from "@asheeui/core";
+import {
+  ERROR_STATE_DETAIL_BODY_CLASS,
+  ERROR_STATE_DETAIL_CLASS,
+  ERROR_STATE_DETAIL_SUMMARY_CLASS,
+  resolveConfigCascade,
+} from "@asheeui/core";
 import {
   type ElementType,
   forwardRef,
@@ -26,11 +31,6 @@ import {
   type ErrorStateConfig,
   FALLBACK_ERROR_STATE_CONFIG,
 } from "./error-state-config";
-import {
-  ERROR_STATE_DETAIL_BODY_CLASS,
-  ERROR_STATE_DETAIL_CLASS,
-  ERROR_STATE_DETAIL_SUMMARY_CLASS,
-} from "./error-state-styles";
 
 type BaseErrorStateProps = ErrorStateConfig &
   Omit<HTMLAttributes<HTMLDivElement>, "color" | "title">;

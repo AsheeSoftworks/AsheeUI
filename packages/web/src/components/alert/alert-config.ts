@@ -1,52 +1,15 @@
 /**
  * Alert component configuration for AsheeUI.
- * This file defines the configuration types and defaults for the Alert
- * component and registers them with the component registry, so the
- * component-level fallback tier of the theme cascade has a value to resolve.
+ * This file registers the values the Alert component defaults to on the web, so
+ * the component-level fallback tier of the theme cascade has a value to resolve.
+ * The options themselves, and the type that names them, live in `@asheeui/core`:
+ * they are the framework's alert contract rather than a web renderer's, and the
+ * native renderer reads the same ones from the same place.
  */
 
-import type { Radius, Variant } from "@asheeui/core";
-import { registerComponentDefaults } from "@asheeui/core";
+import { type AlertConfig, registerComponentDefaults } from "@asheeui/core";
 
-/**
- * Intent of an alert.
- * Selects the colour an alert is presented in and how urgently it is
- * announced: `error` and `warning` interrupt, `info` and `success` wait for a
- * pause in what assistive technology is reading.
- */
-export type AlertType = "success" | "error" | "info" | "warning";
-
-/**
- * Theme configuration options for the Alert component.
- *
- * Set under `components.alert` in the AsheeUI config. Values feed the
- * component-level fallback tier of the theme cascade.
- */
-export interface AlertConfig {
-  /**
-   * Intent of the alert.
-   * Controls its colour and how urgently its message is announced.
-   *
-   * @default "info"
-   */
-  type?: AlertType;
-
-  /**
-   * Visual style variant.
-   * Controls the alert's background, border, and text treatment.
-   *
-   * @default "faded"
-   */
-  variant?: Exclude<Variant, "underlined">;
-
-  /**
-   * Corner rounding.
-   * Controls the border-radius of the alert.
-   *
-   * @default "md"
-   */
-  radius?: Radius;
-}
+export type { AlertConfig, AlertType } from "@asheeui/core";
 
 /**
  * Default config values registered for the Alert component.
@@ -69,11 +32,5 @@ export const FALLBACK_ALERT_CONFIG: Required<AlertConfig> = {
   variant: "faded",
   radius: "md",
 } as const;
-
-declare module "@asheeui/core" {
-  interface ComponentTypeConfigRegistry {
-    alert: AlertConfig;
-  }
-}
 
 registerComponentDefaults("alert", defaultAlertConfig);

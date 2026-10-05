@@ -1,69 +1,18 @@
 /**
  * ErrorState component configuration for AsheeUI.
- * This file defines the configuration type and defaults for the failed-region
- * presentation: how dense it is, whether it is drawn as a panel, whether it is
- * announced as a change, and what its retry control and its technical detail are
- * called. It registers the default configuration with the component registry and
- * provides fallback values for the cascade resolution system.
+ * This file registers the values the failed-region presentation defaults to on the
+ * web, so the component-level tier of the theme cascade has a value to resolve.
+ * The options themselves, and the types that name them, live in `@asheeui/core`:
+ * they are the framework's failed-region contract rather than a web renderer's, and
+ * the native renderer reads the same ones from the same place.
  */
 
-import type { Size } from "@asheeui/core";
-import { registerComponentDefaults } from "@asheeui/core";
+import {
+  type ErrorStateConfig,
+  registerComponentDefaults,
+} from "@asheeui/core";
 
-/**
- * How the failed region announces itself.
- *
- * - `alert`: it is announced as soon as it appears, which is right when it
- *   replaces content after a request failed.
- * - `status`: it is announced politely, which is right when the failure is not
- *   the result of the reader's last action.
- * - `none`: it is not announced, which is right when it is part of the page's
- *   initial markup, such as a not-found page.
- */
-export type ErrorStateRole = "alert" | "status" | "none";
-
-/**
- * Theme configuration options for the ErrorState component.
- *
- * Set under `components.errorstate` in the AsheeUI config. Values feed the
- * component-level tier of the theme cascade.
- */
-export interface ErrorStateConfig {
-  /**
-   * Density of the state.
-   *
-   * @default "md"
-   */
-  size?: Size;
-
-  /**
-   * Whether the state is drawn as a panel.
-   *
-   * @default true
-   */
-  panel?: boolean;
-
-  /**
-   * How the state is announced.
-   *
-   * @default "alert"
-   */
-  role?: ErrorStateRole;
-
-  /**
-   * Wording of the retry control.
-   *
-   * @default "Try again"
-   */
-  retryLabel?: string;
-
-  /**
-   * Wording of the disclosure that holds the technical detail.
-   *
-   * @default "Technical details"
-   */
-  detailLabel?: string;
-}
+export type { ErrorStateConfig, ErrorStateRole } from "@asheeui/core";
 
 /**
  * Default config values registered for the ErrorState component.
@@ -77,12 +26,6 @@ export const defaultErrorStateConfig: ErrorStateConfig = {
   retryLabel: "Try again",
   detailLabel: "Technical details",
 };
-
-declare module "@asheeui/core" {
-  interface ComponentTypeConfigRegistry {
-    errorstate: ErrorStateConfig;
-  }
-}
 
 registerComponentDefaults("errorstate", defaultErrorStateConfig);
 

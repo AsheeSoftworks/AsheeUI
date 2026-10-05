@@ -1,46 +1,18 @@
 /**
  * EmptyState component configuration for AsheeUI.
- * This file defines the configuration type and defaults for the EmptyState
- * pattern: the tone of the state and its density. It registers the default
- * configuration with the component registry and provides fallback values for the
- * cascade resolution system.
+ * This file registers the values the EmptyState pattern defaults to on the web, so
+ * the component-level fallback tier of the theme cascade has a value to resolve.
+ * The options themselves, and the type that names them, live in `@asheeui/core`:
+ * they are the framework's empty-region contract rather than a web renderer's, and
+ * the native renderer reads the same ones from the same place.
  */
 
-import type { Size } from "@asheeui/core";
-import { registerComponentDefaults } from "@asheeui/core";
+import {
+  type EmptyStateConfig,
+  registerComponentDefaults,
+} from "@asheeui/core";
 
-/**
- * The tone of an empty region.
- *
- * - `info`: nothing is here yet, which is expected.
- * - `success`: the region is empty because the work finished.
- * - `warning`: the region is empty and something needs attention.
- * - `error`: the region could not be filled because something failed.
- */
-export type EmptyStateType = "info" | "success" | "warning" | "error";
-
-/**
- * Theme configuration options for the EmptyState component.
- *
- * Set under `components.emptystate` in the AsheeUI config. Values feed the
- * component-level fallback tier of the theme cascade.
- */
-export interface EmptyStateConfig {
-  /** Tone of the state. @default "info" */
-  type?: EmptyStateType;
-
-  /** Density of the state. @default "md" */
-  size?: Size;
-
-  /**
-   * Whether the state is drawn as a panel.
-   * A panel suits a region inside a dashboard; without one the state sits
-   * directly on the page, which suits a whole-page empty view.
-   *
-   * @default false
-   */
-  panel?: boolean;
-}
+export type { EmptyStateConfig, EmptyStateType } from "@asheeui/core";
 
 /**
  * Default config values registered for the EmptyState component.
@@ -50,12 +22,6 @@ export const defaultEmptyStateConfig: EmptyStateConfig = {
   size: "md",
   panel: false,
 };
-
-declare module "@asheeui/core" {
-  interface ComponentTypeConfigRegistry {
-    emptystate: EmptyStateConfig;
-  }
-}
 
 registerComponentDefaults("emptystate", defaultEmptyStateConfig);
 
