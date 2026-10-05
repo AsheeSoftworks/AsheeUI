@@ -25,7 +25,9 @@ describe("defaultConfigContent", () => {
     // The generated provider wiring does `import config from "./asheeui.config"`,
     // so a default export is what makes the scaffolded project compile.
     expect(source).toContain("export default config;");
-    expect(source).toContain('import type { ExternalConfig } from "asheeui";');
+    expect(source).toContain(
+      'import type { ExternalConfig } from "@asheeui/web";',
+    );
     expect(source).not.toContain("export const config");
     expect(source).not.toContain("export default const");
   });
@@ -51,7 +53,7 @@ describe("defaultConfigContent", () => {
     // The doc comment promises a JSDoc typedef, which is what gives editors
     // theming options in a JavaScript project.
     expect(defaultConfigContent("javascript")).toContain(
-      '@type {import("asheeui").ExternalConfig}',
+      '@type {import("@asheeui/web").ExternalConfig}',
     );
   });
 });

@@ -23,7 +23,7 @@ resolved value, so overriding one tier never requires touching another.
 Pass a partial configuration to the provider:
 
 ```tsx
-import { AsheeUIProvider } from "asheeui";
+import { AsheeUIProvider } from "@asheeui/web";
 
 export function Root({ children }) {
   return (
@@ -47,7 +47,7 @@ no bundler plugin is needed.
 
 ```ts
 // asheeui.config.ts
-import type { ExternalConfig } from "asheeui";
+import type { ExternalConfig } from "@asheeui/web";
 
 const config: ExternalConfig = {
   defaultTheme: "light",

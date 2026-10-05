@@ -7,7 +7,7 @@
  * both platforms.
  */
 
-import { resolveConfigCascade } from "@asheeui/shared";
+import { resolveConfigCascade } from "@asheeui/core";
 import type { ReactNode } from "react";
 import type { StyleProp, ViewProps, ViewStyle } from "react-native";
 import { View } from "react-native";

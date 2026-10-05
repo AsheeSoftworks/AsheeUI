@@ -6,7 +6,7 @@
  * one, and the vocabulary is shared.
  */
 
-import type { ColorRole, Size } from "@asheeui/shared";
+import type { ColorRole, Size } from "@asheeui/core";
 import { registerNativeComponentDefaults } from "../../config/registry";
 
 /**

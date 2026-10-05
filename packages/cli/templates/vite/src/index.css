@@ -5,4 +5,4 @@
  * the order the consumer documentation states.
  */
 @import "tailwindcss";
-@import "asheeui/styles";
+@import "@asheeui/web/styles";

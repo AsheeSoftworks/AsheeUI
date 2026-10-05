@@ -19,7 +19,7 @@ composition      MarketingLayout, DocsLayout, SidebarLayout, AuthLayout
         ↓
 page             Navbar, Hero, FeatureGrid, CTA, Footer
         ↓
-Puck block       any of the above, through asheeui/puck
+Puck block       any of the above, through @asheeui/web/puck
 ```
 
 ## Shared prop axes

@@ -7,7 +7,7 @@
 
 import { join } from "node:path";
 import { STYLES_IMPORT_MARKER } from "../../utils/audit";
-import { pathExists } from "../common/file-utils";
+import { pathExists, toProjectRelative } from "../common/file-utils";
 import type {
   FileEdit,
   IntegrationContext,
@@ -24,7 +24,7 @@ import { resolveGlobalCss, resolveRouterOrEntryPoint } from "./resolvers";
  *
  * Performs the following steps:
  * 1. Create the `asheeui.config.*` file when missing.
- * 2. Inject `@import "asheeui/styles";` into the project's global
+ * 2. Inject `@import "@asheeui/web/styles";` into the project's global
  *    stylesheet (right under `@import "tailwindcss";`).
  * 3. Wrap `{children}` (App Router) or `<Component />` (Pages Router)
  *    inside `<AsheeUIProvider config={config}>` in the layout / `_app`
@@ -79,7 +79,7 @@ export async function buildNextIntegration(
     fileEdits.push({
       path: globalsCssPath,
       search: `@import "tailwindcss";`,
-      replace: `@import "tailwindcss";\n@import "asheeui/styles";`,
+      replace: `@import "tailwindcss";\n@import "@asheeui/web/styles";`,
       skipIfContentIncludes: STYLES_IMPORT_MARKER,
       notFoundMessage: `Could not find @import "tailwindcss"; in ${cssRelative}`,
       description: `Add asheeui styles import to ${cssRelative}`,
@@ -101,8 +101,8 @@ export async function buildNextIntegration(
       fileEdits.push({
         path: layout,
         search: `import type { Metadata } from "next";`,
-        replace: `import type { Metadata } from "next";\nimport { ${providerName} } from "asheeui";\nimport config from "${configRel}";`,
-        skipIfContentIncludes: `from "asheeui"`,
+        replace: `import type { Metadata } from "next";\nimport { ${providerName} } from "@asheeui/web";\nimport config from "${configRel}";`,
+        skipIfContentIncludes: `from "@asheeui/web"`,
         notFoundMessage: `Could not find Metadata import in ${layoutRelative}`,
         description: `Import ${providerName} and config in ${layoutRelative}`,
       });
@@ -150,8 +150,8 @@ export async function buildNextIntegration(
         {
           path: appFile,
           search: `import type { AppProps } from "next/app";`,
-          replace: `import type { AppProps } from "next/app";\nimport { ${providerName} } from "asheeui";\nimport config from "${configRel}";`,
-          skipIfContentIncludes: `from "asheeui"`,
+          replace: `import type { AppProps } from "next/app";\nimport { ${providerName} } from "@asheeui/web";\nimport config from "${configRel}";`,
+          skipIfContentIncludes: `from "@asheeui/web"`,
           notFoundMessage: `Could not find AppProps import in ${appRelative}`,
           description: `Import ${providerName} and config in ${appRelative}`,
         },
@@ -181,20 +181,7 @@ export async function buildNextIntegration(
     fileWrites,
     fileEdits,
     integrityChecks,
-    dependenciesToInstall: ["asheeui"],
+    dependenciesToInstall: ["@asheeui/web"],
     summary,
   };
-}
-
-/**
- * Strip the `directory/` prefix from an absolute path to produce a
- * project-relative path for CLI output.
- *
- * @param directory - Project directory prefix to strip.
- * @param file - Absolute file path.
- * @returns A project-relative path string.
- */
-function toProjectRelative(directory: string, file: string): string {
-  const rel = file.replace(`${directory}/`, "");
-  return rel === file ? file : rel;
 }

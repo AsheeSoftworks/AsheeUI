@@ -111,8 +111,8 @@ describe("runFix", () => {
     const vite = await read("vite.config.ts");
     const main = await read("src/main.tsx");
 
-    expect(css).toContain('@import "asheeui/styles"');
-    expect(countOccurrences(css, '@import "asheeui/styles"')).toBe(1);
+    expect(css).toContain('@import "@asheeui/web/styles"');
+    expect(countOccurrences(css, '@import "@asheeui/web/styles"')).toBe(1);
     expect(countOccurrences(vite, "@asheeui/vite")).toBe(0);
     expect(countOccurrences(vite, "asheeui()")).toBe(0);
     expect(countOccurrences(main, "AsheeUIProvider")).toBe(3);
@@ -146,7 +146,7 @@ describe("runFix", () => {
     const css = afterSecond.css;
     const vite = afterSecond.vite;
     const main = afterSecond.main;
-    expect(countOccurrences(css, '@import "asheeui/styles"')).toBe(1);
+    expect(countOccurrences(css, '@import "@asheeui/web/styles"')).toBe(1);
     expect(countOccurrences(vite, "@asheeui/vite")).toBe(0);
     expect(countOccurrences(vite, "asheeui()")).toBe(0);
     expect(countOccurrences(main, "AsheeUIProvider")).toBe(3);

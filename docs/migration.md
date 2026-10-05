@@ -21,10 +21,37 @@ release notes.
 
 | Included | Not included |
 | --- | --- |
-| Everything exported from `asheeui` | Internal modules and helpers |
+| Everything exported from `@asheeui/web` | Internal modules and helpers |
 | Props, types and component names | DOM structure that is not documented |
 | The configuration keys and their defaults | Class names the framework applies |
 | The CLI's commands, flags and exit codes | The CLI's console output |
+
+## 2.2.0
+
+The library is split into three packages, and the components move out of the
+`asheeui` name into the renderer that owns them:
+
+| Before | After |
+| --- | --- |
+| The components in `asheeui` | `@asheeui/web`, the DOM renderer |
+| `@asheeui/shared` | `@asheeui/core`, the platform-neutral layer |
+| `asheeui/styles` | `@asheeui/web/styles` |
+| `asheeui/puck` | `@asheeui/web/puck` |
+
+`asheeui` keeps its name and becomes the umbrella entry point over the two renderers:
+an import that names a component resolves to `@asheeui/web` in a browser bundle and to
+`@asheeui/native` under Expo and Metro, so a component imported from `asheeui` renders
+on both platforms without a second specifier. The subpaths did move, so a stylesheet or
+a Puck configuration imported from `asheeui` is the change to make.
+
+Installing `@asheeui/web` brings `@asheeui/core` with it, so an application that
+imports only the components of one platform installs one package. Add
+`@asheeui/core` yourself only if you import its contracts, tokens or configuration
+utilities directly, and add `@asheeui/native` for the React Native components.
+
+Nothing else changes: `asheeui.config.ts` keeps its name, the CLI keeps its
+`asheeui` command, the component names, the props and the configuration keys are the
+same, and the stylesheet still extends the Tailwind theme in the same order.
 
 ## 2.0.0
 

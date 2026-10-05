@@ -21,7 +21,7 @@
   },
   "overrides": [
     {
-      "includes": ["packages/ui/src/components/search-input/SearchInput.tsx"],
+      "includes": ["packages/web/src/components/search-input/SearchInput.tsx"],
       "linter": {
         "rules": {
           "a11y": {

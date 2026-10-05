@@ -14,7 +14,7 @@
  * @see docs/configuration.md for the documented baseline these defaults resolve to.
  */
 
-import type { ExternalConfig } from "asheeui";
+import type { ExternalConfig } from "@asheeui/web";
 
 /**
  * The playground's configuration: nothing.

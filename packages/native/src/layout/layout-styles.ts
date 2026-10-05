@@ -12,7 +12,7 @@
  * breakpoints as data, so a component reads them rather than assuming them.
  */
 
-import type { Space } from "@asheeui/shared";
+import type { Space } from "@asheeui/core";
 import type {
   NativeCenteredConfig,
   NativeContainerSize,

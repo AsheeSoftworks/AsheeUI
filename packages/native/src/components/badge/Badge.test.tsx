@@ -91,6 +91,18 @@ describe("Native Badge", () => {
     expect(classesOf(view, "badge")).not.toContain("bg-danger/10");
   });
 
+  it("lands a treatment a badge cannot express on the nearest one it can", async () => {
+    // A theme loaded at runtime can carry a value the type does not name, so the
+    // shared rule is what keeps the class look-up answering rather than resolving a
+    // key the badge's maps do not have.
+    const view = await renderBadge(<Badge testID="badge">Paid</Badge>, {
+      components: { badge: { variant: "underlined" } },
+    });
+
+    expect(classesOf(view, "badge")).toContain("border-primary");
+    expect(classesOf(view, "badge")).not.toContain("undefined");
+  });
+
   it("carries the consumer's class last, so it wins", async () => {
     const view = await renderBadge(
       <Badge testID="badge" className="self-end">

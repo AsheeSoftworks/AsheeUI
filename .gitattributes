@@ -1,0 +1,12 @@
+# Keep the working copy byte-identical to what the formatter expects.
+#
+# The packages are formatted with LF, and `core.autocrlf=true` — the setting Git
+# for Windows offers on install — rewrites every text file to CRLF on checkout.
+# Biome then reports a format diagnostic for each file, and because it stops
+# after twenty diagnostics those line endings hide the findings that matter:
+# the last run on such a checkout showed 611 errors, of which 483 were line
+# endings and 128 were imports that had drifted from `biome.json`.
+#
+# Declaring the line endings overrides `core.autocrlf`, so a checkout looks the
+# same on every platform and `pnpm check` says the same thing everywhere.
+* text=auto eol=lf

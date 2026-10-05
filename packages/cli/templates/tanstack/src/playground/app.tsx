@@ -21,7 +21,7 @@ import {
   Section,
   Typography,
   VStack,
-} from "asheeui";
+} from "@asheeui/web";
 import type { ReactNode } from "react";
 import { Gallery } from "./gallery";
 import { playgroundConfig } from "./playground-config";

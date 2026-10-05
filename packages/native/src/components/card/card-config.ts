@@ -7,7 +7,7 @@
  * reason the platform's own surfaces are neutral by default.
  */
 
-import type { ColorRole, Radius, Size, Variant } from "@asheeui/shared";
+import type { ColorRole, Radius, Size, Variant } from "@asheeui/core";
 import { registerNativeComponentDefaults } from "../../config/registry";
 
 /**

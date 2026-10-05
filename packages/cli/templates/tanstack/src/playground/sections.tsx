@@ -20,7 +20,7 @@
 
 "use client";
 
-import type { ColumnDef } from "asheeui";
+import type { ColumnDef } from "@asheeui/web";
 import {
   Accordion,
   Alert,
@@ -53,7 +53,7 @@ import {
   Tooltip,
   Typography,
   VStack,
-} from "asheeui";
+} from "@asheeui/web";
 import { useState } from "react";
 import {
   accessibleNameOf,

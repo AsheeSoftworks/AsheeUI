@@ -5,7 +5,7 @@ application, a visual editor and a published page. It lives behind its own
 entry point, so an application that does not build pages never loads it.
 
 ```bash
-npm install asheeui @puckeditor/core
+npm install @asheeui/web @puckeditor/core
 ```
 
 `@puckeditor/core` is an optional peer dependency. It is only needed when you
@@ -31,9 +31,9 @@ cannot drift away from the component an application renders.
 
 ```tsx
 import { Puck } from "@puckeditor/core";
-import { asheePuckConfig } from "asheeui/puck";
+import { asheePuckConfig } from "@asheeui/web/puck";
 import "@puckeditor/core/puck.css";
-import "asheeui/styles";
+import "@asheeui/web/styles";
 
 export function Editor() {
   return (
@@ -46,7 +46,7 @@ A published page renders through Puck's own renderer, which needs no editor:
 
 ```tsx
 import { Render } from "@puckeditor/core";
-import { asheePuckConfig } from "asheeui/puck";
+import { asheePuckConfig } from "@asheeui/web/puck";
 
 export function PublishedPage({ page }) {
   return <Render config={asheePuckConfig} data={page} />;
@@ -99,7 +99,7 @@ reach the component:
 
 ```tsx
 import type { ComponentConfig } from "@puckeditor/core";
-import { Alert } from "asheeui";
+import { Alert } from "@asheeui/web";
 
 type AlertBlockProps = {
   title: string;

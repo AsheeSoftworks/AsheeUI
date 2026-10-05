@@ -1,6 +1,6 @@
 "use client";
 
-import { Avatar, Breadcrumb, Container, HStack, Link, VStack } from "asheeui";
+import { Avatar, Breadcrumb, Container, HStack, Link, VStack } from "@asheeui/web";
 import NextImage from "next/image";
 import NextLink from "next/link";
 

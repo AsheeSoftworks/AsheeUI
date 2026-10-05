@@ -93,35 +93,27 @@ repository:
 
 | Property | How it holds |
 | --- | --- |
-| It depends on the published framework | Its `package.json` depends on `asheeui` at a released range |
-| It carries no repository-only code | The shared application travels inside it as `playground/`; any `workspace:` range and any dependency on the repository's own packages are removed as the template is generated |
+| It depends on the published framework | Its `package.json` depends on `@asheeui/web` at a released range |
+| It carries no repository-only code | The shared application travels inside it as `playground/`, and the template carries no `workspace:` range and no dependency on the repository's own packages |
 | It installs and runs on its own | `pnpm install` then `pnpm dev`, with this framework's usual scripts |
 | It verifies itself | It ships the contract its sections satisfy, so `pnpm test` proves the installation works before any application code is written |
 | It configures nothing | Its configuration is the same empty object, so the framework's defaults are what it shows |
 
-The templates are generated from the playgrounds in this repository rather than
-written twice, so the project a client receives is the project the repository
-verifies — which is to say the files the repository tracks, because a build leaves
-files of its own in an application directory and none of them belong to a client's
-project:
+The templates are committed to this repository rather than generated from the
+playgrounds, so each one is a project this repository maintains and checks as it
+stands.
 
-```bash
-pnpm --filter @asheeui/cli sync:playground-templates   # regenerate all three
-```
+Two checks hold them. One asserts what a template may and may not contain: no
+dependency tree, no build output, no cache, no repository build stamp, and no
+package that exists only inside the monorepo. The other copies each template into a
+directory of its own, installs it, runs its own test suite and builds it, which is
+what proves the project a client receives actually works — see
+[Verifying a distribution](#verifying-a-distribution).
 
-Two tests hold that. One requires every template's application modules to be the
-exact files this repository verifies. The other regenerates all three templates
-into a directory of its own and requires every committed file — shell,
-application, manifest and README — to be the file the generator produces today, so
-a shell that changed without a regeneration is a failing test rather than a
-silently stale project. A further test asserts what a template may and may not
-contain: no dependency tree, no build output, no cache, no repository build stamp,
-and no package that exists only inside the monorepo.
-
-The templates are excluded from the repository's format check for the same reason
-build output is: they are generated, and the parity test is what asserts their
-content. What the generator copies is already formatted, because it is copied from
-sources that are checked.
+The templates are excluded from the repository's format check because they are
+standalone projects rather than workspace sources: their configuration and their
+generated files belong to the projects that carry them rather than to this
+repository's formatter.
 
 ## Verifying a distribution
 
@@ -193,14 +185,14 @@ than the application:
 | --- | --- |
 | The document shell (`<html>`, `<body>`, `index.html`) | The framework owns the document; an application cannot express it in components |
 | The router and image adapters (a `next/link`, a router `Link`, a stand-in for one) | AsheeUI's substitution API is defined by a consumer component that renders one element; the adapter is that component, and it is what the framework's router reaches into |
-| The stylesheet entry (`@import "tailwindcss"` then `@import "asheeui/styles"`) | AsheeUI's styling engine is Tailwind-based; the import is how the framework's stylesheet reaches the page, and it is not a utility class in application code |
+| The stylesheet entry (`@import "tailwindcss"` then `@import "@asheeui/web/styles"`) | AsheeUI's styling engine is Tailwind-based; the import is how the framework's stylesheet reaches the page, and it is not a utility class in application code |
 
 One further rule follows from how AsheeUI is built, and it is a rule about
 boundaries rather than about markup: **AsheeUI components are client components**,
 so a React Server Component reaches them through a client island rather than by
 importing the framework itself. The shared application states `"use client"` once,
 at the application, and each shell renders an island. A server component that
-imports `asheeui` directly fails the framework's build, which is the intended
+imports `@asheeui/web` directly fails the framework's build, which is the intended
 behaviour: the provider and the components that read it belong on the client.
 
 ---

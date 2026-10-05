@@ -69,7 +69,7 @@ breakpoint. Three rules cover the layout layer:
    query at each use.
 
 The breakpoints are `sm` 640, `md` 768, `lg` 1024 and `xl` 1280, and they are the
-same values in `@asheeui/shared`, so a native layout that says `md` means the
+same values in `@asheeui/core`, so a native layout that says `md` means the
 same width.
 
 ## Compositions
@@ -176,7 +176,7 @@ The portable half of the layout layer exists on both platforms: `Container`,
 the four compositions are not ported as components, because a native screen
 composes differently: it is a scroll view with a header and a stack, and the
 platform supplies split views and navigation itself. The compatibility matrix in
-`@asheeui/shared` records what each component means on each platform. See
+`@asheeui/core` records what each component means on each platform. See
 [React Native](./native.md) for the details.
 
 ---

@@ -46,6 +46,9 @@ jobs:
       - name: Lint
         run: pnpm lint
 
+      - name: Native Parity
+        run: pnpm check:native-parity
+
       - name: Run Tests
         run: pnpm test
 

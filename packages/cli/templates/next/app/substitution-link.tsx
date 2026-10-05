@@ -1,6 +1,6 @@
 "use client";
 
-import { Container, Link, Typography } from "asheeui";
+import { Container, Link, Typography } from "@asheeui/web";
 import NextLink from "next/link";
 
 /**

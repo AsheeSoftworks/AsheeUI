@@ -37,7 +37,7 @@ async function scaffoldViteProject() {
         private: true,
         type: "module",
         dependencies: {
-          asheeui: "^0.4.0",
+          "@asheeui/web": "^2.1.0",
           react: "^19.0.0",
           "react-dom": "^19.0.0",
         },
@@ -89,12 +89,12 @@ describe("runInit idempotency", () => {
 
     // Config file
     const config = await read("asheeui.config.ts");
-    expect(config).toContain('from "asheeui"');
+    expect(config).toContain('from "@asheeui/web"');
     expect(config).toContain('defaultTheme: "light"');
 
     // CSS import added exactly once
     const css = await read("src/index.css");
-    expect(countOccurrences(css, '@import "asheeui/styles"')).toBe(1);
+    expect(countOccurrences(css, '@import "@asheeui/web/styles"')).toBe(1);
 
     // The bundler config is left untouched: no plugin is needed anymore.
     const viteConfig = await read("vite.config.ts");
@@ -138,18 +138,18 @@ describe("runInit idempotency", () => {
     const viteConfig = await read("vite.config.ts");
     const main = await read("src/main.tsx");
 
-    expect(countOccurrences(css, '@import "asheeui/styles"')).toBe(1);
+    expect(countOccurrences(css, '@import "@asheeui/web/styles"')).toBe(1);
     expect(countOccurrences(viteConfig, "@asheeui/vite")).toBe(0);
     expect(countOccurrences(viteConfig, "asheeui()")).toBe(0);
     expect(countOccurrences(main, "AsheeUIProvider")).toBe(3);
-    expect(countOccurrences(main, 'from "asheeui"')).toBe(1);
+    expect(countOccurrences(main, 'from "@asheeui/web"')).toBe(1);
   });
 
   it("keeps an existing user config intact", async () => {
     await scaffoldViteProject();
     await write(
       "asheeui.config.ts",
-      `import type { ExternalConfig } from "asheeui";
+      `import type { ExternalConfig } from "@asheeui/web";
 
 export default const config
   defaultTheme: "company-red",

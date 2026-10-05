@@ -11,7 +11,7 @@
 
 "use client";
 
-import { Container, Section, Typography, VStack } from "asheeui";
+import { Container, Section, Typography, VStack } from "@asheeui/web";
 import { GALLERY_SECTIONS } from "./sections";
 import type { GallerySectionProps } from "./types";
 

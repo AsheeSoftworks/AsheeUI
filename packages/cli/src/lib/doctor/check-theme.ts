@@ -40,8 +40,8 @@ export async function checkThemeAugmentation(cwd: string) {
     const content = await readTextFile(file);
     if (content === null) continue;
     const declaresAsheeUi =
-      content.includes('declare module "asheeui"') ||
-      content.includes("declare module 'asheeui'");
+      content.includes('declare module "@asheeui/web"') ||
+      content.includes("declare module '@asheeui/web'");
     if (declaresAsheeUi || content.includes("AsheeThemeNameRegistry")) {
       return {
         id: "theme-augmentation",

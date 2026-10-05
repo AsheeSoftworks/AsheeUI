@@ -15,11 +15,23 @@
 
 import {
   type ColorRole,
+  type FieldStatus,
+  isFieldInvalid,
+  NATIVE_INPUT_BASE_CLASS,
+  NATIVE_INPUT_DISABLED_CLASS,
+  NATIVE_INPUT_EDGE_ACCENT_CLASS,
+  NATIVE_INPUT_EDGE_INVALID_CLASS,
+  NATIVE_INPUT_EDGE_NEUTRAL_CLASS,
+  NATIVE_INPUT_EDGE_WIDTH_CLASS,
+  NATIVE_INPUT_MULTILINE_CLASS,
+  NATIVE_INPUT_SIZE_CLASS,
+  NATIVE_INPUT_VARIANT_CLASS,
+  NATIVE_RADIUS_CLASS,
   type Radius,
   resolveCascade,
   type Size,
   type Variant,
-} from "@asheeui/shared";
+} from "@asheeui/core";
 import { useState } from "react";
 import type { StyleProp, TextInputProps, TextStyle } from "react-native";
 import { TextInput } from "react-native";
@@ -30,18 +42,6 @@ import {
   FALLBACK_NATIVE_INPUT_CONFIG,
   type NativeInputConfig,
 } from "./input-config";
-import {
-  INPUT_BASE_CLASS,
-  INPUT_DISABLED_CLASS,
-  INPUT_EDGE_ACCENT_CLASS,
-  INPUT_EDGE_INVALID_CLASS,
-  INPUT_EDGE_NEUTRAL_CLASS,
-  INPUT_EDGE_WIDTH_CLASS,
-  INPUT_MULTILINE_CLASS,
-  INPUT_RADIUS_CLASS,
-  INPUT_SIZE_CLASS,
-  INPUT_VARIANT_CLASS,
-} from "./input-styles";
 
 /**
  * Props for the native Input.
@@ -113,7 +113,7 @@ export function Input({
   const sectionConfig = config.components.input;
   const [isFocused, setIsFocused] = useState(false);
 
-  const resolvedStatus = resolveCascade<NativeInputConfig["status"]>(
+  const resolvedStatus = resolveCascade<FieldStatus>(
     status,
     sectionConfig?.status,
     undefined,
@@ -162,14 +162,14 @@ export function Input({
     FALLBACK_NATIVE_INPUT_CONFIG.required,
   );
 
-  const isInvalid = resolvedStatus === "error";
+  const isInvalid = isFieldInvalid(resolvedStatus);
   const edgeClass = classNames(
-    INPUT_EDGE_WIDTH_CLASS[resolvedVariant],
+    NATIVE_INPUT_EDGE_WIDTH_CLASS[resolvedVariant],
     isInvalid
-      ? INPUT_EDGE_INVALID_CLASS
+      ? NATIVE_INPUT_EDGE_INVALID_CLASS
       : isFocused
-        ? INPUT_EDGE_ACCENT_CLASS[resolvedColor]
-        : INPUT_EDGE_NEUTRAL_CLASS[resolvedVariant],
+        ? NATIVE_INPUT_EDGE_ACCENT_CLASS[resolvedColor]
+        : NATIVE_INPUT_EDGE_NEUTRAL_CLASS[resolvedVariant],
   );
 
   return (
@@ -195,13 +195,13 @@ export function Input({
           onBlur?.(event);
         }}
         className={classNames(
-          INPUT_BASE_CLASS,
-          INPUT_SIZE_CLASS[resolvedSize],
-          INPUT_RADIUS_CLASS[resolvedRadius],
-          INPUT_VARIANT_CLASS[resolvedVariant],
+          NATIVE_INPUT_BASE_CLASS,
+          NATIVE_INPUT_SIZE_CLASS[resolvedSize],
+          NATIVE_RADIUS_CLASS[resolvedRadius],
+          NATIVE_INPUT_VARIANT_CLASS[resolvedVariant],
           edgeClass,
-          resolvedMultiline && INPUT_MULTILINE_CLASS,
-          resolvedDisabled && INPUT_DISABLED_CLASS,
+          resolvedMultiline && NATIVE_INPUT_MULTILINE_CLASS,
+          resolvedDisabled && NATIVE_INPUT_DISABLED_CLASS,
           className,
         )}
         style={style}

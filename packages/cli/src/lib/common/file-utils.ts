@@ -46,6 +46,26 @@ export function toRelativePath(directory: string, file: string): string {
 }
 
 /**
+ * Strip the `directory/` prefix from an absolute path to produce a
+ * project-relative path for CLI output.
+ *
+ * The paths are compared with `relative`, so the prefix is recognised
+ * whether it was written with `/` or `\`, and the result always uses `/`.
+ * Unlike {@link toRelativePath} the result is not `./`-prefixed, which is
+ * what CLI summaries report.
+ *
+ * @param directory - Project directory prefix to strip.
+ * @param file - Absolute file path.
+ * @returns A project-relative path, or `file` unchanged when it does not
+ *   live under `directory`.
+ */
+export function toProjectRelative(directory: string, file: string): string {
+  const rel = relative(directory, file);
+  if (rel === "" || rel.startsWith("..")) return file;
+  return rel.replaceAll("\\", "/");
+}
+
+/**
  * Cheap `fs.access`-backed existence check.
  *
  * @param p - Absolute path to test.

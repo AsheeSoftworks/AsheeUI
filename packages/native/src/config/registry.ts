@@ -9,7 +9,7 @@
  *
  * The registry is per platform because the defaults are: a native button's density
  * is decided by touch targets, and a web button's by pointer precision. The cascade
- * rule itself comes from `@asheeui/shared`, so the two platforms cannot drift.
+ * rule itself comes from `@asheeui/core`, so the two platforms cannot drift.
  */
 
 /**

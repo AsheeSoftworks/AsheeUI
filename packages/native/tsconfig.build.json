@@ -1,0 +1,16 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "rootDir": "./src",
+    "outDir": "./dist",
+    "noEmit": false,
+    "declaration": true,
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "types": ["jest", "node", "nativewind/types"],
+    "paths": {
+      "@asheeui/core": ["../core/dist/index.d.ts"]
+    }
+  },
+  "exclude": ["src/**/*.test.*", "src/**/*.test.tsx", "src/**/__tests__/**"]
+}

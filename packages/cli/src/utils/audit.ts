@@ -16,13 +16,13 @@ import { discoverConfig } from "./config-discovery";
 /**
  * Substring that identifies an `asheeui` stylesheet import in a CSS file.
  */
-export const STYLES_IMPORT_MARKER = "asheeui/styles";
+export const STYLES_IMPORT_MARKER = "@asheeui/web/styles";
 
 /**
- * Matches `@import "asheeui/styles"` / `@import 'asheeui/styles.css';` etc.
+ * Matches `@import "@asheeui/web/styles"` / `@import '@asheeui/web/styles.css';` etc.
  */
 export const STYLES_IMPORT_PATTERN =
-  /@import\s+["']asheeui\/styles(?:\.css)?["']\s*;?/;
+  /@import\s+["']@asheeui\/web\/styles(?:\.css)?["']\s*;?/;
 
 /**
  * Matches a bare tailwind v4 import.
@@ -63,7 +63,7 @@ export const ENTRYPOINT_CANDIDATES = [
 // Content checks.
 
 /**
- * Test whether `content` already contains an `asheeui/styles` import.
+ * Test whether `content` already contains an `@asheeui/web/styles` import.
  *
  * @param content - File source to scan.
  * @returns `true` when a matching `@import` statement is detected.
@@ -101,7 +101,7 @@ export async function findGlobalCssFile(
 
 /**
  * Return the absolute path of the first CSS file that already imports
- * `asheeui/styles`, or `null` when no such file exists.
+ * `@asheeui/web/styles`, or `null` when no such file exists.
  *
  * @param directory - Project directory to scan.
  * @returns Absolute path of the first matching CSS file, or `null`.

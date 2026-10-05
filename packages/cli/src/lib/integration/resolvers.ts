@@ -30,7 +30,7 @@ const CONFIG_CANDIDATES = [
  * ```ts
  * const css = await resolveGlobalCss(process.cwd());
  * if (css) {
- *   // inject @import "asheeui/styles"; into css
+ *   // inject @import "@asheeui/web/styles"; into css
  * }
  * ```
  */

@@ -185,15 +185,16 @@ describe("resolveAsheeuiPackage", () => {
     expect(resolved).toBe(join(dir, "asheeui-pkg"));
   });
 
-  it("finds an installed asheeui package from a nested project directory", async () => {
+  it("finds an installed @asheeui/web package from a nested project directory", async () => {
     await write(
-      join("node_modules", "asheeui", "package.json"),
-      JSON.stringify({ name: "asheeui" }),
+      join("node_modules", "@asheeui", "web", "package.json"),
+      JSON.stringify({ name: "@asheeui/web" }),
     );
     await write(
       join(
         "node_modules",
-        "asheeui",
+        "@asheeui",
+        "web",
         "src",
         "components",
         "button",
@@ -204,12 +205,12 @@ describe("resolveAsheeuiPackage", () => {
 
     const project = join(dir, "apps", "my-app");
     const resolved = await resolveAsheeuiPackage({ cwd: project });
-    expect(resolved).toBe(join(dir, "node_modules", "asheeui"));
+    expect(resolved).toBe(join(dir, "node_modules", "@asheeui", "web"));
   });
 
   it("falls back to the monorepo asheeui source package", async () => {
     // When running inside the asheeui monorepo (this repo), resolution walks
-    // up from the CLI's own module and finds packages/ui.
+    // up from the CLI's own module and finds packages/web.
     const resolved = await resolveAsheeuiPackage({ cwd: dir });
     expect(resolved).not.toBeNull();
     if (resolved) {

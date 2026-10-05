@@ -81,7 +81,7 @@ async function isDirectory(p: string): Promise<boolean> {
 async function isAsheeuiPackageRoot(p: string): Promise<boolean> {
   if (!(await pathExists(p))) return false;
   const pkg = await readJson(join(p, "package.json"));
-  return pkg?.name === "asheeui";
+  return pkg?.name === "@asheeui/web";
 }
 
 /**
@@ -295,7 +295,7 @@ export async function discoverPublicComponents(
  * 2. An installed `asheeui` package inside `cwd`/`node_modules`
  *    (walking up parent directories).
  * 3. The `asheeui` package source in the same monorepo as this CLI
- *    (`packages/ui` or a local `node_modules/asheeui`).
+ *    (`packages/web` or a local `node_modules/asheeui`).
  *
  * @param options - {@link ResolvePackageOptions} for the lookup.
  * @returns Absolute path of the located package root, or `null`.
@@ -314,7 +314,7 @@ export async function resolveAsheeuiPackage(
   let current = resolve(cwd);
   const { root } = parse(current);
   while (current !== root) {
-    const candidate = join(current, "node_modules", "asheeui");
+    const candidate = join(current, "node_modules", "@asheeui/web");
     if (await isAsheeuiPackageRoot(candidate)) return candidate;
     current = dirname(current);
   }
@@ -323,10 +323,12 @@ export async function resolveAsheeuiPackage(
   const cliDir = dirname(fileURLToPath(import.meta.url));
   let anchor = cliDir;
   while (anchor !== dirname(anchor)) {
-    const workspacePkg = join(anchor, "packages", "ui");
+    const workspacePkg = join(anchor, "packages", "web");
     if (await isAsheeuiPackageRoot(workspacePkg)) return workspacePkg;
-    const localNodeModules = join(anchor, "node_modules", "asheeui");
-    if (await isAsheeuiPackageRoot(localNodeModules)) return localNodeModules;
+    const localNodeModules = join(anchor, "node_modules", "@asheeui", "web");
+    if (await isAsheeuiPackageRoot(localNodeModules)) {
+      return localNodeModules;
+    }
     anchor = dirname(anchor);
   }
 

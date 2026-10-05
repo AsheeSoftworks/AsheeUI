@@ -42,7 +42,7 @@ npx asheeui playground next ./invoices
 | `[target]` | `next`, `vite` or `tanstack`. `expo` is listed and answered for, and refused with the reason it is not available yet |
 | `[directory]` | Where to create the project. Defaults to the current directory |
 
-The copied project depends on the published `asheeui` package and contains the
+The copied project depends on the published `@asheeui/web` package and contains the
 shared playground application, so it installs and runs on its own. It writes
 nothing into a directory that already holds any of the project's files unless you
 pass `--force`, which is what keeps a copy from replacing work you have already
@@ -66,7 +66,7 @@ npx asheeui doctor || echo "the setup needs attention"
 
 | Check | Fails when | Manual equivalent |
 | --- | --- | --- |
-| Stylesheet import | A global stylesheet does not import `asheeui/styles` | Add the import yourself |
+| Stylesheet import | A global stylesheet does not import `@asheeui/web/styles` | Add the import yourself |
 | Root provider | No entry point wraps the application in `AsheeUIProvider` | Wrap the root yourself |
 | Peer dependencies | `react`, `react-dom` or `tailwindcss` is missing | Install them |
 | Configuration file | Never. The file is optional, so its absence is informational | Create one only if you want one |

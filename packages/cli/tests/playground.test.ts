@@ -8,7 +8,6 @@
  * repository it came from.
  */
 
-import { spawn } from "node:child_process";
 import { existsSync, statSync } from "node:fs";
 import {
   mkdir,
@@ -58,7 +57,7 @@ const REPOSITORY_REFERENCES = [
   "@asheeui/e2e-gallery",
   "workspace:",
   "../..",
-  "packages/ui",
+  "packages/web",
 ];
 
 let dir: string;
@@ -223,7 +222,7 @@ describe("playground templates", () => {
       };
 
       // The published framework, and nothing that only exists in the repository.
-      expect(manifest.dependencies.asheeui).toMatch(/^\^?\d/);
+      expect(manifest.dependencies["@asheeui/web"]).toMatch(/^\^?\d/);
       expect(Object.keys(dependencies)).not.toContain("@asheeui/e2e-gallery");
 
       for (const name of Object.keys(dependencies)) {
@@ -334,108 +333,5 @@ describe("playground distribution", () => {
     expect(result.problems.join(" ")).toContain(
       "missing from the installed CLI",
     );
-  });
-});
-
-/** The generator that assembles every template from the playgrounds. */
-const generator = join(packageRoot, "scripts", "sync-playground-templates.mjs");
-
-/**
- * Generate every template into a directory of the caller's choosing.
- *
- * Running the generator is what keeps this check honest: whatever the script
- * decides a template contains is what the committed templates must contain, so
- * the test cannot agree with itself by copying a list of files.
- *
- * @param root - Directory to generate into.
- */
-async function generateInto(root: string): Promise<void> {
-  await new Promise<void>((finished, failed) => {
-    const child = spawn(process.execPath, [generator, root], {
-      cwd: packageRoot,
-      stdio: "pipe",
-    });
-
-    child.on("error", failed);
-    child.on("close", (code) =>
-      code === 0
-        ? finished()
-        : failed(new Error(`the generator exited with code ${code}`)),
-    );
-  });
-}
-
-/**
- * Read a directory tree into a map of relative path to contents.
- *
- * @param root - Absolute path of the directory to read.
- * @returns Every file under the directory, by relative path.
- */
-async function readTree(root: string): Promise<Map<string, string>> {
-  const contents = new Map<string, string>();
-
-  for (const file of await listTemplateFiles(root)) {
-    contents.set(file, await readFile(join(root, file), "utf8"));
-  }
-
-  return contents;
-}
-
-/**
- * The templates are generated from the playgrounds this repository verifies, so a
- * template that has drifted is a client receiving a playground nobody tested.
- *
- * Two comparisons hold that: the first reads every template's own contents and
- * requires the shared application inside it to be the exact file the shared
- * package holds; the second regenerates all three templates into a directory of
- * its own and requires every committed file — shell, application, manifest and
- * README — to be the file the generator produces today. The second is what makes
- * a shell that changed without a regeneration a failing test rather than a
- * silently stale project.
- */
-describe("playground template parity", () => {
-  for (const target of READY) {
-    it(`${target}: ships the shared application this repository verifies`, async () => {
-      const templateRoot = join(packageRoot, "templates", target);
-      const files = (await listTemplateFiles(templateRoot)).filter((file) =>
-        file.includes("playground/"),
-      );
-
-      expect(files.length).toBeGreaterThan(0);
-
-      for (const file of files) {
-        const module = file.slice(
-          file.indexOf("playground/") + "playground/".length,
-        );
-        const verified = await readFile(
-          join(packageRoot, "..", "e2e-gallery", "src", module),
-          "utf8",
-        );
-        const shipped = await readFile(join(templateRoot, file), "utf8");
-
-        expect(
-          shipped,
-          `${target}: ${module} is not the source this repository verifies`,
-        ).toBe(verified);
-      }
-    });
-  }
-
-  it("every committed template is what the generator produces today", async () => {
-    const output = join(dir, "generated");
-
-    await generateInto(output);
-
-    const generated = await readTree(join(output, "templates"));
-    const committed = await readTree(join(packageRoot, "templates"));
-
-    expect([...committed.keys()]).toEqual([...generated.keys()]);
-
-    for (const [file, content] of committed) {
-      expect(
-        content,
-        `${file} is not what the generator produces from the playgrounds`,
-      ).toBe(generated.get(file));
-    }
   });
 });

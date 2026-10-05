@@ -6,7 +6,7 @@
  * theme's accent on its border, which is what a card usually wants.
  */
 
-import type { ColorRole, Radius, Size, Variant } from "@asheeui/shared";
+import type { ColorRole, Radius, Size, Variant } from "@asheeui/core";
 
 /** Shared classes for every card. */
 export const CARD_BASE_CLASS = "flex-col gap-2";

@@ -7,6 +7,7 @@
  * focus edge, and every option resolves through the configuration cascade.
  */
 
+import { FIELD_STATUS_TEXT_CLASS } from "@asheeui/core";
 import {
   act,
   fireEvent,
@@ -111,6 +112,38 @@ describe("Native Input", () => {
     expect(classesOf(view, "input")).toContain("rounded-full");
     expect(classesOf(view, "input")).toContain("min-h-[96px]");
     expect(view.getByTestId("input").props.multiline).toBe(true);
+  });
+
+  it("tones its message with the shared status dictionary", async () => {
+    const view = await renderInput(
+      <Input
+        testID="input"
+        label="Email"
+        status="success"
+        message="Looks good"
+      />,
+    );
+
+    const messageClasses = (
+      view.getByText("Looks good").props as { className?: string }
+    ).className as string;
+
+    // The Text component states its own default tone first, so the status tone has to
+    // arrive last to win — which is why the shared dictionary's class is asserted by
+    // position rather than by presence.
+    expect(messageClasses).toContain(FIELD_STATUS_TEXT_CLASS.success);
+    expect(messageClasses.endsWith(FIELD_STATUS_TEXT_CLASS.success)).toBe(true);
+  });
+
+  it("rounds with the shared native radius scale", async () => {
+    const view = await renderInput(<Input testID="input" radius="sm" />, {
+      components: { input: { radius: "sm" } },
+    });
+
+    // The native scale spells its second step "rounded" rather than the web's
+    // "rounded-sm", so this pins which vocabulary the field rounds with.
+    expect(classesOf(view, "input")).toContain("rounded");
+    expect(classesOf(view, "input")).not.toContain("rounded-rounded");
   });
 
   it("lets an instance prop win over the configured value", async () => {

@@ -6,28 +6,22 @@
  * thumb here, which is why the default size is `lg` rather than the web's `md`.
  */
 
-import type { ColorRole, Radius, Size, Variant } from "@asheeui/shared";
+import type { ButtonConfig } from "@asheeui/core";
 import { registerNativeComponentDefaults } from "../../config/registry";
 
 /**
  * Configuration options for the native Button.
+ *
+ * The axes are the shared ones, so `components.button` is configured the same way on
+ * both platforms. `animate` is the one option left out: the press feedback belongs to
+ * the platform's own `Pressable`, so a native button has no scale animation to switch
+ * on rather than a scale animation that is switched off.
+ *
+ * The differences between the two renderers are in the *defaults* rather than in the
+ * shape — a native button is density `lg` because a thumb needs the room, where the
+ * web's `md` is sized for a pointer — and those live in `defaultNativeButtonConfig`.
  */
-export interface NativeButtonConfig {
-  /** Visual treatment. Defaults to the platform's `defaultVariant`. */
-  variant?: Variant;
-
-  /** Colour role. Defaults to the platform's `defaultColor`. */
-  color?: ColorRole;
-
-  /** Density, which decides height, padding and text size. Defaults to `"lg"`. */
-  size?: Size;
-
-  /** Corner rounding. Defaults to the platform's `defaultRadius`. */
-  radius?: Radius;
-
-  /** Whether the button stretches to its container's width. Defaults to false. */
-  fullWidth?: boolean;
-}
+export type NativeButtonConfig = Omit<ButtonConfig, "animate">;
 
 /**
  * The defaults the Button registers with the native registry.
