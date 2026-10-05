@@ -67,9 +67,8 @@ reader may reach (`isFutureDay` and `canGoToNextMonth`), and the vocabulary that
 an empty field collects. A day the web refuses is a day native refuses.
 
 The components the matrix classifies but this release does not implement are
-listed at the end of this document *and* queued in `scripts/native-parity.json`, so
-platform support is a stated fact rather than something a developer discovers by
-trying.
+queued in `scripts/native-parity.json`, which is the list of record, so platform
+support is a stated fact rather than something a developer discovers by trying.
 
 The native package is not published yet, on purpose: a package is published when a
 consumer can build a real screen with it, and the remaining components in the matrix
@@ -282,7 +281,7 @@ Accessibility is a property of each component rather than a later addition:
 | A framework-wide animation system | Motion belongs to the component that needs it, and a general layer would be speculation |
 | The web's table, breadcrumb and resizable-split components | Their native equivalents are lists, a titled header and a platform split view |
 | The web package's source | Sharing source would give one platform the other's behaviour, which is what this architecture exists to avoid |
-| `Alert`, `Sheet`, `Tabs`, `Avatar`, `Separator`, `EmptyState` | Decided and recorded in the matrix, but not implemented in the 2.0 release. Each is the next increment of the native component set, and none is blocked by an undecided contract. |
+| The components the matrix promises for native that are still queued | Each contract is decided and recorded in the matrix, but the implementation is not written yet. `scripts/native-parity.json` names them and `pnpm check:native-parity --list` prints the whole expectation table; every one is the next increment of the native component set, none is blocked by an undecided contract, and the queue may only shrink. |
 
 ---
 
