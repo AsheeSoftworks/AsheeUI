@@ -8,10 +8,8 @@
     "toast": "ToastProvider"
   },
   "pending": [
-    "accordion",
     "auth-layout",
     "avatar",
-    "carousel",
     "chip",
     "clipboard",
     "cta",
@@ -22,7 +20,6 @@
     "footer",
     "hero",
     "image",
-    "link",
     "marketing-layout",
     "marquee",
     "modal",
@@ -34,7 +31,6 @@
     "sidebar-layout",
     "split",
     "table",
-    "tabs",
     "testimonials",
     "tooltip"
   ]

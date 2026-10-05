@@ -1,78 +1,15 @@
 /**
  * Link component configuration for AsheeUI.
- * This file defines the configuration types and defaults for the Link
- * component, including variant, color, size, underline behavior, and
- * external link handling. It registers the default configuration with
- * the component registry and provides fallback values for the cascade
- * resolution system.
+ * This file registers the values the Link component defaults to on the web, so the
+ * component-level fallback tier of the theme cascade has a value to resolve.
+ * The options themselves, and the types that name them, live in `@asheeui/core`:
+ * they are the framework's link contract rather than a web renderer's, and the native
+ * renderer reads the same ones from the same place.
  */
 
-import type { Color, Size } from "@asheeui/core";
-import { registerComponentDefaults } from "@asheeui/core";
+import { type LinkConfig, registerComponentDefaults } from "@asheeui/core";
 
-/**
- * Visual style variant of the link.
- * - `default`: Standard link with color accent.
- * - `muted`: Subtle, lower-contrast link.
- * - `subtle`: Very low emphasis link with reduced opacity.
- */
-export type LinkVariant = "default" | "muted" | "subtle";
-
-/**
- * Underline behavior of the link.
- * - `always`: Always show underline.
- * - `hover`: Show underline only on hover.
- * - `never`: Never show underline.
- */
-export type LinkUnderline = "always" | "hover" | "never";
-
-/**
- * Theme configuration options for the Link component.
- *
- * Set under `components.link` in the AsheeUI config. Values feed the
- * component-level fallback tier of the theme cascade.
- */
-export interface LinkConfig {
-  /**
-   * Visual style variant.
-   * Controls the emphasis level of the link.
-   *
-   * @default "default"
-   */
-  variant?: LinkVariant;
-
-  /**
-   * Theme accent color.
-   * Controls the color of the link text.
-   *
-   * @default "primary"
-   */
-  color?: Color;
-
-  /**
-   * Font size scale.
-   * Controls the text size and spacing.
-   *
-   * @default "md"
-   */
-  size?: Size;
-
-  /**
-   * Underline behavior.
-   * Controls when the underline is visible.
-   *
-   * @default "hover"
-   */
-  underline?: LinkUnderline;
-
-  /**
-   * Whether the link points to an external resource.
-   * When true, adds an external link icon and appropriate rel attributes.
-   *
-   * @default false
-   */
-  isExternal?: boolean;
-}
+export type { LinkConfig, LinkUnderline, LinkVariant } from "@asheeui/core";
 
 /**
  * Default config values registered for the Link component.
@@ -95,11 +32,5 @@ export const FALLBACK_LINK_CONFIG = {
   underline: "hover",
   isExternal: false,
 } as const;
-
-declare module "@asheeui/core" {
-  interface ComponentTypeConfigRegistry {
-    link: LinkConfig;
-  }
-}
 
 registerComponentDefaults("link", defaultLinkConfig);

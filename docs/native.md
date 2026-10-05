@@ -36,6 +36,7 @@ implemented and tested with the platform's own tooling.
 | Components | `Button`, `Text`, `Card`, `Badge`, `Input`, `Spinner`, `Skeleton` |
 | The field family | `Textarea`, `SearchInput`, `PinInput`, `Switch`, `Radio` and `RadioGroup`, `Dropmenu`, `MultiSelect`, `Autocomplete`, `Form`, `Stepper`, `FileUpload`, `Calendar` |
 | Feedback and state | `Alert`, `EmptyState`, `ErrorState`, `LoadingState`, and the `ToastProvider` with `useToast` |
+| Navigation and disclosure | `Link`, `Tabs`, `Accordion`, `Carousel` |
 | Responsive | `useBreakpoint`, and the pure `resolveBreakpoint` and `resolveGridColumns` |
 | Configuration | Every component registers its defaults and resolves through the shared cascade |
 
@@ -100,6 +101,33 @@ The rest is the framework's, read from the same place the web reads it: `resolve
 for every option, `NATIVE_RADIUS_CLASS` for corners, `SPACE_MIN_HEIGHT_CLASS` for the room a
 loading region claims, and one helper (`openDestination`) for the destination a configured
 action describes.
+
+The navigation and disclosure family followed, and it is the family where the platform's own
+behaviour does most of the work. What is shared is the vocabulary and the scale: a link's
+emphasis, underline and density, a tab's items and its active and inactive treatment, an
+accordion's items and its treatments, a carousel's slides and its timing. What the platform
+does with them is read from the platform rather than imitated:
+
+- A link underlines itself while it is **pressed**, because there is no pointer to hover with,
+  and it follows its destination through the platform's URL handler unless the consumer handles
+  the press itself or names the component that should render the link — the same substitution
+  API the web link offers.
+- A tab bar **scrolls with the platform's scroll view** rather than with a wrapped overflow,
+  and the bar is not an accessibility element of its own: a container that is one hides the
+  controls inside it from a reader, so a native tab bar is a row of tabs, each carrying its
+  role and whether it is selected.
+- An accordion opens with the **platform's own layout animation** rather than with a measured
+  height, and a closed panel is not drawn at all, which is what takes it out of the
+  accessibility tree — the platform's answer to the web's `inert`.
+- A carousel **pages** with the platform's scroll view, so a slide arrives where the screen is.
+  That is also why `loop` wraps only the autoplay here: a scroll view that teleported its
+  content back to the start would be lying about where the reader is. `pauseOnHover` becomes
+  "pause while a thumb is on it", which is the same intent on a platform with no pointer.
+
+Two things the family states that the web states differently on purpose: a treatment a
+component has none for — a global default stated for a filled control — resolves to the
+treatment the component documents, and a decoration is a character rather than a drawing,
+because this package ships no icon set.
 
 The components the matrix classifies but this release does not implement are
 queued in `scripts/native-parity.json`, which is the list of record, so platform

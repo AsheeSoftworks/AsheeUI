@@ -7,18 +7,21 @@
  * components it already knows, behaving the way the platform behaves.
  */
 
+export * from "./components/accordion";
 export * from "./components/alert";
 export * from "./components/autocomplete";
 export * from "./components/badge";
 export * from "./components/button";
 export * from "./components/calendar";
 export * from "./components/card";
+export * from "./components/carousel";
 export * from "./components/dropmenu";
 export * from "./components/empty-state";
 export * from "./components/error-state";
 export * from "./components/file-upload";
 export * from "./components/form";
 export * from "./components/input";
+export * from "./components/link";
 export * from "./components/loading-state";
 export * from "./components/multi-select";
 export * from "./components/pin-input";
@@ -28,6 +31,7 @@ export * from "./components/skeleton";
 export * from "./components/spinner";
 export * from "./components/stepper";
 export * from "./components/switch";
+export * from "./components/tabs";
 export * from "./components/text";
 export * from "./components/textarea";
 export * from "./components/toast";

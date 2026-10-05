@@ -1,151 +1,22 @@
 /**
  * Tabs component configuration for AsheeUI.
- * This file defines the configuration types and defaults for the Tabs
- * component, including variant, size, radius, and active state styling
- * options. It registers the default configuration with the component
- * registry and provides fallback values for the cascade resolution system.
+ * This file registers the values the Tabs component defaults to on the web, so the
+ * component-level fallback tier of the theme cascade has a value to resolve.
+ * The options themselves, and the types that name them, live in `@asheeui/core`:
+ * they are the framework's tabs contract rather than a web renderer's, and the native
+ * renderer reads the same ones from the same place.
  */
 
-import type { Color, Radius, Size, Variant } from "@asheeui/core";
-import { registerComponentDefaults } from "@asheeui/core";
-import type { ReactNode } from "react";
+import { registerComponentDefaults, type TabsConfig } from "@asheeui/core";
 
-/**
- * Visual style variant of the tabs.
- * - `underline`: Active tab highlighted with an underline.
- * - `bordered`: Tabs with a bordered container.
- * - `ghost`: Minimal tabs without container styling.
- */
-export type TabsVariant = "underline" | "bordered" | "ghost";
-
-/**
- * A single tab item in the tabs list.
- * Each tab must have an id and either label or name for display.
- */
-export interface TabItem {
-  /**
-   * Unique identifier for the tab.
-   * Used for selection state and React keys.
-   */
-  id: string | number;
-
-  /**
-   * Primary display text.
-   * Alias for `name` for cleaner API.
-   */
-  label?: ReactNode;
-
-  /**
-   * Legacy display text support.
-   * Backward compatibility for `name` prop.
-   */
-  name?: ReactNode;
-
-  /**
-   * Optional icon rendered before the label.
-   */
-  icon?: ReactNode;
-
-  /**
-   * Optional badge rendered after the label.
-   * Typically a number or status indicator.
-   */
-  badge?: ReactNode;
-
-  /**
-   * Content rendered in the tab panel when this tab is active.
-   */
-  content?: ReactNode;
-
-  /**
-   * Whether the tab is disabled.
-   * Disabled tabs cannot be selected.
-   *
-   * @default false
-   */
-  disabled?: boolean;
-
-  /**
-   * Active button variant override for this specific tab.
-   * Overrides the component-level activeVariant.
-   */
-  activeVariant?: Variant;
-
-  /**
-   * Active button color override for this specific tab.
-   * Overrides the component-level activeColor.
-   */
-  activeColor?: Color;
-
-  /**
-   * Allows arbitrary tab metadata.
-   * Additional properties are passed through.
-   */
-  [key: string]: unknown;
-}
-
-/**
- * Visual styling of the active tab.
- */
-export interface TabsActiveOptionConfig {
-  radius?: Radius;
-  variant?: Variant;
-  color?: Color;
-}
-
-/**
- * Visual styling of inactive tabs.
- */
-export interface TabsInactiveOptionConfig {
-  radius?: Radius;
-  variant?: Variant;
-  color?: Color;
-}
-
-/**
- * Options configuration for the tab items.
- */
-export interface TabsOptionsConfig {
-  active?: TabsActiveOptionConfig;
-  inactive?: TabsInactiveOptionConfig;
-}
-
-/**
- * Theme configuration options for the Tabs component.
- *
- * Set under `components.tabs` in the AsheeUI config. Values feed the
- * component-level fallback tier of the theme cascade.
- */
-export interface TabsConfig {
-  /**
-   * Density scale of the tabs.
-   * Controls the height, padding, and font size of tab triggers.
-   *
-   * @default "md"
-   */
-  size?: Size;
-
-  /**
-   * Visual style variant.
-   * Controls the container and active indicator styling.
-   *
-   * @default "underline"
-   */
-  variant?: TabsVariant;
-
-  /**
-   * Corner rounding of the tab container.
-   * Controls the border-radius of the tablist container.
-   *
-   * @default "md"
-   */
-  radius?: Radius;
-
-  /**
-   * Options configuration for the tab items.
-   */
-  options?: TabsOptionsConfig;
-}
+export type {
+  TabItem,
+  TabsActiveOptionConfig,
+  TabsConfig,
+  TabsInactiveOptionConfig,
+  TabsOptionsConfig,
+  TabsVariant,
+} from "@asheeui/core";
 
 /**
  * Default config values registered for the Tabs component.
@@ -159,10 +30,10 @@ export const defaultTabsConfig: TabsConfig = {
   },
 };
 
+registerComponentDefaults("tabs", defaultTabsConfig);
+
 /**
  * Hard fallback values used when no config tier provides a value.
- * These values are used when instance props, component config,
- * and global defaults are all undefined.
  */
 export const FALLBACK_TABS_CONFIG = {
   size: "md",
@@ -173,11 +44,3 @@ export const FALLBACK_TABS_CONFIG = {
     inactive: { radius: "md", variant: "ghost", color: "none" },
   },
 } as const;
-
-declare module "@asheeui/core" {
-  interface ComponentTypeConfigRegistry {
-    tabs: TabsConfig;
-  }
-}
-
-registerComponentDefaults("tabs", defaultTabsConfig);

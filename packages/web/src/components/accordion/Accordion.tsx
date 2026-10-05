@@ -9,6 +9,10 @@
 "use client";
 
 import {
+  ACCORDION_CONTENT_SIZE_CLASS,
+  ACCORDION_HEADER_SIZE_CLASS,
+  ACCORDION_VARIANT_CONTAINER_CLASS,
+  ACCORDION_VARIANT_ITEM_CLASS,
   cn,
   RADIUS_CLASS,
   resolveCascade,
@@ -31,12 +35,6 @@ import {
   type AccordionVariant,
   FALLBACK_ACCORDION_CONFIG,
 } from "./accordion-config";
-import {
-  ACCORDION_CONTENT_SIZE_CLASS,
-  ACCORDION_HEADER_SIZE_CLASS,
-  ACCORDION_VARIANT_CONTAINER_CLASS,
-  ACCORDION_VARIANT_ITEM_CLASS,
-} from "./accordion-styles";
 
 // ─── Component Interface ──────────────────────────────────────────────────────
 
