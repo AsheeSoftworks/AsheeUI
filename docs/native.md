@@ -37,6 +37,7 @@ implemented and tested with the platform's own tooling.
 | The field family | `Textarea`, `SearchInput`, `PinInput`, `Switch`, `Radio` and `RadioGroup`, `Dropmenu`, `MultiSelect`, `Autocomplete`, `Form`, `Stepper`, `FileUpload`, `Calendar` |
 | Feedback and state | `Alert`, `EmptyState`, `ErrorState`, `LoadingState`, and the `ToastProvider` with `useToast` |
 | Navigation and disclosure | `Link`, `Tabs`, `Accordion`, `Carousel` |
+| Overlays | `Modal`, `Drawer`, `Tooltip` |
 | Responsive | `useBreakpoint`, and the pure `resolveBreakpoint` and `resolveGridColumns` |
 | Configuration | Every component registers its defaults and resolves through the shared cascade |
 
@@ -128,6 +129,33 @@ Two things the family states that the web states differently on purpose: a treat
 component has none for — a global default stated for a filled control — resolves to the
 treatment the component documents, and a decoration is a character rather than a drawing,
 because this package ships no icon set.
+
+The overlays came last, and they are the family where the platform's own arrangements replace the
+framework's. What is shared is what an overlay is: a modal's widths and positions, a drawer's
+sizes and placements, a hint's treatments, colour roles, sizes, placements, arrow, offset and
+delay — all of it read from `@asheeui/core`, so a consumer configures them once for both.
+
+What is not shared is the panel itself, and the platform's answer is better than a copy of the
+web's would be:
+
+- A modal is the platform's **own modal presentation**, which takes the screen above everything
+  else, keeps the reader inside it, and hands the framework the platform's way out — the back
+  gesture or button — through the platform's own callback. That is what `closeOnEscape` names
+  here. The surface takes its own presses, so pressing what a dialog holds never dismisses it.
+- A drawer is a **sheet** rather than a panel at the side of the page, because a panel at the
+  side of a phone has nowhere to be. A top or bottom placement is already the edge a sheet comes
+  from and is kept; a side placement resolves to the sheet, which the shared class dictionaries
+  state. The movement is the platform's slide, from the edge it was given.
+- A tooltip is shown on a **long press**, because there is no pointer to rest on the trigger, and
+  the same `delay` the web counts is the length of the platform's long press. It is placed
+  against the platform's own measurement of its trigger, and the placement reads exactly as the
+  web's does — a side placement resolving to the vertical direction it reads from, because a hint
+  beside a control has nowhere to be on a screen a thumb is already holding. Because a control
+  may claim the press for itself, the hint is also stated as the trigger's **accessibility hint**,
+  so a reader using assistive technology is told it without having to find the gesture.
+
+Two of the overlays name options the platform leaves out, and the modules say so: a portal and a
+layer order are about where something sits in a document, and the platform has no document.
 
 The components the matrix classifies but this release does not implement are
 queued in `scripts/native-parity.json`, which is the list of record, so platform

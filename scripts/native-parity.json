@@ -15,14 +15,12 @@
     "cta",
     "data-table",
     "docs-layout",
-    "drawer",
     "feature-grid",
     "footer",
     "hero",
     "image",
     "marketing-layout",
     "marquee",
-    "modal",
     "navbar",
     "page",
     "pagination",
@@ -31,7 +29,6 @@
     "sidebar-layout",
     "split",
     "table",
-    "testimonials",
-    "tooltip"
+    "testimonials"
   ]
 }

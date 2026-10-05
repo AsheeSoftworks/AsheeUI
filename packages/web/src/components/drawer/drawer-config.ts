@@ -1,74 +1,19 @@
 /**
  * Drawer component configuration for AsheeUI.
- * This file defines the configuration types and defaults for the Drawer
- * component, including placement, size, animation, and behavior options.
- * It registers the default configuration with the component registry
- * and provides fallback values for the cascade resolution system.
+ * This file registers the values the Drawer component defaults to on the web, so the
+ * component-level fallback tier of the theme cascade has a value to resolve.
+ * The options themselves, and the types that name them, live in `@asheeui/core`: they
+ * are the framework's drawer contract rather than a web renderer's, and the native
+ * renderer reads the same ones from the same place.
  */
 
-import type { Size } from "@asheeui/core";
-import { registerComponentDefaults } from "@asheeui/core";
+import { type DrawerConfig, registerComponentDefaults } from "@asheeui/core";
 
-/**
- * The placement of the drawer on the screen.
- * - `right`: Slides in from the right edge.
- * - `left`: Slides in from the left edge.
- * - `top`: Slides in from the top edge.
- * - `bottom`: Slides in from the bottom edge.
- */
-export type DrawerPlacement = "right" | "left" | "top" | "bottom";
-
-/**
- * The size of the drawer.
- * Can be "sm", "md", "lg", or "full" for full screen.
- */
-export type DrawerSize = Size | "full";
-
-/**
- * Theme configuration options for the Drawer component.
- *
- * Set under `components.drawer` in the AsheeUI config. Values feed the
- * component-level fallback tier of the theme cascade.
- */
-export interface DrawerConfig {
-  /**
-   * The size of the drawer.
-   * Controls the width for left/right drawers and height for top/bottom drawers.
-   *
-   * @default "md"
-   */
-  size?: DrawerSize;
-
-  /**
-   * The placement of the drawer.
-   * Determines which edge the drawer slides in from.
-   *
-   * @default "right"
-   */
-  placement?: DrawerPlacement;
-
-  /**
-   * Whether the drawer has slide animations.
-   * When false, the drawer appears and disappears instantly.
-   *
-   * @default true
-   */
-  animated?: boolean;
-
-  /**
-   * Whether clicking on the overlay closes the drawer.
-   *
-   * @default true
-   */
-  closeOnOverlayClick?: boolean;
-
-  /**
-   * Whether pressing the Escape key closes the drawer.
-   *
-   * @default true
-   */
-  closeOnEsc?: boolean;
-}
+export type {
+  DrawerConfig,
+  DrawerPlacement,
+  DrawerSize,
+} from "@asheeui/core";
 
 /**
  * Default config values registered for the Drawer component.
@@ -81,10 +26,10 @@ export const defaultDrawerConfig: DrawerConfig = {
   closeOnEsc: true,
 };
 
+registerComponentDefaults("drawer", defaultDrawerConfig);
+
 /**
  * Hard fallback values used when no config tier provides a value.
- * These values are used when instance props, component config,
- * and global defaults are all undefined.
  */
 export const FALLBACK_DRAWER_CONFIG: Required<DrawerConfig> = {
   size: "md",
@@ -92,12 +37,4 @@ export const FALLBACK_DRAWER_CONFIG: Required<DrawerConfig> = {
   animated: true,
   closeOnOverlayClick: true,
   closeOnEsc: true,
-} as const;
-
-declare module "@asheeui/core" {
-  interface ComponentTypeConfigRegistry {
-    drawer: DrawerConfig;
-  }
-}
-
-registerComponentDefaults("drawer", defaultDrawerConfig);
+};

@@ -10,6 +10,11 @@
 import {
   ASHEE_GLOBAL_LAYER,
   cn,
+  DRAWER_ANIMATION_STATE,
+  DRAWER_BORDER_PLACEMENT_CLASS,
+  DRAWER_CONTAINER_PLACEMENT_CLASS,
+  DRAWER_HEIGHT_CLASS,
+  DRAWER_WIDTH_CLASS,
   resolveCascade,
   resolveClassKey,
 } from "@asheeui/core";
@@ -32,13 +37,6 @@ import {
   type DrawerSize,
   FALLBACK_DRAWER_CONFIG,
 } from "./drawer-config";
-import {
-  DRAWER_ANIMATION_STATE,
-  DRAWER_BORDER_PLACEMENT_CLASS,
-  DRAWER_CONTAINER_PLACEMENT_CLASS,
-  DRAWER_HEIGHT_CLASS,
-  DRAWER_WIDTH_CLASS,
-} from "./drawer-styles";
 
 type BaseDrawerProps = DrawerConfig &
   Omit<HTMLAttributes<HTMLDivElement>, "content">;
