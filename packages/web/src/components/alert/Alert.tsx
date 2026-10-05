@@ -8,10 +8,17 @@
 
 import type { Radius, Variant } from "@asheeui/core";
 import {
+  ALERT_BASE_CLASS,
+  ALERT_DISMISS_CLASS,
+  ALERT_ICON_CLASS,
+  ALERT_TYPE_COLOR,
+  ALERT_TYPE_ICON_CLASS,
+  ALERT_TYPE_ROLE,
   cn,
   RADIUS_CLASS,
   resolveCascade,
   resolveClassKey,
+  resolveMessageVariant,
   resolveVariantClass,
 } from "@asheeui/core";
 import { forwardRef, type HTMLAttributes, type ReactNode } from "react";
@@ -26,14 +33,6 @@ import {
   type AlertType,
   FALLBACK_ALERT_CONFIG,
 } from "./alert-config";
-import {
-  ALERT_BASE_CLASS,
-  ALERT_DISMISS_CLASS,
-  ALERT_ICON_CLASS,
-  ALERT_TYPE_COLOR,
-  ALERT_TYPE_ICON_CLASS,
-  ALERT_TYPE_ROLE,
-} from "./alert-styles";
 
 type BaseAlertProps = AlertConfig &
   Omit<HTMLAttributes<HTMLDivElement>, "color" | "title" | "content">;
@@ -174,17 +173,17 @@ export const Alert = forwardRef<HTMLDivElement, AlertProps>(
       FALLBACK_ALERT_CONFIG.type,
     );
 
-    const rawVariant = resolveCascade<Variant>(
-      variant,
-      sectionConfig?.variant,
-      config.defaultVariant as AlertConfig["variant"],
-      FALLBACK_ALERT_CONFIG.variant,
+    // An alert has no underline treatment. The shared rule says what a global
+    // "underlined" default becomes instead, so a web alert and a native one
+    // answer the question the same way.
+    const resolvedVariant = resolveMessageVariant(
+      resolveCascade<Variant>(
+        variant,
+        sectionConfig?.variant,
+        config.defaultVariant as AlertConfig["variant"],
+        FALLBACK_ALERT_CONFIG.variant,
+      ),
     );
-
-    // An alert has no underline treatment, so a global "underlined" default
-    // resolves to the bordered treatment instead.
-    const resolvedVariant: Variant =
-      rawVariant === "underlined" ? "bordered" : rawVariant;
 
     const resolvedRadiusKey = resolveCascade<Radius>(
       radius,

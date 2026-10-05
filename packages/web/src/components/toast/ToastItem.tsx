@@ -16,6 +16,12 @@ import {
   resolveClassKey,
   resolveVariantClass,
   type Size,
+  TOAST_ANIMATION_STATE,
+  TOAST_FONT_CLASS,
+  TOAST_PADDING_CLASS,
+  TOAST_TITLE_FONT_CLASS,
+  TOAST_TYPE_COLOR,
+  TOAST_WIDTH_CLASS,
   type Variant,
 } from "@asheeui/core";
 import { useCallback, useState } from "react";
@@ -31,35 +37,7 @@ import {
   type ToastPlacement,
   type ToastType,
 } from "./toast-config";
-import {
-  TOAST_ANIMATION_STATE,
-  TOAST_FONT_CLASS,
-  TOAST_PADDING_CLASS,
-  TOAST_TITLE_FONT_CLASS,
-  TOAST_WIDTH_CLASS,
-} from "./toast-styles";
 import { usePausableTimeout } from "./use-pausable-timeout";
-
-// ─── Color Resolver ─────────────────────────────────────────────────────────
-
-/**
- * Maps a toast type to a theme color.
- * Used to determine the accent color for the toast.
- */
-function mapTypeToColor(type: ToastType = "info"): Color {
-  switch (type) {
-    case "success":
-      return "success";
-    case "error":
-      return "danger";
-    case "warning":
-      return "warning";
-    case "info":
-      return "primary";
-    default:
-      return "secondary";
-  }
-}
 
 // ─── Default SVG Icons ───────────────────────────────────────────────────────
 
@@ -203,7 +181,7 @@ export function ToastItem({
   const { pause, resume } = usePausableTimeout(handleDismiss, timeout);
 
   // ─── Token Resolvers (4-Tier Cascade) ──────────────────────────────────
-  const resolvedColor = color ?? mapTypeToColor(type);
+  const resolvedColor = color ?? TOAST_TYPE_COLOR[type ?? "info"];
   const isSolid = variant === "solid";
 
   // ─── Class Maps ────────────────────────────────────────────────────────

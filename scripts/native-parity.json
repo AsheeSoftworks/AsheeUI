@@ -4,11 +4,11 @@
   "overrides": {
     "typography": "Text",
     "table": "RowList",
-    "data-table": "RowList"
+    "data-table": "RowList",
+    "toast": "ToastProvider"
   },
   "pending": [
     "accordion",
-    "alert",
     "auth-layout",
     "avatar",
     "carousel",
@@ -18,14 +18,11 @@
     "data-table",
     "docs-layout",
     "drawer",
-    "empty-state",
-    "error-state",
     "feature-grid",
     "footer",
     "hero",
     "image",
     "link",
-    "loading-state",
     "marketing-layout",
     "marquee",
     "modal",
@@ -39,7 +36,6 @@
     "table",
     "tabs",
     "testimonials",
-    "toast",
     "tooltip"
   ]
 }

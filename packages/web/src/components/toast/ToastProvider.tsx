@@ -10,6 +10,7 @@ import type { Size, Variant } from "@asheeui/core";
 import {
   ASHEE_GLOBAL_LAYER,
   cn,
+  PLACEMENT_CLASSES,
   resolveCascade,
   resolveRadiusKey,
 } from "@asheeui/core";
@@ -25,7 +26,6 @@ import {
   type ToastPlacement,
   type ToastShowOptions,
 } from "./toast-config";
-import { PLACEMENT_CLASSES } from "./toast-styles";
 
 // ─── Component Props ──────────────────────────────────────────────────────────
 

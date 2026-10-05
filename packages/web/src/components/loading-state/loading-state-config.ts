@@ -1,52 +1,18 @@
 /**
  * LoadingState component configuration for AsheeUI.
- * This file defines the configuration type and defaults for the loading
- * presentation: what it says, how dense it is, whether it is drawn as a panel
- * and how much room it claims. It registers the default configuration with the
- * component registry and provides fallback values for the cascade resolution
- * system.
+ * This file registers the values the loading presentation defaults to on the web,
+ * so the component-level tier of the theme cascade has a value to resolve.
+ * The options themselves, and the type that names them, live in `@asheeui/core`:
+ * they are the framework's loading-region contract rather than a web renderer's,
+ * and the native renderer reads the same ones from the same place.
  */
 
-import type { Size, Space } from "@asheeui/core";
-import { registerComponentDefaults } from "@asheeui/core";
+import {
+  type LoadingStateConfig,
+  registerComponentDefaults,
+} from "@asheeui/core";
 
-/**
- * Theme configuration options for the LoadingState component.
- *
- * Set under `components.loadingstate` in the AsheeUI config. Values feed the
- * component-level tier of the theme cascade.
- */
-export interface LoadingStateConfig {
-  /**
-   * Text announced and shown while the region loads.
-   *
-   * @default "Loading"
-   */
-  label?: string;
-
-  /**
-   * Density of the indicator and of the label.
-   *
-   * @default "md"
-   */
-  size?: Size;
-
-  /**
-   * Whether the state is drawn as a panel.
-   * A panel suits a region inside a dashboard; without one the state sits
-   * directly on the page, which suits a whole-page load.
-   *
-   * @default false
-   */
-  panel?: boolean;
-
-  /**
-   * Room the state claims, so the page does not jump when the content arrives.
-   *
-   * @default "sm"
-   */
-  minHeight?: Space;
-}
+export type { LoadingStateConfig } from "@asheeui/core";
 
 /**
  * Default config values registered for the LoadingState component.
@@ -57,12 +23,6 @@ export const defaultLoadingStateConfig: LoadingStateConfig = {
   panel: false,
   minHeight: "sm",
 };
-
-declare module "@asheeui/core" {
-  interface ComponentTypeConfigRegistry {
-    loadingstate: LoadingStateConfig;
-  }
-}
 
 registerComponentDefaults("loadingstate", defaultLoadingStateConfig);
 
