@@ -1,14 +1,14 @@
 /**
  * Responsive breakpoints for the native package.
  *
- * The breakpoints are the shared ones (`@asheeui/shared`), read as
+ * The breakpoints are the shared ones (`@asheeui/core`), read as
  * density-independent pixels, so a native layout and a web layout that say `md`
  * mean the same width. React Native reports the window rather than a media query,
  * so responsiveness here is a value a component reads and acts on, which is why
  * the hook returns state rather than a set of class names.
  */
 
-import { BREAKPOINT, type Breakpoint } from "@asheeui/shared";
+import { BREAKPOINT, type Breakpoint } from "@asheeui/core";
 import { useCallback, useMemo } from "react";
 import { useWindowDimensions } from "react-native";
 

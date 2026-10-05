@@ -2,7 +2,7 @@
 # Reference: https://docs.github.com/en/code-security/dependabot/dependabot-version-updates/configuration-options-for-the-dependabot.yml-file
 version: 2
 updates:
-  # pnpm workspace. The single root pnpm-lock.yaml covers packages/ui,
+  # pnpm workspace. The single root pnpm-lock.yaml covers packages/web,
   # packages/cli, and apps/playground, so one entry at "/" reaches all of
   # them. If Dependabot ever misses a workspace manifest, add an entry per
   # package directory with the same schedule and groups.

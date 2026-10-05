@@ -14,7 +14,7 @@ import type { PackageManager } from "./types";
  *
  * @example
  * ```ts
- * formatInstallCommand("pnpm", ["asheeui"]);            // "pnpm add asheeui"
+ * formatInstallCommand("pnpm", ["@asheeui/web"]);            // "pnpm add asheeui"
  * formatInstallCommand("npm", ["tailwindcss"], true);    // "npm install -D tailwindcss"
  * ```
  */

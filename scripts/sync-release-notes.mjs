@@ -12,14 +12,14 @@
  * Run from the repository root:
  *
  * ```sh
- * node scripts/sync-release-notes.mjs asheeui 2.0.0
+ * node scripts/sync-release-notes.mjs @asheeui/web 2.0.0
  * ```
  *
  * Applying it writes to the release carrying the same tag, and needs a token that
  * may edit releases:
  *
  * ```sh
- * GITHUB_TOKEN=<token> node scripts/sync-release-notes.mjs asheeui 2.0.0 --apply
+ * GITHUB_TOKEN=<token> node scripts/sync-release-notes.mjs @asheeui/web 2.0.0 --apply
  * ```
  */
 

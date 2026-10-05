@@ -11,11 +11,18 @@
 
 import {
   type ColorRole,
+  NATIVE_BUTTON_BASE_CLASS,
+  NATIVE_BUTTON_DISABLED_CLASS,
+  NATIVE_BUTTON_FULL_WIDTH_CLASS,
+  NATIVE_BUTTON_SIZE_CLASS,
+  NATIVE_BUTTON_TEXT_CLASS,
+  NATIVE_BUTTON_VARIANT_CLASS,
+  NATIVE_RADIUS_CLASS,
   type Radius,
   resolveCascade,
   type Size,
   type Variant,
-} from "@asheeui/shared";
+} from "@asheeui/core";
 import type { ReactNode } from "react";
 import type { PressableProps, StyleProp, ViewStyle } from "react-native";
 import { ActivityIndicator, Pressable, Text } from "react-native";
@@ -25,15 +32,6 @@ import {
   FALLBACK_NATIVE_BUTTON_CONFIG,
   type NativeButtonConfig,
 } from "./button-config";
-import {
-  BUTTON_BASE_CLASS,
-  BUTTON_DISABLED_CLASS,
-  BUTTON_FULL_WIDTH_CLASS,
-  BUTTON_RADIUS_CLASS,
-  BUTTON_SIZE_CLASS,
-  BUTTON_TEXT_CLASS,
-  BUTTON_VARIANT_CLASS,
-} from "./button-styles";
 
 /**
  * Props for the native Button.
@@ -141,13 +139,13 @@ export function Button({
   const isInteractionDisabled = Boolean(isDisabled) || Boolean(isLoading);
 
   const classes = classNames(
-    BUTTON_BASE_CLASS,
-    BUTTON_SIZE_CLASS[resolvedSize],
-    BUTTON_RADIUS_CLASS[resolvedRadius],
-    BUTTON_VARIANT_CLASS[resolvedVariant][resolvedColor],
-    BUTTON_TEXT_CLASS[resolvedVariant][resolvedColor],
-    resolvedFullWidth && BUTTON_FULL_WIDTH_CLASS,
-    isInteractionDisabled && BUTTON_DISABLED_CLASS,
+    NATIVE_BUTTON_BASE_CLASS,
+    NATIVE_BUTTON_SIZE_CLASS[resolvedSize],
+    NATIVE_RADIUS_CLASS[resolvedRadius],
+    NATIVE_BUTTON_VARIANT_CLASS[resolvedVariant][resolvedColor],
+    NATIVE_BUTTON_TEXT_CLASS[resolvedVariant][resolvedColor],
+    resolvedFullWidth && NATIVE_BUTTON_FULL_WIDTH_CLASS,
+    isInteractionDisabled && NATIVE_BUTTON_DISABLED_CLASS,
     className,
   );
 

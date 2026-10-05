@@ -7,7 +7,7 @@
  * it configures any other component, through `components.<name>`.
  */
 
-import type { Space } from "@asheeui/shared";
+import type { Space } from "@asheeui/core";
 import { registerNativeComponentDefaults } from "../config/registry";
 import type { NativeBreakpoint } from "../hooks/use-breakpoint";
 

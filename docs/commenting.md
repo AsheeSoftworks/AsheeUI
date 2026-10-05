@@ -74,7 +74,7 @@ Example from `components/button/Button.tsx`:
  *
  * @example
  * ```tsx
- * import { Button } from "asheeui";
+ * import { Button } from "@asheeui/web";
  *
  * export function Example() {
  *   return (

@@ -23,7 +23,7 @@
  * 2. React itself is pinned to a single copy for the same reason: the hook
  *    dispatcher is stored on one module instance, so every module that calls a hook
  *    has to reach the same one, whichever package happened to require it.
- * 3. `@asheeui/shared` is mapped to its source because the workspace consumes it as
+ * 3. `@asheeui/core` is mapped to its source because the workspace consumes it as
  *    TypeScript: mapping it keeps it inside the transform instead of inside the
  *    ignored `node_modules` tree.
  */
@@ -36,7 +36,7 @@ module.exports = {
   moduleNameMapper: {
     "^react-native($|/.*)": `${path.dirname(require.resolve("react-native"))}/$1`,
     "^react$": require.resolve("react"),
-    "^@asheeui/shared$": "<rootDir>/../shared/src/index.ts",
+    "^@asheeui/core$": "<rootDir>/../core/src/index.ts",
   },
   // pnpm resolves every package through its store (`node_modules/.pnpm/...`), and
   // React Native ships source that has to be transformed rather than a compiled

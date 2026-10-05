@@ -7,7 +7,7 @@
  * the count, because the platform has no breakpoint variants of its own.
  */
 
-import { resolveConfigCascade } from "@asheeui/shared";
+import { resolveConfigCascade } from "@asheeui/core";
 import { Children, cloneElement, isValidElement, type ReactNode } from "react";
 import type { StyleProp, ViewProps, ViewStyle } from "react-native";
 import { View } from "react-native";

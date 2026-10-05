@@ -1,32 +1,34 @@
 /**
  * Badge component configuration for the native package.
  *
- * The options are the ones the framework's badge contract names: a compact
- * status label with the shared treatment, colour, density and radius axes.
+ * The options are the ones the framework's badge contract names, with native defaults:
+ * a badge beside a thumb is read at arm's length, so the native scale starts one step
+ * higher than the web's.
  */
 
-import type { ColorRole, Radius, Size, Variant } from "@asheeui/shared";
+import type { BadgeConfig } from "@asheeui/core";
 import { registerNativeComponentDefaults } from "../../config/registry";
 
 /**
  * Configuration options for the native Badge.
+ *
+ * The axes are the shared ones, so `components.badge` is configured the same way on
+ * both platforms. Nothing is added or dropped here: unlike the Button, whose press
+ * animation belongs to the platform's own `Pressable`, a badge has no option that is
+ * one platform's alone, so the native type is the shared one rather than a narrowing
+ * of it.
  */
-export interface NativeBadgeConfig {
-  /** Visual treatment. Defaults to "faded". */
-  variant?: Variant;
-
-  /** Colour role. Defaults to "primary". */
-  color?: ColorRole;
-
-  /** Density. Defaults to "sm". */
-  size?: Size;
-
-  /** Corner rounding. Defaults to "full". */
-  radius?: Radius;
-}
+export type NativeBadgeConfig = BadgeConfig;
 
 /**
  * The defaults the Badge registers with the native registry.
+ *
+ * `color` and `radius` are deliberately absent so they inherit from the platform's
+ * configuration. `variant` is not, and that is the one place the two platforms'
+ * registered defaults differ: a native surface's platform default treatment is the
+ * filled `solid` that suits a button, and a status label that shouts by default is a
+ * defect rather than a style choice, so the badge pins the low-emphasis treatment
+ * instead. A consumer's own configuration still outranks it.
  */
 export const defaultNativeBadgeConfig: NativeBadgeConfig = {
   variant: "faded",

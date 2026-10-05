@@ -5,16 +5,27 @@
  * block every field component shows, so a text field, a code field and a picker
  * present their field the same way. It is an internal helper: it is not exported
  * from the package entry point and is not part of the public component inventory.
+ *
+ * The block it draws is the family's: the stack, the label row, the marker and the tone
+ * a status gives the message all come from the shared field dictionary, so a native
+ * field's label block is the same block a web field shows. What stays here is what only
+ * native has — the accessibility properties the platform reads a field's name and its
+ * announcement from.
  */
 
+import {
+  FALLBACK_FIELD_CONFIG,
+  FIELD_REQUIRED_MARKER_CLASS,
+  FIELD_STATUS_TEXT_CLASS,
+  type FieldStatus,
+  isFieldInvalid,
+  NATIVE_FIELD_LABEL_ROW_CLASS,
+  NATIVE_FIELD_SHELL_CLASS,
+} from "@asheeui/core";
 import type { ReactNode } from "react";
 import { View } from "react-native";
+import { Spinner } from "../spinner/Spinner";
 import { Text } from "../text/Text";
-
-/**
- * Validation status of a native field.
- */
-export type NativeFieldStatus = "default" | "error" | "warning" | "success";
 
 /**
  * Props for the internal native field shell.
@@ -30,10 +41,20 @@ export interface FieldShellProps {
   message?: string;
 
   /** Validation status, which selects the message's tone. */
-  status?: NativeFieldStatus;
+  status?: FieldStatus;
 
   /** Whether the field is required, which adds the visible marker. */
   required?: boolean;
+
+  /**
+   * Whether the field is waiting for something.
+   *
+   * A pending field shows the framework's spinner in its label row, which is where a
+   * reader looks for the name of the field that is taking its time.
+   *
+   * @default false
+   */
+  isLoading?: boolean;
 
   /** The control the shell describes. */
   children: ReactNode;
@@ -56,20 +77,25 @@ export function FieldShell({
   label,
   description,
   message,
-  status = "default",
+  status = FALLBACK_FIELD_CONFIG.status,
   required = false,
+  isLoading = false,
   children,
 }: FieldShellProps) {
   return (
-    <View className="flex-col gap-1.5">
+    <View className={NATIVE_FIELD_SHELL_CLASS}>
       {label && (
-        <View className="flex-row items-center gap-1">
+        <View className={NATIVE_FIELD_LABEL_ROW_CLASS}>
           <Text role="label">{label}</Text>
           {required && (
-            <Text role="label" className="text-danger" accessible={false}>
+            <Text
+              role="label"
+              className={FIELD_REQUIRED_MARKER_CLASS}
+              accessible={false}>
               *
             </Text>
           )}
+          {isLoading && <Spinner size="sm" />}
         </View>
       )}
       {description && (
@@ -81,23 +107,13 @@ export function FieldShell({
       {message && (
         <Text
           role="body-sm"
-          className={MESSAGE_TONE_CLASS[status]}
+          className={FIELD_STATUS_TEXT_CLASS[status]}
           // A failed field announces its message when it appears; the others
           // are part of the form's own text.
-          accessibilityLiveRegion={status === "error" ? "polite" : "none"}>
+          accessibilityLiveRegion={isFieldInvalid(status) ? "polite" : "none"}>
           {message}
         </Text>
       )}
     </View>
   );
 }
-
-/**
- * The message's colour for each validation status.
- */
-const MESSAGE_TONE_CLASS: Record<NativeFieldStatus, string> = {
-  default: "text-foreground",
-  error: "text-danger",
-  warning: "text-warning",
-  success: "text-success",
-};

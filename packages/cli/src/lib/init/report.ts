@@ -4,6 +4,8 @@
  * outcomes to the CLI and collects failures for the final summary.
  */
 
+import { toProjectRelative } from "../common/file-utils";
+
 /**
  * Report a single write/edit result in the CLI output and collect failures.
  *
@@ -30,7 +32,7 @@ export function reportResult(
   successfulFiles: string[],
   cwd: string,
 ): void {
-  const relativePath = result.path.replace(`${cwd}/`, "");
+  const relativePath = toProjectRelative(cwd, result.path);
 
   if (result.success && result.skipped) {
     console.log(`  - ${result.actionDescription} - already configured`);

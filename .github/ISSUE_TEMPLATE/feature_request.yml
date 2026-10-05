@@ -39,7 +39,7 @@ body:
       description: Sketch the props, types, or usage examples you have in mind. This is optional.
       placeholder: |
         ```tsx
-        import { Rating } from "asheeui";
+        import { Rating } from "@asheeui/web";
 
         export function Example() {
           return <Rating value={3} max={5} onValueChange={(v) => console.log(v)} />;

@@ -4,7 +4,7 @@
 |---|---|
 | Document type | Public explanation |
 | Owner | The project |
-| Applies to | Every release of `asheeui` |
+| Applies to | Every release of the published packages |
 
 **Purpose.** This page states how AsheeUI is produced, what the automated part of
 that work is allowed to decide, and what remains a person's decision. It exists

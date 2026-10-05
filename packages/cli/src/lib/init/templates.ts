@@ -31,7 +31,7 @@ export function providerWrapperContent(opts: {
   const { componentName, providerName, configImport, hasNonAsheeChildren } =
     opts;
   return `import type { ReactNode } from "react";
-import { ${providerName} } from "asheeui";
+import { ${providerName} } from "@asheeui/web";
 import config from "${configImport}";
 
 export interface ${componentName}Props {
@@ -70,7 +70,7 @@ export function defaultConfigContent(
   language: "typescript" | "javascript",
 ): string {
   if (language === "typescript") {
-    return `import type { ExternalConfig } from "asheeui";
+    return `import type { ExternalConfig } from "@asheeui/web";
 
 const config: ExternalConfig = {
   defaultTheme: "light",
@@ -85,7 +85,7 @@ export default config;
   return `/**
  * AsheeUI configuration.
  *
- * @type {import("asheeui").ExternalConfig}
+ * @type {import("@asheeui/web").ExternalConfig}
  */
 const config = {
   defaultTheme: "light",

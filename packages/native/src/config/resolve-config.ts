@@ -13,7 +13,7 @@ import {
   resolveConfigCascade,
   type Size,
   type Variant,
-} from "@asheeui/shared";
+} from "@asheeui/core";
 import {
   getNativeComponentDefaults,
   type NativeComponentConfigRegistry,

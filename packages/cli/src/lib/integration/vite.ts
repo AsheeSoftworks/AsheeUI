@@ -7,7 +7,7 @@
 
 import { join } from "node:path";
 import { STYLES_IMPORT_MARKER } from "../../utils/audit";
-import { pathExists } from "../common/file-utils";
+import { pathExists, toProjectRelative } from "../common/file-utils";
 import type {
   FileEdit,
   IntegrationContext,
@@ -24,7 +24,7 @@ import { resolveGlobalCss, resolveRouterOrEntryPoint } from "./resolvers";
  *
  * Performs three logical steps:
  * 1. Create the `asheeui.config.*` file when it does not already exist.
- * 2. Inject `@import "asheeui/styles";` into the project's global
+ * 2. Inject `@import "@asheeui/web/styles";` into the project's global
  *    stylesheet (right under `@import "tailwindcss";`).
  * 3. Wrap the application's entry component with `<AsheeUIProvider
  *    config={config}>`, passing the runtime config straight to the
@@ -83,7 +83,7 @@ export async function buildViteIntegration(
     fileEdits.push({
       path: indexCssPath,
       search: `@import "tailwindcss";`,
-      replace: `@import "tailwindcss";\n@import "asheeui/styles";`,
+      replace: `@import "tailwindcss";\n@import "@asheeui/web/styles";`,
       skipIfContentIncludes: STYLES_IMPORT_MARKER,
       notFoundMessage: `Could not find @import "tailwindcss"; in ${cssRelative}`,
       description: `Add asheeui styles import to ${cssRelative}`,
@@ -102,8 +102,8 @@ export async function buildViteIntegration(
       {
         path: entry,
         search: `import { StrictMode } from "react";`,
-        replace: `import { StrictMode } from "react";\nimport { ${providerName} } from "asheeui";\nimport config from "${configRel}";`,
-        skipIfContentIncludes: `from "asheeui"`,
+        replace: `import { StrictMode } from "react";\nimport { ${providerName} } from "@asheeui/web";\nimport config from "${configRel}";`,
+        skipIfContentIncludes: `from "@asheeui/web"`,
         notFoundMessage: `Could not find StrictMode import in ${projectRelativeEntry}`,
         description: `Import ${providerName} and config in ${projectRelativeEntry}`,
       },
@@ -140,20 +140,7 @@ export async function buildViteIntegration(
     fileWrites,
     fileEdits,
     integrityChecks,
-    dependenciesToInstall: ["asheeui"],
+    dependenciesToInstall: ["@asheeui/web"],
     summary,
   };
-}
-
-/**
- * Strip the `directory/` prefix from an absolute path to produce a
- * project-relative path for CLI output.
- *
- * @param directory - Project directory prefix to strip.
- * @param file - Absolute file path.
- * @returns A project-relative path string.
- */
-function toProjectRelative(directory: string, file: string): string {
-  const rel = file.replace(`${directory}/`, "");
-  return rel === file ? file : rel;
 }

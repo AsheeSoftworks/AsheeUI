@@ -86,7 +86,7 @@ interface Pkg {
  *
  * The fix order is fixed:
  * 1. `config` (write `asheeui.config.*` when missing).
- * 2. `css` (inject `@import "asheeui/styles";` into the global stylesheet).
+ * 2. `css` (inject `@import "@asheeui/web/styles";` into the global stylesheet).
  * 3. `provider` (re-run the integration flow to wrap the app root).
  * 4. `peer-deps` (install missing runtime/dev dependencies).
  *
@@ -227,7 +227,7 @@ async function fixConfig(
 }
 
 /**
- * Fix the `css` doctor check by injecting `@import "asheeui/styles";`
+ * Fix the `css` doctor check by injecting `@import "@asheeui/web/styles";`
  * into the first conventional global stylesheet when it is missing.
  *
  * @param check - The doctor check result to act on.
@@ -266,7 +266,7 @@ async function fixCss(
           id: check.id,
           title: check.title,
           status: "fixed",
-          message: `Added @import "asheeui/styles"; to ${cssPath}.`,
+          message: `Added @import "@asheeui/web/styles"; to ${cssPath}.`,
         };
       } catch (err) {
         return {
@@ -284,7 +284,7 @@ async function fixCss(
   try {
     await writeFileWithDirs(
       target,
-      `@import "tailwindcss";\n@import "asheeui/styles";\n`,
+      `@import "tailwindcss";\n@import "@asheeui/web/styles";\n`,
     );
     return {
       id: check.id,
@@ -304,7 +304,7 @@ async function fixCss(
 }
 
 /**
- * Insert `@import "asheeui/styles";` into a CSS file right after the
+ * Insert `@import "@asheeui/web/styles";` into a CSS file right after the
  * tailwindcss import when one exists, or at the top of the file when
  * there is no tailwindcss import.
  *
@@ -317,7 +317,7 @@ async function fixCss(
  * @example
  * ```ts
  * injectStylesImport('@import "tailwindcss";\nbody { color: red; }');
- * // -> '@import "tailwindcss";\n@import "asheeui/styles";\nbody { color: red; }'
+ * // -> '@import "tailwindcss";\n@import "@asheeui/web/styles";\nbody { color: red; }'
  * ```
  */
 export function injectStylesImport(content: string): string {
@@ -325,9 +325,9 @@ export function injectStylesImport(content: string): string {
   const tailwind = /@import\s+["']tailwindcss["']\s*;?/.exec(content);
   if (tailwind) {
     const at = tailwind.index + tailwind[0].length;
-    return `${content.slice(0, at)}\n@import "asheeui/styles";${content.slice(at)}`;
+    return `${content.slice(0, at)}\n@import "@asheeui/web/styles";${content.slice(at)}`;
   }
-  return `@import "tailwindcss";\n@import "asheeui/styles";\n${content}`;
+  return `@import "tailwindcss";\n@import "@asheeui/web/styles";\n${content}`;
 }
 
 /**

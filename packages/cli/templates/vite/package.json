@@ -12,7 +12,7 @@
     "test:watch": "vitest"
   },
   "dependencies": {
-    "asheeui": "^2.0.0",
+    "@asheeui/web": "^2.1.0",
     "react": "^19.3.0",
     "react-dom": "^19.3.0"
   },

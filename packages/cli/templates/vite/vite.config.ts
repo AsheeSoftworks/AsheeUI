@@ -7,7 +7,7 @@ import { defineConfig } from "vitest/config";
  *
  * Tailwind is added the way a consumer adds it, so the utilities the components
  * use are generated from the library's own sources through the
- * `@import "asheeui/styles"` line in `src/index.css`. The test configuration
+ * `@import "@asheeui/web/styles"` line in `src/index.css`. The test configuration
  * reuses the shared browser stand-ins, because jsdom implements the DOM but not
  * `matchMedia` or the observers.
  */

@@ -27,7 +27,7 @@ describe("applyEdit", () => {
       path: target,
       search: 'import { StrictMode } from "react";',
       replace:
-        'import { StrictMode } from "react";\nimport { AsheeUIProvider } from "asheeui";',
+        'import { StrictMode } from "react";\nimport { AsheeUIProvider } from "@asheeui/web";',
       description: "Inject provider import",
     });
 
@@ -37,7 +37,9 @@ describe("applyEdit", () => {
     expect(result.error).toBeUndefined();
 
     const updated = await readFile(target, "utf8");
-    expect(updated).toContain('import { AsheeUIProvider } from "asheeui";');
+    expect(updated).toContain(
+      'import { AsheeUIProvider } from "@asheeui/web";',
+    );
   });
 
   it("returns a failed EditResult (no throw) when the file is missing", async () => {

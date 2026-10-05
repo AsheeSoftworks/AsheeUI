@@ -19,7 +19,7 @@ import {
  * Aliases: `ls`, `l`.
  *
  * Discovers the `asheeui` package either inside the project's
- * `node_modules`, in a monorepo `packages/ui` sibling, or at a path
+ * `node_modules`, in a monorepo `packages/web` sibling, or at a path
  * supplied via `--path`, then prints every component exposed by the
  * package's public export surface. Internal helpers are never listed.
  *
@@ -61,7 +61,7 @@ export function registerListCommand(program: Command) {
 
       if (!pkgRoot) {
         console.error(
-          "Could not locate the asheeui package. Install `asheeui` in your project or pass --path <registry>.",
+          "Could not locate the asheeui package. Install `@asheeui/web` in your project or pass --path <registry>.",
         );
         process.exit(1);
       }

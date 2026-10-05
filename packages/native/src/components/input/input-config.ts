@@ -1,34 +1,34 @@
 /**
- * Input component configuration for the native package.
+ * Input configuration for the native package.
  *
- * The options are the ones the framework's input contract names, so a text field
- * on native and a text field on the web are configured the same way. The density
- * scale is decided by touch, which is why the default is taller here than on the
- * web.
+ * The options are the ones the framework's input contract names, so a text field on
+ * native and a text field on the web are configured the same way. The density scale is
+ * decided by touch, which is why the default is taller here than on the web.
+ *
+ * The five axes the family offers are taken from the family's own configuration rather
+ * than restated, so a member of the family that renames or retypes one cannot leave the
+ * input behind. The three options that follow are native's own: the platform has one
+ * control for one line and for several, where the web has a field and a textarea
+ * beside it, and it names the unavailable and the mandatory state itself. The family
+ * axes native does not implement — `labelAlign` and `fullWidth` — are absent
+ * deliberately, because a configuration that advertised them would offer a consumer
+ * options the platform ignores.
  */
 
-import type { ColorRole, Radius, Size, Variant } from "@asheeui/shared";
+import type { FieldConfig } from "@asheeui/core";
 import { registerNativeComponentDefaults } from "../../config/registry";
 
 /**
  * Configuration options for the native Input.
+ *
+ * `size`, `radius`, `variant`, `color` and `status` carry the meanings the shared field
+ * contract gives them.
  */
-export interface NativeInputConfig {
-  /** Density, which decides height, padding and text size. Defaults to "md". */
-  size?: Size;
-
-  /** Corner rounding. Defaults to the platform's `defaultRadius`. */
-  radius?: Radius;
-
-  /** Surface treatment. Defaults to "bordered". */
-  variant?: Variant;
-
-  /** Accent colour of the field's focused border. Defaults to the platform's `defaultColor`. */
-  color?: ColorRole;
-
-  /** Validation status of the field. Defaults to "default". */
-  status?: "default" | "error" | "warning" | "success";
-
+export interface NativeInputConfig
+  extends Pick<
+    FieldConfig,
+    "size" | "radius" | "variant" | "color" | "status"
+  > {
   /** Whether the field accepts several lines. Defaults to false. */
   multiline?: boolean;
 

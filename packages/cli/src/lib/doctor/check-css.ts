@@ -1,7 +1,7 @@
 /**
  * CSS import check for AsheeUI CLI doctor command.
  * This module provides the checkCssImport function that validates whether
- * `@import "asheeui/styles"` is present in a global CSS entry file.
+ * `@import "@asheeui/web/styles"` is present in a global CSS entry file.
  */
 
 import { join } from "node:path";
@@ -10,7 +10,11 @@ import {
   findCssFileWithStylesImport,
   GLOBAL_CSS_CANDIDATES,
 } from "../../utils/audit";
-import { firstExisting, readTextFile } from "../common/file-utils";
+import {
+  firstExisting,
+  readTextFile,
+  toProjectRelative,
+} from "../common/file-utils";
 import type { DoctorCheckResult, DoctorOptions } from "./types";
 
 export {
@@ -19,7 +23,7 @@ export {
 } from "../../utils/audit";
 
 /**
- * Validate that `@import "asheeui/styles"` is present in a CSS entry file.
+ * Validate that `@import "@asheeui/web/styles"` is present in a CSS entry file.
  *
  * Three outcomes are possible:
  * - `pass`: a global stylesheet already imports asheeui styles.
@@ -40,7 +44,7 @@ export async function checkCssImport(
       id: "css",
       title: "CSS styles import",
       status: "pass",
-      message: `@import "asheeui/styles" found in ${relativeTo(cwd, foundWithImport)}`,
+      message: `@import "@asheeui/web/styles" found in ${relativeTo(cwd, foundWithImport)}`,
     };
   }
 
@@ -54,8 +58,8 @@ export async function checkCssImport(
         id: "css",
         title: "CSS styles import",
         status: "fail",
-        message: `No @import "asheeui/styles" found in ${existingFile}.`,
-        fix: `Add @import "asheeui/styles"; to ${existingFile} to ensure component styles render correctly.`,
+        message: `No @import "@asheeui/web/styles" found in ${existingFile}.`,
+        fix: `Add @import "@asheeui/web/styles"; to ${existingFile} to ensure component styles render correctly.`,
       };
     }
   }
@@ -66,7 +70,7 @@ export async function checkCssImport(
     status: "fail",
     message:
       "No common CSS entry file found (src/index.css, src/globals.css, app/globals.css, etc.).",
-    fix: 'Create src/index.css containing `@import "tailwindcss";` and `@import "asheeui/styles";` and import it from your entrypoint.',
+    fix: 'Create src/index.css containing `@import "tailwindcss";` and `@import "@asheeui/web/styles";` and import it from your entrypoint.',
   };
 }
 
@@ -79,5 +83,5 @@ export async function checkCssImport(
  * @returns A project-relative path string.
  */
 function relativeTo(cwd: string, file: string): string {
-  return file.replace(`${cwd}/`, "");
+  return toProjectRelative(cwd, file);
 }

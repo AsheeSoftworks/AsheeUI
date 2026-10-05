@@ -1,0 +1,118 @@
+{
+  "name": "asheeui",
+  "version": "2.1.0",
+  "description": "The AsheeUI umbrella package: the components of @asheeui/web and @asheeui/native behind one import, routed by the bundler instead of by a runtime check.",
+  "author": "Ashee Softworks <asheesoftworks@gmail.com>",
+  "homepage": "https://asheeui.com",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AsheeSoftworks/AsheeUI.git",
+    "directory": "packages/asheeui"
+  },
+  "bugs": {
+    "url": "https://github.com/AsheeSoftworks/AsheeUI/issues"
+  },
+  "keywords": [
+    "react",
+    "react-native",
+    "expo",
+    "component-library",
+    "design-system",
+    "ui-kit",
+    "tailwindcss",
+    "nativewind",
+    "typescript",
+    "accessible",
+    "a11y"
+  ],
+  "license": "Apache-2.0",
+  "type": "module",
+  "main": "./src/index.ts",
+  "module": "./src/index.ts",
+  "types": "./src/index.ts",
+  "react-native": "./src/index.native.ts",
+  "exports": {
+    ".": {
+      "react-native": {
+        "types": "./src/index.native.ts",
+        "default": "./src/index.native.ts"
+      },
+      "types": "./src/index.ts",
+      "import": "./src/index.ts",
+      "default": "./src/index.ts"
+    }
+  },
+  "publishConfig": {
+    "provenance": true,
+    "main": "./dist/index.js",
+    "module": "./dist/index.js",
+    "types": "./dist/index.d.ts",
+    "exports": {
+      ".": {
+        "react-native": {
+          "types": "./dist/index.native.d.ts",
+          "default": "./dist/index.native.js"
+        },
+        "types": "./dist/index.d.ts",
+        "import": "./dist/index.js",
+        "default": "./dist/index.js"
+      }
+    }
+  },
+  "files": [
+    "dist",
+    "src/index.ts",
+    "src/index.native.ts",
+    "LICENSE",
+    "NOTICE"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "prepublishOnly": "pnpm build",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "@asheeui/core": "workspace:^",
+    "@asheeui/native": "workspace:^",
+    "@asheeui/web": "workspace:^"
+  },
+  "peerDependencies": {
+    "@puckeditor/core": "^0.23.0",
+    "nativewind": ">=4.2.0",
+    "react": "^18.0.0 || ^19.0.0",
+    "react-dom": "^18.0.0 || ^19.0.0",
+    "react-native": ">=0.78.0",
+    "tailwindcss": ">=4.0.0"
+  },
+  "peerDependenciesMeta": {
+    "@puckeditor/core": {
+      "optional": true
+    },
+    "nativewind": {
+      "optional": true
+    },
+    "react-dom": {
+      "optional": true
+    },
+    "react-native": {
+      "optional": true
+    },
+    "tailwindcss": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@types/node": "^26.5.0",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@vitejs/plugin-react": "^6.1.1",
+    "jsdom": "^30.0.1",
+    "nativewind": "^4.2.7",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0",
+    "react-native": "0.86.3",
+    "typescript": "^7.0.2",
+    "vitest": "^5.0.0"
+  }
+}

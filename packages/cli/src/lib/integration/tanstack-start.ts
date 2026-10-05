@@ -7,7 +7,7 @@
 
 import { join } from "node:path";
 import { STYLES_IMPORT_MARKER } from "../../utils/audit";
-import { pathExists } from "../common/file-utils";
+import { pathExists, toProjectRelative } from "../common/file-utils";
 import type {
   FileEdit,
   IntegrationContext,
@@ -24,7 +24,7 @@ import { resolveGlobalCss, resolveRouterOrEntryPoint } from "./resolvers";
  *
  * Performs the following steps:
  * 1. Create the `asheeui.config.*` file when missing.
- * 2. Inject `@import "asheeui/styles";` into the project's global
+ * 2. Inject `@import "@asheeui/web/styles";` into the project's global
  *    stylesheet (right under `@import "tailwindcss";`).
  * 3. Wrap `{children}` inside `<AsheeUIProvider config={config}>` in the
  *    root route file (`src/routes/__root.tsx` or `app/routes/__root.tsx`)
@@ -88,7 +88,7 @@ export async function buildTanStackStartIntegration(
     fileEdits.push({
       path: cssFile,
       search: `@import "tailwindcss";`,
-      replace: `@import "tailwindcss";\n@import "asheeui/styles";`,
+      replace: `@import "tailwindcss";\n@import "@asheeui/web/styles";`,
       skipIfContentIncludes: STYLES_IMPORT_MARKER,
       notFoundMessage: `Could not find @import "tailwindcss"; in ${cssRelative}`,
       description: `Add asheeui styles import to ${cssRelative}`,
@@ -105,8 +105,8 @@ export async function buildTanStackStartIntegration(
     fileEdits.push({
       path: rootRouteFile,
       search: `import { HeadContent`,
-      replace: `import { ${providerName} } from "asheeui";\nimport config from "${configRel}";\nimport { HeadContent`,
-      skipIfContentIncludes: `from "asheeui"`,
+      replace: `import { ${providerName} } from "@asheeui/web";\nimport config from "${configRel}";\nimport { HeadContent`,
+      skipIfContentIncludes: `from "@asheeui/web"`,
       notFoundMessage: `Could not find import statement in ${rootRelative}`,
       description: `Import ${providerName} and config in ${rootRelative}`,
     });
@@ -144,20 +144,7 @@ export async function buildTanStackStartIntegration(
     fileWrites,
     fileEdits,
     integrityChecks,
-    dependenciesToInstall: ["asheeui"],
+    dependenciesToInstall: ["@asheeui/web"],
     summary,
   };
-}
-
-/**
- * Strip the `directory/` prefix from an absolute path to produce a
- * project-relative path for CLI output.
- *
- * @param directory - Project directory prefix to strip.
- * @param file - Absolute file path.
- * @returns A project-relative path string.
- */
-function toProjectRelative(directory: string, file: string): string {
-  const rel = file.replace(`${directory}/`, "");
-  return rel === file ? file : rel;
 }

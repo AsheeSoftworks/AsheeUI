@@ -14,7 +14,7 @@ import {
   resolveCascade,
   type Size,
   type Variant,
-} from "@asheeui/shared";
+} from "@asheeui/core";
 import type { ReactNode } from "react";
 import type {
   PressableProps,

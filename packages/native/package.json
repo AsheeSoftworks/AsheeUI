@@ -1,7 +1,6 @@
 {
   "name": "@asheeui/native",
-  "version": "2.0.0",
-  "private": true,
+  "version": "2.1.0",
   "description": "React Native components styled with NativeWind, sharing the AsheeUI design language and component contracts.",
   "author": "Ashee Softworks <asheesoftworks@gmail.com>",
   "license": "Apache-2.0",
@@ -14,12 +13,32 @@
       "default": "./src/index.ts"
     }
   },
+  "publishConfig": {
+    "provenance": true,
+    "type": "module",
+    "main": "./dist/index.js",
+    "types": "./dist/index.d.ts",
+    "exports": {
+      ".": {
+        "types": "./dist/index.d.ts",
+        "import": "./dist/index.js",
+        "default": "./dist/index.js"
+      }
+    }
+  },
+  "files": [
+    "dist",
+    "LICENSE",
+    "NOTICE"
+  ],
   "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "prepublishOnly": "pnpm build",
     "test": "jest",
     "test:watch": "jest --watch"
   },
   "dependencies": {
-    "@asheeui/shared": "workspace:*"
+    "@asheeui/core": "workspace:^"
   },
   "peerDependencies": {
     "nativewind": ">=4.2.0",

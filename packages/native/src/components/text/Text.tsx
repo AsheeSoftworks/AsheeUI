@@ -8,7 +8,7 @@
  * instead of a set of remembered font sizes.
  */
 
-import { resolveCascade } from "@asheeui/shared";
+import { resolveCascade } from "@asheeui/core";
 import type { ReactNode } from "react";
 import {
   Text as NativeText,

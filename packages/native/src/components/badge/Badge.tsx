@@ -10,11 +10,17 @@
 
 import {
   type ColorRole,
+  NATIVE_BADGE_BASE_CLASS,
+  NATIVE_BADGE_FONT_CLASS,
+  NATIVE_BADGE_TEXT_CLASS,
+  NATIVE_BADGE_VARIANT_CLASS,
+  NATIVE_RADIUS_CLASS,
   type Radius,
+  resolveBadgeVariant,
   resolveCascade,
   type Size,
   type Variant,
-} from "@asheeui/shared";
+} from "@asheeui/core";
 import type { ReactNode } from "react";
 import type { StyleProp, ViewProps, ViewStyle } from "react-native";
 import { Text, View } from "react-native";
@@ -24,13 +30,6 @@ import {
   FALLBACK_NATIVE_BADGE_CONFIG,
   type NativeBadgeConfig,
 } from "./badge-config";
-import {
-  BADGE_BASE_CLASS,
-  BADGE_RADIUS_CLASS,
-  BADGE_SIZE_CLASS,
-  BADGE_TEXT_CLASS,
-  BADGE_VARIANT_CLASS,
-} from "./badge-styles";
 
 /**
  * Props for the native Badge.
@@ -76,11 +75,17 @@ export function Badge({
   const config = useAsheeNativeConfig();
   const sectionConfig = config.components.badge;
 
-  const resolvedVariant = resolveCascade<Variant>(
-    variant,
-    sectionConfig?.variant,
-    config.defaultVariant,
-    FALLBACK_NATIVE_BADGE_CONFIG.variant,
+  // The cascade's last two tiers belong to the platform rather than to the badge, so what
+  // comes out of it may be a treatment a badge cannot express; `resolveBadgeVariant` is the
+  // shared rule that lands it on the nearest one it can, so the class lookup below is
+  // always a lookup rather than a fallback.
+  const resolvedVariant = resolveBadgeVariant(
+    resolveCascade<Variant>(
+      variant,
+      sectionConfig?.variant,
+      config.defaultVariant,
+      FALLBACK_NATIVE_BADGE_CONFIG.variant,
+    ),
   );
   const resolvedColor = resolveCascade<ColorRole>(
     color,
@@ -104,9 +109,9 @@ export function Badge({
   return (
     <View
       className={classNames(
-        BADGE_BASE_CLASS,
-        BADGE_VARIANT_CLASS[resolvedVariant][resolvedColor],
-        BADGE_RADIUS_CLASS[resolvedRadius],
+        NATIVE_BADGE_BASE_CLASS,
+        NATIVE_BADGE_VARIANT_CLASS[resolvedVariant][resolvedColor],
+        NATIVE_RADIUS_CLASS[resolvedRadius],
         className,
       )}
       style={style}
@@ -117,8 +122,8 @@ export function Badge({
         // single piece of text rather than as a view containing a text node.
         accessibilityLabel={typeof children === "string" ? children : undefined}
         className={classNames(
-          BADGE_SIZE_CLASS[resolvedSize],
-          BADGE_TEXT_CLASS[resolvedVariant][resolvedColor],
+          NATIVE_BADGE_FONT_CLASS[resolvedSize],
+          NATIVE_BADGE_TEXT_CLASS[resolvedVariant][resolvedColor],
         )}>
         {children}
       </Text>

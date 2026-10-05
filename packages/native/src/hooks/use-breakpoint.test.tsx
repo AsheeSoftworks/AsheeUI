@@ -6,7 +6,7 @@
  * it adds: reading the window the platform reports.
  */
 
-import { BREAKPOINT } from "@asheeui/shared";
+import { BREAKPOINT } from "@asheeui/core";
 import { render } from "@testing-library/react-native";
 import { Dimensions, Text } from "react-native";
 import { resolveBreakpoint, useBreakpoint } from "./use-breakpoint";

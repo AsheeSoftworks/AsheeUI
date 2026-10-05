@@ -57,12 +57,12 @@ describe("runDoctorChecks", () => {
     await write("asheeui.config.ts", "export default {};");
     await write(
       "src/index.css",
-      `@import "asheeui/styles";
+      `@import "@asheeui/web/styles";
 @tailwind base;`,
     );
     await write(
       "src/main.tsx",
-      `import { AsheeUIProvider } from "asheeui";
+      `import { AsheeUIProvider } from "@asheeui/web";
 import { createRoot } from "react-dom/client";`,
     );
 
@@ -105,8 +105,11 @@ import { createRoot } from "react-dom/client";`,
         },
         { tailwindcss: "^4.0.0" },
       );
-      await write("src/index.css", '@import "asheeui/styles";');
-      await write("src/main.tsx", 'import { AsheeUIProvider } from "asheeui";');
+      await write("src/index.css", '@import "@asheeui/web/styles";');
+      await write(
+        "src/main.tsx",
+        'import { AsheeUIProvider } from "@asheeui/web";',
+      );
 
       const results = await runDoctorChecks({ cwd: dir });
 
@@ -115,20 +118,20 @@ import { createRoot } from "react-dom/client";`,
   });
 
   describe("CSS styles import check", () => {
-    it('passes when @import "asheeui/styles" exists', async () => {
-      await write("src/index.css", `@import "asheeui/styles";`);
+    it('passes when @import "@asheeui/web/styles" exists', async () => {
+      await write("src/index.css", `@import "@asheeui/web/styles";`);
       const result = await resultOf("css");
       expect(result?.status).toBe("pass");
     });
 
     it("passes with single quotes and .css suffix", async () => {
-      await write("src/globals.css", `@import 'asheeui/styles.css';`);
+      await write("src/globals.css", `@import '@asheeui/web/styles.css';`);
       const result = await resultOf("css");
       expect(result?.status).toBe("pass");
     });
 
     it("passes when found in app/globals.css", async () => {
-      await write("app/globals.css", `@import "asheeui/styles";`);
+      await write("app/globals.css", `@import "@asheeui/web/styles";`);
       const result = await resultOf("css");
       expect(result?.status).toBe("pass");
     });
@@ -137,7 +140,7 @@ import { createRoot } from "react-dom/client";`,
       await write("src/index.css", `@tailwind base;`);
       const result = await resultOf("css");
       expect(result?.status).toBe("fail");
-      expect(result?.fix).toContain('@import "asheeui/styles"');
+      expect(result?.fix).toContain('@import "@asheeui/web/styles"');
     });
 
     it("fails with a useful message when no CSS file exists", async () => {
@@ -218,7 +221,10 @@ import { createRoot } from "react-dom/client";`,
 
   describe("root provider check", () => {
     it("passes when AsheeUIProvider is in src/main.tsx", async () => {
-      await write("src/main.tsx", `import { AsheeUIProvider } from "asheeui";`);
+      await write(
+        "src/main.tsx",
+        `import { AsheeUIProvider } from "@asheeui/web";`,
+      );
       const result = await resultOf("provider");
       expect(result?.status).toBe("pass");
     });
@@ -226,7 +232,7 @@ import { createRoot } from "react-dom/client";`,
     it("passes when asheeui is imported in app/layout.tsx", async () => {
       await write(
         "app/layout.tsx",
-        `import { AsheeUIProvider } from "asheeui";`,
+        `import { AsheeUIProvider } from "@asheeui/web";`,
       );
       const result = await resultOf("provider");
       expect(result?.status).toBe("pass");

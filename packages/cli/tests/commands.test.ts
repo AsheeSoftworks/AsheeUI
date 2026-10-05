@@ -59,8 +59,11 @@ describe("command exit codes", () => {
         devDependencies: { tailwindcss: "^4.0.0" },
       }),
     );
-    await write("src/index.css", '@import "asheeui/styles";');
-    await write("src/main.tsx", 'import { AsheeUIProvider } from "asheeui";');
+    await write("src/index.css", '@import "@asheeui/web/styles";');
+    await write(
+      "src/main.tsx",
+      'import { AsheeUIProvider } from "@asheeui/web";',
+    );
 
     process.exitCode = 0;
     await runDoctorCommand();
