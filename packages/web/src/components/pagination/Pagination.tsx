@@ -10,6 +10,11 @@
 import type { Color, Radius, Size, Variant } from "@asheeui/core";
 import {
   cn,
+  PAGINATION_BASE_CLASS,
+  PAGINATION_CONTROL_CLASS,
+  PAGINATION_DISABLED_CLASS,
+  PAGINATION_GAP_CLASS,
+  PAGINATION_LIST_CLASS,
   RADIUS_CLASS,
   resolveCascade,
   resolveRadiusKey,
@@ -26,11 +31,6 @@ import {
   FALLBACK_PAGINATION_CONFIG,
   type PaginationConfig,
 } from "./pagination-config";
-import {
-  PAGINATION_BASE_CLASS,
-  PAGINATION_GAP_CLASS,
-  PAGINATION_LIST_CLASS,
-} from "./pagination-styles";
 
 type BasePaginationProps = PaginationConfig &
   Omit<HTMLAttributes<HTMLElement>, "color" | "onChange">;
@@ -224,11 +224,10 @@ export const Pagination = forwardRef<HTMLElement, PaginationProps>(
             aria-current={isCurrent ? "page" : undefined}
             aria-disabled={isDisabled || isOutOfRange ? true : undefined}
             className={cn(
-              "inline-flex items-center justify-center min-w-8 h-8 px-2",
+              PAGINATION_CONTROL_CLASS,
               RADIUS_CLASS[resolvedRadiusKey as Radius],
               resolveVariantClass(resolvedVariantKey, resolvedColorKey),
-              (isDisabled || isOutOfRange) &&
-                "opacity-50 pointer-events-none cursor-not-allowed",
+              (isDisabled || isOutOfRange) && PAGINATION_DISABLED_CLASS,
             )}>
             {content}
           </Link>

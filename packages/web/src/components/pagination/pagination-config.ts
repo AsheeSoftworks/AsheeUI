@@ -1,64 +1,20 @@
 /**
  * Pagination component configuration for AsheeUI.
- * This file defines the configuration types and defaults for the Pagination
- * component and registers them with the component registry, so the
- * component-level fallback tier of the theme cascade has a value to resolve.
- */
-
-import type { Color, Radius, Size, Variant } from "@asheeui/core";
-import { registerComponentDefaults } from "@asheeui/core";
-
-/**
- * Theme configuration options for the Pagination component.
  *
- * Set under `components.pagination` in the AsheeUI config. Values feed the
- * component-level fallback tier of the theme cascade.
+ * This file registers the values the pagination controls default to on the web, so the
+ * component-level fallback tier of the theme cascade has a value to resolve. The options
+ * themselves, and the types that name them, live in `@asheeui/core`: they are the
+ * framework's pagination contract rather than a web renderer's, and the native renderer
+ * reads the same ones from the same place. What stays here is the web default values and
+ * the registration that puts them in the web registry.
  */
-export interface PaginationConfig {
-  /**
-   * Size of the page controls.
-   *
-   * @default "md"
-   */
-  size?: Size;
 
-  /**
-   * Visual style variant of the page controls.
-   *
-   * @default "bordered"
-   */
-  variant?: Variant;
+import {
+  type PaginationConfig,
+  registerComponentDefaults,
+} from "@asheeui/core";
 
-  /**
-   * Theme accent colour of the page controls.
-   *
-   * @default "primary"
-   */
-  color?: Color;
-
-  /**
-   * Corner rounding of the page controls.
-   *
-   * @default "md"
-   */
-  radius?: Radius;
-
-  /**
-   * How many pages to show on each side of the current page.
-   * A wider range shows more of the collection at once; a narrower range keeps
-   * the trail short.
-   *
-   * @default 1
-   */
-  siblingCount?: number;
-
-  /**
-   * Whether the trail offers controls for the first and last page.
-   *
-   * @default false
-   */
-  showEdges?: boolean;
-}
+export type { PaginationConfig };
 
 /**
  * Default config values registered for the Pagination component.
@@ -73,6 +29,8 @@ export const defaultPaginationConfig: PaginationConfig = {
   showEdges: false,
 };
 
+registerComponentDefaults("pagination", defaultPaginationConfig);
+
 /**
  * Hard fallback values used when no config tier provides a value.
  * These values are used when instance props, component config,
@@ -86,11 +44,3 @@ export const FALLBACK_PAGINATION_CONFIG: Required<PaginationConfig> = {
   siblingCount: 1,
   showEdges: false,
 } as const;
-
-declare module "@asheeui/core" {
-  interface ComponentTypeConfigRegistry {
-    pagination: PaginationConfig;
-  }
-}
-
-registerComponentDefaults("pagination", defaultPaginationConfig);

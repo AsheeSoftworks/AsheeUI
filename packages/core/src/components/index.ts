@@ -34,6 +34,7 @@ export * from "./loading-state";
 export * from "./marquee";
 export * from "./modal";
 export * from "./page";
+export * from "./pagination";
 export * from "./pin-input";
 export * from "./pricing-card";
 export * from "./radio";
