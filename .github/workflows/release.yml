@@ -46,6 +46,34 @@ jobs:
           git reset --hard
           git clean -fd
 
+      - name: Name the account the release credential belongs to
+        # A refused publish arrives as "E403: 403 Forbidden - PUT ... - [object Object]",
+        # because pnpm prints npm's JSON body as an object with no toString: the one
+        # part of the failure that says whether the token is unknown, wrong-scoped or
+        # refused on the account's behalf never reaches the log. One request to
+        # /-/whoami first turns "refused for some reason" into "refused for <account>".
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          answered=$(curl -sS -w '\n%{http_code}' \
+            -H "Authorization: Bearer $NODE_AUTH_TOKEN" \
+            https://registry.npmjs.org/-/whoami 2>&1 || true)
+          code=$(printf '%s' "$answered" | tail -n1)
+          body=$(printf '%s' "$answered" | sed '$d')
+          echo "registry answered $code for NPM_TOKEN: $body"
+          echo "the credential reaches these packages in @asheeui:"
+          npm access list packages @asheeui || true
+          case "$code" in
+            200) ;;
+            401 | 403)
+              echo "::error title=Release credential::The registry does not accept NPM_TOKEN ($code). Store a granular access token with \"Read and write (publish and stage)\" for all packages and \"Bypass 2FA\" enabled as the NPM_TOKEN secret, then re-run this release."
+              exit 1
+              ;;
+            *)
+              echo "::warning title=Release credential::The registry did not answer the probe ($code). Publishing continues, and the registry reports its refusal there."
+              ;;
+          esac
+
       - name: Create Release PR or Publish
         id: changesets
         uses: changesets/action@v2
