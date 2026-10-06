@@ -17,6 +17,12 @@ import {
   resolveClassKey,
   resolveRadiusKey,
   resolveVariantClass,
+  SIDEBAR_COLLAPSED_WIDTH_CLASS,
+  SIDEBAR_EXPANDED_WIDTH_CLASS,
+  SIDEBAR_HEADER_CLASS,
+  SIDEBAR_ITEM_CLASS,
+  SIDEBAR_SECTION_LABEL_CLASS,
+  SIDEBAR_VARIANT_CLASS,
   type Variant,
 } from "@asheeui/core";
 import {
@@ -46,14 +52,6 @@ import type {
   SidebarVariant,
 } from "./sidebar-config";
 import { FALLBACK_SIDEBAR_CONFIG } from "./sidebar-config";
-import {
-  SIDEBAR_COLLAPSED_WIDTH_CLASS,
-  SIDEBAR_EXPANDED_WIDTH_CLASS,
-  SIDEBAR_HEADER_CLASS,
-  SIDEBAR_ITEM_CLASS,
-  SIDEBAR_SECTION_LABEL_CLASS,
-  SIDEBAR_VARIANT_CLASS,
-} from "./sidebar-styles";
 
 /**
  * Helper type guard to check if items are sections.

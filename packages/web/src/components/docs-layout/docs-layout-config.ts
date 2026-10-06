@@ -1,66 +1,20 @@
 /**
  * DocsLayout component configuration for AsheeUI.
- * This file defines the configuration type and defaults for the documentation
- * composition: the names of its landmarks, the width of its navigation column
- * and whether its table of contents stays in view. It registers the default
- * configuration with the component registry and provides fallback values for the
- * cascade resolution system.
- */
-
-import { registerComponentDefaults } from "@asheeui/core";
-import type { SidebarLayoutWidth } from "../sidebar-layout/sidebar-layout-config";
-
-/**
- * Theme configuration options for the DocsLayout component.
  *
- * Set under `components.docslayout` in the AsheeUI config. Values feed the
- * component-level tier of the theme cascade.
+ * This file registers the values the documentation composition defaults to on the web, so the
+ * component-level tier of the theme cascade has a value to resolve. The options themselves, and
+ * the types that name them, live in `@asheeui/core`: they are the framework's docs-layout
+ * contract rather than a web renderer's, and the native renderer reads the same ones from the
+ * same place. What stays here is the web default values and the registration that puts them in
+ * the web registry.
  */
-export interface DocsLayoutConfig {
-  /**
-   * Name of the navigation landmark.
-   * It distinguishes the documentation navigation from the other navigation
-   * regions a page may have.
-   *
-   * @default "Documentation"
-   */
-  navigationLabel?: string;
 
-  /**
-   * Name of the table of contents landmark.
-   *
-   * @default "On this page"
-   */
-  tocLabel?: string;
+import {
+  type DocsLayoutConfig,
+  registerComponentDefaults,
+} from "@asheeui/core";
 
-  /**
-   * Width of the navigation column from the `lg` breakpoint upwards.
-   *
-   * @default "md"
-   */
-  navigationWidth?: SidebarLayoutWidth;
-
-  /**
-   * Whether the table of contents stays in view while the article scrolls.
-   *
-   * @default true
-   */
-  stickyToc?: boolean;
-
-  /**
-   * Whether the composition renders a skip link to its main region.
-   *
-   * @default true
-   */
-  skipLink?: boolean;
-
-  /**
-   * Wording of the skip link.
-   *
-   * @default "Skip to content"
-   */
-  skipLinkLabel?: string;
-}
+export type { DocsLayoutConfig } from "@asheeui/core";
 
 /**
  * Default config values registered for the DocsLayout component.
@@ -73,12 +27,6 @@ export const defaultDocsLayoutConfig: DocsLayoutConfig = {
   skipLink: true,
   skipLinkLabel: "Skip to content",
 };
-
-declare module "@asheeui/core" {
-  interface ComponentTypeConfigRegistry {
-    docslayout: DocsLayoutConfig;
-  }
-}
 
 registerComponentDefaults("docslayout", defaultDocsLayoutConfig);
 

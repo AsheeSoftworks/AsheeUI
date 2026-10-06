@@ -26,17 +26,21 @@ names, and each platform behaves the way its users expect.
 
 ## Status
 
-The native package has a component set. The shared layer, the provider, the
-configuration cascade, the layout kit and the components listed here are
-implemented and tested with the platform's own tooling.
+The native package has a component set, and it is now the whole matrix: every one
+of the 58 components the compatibility matrix promises for native is implemented
+and tested with the platform's own tooling, and `scripts/native-parity.json` holds
+no queued module.
 
 | Area | Delivered |
 | --- | --- |
-| Layout | `Container`, `Stack`, `HStack`, `VStack`, `Grid`, `Section`, `Centered` |
-| Components | `Button`, `Text`, `Card`, `Badge`, `Input`, `Spinner`, `Skeleton` |
+| Layout | `Container`, `Stack`, `HStack`, `VStack`, `Grid`, `Section`, `Centered`, `Split`, `Page` with `PageHeader`, `PageContent` and `PageFooter` |
+| Components | `Button`, `Text`, `Card`, `Badge`, `Input`, `Chip`, `Avatar`, `Image`, `Clipboard`, `Marquee`, `Spinner`, `Skeleton` |
 | The field family | `Textarea`, `SearchInput`, `PinInput`, `Switch`, `Radio` and `RadioGroup`, `Dropmenu`, `MultiSelect`, `Autocomplete`, `Form`, `Stepper`, `FileUpload`, `Calendar` |
 | Feedback and state | `Alert`, `EmptyState`, `ErrorState`, `LoadingState`, and the `ToastProvider` with `useToast` |
-| Navigation and disclosure | `Link`, `Tabs`, `Accordion`, `Carousel` |
+| Navigation and disclosure | `Link`, `Tabs`, `Accordion`, `Carousel`, `Pagination` |
+| The page shell | `Navbar` with its `TabBar`, `Sidebar`, `SidebarLayout`, `DocsLayout`, `AuthLayout` |
+| A marketing page | `MarketingLayout`, `Hero`, `FeatureGrid`, `CTA`, `Footer`, `Testimonials`, `PricingCard` |
+| Data display | `Table` and `DataTable`, both shipped as `RowList` |
 | Overlays | `Modal`, `Drawer`, `Tooltip` |
 | Responsive | `useBreakpoint`, and the pure `resolveBreakpoint` and `resolveGridColumns` |
 | Configuration | Every component registers its defaults and resolves through the shared cascade |
@@ -157,13 +161,44 @@ web's would be:
 Two of the overlays name options the platform leaves out, and the modules say so: a portal and a
 layer order are about where something sits in a document, and the platform has no document.
 
-The components the matrix classifies but this release does not implement are
-queued in `scripts/native-parity.json`, which is the list of record, so platform
-support is a stated fact rather than something a developer discovers by trying.
+The shell came last, and it is the increment that closes the matrix. A `Navbar`, a `Sidebar` and
+the three compositions that arrange them are the components a whole screen is built out of, so
+what the platform decides about them is about a screen rather than about a document:
+
+- A bar **scrolls its row of destinations** rather than opening a disclosure, because a browser's
+  bar is a single line it cannot scroll sideways and a platform's is not. The disclosure's three
+  options — `mobileOpen`, `onMobileOpenChange` and `mobileLabel` — resolve through the shared
+  contract and change nothing, and where the web marks the current destination with `aria-current`
+  the platform states the same fact as the control's selected state. The navbar module also
+  publishes `TabBar`, the platform's own second half of a navigation: the same destinations and
+  the same states, at the edge a thumb reaches, which the web needs no equivalent for because its
+  links are already in the bar.
+- A sidebar **collapses to a rail** exactly as it does on the web, and a collapsed row explains
+  itself through the framework's native `Tooltip`, which the platform shows on a long press rather
+  than while a pointer rests on it. A row is the framework's own `Link`, so a consumer keeps its
+  routing. The width transition and the pointer cursor the web declares resolve through the shared
+  contract and state nothing, because a class cannot promise movement or a cursor the platform
+  does not have.
+- `SidebarLayout` and `DocsLayout` are **stacked screens**. The shell asks `useBreakpoint` once
+  and states the direction it means — stacked on a phone, and beside the content from `lg` — with
+  the column placed outside the consumer's scrolling region, which is the platform's own way of
+  keeping it in view, so `stickySidebar` and the contents' stickiness resolve and change nothing.
+  A documentation page's three regions become three stacked sections in the order the web's own
+  flow gives them at its narrow widths, each headed with the name the web gives its landmark,
+  because a platform screen has no landmark vocabulary but does let a region be titled.
+- `AuthLayout` is **what fills the height the platform gives the screen**: the form is centred in
+  it, the media column is decided once by `useBreakpoint`, and nothing scrolls, because the
+  keyboard and the reading order of a platform screen are the screen's own business.
+
+The queue in `scripts/native-parity.json` is empty as a result: every component the
+matrix classifies for native is implemented, so platform support is a stated fact
+rather than something a developer discovers by trying, and nothing is left for a
+later increment.
 
 The native package is not published yet, on purpose: a package is published when a
-consumer can build a real screen with it, and the remaining components in the matrix
-decide when that is. `@asheeui/core` and `@asheeui/web` are published and
+consumer can build a real screen with it, and the component set is no longer what
+decides that — the proof is a consumer application building and testing its own
+screens against it. `@asheeui/core` and `@asheeui/web` are published and
 unaffected: their version lines, their tests and their public APIs are their own.
 
 Publishing it is therefore an increment rather than a switch, and what the increment
@@ -187,7 +222,7 @@ classification:
 | Classification | Meaning | Examples |
 | --- | --- | --- |
 | Shared | One contract, and the platform implementation is the platform's | `Button`, `Text`, `Card`, `Badge`, `Input`, `Chip`, `Spinner`, `Skeleton`, `PinInput`, `Form`, `Radio`, `Switch`, `Stack`, `Section`, `Centered`, `Grid`, `EmptyState`, `Alert`, `LoadingState`, `ErrorState`, `SearchInput`, `Stepper` |
-| Shared API, separate implementation | The concept is shared and the platform behaviour differs, deliberately | `Modal` (platform modal), `Drawer` (bottom sheet), `Tooltip` (long press), `Tabs`, `Table` (rows, not a table), `DataTable` (a list), `Page` (screen with safe areas), `Pagination` (load more), `Split` (the platform's own split view), `FileUpload` (the document picker), `Calendar` (one surface at a time, and the time is stepped rather than typed), `SidebarLayout` and `DocsLayout` (a stacked screen) |
+| Shared API, separate implementation | The concept is shared and the platform behaviour differs, deliberately | `Modal` (platform modal), `Drawer` (bottom sheet), `Tooltip` (long press), `Tabs`, `Table` (rows, not a table), `DataTable` (a list), `Page` (screen with safe areas), `Pagination` (load more), `Split` (the platform's own split view), `FileUpload` (the document picker), `Calendar` (one surface at a time, and the time is stepped rather than typed), `SidebarLayout` and `DocsLayout` (a stacked screen), `Navbar` (a header with a tab bar) and `Sidebar` (the same list, collapsing to a rail) |
 | Web only | The concept has no meaningful native equivalent | `Breadcrumb` (native uses a titled header), `ResizableScreen` (a desktop idiom) |
 | Not applicable | The component compensates for a browser constraint the platform solves itself | `Keyboard` (the platform has one) |
 
@@ -216,10 +251,12 @@ then fails in three cases:
 The queue itself is `scripts/native-parity.json`. It has two halves: `overrides`,
 which names the native component where native publishes a different name from the
 matrix's module (`typography` ships as `Text`, `table` and `data-table` ship as
-`RowList`), and `pending`, which is what is left to implement. The queue is a
-ratchet and may only shrink: implementing a queued component fails the check until
-its entry is removed, so it cannot quietly become a list of what nobody got round to.
-CI runs the guard, so a component cannot ship for one platform alone by accident.
+`RowList`, `toast` ships as `ToastProvider`), and `pending`, which is what is left to
+implement. The queue is a ratchet and may only shrink: implementing a queued component
+fails the check until its entry is removed, so it cannot quietly become a list of what
+nobody got round to. It is empty now, and it stays in the file because the next
+component added to the matrix either ships for both platforms or is recorded there. CI
+runs the guard, so a component cannot ship for one platform alone by accident.
 
 ## The layout kit and responsiveness
 
@@ -372,7 +409,6 @@ Accessibility is a property of each component rather than a later addition:
 | A framework-wide animation system | Motion belongs to the component that needs it, and a general layer would be speculation |
 | The web's table, breadcrumb and resizable-split components | Their native equivalents are lists, a titled header and a platform split view |
 | The web package's source | Sharing source would give one platform the other's behaviour, which is what this architecture exists to avoid |
-| The components the matrix promises for native that are still queued | Each contract is decided and recorded in the matrix, but the implementation is not written yet. `scripts/native-parity.json` names them and `pnpm check:native-parity --list` prints the whole expectation table; every one is the next increment of the native component set, none is blocked by an undecided contract, and the queue may only shrink. |
 
 ---
 

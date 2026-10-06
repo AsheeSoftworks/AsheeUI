@@ -1,43 +1,24 @@
 /**
  * AuthLayout component configuration for AsheeUI.
- * This file defines the configuration type and defaults for the authentication
- * page shell: panel treatment, content alignment, media position and content
- * width. It registers the default configuration with the component registry and
- * provides fallback values for the cascade resolution system.
- */
-
-import { registerComponentDefaults } from "@asheeui/core";
-import type { ContainerSize } from "../container/container-config";
-
-/**
- * Theme configuration options for the AuthLayout component.
  *
- * Set under `components.authlayout` in the AsheeUI config. Values feed the
- * component-level fallback tier of the theme cascade.
+ * This file registers the values the authentication shell defaults to on the web, so the
+ * component-level tier of the theme cascade has a value to resolve. The options themselves,
+ * and the types that name them, live in `@asheeui/core`: they are the framework's auth-layout
+ * contract rather than a web renderer's, and the native renderer reads the same ones from the
+ * same place. What stays here is the web default values and the registration that puts them in
+ * the web registry.
  */
-export interface AuthLayoutConfig {
-  /**
-   * Whether the form is drawn on a panel.
-   * A panel suits a page that also shows product media; without one the form
-   * sits directly on the page background.
-   *
-   * @default true
-   */
-  panel?: boolean;
 
-  /** Vertical alignment of the form column. @default "center" */
-  align?: "center" | "start";
+import {
+  type AuthLayoutConfig,
+  registerComponentDefaults,
+} from "@asheeui/core";
 
-  /**
-   * Side the media column sits on from the `lg` breakpoint upwards.
-   *
-   * @default "end"
-   */
-  mediaPosition?: "start" | "end";
-
-  /** Maximum width of the form column. @default "sm" */
-  contentSize?: ContainerSize;
-}
+export type {
+  AuthLayoutAlign,
+  AuthLayoutConfig,
+  AuthLayoutMediaPosition,
+} from "@asheeui/core";
 
 /**
  * Default config values registered for the AuthLayout component.
@@ -48,12 +29,6 @@ export const defaultAuthLayoutConfig: AuthLayoutConfig = {
   mediaPosition: "end",
   contentSize: "sm",
 };
-
-declare module "@asheeui/core" {
-  interface ComponentTypeConfigRegistry {
-    authlayout: AuthLayoutConfig;
-  }
-}
 
 registerComponentDefaults("authlayout", defaultAuthLayoutConfig);
 
