@@ -1,37 +1,20 @@
 /**
  * PricingCard component configuration for AsheeUI.
- * This file defines the configuration type and defaults for the PricingCard
- * pattern: card treatment, highlight and density. It registers the default
- * configuration with the component registry and provides fallback values for the
- * cascade resolution system.
- */
-
-import type { Size } from "@asheeui/core";
-import { registerComponentDefaults } from "@asheeui/core";
-
-/**
- * Surface treatment of a pricing card.
- * These map to the framework's card variants, so a pricing card looks like the
- * rest of the surface system.
- */
-export type PricingCardVariant = "bordered" | "elevated";
-
-/**
- * Theme configuration options for the PricingCard component.
  *
- * Set under `components.pricingcard` in the AsheeUI config. Values feed the
- * component-level fallback tier of the theme cascade.
+ * This file registers the values the pricing card defaults to on the web, so the
+ * component-level fallback tier of the theme cascade has a value to resolve. The options
+ * themselves, and the types that name them, live in `@asheeui/core`: they are the
+ * framework's pricing-card contract rather than a web renderer's, and the native renderer
+ * reads the same ones from the same place. What stays here is the web default values and
+ * the registration that puts them in the web registry.
  */
-export interface PricingCardConfig {
-  /** Surface treatment. @default "bordered" */
-  variant?: PricingCardVariant;
 
-  /** Density of the card padding. @default "lg" */
-  size?: Size;
+import {
+  type PricingCardConfig,
+  registerComponentDefaults,
+} from "@asheeui/core";
 
-  /** Whether the card is the recommended plan. @default false */
-  highlighted?: boolean;
-}
+export type { PricingCardConfig, PricingCardVariant } from "@asheeui/core";
 
 /**
  * Default config values registered for the PricingCard component.
@@ -41,12 +24,6 @@ export const defaultPricingCardConfig: PricingCardConfig = {
   size: "lg",
   highlighted: false,
 };
-
-declare module "@asheeui/core" {
-  interface ComponentTypeConfigRegistry {
-    pricingcard: PricingCardConfig;
-  }
-}
 
 registerComponentDefaults("pricingcard", defaultPricingCardConfig);
 

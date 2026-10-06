@@ -10,7 +10,20 @@
 "use client";
 
 import type { ActionConfig } from "@asheeui/core";
-import { cn, resolveConfigCascade } from "@asheeui/core";
+import {
+  cn,
+  PRICING_BADGE_CLASS,
+  PRICING_BODY_CLASS,
+  PRICING_FEATURE_CLASS,
+  PRICING_FEATURE_EXCLUDED_CLASS,
+  PRICING_FEATURE_INCLUDED_CLASS,
+  PRICING_FEATURES_CLASS,
+  PRICING_HIGHLIGHTED_CLASS,
+  PRICING_PRICE_CLASS,
+  type PricingFeatureItem,
+  resolveConfigCascade,
+  VISUALLY_HIDDEN_CLASS,
+} from "@asheeui/core";
 import { forwardRef, type HTMLAttributes, type ReactNode } from "react";
 import { CheckIcon } from "../../icons/CheckIcon";
 import { CloseIcon } from "../../icons/CloseIcon";
@@ -22,36 +35,8 @@ import {
   FALLBACK_PRICING_CARD_CONFIG,
   type PricingCardConfig,
 } from "./pricing-card-config";
-import {
-  PRICING_BADGE_CLASS,
-  PRICING_BODY_CLASS,
-  PRICING_FEATURE_CLASS,
-  PRICING_FEATURE_EXCLUDED_CLASS,
-  PRICING_FEATURE_INCLUDED_CLASS,
-  PRICING_FEATURES_CLASS,
-  PRICING_HIGHLIGHTED_CLASS,
-  PRICING_PRICE_CLASS,
-} from "./pricing-card-styles";
 
-/**
- * One line of a plan's feature list.
- */
-export interface PricingFeatureItem {
-  /** Stable identifier for the line. Defaults to its position in the list. */
-  id?: string | number;
-
-  /** What the line says. */
-  label: ReactNode;
-
-  /**
-   * Whether the plan includes this line.
-   * An excluded line also carries the wording "(not included)" for assistive
-   * technology, so the meaning never depends on the visual treatment alone.
-   *
-   * @default true
-   */
-  included?: boolean;
-}
+export type { PricingFeatureItem };
 
 type BasePricingCardProps = PricingCardConfig &
   Omit<HTMLAttributes<HTMLDivElement>, "color" | "title">;
@@ -208,7 +193,10 @@ export const PricingCard = forwardRef<HTMLDivElement, PricingCardProps>(
                       tone={excluded ? "muted" : "default"}>
                       {feature.label}
                       {excluded && (
-                        <span className="sr-only"> (not included)</span>
+                        <span className={VISUALLY_HIDDEN_CLASS}>
+                          {" "}
+                          (not included)
+                        </span>
                       )}
                     </Typography>
                   </li>

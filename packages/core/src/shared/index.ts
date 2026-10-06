@@ -7,3 +7,4 @@ export * from "./section-block";
 export * from "./spacing";
 export * from "./typography";
 export * from "./variant";
+export * from "./visually-hidden";
