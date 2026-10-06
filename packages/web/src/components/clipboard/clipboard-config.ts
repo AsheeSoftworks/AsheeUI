@@ -1,47 +1,17 @@
 /**
  * Clipboard and CopyButton component configuration for AsheeUI.
- * This file defines the configuration type and defaults for the clipboard pair:
- * how long the copied state lasts and how the copy control looks. It registers
- * the default configuration with the component registry and provides fallback
- * values for the cascade resolution system.
- */
-
-import type { Color, Radius, Size, Variant } from "@asheeui/core";
-import { registerComponentDefaults } from "@asheeui/core";
-
-/**
- * Theme configuration options for the clipboard components.
  *
- * Set under `components.clipboard` in the AsheeUI config. Values feed the
- * component-level fallback tier of the theme cascade.
+ * This file registers the values the clipboard pair defaults to on the web, so the
+ * component-level fallback tier of the theme cascade has a value to resolve. The options
+ * themselves, and the types that name them, live in `@asheeui/core`: they are the
+ * framework's clipboard contract rather than a web renderer's, and the native renderer
+ * reads the same ones from the same place. What stays here is the web default values and
+ * the registration that puts them in the web registry.
  */
-export interface ClipboardConfig {
-  /**
-   * How long the copied state lasts, in milliseconds.
-   *
-   * @default 2000
-   */
-  timeout?: number;
 
-  /** Name of the copy control. @default "Copy" */
-  label?: string;
+import { type ClipboardConfig, registerComponentDefaults } from "@asheeui/core";
 
-  /** Name of the copy control once the text is on the clipboard.
-   * @default "Copied" */
-  copiedLabel?: string;
-
-  /** Visual style of the copy control. @default "bordered" */
-  variant?: Variant;
-
-  /** Accent colour of the copy control. @default "primary" */
-  color?: Color;
-
-  /** Density of the copy control. @default "sm" */
-  size?: Size;
-
-  /** Corner rounding of the copy control. Defaults to the framework radius. */
-  radius?: Radius;
-}
+export type { ClipboardConfig };
 
 /**
  * Default config values registered for the clipboard components.
@@ -54,12 +24,6 @@ export const defaultClipboardConfig: ClipboardConfig = {
   color: "primary",
   size: "sm",
 };
-
-declare module "@asheeui/core" {
-  interface ComponentTypeConfigRegistry {
-    clipboard: ClipboardConfig;
-  }
-}
 
 registerComponentDefaults("clipboard", defaultClipboardConfig);
 

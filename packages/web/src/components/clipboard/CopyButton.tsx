@@ -9,7 +9,7 @@
 
 "use client";
 
-import { resolveCascade } from "@asheeui/core";
+import { CLIPBOARD_STATUS_CLASS, resolveCascade } from "@asheeui/core";
 import { forwardRef, type ReactNode } from "react";
 import { CheckIcon } from "../../icons/CheckIcon";
 import { CopyIcon } from "../../icons/CopyIcon";
@@ -17,7 +17,6 @@ import { useAsheeConfig } from "../../libs/context";
 import { Button, type ButtonProps } from "../button/Button";
 import { Clipboard } from "./Clipboard";
 import { FALLBACK_CLIPBOARD_CONFIG } from "./clipboard-config";
-import { CLIPBOARD_STATUS_CLASS } from "./clipboard-styles";
 
 type BaseCopyButtonProps = Omit<
   ButtonProps,
