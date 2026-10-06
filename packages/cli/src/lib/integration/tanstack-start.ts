@@ -91,9 +91,9 @@ export async function buildTanStackStartIntegration(
       replace: `@import "tailwindcss";\n@import "@asheeui/web/styles";`,
       skipIfContentIncludes: STYLES_IMPORT_MARKER,
       notFoundMessage: `Could not find @import "tailwindcss"; in ${cssRelative}`,
-      description: `Add asheeui styles import to ${cssRelative}`,
+      description: `Add the @asheeui/web styles import to ${cssRelative}`,
     });
-    summary.push(`add asheeui styles import to ${cssRelative}`);
+    summary.push(`add the @asheeui/web styles import to ${cssRelative}`);
   }
 
   // 2. __root.tsx Integration

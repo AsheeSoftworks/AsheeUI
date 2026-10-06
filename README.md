@@ -1,4 +1,4 @@
-[![npm version](https://img.shields.io/npm/v/asheeui?style=flat-square&logo=npm)](https://www.npmjs.com/package/asheeui)
+[![npm version](https://img.shields.io/npm/v/@asheeui/web?style=flat-square&logo=npm)](https://www.npmjs.com/package/@asheeui/web)
 [![license](https://img.shields.io/badge/license-Apache--2.0-blue?style=flat-square)](LICENSE)
 [![build](https://img.shields.io/github/actions/workflow/status/AsheeSoftworks/AsheeUI/ci.yml?branch=main&style=flat-square&logo=github)](https://github.com/AsheeSoftworks/AsheeUI/actions/workflows/ci.yml)
 [![GitHub release](https://img.shields.io/github/v/release/AsheeSoftworks/AsheeUI?style=flat-square&logo=github)](https://github.com/AsheeSoftworks/AsheeUI/releases)
@@ -19,7 +19,8 @@ build-time configuration file and no CLI.
 | Documentation and the component reference | [asheeui.com](https://www.asheeui.com) |
 | What the framework cost to build, with the receipt | [asheeui.com/docs/build-cost](https://www.asheeui.com/docs/build-cost) |
 | The company that maintains it | [asheesoftworks.com](https://asheesoftworks.com) |
-| The web package | [npmjs.com/package/asheeui](https://www.npmjs.com/package/asheeui) |
+| The web package | [npmjs.com/package/@asheeui/web](https://www.npmjs.com/package/@asheeui/web) |
+| The umbrella package, for an application that runs on both platforms | [npmjs.com/package/@asheeui/ui](https://www.npmjs.com/package/@asheeui/ui) |
 | The Next.js playground | [next-playground-ashee-saids-projects.vercel.app](https://next-playground-ashee-saids-projects.vercel.app) |
 | The Vite playground | [vite-playground-ashee-saids-projects.vercel.app](https://vite-playground-ashee-saids-projects.vercel.app) |
 | The Expo playground, on a device and in a browser | [expo-playground-ashee-saids-projects.vercel.app](https://expo-playground-ashee-saids-projects.vercel.app) |
@@ -52,8 +53,8 @@ runs:
 
 | Platform | How | State |
 | --- | --- | --- |
-| Web | `asheeui` on React, styled by Tailwind CSS v4 | Published, and what the documentation covers |
-| Mobile | `@asheeui/native` on React Native, through Expo | In this repository; the playground builds for it and exports to the web |
+| Web | `@asheeui/web` on React, styled by Tailwind CSS v4 | Published, and what the documentation covers |
+| Mobile | `@asheeui/native` on React Native, through Expo | Published; the playground builds for it and exports to the web |
 | Desktop | The web application, framed by whatever packages it | Follows the web build |
 
 A colour is decided once and is the same colour on every platform, because a platform
@@ -126,52 +127,67 @@ the two events will be documented as the launch proceeds.
 
 ## Installation
 
-Add `asheeui` with your favorite package manager. Tailwind CSS v4 is required
+Add `@asheeui/ui` with your favorite package manager. Tailwind CSS v4 is required
 as a peer dependency.
+
+`@asheeui/ui` is the umbrella entry point: it resolves to the DOM renderer in a
+browser bundle and to the React Native renderer under Expo and Metro, so one
+import names a component once and renders on both platforms. An application that
+knows its platform can install a renderer instead — `@asheeui/web` or
+`@asheeui/native` — and the stylesheet and the Puck entry point live in
+`@asheeui/web`.
+
+Coming from the unscoped `asheeui` package, the dependency becomes `@asheeui/ui`
+and two specifiers move: `asheeui/styles` becomes `@asheeui/web/styles` and
+`asheeui/puck` becomes `@asheeui/web/puck`. [Migration](docs/migration.md) lists
+every change.
 
 **npm**
 
 ```bash
-npm install asheeui
+npm install @asheeui/ui
 ```
 
 **pnpm**
 
 ```bash
-pnpm add asheeui
+pnpm add @asheeui/ui
 ```
 
 **yarn**
 
 ```bash
-yarn add asheeui
+yarn add @asheeui/ui
 ```
 
 **bun**
 
 ```bash
-bun add asheeui
+bun add @asheeui/ui
 ```
 
 **Deno**
 
 ```bash
-deno add npm:asheeui
+deno add npm:@asheeui/ui
 ```
 
 ## Quick Start
 
-**1. Import the styles** into your global CSS entry file:
+**1. Import the styles** into your global CSS entry file. The stylesheet belongs to
+`@asheeui/web`, which the umbrella depends on; a package manager that wants every
+imported package declared — pnpm, and Yarn with PnP — names `@asheeui/web` in the
+manifest as well.
 
 ```css
 @import "tailwindcss";
-@import "asheeui/styles";
+@import "@asheeui/web/styles";
 ```
 
 **2. Wrap your app root** in `AsheeUIProvider`:
 
 ```tsx
-import { AsheeUIProvider } from "asheeui";
+import { AsheeUIProvider } from "@asheeui/ui";
 import type { ReactNode } from "react";
 
 export function Root({ children }: { children: ReactNode }) {
@@ -189,7 +205,7 @@ config to change the defaults:
 **3. Use the components** anywhere in your app:
 
 ```tsx
-import { Dropmenu } from "asheeui";
+import { Dropmenu } from "@asheeui/ui";
 import { useState } from "react";
 
 export function Example() {
@@ -220,9 +236,9 @@ the same components are available to a visual builder:
 
 ```tsx
 import {
-  Container, CTA, FeatureGrid, Footer, Grid, Hero, Navbar,
+  Button, Card, Container, CTA, FeatureGrid, Footer, Grid, Hero, Navbar,
   Page, PageContent, Section, Typography,
-} from "asheeui";
+} from "@asheeui/ui";
 
 export function Home() {
   return (
@@ -258,7 +274,7 @@ export function Home() {
 A [Puck](docs/puck.md) editor builds the same page from the same components:
 
 ```tsx
-import { asheePuckConfig } from "asheeui/puck";
+import { asheePuckConfig } from "@asheeui/web/puck";
 
 <Puck config={asheePuckConfig} data={page} onPublish={save} />;
 ```
@@ -303,9 +319,10 @@ via `https://asheeui.com/llms.txt`.
 ## Key Links
 
 - Documentation: https://asheeui.com
-- npm package: https://www.npmjs.com/package/asheeui
+- npm package: https://www.npmjs.com/package/@asheeui/web
+- The umbrella package: https://www.npmjs.com/package/@asheeui/ui
 - GitHub repository: https://github.com/AsheeSoftworks/AsheeUI
-- Browse the components: https://github.com/AsheeSoftworks/AsheeUI/tree/main/packages/ui/src/components
+- Browse the components: https://github.com/AsheeSoftworks/AsheeUI/tree/main/packages/web/src/components
 - Releases: https://github.com/AsheeSoftworks/AsheeUI/releases
 - Commenting and JSDoc standards: https://github.com/AsheeSoftworks/AsheeUI/blob/main/docs/commenting.md
 

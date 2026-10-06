@@ -135,7 +135,7 @@ describe("public entry point", () => {
 
   it("keeps the section kit and the Puck configuration off the main entry point", () => {
     // The kit is an implementation detail the patterns share, and the Puck
-    // configuration is deliberately behind its own subpath (`asheeui/puck`),
+    // configuration is deliberately behind its own subpath (`@asheeui/web/puck`),
     // so an application that does not build pages never loads it.
     expect(AsheeUI).not.toHaveProperty("SectionHeading");
     expect(AsheeUI).not.toHaveProperty("ActionGroup");

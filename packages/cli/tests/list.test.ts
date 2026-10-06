@@ -55,7 +55,7 @@ const BUNDLED_ENTRY_SOURCE = [
 ].join("\n");
 
 /**
- * Scaffold an `asheeui` package whose public entry module re-exports a known
+ * Scaffold a `@asheeui/web` package whose public entry module re-exports a known
  * component set. Directories that are never re-exported still exist on disk,
  * so the tests can prove they do not reach the inventory.
  */
@@ -70,7 +70,7 @@ async function scaffoldPackage(
   await write(
     join("asheeui-pkg", "package.json"),
     JSON.stringify({
-      name: "asheeui",
+      name: "@asheeui/web",
       main: `./${entry}`,
       ...options.packageJson,
     }),
@@ -166,7 +166,7 @@ describe("discoverPublicComponents", () => {
   it("returns an empty list when the package has no entry module", async () => {
     await write(
       join("asheeui-pkg", "package.json"),
-      JSON.stringify({ name: "asheeui" }),
+      JSON.stringify({ name: "@asheeui/web" }),
     );
 
     const components = await discoverPublicComponents(join(dir, "asheeui-pkg"));
@@ -376,10 +376,10 @@ const PUBLIC_COMPONENT_INVENTORY = [
 ] as const;
 
 describe("public component inventory", () => {
-  it("matches the reconciled inventory of the asheeui package", async () => {
+  it("matches the reconciled inventory of @asheeui/web", async () => {
     const packageRoot = await resolveAsheeuiPackage({ cwd: dir });
     if (!packageRoot) {
-      throw new Error("expected to resolve the asheeui package");
+      throw new Error("expected to resolve the renderer package");
     }
 
     const components = await discoverPublicComponents(packageRoot);
@@ -390,7 +390,7 @@ describe("public component inventory", () => {
   it("never reports an internal helper or a non-component module", async () => {
     const packageRoot = await resolveAsheeuiPackage({ cwd: dir });
     if (!packageRoot) {
-      throw new Error("expected to resolve the asheeui package");
+      throw new Error("expected to resolve the renderer package");
     }
 
     const components = await discoverPublicComponents(packageRoot);

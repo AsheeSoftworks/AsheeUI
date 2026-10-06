@@ -34,7 +34,7 @@ export interface InitPlan {
  * A `write` action is emitted for each line in `integrationSummary`, an
  * `install` action for each missing dependency, and a single `edit`
  * action when the project already has a global stylesheet (so the
- * init flow will inject the asheeui import into it).
+ * init flow will inject the @asheeui/web styles import into it).
  *
  * @param integrationSummary - Lines produced by the integration builder.
  * @param missingDependencies - Package names that still need to be installed.

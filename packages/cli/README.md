@@ -63,7 +63,7 @@ npx asheeui i
 1. Detects your framework (Next.js, TanStack Start, or Vite + React)
 2. Checks for existing setup elements to prevent duplicate imports
 3. Creates `asheeui.config.ts` in your project root (skipped if one already exists)
-4. Safely appends `@import "asheeui/styles"` to your global CSS file if missing
+4. Safely appends `@import "@asheeui/web/styles"` to your global CSS file if missing
 5. Wraps your root component with `AsheeUIProvider` and imports the `config`
 6. Installs missing peer dependencies using your detected package manager (`npm`, `pnpm`, `yarn`, or `bun`)
 
@@ -79,7 +79,7 @@ npx asheeui init --yes
 
 ### `list`
 
-Lists all available UI components directly from the `asheeui` library package (an installed copy, a local registry path, or the package source in this monorepo).
+Lists all available UI components directly from the `@asheeui/web` package (an installed copy, a local registry path, or the package source in this monorepo).
 
 ```bash
 npx asheeui list
@@ -92,8 +92,8 @@ npx asheeui l
 
 | Option | Type | Description |
 | --- | --- | --- |
-| `-d, --dir <path>` | string | Project directory used to locate the `asheeui` package (default: current directory) |
-| `--path <path>` | string | Path to an `asheeui` package root or local registry folder |
+| `-d, --dir <path>` | string | Project directory used to locate the `@asheeui/web` package (default: current directory) |
+| `--path <path>` | string | Path to a `@asheeui/web` package root or local registry folder |
 | `--json` | flag | Output the component list as JSON |
 | `-h, --help` | flag | Show help for command |
 
@@ -118,7 +118,7 @@ npx asheeui dr
 **What it checks**
 
 - Config file existence (`asheeui.config.ts` or `.js` in the project root or `src/`)
-- Global CSS style import (`@import "asheeui/styles"`)
+- Global CSS style import (`@import "@asheeui/web/styles"`)
 - Required peer dependencies (`react`, `react-dom`, `tailwindcss`, `clsx`, `tailwind-merge`)
 - `AsheeUIProvider` wrapping in the root entrypoint
 - Optional theme augmentation (`AsheeThemeNameRegistry`) — informational
@@ -143,7 +143,7 @@ npx asheeui f
 
 **What it fixes**
 
-- Appends missing `@import "asheeui/styles"` to your global CSS (or creates `src/index.css`)
+- Appends missing `@import "@asheeui/web/styles"` to your global CSS (or creates `src/index.css`)
 - Generates a default `asheeui.config.ts` if missing
 - Wraps your root with `AsheeUIProvider`
 - Installs missing peer dependencies automatically with your detected package manager (`--skip-install` disables this)
@@ -155,7 +155,7 @@ npx asheeui f
 The CLI creates `asheeui.config.ts` in your project root:
 
 ```ts
-import { type ExternalConfig } from "asheeui";
+import { type ExternalConfig } from "@asheeui/web";
 
 const config: ExternalConfig = {
   defaultTheme: "light",

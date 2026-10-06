@@ -11,7 +11,7 @@ import { pathExists, readTextFile, toRelativePath } from "../common/file-utils";
 
 /**
  * Detect an optional custom theme registry (`.d.ts` files declaring the
- * `"asheeui"` module or `AsheeThemeNameRegistry`).
+ * `"@asheeui/web"` module or `AsheeThemeNameRegistry`).
  *
  * Always informational: this check never fails the project. It is
  * useful for projects that need custom theme tokens.

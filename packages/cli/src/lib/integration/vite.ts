@@ -77,7 +77,7 @@ export async function buildViteIntegration(
     summary.push(`skip creating ${configFile} (already exists)`);
   }
 
-  // 1. Add asheeui styles import to the global stylesheet
+  // 1. Add the @asheeui/web styles import to the global stylesheet
   if (indexCssPath) {
     const cssRelative = toProjectRelative(directory, indexCssPath);
     fileEdits.push({
@@ -86,9 +86,9 @@ export async function buildViteIntegration(
       replace: `@import "tailwindcss";\n@import "@asheeui/web/styles";`,
       skipIfContentIncludes: STYLES_IMPORT_MARKER,
       notFoundMessage: `Could not find @import "tailwindcss"; in ${cssRelative}`,
-      description: `Add asheeui styles import to ${cssRelative}`,
+      description: `Add the @asheeui/web styles import to ${cssRelative}`,
     });
-    summary.push(`add asheeui styles import to ${cssRelative}`);
+    summary.push(`add the @asheeui/web styles import to ${cssRelative}`);
   } else {
     summary.push("skip CSS injection (no global stylesheet found)");
   }

@@ -33,7 +33,7 @@ function copyStyles(): Plugin {
  * Rollup drops barrel files (index.ts that only re-export) during bundling,
  * leaving only the implementation modules in dist. This plugin regenerates
  * the missing index.js barrels so import maps like
- * "asheeui/button" -> dist/components/button/index.js resolve at runtime.
+ * "@asheeui/web/button" -> dist/components/button/index.js resolve at runtime.
  */
 function generateBarrels(): Plugin {
   return {
@@ -133,7 +133,7 @@ export default defineConfig({
   build: {
     lib: {
       // Two entries: the framework itself, and the Puck integration behind its
-      // own subpath (`asheeui/puck`). Rollup only emits a module that the graph
+      // own subpath (`@asheeui/web/puck`). Rollup only emits a module that the graph
       // reaches, and the main entry deliberately does not import the Puck layer,
       // so the subpath has to be an entry of its own or it would ship
       // declarations without an implementation.

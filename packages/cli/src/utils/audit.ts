@@ -2,7 +2,7 @@
  * Shared audit utilities for AsheeUI CLI.
  *
  * These helpers are the single source of truth for verifying whether an
- * `asheeui` setup element already exists on disk. They are consumed by the
+ * AsheeUI setup element already exists on disk. They are consumed by the
  * `doctor` command (reporting), the `fix` command (repairing) and the `init`
  * command (guarding against duplicate writes/edits).
  */
@@ -14,7 +14,7 @@ import { discoverConfig } from "./config-discovery";
 // Markers.
 
 /**
- * Substring that identifies an `asheeui` stylesheet import in a CSS file.
+ * Substring that identifies the AsheeUI stylesheet import in a CSS file.
  */
 export const STYLES_IMPORT_MARKER = "@asheeui/web/styles";
 
@@ -74,7 +74,9 @@ export function containsStylesImport(content: string): boolean {
 
 /**
  * Test whether `content` already references the root provider, either by
- * rendering `<AsheeUIProvider>` or by importing from `asheeui`.
+ * rendering `<AsheeUIProvider>` or by importing from an AsheeUI package. The
+ * test is a substring on `asheeui`, so it matches `@asheeui/web`, `@asheeui/ui`
+ * and the unscoped `asheeui` name the library published under before 2.2.
  *
  * @param content - File source to scan.
  * @returns `true` when a root provider reference is detected.

@@ -1,4 +1,4 @@
-# asheeui
+# @asheeui/web
 
 A React UI framework built on Tailwind CSS v4. Accessible, config-driven
 components, a layout system, the sections a page is made of, and a Puck
@@ -14,7 +14,7 @@ integration behind their own entry point.
   and `AuthLayout` for application pages.
 - **Page sections** — `Navbar`, `Hero`, `FeatureGrid`, `CTA`, `Testimonials`,
   `PricingCard` and `Footer`, each taking its actions as configuration.
-- **Puck integration** — `asheeui/puck` exposes the same components as builder
+- **Puck integration** — `@asheeui/web/puck` exposes the same components as builder
   blocks, so an application, an editor and a published page share one
   implementation. `@puckeditor/core` is an optional peer dependency.
 - **Tailwind CSS v4** — class names are static and complete, and colours resolve
@@ -35,18 +35,18 @@ integration behind their own entry point.
 ## Installation
 
 ```bash
-npm install asheeui
+npm install @asheeui/web
 ```
 
 Import the stylesheet once and wrap your root in the provider:
 
 ```css
 @import "tailwindcss";
-@import "asheeui/styles";
+@import "@asheeui/web/styles";
 ```
 
 ```tsx
-import { AsheeUIProvider } from "asheeui";
+import { AsheeUIProvider } from "@asheeui/web";
 ```
 
 The optional `@asheeui/cli` package can scaffold that setup and check it, but it
@@ -66,7 +66,7 @@ The framework documentation lives in the repository:
 ## Quick start
 
 ```tsx
-import { Button, Page, PageContent, Hero } from "asheeui";
+import { Button, Page, PageContent, Hero } from "@asheeui/web";
 
 export function App() {
   return (

@@ -93,7 +93,7 @@ export function renderFixReport(result: FixResult): void {
     console.log(
       `${paint(ANSI.green, "✔")} ${paint(
         ANSI.bold,
-        "All checks passed. Your asheeui setup is healthy.",
+        "All checks passed. Your AsheeUI setup is healthy.",
       )}`,
     );
   } else {

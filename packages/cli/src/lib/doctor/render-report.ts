@@ -105,7 +105,7 @@ export function renderDoctorReport(
 
   if (failed.length === 0 && warned.length === 0) {
     console.log(
-      `${green("✔")} ${bold("All checks passed! Your asheeui setup looks great.")}`,
+      `${green("✔")} ${bold("All checks passed! Your AsheeUI setup looks great.")}`,
     );
   } else if (uniqueFixes.length > 0) {
     console.log(bold(`Recommended fixes (${uniqueFixes.length}):`));

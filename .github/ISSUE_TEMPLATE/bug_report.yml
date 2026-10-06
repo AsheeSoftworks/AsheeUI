@@ -57,8 +57,8 @@ body:
     id: asheeui-version
     attributes:
       label: AsheeUI version
-      description: The version of `asheeui` you are using, for example from your lockfile or `package.json`.
-      placeholder: 0.6.13
+      description: The version of `@asheeui/ui`, `@asheeui/web` or `@asheeui/native` you are using, for example from your lockfile or `package.json`.
+      placeholder: 2.2.0
     validations:
       required: true
   - type: input
