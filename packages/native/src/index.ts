@@ -46,6 +46,7 @@ export * from "./components/split";
 export * from "./components/stepper";
 export * from "./components/switch";
 export * from "./components/tabs";
+export * from "./components/testimonials";
 export * from "./components/text";
 export * from "./components/textarea";
 export * from "./components/toast";
