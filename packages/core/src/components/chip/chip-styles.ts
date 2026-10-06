@@ -98,7 +98,8 @@ export const CHIP_PRESSABLE_CLASS =
 export const CHIP_DOT_CLASS = "shrink-0 rounded-full";
 
 /** The box around an icon, an avatar or the remove control. */
-export const CHIP_SLOT_CLASS = "inline-flex items-center justify-center shrink-0";
+export const CHIP_SLOT_CLASS =
+  "inline-flex items-center justify-center shrink-0";
 
 /** The box around an avatar, which clips it to a circle. */
 export const CHIP_AVATAR_CLASS =
@@ -284,4 +285,3 @@ export const NATIVE_CHIP_CLOSE_GLYPH = "×";
 
 /** The chip's disabled treatment, which dims it without removing the space it holds. */
 export const NATIVE_CHIP_DISABLED_CLASS = "opacity-50";
-

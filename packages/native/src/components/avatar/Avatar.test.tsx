@@ -74,7 +74,9 @@ describe("Native Avatar", () => {
   });
 
   it("carries the initials when there is no picture", async () => {
-    const view = await renderAvatar(<Avatar testID="avatar" name="Ada Lovelace" />);
+    const view = await renderAvatar(
+      <Avatar testID="avatar" name="Ada Lovelace" />,
+    );
 
     expect(view.getByText("AL")).toBeTruthy();
   });
@@ -91,7 +93,11 @@ describe("Native Avatar", () => {
 
   it("lets a consumer replace the initials with its own fallback", async () => {
     const view = await renderAvatar(
-      <Avatar testID="avatar" name="Ada Lovelace" fallback={<Text>Guest</Text>} />,
+      <Avatar
+        testID="avatar"
+        name="Ada Lovelace"
+        fallback={<Text>Guest</Text>}
+      />,
     );
 
     expect(view.getByText("Guest")).toBeTruthy();
@@ -108,7 +114,9 @@ describe("Native Avatar", () => {
   });
 
   it("falls back to the initials once the picture fails to load", async () => {
-    const view = await renderAvatar(<Avatar testID="avatar" name="Ada Lovelace" src="/missing.png" />);
+    const view = await renderAvatar(
+      <Avatar testID="avatar" name="Ada Lovelace" src="/missing.png" />,
+    );
     const [picture] = descendantsWithProp(view.getByTestId("avatar"), "source");
 
     await fireEvent(picture, "error", new Error("The picture failed"));
@@ -117,9 +125,12 @@ describe("Native Avatar", () => {
   });
 
   it("resolves its diameter, rounding and accent through the cascade", async () => {
-    const view = await renderAvatar(<Avatar testID="avatar" name="Ada Lovelace" />, {
-      components: { avatar: { size: "lg", radius: "md", color: "danger" } },
-    });
+    const view = await renderAvatar(
+      <Avatar testID="avatar" name="Ada Lovelace" />,
+      {
+        components: { avatar: { size: "lg", radius: "md", color: "danger" } },
+      },
+    );
     const avatar = view.getByTestId("avatar");
 
     expect(String(avatar.props.className)).toContain("h-12 w-12");

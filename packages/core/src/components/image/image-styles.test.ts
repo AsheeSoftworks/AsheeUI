@@ -20,7 +20,9 @@ const RATIOS: ImageRatioKey[] = ["auto", "square", "video", "portrait"];
 describe("the image's fit", () => {
   it("describes every strategy on both platforms", () => {
     expect(Object.keys(IMAGE_FIT_CLASS).sort()).toEqual([...FITS].sort());
-    expect(Object.keys(NATIVE_IMAGE_RESIZE_MODE).sort()).toEqual([...FITS].sort());
+    expect(Object.keys(NATIVE_IMAGE_RESIZE_MODE).sort()).toEqual(
+      [...FITS].sort(),
+    );
   });
 
   it("covers and contains on both platforms", () => {

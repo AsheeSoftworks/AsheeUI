@@ -20,8 +20,8 @@
  */
 
 import type { Size } from "../../shared/radius";
-import type { ColorRole } from "../../tokens";
 import type { Variant } from "../../shared/variant";
+import type { ColorRole } from "../../tokens";
 
 // ─── Web ──────────────────────────────────────────────────────────────────────
 
@@ -123,5 +123,4 @@ export const NATIVE_AVATAR_TEXT_BLOCK_CLASS =
  * The web states this on the frame (`font-medium uppercase`); the platform states it on
  * the text, because its compiler reads a class on the element that carries it.
  */
-export const NATIVE_AVATAR_INITIALS_CLASS =
-  "font-medium text-center uppercase";
+export const NATIVE_AVATAR_INITIALS_CLASS = "font-medium text-center uppercase";
