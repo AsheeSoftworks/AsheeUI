@@ -11,7 +11,13 @@
 
 "use client";
 
-import { cn, resolveConfigCascade } from "@asheeui/core";
+import {
+  cn,
+  MARKETING_LAYOUT_BACKGROUND_CLASS,
+  MARKETING_LAYOUT_BASE_CLASS,
+  MARKETING_LAYOUT_MAIN_CLASS,
+  resolveConfigCascade,
+} from "@asheeui/core";
 import {
   type ElementType,
   forwardRef,
@@ -24,11 +30,6 @@ import {
   FALLBACK_MARKETING_LAYOUT_CONFIG,
   type MarketingLayoutConfig,
 } from "./marketing-layout-config";
-import {
-  MARKETING_LAYOUT_BACKGROUND_CLASS,
-  MARKETING_LAYOUT_BASE_CLASS,
-  MARKETING_LAYOUT_MAIN_CLASS,
-} from "./marketing-layout-styles";
 
 type BaseMarketingLayoutProps = MarketingLayoutConfig &
   Omit<HTMLAttributes<HTMLDivElement>, "color">;

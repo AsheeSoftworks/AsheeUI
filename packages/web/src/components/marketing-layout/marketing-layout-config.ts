@@ -1,53 +1,23 @@
 /**
  * MarketingLayout component configuration for AsheeUI.
- * This file defines the configuration type and defaults for the marketing page
- * composition: whether it renders a skip link, what that link says, and which
- * background it paints. It registers the default configuration with the
- * component registry and provides fallback values for the cascade resolution
- * system.
- */
-
-import { registerComponentDefaults } from "@asheeui/core";
-
-/**
- * The background a marketing composition paints behind its content.
  *
- * - `default`: the theme background, for a page whose sections carry their own
- *   surfaces.
- * - `muted`: a recessed background, for a page whose sections are cards.
+ * This file registers the values the marketing composition defaults to on the web, so the
+ * component-level tier of the theme cascade has a value to resolve. The options themselves,
+ * and the types that name them, live in `@asheeui/core`: they are the framework's
+ * marketing-layout contract rather than a web renderer's, and the native renderer reads the
+ * same ones from the same place. What stays here is the web default values and the
+ * registration that puts them in the web registry.
  */
-export type MarketingLayoutBackground = "default" | "muted";
 
-/**
- * Theme configuration options for the MarketingLayout component.
- *
- * Set under `components.marketinglayout` in the AsheeUI config. Values feed the
- * component-level tier of the theme cascade.
- */
-export interface MarketingLayoutConfig {
-  /**
-   * Whether the composition renders a skip link to its main region.
-   * A marketing page leads with navigation, so a keyboard reader needs to be
-   * able to pass it; the link is rendered as the first focusable element.
-   *
-   * @default true
-   */
-  skipLink?: boolean;
+import {
+  type MarketingLayoutConfig,
+  registerComponentDefaults,
+} from "@asheeui/core";
 
-  /**
-   * Wording of the skip link.
-   *
-   * @default "Skip to content"
-   */
-  skipLinkLabel?: string;
-
-  /**
-   * Background the composition paints.
-   *
-   * @default "default"
-   */
-  background?: MarketingLayoutBackground;
-}
+export type {
+  MarketingLayoutBackground,
+  MarketingLayoutConfig,
+} from "@asheeui/core";
 
 /**
  * Default config values registered for the MarketingLayout component.
@@ -59,12 +29,6 @@ export const defaultMarketingLayoutConfig: MarketingLayoutConfig = {
   skipLinkLabel: "Skip to content",
   background: "default",
 };
-
-declare module "@asheeui/core" {
-  interface ComponentTypeConfigRegistry {
-    marketinglayout: MarketingLayoutConfig;
-  }
-}
 
 registerComponentDefaults("marketinglayout", defaultMarketingLayoutConfig);
 

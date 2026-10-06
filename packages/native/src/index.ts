@@ -32,6 +32,7 @@ export * from "./components/image";
 export * from "./components/input";
 export * from "./components/link";
 export * from "./components/loading-state";
+export * from "./components/marketing-layout";
 export * from "./components/marquee";
 export * from "./components/modal";
 export * from "./components/multi-select";
