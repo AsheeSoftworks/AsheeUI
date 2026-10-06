@@ -35,6 +35,7 @@ export * from "./marquee";
 export * from "./modal";
 export * from "./page";
 export * from "./pin-input";
+export * from "./pricing-card";
 export * from "./radio";
 export * from "./search-input";
 export * from "./skeleton";

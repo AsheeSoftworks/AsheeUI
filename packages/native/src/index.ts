@@ -37,6 +37,7 @@ export * from "./components/modal";
 export * from "./components/multi-select";
 export * from "./components/page";
 export * from "./components/pin-input";
+export * from "./components/pricing-card";
 export * from "./components/radio";
 export * from "./components/search-input";
 export * from "./components/skeleton";
