@@ -10,7 +10,13 @@
 
 "use client";
 
-import { resolveConfigCascade } from "@asheeui/core";
+import {
+  resolveConfigCascade,
+  TESTIMONIAL_HEADING_CLASS,
+  TESTIMONIAL_PERSON_CLASS,
+  TESTIMONIAL_QUOTE_CLASS,
+  type TestimonialItem,
+} from "@asheeui/core";
 import {
   type ElementType,
   forwardRef,
@@ -29,37 +35,8 @@ import {
   FALLBACK_TESTIMONIALS_CONFIG,
   type TestimonialsConfig,
 } from "./testimonials-config";
-import {
-  TESTIMONIAL_HEADING_CLASS,
-  TESTIMONIAL_PERSON_CLASS,
-  TESTIMONIAL_QUOTE_CLASS,
-} from "./testimonials-styles";
 
-/**
- * One attributed quote.
- */
-export interface TestimonialItem {
-  /** Stable identifier for the quote. Defaults to its position in the list. */
-  id?: string | number;
-
-  /** What the person said. */
-  quote: ReactNode;
-
-  /** Name of the person. */
-  name: string;
-
-  /** Role or organisation of the person. */
-  role?: string;
-
-  /** Picture of the person, passed to the framework's `Avatar`. */
-  avatarSrc?: string;
-
-  /** Component that replaces the avatar picture, such as a framework image. */
-  avatarComponent?: ElementType;
-
-  /** Additional props for that component. */
-  avatarComponentProps?: Record<string, unknown>;
-}
+export type { TestimonialItem };
 
 type BaseTestimonialsProps = TestimonialsConfig &
   Omit<HTMLAttributes<HTMLElement>, "color" | "title">;
