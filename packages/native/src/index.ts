@@ -36,6 +36,7 @@ export * from "./components/marquee";
 export * from "./components/modal";
 export * from "./components/multi-select";
 export * from "./components/page";
+export * from "./components/pagination";
 export * from "./components/pin-input";
 export * from "./components/pricing-card";
 export * from "./components/radio";
