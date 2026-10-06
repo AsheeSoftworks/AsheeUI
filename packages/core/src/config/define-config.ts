@@ -16,8 +16,8 @@ import type { ExternalConfig } from "./config";
  *
  * @example
  * ```tsx
- * // ashee.config.ts
- * import { defineConfig } from 'asheeui';
+ * // asheeui.config.ts
+ * import { defineConfig } from "@asheeui/web";
  *
  * export const config = defineConfig({
  *   defaultTheme: 'dark',

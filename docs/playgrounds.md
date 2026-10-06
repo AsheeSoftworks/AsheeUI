@@ -6,11 +6,12 @@ They are not three demo applications. They are three framework entry points into
 exercised the way a consumer uses it: server-rendered, hydrated, in a real build,
 in the framework's own router.
 
-Expo is the planned fourth entry point. It is not in this release, because the
-native package does not yet carry every component the shared application renders:
-a copied Expo project would be a promise the framework cannot keep. `asheeui
-playground expo` lists the target and refuses it with that reason, and the
-remaining native components are the increment that unblocks it.
+Expo is the planned fourth entry point. It is not in this release, because
+`@asheeui/native` is not published yet — the component set is complete, and what the
+package waits on is a consumer's own screens rather than another component — so a
+copied Expo project could not install the framework it demonstrates. `asheeui
+playground expo` lists the target and refuses it with that reason, and the native
+package's release is the increment that unblocks it.
 
 ## One application, three doors
 

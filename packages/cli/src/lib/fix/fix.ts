@@ -256,7 +256,7 @@ async function fixCss(
         id: check.id,
         title: check.title,
         status: "already",
-        message: `asheeui styles import already present in ${cssPath}.`,
+        message: `@asheeui/web styles import already present in ${cssPath}.`,
       };
     }
     if (content !== null) {
@@ -291,7 +291,7 @@ async function fixCss(
       title: check.title,
       status: "fixed",
       message:
-        "Created src/index.css with tailwindcss + asheeui styles imports. Manual step: import it from your application entrypoint if it is not already imported.",
+        "Created src/index.css with the tailwindcss and @asheeui/web styles imports. Manual step: import it from your application entrypoint if it is not already imported.",
     };
   } catch (err) {
     return {
@@ -308,8 +308,8 @@ async function fixCss(
  * tailwindcss import when one exists, or at the top of the file when
  * there is no tailwindcss import.
  *
- * The operation is idempotent: content that already imports asheeui
- * styles is returned unchanged.
+ * The operation is idempotent: content that already imports the
+ * `@asheeui/web` styles is returned unchanged.
  *
  * @param content - Original CSS file content.
  * @returns The updated CSS content.

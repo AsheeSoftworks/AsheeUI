@@ -40,27 +40,33 @@ pnpm build
 pnpm test
 ```
 
-The repository is a pnpm + Turborepo monorepo with these publishable packages:
+The repository is a pnpm + Turborepo monorepo built from these packages:
 
 | Package | Purpose |
 | --- | --- |
-| `asheeui` | React component library (`packages/ui`) |
+| `@asheeui/ui` | The umbrella entry point a consumer installs (`packages/ui`); it routes an import to the renderer for the platform |
+| `@asheeui/core` | The platform-neutral layer: the tokens, the contracts, the compatibility matrix, the registry, the cascade and the class dictionaries (`packages/core`) |
+| `@asheeui/web` | The DOM renderer: the components, the icons, the Puck integration and the theme binding (`packages/web`) |
+| `@asheeui/native` | The React Native renderer (`packages/native`) |
 | `@asheeui/cli` | Scaffolding and doctor/fix CLI (`packages/cli`) |
 
-The workspace also contains private packages that are never published: the
-end-to-end gallery (`packages/e2e-gallery`), the three playground applications
-that render it (see [Testing Local Changes](#testing-local-changes)), and the shared
-contracts and native packages (`packages/shared`, `packages/native`), which are
-published in the increment that completes the native component set — the reason and
-the work it takes are in [React Native](docs/native.md).
+Every package is released except `@asheeui/native`, which is written and tested and
+deliberately held back: a package is published when a consumer can build a real screen
+with it, and its component set is complete, so what the release waits on is a
+consumer's own screens rather than another increment. The reason is in
+[React Native](docs/native.md).
 
-A published package may depend only on published packages. `asheeui` depends on
-`@floating-ui/react`, `clsx` and `tailwind-merge` and on nothing from this
-workspace, so a consumer's install resolves without this repository. Check it
+The workspace also contains private packages that are never published: the
+end-to-end gallery (`packages/e2e-gallery`) and the playground applications that
+render it (see [Testing Local Changes](#testing-local-changes)).
+
+A published package may depend only on published packages, so a consumer's install
+resolves without this repository: the renderers depend on `@asheeui/core`, which is
+published with them, and on `@floating-ui/react`, `clsx` and `tailwind-merge`. Check it
 against the released manifest rather than the local one when a dependency changes:
 
 ```bash
-npm pack asheeui && tar -xzOf asheeui-*.tgz package/package.json | grep -A 6 dependencies
+npm pack @asheeui/web && tar -xzOf asheeui-web-*.tgz package/package.json | grep -A 6 dependencies
 ```
 
 Workspace-wide pnpm settings live in `pnpm-workspace.yaml`. Dependency overrides
@@ -83,16 +89,17 @@ the case that matters most: `pnpm why react` must report one version, and
 
 ```bash
 pnpm build   # build every package and run the TypeScript checks
-pnpm test    # run every package test suite (Vitest)
+pnpm test    # run every package test suite (Jest in the native package, Vitest elsewhere)
 pnpm lint    # lint with Biome
 pnpm check   # lint and check formatting with Biome
 pnpm fix     # lint and format, writing fixes in place
 ```
 
 There is no separate `typecheck` script. TypeScript is checked while packages
-build, so run `pnpm build` before pushing. `pnpm test` runs every package's
-Vitest suite through Turborepo, which includes the CLI, the component library,
-the end-to-end gallery and the three playground applications.
+build, so run `pnpm build` before pushing. `pnpm test` runs every package's suite
+through Turborepo — Vitest everywhere but the native package, which runs on Jest, the
+platform's own runner — and the CLI, the core, the two renderers, the end-to-end
+gallery and the playground applications are all included.
 
 4. Add or update tests for any behavior change. New exported APIs must ship
    with TSDoc/JSDoc annotations and an `@example`, per the
@@ -127,12 +134,13 @@ To try a change by hand, run a playground's development server, for example
 build the package and link it into a separate scratch project with pnpm:
 
 ```bash
-pnpm --filter asheeui build
+pnpm --filter @asheeui/ui build
 cd ../scratch-app
 pnpm link ../asheeui/packages/ui
 ```
 
-Use `../asheeui/packages/cli` when you are working on the CLI. `pnpm link`
+Use `../asheeui/packages/web` when the renderer itself is the change, or
+`../asheeui/packages/cli` when you are working on the CLI. `pnpm link`
 points the scratch project at the built package, so rebuild after each change.
 
 ## Changeset Workflow
@@ -220,11 +228,11 @@ tick, a tag and nothing to install.
 
 A good changeset is short and specific. The front matter lists the packages and
 the bump type, and the body describes the change in the same style used in
-[CHANGELOG.md](packages/ui/CHANGELOG.md):
+[CHANGELOG.md](packages/web/CHANGELOG.md):
 
 ```markdown
 ---
-"asheeui": patch
+"@asheeui/web": patch
 ---
 
 Fixed the SelectMenu dropdown lagging when the page scrolls with the menu open.
@@ -234,7 +242,7 @@ When a change spans packages, list each one in the front matter:
 
 ```markdown
 ---
-"asheeui": minor
+"@asheeui/web": minor
 "@asheeui/cli": patch
 ---
 
@@ -395,23 +403,34 @@ in render if a config tier should be able to override it.
 ## Adding a New Component
 
 Components follow a repeatable layout under
-`packages/ui/src/components/<name>/`:
+`packages/web/src/components/<name>/`:
 
 - `<Name>.tsx` for the implementation and its JSDoc header.
-- `<name>-config.ts` for the config type, the `FALLBACK_<NAME>_CONFIG` object,
-  and the `registerComponentDefaults("<name>", ...)` call.
-- `<name>-styles.ts` for class maps when the component needs them.
+- `<name>-config.ts` for the `FALLBACK_<NAME>_CONFIG` object and the
+  `registerComponentDefaults("<name>", ...)` call.
+- `<name>-styles.ts` for the class maps the component keeps to itself.
 - `index.ts` that re-exports the component and its public types.
+
+The parts both platforms read live under `packages/core/src/components/<name>/`
+instead: the option type, the type augmentation that makes `components.<name>` a
+known configuration section, and one module holding every class string both
+renderers compile, per platform. A web component re-exports the type that moved, so
+the package's public surface is unchanged, and the native component reads the same
+module.
 
 To add one:
 
-1. Create the folder and the files above, and resolve themeable values through
+1. Create the folders and the files above, and resolve themeable values through
    the cascade described in the previous section.
-2. Add `export * from "./components/<name>";` to
-   `packages/ui/src/index.ts`, keeping the export list alphabetical.
-3. Document the component and its props with the JSDoc structure above.
-4. Add a changeset, because `asheeui` is a published package.
-5. Link the package into a scratch project to confirm it renders in a real app,
+2. Record the platform decision in `packages/core/src/matrix.ts`. The matrix test
+   and the parity check both read it, so a component cannot ship for one platform
+   without a decision being stated for it.
+3. Add `export * from "./components/<name>";` to
+   `packages/web/src/index.ts`, keeping the export list alphabetical.
+4. Document the component and its props with the JSDoc structure above.
+5. Add a changeset, because `asheeui`, `@asheeui/core` and `@asheeui/web` are
+   published packages.
+6. Link the package into a scratch project to confirm it renders in a real app,
    as described in [Testing Local Changes](#testing-local-changes).
 
 ## Questions

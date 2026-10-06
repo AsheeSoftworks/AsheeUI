@@ -28,21 +28,24 @@ release notes.
 
 ## 2.2.0
 
-The library is split into three packages, and the components move out of the
+The library is split into four packages, and the components move out of the
 `asheeui` name into the renderer that owns them:
 
 | Before | After |
 | --- | --- |
 | The components in `asheeui` | `@asheeui/web`, the DOM renderer |
 | `@asheeui/shared` | `@asheeui/core`, the platform-neutral layer |
+| `asheeui` | `@asheeui/ui`, the umbrella entry point |
 | `asheeui/styles` | `@asheeui/web/styles` |
 | `asheeui/puck` | `@asheeui/web/puck` |
 
-`asheeui` keeps its name and becomes the umbrella entry point over the two renderers:
-an import that names a component resolves to `@asheeui/web` in a browser bundle and to
-`@asheeui/native` under Expo and Metro, so a component imported from `asheeui` renders
-on both platforms without a second specifier. The subpaths did move, so a stylesheet or
-a Puck configuration imported from `asheeui` is the change to make.
+The umbrella entry point is scoped like the rest of the family rather than named after
+the library: `@asheeui/ui` resolves to `@asheeui/web` in a browser bundle and to
+`@asheeui/native` under Expo and Metro, so one import names a component once and renders
+on both platforms without a second specifier. An existing `"asheeui"` dependency is
+replaced by `"@asheeui/ui"`; the unscoped `asheeui` name is deprecated in this release
+and points at this file. A stylesheet or a Puck configuration imported from `asheeui` is
+the other change to make — those subpaths moved to `@asheeui/web`.
 
 Installing `@asheeui/web` brings `@asheeui/core` with it, so an application that
 imports only the components of one platform installs one package. Add

@@ -54,7 +54,7 @@ const IMPORT_FROM_PATTERN = /import\s+(type\s+)?[^;]*?from\s*["']([^"']+)["']/g;
 export interface ResolvePackageOptions {
   /** Current working directory used as the search anchor. */
   cwd: string;
-  /** Optional direct path to an asheeui package (or components folder). */
+  /** Optional direct path to a renderer package (or components folder). */
   explicitPath?: string;
 }
 
@@ -73,7 +73,7 @@ async function isDirectory(p: string): Promise<boolean> {
 }
 /**
  * Test whether `p` points at the root of a package whose name is
- * exactly `asheeui`.
+ * exactly `@asheeui/web`.
  *
  * @param p - Candidate package directory.
  * @returns `true` when a matching `package.json` is found.
@@ -162,9 +162,9 @@ async function resolveModulePath(
 }
 
 /**
- * Resolve the public entry module of an `asheeui` package.
+ * Resolve the public entry module of the `@asheeui/web` package.
  *
- * @param packageRoot - Absolute path of an `asheeui` package root.
+ * @param packageRoot - Absolute path of the `@asheeui/web` package root.
  * @returns Absolute path of the entry module, or `null` when none exists.
  */
 async function resolvePublicEntry(packageRoot: string): Promise<string | null> {
@@ -254,8 +254,8 @@ export function parsePublicComponentNames(entrySource: string): string[] {
 }
 
 /**
- * Discover the public component names of an installed or local `asheeui`
- * package.
+ * Discover the public component names of an installed or local
+ * `@asheeui/web` package.
  *
  * The inventory is derived from the package's public export surface, not from
  * the `components/` directory tree. A component appears in the list only when
@@ -264,12 +264,12 @@ export function parsePublicComponentNames(entrySource: string): string[] {
  * `scrollbar`) can never be reported as a component. Both a source entry
  * module and a built entry module are supported.
  *
- * @param packageRoot - Absolute path of an `asheeui` package root.
+ * @param packageRoot - Absolute path of a `@asheeui/web` package root.
  * @returns Sorted array of public component names.
  *
  * @example
  * ```ts
- * const components = await discoverPublicComponents("/proj/node_modules/asheeui");
+ * const components = await discoverPublicComponents("/proj/node_modules/@asheeui/web");
  * console.log(components); // ["accordion", "autocomplete", "button", ...]
  * ```
  */
@@ -288,14 +288,14 @@ export async function discoverPublicComponents(
 }
 
 /**
- * Resolve the root of the `asheeui` package that should be scanned.
+ * Resolve the root of the `@asheeui/web` package that should be scanned.
  *
  * Resolution order:
  * 1. `explicitPath` when provided (points at a package root or components dir).
- * 2. An installed `asheeui` package inside `cwd`/`node_modules`
+ * 2. An installed `@asheeui/web` package inside `cwd`/`node_modules`
  *    (walking up parent directories).
- * 3. The `asheeui` package source in the same monorepo as this CLI
- *    (`packages/web` or a local `node_modules/asheeui`).
+ * 3. The `@asheeui/web` package source in the same monorepo as this CLI
+ *    (`packages/web`, or a local `node_modules/@asheeui/web`).
  *
  * @param options - {@link ResolvePackageOptions} for the lookup.
  * @returns Absolute path of the located package root, or `null`.
@@ -310,7 +310,7 @@ export async function resolveAsheeuiPackage(
     if (await isDirectory(resolved)) return resolved;
   }
 
-  // Walk up from the project directory looking for an installed asheeui pkg.
+  // Walk up from the project directory looking for an installed renderer pkg.
   let current = resolve(cwd);
   const { root } = parse(current);
   while (current !== root) {
@@ -319,7 +319,7 @@ export async function resolveAsheeuiPackage(
     current = dirname(current);
   }
 
-  // Fall back to the asheeui package inside this CLI's own monorepo.
+  // Fall back to the renderer package inside this CLI's own monorepo.
   const cliDir = dirname(fileURLToPath(import.meta.url));
   let anchor = cliDir;
   while (anchor !== dirname(anchor)) {

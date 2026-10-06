@@ -1,5 +1,5 @@
 {
-  "name": "asheeui",
+  "name": "@asheeui/ui",
   "version": "2.1.0",
   "description": "The AsheeUI umbrella package: the components of @asheeui/web and @asheeui/native behind one import, routed by the bundler instead of by a runtime check.",
   "author": "Ashee Softworks <asheesoftworks@gmail.com>",
@@ -7,7 +7,7 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/AsheeSoftworks/AsheeUI.git",
-    "directory": "packages/asheeui"
+    "directory": "packages/ui"
   },
   "bugs": {
     "url": "https://github.com/AsheeSoftworks/AsheeUI/issues"

@@ -13,6 +13,6 @@ disclose the issue publicly.
 
 - A description of the issue and the impact you believe it has.
 - The steps or a minimal reproduction that triggers it.
-- The `asheeui` version and, if relevant, the `@asheeui/cli` version.
+- The `@asheeui/ui`, `@asheeui/web` or `@asheeui/native` version and, if relevant, the `@asheeui/cli` version.
 - Your React, Tailwind CSS, and Node.js versions.
 - Any suggested fix or mitigation, if you have one.

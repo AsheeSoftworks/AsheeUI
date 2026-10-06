@@ -1,7 +1,7 @@
 /**
  * The AsheeUI umbrella package.
  *
- * One entry point, two renderers. An application installs `asheeui`, imports the
+ * One entry point, two renderers. An application installs `@asheeui/ui`, imports the
  * components it needs and writes the same import specifiers whether it runs in a browser
  * or on a device; the resolver decides which implementation answers:
  *

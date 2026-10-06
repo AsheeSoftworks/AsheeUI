@@ -264,10 +264,10 @@ import { createRoot } from "react-dom/client";`,
   });
 
   describe("theme augmentation check", () => {
-    it("detects declare module 'asheeui' in a .d.ts file", async () => {
+    it("detects declare module '@asheeui/web' in a .d.ts file", async () => {
       await write(
         "ashee-theme.d.ts",
-        `declare module 'asheeui' { export interface AsheeThemeNameRegistry { custom: string; } }`,
+        `declare module '@asheeui/web' { export interface AsheeThemeNameRegistry { custom: string; } }`,
       );
       const result = await resultOf("theme-augmentation");
       expect(result?.status).toBe("info");

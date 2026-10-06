@@ -59,12 +59,12 @@ export function useAsheeConfig(): Config {
 }
 
 /**
- * Alias for {@link useAsheeConfig}, exported from the `asheeui` root.
+ * Alias for {@link useAsheeConfig}, exported from the package root.
  * Provides a shorter name for convenience when importing from the main package.
  *
  * @example
  * ```tsx
- * import { useAshee } from 'asheeui';
+ * import { useAshee } from "@asheeui/web";
  *
  * function MyComponent() {
  *   const config = useAshee();

@@ -8,7 +8,7 @@ import type { NextConfig } from "next";
  * that is what `transpilePackages` declares.
  */
 const nextConfig: NextConfig = {
-  transpilePackages: ["asheeui", "./app/playground"],
+  transpilePackages: ["@asheeui/core", "@asheeui/web", "./app/playground"],
 };
 
 export default nextConfig;

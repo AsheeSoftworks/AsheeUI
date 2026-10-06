@@ -17,7 +17,7 @@ export { ENTRYPOINT_CANDIDATES } from "../../utils/audit";
 
 /**
  * Validate that the root entrypoint wraps the app with `AsheeUIProvider`
- * (or imports from `"asheeui"`).
+ * (or imports from an AsheeUI package).
  *
  * Scans each candidate in {@link ENTRYPOINT_CANDIDATES} and reports
  * `pass` on the first one that contains a root-provider reference;
@@ -41,7 +41,7 @@ export async function checkRootProvider(
         status: "pass",
         message: content.includes(`<${PROVIDER_TAG}`)
           ? `<${PROVIDER_TAG}> found in ${candidate}`
-          : `asheeui import found in ${candidate}`,
+          : `AsheeUI import found in ${candidate}`,
       };
     }
   }
@@ -52,7 +52,7 @@ export async function checkRootProvider(
     title: "Root provider",
     status: "fail",
     message: entry
-      ? `No AsheeUIProvider or asheeui import found in ${entry}.`
+      ? `No AsheeUIProvider or AsheeUI import found in ${entry}.`
       : "No common application entrypoint found (src/main.tsx, src/App.tsx, app/layout.tsx, etc.).",
     fix: entry
       ? `Wrap your application root with <AsheeUIProvider> in ${entry}. See the Ashee UI docs for setup instructions.`

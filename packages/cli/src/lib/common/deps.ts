@@ -39,7 +39,7 @@ export interface DependencyInfo {
  * @example
  * ```ts
  * const info = await inspectDependencies(process.cwd(), [
- *   "asheeui",
+ *   "@asheeui/web",
  * ], true);
  * if (info.missingDependencies.length > 0) {
  *   // install them with info.packageManager

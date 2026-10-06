@@ -26,7 +26,7 @@ export {
  * Validate that `@import "@asheeui/web/styles"` is present in a CSS entry file.
  *
  * Three outcomes are possible:
- * - `pass`: a global stylesheet already imports asheeui styles.
+ * - `pass`: a global stylesheet already imports the `@asheeui/web` styles.
  * - `fail`: a global stylesheet exists but does not yet import them,
  *   or no stylesheet could be located at all.
  *
