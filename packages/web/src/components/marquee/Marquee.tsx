@@ -8,7 +8,23 @@
  */
 "use client";
 
-import { cn, resolveCascade } from "@asheeui/core";
+import {
+  cn,
+  MARQUEE_AXIS_CLASS,
+  MARQUEE_CLASS,
+  MARQUEE_FADE_END_CLASS,
+  MARQUEE_FADE_OVERLAY_CLASS,
+  MARQUEE_FADE_START_CLASS,
+  MARQUEE_ITEM_CLASS,
+  MARQUEE_PAUSE_ON_HOVER_CLASS,
+  MARQUEE_SET_AXIS_CLASS,
+  MARQUEE_SET_CLASS,
+  MARQUEE_SPEED_PRESETS,
+  MARQUEE_TRACK_CLASS,
+  MARQUEE_TRACK_X_CLASS,
+  MARQUEE_TRACK_Y_CLASS,
+  resolveCascade,
+} from "@asheeui/core";
 import { forwardRef, isValidElement, type ReactNode, useMemo } from "react";
 import { useAsheeConfig } from "../../libs/context";
 import { usePrefersReducedMotion } from "../../libs/use-prefers-reduced-motion";
@@ -19,11 +35,6 @@ import {
   type MarqueeDirection,
   type MarqueeSpeedPreset,
 } from "./marquee-config";
-import {
-  MARQUEE_FADE_END_CLASS,
-  MARQUEE_FADE_START_CLASS,
-  MARQUEE_SPEED_PRESETS,
-} from "./marquee-styles";
 
 type BaseMarqueeProps = MarqueeConfig &
   Omit<React.HTMLAttributes<HTMLDivElement>, "children">;
@@ -64,6 +75,7 @@ export interface MarqueeProps extends BaseMarqueeProps {
  * @param props.gap - The gap between items. Defaults to "1.5rem".
  * @param props.pauseOnHover - Whether to pause on hover. Defaults to false.
  * @param props.fadeEdges - Whether to fade edges. Defaults to false.
+ * @param props.isAnimated - Whether the content moves. Defaults to true.
  * @param props.itemClassName - Extra classes for each item.
  * @param props.className - Extra classes for the container.
  *
@@ -117,6 +129,7 @@ export const Marquee = forwardRef<HTMLDivElement, MarqueeProps>(
       gap,
       pauseOnHover,
       fadeEdges,
+      isAnimated,
       className,
       itemClassName,
       ...props
@@ -170,6 +183,13 @@ export const Marquee = forwardRef<HTMLDivElement, MarqueeProps>(
       FALLBACK_MARQUEE_CONFIG.fadeEdges,
     );
 
+    const resolvedIsAnimated = resolveCascade<boolean>(
+      isAnimated,
+      sectionConfig?.isAnimated,
+      undefined,
+      FALLBACK_MARQUEE_CONFIG.isAnimated,
+    );
+
     // ─── 2. Speed & Track Setup ──────────────────────────────────────────────
 
     const durationSeconds =
@@ -180,8 +200,8 @@ export const Marquee = forwardRef<HTMLDivElement, MarqueeProps>(
 
     const isVertical = resolvedAxis === "y";
 
-    // The loop is continuous motion, so it yields to the reduced-motion
-    // preference and the content is then shown standing still (`REQ-089`).
+    // The loop is continuous motion, so it yields to the reduced-motion preference and to
+    // the `isAnimated` option, and the content is then shown standing still (`REQ-089`).
     const prefersReducedMotion = usePrefersReducedMotion();
 
     const renderedSets = useMemo(
@@ -193,8 +213,8 @@ export const Marquee = forwardRef<HTMLDivElement, MarqueeProps>(
             <div
               key={`${setPrefix}-set`}
               className={cn(
-                "flex shrink-0",
-                isVertical ? "flex-col" : "flex-row",
+                MARQUEE_SET_CLASS,
+                MARQUEE_SET_AXIS_CLASS[resolvedAxis],
               )}
               style={{
                 gap: resolvedGap,
@@ -207,7 +227,9 @@ export const Marquee = forwardRef<HTMLDivElement, MarqueeProps>(
                     : `${setPrefix}-item-${itemIndex}`;
 
                 return (
-                  <div key={itemKey} className={cn("shrink-0", itemClassName)}>
+                  <div
+                    key={itemKey}
+                    className={cn(MARQUEE_ITEM_CLASS, itemClassName)}>
                     {item}
                   </div>
                 );
@@ -222,8 +244,8 @@ export const Marquee = forwardRef<HTMLDivElement, MarqueeProps>(
       <div
         ref={ref}
         className={cn(
-          "group relative scrollbar-hide overflow-hidden",
-          isVertical ? "h-full" : "w-full",
+          MARQUEE_CLASS,
+          MARQUEE_AXIS_CLASS[resolvedAxis],
           className,
         )}
         {...props}>
@@ -240,13 +262,13 @@ export const Marquee = forwardRef<HTMLDivElement, MarqueeProps>(
 
         <div
           className={cn(
-            "flex",
-            isVertical ? "flex-col" : "flex-row w-max",
-            resolvedPauseOnHover && "group-hover:[animation-play-state:paused]",
+            MARQUEE_TRACK_CLASS,
+            isVertical ? MARQUEE_TRACK_Y_CLASS : MARQUEE_TRACK_X_CLASS,
+            resolvedPauseOnHover && MARQUEE_PAUSE_ON_HOVER_CLASS,
           )}
           style={{
             gap: resolvedGap,
-            ...(prefersReducedMotion
+            ...(prefersReducedMotion || !resolvedIsAnimated
               ? { animation: "none" }
               : {
                   animationName: isVertical ? "marquee-y" : "marquee-x",
@@ -264,13 +286,13 @@ export const Marquee = forwardRef<HTMLDivElement, MarqueeProps>(
           <>
             <div
               className={cn(
-                "absolute z-10 pointer-events-none",
+                MARQUEE_FADE_OVERLAY_CLASS,
                 MARQUEE_FADE_START_CLASS[resolvedAxis],
               )}
             />
             <div
               className={cn(
-                "absolute z-10 pointer-events-none",
+                MARQUEE_FADE_OVERLAY_CLASS,
                 MARQUEE_FADE_END_CLASS[resolvedAxis],
               )}
             />
