@@ -10,7 +10,25 @@
 
 "use client";
 
-import { cn, resolveConfigCascade } from "@asheeui/core";
+import {
+  cn,
+  NAVBAR_ACTIONS_CLASS,
+  NAVBAR_BRAND_CLASS,
+  NAVBAR_INNER_CLASS,
+  NAVBAR_LINK_ACTIVE_CLASS,
+  NAVBAR_LINK_CLASS,
+  NAVBAR_LINKS_CENTER_CLASS,
+  NAVBAR_LINKS_CLASS,
+  NAVBAR_LINKS_END_CLASS,
+  NAVBAR_MOBILE_PANEL_CLASS,
+  NAVBAR_POSITION_CLASS,
+  NAVBAR_SECONDARY_CLASS,
+  NAVBAR_TOGGLE_CLASS,
+  NAVBAR_VARIANT_CLASS,
+  type NavbarLink,
+  type NavbarLinkItem,
+  resolveConfigCascade,
+} from "@asheeui/core";
 import {
   type ElementType,
   forwardRef,
@@ -29,63 +47,15 @@ import { Button } from "../button/Button";
 import { Container } from "../container/Container";
 import { Link } from "../link";
 import { FALLBACK_NAVBAR_CONFIG, type NavbarConfig } from "./navbar-config";
-import {
-  NAVBAR_ACTIONS_CLASS,
-  NAVBAR_BRAND_CLASS,
-  NAVBAR_INNER_CLASS,
-  NAVBAR_LINK_ACTIVE_CLASS,
-  NAVBAR_LINK_CLASS,
-  NAVBAR_LINKS_CENTER_CLASS,
-  NAVBAR_LINKS_CLASS,
-  NAVBAR_LINKS_END_CLASS,
-  NAVBAR_MOBILE_PANEL_CLASS,
-  NAVBAR_POSITION_CLASS,
-  NAVBAR_SECONDARY_CLASS,
-  NAVBAR_TOGGLE_CLASS,
-  NAVBAR_VARIANT_CLASS,
-} from "./navbar-styles";
 
 /**
- * One destination in the bar.
+ * The destinations of the bar, and the substitution applied to them.
+ *
+ * The types live in `@asheeui/core`, because they describe the framework's navbar rather than a
+ * renderer's: the native bar reads one description of a destination and the web bar reads the same
+ * one, so `disabled`, `isActive` and the substitution mean the same thing on both.
  */
-export interface NavbarLinkItem {
-  /** Stable identifier for the link. Defaults to its position in the list. */
-  id?: string | number;
-
-  /** Visible name of the link. */
-  label: ReactNode;
-
-  /** Destination of the link. */
-  href?: string;
-
-  /**
-   * Whether this link leads to the page currently shown.
-   * An active link is marked `aria-current="page"`, which is what tells
-   * assistive technology where the reader is, and is styled with emphasis as
-   * well.
-   */
-  isActive?: boolean;
-
-  /** Content before the label, typically an icon. */
-  icon?: ReactNode;
-
-  /** Component that replaces the anchor for this link only. */
-  component?: ElementType;
-
-  /** Additional props for that component. */
-  componentProps?: Record<string, unknown>;
-}
-
-/**
- * Substitution applied to every link in the bar.
- */
-export interface NavbarLink {
-  /** Component that replaces the anchor, such as a framework router link. */
-  component?: ElementType;
-
-  /** Additional props for that component. */
-  props?: Record<string, unknown>;
-}
+export type { NavbarLink, NavbarLinkItem } from "@asheeui/core";
 
 type BaseNavbarProps = NavbarConfig &
   Omit<HTMLAttributes<HTMLElement>, "color" | "title">;
@@ -224,6 +194,7 @@ function NavbarLinkList({
         <li key={item.id ?? index}>
           <Link
             href={item.href}
+            disabled={item.disabled}
             startIcon={item.icon}
             component={item.component ?? link?.component}
             componentProps={{ ...link?.props, ...item.componentProps }}

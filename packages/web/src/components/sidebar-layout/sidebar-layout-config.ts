@@ -1,45 +1,24 @@
 /**
  * SidebarLayout component configuration for AsheeUI.
- * This file defines the configuration type and defaults for the application
- * shell that places a navigation column beside a page: side, sidebar width and
- * stickiness. It registers the default configuration with the component registry
- * and provides fallback values for the cascade resolution system.
- */
-
-import { registerComponentDefaults } from "@asheeui/core";
-
-/**
- * Side the navigation column sits on from the `lg` breakpoint upwards.
- */
-export type SidebarLayoutSide = "start" | "end";
-
-/**
- * Width of the navigation column.
- */
-export type SidebarLayoutWidth = "sm" | "md" | "lg";
-
-/**
- * Theme configuration options for the SidebarLayout component.
  *
- * Set under `components.sidebarlayout` in the AsheeUI config. Values feed the
- * component-level fallback tier of the theme cascade.
+ * This file registers the values the application shell defaults to on the web, so the
+ * component-level tier of the theme cascade has a value to resolve. The options themselves, and
+ * the types that name them, live in `@asheeui/core`: they are the framework's sidebar-layout
+ * contract rather than a web renderer's, and the native renderer reads the same ones from the
+ * same place. What stays here is the web default values and the registration that puts them in
+ * the web registry.
  */
-export interface SidebarLayoutConfig {
-  /** Side the navigation column sits on. @default "start" */
-  side?: SidebarLayoutSide;
 
-  /** Width of the navigation column. @default "md" */
-  sidebarWidth?: SidebarLayoutWidth;
+import {
+  registerComponentDefaults,
+  type SidebarLayoutConfig,
+} from "@asheeui/core";
 
-  /**
-   * Whether the navigation column stays in view while the content scrolls.
-   * Applies from the `lg` breakpoint upwards, where the column sits beside the
-   * content rather than above it.
-   *
-   * @default true
-   */
-  stickySidebar?: boolean;
-}
+export type {
+  SidebarLayoutConfig,
+  SidebarLayoutSide,
+  SidebarLayoutWidth,
+} from "@asheeui/core";
 
 /**
  * Default config values registered for the SidebarLayout component.
@@ -49,12 +28,6 @@ export const defaultSidebarLayoutConfig: SidebarLayoutConfig = {
   sidebarWidth: "md",
   stickySidebar: true,
 };
-
-declare module "@asheeui/core" {
-  interface ComponentTypeConfigRegistry {
-    sidebarlayout: SidebarLayoutConfig;
-  }
-}
 
 registerComponentDefaults("sidebarlayout", defaultSidebarLayoutConfig);
 

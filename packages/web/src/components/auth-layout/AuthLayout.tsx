@@ -10,19 +10,6 @@
 
 "use client";
 
-import { cn, resolveConfigCascade } from "@asheeui/core";
-import {
-  type ElementType,
-  forwardRef,
-  type HTMLAttributes,
-  type ReactNode,
-} from "react";
-import { useAsheeConfig } from "../../libs/context";
-import { SectionHeading } from "../section-kit/SectionHeading";
-import {
-  type AuthLayoutConfig,
-  FALLBACK_AUTH_LAYOUT_CONFIG,
-} from "./auth-layout-config";
 import {
   AUTH_CONTENT_SIZE_CLASS,
   AUTH_FOOTER_CLASS,
@@ -34,7 +21,19 @@ import {
   AUTH_MEDIA_FIRST_CLASS,
   AUTH_PANEL_CLASS,
   AUTH_PANEL_PADDING_CLASS,
-} from "./auth-layout-styles";
+  type AuthLayoutConfig,
+  cn,
+  resolveConfigCascade,
+} from "@asheeui/core";
+import {
+  type ElementType,
+  forwardRef,
+  type HTMLAttributes,
+  type ReactNode,
+} from "react";
+import { useAsheeConfig } from "../../libs/context";
+import { SectionHeading } from "../section-kit/SectionHeading";
+import { FALLBACK_AUTH_LAYOUT_CONFIG } from "./auth-layout-config";
 
 type BaseAuthLayoutProps = AuthLayoutConfig &
   Omit<HTMLAttributes<HTMLDivElement>, "color" | "title">;

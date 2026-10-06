@@ -7,11 +7,5 @@
     "data-table": "RowList",
     "toast": "ToastProvider"
   },
-  "pending": [
-    "auth-layout",
-    "docs-layout",
-    "navbar",
-    "sidebar",
-    "sidebar-layout"
-  ]
+  "pending": []
 }

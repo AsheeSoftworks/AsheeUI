@@ -10,7 +10,17 @@
 
 "use client";
 
-import { cn, resolveConfigCascade } from "@asheeui/core";
+import {
+  cn,
+  DOCS_LAYOUT_ARTICLE_CLASS,
+  DOCS_LAYOUT_BODY_CLASS,
+  DOCS_LAYOUT_CLASS,
+  DOCS_LAYOUT_SHELL_CLASS,
+  DOCS_LAYOUT_TOC_CLASS,
+  DOCS_LAYOUT_TOC_STICKY_CLASS,
+  type DocsLayoutConfig,
+  resolveConfigCascade,
+} from "@asheeui/core";
 import {
   type ElementType,
   forwardRef,
@@ -21,18 +31,7 @@ import { useAsheeConfig } from "../../libs/context";
 import { SkipLink } from "../section-kit/SkipLink";
 import { SidebarLayout } from "../sidebar-layout/SidebarLayout";
 import { Split } from "../split/Split";
-import {
-  type DocsLayoutConfig,
-  FALLBACK_DOCS_LAYOUT_CONFIG,
-} from "./docs-layout-config";
-import {
-  DOCS_LAYOUT_ARTICLE_CLASS,
-  DOCS_LAYOUT_BODY_CLASS,
-  DOCS_LAYOUT_CLASS,
-  DOCS_LAYOUT_SHELL_CLASS,
-  DOCS_LAYOUT_TOC_CLASS,
-  DOCS_LAYOUT_TOC_STICKY_CLASS,
-} from "./docs-layout-styles";
+import { FALLBACK_DOCS_LAYOUT_CONFIG } from "./docs-layout-config";
 
 type BaseDocsLayoutProps = DocsLayoutConfig &
   Omit<HTMLAttributes<HTMLDivElement>, "color">;
