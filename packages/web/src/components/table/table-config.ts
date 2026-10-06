@@ -1,107 +1,17 @@
 /**
  * Table component configuration for AsheeUI.
- * This file defines the configuration types and defaults for the Table
- * component, including variant, size, color, and radius options. It registers
- * the default configuration with the component registry and provides fallback
- * values for the cascade resolution system.
- */
-
-import type { Color, Radius, Size } from "@asheeui/core";
-import { registerComponentDefaults } from "@asheeui/core";
-import type { ReactNode } from "react";
-
-/**
- * Visual style variant of the table.
- * - `grid`: Table with grid lines between cells.
- * - `striped`: Alternating row backgrounds.
- * - `bordered`: Table with outer border only.
- * - `ghost`: Minimal table without borders or backgrounds.
- */
-export type TableVariant = "grid" | "striped" | "bordered" | "ghost";
-
-/**
- * Column definition for the table.
- * Defines the header content and cell renderer for a column.
- */
-export interface ColumnDef<TData> {
-  /**
-   * Optional explicit key for React list rendering.
-   * Used as the key prop for the column element.
-   */
-  id?: string;
-
-  /**
-   * Header content or title.
-   * Rendered in the table header cell.
-   */
-  header: ReactNode;
-
-  /**
-   * Cell renderer function.
-   * Receives the row data and returns the cell content.
-   */
-  cell: (row: TData) => ReactNode;
-}
-
-/**
- * Theme configuration options for the Table component.
  *
- * Set under `components.table` in the AsheeUI config. Values feed the
- * component-level fallback tier of the theme cascade.
+ * This file registers the values the table defaults to on the web, so the component-level
+ * fallback tier of the theme cascade has a value to resolve. The options themselves, and the
+ * types that name them, live in `@asheeui/core`: they are the framework's table contract
+ * rather than a web renderer's, and the component that renders a table's rows on the native
+ * platform reads the same ones from the same place. What stays here is the web default
+ * values and the registration that puts them in the web registry.
  */
-export interface TableConfig {
-  /**
-   * Density scale of the table.
-   * Controls the padding and font size of cells.
-   *
-   * @default "md"
-   */
-  size?: Size;
 
-  /**
-   * Visual style variant.
-   * Controls the table's border and background treatment.
-   *
-   * @default "grid"
-   */
-  variant?: TableVariant;
+import { registerComponentDefaults, type TableConfig } from "@asheeui/core";
 
-  /**
-   * Theme accent color.
-   * Controls the color of selected rows and interactive states.
-   *
-   * @default "primary"
-   */
-  color?: Color;
-
-  /**
-   * Corner rounding.
-   * Controls the border-radius of the table container.
-   *
-   * @default "md"
-   */
-  radius?: Radius;
-
-  /**
-   * Extra classes applied to the table container.
-   */
-  className?: string;
-
-  /**
-   * Extra classes applied to the table header.
-   */
-  headerClassName?: string;
-
-  /**
-   * Extra classes applied to table rows.
-   */
-  rowClassName?: string;
-
-  /**
-   * Extra classes applied to table cells.
-   */
-  cellClassName?: string;
-}
+export type { ColumnDef, TableConfig, TableVariant } from "@asheeui/core";
 
 /**
  * Default config values registered for the Table component.
@@ -110,6 +20,8 @@ export const defaultTableConfig: TableConfig = {
   size: "md",
   variant: "grid",
 };
+
+registerComponentDefaults("table", defaultTableConfig);
 
 /**
  * Hard fallback values used when no config tier provides a value.
@@ -126,11 +38,3 @@ export const FALLBACK_TABLE_CONFIG: Required<TableConfig> = {
   rowClassName: "",
   cellClassName: "",
 } as const;
-
-declare module "@asheeui/core" {
-  interface ComponentTypeConfigRegistry {
-    table: TableConfig;
-  }
-}
-
-registerComponentDefaults("table", defaultTableConfig);

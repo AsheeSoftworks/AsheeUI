@@ -1,73 +1,17 @@
 /**
  * DataTable component configuration for AsheeUI.
- * This file defines the configuration type and defaults for the table
- * composition: whether it searches and pages, how many rows a page holds,
- * whether it reports the count, and what it says when there is nothing to show.
- * It registers the default configuration with the component registry and
- * provides fallback values for the cascade resolution system.
- */
-
-import { registerComponentDefaults } from "@asheeui/core";
-
-/**
- * Theme configuration options for the DataTable component.
  *
- * Set under `components.datatable` in the AsheeUI config. Values feed the
- * component-level tier of the theme cascade.
+ * This file registers the values the table composition defaults to on the web, so the
+ * component-level tier of the theme cascade has a value to resolve. The options themselves,
+ * and the types that name them, live in `@asheeui/core`: they are the framework's data-table
+ * contract rather than a web renderer's, and the native component that renders a table's
+ * rows reads the same ones from the same place. What stays here is the web default values
+ * and the registration that puts them in the web registry.
  */
-export interface DataTableConfig {
-  /**
-   * Whether the table offers a search control.
-   * The control appears only when the table also knows what to search, through
-   * `searchAccessor` or `onSearchChange`, because a field that cannot search
-   * would be a control that does nothing.
-   *
-   * @default true
-   */
-  searchable?: boolean;
 
-  /**
-   * Placeholder of the search control.
-   *
-   * @default "Search"
-   */
-  searchLabel?: string;
+import { type DataTableConfig, registerComponentDefaults } from "@asheeui/core";
 
-  /**
-   * Whether the rows are divided into pages.
-   *
-   * @default true
-   */
-  paginated?: boolean;
-
-  /**
-   * How many rows a page holds.
-   *
-   * @default 10
-   */
-  pageSize?: number;
-
-  /**
-   * Whether the table reports how many rows it is showing.
-   *
-   * @default true
-   */
-  showRowCount?: boolean;
-
-  /**
-   * What the table says when there is nothing to show.
-   *
-   * @default "No results"
-   */
-  emptyTitle?: string;
-
-  /**
-   * The sentence under that title.
-   *
-   * @default "Try a different search, or clear it to see everything."
-   */
-  emptyDescription?: string;
-}
+export type { DataTableConfig };
 
 /**
  * Default config values registered for the DataTable component.
@@ -81,12 +25,6 @@ export const defaultDataTableConfig: DataTableConfig = {
   emptyTitle: "No results",
   emptyDescription: "Try a different search, or clear it to see everything.",
 };
-
-declare module "@asheeui/core" {
-  interface ComponentTypeConfigRegistry {
-    datatable: DataTableConfig;
-  }
-}
 
 registerComponentDefaults("datatable", defaultDataTableConfig);
 

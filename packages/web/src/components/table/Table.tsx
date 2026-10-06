@@ -16,6 +16,11 @@ import {
   resolveCascade,
   resolveClassKey,
   resolveRadiusKey,
+  TABLE_CELL_PADDING_X_CLASS,
+  TABLE_CELL_PADDING_Y_CLASS,
+  TABLE_COLOR_STYLES,
+  TABLE_FONT_CLASS,
+  TABLE_HEADER_FONT_CLASS,
 } from "@asheeui/core";
 import { type HTMLAttributes, type ReactNode, useCallback } from "react";
 import { useAsheeConfig } from "../../libs/context";
@@ -25,13 +30,6 @@ import {
   type TableConfig,
   type TableVariant,
 } from "./table-config";
-import {
-  TABLE_CELL_PADDING_X_CLASS,
-  TABLE_CELL_PADDING_Y_CLASS,
-  TABLE_COLOR_STYLES,
-  TABLE_FONT_CLASS,
-  TABLE_HEADER_FONT_CLASS,
-} from "./table-styles";
 
 type BaseTableProps = TableConfig &
   Omit<HTMLAttributes<HTMLDivElement>, "color" | "onClick">;

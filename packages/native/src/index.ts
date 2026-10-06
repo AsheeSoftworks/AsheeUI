@@ -40,6 +40,7 @@ export * from "./components/pagination";
 export * from "./components/pin-input";
 export * from "./components/pricing-card";
 export * from "./components/radio";
+export * from "./components/row-list";
 export * from "./components/search-input";
 export * from "./components/skeleton";
 export * from "./components/spinner";
