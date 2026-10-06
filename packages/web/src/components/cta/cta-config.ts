@@ -1,74 +1,17 @@
 /**
  * CTA component configuration for AsheeUI.
- * This file defines the configuration type and defaults for the CTA pattern:
- * alignment, vertical rhythm, background treatment, panel treatment and content
- * width. It registers the default configuration with the component registry and
- * provides fallback values for the cascade resolution system.
- */
-
-import type { Space } from "@asheeui/core";
-import { registerComponentDefaults } from "@asheeui/core";
-import type { ContainerSize } from "../container/container-config";
-import type { SectionBackground } from "../section/section-config";
-
-/**
- * Visual treatment of the call to action panel.
  *
- * - `bordered`: a bordered surface on the page background.
- * - `muted`: a subdued surface without a border.
- * - `plain`: no panel, so the actions sit directly on the band.
+ * This file registers the values the CTA defaults to on the web, so the component-level
+ * fallback tier of the theme cascade has a value to resolve. The options themselves, and the
+ * types that name them, live in `@asheeui/core`: they are the framework's call-to-action
+ * contract rather than a web renderer's, and the native renderer reads the same ones from the
+ * same place. What stays here is the web default values and the registration that puts them
+ * in the web registry.
  */
-export type CtaPanel = "bordered" | "muted" | "plain";
 
-/**
- * Theme configuration options for the CTA component.
- *
- * Set under `components.cta` in the AsheeUI config. Values feed the
- * component-level fallback tier of the theme cascade.
- */
-export interface CtaConfig {
-  /**
-   * Alignment of the panel content.
-   *
-   * @default "center"
-   */
-  align?: "start" | "center";
+import { type CtaConfig, registerComponentDefaults } from "@asheeui/core";
 
-  /**
-   * Vertical padding of the band.
-   *
-   * @default "lg"
-   */
-  spacing?: Space;
-
-  /**
-   * Background treatment of the band.
-   *
-   * @default "none"
-   */
-  background?: SectionBackground;
-
-  /**
-   * Panel treatment.
-   *
-   * @default "bordered"
-   */
-  panel?: CtaPanel;
-
-  /**
-   * Maximum content width of the band.
-   *
-   * @default "lg"
-   */
-  containerSize?: ContainerSize;
-
-  /**
-   * Whether the band wraps its content in a {@link Container}.
-   *
-   * @default true
-   */
-  contained?: boolean;
-}
+export type { CtaConfig, CtaPanel } from "@asheeui/core";
 
 /**
  * Default config values registered for the CTA component.
@@ -81,12 +24,6 @@ export const defaultCtaConfig: CtaConfig = {
   containerSize: "lg",
   contained: true,
 };
-
-declare module "@asheeui/core" {
-  interface ComponentTypeConfigRegistry {
-    cta: CtaConfig;
-  }
-}
 
 registerComponentDefaults("cta", defaultCtaConfig);
 

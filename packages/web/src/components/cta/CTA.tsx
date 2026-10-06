@@ -10,7 +10,13 @@
 "use client";
 
 import type { ActionConfig } from "@asheeui/core";
-import { cn, resolveConfigCascade } from "@asheeui/core";
+import {
+  CTA_CENTERED_CLASS,
+  CTA_INNER_CLASS,
+  CTA_PANEL_CLASS,
+  cn,
+  resolveConfigCascade,
+} from "@asheeui/core";
 import {
   type ElementType,
   forwardRef,
@@ -23,11 +29,6 @@ import { Section } from "../section/Section";
 import { ActionGroup } from "../section-kit/ActionGroup";
 import { SectionHeading } from "../section-kit/SectionHeading";
 import { type CtaConfig, FALLBACK_CTA_CONFIG } from "./cta-config";
-import {
-  CTA_CENTERED_CLASS,
-  CTA_INNER_CLASS,
-  CTA_PANEL_CLASS,
-} from "./cta-styles";
 
 type BaseCtaProps = CtaConfig &
   Omit<HTMLAttributes<HTMLElement>, "color" | "title">;

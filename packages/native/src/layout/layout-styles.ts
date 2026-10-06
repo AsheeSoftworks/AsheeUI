@@ -12,11 +12,10 @@
  * breakpoints as data, so a component reads them rather than assuming them.
  */
 
-import type { Space } from "@asheeui/core";
+import type { SectionBackground, Space } from "@asheeui/core";
 import type {
   NativeCenteredConfig,
   NativeContainerSize,
-  NativeSectionConfig,
   NativeStackConfig,
 } from "./layout-config";
 
@@ -123,13 +122,18 @@ export const SECTION_SPACING_CLASS: Record<Space, string> = {
   "2xl": "py-20",
 };
 
-/** The background a section paints. */
-export const SECTION_BACKGROUND_CLASS: Record<
-  NonNullable<NativeSectionConfig["background"]>,
-  string
-> = {
-  default: "bg-background",
+/**
+ * The background a section paints.
+ *
+ * The keys are the shared vocabulary. What differs is the value behind `none`:
+ * the web leaves the section transparent so the page shows through, and a native
+ * screen has no page behind it, so the platform paints the theme's own background
+ * and states that rather than pretending the option vanished.
+ */
+export const SECTION_BACKGROUND_CLASS: Record<SectionBackground, string> = {
+  none: "bg-background",
   muted: "bg-secondary/40",
+  tinted: "bg-primary/10",
 };
 
 /** Shared classes for every centred block. */

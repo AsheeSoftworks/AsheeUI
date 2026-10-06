@@ -17,7 +17,7 @@
  * configuration section without either renderer restating it.
  */
 
-import type { Size } from "../shared/radius";
+import type { Size } from "../../shared/radius";
 
 /**
  * The edge a drawer comes from.

@@ -16,8 +16,8 @@
  * configuration section without either renderer restating it.
  */
 
-import type { Size } from "../shared/radius";
-import type { Color } from "../shared/variant";
+import type { Size } from "../../shared/radius";
+import type { Color } from "../../shared/variant";
 
 /**
  * Visual style variant of the link.

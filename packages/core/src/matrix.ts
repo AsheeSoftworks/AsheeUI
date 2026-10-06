@@ -163,7 +163,7 @@ export const COMPONENT_SUPPORT: readonly ComponentSupport[] = [
     module: "feature-grid",
     support: "shared-api",
     native: "FeatureGrid",
-    note: "Native wraps a row of cards instead of using a column grid",
+    note: "Native reads the window itself rather than using breakpoint variants, so a stated column count lands on the cards' cell widths",
   },
   {
     name: "FileUpload",
@@ -177,7 +177,7 @@ export const COMPONENT_SUPPORT: readonly ComponentSupport[] = [
     module: "footer",
     support: "shared-api",
     native: "Footer",
-    note: "A native footer carries less navigation; the contract still holds",
+    note: "Native keeps the groups stacked and wrapped rather than turning them into a row at a breakpoint, and has no anchor to substitute",
   },
   { name: "Form", module: "form", support: "shared" },
   {

@@ -1,82 +1,22 @@
 /**
  * Image component configuration for AsheeUI.
- * This file defines the configuration types and defaults for the Image
- * component, including fit, ratio, radius, loading strategy, and skeleton
- * options. It registers the default configuration with the component
- * registry and provides fallback values for the cascade resolution system.
- */
-
-import type { Radius } from "@asheeui/core";
-import { registerComponentDefaults } from "@asheeui/core";
-
-/**
- * Object-fit behaviour of the image inside its ratio box.
  *
- * - `cover`: Scales to fill, cropping overflow.
- * - `contain`: Scales to fit entirely inside.
- * - `fill`: Stretches to fill, ignoring aspect ratio.
- * - `none`: Natural size, no scaling.
- * - `scale-down`: Smallest of `none` and `contain`.
+ * This file registers the values the Image defaults to on the web, so the
+ * component-level fallback tier of the theme cascade has a value to resolve. The
+ * options themselves, and the types that name them, live in `@asheeui/core`: they are
+ * the framework's image contract rather than a web renderer's, and the native renderer
+ * reads the same ones from the same place. What stays here is the web default values
+ * and the registration that puts them in the web registry.
  */
-export type ImageFit = "cover" | "contain" | "fill" | "none" | "scale-down";
 
-/**
- * Aspect ratio applied to the image container.
- *
- * - `auto`: Uses the image's intrinsic ratio.
- * - `square`: 1 / 1.
- * - `video`: 16 / 9.
- * - `portrait`: 4 / 5.
- */
-export type ImageRatioKey = "auto" | "square" | "video" | "portrait";
+import { type ImageConfig, registerComponentDefaults } from "@asheeui/core";
 
-/**
- * Theme configuration options for the Image component.
- *
- * Set under `components.image` in the AsheeUI config. Values feed the
- * component-level fallback tier of the theme cascade.
- */
-export interface ImageConfig {
-  /**
-   * Object-fit strategy.
-   * Controls how the image fills its container.
-   *
-   * @default "cover"
-   */
-  fit?: ImageFit;
-
-  /**
-   * Container aspect ratio.
-   * Controls the proportional dimensions of the image container.
-   *
-   * @default "auto"
-   */
-  ratio?: ImageRatioKey;
-
-  /**
-   * Corner rounding.
-   * Controls the border-radius of the image container.
-   *
-   * @default "md"
-   */
-  radius?: Radius;
-
-  /**
-   * Native image loading strategy.
-   * Controls when the browser loads the image resource.
-   *
-   * @default "lazy"
-   */
-  loading?: "lazy" | "eager";
-
-  /**
-   * Shows a shimmering placeholder until the image loads.
-   * Displays a subtle loading animation while the image is loading.
-   *
-   * @default true
-   */
-  showSkeleton?: boolean;
-}
+export type {
+  ImageConfig,
+  ImageFit,
+  ImageLoading,
+  ImageRatioKey,
+} from "@asheeui/core";
 
 /**
  * Default config values registered for the Image component.
@@ -88,6 +28,8 @@ export const defaultImageConfig: ImageConfig = {
   loading: "lazy",
   showSkeleton: true,
 };
+
+registerComponentDefaults("image", defaultImageConfig);
 
 /**
  * Hard fallback values used when no config tier provides a value.
@@ -101,11 +43,3 @@ export const FALLBACK_IMAGE_CONFIG = {
   loading: "lazy",
   showSkeleton: true,
 } as const;
-
-declare module "@asheeui/core" {
-  interface ComponentTypeConfigRegistry {
-    image: ImageConfig;
-  }
-}
-
-registerComponentDefaults("image", defaultImageConfig);

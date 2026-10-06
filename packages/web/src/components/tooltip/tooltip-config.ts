@@ -48,4 +48,5 @@ export const FALLBACK_TOOLTIP_CONFIG: Required<TooltipConfig> = {
   showArrow: false,
   portal: false,
   zIndex: ASHEE_LAYER.tooltip,
+  className: "",
 } as const;

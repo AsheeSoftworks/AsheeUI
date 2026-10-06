@@ -6,22 +6,27 @@
  * values for the cascade resolution system.
  */
 
-import type { Space } from "@asheeui/core";
-import { registerComponentDefaults } from "@asheeui/core";
+import {
+  type GridAlign,
+  type GridColumns,
+  registerComponentDefaults,
+  type Space,
+} from "@asheeui/core";
 
 /**
  * Column counts a grid can declare.
- * Only the counts the framework's own layouts use are offered, so the class
- * map stays small and every entry is a complete literal.
+ *
+ * The counts are shared layout vocabulary rather than a web idea: `@asheeui/core` declares
+ * them, so a grid and a feature grid name one type on both platforms. This module re-exports
+ * them so code that already reaches for them here keeps working. Only the counts the
+ * framework's own layouts use are offered, so the class map stays small and every entry is a
+ * complete literal.
  */
-export type GridColumns = 1 | 2 | 3 | 4 | 6 | 12;
-
 /**
  * Cross-axis alignment of the grid's items.
- * `stretch` makes every cell fill the row height, which is what a row of cards
- * wants.
+ * `stretch` makes every cell fill the row height, which is what a row of cards wants.
  */
-export type GridAlign = "start" | "center" | "end" | "stretch";
+export type { GridAlign, GridColumns };
 
 /**
  * Theme configuration options for the Grid component.

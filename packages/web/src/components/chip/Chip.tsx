@@ -8,15 +8,30 @@
  */
 "use client";
 
-import type { Size } from "@asheeui/core";
 import {
+  CHIP_AVATAR_CLASS,
+  CHIP_BASE_CLASS,
+  CHIP_CLOSE_CLASS,
+  CHIP_DISABLED_CLASS,
+  CHIP_DOT_CLASS,
+  CHIP_FOCUS_CLASS,
+  CHIP_FONT_CLASS,
+  CHIP_GAP_CLASS,
+  CHIP_HEIGHT_CLASS,
+  CHIP_ICON_SIZE_CLASS,
+  CHIP_PADDING_CLASS,
+  CHIP_PRESSABLE_CLASS,
+  CHIP_SLOT_CLASS,
   type Color,
   cn,
   RADIUS_CLASS,
   resolveCascade,
+  resolveChipVariant,
   resolveClassKey,
   resolveRadiusKey,
   resolveVariantClass,
+  type Size,
+  type Variant,
 } from "@asheeui/core";
 import {
   forwardRef,
@@ -32,13 +47,6 @@ import {
   type ChipVariant,
   FALLBACK_CHIP_CONFIG,
 } from "./chip-config";
-import {
-  CHIP_FONT_CLASS,
-  CHIP_GAP_CLASS,
-  CHIP_HEIGHT_CLASS,
-  CHIP_ICON_SIZE_CLASS,
-  CHIP_PADDING_CLASS,
-} from "./chip-styles";
 
 /**
  * Configuration options for the Chip component.
@@ -196,16 +204,16 @@ export const Chip = forwardRef<HTMLDivElement, ChipProps>(
 
     // ─── 1. Token Resolvers ──────────────────────────────────────────────────
 
-    const rawVariant = resolveCascade<string>(
-      variant,
-      sectionConfig?.variant,
-      config.defaultVariant as ChipVariant | undefined,
-      FALLBACK_CHIP_CONFIG.variant,
+    // The cascade's last tiers are the platform's, so they may hand back a treatment a
+    // chip cannot draw; the shared rule lands it on the nearest one it can.
+    const resolvedVariantKey: ChipVariant = resolveChipVariant(
+      resolveCascade<Variant>(
+        variant,
+        sectionConfig?.variant,
+        config.defaultVariant,
+        FALLBACK_CHIP_CONFIG.variant,
+      ),
     );
-
-    // Fallback 'underlined' to 'bordered'
-    const resolvedVariantKey: ChipVariant =
-      rawVariant === "underlined" ? "bordered" : (rawVariant as ChipVariant);
 
     const resolvedColorKey = resolveCascade<Color>(
       color,
@@ -315,18 +323,16 @@ export const Chip = forwardRef<HTMLDivElement, ChipProps>(
         onClick={handleClick}
         onKeyDown={handleKeyDown}
         className={cn(
-          "inline-flex items-center font-medium transition-all duration-200 select-none shrink-0",
-          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2",
+          CHIP_BASE_CLASS,
+          CHIP_FOCUS_CLASS,
           resolveVariantClass(resolvedVariantKey, resolvedColorKey),
           heightClass,
           paddingClass,
           fontClass,
           gapClass,
           radiusClass,
-          isDisabled && "opacity-50 pointer-events-none cursor-not-allowed",
-          onClick &&
-            !isDisabled &&
-            "cursor-pointer hover:opacity-90 active:scale-[0.98]",
+          isDisabled && CHIP_DISABLED_CLASS,
+          onClick && !isDisabled && CHIP_PRESSABLE_CLASS,
           className,
         )}
         style={style}
@@ -334,7 +340,7 @@ export const Chip = forwardRef<HTMLDivElement, ChipProps>(
         {/* Status Dot */}
         {dot && (
           <span
-            className="shrink-0 rounded-full"
+            className={CHIP_DOT_CLASS}
             style={{
               width: "0.5em",
               height: "0.5em",
@@ -345,24 +351,12 @@ export const Chip = forwardRef<HTMLDivElement, ChipProps>(
 
         {/* Avatar */}
         {avatar && (
-          <span
-            className={cn(
-              "inline-flex items-center justify-center shrink-0 scrollbar-hide overflow-hidden rounded-full",
-              iconSizeClass,
-            )}>
-            {avatar}
-          </span>
+          <span className={cn(CHIP_AVATAR_CLASS, iconSizeClass)}>{avatar}</span>
         )}
 
         {/* Start Icon */}
         {startIcon && !avatar && (
-          <span
-            className={cn(
-              "inline-flex items-center justify-center shrink-0",
-              iconSizeClass,
-            )}>
-            {startIcon}
-          </span>
+          <span className={cn(CHIP_SLOT_CLASS, iconSizeClass)}>{startIcon}</span>
         )}
 
         {/* Content */}
@@ -370,13 +364,7 @@ export const Chip = forwardRef<HTMLDivElement, ChipProps>(
 
         {/* End Icon */}
         {endIcon && !onClose && (
-          <span
-            className={cn(
-              "inline-flex items-center justify-center shrink-0",
-              iconSizeClass,
-            )}>
-            {endIcon}
-          </span>
+          <span className={cn(CHIP_SLOT_CLASS, iconSizeClass)}>{endIcon}</span>
         )}
 
         {/* Close Button */}
@@ -386,12 +374,7 @@ export const Chip = forwardRef<HTMLDivElement, ChipProps>(
             aria-label={closeLabel}
             disabled={isDisabled}
             onClick={handleClose}
-            className={cn(
-              "inline-flex items-center justify-center shrink-0 rounded-full transition-opacity",
-              "hover:opacity-70 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-current",
-              "opacity-80 -mr-1",
-              iconSizeClass,
-            )}>
+            className={cn(CHIP_CLOSE_CLASS, iconSizeClass)}>
             {closeIcon ?? <CloseIcon className="w-full h-full" />}
           </button>
         )}

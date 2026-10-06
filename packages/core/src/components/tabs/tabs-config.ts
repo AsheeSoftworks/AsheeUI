@@ -20,8 +20,8 @@
  */
 
 import type { ReactNode } from "react";
-import type { Radius, Size } from "../shared/radius";
-import type { Color, Variant } from "../shared/variant";
+import type { Radius, Size } from "../../shared/radius";
+import type { Color, Variant } from "../../shared/variant";
 
 /**
  * Visual style variant of the tabs.

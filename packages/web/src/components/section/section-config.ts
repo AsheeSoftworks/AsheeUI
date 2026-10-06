@@ -6,18 +6,23 @@
  * and provides fallback values for the cascade resolution system.
  */
 
-import type { Space } from "@asheeui/core";
-import { registerComponentDefaults } from "@asheeui/core";
+import type { SectionBackground } from "@asheeui/core";
+import { registerComponentDefaults, type Space } from "@asheeui/core";
 import type { ContainerSize } from "../container/container-config";
 
 /**
  * Background treatment of a section.
  *
+ * The three treatments are shared vocabulary rather than a web idea: `@asheeui/core`
+ * declares them, so a `Section`, a hero and a call to action name one type on both
+ * platforms. This module re-exports the type so code that already reaches for it here keeps
+ * working.
+ *
  * - `none`: transparent, so the page background shows through.
  * - `muted`: a subdued band, used to separate one section from the next.
  * - `tinted`: a faint accent band, used to emphasise a section.
  */
-export type SectionBackground = "none" | "muted" | "tinted";
+export type { SectionBackground };
 
 /**
  * Theme configuration options for the Section component.
