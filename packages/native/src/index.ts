@@ -17,6 +17,7 @@ export * from "./components/calendar";
 export * from "./components/card";
 export * from "./components/carousel";
 export * from "./components/chip";
+export * from "./components/clipboard";
 export * from "./components/cta";
 export * from "./components/drawer";
 export * from "./components/dropmenu";

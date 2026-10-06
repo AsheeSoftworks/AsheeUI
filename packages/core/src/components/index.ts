@@ -16,6 +16,7 @@ export * from "./button";
 export * from "./calendar";
 export * from "./carousel";
 export * from "./chip";
+export * from "./clipboard";
 export * from "./cta";
 export * from "./drawer";
 export * from "./empty-state";
