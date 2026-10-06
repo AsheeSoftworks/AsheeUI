@@ -356,7 +356,9 @@ export const Chip = forwardRef<HTMLDivElement, ChipProps>(
 
         {/* Start Icon */}
         {startIcon && !avatar && (
-          <span className={cn(CHIP_SLOT_CLASS, iconSizeClass)}>{startIcon}</span>
+          <span className={cn(CHIP_SLOT_CLASS, iconSizeClass)}>
+            {startIcon}
+          </span>
         )}
 
         {/* Content */}

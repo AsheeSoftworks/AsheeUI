@@ -27,7 +27,9 @@ import { Chip } from "./Chip";
  * @returns The rendered tree and its queries.
  */
 async function renderChip(ui: ReactElement, config?: object) {
-  return render(<AsheeNativeProvider config={config}>{ui}</AsheeNativeProvider>);
+  return render(
+    <AsheeNativeProvider config={config}>{ui}</AsheeNativeProvider>,
+  );
 }
 
 /**
@@ -96,7 +98,11 @@ describe("Native Chip", () => {
   });
 
   it("names the remove control when the consumer does not", async () => {
-    const view = await renderChip(<Chip testID="chip" onClose={() => {}}>React</Chip>);
+    const view = await renderChip(
+      <Chip testID="chip" onClose={() => {}}>
+        React
+      </Chip>,
+    );
 
     // A closer that says nothing about what it closes is worse than no name at all, so the
     // component states a default rather than leaving the control anonymous.
@@ -116,7 +122,11 @@ describe("Native Chip", () => {
   it("dims a disabled chip and refuses to close it", async () => {
     const onClose = jest.fn();
     const view = await renderChip(
-      <Chip testID="chip" isDisabled onClose={onClose} closeLabel="Remove React">
+      <Chip
+        testID="chip"
+        isDisabled
+        onClose={onClose}
+        closeLabel="Remove React">
         React
       </Chip>,
     );

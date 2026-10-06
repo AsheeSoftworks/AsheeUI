@@ -265,7 +265,6 @@ export function Image({
   );
 }
 
-
 /**
  * Whether a value is a usable source.
  *

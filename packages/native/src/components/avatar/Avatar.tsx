@@ -29,15 +29,15 @@ import {
   NATIVE_IMAGE_PICTURE_FILL_CLASS,
   NATIVE_RADIUS_CLASS,
   type Radius,
-  type Size,
   resolveCascade,
   resolveClassKey,
+  type Size,
 } from "@asheeui/core";
 import { type ElementType, type ReactNode, useState } from "react";
 import {
+  type StyleProp,
   Text,
   View,
-  type StyleProp,
   type ViewProps,
   type ViewStyle,
 } from "react-native";
@@ -247,4 +247,3 @@ export function Avatar({
     </View>
   );
 }
-
