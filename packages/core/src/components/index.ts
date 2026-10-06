@@ -32,6 +32,7 @@ export * from "./image";
 export * from "./input";
 export * from "./link";
 export * from "./loading-state";
+export * from "./marketing-layout";
 export * from "./marquee";
 export * from "./modal";
 export * from "./page";
