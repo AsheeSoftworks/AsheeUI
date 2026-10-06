@@ -8,7 +8,7 @@
  * package would mean mocking the platform away, and then the test would prove
  * nothing about the platform.
  *
- * Three mappings are deliberate, and the first two exist because this is a
+ * Four mappings are deliberate, and the first two exist because this is a
  * workspace rather than a single install:
  *
  * 1. React Native's preset resolves `react-native` from its own directory, where
@@ -26,6 +26,10 @@
  * 3. `@asheeui/core` is mapped to its source because the workspace consumes it as
  *    TypeScript: mapping it keeps it inside the transform instead of inside the
  *    ignored `node_modules` tree.
+ * 4. The Babel runtime is mapped to this package's copy. The platform's preset
+ *    rewrites the helpers of the code it transforms into `@babel/runtime` imports,
+ *    and the mapped `@asheeui/core` source is transformed here as well, so a file in
+ *    that package asks for a runtime this package is the one that installs.
  */
 const path = require("node:path");
 
@@ -37,6 +41,7 @@ module.exports = {
     "^react-native($|/.*)": `${path.dirname(require.resolve("react-native"))}/$1`,
     "^react$": require.resolve("react"),
     "^@asheeui/core$": "<rootDir>/../core/src/index.ts",
+    "^@babel/runtime/(.*)$": `${path.dirname(require.resolve("@babel/runtime/package.json"))}/$1`,
   },
   // pnpm resolves every package through its store (`node_modules/.pnpm/...`), and
   // React Native ships source that has to be transformed rather than a compiled
