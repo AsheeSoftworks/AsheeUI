@@ -9,12 +9,10 @@
   },
   "pending": [
     "auth-layout",
-    "data-table",
     "docs-layout",
     "marketing-layout",
     "navbar",
     "sidebar",
-    "sidebar-layout",
-    "table"
+    "sidebar-layout"
   ]
 }

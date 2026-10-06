@@ -11,7 +11,17 @@
 
 "use client";
 
-import { cn, resolveConfigCascade } from "@asheeui/core";
+import {
+  cn,
+  DATA_TABLE_CLASS,
+  DATA_TABLE_FOOTER_CLASS,
+  DATA_TABLE_HEADING_CLASS,
+  DATA_TABLE_REGION_CLASS,
+  DATA_TABLE_SEARCH_CLASS,
+  DATA_TABLE_TOOLBAR_CLASS,
+  DATA_TABLE_TOOLBAR_GROUP_CLASS,
+  resolveConfigCascade,
+} from "@asheeui/core";
 import {
   type ElementType,
   type HTMLAttributes,
@@ -32,15 +42,6 @@ import {
   type DataTableConfig,
   FALLBACK_DATA_TABLE_CONFIG,
 } from "./data-table-config";
-import {
-  DATA_TABLE_CLASS,
-  DATA_TABLE_FOOTER_CLASS,
-  DATA_TABLE_HEADING_CLASS,
-  DATA_TABLE_REGION_CLASS,
-  DATA_TABLE_SEARCH_CLASS,
-  DATA_TABLE_TOOLBAR_CLASS,
-  DATA_TABLE_TOOLBAR_GROUP_CLASS,
-} from "./data-table-styles";
 
 /**
  * Props for the DataTable component.
