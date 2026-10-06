@@ -7,14 +7,19 @@
  * it configures any other component, through `components.<name>`.
  */
 
-import type { Space } from "@asheeui/core";
+import type { ContainerSize, SectionBackground, Space } from "@asheeui/core";
 import { registerNativeComponentDefaults } from "../config/registry";
 import type { NativeBreakpoint } from "../hooks/use-breakpoint";
 
 /**
  * Maximum width of a container, in the framework's own sizes.
+ *
+ * The sizes are the design language's, not this renderer's: a hero that caps its
+ * content at `lg` is asking the same question on a tablet as in a browser, so the
+ * shared vocabulary is what the two renderers name and this alias is kept so the
+ * layout kit reads as one kit.
  */
-export type NativeContainerSize = "sm" | "md" | "lg" | "xl" | "full";
+export type NativeContainerSize = ContainerSize;
 
 /**
  * Configuration options for the native Container.
@@ -71,8 +76,15 @@ export interface NativeSectionConfig {
   /** Vertical padding. Defaults to "md". */
   spacing?: Space;
 
-  /** Background the section paints. Defaults to "default". */
-  background?: "default" | "muted";
+  /**
+   * Background the section paints. Defaults to "none".
+   *
+   * The vocabulary is the shared one, so the same value means the same thing here
+   * as in a browser. What the platform states is what `none` looks like: there is
+   * no page behind a native screen to show through, so `none` paints the theme's
+   * own background rather than nothing at all.
+   */
+  background?: SectionBackground;
 }
 
 /**
@@ -110,7 +122,7 @@ export const defaultNativeGridConfig: NativeGridConfig = {
 /** The defaults the native Section registers. */
 export const defaultNativeSectionConfig: NativeSectionConfig = {
   spacing: "md",
-  background: "default",
+  background: "none",
 };
 
 /** The defaults the native Centered registers. */
@@ -154,21 +166,26 @@ export const FALLBACK_NATIVE_STACK_CONFIG: Required<NativeStackConfig> = {
 /**
  * The values the native Grid falls back to.
  *
- * The two breakpoint columns are absent on purpose: a grid that never changes
- * shape only states `columns`, and `resolveGridColumns` reads an absent
- * breakpoint as "inherit the one below it".
+ * The two breakpoint columns are present but undefined, and that is not the same as
+ * absent: `resolveConfigCascade` resolves exactly the keys a fallback declares, so a
+ * key left out of this object never reaches the grid at all. Undefined is how the grid
+ * states "inherit the count below me", which is the same rule the web grid gets from
+ * the order of its class variants.
  */
 export const FALLBACK_NATIVE_GRID_CONFIG: Required<
   Pick<NativeGridConfig, "columns" | "gap">
-> = {
+> &
+  Pick<NativeGridConfig, "columnsMd" | "columnsLg"> = {
   columns: 1,
   gap: "md",
+  columnsMd: undefined,
+  columnsLg: undefined,
 };
 
 /** The values the native Section falls back to. */
 export const FALLBACK_NATIVE_SECTION_CONFIG: Required<NativeSectionConfig> = {
   spacing: "md",
-  background: "default",
+  background: "none",
 };
 
 /** The values the native Centered falls back to. */

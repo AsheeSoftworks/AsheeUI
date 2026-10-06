@@ -10,7 +10,22 @@
 
 "use client";
 
-import { cn, resolveConfigCascade, SPACE_PADDING_Y_CLASS } from "@asheeui/core";
+import type { FooterGroup, FooterLinkItem } from "@asheeui/core";
+import {
+  cn,
+  FOOTER_BOTTOM_CLASS,
+  FOOTER_BOTTOM_LINKS_CLASS,
+  FOOTER_BRAND_COLUMN_CLASS,
+  FOOTER_GROUP_CLASS,
+  FOOTER_GROUPS_CLASS,
+  FOOTER_LINK_CLASS,
+  FOOTER_LIST_CLASS,
+  FOOTER_SOCIAL_ROW_CLASS,
+  FOOTER_TOP_CLASS,
+  FOOTER_VARIANT_CLASS,
+  resolveConfigCascade,
+  SPACE_PADDING_Y_CLASS,
+} from "@asheeui/core";
 import {
   type ElementType,
   forwardRef,
@@ -22,58 +37,20 @@ import { Container } from "../container/Container";
 import { Link } from "../link";
 import { Typography } from "../typography/Typography";
 import { FALLBACK_FOOTER_CONFIG, type FooterConfig } from "./footer-config";
-import {
-  FOOTER_BOTTOM_CLASS,
-  FOOTER_BOTTOM_LINKS_CLASS,
-  FOOTER_BRAND_COLUMN_CLASS,
-  FOOTER_GROUP_CLASS,
-  FOOTER_GROUPS_CLASS,
-  FOOTER_LINK_CLASS,
-  FOOTER_LIST_CLASS,
-  FOOTER_SOCIAL_ROW_CLASS,
-  FOOTER_TOP_CLASS,
-  FOOTER_VARIANT_CLASS,
-} from "./footer-styles";
 
 /**
  * One link in the footer.
+ *
+ * The description is the framework's, declared in `@asheeui/core`, because the native
+ * renderer reads the same one. It is re-exported here so a consumer importing the web
+ * component keeps naming one type.
  */
-export interface FooterLinkItem {
-  /** Stable identifier for the link. Defaults to its position in the list. */
-  id?: string | number;
-
-  /** Visible name of the link. */
-  label: ReactNode;
-
-  /** Destination of the link. */
-  href?: string;
-
-  /** Content before the label, typically an icon or a social mark. */
-  icon?: ReactNode;
-
-  /** Whether the link leaves the site, which marks the anchor accordingly. */
-  isExternal?: boolean;
-
-  /** Component that replaces the anchor for this link only. */
-  component?: ElementType;
-
-  /** Additional props for that component. */
-  componentProps?: Record<string, unknown>;
-}
-
 /**
  * One column of footer navigation.
+ *
+ * Shared with the native renderer in the same way as {@link FooterLinkItem}.
  */
-export interface FooterGroup {
-  /** Stable identifier for the group. Defaults to its position in the list. */
-  id?: string | number;
-
-  /** Title of the column, which also names its navigation landmark. */
-  title: string;
-
-  /** The links in the column. */
-  links: FooterLinkItem[];
-}
+export type { FooterGroup, FooterLinkItem };
 
 /**
  * Substitution applied to every link in the footer.

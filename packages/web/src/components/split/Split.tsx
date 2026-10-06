@@ -10,16 +10,10 @@
 
 "use client";
 
-import { cn, resolveConfigCascade, SPACE_GAP_CLASS } from "@asheeui/core";
 import {
-  type ElementType,
-  forwardRef,
-  type HTMLAttributes,
-  type ReactNode,
-} from "react";
-import { useAsheeConfig } from "../../libs/context";
-import { FALLBACK_SPLIT_CONFIG, type SplitConfig } from "./split-config";
-import {
+  cn,
+  resolveConfigCascade,
+  SPACE_GAP_CLASS,
   SPLIT_ALIGN_CLASS,
   SPLIT_BASE_CLASS,
   SPLIT_DIVIDER_CLASS,
@@ -27,7 +21,16 @@ import {
   SPLIT_PANE_WIDTH_CLASS,
   SPLIT_STACK_CLASS,
   SPLIT_STICKY_CLASS,
-} from "./split-styles";
+  type SplitConfig,
+} from "@asheeui/core";
+import {
+  type ElementType,
+  forwardRef,
+  type HTMLAttributes,
+  type ReactNode,
+} from "react";
+import { useAsheeConfig } from "../../libs/context";
+import { FALLBACK_SPLIT_CONFIG } from "./split-config";
 
 type BaseSplitProps = SplitConfig &
   Omit<HTMLAttributes<HTMLDivElement>, "color">;

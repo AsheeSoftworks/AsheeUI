@@ -19,7 +19,7 @@
  */
 
 import type { ReactNode } from "react";
-import type { Radius, Size } from "../shared/radius";
+import type { Radius, Size } from "../../shared/radius";
 
 /**
  * Visual style of the accordion.

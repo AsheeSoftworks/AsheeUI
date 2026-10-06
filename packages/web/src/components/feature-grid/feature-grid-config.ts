@@ -1,87 +1,20 @@
 /**
  * FeatureGrid component configuration for AsheeUI.
- * This file defines the configuration type and defaults for the FeatureGrid
- * pattern: grid columns per breakpoint, gap, rhythm, background and content
- * width. It registers the default configuration with the component registry and
- * provides fallback values for the cascade resolution system.
- */
-
-import type { Space } from "@asheeui/core";
-import { registerComponentDefaults } from "@asheeui/core";
-import type { ContainerSize } from "../container/container-config";
-import type { GridColumns } from "../grid/grid-config";
-import type { SectionBackground } from "../section/section-config";
-
-/**
- * Theme configuration options for the FeatureGrid component.
  *
- * Set under `components.featuregrid` in the AsheeUI config. Values feed the
- * component-level fallback tier of the theme cascade.
+ * This file registers the values the FeatureGrid defaults to on the web, so the
+ * component-level fallback tier of the theme cascade has a value to resolve. The options
+ * themselves, and the types that name them, live in `@asheeui/core`: they are the framework's
+ * feature-grid contract rather than a web renderer's, and the native renderer reads the same
+ * ones from the same place. What stays here is the web default values and the registration
+ * that puts them in the web registry.
  */
-export interface FeatureGridConfig {
-  /**
-   * Columns from the smallest viewport upwards.
-   *
-   * @default 1
-   */
-  columns?: GridColumns;
 
-  /**
-   * Columns from the `md` breakpoint upwards.
-   *
-   * @default 2
-   */
-  columnsMd?: GridColumns;
+import {
+  type FeatureGridConfig,
+  registerComponentDefaults,
+} from "@asheeui/core";
 
-  /**
-   * Columns from the `lg` breakpoint upwards.
-   *
-   * @default 3
-   */
-  columnsLg?: GridColumns;
-
-  /**
-   * Space between the feature cards.
-   *
-   * @default "lg"
-   */
-  gap?: Space;
-
-  /**
-   * Vertical padding of the band.
-   *
-   * @default "lg"
-   */
-  spacing?: Space;
-
-  /**
-   * Background treatment of the band.
-   *
-   * @default "none"
-   */
-  background?: SectionBackground;
-
-  /**
-   * Alignment of the heading above the grid.
-   *
-   * @default "center"
-   */
-  align?: "start" | "center";
-
-  /**
-   * Maximum content width of the band.
-   *
-   * @default "lg"
-   */
-  containerSize?: ContainerSize;
-
-  /**
-   * Whether the band wraps its content in a {@link Container}.
-   *
-   * @default true
-   */
-  contained?: boolean;
-}
+export type { FeatureGridConfig, FeatureItem } from "@asheeui/core";
 
 /**
  * Default config values registered for the FeatureGrid component.
@@ -97,12 +30,6 @@ export const defaultFeatureGridConfig: FeatureGridConfig = {
   containerSize: "lg",
   contained: true,
 };
-
-declare module "@asheeui/core" {
-  interface ComponentTypeConfigRegistry {
-    featuregrid: FeatureGridConfig;
-  }
-}
 
 registerComponentDefaults("featuregrid", defaultFeatureGridConfig);
 

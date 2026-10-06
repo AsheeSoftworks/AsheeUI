@@ -12,7 +12,7 @@
 
 import { type RenderResult, render } from "@testing-library/react-native";
 import type { ReactElement } from "react";
-import { Text } from "react-native";
+import { Dimensions, Text } from "react-native";
 import { AsheeNativeProvider } from "../provider/AsheeNativeProvider";
 import { Centered, Container, Grid, HStack, Section, Stack, VStack } from ".";
 import { resolveGridColumns } from "./layout-config";
@@ -171,6 +171,25 @@ describe("Grid", () => {
     // A grid that never changes shape only states one count.
     expect(resolveGridColumns({ columns: 2 }, "xl")).toBe(2);
     expect(resolveGridColumns({}, "md")).toBe(1);
+  });
+
+  it("states a cell's width from the count it resolved from the window", async () => {
+    const silence = jest
+      .spyOn(Dimensions, "get")
+      .mockReturnValue({ width: 1024, height: 844, scale: 2, fontScale: 2 });
+
+    const view = await renderLayout(
+      <Grid testID="grid" columns={1} columnsMd={2} columnsLg={3}>
+        <Text testID="cell">a</Text>
+      </Grid>,
+    );
+
+    // The window is at `lg`, so the count stated for `lg` is the one that lands on
+    // the cell. A breakpoint count that never reaches the grid is the defect this
+    // states.
+    expect(classesOf(view, "cell")).toContain("w-[31%]");
+
+    silence.mockRestore();
   });
 });
 

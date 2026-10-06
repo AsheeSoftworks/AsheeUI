@@ -9,7 +9,13 @@
 
 "use client";
 
-import { resolveConfigCascade } from "@asheeui/core";
+import type { FeatureItem } from "@asheeui/core";
+import {
+  FEATURE_CARD_BODY_CLASS,
+  FEATURE_HEADING_CLASS,
+  FEATURE_ICON_CLASS,
+  resolveConfigCascade,
+} from "@asheeui/core";
 import {
   type ElementType,
   forwardRef,
@@ -27,43 +33,15 @@ import {
   FALLBACK_FEATURE_GRID_CONFIG,
   type FeatureGridConfig,
 } from "./feature-grid-config";
-import {
-  FEATURE_CARD_BODY_CLASS,
-  FEATURE_HEADING_CLASS,
-  FEATURE_ICON_CLASS,
-} from "./feature-grid-styles";
 
 /**
  * One feature in the grid.
+ *
+ * The description is the framework's, declared in `@asheeui/core`, because the native
+ * renderer reads the same one. It is re-exported here so a consumer importing the web
+ * component keeps naming one type.
  */
-export interface FeatureItem {
-  /**
-   * Stable identifier for the feature.
-   * Defaults to its position in the list.
-   */
-  id?: string | number;
-
-  /**
-   * Icon shown above the feature title.
-   */
-  icon?: ReactNode;
-
-  /**
-   * Name of the feature.
-   */
-  title: ReactNode;
-
-  /**
-   * Explanation of the feature.
-   */
-  description?: ReactNode;
-
-  /**
-   * Destination of the feature.
-   * With one, the whole card becomes a link.
-   */
-  href?: string;
-}
+export type { FeatureItem };
 
 /**
  * Substitution for the link each feature card renders.

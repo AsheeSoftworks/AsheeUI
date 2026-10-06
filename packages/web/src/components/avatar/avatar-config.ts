@@ -1,54 +1,29 @@
 /**
  * Avatar component configuration for AsheeUI.
- * This file defines the configuration types and defaults for the Avatar
- * component and registers them with the component registry, so the
- * component-level fallback tier of the theme cascade has a value to resolve.
- */
-
-import type { Color, Radius, Size } from "@asheeui/core";
-import { registerComponentDefaults } from "@asheeui/core";
-
-/**
- * Theme configuration options for the Avatar component.
  *
- * Set under `components.avatar` in the AsheeUI config. Values feed the
- * component-level fallback tier of the theme cascade.
+ * This file registers the values the Avatar defaults to on the web, so the
+ * component-level fallback tier of the theme cascade has a value to resolve. The
+ * options themselves, and the types that name them, live in `@asheeui/core`: they are
+ * the framework's avatar contract rather than a web renderer's, and the native renderer
+ * reads the same ones from the same place. What stays here is the web default values
+ * and the registration that puts them in the web registry.
  */
-export interface AvatarConfig {
-  /**
-   * Diameter scale of the avatar.
-   *
-   * @default "md"
-   */
-  size?: Size;
 
-  /**
-   * Corner rounding.
-   * The default makes a circular avatar; a smaller radius makes it square.
-   *
-   * @default "full"
-   */
-  radius?: Radius;
+import { type AvatarConfig, registerComponentDefaults } from "@asheeui/core";
 
-  /**
-   * Theme accent colour.
-   * Colours the surface the initials fall back to. It does not tint the image.
-   *
-   * @default "primary"
-   */
-  color?: Color;
-}
+export type { AvatarConfig } from "@asheeui/core";
 
 /**
  * Default config values registered for the Avatar component.
  *
- * `color` is intentionally absent so it inherits from the global
- * `defaultColor`.
+ * `color` is intentionally absent so it inherits from the global `defaultColor`.
  */
 export const defaultAvatarConfig: AvatarConfig = {
   size: "md",
   radius: "full",
 };
+
+registerComponentDefaults("avatar", defaultAvatarConfig);
 
 /**
  * Hard fallback values used when no config tier provides a value.
@@ -60,11 +35,3 @@ export const FALLBACK_AVATAR_CONFIG: Required<AvatarConfig> = {
   radius: "full",
   color: "primary",
 } as const;
-
-declare module "@asheeui/core" {
-  interface ComponentTypeConfigRegistry {
-    avatar: AvatarConfig;
-  }
-}
-
-registerComponentDefaults("avatar", defaultAvatarConfig);

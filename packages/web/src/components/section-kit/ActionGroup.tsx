@@ -11,7 +11,12 @@
  */
 
 import type { ActionConfig } from "@asheeui/core";
-import { cn } from "@asheeui/core";
+import {
+  cn,
+  SECTION_BLOCK_ACTIONS_ALIGN_CLASS,
+  SECTION_BLOCK_ACTIONS_CLASS,
+  type SectionBlockAlign,
+} from "@asheeui/core";
 import type { ReactNode } from "react";
 import { Button } from "../button/Button";
 
@@ -37,7 +42,7 @@ export interface ActionGroupProps {
    *
    * @default "start"
    */
-  align?: "start" | "center";
+  align?: SectionBlockAlign;
 
   /**
    * Additional classes for the wrapper.
@@ -84,8 +89,8 @@ export function ActionGroup({
   return (
     <div
       className={cn(
-        "flex flex-col gap-3 sm:flex-row sm:items-center",
-        align === "center" && "sm:justify-center",
+        SECTION_BLOCK_ACTIONS_CLASS,
+        SECTION_BLOCK_ACTIONS_ALIGN_CLASS[align],
         className,
       )}>
       {primaryAction && (

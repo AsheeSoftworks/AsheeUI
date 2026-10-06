@@ -1,64 +1,22 @@
 /**
  * Page component configuration for AsheeUI.
- * This file defines the configuration type and defaults shared by the four page
- * parts (`Page`, `PageHeader`, `PageContent`, `PageFooter`): nesting behaviour,
- * container width, content rhythm, stickiness and separators. It registers the
- * default configuration with the component registry and provides fallback
- * values for the cascade resolution system.
- */
-
-import type { Space } from "@asheeui/core";
-import { registerComponentDefaults } from "@asheeui/core";
-import type { ContainerSize } from "../container/container-config";
-
-/**
- * Theme configuration options shared by the page parts.
  *
- * Set under `components.page` in the AsheeUI config. Values feed the
- * component-level fallback tier of the theme cascade for all four parts, so an
- * application can set its page shell once.
+ * This file registers the values the page parts default to on the web, so the
+ * component-level fallback tier of the theme cascade has a value to resolve. The options
+ * themselves, and the types that name them, live in `@asheeui/core`: they are the
+ * framework's page contract rather than a web renderer's, and the native renderer reads the
+ * same ones from the same place. What stays here is the web default values and the
+ * registration that puts them in the web registry.
  */
-export interface PageConfig {
-  /**
-   * Whether a part wraps its content in a {@link Container}.
-   *
-   * @default true
-   */
-  contained?: boolean;
 
-  /**
-   * Maximum content width used when a part is contained.
-   *
-   * @default "lg"
-   */
-  containerSize?: ContainerSize;
+import { type PageConfig, registerComponentDefaults } from "@asheeui/core";
 
-  /**
-   * Vertical rhythm of the content area.
-   *
-   * @default "md"
-   */
-  spacing?: Space;
-
-  /**
-   * Whether the header stays at the top of the viewport while the content
-   * scrolls.
-   *
-   * @default true
-   */
-  sticky?: boolean;
-
-  /**
-   * Whether the header and the footer draw a separator line against the
-   * content.
-   *
-   * @default true
-   */
-  divider?: boolean;
-}
+export type { PageConfig } from "@asheeui/core";
 
 /**
  * Default config values registered for the page parts.
+ * Contained, sticky and divider are the shell's shape and are pinned; the width and the
+ * rhythm are stated as well, so a page reads the same wherever it is rendered.
  */
 export const defaultPageConfig: PageConfig = {
   contained: true,
@@ -67,12 +25,6 @@ export const defaultPageConfig: PageConfig = {
   sticky: true,
   divider: true,
 };
-
-declare module "@asheeui/core" {
-  interface ComponentTypeConfigRegistry {
-    page: PageConfig;
-  }
-}
 
 registerComponentDefaults("page", defaultPageConfig);
 

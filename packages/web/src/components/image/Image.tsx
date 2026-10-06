@@ -10,6 +10,8 @@
 
 import {
   cn,
+  IMAGE_FIT_CLASS,
+  IMAGE_RATIO_CLASS,
   RADIUS_CLASS,
   type Radius,
   resolveCascade,
@@ -32,7 +34,6 @@ import {
   type ImageFit,
   type ImageRatioKey,
 } from "./image-config";
-import { IMAGE_FIT_CLASS, IMAGE_RATIO_CLASS } from "./image-styles";
 
 type BaseImageProps = ImageConfig & ImgHTMLAttributes<HTMLImageElement>;
 

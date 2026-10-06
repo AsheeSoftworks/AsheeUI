@@ -6,10 +6,14 @@
  * registry and provides fallback values for the cascade resolution system.
  */
 
-import { registerComponentDefaults } from "@asheeui/core";
+import { type ContainerSize, registerComponentDefaults } from "@asheeui/core";
 
 /**
  * Maximum content width of a container.
+ *
+ * The widths are shared layout vocabulary rather than a web idea: `@asheeui/core` declares
+ * them, so a band's configuration and the container itself name one type on both platforms.
+ * This module re-exports the type so code that already reaches for it here keeps working.
  *
  * - `sm`: a single reading column.
  * - `md`: a narrow application or form column.
@@ -17,7 +21,7 @@ import { registerComponentDefaults } from "@asheeui/core";
  * - `xl`: a wide application shell.
  * - `full`: no maximum width.
  */
-export type ContainerSize = "sm" | "md" | "lg" | "xl" | "full";
+export type { ContainerSize };
 
 /**
  * Theme configuration options for the Container component.

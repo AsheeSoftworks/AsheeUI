@@ -23,8 +23,8 @@
  * without either renderer restating it.
  */
 
-import type { Radius, Size } from "../shared/radius";
-import type { Color, Variant } from "../shared/variant";
+import type { Radius, Size } from "../../shared/radius";
+import type { Color, Variant } from "../../shared/variant";
 
 /**
  * Where the tooltip sits relative to its trigger.

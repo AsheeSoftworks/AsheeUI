@@ -1,8 +1,10 @@
 /**
- * Avatar helpers for AsheeUI.
- * This file provides the small pure helpers the Avatar component needs, kept
- * apart from the component so they can be reasoned about and tested on their
- * own.
+ * The initials an avatar falls back to, for both renderers.
+ *
+ * The rule is a decision about the identity the framework presents rather than about a
+ * platform, so it lives in the shared layer and both renderers read it: an avatar shows
+ * the same initials on a phone as it does in a browser, and there is one place to change
+ * what "the initials" means.
  */
 
 /**
@@ -15,6 +17,13 @@
  * @param name - The represented entity's name.
  * @returns One or two uppercase characters, or an empty string when there is
  * nothing to derive them from.
+ *
+ * @example
+ * ```ts
+ * getInitials("Ada Lovelace"); // "AL"
+ * getInitials("Ashee"); // "AS"
+ * getInitials(""); // ""
+ * ```
  */
 export function getInitials(name: string): string {
   const words = name.trim().split(/\s+/).filter(Boolean);

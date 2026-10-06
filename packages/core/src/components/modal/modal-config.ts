@@ -18,7 +18,7 @@
  * section without either renderer restating it.
  */
 
-import type { Radius } from "../shared/radius";
+import type { Radius } from "../../shared/radius";
 
 /**
  * Where the modal sits vertically.

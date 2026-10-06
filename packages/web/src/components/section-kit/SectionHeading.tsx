@@ -9,21 +9,34 @@
  * component inventory.
  */
 
-import { cn } from "@asheeui/core";
+import {
+  cn,
+  SECTION_BLOCK_DESCRIPTION_CENTERED_CLASS,
+  SECTION_BLOCK_DESCRIPTION_CLASS,
+  SECTION_BLOCK_HEADING_ALIGN_CLASS,
+  SECTION_BLOCK_HEADING_CLASS,
+  SECTION_BLOCK_HEADING_ROLE,
+  type SectionBlockAlign,
+  type SectionBlockHeadingSize,
+} from "@asheeui/core";
 import type { ElementType, ReactNode } from "react";
 import { Typography } from "../typography/Typography";
 
 /**
  * Heading sizes a section heading can use.
  * The size selects a semantic typography role, so the visual step and the
- * markup step are decided together.
+ * markup step are decided together. The sizes and the role they resolve to are
+ * shared vocabulary — `@asheeui/core` declares them, so a heading in a marketing
+ * band and a heading the native renderer draws name one set — and this alias is
+ * kept so callers keep naming the helper's own option.
  */
-export type SectionHeadingSize = "md" | "lg" | "xl";
+export type SectionHeadingSize = SectionBlockHeadingSize;
 
 /**
- * Horizontal alignment of a section heading.
+ * Horizontal alignment of a section heading, shared with every band in the
+ * same way as {@link SectionHeadingSize}.
  */
-export type SectionHeadingAlign = "start" | "center";
+export type SectionHeadingAlign = SectionBlockAlign;
 
 /**
  * Props for the internal SectionHeading helper.
@@ -104,8 +117,8 @@ export function SectionHeading({
   return (
     <div
       className={cn(
-        "flex flex-col gap-2",
-        centered && "items-center text-center",
+        SECTION_BLOCK_HEADING_CLASS,
+        SECTION_BLOCK_HEADING_ALIGN_CLASS[align],
         className,
       )}>
       {eyebrow && (
@@ -117,13 +130,7 @@ export function SectionHeading({
         <Typography
           as={titleAs}
           id={titleId}
-          role={
-            size === "xl"
-              ? "display"
-              : size === "lg"
-                ? "heading-xl"
-                : "heading-lg"
-          }
+          role={SECTION_BLOCK_HEADING_ROLE[size]}
           className={centered ? "text-balance" : "text-pretty"}>
           {title}
         </Typography>
@@ -132,7 +139,10 @@ export function SectionHeading({
         <Typography
           role="body-lg"
           tone="muted"
-          className={cn("max-w-2xl", centered && "mx-auto")}>
+          className={cn(
+            SECTION_BLOCK_DESCRIPTION_CLASS,
+            centered && SECTION_BLOCK_DESCRIPTION_CENTERED_CLASS,
+          )}>
           {description}
         </Typography>
       )}

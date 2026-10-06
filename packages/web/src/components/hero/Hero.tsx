@@ -11,7 +11,16 @@
 "use client";
 
 import type { ActionConfig } from "@asheeui/core";
-import { cn, resolveConfigCascade } from "@asheeui/core";
+import {
+  cn,
+  HERO_CENTERED_CLASS,
+  HERO_DESCRIPTION_MEASURE_CLASS,
+  HERO_LAYOUT_CLASS,
+  HERO_MEDIA_CLASS,
+  HERO_MEDIA_FIRST_CLASS,
+  HERO_TEXT_COLUMN_CLASS,
+  resolveConfigCascade,
+} from "@asheeui/core";
 import {
   type ElementType,
   forwardRef,
@@ -24,14 +33,6 @@ import { Section } from "../section/Section";
 import { ActionGroup } from "../section-kit/ActionGroup";
 import { SectionHeading } from "../section-kit/SectionHeading";
 import { FALLBACK_HERO_CONFIG, type HeroConfig } from "./hero-config";
-import {
-  HERO_CENTERED_CLASS,
-  HERO_DESCRIPTION_MEASURE_CLASS,
-  HERO_LAYOUT_CLASS,
-  HERO_MEDIA_CLASS,
-  HERO_MEDIA_FIRST_CLASS,
-  HERO_TEXT_COLUMN_CLASS,
-} from "./hero-styles";
 
 type BaseHeroProps = HeroConfig &
   Omit<HTMLAttributes<HTMLElement>, "color" | "title">;

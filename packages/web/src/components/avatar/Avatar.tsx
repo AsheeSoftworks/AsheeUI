@@ -8,7 +8,13 @@
 
 import type { Color, Radius, Size } from "@asheeui/core";
 import {
+  AVATAR_BASE_CLASS,
+  AVATAR_FALLBACK_CLASS,
+  AVATAR_FALLBACK_VARIANT,
+  AVATAR_FONT_CLASS,
+  AVATAR_SIZE_CLASS,
   cn,
+  getInitials,
   RADIUS_CLASS,
   resolveCascade,
   resolveClassKey,
@@ -23,14 +29,7 @@ import {
 } from "react";
 import { useAsheeConfig } from "../../libs/context";
 import { Image } from "../image";
-import { getInitials } from "./avatar.helpers";
 import { type AvatarConfig, FALLBACK_AVATAR_CONFIG } from "./avatar-config";
-import {
-  AVATAR_BASE_CLASS,
-  AVATAR_FALLBACK_VARIANT,
-  AVATAR_FONT_CLASS,
-  AVATAR_SIZE_CLASS,
-} from "./avatar-styles";
 
 type BaseAvatarProps = AvatarConfig &
   Omit<HTMLAttributes<HTMLDivElement>, "color" | "children">;
@@ -211,7 +210,7 @@ export const Avatar = forwardRef<HTMLDivElement, AvatarProps>(
           <span
             aria-hidden="true"
             className={cn(
-              "inline-flex items-center justify-center size-full",
+              AVATAR_FALLBACK_CLASS,
               fontClass,
               resolveVariantClass(AVATAR_FALLBACK_VARIANT, resolvedColorKey),
             )}>
