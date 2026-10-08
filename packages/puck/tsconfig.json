@@ -1,0 +1,23 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "rootDir": "./src",
+    "outDir": "./dist",
+    "jsx": "react-jsx",
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "types": ["node", "jest", "nativewind/types"],
+    "paths": {
+      "@asheeui/core": ["../core/dist/index.d.ts"],
+      "@asheeui/web": ["../web/dist/index.d.ts"],
+      "@asheeui/web/section-kit": [
+        "../web/dist/components/section-kit/index.d.ts"
+      ],
+      "@asheeui/native": ["../native/dist/index.d.ts"],
+      "@asheeui/native/section-kit": [
+        "../native/dist/components/section-kit/index.d.ts"
+      ]
+    }
+  },
+  "include": ["src"]
+}

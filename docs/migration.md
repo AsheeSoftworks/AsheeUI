@@ -37,15 +37,24 @@ The library is split into four packages, and the components move out of the
 | `@asheeui/shared` | `@asheeui/core`, the platform-neutral layer |
 | `asheeui` | `@asheeui/ui`, the umbrella entry point |
 | `asheeui/styles` | `@asheeui/web/styles` |
-| `asheeui/puck` | `@asheeui/web/puck` |
+| `asheeui/puck` | `@asheeui/puck`, the Puck integration |
 
 The umbrella entry point is scoped like the rest of the family rather than named after
 the library: `@asheeui/ui` resolves to `@asheeui/web` in a browser bundle and to
 `@asheeui/native` under Expo and Metro, so one import names a component once and renders
 on both platforms without a second specifier. An existing `"asheeui"` dependency is
 replaced by `"@asheeui/ui"`; the unscoped `asheeui` name is deprecated in this release
-and points at this file. A stylesheet or a Puck configuration imported from `asheeui` is
-the other change to make — those subpaths moved to `@asheeui/web`.
+and points at this file. A stylesheet imported from `asheeui` is the other change to
+make — that subpath moved to `@asheeui/web` — and the Puck integration is a third,
+because it is now a package of its own rather than a subpath of a renderer.
+
+The Puck integration moved because it is used on both platforms, and a subpath of the
+web package could not be. `@asheeui/puck` has one entry point and two renderers: on the
+web it is the editor's block registry and the editor's page renderer, and under Metro it
+is the same block specs plus a renderer that draws a stored page with the native
+components. `@puckeditor/core` remains an optional peer, needed by the web half alone.
+An application that composed pages with `asheeui/puck` renames that import and needs no
+other change; `@asheeui/web/puck` was never published, so no deprecation window applies.
 
 Installing `@asheeui/web` brings `@asheeui/core` with it, so an application that
 imports only the components of one platform installs one package. Add

@@ -44,6 +44,7 @@ no queued module.
 | Overlays | `Modal`, `Drawer`, `Tooltip` |
 | Responsive | `useBreakpoint`, and the pure `resolveBreakpoint` and `resolveGridColumns` |
 | Configuration | Every component registers its defaults and resolves through the shared cascade |
+| A composed page | `@asheeui/puck` renders a page the web editor composed, with the components above |
 
 The field family arrived as one increment rather than one component at a time, because
 its members are the same shape: they read the family's vocabulary from `@asheeui/core`
@@ -368,6 +369,32 @@ pnpm --filter @asheeui/web test             # web
 pnpm --filter @asheeui/core test     # the shared layer
 ```
 
+## A composed page
+
+A page a web editor composed is rendered on a device by `@asheeui/puck`. The package
+holds one set of block specs — the label a builder shows, the fields it fills in and the
+value each block starts as — and two drawings for each block, so a page cannot mean one
+thing in the editor and another on a screen:
+
+```tsx
+import { PuckPage } from "@asheeui/puck";
+
+export function PublishedPage({ page }) {
+  return <PuckPage data={page} />;
+}
+```
+
+What the platform renders is the same component set documented above, reached through the
+same provider. Two things are deliberately absent. There is no editor: composing is a web
+concern, and the platform is where a composed page is shown. And the package imports
+nothing from `@puckeditor/core`, which is what lets a native bundle reach it at all — the
+editor is an optional peer the web half alone needs.
+
+One arrangement differs and is stated rather than hidden. A two-column block offers a
+ratio on the web, where a stylesheet expresses one; the platform resolves its own window
+and offers whole column counts, so the block draws the framework's two columns once there
+is room for them.
+
 ## Styling rules on native
 
 NativeWind compiles the classes it can read in the source, exactly as Tailwind does
@@ -405,7 +432,7 @@ Accessibility is a property of each component rather than a later addition:
 
 | Not ported | Why |
 | --- | --- |
-| Puck (the page builder) | It is a web authoring concern; a native block editor would be a different product |
+| Puck's *editor* | It is a web authoring concern, and a block editor for a device would be a different product |
 | A framework-wide animation system | Motion belongs to the component that needs it, and a general layer would be speculation |
 | The web's table, breadcrumb and resizable-split components | Their native equivalents are lists, a titled header and a platform split view |
 | The web package's source | Sharing source would give one platform the other's behaviour, which is what this architecture exists to avoid |

@@ -134,12 +134,12 @@ as a peer dependency.
 browser bundle and to the React Native renderer under Expo and Metro, so one
 import names a component once and renders on both platforms. An application that
 knows its platform can install a renderer instead — `@asheeui/web` or
-`@asheeui/native` — and the stylesheet and the Puck entry point live in
-`@asheeui/web`.
+`@asheeui/native` — and the stylesheet lives in `@asheeui/web` while the Puck
+integration is a package of its own, `@asheeui/puck`.
 
 Coming from the unscoped `asheeui` package, the dependency becomes `@asheeui/ui`
 and two specifiers move: `asheeui/styles` becomes `@asheeui/web/styles` and
-`asheeui/puck` becomes `@asheeui/web/puck`. [Migration](docs/migration.md) lists
+`asheeui/puck` becomes `@asheeui/puck`. [Migration](docs/migration.md) lists
 every change.
 
 **npm**
@@ -274,9 +274,10 @@ export function Home() {
 A [Puck](docs/puck.md) editor builds the same page from the same components:
 
 ```tsx
-import { asheePuckConfig } from "@asheeui/web/puck";
+import { PuckPage, asheePuckConfig } from "@asheeui/puck";
 
 <Puck config={asheePuckConfig} data={page} onPublish={save} />;
+<PuckPage data={page} />;
 ```
 
 ## Optional CLI

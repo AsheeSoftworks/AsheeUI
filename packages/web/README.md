@@ -14,9 +14,10 @@ integration behind their own entry point.
   and `AuthLayout` for application pages.
 - **Page sections** — `Navbar`, `Hero`, `FeatureGrid`, `CTA`, `Testimonials`,
   `PricingCard` and `Footer`, each taking its actions as configuration.
-- **Puck integration** — `@asheeui/web/puck` exposes the same components as builder
-  blocks, so an application, an editor and a published page share one
-  implementation. `@puckeditor/core` is an optional peer dependency.
+- **Puck integration** — the framework's block registry lives in `@asheeui/puck`, so an
+  application, an editor and a published page share one implementation, and a device
+  renders the composed page with the native components. `@puckeditor/core` is an
+  optional peer dependency of that package.
 - **Tailwind CSS v4** — class names are static and complete, and colours resolve
   through CSS custom properties.
 - **Light and dark themes** — built-in `light`, `dark` and `system` themes, plus

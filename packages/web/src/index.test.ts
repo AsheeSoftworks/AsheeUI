@@ -133,10 +133,11 @@ describe("public entry point", () => {
     expect(AsheeUI).not.toHaveProperty("STEPPER_LIST_CLASS");
   });
 
-  it("keeps the section kit and the Puck configuration off the main entry point", () => {
+  it("keeps the section kit and the Puck registry off the main entry point", () => {
     // The kit is an implementation detail the patterns share, and the Puck
-    // configuration is deliberately behind its own subpath (`@asheeui/web/puck`),
-    // so an application that does not build pages never loads it.
+    // integration is a package of its own (`@asheeui/puck`), so an application that
+    // does not build pages never loads either. The kit is reachable only at its own
+    // subpath, because the Puck integration composes a band's heading with it.
     expect(AsheeUI).not.toHaveProperty("SectionHeading");
     expect(AsheeUI).not.toHaveProperty("ActionGroup");
     expect(AsheeUI).not.toHaveProperty("asheePuckConfig");
