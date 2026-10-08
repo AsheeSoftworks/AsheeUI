@@ -1,37 +1,42 @@
 # Puck
 
 AsheeUI ships a Puck integration that lets the same components power a React
-application, a visual editor and a published page. It lives behind its own
-entry point, so an application that does not build pages never loads it.
+application, a visual editor and a published page. It is a package of its own,
+`@asheeui/puck`, because it is used on both platforms: the web half is the editor's
+block registry and the editor's page renderer, and the React Native half draws a
+composed page with the native components.
 
 ```bash
-npm install @asheeui/web @puckeditor/core
+npm install @asheeui/puck @puckeditor/core
 ```
 
-`@puckeditor/core` is an optional peer dependency. It is only needed when you
-import the integration.
+`@puckeditor/core` is an optional peer dependency. It is needed by the web half
+alone; the native half loads without it, which is what lets a device bundle reach
+`@asheeui/puck` at all.
 
 ## What the integration is
 
 ```text
 AsheeUI component
         ↓
-Puck configuration (fields + default props + render)
+block spec (label + fields + default value)      ← one, read by both platforms
         ↓
-block registry (asheePuckConfig)
+platform drawing (web registry, native registry)
         ↓
-editor preview and published page
+editor preview, published page, and a device
 ```
 
 There are no `PuckHero`, `PuckNavbar` or `PuckFooter` components. Each block is
-the framework component plus the configuration a builder can own, so a block
-cannot drift away from the component an application renders.
+the framework component plus the configuration a builder can own, and the
+configuration half is stated once — so a block cannot drift away from the
+component an application renders, and a block added once is offered on both
+platforms.
 
 ## Usage
 
 ```tsx
 import { Puck } from "@puckeditor/core";
-import { asheePuckConfig } from "@asheeui/web/puck";
+import { asheePuckConfig } from "@asheeui/puck";
 import "@puckeditor/core/puck.css";
 import "@asheeui/web/styles";
 
@@ -42,16 +47,24 @@ export function Editor() {
 }
 ```
 
-A published page renders through Puck's own renderer, which needs no editor:
+A published page renders through `PuckPage`, which needs no editor — and, written
+this way, renders on a device as well as in a browser:
 
 ```tsx
-import { Render } from "@puckeditor/core";
-import { asheePuckConfig } from "@asheeui/web/puck";
+import { PuckPage } from "@asheeui/puck";
 
 export function PublishedPage({ page }) {
-  return <Render config={asheePuckConfig} data={page} />;
+  return <PuckPage data={page} />;
 }
 ```
+
+On the web `PuckPage` renders through Puck's own `Render`, so a live site and the
+editor's preview are the same components. Under Expo and Metro the same import
+resolves to the native half, which walks the stored document and draws each block
+with `@asheeui/native` — no editor, no DOM, and no `@puckeditor/core` in the
+bundle. An application that renders a page in a server component and prefers the
+editor's renderer directly can still import `Render` from `@puckeditor/core` and
+pass `asheePuckConfig` to it.
 
 Blocks resolve their theme through the framework provider. The configuration's
 page shell supplies one when the page has none, and respects the one you
@@ -94,40 +107,60 @@ builder problem.
 
 ## Adding a block
 
-A block is a small module. It states its props, its fields and how the props
-reach the component:
+A block is a spec plus one drawing per platform.
 
-```tsx
-import type { ComponentConfig } from "@puckeditor/core";
-import { Alert } from "@asheeui/web";
+The spec states its props, its fields and the value it starts as, and it lives with
+the other specs so both platforms read it:
 
-type AlertBlockProps = {
-  title: string;
-  tone: "info" | "success" | "warning" | "error";
+```ts
+// src/shared/blocks/content.ts
+import { textField, selectField } from "../fields";
+import type { AsheeBlockSpec } from "../types";
+
+export type AlertBlockProps = {
+  title?: string;
+  tone?: "info" | "success" | "warning" | "error";
 };
 
-export const alertBlock: ComponentConfig<AlertBlockProps> = {
+export const ALERT_SPEC: AsheeBlockSpec<AlertBlockProps> = {
   label: "Notice",
   fields: {
-    title: { type: "text", label: "Wording" },
-    tone: {
-      type: "select",
-      label: "Tone",
-      options: [
-        { label: "Information", value: "info" },
-        { label: "Warning", value: "warning" },
-      ],
-    },
+    title: textField("Wording", "A new version is available"),
+    tone: selectField("Tone", ["info", "success", "warning", "error"] as const),
   },
   defaultProps: { title: "A new version is available", tone: "info" },
-  render: ({ title, tone }) => <Alert type={tone}>{title}</Alert>,
 };
 ```
 
-Add it to `components` and to a `categories` entry, and a test in the same
-change. The integration's own test suite asserts that every block renders, that
-every field is a field type the builder knows, that every category names real
-blocks, and that every default value survives a JSON round trip.
+Each platform adds the drawing, which is the only part that differs:
+
+```tsx
+// src/web/blocks/utility.tsx
+import { Alert } from "@asheeui/web";
+
+export const alertBlock: AsheeBlock<AlertBlockProps> = {
+  ...ALERT_SPEC,
+  render: ({ title, tone }) => <Alert type={tone ?? "info"}>{title}</Alert>,
+};
+```
+
+```tsx
+// src/native/blocks/utility.tsx
+import { Alert } from "@asheeui/native";
+
+export const alertBlock: AsheeBlock<AlertBlockProps> = {
+  ...ALERT_SPEC,
+  render: ({ title, tone }) => <Alert type={tone ?? "info"}>{title}</Alert>,
+};
+```
+
+Register it under its name in both registries, file it under a category in
+`PUCK_CATEGORIES`, and add the name to `PUCK_BLOCK_NAMES` — the package's own
+tests fail until the three agree. They assert that every name has a spec and every
+spec has a name, that every block is labelled and holds fields, that every field
+is a type the builder knows, that every category names blocks that exist and files
+each of them once, and that every default value survives a JSON round trip. Each
+platform's suite then asserts that every block the registry carries draws.
 
 ## What is not included
 

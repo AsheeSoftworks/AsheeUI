@@ -132,14 +132,19 @@ export default defineConfig({
   ],
   build: {
     lib: {
-      // Two entries: the framework itself, and the Puck integration behind its
-      // own subpath (`@asheeui/web/puck`). Rollup only emits a module that the graph
-      // reaches, and the main entry deliberately does not import the Puck layer,
-      // so the subpath has to be an entry of its own or it would ship
-      // declarations without an implementation.
+      // Two entries: the framework itself, and the section kit behind its own
+      // subpath (`@asheeui/web/section-kit`). Rollup only emits a module that the
+      // graph reaches, and the main entry deliberately does not reach the kit — an
+      // application that never composes a band does not load it — so the subpath has
+      // to be an entry of its own or it would ship declarations without an
+      // implementation. The kit is the one internal module another package composes
+      // with: the Puck integration draws a band's heading and action row through it.
       entry: {
         index: resolve(__dirname, "src/index.ts"),
-        "puck/index": resolve(__dirname, "src/puck/index.ts"),
+        "components/section-kit/index": resolve(
+          __dirname,
+          "src/components/section-kit/index.ts",
+        ),
       },
       formats: ["es"],
     },

@@ -1,13 +1,13 @@
 {
-  "name": "@asheeui/ui",
-  "version": "2.2.1",
-  "description": "The AsheeUI umbrella package: the components of @asheeui/web and @asheeui/native behind one import, routed by the bundler instead of by a runtime check.",
+  "name": "@asheeui/puck",
+  "version": "2.3.0",
+  "description": "The AsheeUI Puck integration: one block registry behind one import, routed by the bundler so an editor composes a page on the web and a device renders the stored page with the native components.",
   "author": "Ashee Softworks <asheesoftworks@gmail.com>",
   "homepage": "https://asheeui.com",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/AsheeSoftworks/AsheeUI.git",
-    "directory": "packages/ui"
+    "directory": "packages/puck"
   },
   "bugs": {
     "url": "https://github.com/AsheeSoftworks/AsheeUI/issues"
@@ -16,14 +16,14 @@
     "react",
     "react-native",
     "expo",
+    "puck",
+    "page-builder",
+    "visual-editor",
     "component-library",
     "design-system",
-    "ui-kit",
     "tailwindcss",
     "nativewind",
-    "typescript",
-    "accessible",
-    "a11y"
+    "typescript"
   ],
   "license": "Apache-2.0",
   "type": "module",
@@ -63,13 +63,20 @@
     "dist",
     "src/index.ts",
     "src/index.native.ts",
+    "src/shared",
+    "src/web",
+    "src/native",
+    "!src/**/*.test.ts",
+    "!src/**/*.test.tsx",
     "LICENSE",
     "NOTICE"
   ],
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
     "prepublishOnly": "pnpm build",
-    "test": "vitest run",
+    "test": "vitest run && jest",
+    "test:web": "vitest run",
+    "test:native": "jest",
     "test:watch": "vitest"
   },
   "dependencies": {
@@ -78,6 +85,7 @@
     "@asheeui/web": "workspace:^"
   },
   "peerDependencies": {
+    "@puckeditor/core": "^0.23.0",
     "nativewind": ">=4.2.0",
     "react": "^18.0.0 || ^19.0.0",
     "react-dom": "^18.0.0 || ^19.0.0",
@@ -85,6 +93,9 @@
     "tailwindcss": ">=4.0.0"
   },
   "peerDependenciesMeta": {
+    "@puckeditor/core": {
+      "optional": true
+    },
     "nativewind": {
       "optional": true
     },
@@ -99,15 +110,27 @@
     }
   },
   "devDependencies": {
+    "@babel/core": "^7.28.5",
+    "@babel/runtime": "^7.29.7",
+    "@puckeditor/core": "^0.23.0",
+    "@react-native/babel-preset": "^0.86.3",
+    "@react-native/jest-preset": "^0.86.3",
+    "@testing-library/jest-dom": "^7.0.1",
+    "@testing-library/react": "^16.3.3",
+    "@testing-library/react-native": "^14.0.1",
+    "@types/jest": "^30.0.0",
     "@types/node": "^26.5.0",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
     "@vitejs/plugin-react": "^6.1.1",
+    "babel-jest": "^30.2.0",
+    "jest": "^30.2.0",
     "jsdom": "^30.0.1",
     "nativewind": "^4.2.7",
     "react": "^19.3.0",
     "react-dom": "^19.3.0",
     "react-native": "0.86.3",
+    "tailwindcss": "^4.3.3",
     "typescript": "^7.0.2",
     "vitest": "^5.0.0"
   }

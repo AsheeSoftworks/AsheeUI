@@ -25,8 +25,10 @@ why a browser bundle carries no React Native and a native bundle carries no DOM.
 
 An application that knows its platform can install a renderer instead —
 `@asheeui/web` or `@asheeui/native` — and read the same components without the
-umbrella. Two entry points stay with the web package: the stylesheet,
-`@asheeui/web/styles`, and the Puck configuration, `@asheeui/web/puck`.
+umbrella. One entry point stays with the web package: the stylesheet,
+`@asheeui/web/styles`. The Puck integration is a package of its own, `@asheeui/puck`,
+because it is used on both platforms: the web half is the editor's block registry and
+the native half renders a composed page with the native components.
 
 ## Requirements
 

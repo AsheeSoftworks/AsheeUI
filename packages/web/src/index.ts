@@ -112,6 +112,22 @@ export * from "./components/toast";
 export * from "./components/tooltip";
 export * from "./components/typography";
 /**
+ * The configuration context and the hooks that read it.
+ *
+ * The provider publishes the resolved configuration through this context, and a module
+ * outside this package that composes framework components reads it to tell whether the
+ * application has already provided one — the Puck integration does exactly that, so a
+ * built page does not nest a second provider over the application's own. The hook is
+ * the documented way for an application to read the configuration; it throws outside a
+ * provider, which is why the context itself is exported beside it for the callers that
+ * only need to ask whether one exists.
+ */
+export {
+  AsheeConfigContext,
+  useAshee,
+  useAsheeConfig,
+} from "./libs/context";
+/**
  * Theme utilities and hooks.
  * These provide runtime theme management and reactivity.
  */

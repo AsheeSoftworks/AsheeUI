@@ -42,6 +42,11 @@ The stylesheet is `@asheeui/web`'s, and `@asheeui/ui` depends on it. A package m
 that wants every imported package declared — pnpm does, and so does Yarn with PnP —
 takes `@asheeui/web` in the manifest beside the umbrella.
 
+The [Puck integration](./puck.md) is a package of its own, `@asheeui/puck`. It is not
+part of the umbrella and it is not installed by default: an application that composes
+pages adds it, and brings `@puckeditor/core` with it, while one that only renders
+components never installs either.
+
 ## Import the styles
 
 Add the framework stylesheet to the CSS entry file that Tailwind already uses,
