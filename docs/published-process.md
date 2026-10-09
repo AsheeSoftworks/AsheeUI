@@ -62,7 +62,6 @@ inspected today:
 - the source is public, and each release records what changed and why;
 - the component reference in this documentation is derived from the installed
   package rather than typed into a page, so it cannot disagree with the code;
-- the playground applications run the same package a consumer installs;
 - the verification the project requires (`pnpm verify`) is the same one a
   contributor can run.
 

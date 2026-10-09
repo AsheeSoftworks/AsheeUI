@@ -109,8 +109,7 @@ imports `asheeui/puck` never installs it and never loads it.
   field is a field type the builder knows, every category names real blocks, and
   every default value survives a JSON round trip.
 - A published page is rendered through Puck's own renderer in the test suite.
-- The end-to-end gallery and the three playground applications cover the
-  additions on Vite, Next.js and TanStack Start.
+- The end-to-end gallery covers the additions.
 
 ## Deferred
 
