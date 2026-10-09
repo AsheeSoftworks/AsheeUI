@@ -21,17 +21,6 @@ build-time configuration file and no CLI.
 | The company that maintains it | [asheesoftworks.com](https://asheesoftworks.com) |
 | The web package | [npmjs.com/package/@asheeui/web](https://www.npmjs.com/package/@asheeui/web) |
 | The umbrella package, for an application that runs on both platforms | [npmjs.com/package/@asheeui/ui](https://www.npmjs.com/package/@asheeui/ui) |
-| The Next.js playground | [next-playground-ashee-saids-projects.vercel.app](https://next-playground-ashee-saids-projects.vercel.app) |
-| The Vite playground | [vite-playground-ashee-saids-projects.vercel.app](https://vite-playground-ashee-saids-projects.vercel.app) |
-| The Expo playground, on a device and in a browser | [expo-playground-ashee-saids-projects.vercel.app](https://expo-playground-ashee-saids-projects.vercel.app) |
-
-The playground applications in this repository render the same gallery, and each one's
-end-to-end test asserts it. They are the stress test rather than the brochure: a
-component that only looks right in one state is meant to fail there.
-
-Run them with `pnpm playground:next`, `pnpm playground:vite`, `pnpm playground:tanstack`
-or `pnpm playground:expo`. A playground's tools are project-local, so they are run through
-pnpm rather than typed bare.
 
 ## One install, then copy and paste
 
@@ -339,6 +328,3 @@ AsheeUI is licensed under the [Apache License 2.0](LICENSE). You may use, modify
 and distribute it, including commercially, provided the copyright, patent and
 attribution notices are kept; see [Licensing](docs/licensing.md) for what that
 means in practice, including the trademark position.
-
-The project is developed with the **AI Test Driven Development** methodology,
-created by Ashee Softworks.
