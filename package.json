@@ -36,8 +36,8 @@
   },
   "devDependencies": {
     "@biomejs/biome": "latest",
-    "@changesets/cli": "^3.0.2",
-    "@types/node": "^26.5.0",
+    "@changesets/cli": "^3.0.3",
+    "@types/node": "^26.6.5",
     "turbo": "latest",
     "typescript": "^7.0.2"
   },
