@@ -8,6 +8,11 @@
  * package would mean mocking the platform away, and then the test would prove
  * nothing about the platform.
  *
+ * One test is the exception: `src/utils/resolve-length.test.ts` imports neither the
+ * platform nor the package's component surface, so it runs on Vitest under
+ * `vitest.config.ts`. That config names it in `include` and this one names it in
+ * `testPathIgnorePatterns`, so exactly one runner owns it.
+ *
  * Four mappings are deliberate, and the first two exist because this is a
  * workspace rather than a single install:
  *
@@ -37,7 +42,23 @@ module.exports = {
   preset: "@react-native/jest-preset",
   rootDir: ".",
   testMatch: ["<rootDir>/src/**/*.test.ts?(x)"],
+  // The one platform-free test runs on Vitest (see `vitest.config.ts`), which names
+  // the same file in its `include`. Ignoring it here is what keeps the two runners
+  // from running it twice.
+  testPathIgnorePatterns: [
+    "/node_modules/",
+    "<rootDir>/src/utils/resolve-length.test.ts",
+  ],
+  // Jest merges a preset's `moduleNameMapper` *after* this object, so the keys
+  // declared here come first and win the first-match rule. The two `react-native`
+  // subpaths the preset maps to specific files therefore have to be declared ahead
+  // of the generic rule below: with the generic rule first, `react-native/setup-env`
+  // resolves to `<react-native>/setup-env` and the whole suite fails to load with
+  // "Could not locate module react-native/setup-env". Declaring them here also pins
+  // them to the platform copy this package installs.
   moduleNameMapper: {
+    "^react-native/setup-env$": `${path.dirname(require.resolve("react-native"))}/src/setup-env.js`,
+    "^react-native/react-private-interface$": `${path.dirname(require.resolve("react-native"))}/src/react-private-interface.js`,
     "^react-native($|/.*)": `${path.dirname(require.resolve("react-native"))}/$1`,
     "^react$": require.resolve("react"),
     "^@asheeui/core$": "<rootDir>/../core/src/index.ts",
