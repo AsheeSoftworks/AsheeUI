@@ -44,7 +44,7 @@ The repository is a pnpm + Turborepo monorepo built from these packages:
 
 | Package | Purpose |
 | --- | --- |
-| `@asheeui/ui` | The umbrella entry point a consumer installs (`packages/ui`); it routes an import to the renderer for the platform |
+| `asheeui` | The umbrella entry point a consumer installs (`packages/ui`); it routes an import to the renderer for the platform |
 | `@asheeui/core` | The platform-neutral layer: the tokens, the contracts, the compatibility matrix, the registry, the cascade and the class dictionaries (`packages/core`) |
 | `@asheeui/web` | The DOM renderer: the components, the icons, the Puck integration and the theme binding (`packages/web`) |
 | `@asheeui/native` | The React Native renderer (`packages/native`) |
@@ -134,7 +134,7 @@ To try a change by hand, run a playground's development server, for example
 build the package and link it into a separate scratch project with pnpm:
 
 ```bash
-pnpm --filter @asheeui/ui build
+pnpm --filter asheeui build
 cd ../scratch-app
 pnpm link ../asheeui/packages/ui
 ```

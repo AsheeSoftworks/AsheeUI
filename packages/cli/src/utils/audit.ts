@@ -75,7 +75,7 @@ export function containsStylesImport(content: string): boolean {
 /**
  * Test whether `content` already references the root provider, either by
  * rendering `<AsheeUIProvider>` or by importing from an AsheeUI package. The
- * test is a substring on `asheeui`, so it matches `@asheeui/web`, `@asheeui/ui`
+ * test is a substring on `asheeui`, so it matches `@asheeui/web`, `asheeui`
  * and the unscoped `asheeui` name the library published under before 2.2.
  *
  * @param content - File source to scan.

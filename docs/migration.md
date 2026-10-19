@@ -35,15 +35,15 @@ The library is split into four packages, and the components move out of the
 | --- | --- |
 | The components in `asheeui` | `@asheeui/web`, the DOM renderer |
 | `@asheeui/shared` | `@asheeui/core`, the platform-neutral layer |
-| `asheeui` | `@asheeui/ui`, the umbrella entry point |
+| `asheeui` | `asheeui`, the umbrella entry point |
 | `asheeui/styles` | `@asheeui/web/styles` |
 | `asheeui/puck` | `@asheeui/puck`, the Puck integration |
 
 The umbrella entry point is scoped like the rest of the family rather than named after
-the library: `@asheeui/ui` resolves to `@asheeui/web` in a browser bundle and to
+the library: `asheeui` resolves to `@asheeui/web` in a browser bundle and to
 `@asheeui/native` under Expo and Metro, so one import names a component once and renders
 on both platforms without a second specifier. An existing `"asheeui"` dependency is
-replaced by `"@asheeui/ui"`; the unscoped `asheeui` name is deprecated in this release
+replaced by `"asheeui"`; the unscoped `asheeui` name is deprecated in this release
 and points at this file. A stylesheet imported from `asheeui` is the other change to
 make — that subpath moved to `@asheeui/web` — and the Puck integration is a third,
 because it is now a package of its own rather than a subpath of a renderer.

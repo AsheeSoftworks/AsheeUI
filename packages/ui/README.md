@@ -1,4 +1,4 @@
-# @asheeui/ui
+# asheeui
 
 The AsheeUI umbrella package: one import, two renderers. An application names a
 component once, and the resolver decides which implementation answers — the DOM
@@ -7,14 +7,14 @@ renderer in a browser bundle, the React Native renderer under Expo and Metro.
 ## Installation
 
 ```bash
-npm install @asheeui/ui
+npm install asheeui
 ```
 
 ```tsx
-import { Button, Page, PageContent } from "@asheeui/ui";
+import { Button, Page, PageContent } from "asheeui";
 ```
 
-`@asheeui/ui` depends on `@asheeui/web` and `@asheeui/native`, re-exports the
+`asheeui` depends on `@asheeui/web` and `@asheeui/native`, re-exports the
 component surface of each, and adds the `@asheeui/core` helpers both platforms
 offer, so the same import works wherever the application runs.
 

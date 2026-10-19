@@ -20,7 +20,7 @@ build-time configuration file and no CLI.
 | What the framework cost to build, with the receipt | [asheeui.com/docs/build-cost](https://www.asheeui.com/docs/build-cost) |
 | The company that maintains it | [asheesoftworks.com](https://asheesoftworks.com) |
 | The web package | [npmjs.com/package/@asheeui/web](https://www.npmjs.com/package/@asheeui/web) |
-| The umbrella package, for an application that runs on both platforms | [npmjs.com/package/@asheeui/ui](https://www.npmjs.com/package/@asheeui/ui) |
+| The umbrella package, for an application that runs on both platforms | [npmjs.com/package/asheeui](https://www.npmjs.com/package/asheeui) |
 
 ## One install, then copy and paste
 
@@ -116,17 +116,17 @@ the two events will be documented as the launch proceeds.
 
 ## Installation
 
-Add `@asheeui/ui` with your favorite package manager. Tailwind CSS v4 is required
+Add `asheeui` with your favorite package manager. Tailwind CSS v4 is required
 as a peer dependency.
 
-`@asheeui/ui` is the umbrella entry point: it resolves to the DOM renderer in a
+`asheeui` is the umbrella entry point: it resolves to the DOM renderer in a
 browser bundle and to the React Native renderer under Expo and Metro, so one
 import names a component once and renders on both platforms. An application that
 knows its platform can install a renderer instead — `@asheeui/web` or
 `@asheeui/native` — and the stylesheet lives in `@asheeui/web` while the Puck
 integration is a package of its own, `@asheeui/puck`.
 
-Coming from the unscoped `asheeui` package, the dependency becomes `@asheeui/ui`
+Coming from the unscoped `asheeui` package, the dependency becomes `asheeui`
 and two specifiers move: `asheeui/styles` becomes `@asheeui/web/styles` and
 `asheeui/puck` becomes `@asheeui/puck`. [Migration](docs/migration.md) lists
 every change.
@@ -134,31 +134,31 @@ every change.
 **npm**
 
 ```bash
-npm install @asheeui/ui
+npm install asheeui
 ```
 
 **pnpm**
 
 ```bash
-pnpm add @asheeui/ui
+pnpm add asheeui
 ```
 
 **yarn**
 
 ```bash
-yarn add @asheeui/ui
+yarn add asheeui
 ```
 
 **bun**
 
 ```bash
-bun add @asheeui/ui
+bun add asheeui
 ```
 
 **Deno**
 
 ```bash
-deno add npm:@asheeui/ui
+deno add npm:asheeui
 ```
 
 ## Quick Start
@@ -176,7 +176,7 @@ manifest as well.
 **2. Wrap your app root** in `AsheeUIProvider`:
 
 ```tsx
-import { AsheeUIProvider } from "@asheeui/ui";
+import { AsheeUIProvider } from "asheeui";
 import type { ReactNode } from "react";
 
 export function Root({ children }: { children: ReactNode }) {
@@ -194,7 +194,7 @@ config to change the defaults:
 **3. Use the components** anywhere in your app:
 
 ```tsx
-import { Dropmenu } from "@asheeui/ui";
+import { Dropmenu } from "asheeui";
 import { useState } from "react";
 
 export function Example() {
@@ -227,7 +227,7 @@ the same components are available to a visual builder:
 import {
   Button, Card, Container, CTA, FeatureGrid, Footer, Grid, Hero, Navbar,
   Page, PageContent, Section, Typography,
-} from "@asheeui/ui";
+} from "asheeui";
 
 export function Home() {
   return (
@@ -310,7 +310,7 @@ via `https://asheeui.com/llms.txt`.
 
 - Documentation: https://asheeui.com
 - npm package: https://www.npmjs.com/package/@asheeui/web
-- The umbrella package: https://www.npmjs.com/package/@asheeui/ui
+- The umbrella package: https://www.npmjs.com/package/asheeui
 - GitHub repository: https://github.com/AsheeSoftworks/AsheeUI
 - Browse the components: https://github.com/AsheeSoftworks/AsheeUI/tree/main/packages/web/src/components
 - Releases: https://github.com/AsheeSoftworks/AsheeUI/releases
