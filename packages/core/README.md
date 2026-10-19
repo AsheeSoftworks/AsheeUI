@@ -16,7 +16,7 @@ names and style objects on native.
 ## Installation
 
 Both renderers depend on it, so installing `@asheeui/web`, `@asheeui/native` or
-`@asheeui/ui` brings it with them. Install it directly when you import its
+`asheeui` brings it with them. Install it directly when you import its
 contracts, its tokens or its configuration utilities yourself:
 
 ```bash

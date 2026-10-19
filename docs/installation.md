@@ -15,22 +15,22 @@ are the whole setup.
 ## Install the package
 
 ```bash
-npm install @asheeui/ui
+npm install asheeui
 ```
 
 ```bash
-pnpm add @asheeui/ui
+pnpm add asheeui
 ```
 
 ```bash
-yarn add @asheeui/ui
+yarn add asheeui
 ```
 
 ```bash
-bun add @asheeui/ui
+bun add asheeui
 ```
 
-`@asheeui/ui` is the umbrella entry point: it resolves to the DOM renderer in a browser
+`asheeui` is the umbrella entry point: it resolves to the DOM renderer in a browser
 bundle and to the React Native renderer under Expo and Metro, so one import names a
 component once and renders on both platforms. It is not the only way in —
 `@asheeui/web` and `@asheeui/native` are published on their own, and an application
@@ -38,7 +38,7 @@ that knows its platform can install the renderer directly. The examples below na
 `@asheeui/web`, because everything they set up is the web's: the stylesheet, the
 provider, and the substitution of a framework's own link and image components.
 
-The stylesheet is `@asheeui/web`'s, and `@asheeui/ui` depends on it. A package manager
+The stylesheet is `@asheeui/web`'s, and `asheeui` depends on it. A package manager
 that wants every imported package declared — pnpm does, and so does Yarn with PnP —
 takes `@asheeui/web` in the manifest beside the umbrella.
 

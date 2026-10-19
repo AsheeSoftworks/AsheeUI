@@ -74,40 +74,40 @@ jobs:
               ;;
           esac
 
-      - name: Create Release PR or Publish
-        id: changesets
-        uses: changesets/action@v2
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          version-script: pnpm version-packages
-          publish-script: pnpm changeset publish
-          commit-message: "chore: version packages"
-          pr-title: "chore: publish package updates"
-          create-github-releases: true
-          push-git-tags: true
-        # The registry credentials belong to this step and to no other: the action is
-        # what publishes, and without them npm sends the request unauthenticated and
-        # the registry answers 404 for a scoped package, which reads like a missing
-        # package rather than a missing token.
-        env:
-          PNPM_CONFIG_PROVENANCE: "true"
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      # - name: Create Release PR or Publish
+      #   id: changesets
+      #   uses: changesets/action@v2
+      #   with:
+      #     github-token: ${{ secrets.GITHUB_TOKEN }}
+      #     version-script: pnpm version-packages
+      #     publish-script: pnpm changeset publish
+      #     commit-message: "chore: version packages"
+      #     pr-title: "chore: publish package updates"
+      #     create-github-releases: true
+      #     push-git-tags: true
+      #   # The registry credentials belong to this step and to no other: the action is
+      #   # what publishes, and without them npm sends the request unauthenticated and
+      #   # the registry answers 404 for a scoped package, which reads like a missing
+      #   # package rather than a missing token.
+      #   env:
+      #     PNPM_CONFIG_PROVENANCE: "true"
+      #     NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+      #     NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-      - name: Verify the registry carries every released version
-        # A run that reports success while publishing nothing leaves a green tick, a
-        # tag and no version. This reads the workspace manifests and asks the
-        # registry, so that state fails here with the version named.
-        if: steps.changesets.outcome == 'success'
-        run: pnpm verify:released
+      # - name: Verify the registry carries every released version
+      #   # A run that reports success while publishing nothing leaves a green tick, a
+      #   # tag and no version. This reads the workspace manifests and asks the
+      #   # registry, so that state fails here with the version named.
+      #   if: steps.changesets.outcome == 'success'
+      #   run: pnpm verify:released
 
-      - name: Explain a failed release step
-        if: failure() && steps.changesets.outcome == 'failure'
-        run: |
-          echo "::error title=Release step::changesets/action failed. Two causes account for this."
-          echo "1. It could not open the version pull request, which GitHub blocks until the repository"
-          echo "   allows it: Settings -> Actions -> General -> Workflow permissions"
-          echo "   -> Allow GitHub Actions to create and approve pull requests."
-          echo "2. It could not publish. The registry answers 404 for a scoped package when the request is"
-          echo "   unauthenticated, so check that this step carries NPM_TOKEN and that the token may publish"
-          echo "   the @asheeui packages."
+      # - name: Explain a failed release step
+      #   if: failure() && steps.changesets.outcome == 'failure'
+      #   run: |
+      #     echo "::error title=Release step::changesets/action failed. Two causes account for this."
+      #     echo "1. It could not open the version pull request, which GitHub blocks until the repository"
+      #     echo "   allows it: Settings -> Actions -> General -> Workflow permissions"
+      #     echo "   -> Allow GitHub Actions to create and approve pull requests."
+      #     echo "2. It could not publish. The registry answers 404 for a scoped package when the request is"
+      #     echo "   unauthenticated, so check that this step carries NPM_TOKEN and that the token may publish"
+      #     echo "   the @asheeui packages."

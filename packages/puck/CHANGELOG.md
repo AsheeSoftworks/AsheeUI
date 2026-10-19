@@ -27,7 +27,7 @@
   
   **`@asheeui/native`** gains `@asheeui/native/section-kit` for the same reason.
   
-  **`@asheeui/ui`** drops its `@puckeditor/core` optional peer. The umbrella never exported
+  **`asheeui`** drops its `@puckeditor/core` optional peer. The umbrella never exported
   the Puck integration, so the entry described a dependency no import of the umbrella could
   reach; the package that does export it declares it now.
   
