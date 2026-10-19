@@ -39,15 +39,15 @@
     "check-types": "tsc -p tsconfig.build.json --noEmit"
   },
   "devDependencies": {
-    "@types/node": "^26.5.0",
+    "@types/node": "^26.6.5",
+    "@types/react": "^19.3.0",
     "typescript": "^7.0.2",
-    "vitest": "^5.0.0",
-    "vite": "^8.3.0",
-    "vite-plugin-dts": "^5.1.0",
-    "@types/react": "^19.3.0"
+    "vite": "^8.3.4",
+    "vite-plugin-dts": "^5.1.2",
+    "vitest": "^5.0.5"
   },
   "dependencies": {
     "clsx": "^2.1.1",
-    "tailwind-merge": "^3.6.0"
+    "tailwind-merge": "^3.7.0"
   }
 }
