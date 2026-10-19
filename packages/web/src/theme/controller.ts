@@ -113,10 +113,22 @@ class ThemeController {
    * - Falls back to `config.theme.defaultTheme` on first visit.
    * - Clears stale/invalid values from storage.
    * - Never writes to storage (only `setTheme` persists user intent).
+   *
+   * The available list only ever grows. This controller is a single instance shared by
+   * the whole application, and a provider may be mounted below the application's own —
+   * a page that demonstrates its own configuration, for example. Such a provider states
+   * the themes *it* knows about, which is usually just the built-ins, and taking its
+   * word for the whole application made an application's custom theme invalid: selecting
+   * it failed validation and silently fell back to the default theme, which looks exactly
+   * like "my custom theme does not apply". A nested provider can therefore add a theme
+   * but never remove one.
    */
   configure({ defaultTheme, themes }: ThemeConfigInput): void {
     this.defaultTheme = defaultTheme;
-    this.availableThemes = themes;
+    this.availableThemes =
+      this.availableThemes.length === 0
+        ? themes
+        : [...new Set([...this.availableThemes, ...themes])];
 
     if (typeof window === "undefined") {
       console.log(

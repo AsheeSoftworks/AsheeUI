@@ -9,25 +9,25 @@
  */
 
 import { describe, expect, it } from "vitest";
-import { FALLBACK_CALENDAR_CONFIG } from "./calendar/calendar-config";
-import { FALLBACK_FIELD_CONFIG, type FieldStatus } from "./field/field-config";
+import { FALLBACK_CALENDAR_CONFIG } from "./forms/calendar/calendar-config";
+import { FALLBACK_FIELD_CONFIG, type FieldStatus } from "./forms/field/field-config";
 import {
   FIELD_STATUS_BORDER_CLASS,
   FIELD_STATUS_TEXT_CLASS,
-} from "./field/field-styles";
-import { FALLBACK_FILE_UPLOAD_CONFIG } from "./file-upload/file-upload-config";
-import { FALLBACK_FORM_CONFIG } from "./form/form-config";
+} from "./forms/field/field-styles";
+import { FALLBACK_FILE_UPLOAD_CONFIG } from "./forms/file-upload/file-upload-config";
+import { FALLBACK_FORM_CONFIG } from "./forms/form/form-config";
 import {
   FALLBACK_PIN_INPUT_CONFIG,
   type PinInputMode,
-} from "./pin-input/pin-input-config";
-import { sanitizePinValue } from "./pin-input/pin-input-helpers";
-import { FALLBACK_RADIO_CONFIG } from "./radio/radio-config";
-import { RADIO_STATUS_BORDER_CLASS } from "./radio/radio-styles";
-import { FALLBACK_SEARCH_INPUT_CONFIG } from "./search-input/search-input-config";
-import { FALLBACK_STEPPER_CONFIG } from "./stepper/stepper-config";
-import { FALLBACK_SWITCH_CONFIG } from "./switch/switch-config";
-import { FALLBACK_TEXTAREA_CONFIG } from "./textarea/textarea-config";
+} from "./forms/pin-input/pin-input-config";
+import { sanitizePinValue } from "./forms/pin-input/pin-input-helpers";
+import { FALLBACK_RADIO_CONFIG } from "./forms/radio/radio-config";
+import { RADIO_STATUS_BORDER_CLASS } from "./forms/radio/radio-styles";
+import { FALLBACK_SEARCH_INPUT_CONFIG } from "./forms/search-input/search-input-config";
+import { FALLBACK_STEPPER_CONFIG } from "./forms/stepper/stepper-config";
+import { FALLBACK_SWITCH_CONFIG } from "./forms/switch/switch-config";
+import { FALLBACK_TEXTAREA_CONFIG } from "./forms/textarea/textarea-config";
 
 const STATUSES: FieldStatus[] = ["default", "error", "warning", "success"];
 

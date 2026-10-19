@@ -66,6 +66,30 @@ describe("validateConfig", () => {
     ).toEqual([]);
   });
 
+  it("accepts the built-in theme a custom theme extends", () => {
+    expect(
+      validateConfig(
+        asConfig({
+          color: { brand: { extends: "dark", primary: "#8b5cf6" } },
+        }),
+      ),
+    ).toEqual([]);
+  });
+
+  it("warns when a built-in theme tries to extend another theme", () => {
+    expect(warningPaths({ color: { light: { extends: "dark" } } })).toEqual([
+      "color.light.extends",
+    ]);
+  });
+
+  it("errors when a custom theme extends something that is not built in", () => {
+    expect(
+      errorPaths(
+        asConfig({ color: { brand: { extends: "sepia", primary: "#fff" } } }),
+      ),
+    ).toEqual(["color.brand.extends"]);
+  });
+
   it("warns about unknown keys instead of failing", () => {
     expect(warningPaths({ bogus: true })).toEqual(["bogus"]);
     expect(

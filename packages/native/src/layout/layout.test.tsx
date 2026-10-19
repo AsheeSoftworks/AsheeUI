@@ -14,7 +14,7 @@ import { type RenderResult, render } from "@testing-library/react-native";
 import type { ReactElement } from "react";
 import { Dimensions, Text } from "react-native";
 import { AsheeNativeProvider } from "../provider/AsheeNativeProvider";
-import { Centered, Container, Grid, HStack, Section, Stack, VStack } from ".";
+import { Centered, Container, Grid, HStack, Section, Stack, VStack } from "./";
 import { resolveGridColumns } from "./layout-config";
 
 /**

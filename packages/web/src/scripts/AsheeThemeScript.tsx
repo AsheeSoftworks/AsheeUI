@@ -44,9 +44,27 @@ export const THEME_VARS_STYLE_ID = "ashee-theme-vars";
 export const THEME_SCRIPT_ID = "ashee-theme-script";
 
 /**
+ * One theme's variable block, as a selector and its declarations.
+ *
+ * The light theme uses both `:root` and `.theme-light` so a document with no theme class
+ * at all still has a palette.
+ *
+ * @param name - The theme's name.
+ * @param variant - Its resolved colours.
+ * @returns A single CSS rule.
+ */
+function buildThemeBlock(name: string, variant: ColorVariant): string {
+  const declarations = Object.entries(variant)
+    .map(([key, value]) => `  ${VAR_MAP[key as keyof ColorVariant]}: ${value};`)
+    .join("\n");
+  const selector = name === "light" ? ":root, .theme-light" : `.theme-${name}`;
+
+  return `${selector} {\n${declarations}\n}`;
+}
+
+/**
  * Builds CSS string for all theme color variables.
  * Generates CSS rules that define CSS custom properties for each theme.
- * The light theme uses both :root and .theme-light selectors for compatibility.
  *
  * @param colors - The complete color configuration with all themes.
  * @returns A CSS string containing variable declarations for all themes.
@@ -62,14 +80,7 @@ export const THEME_SCRIPT_ID = "ashee-theme-script";
  */
 function buildThemeCss(colors: ColorConfig): string {
   return Object.entries(colors)
-    .map(([name, v]) => {
-      const decls = Object.entries(v as ColorVariant)
-        .map(([k, val]) => `  ${VAR_MAP[k as keyof ColorVariant]}: ${val};`)
-        .join("\n");
-      const selector =
-        name === "light" ? ":root, .theme-light" : `.theme-${name}`;
-      return `${selector} {\n${decls}\n}`;
-    })
+    .map(([name, variant]) => buildThemeBlock(name, variant as ColorVariant))
     .join("\n\n");
 }
 
@@ -143,13 +154,38 @@ export function buildThemeVarsCss(config: Config): string {
 }
 
 /**
+ * The variable blocks that have been registered for the document, keyed by theme name.
+ *
+ * A `Map` rather than a string, because the blocks are registered by several callers and
+ * a later registration has to be able to replace one palette without disturbing the
+ * order: `light` first is what lets `.theme-dark` and a custom theme override `:root` at
+ * equal specificity.
+ */
+const registeredBlocks = new Map<string, string>();
+
+/** The key the structural scrollbar block is filed under. */
+const SCROLLBAR_BLOCK_KEY = "\u0000scrollbar";
+
+/** The stylesheet text last written, so an unchanged rebuild is a no-op. */
+let appliedCss = "";
+
+/**
  * Ensure the theme CSS variables are present in the document.
  *
  * The pre-paint script injects them while the server HTML is parsed. A
  * client-only render never runs that script, because React does not execute a
- * script it creates, so the provider calls this before the first paint. It does
- * nothing when the element is already there, which is the case once the script
- * has run.
+ * script it creates, so the provider calls this before the first paint.
+ *
+ * The blocks are **registered and rebuilt**, never written once. A provider may be
+ * mounted below the application's own — a page that demonstrates its own configuration
+ * — and React runs a child's effects before its parent's, so that nested provider reaches
+ * this function first with a configuration that usually declares only the built-in
+ * themes. Writing on the first call and returning on every later one left the stylesheet
+ * holding `:root, .theme-light` and nothing else: the application's custom theme got its
+ * class but had no variables, so the page painted with the light palette. Rebuilding from
+ * the union is what makes the order irrelevant. Where two registrations state the same
+ * theme, the later one wins, which is why the application's provider — the last to run —
+ * is authoritative for the palette.
  *
  * @param config - The resolved configuration.
  *
@@ -157,12 +193,30 @@ export function buildThemeVarsCss(config: Config): string {
  */
 export function ensureThemeVarsStyle(config: Config): void {
   if (typeof document === "undefined") return;
-  if (document.getElementById(THEME_VARS_STYLE_ID)) return;
 
-  const style = document.createElement("style");
-  style.id = THEME_VARS_STYLE_ID;
-  style.textContent = buildThemeVarsCss(config);
-  document.head.appendChild(style);
+  for (const [name, variant] of Object.entries(config.color ?? {})) {
+    registeredBlocks.set(name, buildThemeBlock(name, variant as ColorVariant));
+  }
+
+  const scrollbar = buildScrollbarCss(config.components?.scrollbar);
+  if (scrollbar === "") registeredBlocks.delete(SCROLLBAR_BLOCK_KEY);
+  else registeredBlocks.set(SCROLLBAR_BLOCK_KEY, scrollbar);
+
+  const css = [...registeredBlocks.values()].join("\n\n");
+  let style = document.getElementById(THEME_VARS_STYLE_ID);
+
+  // The element may be missing even when the text is unchanged — a test or a consumer can
+  // remove it — so the no-op path checks for both.
+  if (style && css === appliedCss) return;
+
+  if (!style) {
+    style = document.createElement("style");
+    style.id = THEME_VARS_STYLE_ID;
+    document.head.appendChild(style);
+  }
+
+  style.textContent = css;
+  appliedCss = css;
 }
 
 /**

@@ -141,9 +141,12 @@ export default defineConfig({
       // with: the Puck integration draws a band's heading and action row through it.
       entry: {
         index: resolve(__dirname, "src/index.ts"),
-        "components/section-kit/index": resolve(
+        // The key is the emitted path, and it mirrors the source tree so the
+        // declaration files (which follow the source layout) land beside their
+        // implementation instead of in a second, differently named folder.
+        "components/layouts/section-kit/index": resolve(
           __dirname,
-          "src/components/section-kit/index.ts",
+          "src/components/layouts/section-kit/index.ts",
         ),
       },
       formats: ["es"],

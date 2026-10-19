@@ -8,8 +8,9 @@
 
 import type { Command } from "commander";
 import {
-  discoverPublicComponents,
-  renderComponentList,
+  type ComponentEntry,
+  discoverComponentGroups,
+  renderGroupedComponentList,
   resolveAsheeuiPackage,
 } from "../lib/list/list";
 
@@ -21,12 +22,13 @@ import {
  * Discovers `@asheeui/web` either inside the project's
  * `node_modules`, in a monorepo `packages/web` sibling, or at a path
  * supplied via `--path`, then prints every component exposed by the
- * package's public export surface. Internal helpers are never listed.
+ * package's public export surface, grouped by the category folder it lives
+ * in. Internal helpers are never listed.
  *
  * Flags:
  * - `-d, --dir <path>`: project directory used to locate the package.
  * - `--path <path>`: explicit path to a package root or registry folder.
- * - `--json`: emit the component list as JSON instead of a grid.
+ * - `--json`: emit the inventory as JSON, each entry carrying its category.
  *
  * @param program - Root commander program receiving the new subcommand.
  * @returns The configured commander `Command` instance.
@@ -52,7 +54,10 @@ export function registerListCommand(program: Command) {
       "--path <path>",
       "path to a @asheeui/web package root or local registry folder",
     )
-    .option("--json", "output the component list as JSON")
+    .option(
+      "--json",
+      "output the component inventory as JSON, with each category",
+    )
     .action(async (opts) => {
       const pkgRoot = await resolveAsheeuiPackage({
         cwd: opts.dir,
@@ -66,15 +71,21 @@ export function registerListCommand(program: Command) {
         process.exit(1);
       }
 
-      const components = await discoverPublicComponents(pkgRoot);
+      const components = await discoverComponentGroups(pkgRoot);
 
       if (opts.json) {
-        console.log(JSON.stringify(components, null, 2));
+        // Each entry carries the category it lives in, so a script can group the
+        // inventory the way the terminal output does.
+        const payload = components.map((entry: ComponentEntry) => ({
+          name: entry.name,
+          group: entry.group,
+        }));
+        console.log(JSON.stringify(payload, null, 2));
         return;
       }
 
       console.log(`Available AsheeUI components (${components.length}):`);
       console.log("");
-      console.log(renderComponentList(components));
+      console.log(renderGroupedComponentList(components));
     });
 }

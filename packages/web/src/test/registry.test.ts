@@ -9,9 +9,9 @@ import {
   registerComponentDefaults,
 } from "@asheeui/core";
 import { afterEach, describe, expect, it } from "vitest";
-import { defaultAccordionConfig } from "../components/accordion/accordion-config";
-import { defaultButtonConfig } from "../components/button/button-config";
-import { defaultScrollbarConfig } from "../components/scrollbar/scrollbar-config";
+import { defaultAccordionConfig } from "../components/data-display/accordion/accordion-config";
+import { defaultButtonConfig } from "../components/forms/button/button-config";
+import { defaultScrollbarConfig } from "../components/system/scrollbar/scrollbar-config";
 
 afterEach(() => {
   // The registry has no unregister API, so restore the value under test.
@@ -54,7 +54,7 @@ describe("component config registry", () => {
     // `resolveConfig` reads it lazily instead of freezing it at first render.
     expect(getComponentDefaults("field")).toBeUndefined();
 
-    await import("../components/field");
+    await import("../components/forms/field");
 
     expect(getComponentDefaults("field")).toBeDefined();
   });

@@ -225,7 +225,7 @@ if (missing.length > 0) {
     console.error(`  - ${entry.module} -> ${entry.name}`);
   }
   console.error(
-    "\nImplement them in packages/native/src/components/<module>, or state in scripts/native-parity.json that they are queued. A component that exists on one platform only is the defect this check exists to catch.",
+    "\nImplement them in packages/native/src/components/<group>/<module>, or state in scripts/native-parity.json that they are queued. A component that exists on one platform only is the defect this check exists to catch.",
   );
   process.exit(1);
 }

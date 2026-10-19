@@ -12,30 +12,30 @@
  */
 
 import { describe, expect, it } from "vitest";
-import { AuthLayout } from "../components/auth-layout/AuthLayout";
-import { Clipboard } from "../components/clipboard/Clipboard";
-import { CopyButton } from "../components/clipboard/CopyButton";
-import { Container } from "../components/container/Container";
-import { CTA } from "../components/cta/CTA";
-import { EmptyState } from "../components/empty-state/EmptyState";
-import { FeatureGrid } from "../components/feature-grid/FeatureGrid";
-import { Footer } from "../components/footer/Footer";
-import { Grid } from "../components/grid/Grid";
-import { Hero } from "../components/hero/Hero";
-import { Navbar } from "../components/navbar/Navbar";
+import { AuthLayout } from "../components/layouts/auth-layout/AuthLayout";
+import { Clipboard } from "../components/data-display/clipboard/Clipboard";
+import { CopyButton } from "../components/data-display/clipboard/CopyButton";
+import { Container } from "../components/layouts/container/Container";
+import { CTA } from "../components/marketing/cta/CTA";
+import { EmptyState } from "../components/feedback/empty-state/EmptyState";
+import { FeatureGrid } from "../components/marketing/feature-grid/FeatureGrid";
+import { Footer } from "../components/navigation/footer/Footer";
+import { Grid } from "../components/layouts/grid/Grid";
+import { Hero } from "../components/marketing/hero/Hero";
+import { Navbar } from "../components/navigation/navbar/Navbar";
 import {
   Page,
   PageContent,
   PageFooter,
   PageHeader,
-} from "../components/page/Page";
-import { PinInput } from "../components/pin-input/PinInput";
-import { PricingCard } from "../components/pricing-card/PricingCard";
-import { Section } from "../components/section/Section";
-import { SidebarLayout } from "../components/sidebar-layout/SidebarLayout";
-import { HStack, Stack, VStack } from "../components/stack/Stack";
-import { Testimonials } from "../components/testimonials/Testimonials";
-import { renderToServerString } from "./index";
+} from "../components/layouts/page/Page";
+import { PinInput } from "../components/forms/pin-input/PinInput";
+import { PricingCard } from "../components/marketing/pricing-card/PricingCard";
+import { Section } from "../components/layouts/section/Section";
+import { SidebarLayout } from "../components/layouts/sidebar-layout/SidebarLayout";
+import { HStack, Stack, VStack } from "../components/layouts/stack/Stack";
+import { Testimonials } from "../components/marketing/testimonials/Testimonials";
+import { renderToServerString } from "./";
 
 describe("1.1 additions server rendering (DOM-free environment)", () => {
   it("runs without DOM globals, so the renders below are genuinely browserless", () => {

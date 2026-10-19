@@ -12,6 +12,7 @@ import type {
   DefaultColorConfig,
   ExternalColorConfig,
   ExternalColorVariant,
+  KnownThemeName,
   ThemeName,
 } from "../theme/color";
 
@@ -21,11 +22,17 @@ import type {
  *
  * For built-in themes (light/dark), user overrides are merged on top
  * of the default theme values. For custom themes, the function looks
- * for an "extends" property to determine which built-in theme to base
- * the custom theme on, falling back to "light" if not specified.
+ * for an "extends" property to determine which theme to base the custom
+ * theme on, falling back to `inheritFrom` and then to "light".
+ *
+ * The built-in themes are merged **first**, and a custom theme inherits from
+ * the merged result, so a custom theme that extends `dark` inherits the
+ * consumer's `dark` overrides rather than the library's original palette.
  *
  * @param defaults - The default color configuration with built-in themes.
  * @param external - Optional user-provided external color configuration.
+ * @param inheritFrom - The theme a custom theme extends when it states no
+ *   `extends`. Defaults to "light".
  * @returns The resolved color configuration with all themes fully defined.
  *
  * @example
@@ -43,26 +50,36 @@ import type {
 export function resolveColorConfig(
   defaults: DefaultColorConfig,
   external?: ExternalColorConfig,
+  inheritFrom: KnownThemeName = "light",
 ): ColorConfig {
   const result = { ...defaults } as ColorConfig;
   if (!external) return result;
 
-  for (const key of Object.keys(external) as ThemeName[]) {
-    const userValue = external[key as keyof ExternalColorConfig];
+  const entries = Object.entries(external) as [
+    ThemeName,
+    ExternalColorConfig[keyof ExternalColorConfig],
+  ][];
+
+  // Built-in themes first: a custom theme may extend one, and it has to see the
+  // consumer's overrides rather than the palette that shipped with the library.
+  for (const [key, userValue] of entries) {
+    if (key !== "light" && key !== "dark") continue;
     if (!userValue) continue;
 
-    if (key === "light" || key === "dark") {
-      // known themes always fall back to their own defaults, never "extends"
-      result[key] = {
-        ...defaults[key],
-        ...(userValue as Partial<ColorVariant>),
-      };
-      continue;
-    }
+    result[key] = {
+      ...defaults[key],
+      ...(userValue as Partial<ColorVariant>),
+    };
+  }
+
+  for (const [key, userValue] of entries) {
+    if (key === "light" || key === "dark") continue;
+    if (!userValue) continue;
 
     const { extends: baseName, ...overrides } =
       userValue as ExternalColorVariant;
-    const base = defaults[baseName ?? "light"];
+    const base = result[baseName ?? inheritFrom] ?? defaults.light;
+
     (result as Record<string, ColorVariant>)[key] = {
       ...base,
       ...overrides,

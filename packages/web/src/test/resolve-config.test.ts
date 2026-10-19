@@ -9,8 +9,8 @@ import {
   resolveConfig,
 } from "@asheeui/core";
 import { describe, expect, it } from "vitest";
-import { defaultButtonConfig } from "../components/button/button-config";
-import { defaultScrollbarConfig } from "../components/scrollbar/scrollbar-config";
+import { defaultButtonConfig } from "../components/forms/button/button-config";
+import { defaultScrollbarConfig } from "../components/system/scrollbar/scrollbar-config";
 
 describe("resolveConfig", () => {
   it("applies framework defaults when no configuration is supplied", () => {

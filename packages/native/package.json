@@ -1,6 +1,6 @@
 {
   "name": "@asheeui/native",
-  "version": "2.3.0",
+  "version": "2.3.1",
   "description": "React Native components styled with NativeWind, sharing the AsheeUI design language and component contracts.",
   "author": "Ashee Softworks <asheesoftworks@gmail.com>",
   "license": "Apache-2.0",
@@ -13,9 +13,9 @@
       "default": "./src/index.ts"
     },
     "./section-kit": {
-      "types": "./src/components/section-kit/index.ts",
-      "import": "./src/components/section-kit/index.ts",
-      "default": "./src/components/section-kit/index.ts"
+      "types": "./src/components/layouts/section-kit/index.ts",
+      "import": "./src/components/layouts/section-kit/index.ts",
+      "default": "./src/components/layouts/section-kit/index.ts"
     }
   },
   "publishConfig": {
@@ -30,9 +30,9 @@
         "default": "./dist/index.js"
       },
       "./section-kit": {
-        "types": "./dist/components/section-kit/index.d.ts",
-        "import": "./dist/components/section-kit/index.js",
-        "default": "./dist/components/section-kit/index.js"
+        "types": "./dist/components/layouts/section-kit/index.d.ts",
+        "import": "./dist/components/layouts/section-kit/index.js",
+        "default": "./dist/components/layouts/section-kit/index.js"
       }
     }
   },

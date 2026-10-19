@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import type { Radius, Variant } from ".";
+import type { Radius, Variant } from "./";
 import { RADIUS_CLASS, UnderlineRadius } from "./radius";
 
 const RADIUS_TOKENS: Radius[] = ["none", "xs", "sm", "md", "lg", "xl", "full"];

@@ -1,5 +1,26 @@
 # @asheeui/native
 
+## 2.3.1
+
+### Patch Changes
+
+- Group the component folders into categories.
+  
+  `@asheeui/core`, `@asheeui/web` and `@asheeui/native` now arrange their components under
+  sibling category folders — `layouts`, `navigation`, `forms`, `feedback`, `overlays`,
+  `data-display`, `marketing`, `typography` and `system` — instead of one flat
+  `components/` directory, and the relative imports and module augmentations were rewritten
+  to match. **The public export surface is unchanged**: every component keeps its name, so
+  a consumer's imports and the `@asheeui/web/section-kit` subpath are unaffected.
+  
+  `asheeui list` follows the new arrangement. It derives a component's name from the last
+  path segment and its category from the first, prints the inventory grouped under a
+  heading per category with its count, and `--json` reports each entry as
+  `{ "name", "group" }` so a script can group it the same way.
+- Updated dependencies
+- Updated dependencies
+  - @asheeui/core@2.2.1
+
 ## 2.3.0
 
 ### Minor Changes

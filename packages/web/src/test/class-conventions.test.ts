@@ -11,10 +11,7 @@ import { promises as fs } from "node:fs";
 import { join, relative } from "node:path";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
-import {
-  scanForDynamicUtilityClasses,
-  scanForRawPaletteColours,
-} from "./index";
+import { scanForDynamicUtilityClasses, scanForRawPaletteColours } from "./";
 
 const SOURCE_ROOT = fileURLToPath(new URL("..", import.meta.url));
 

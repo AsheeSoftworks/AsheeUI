@@ -1,5 +1,72 @@
 # @asheeui/web
 
+## 2.3.1
+
+### Patch Changes
+
+- Group the component folders into categories.
+  
+  `@asheeui/core`, `@asheeui/web` and `@asheeui/native` now arrange their components under
+  sibling category folders — `layouts`, `navigation`, `forms`, `feedback`, `overlays`,
+  `data-display`, `marketing`, `typography` and `system` — instead of one flat
+  `components/` directory, and the relative imports and module augmentations were rewritten
+  to match. **The public export surface is unchanged**: every component keeps its name, so
+  a consumer's imports and the `@asheeui/web/section-kit` subpath are unaffected.
+  
+  `asheeui list` follows the new arrangement. It derives a component's name from the last
+  path segment and its category from the first, prints the inventory grouped under a
+  heading per category with its count, and `--json` reports each entry as
+  `{ "name", "group" }` so a script can group it the same way.
+- Stop a provider mounted below the application's own from breaking its themes.
+  
+  `themeController` is one instance for the whole application, and every `AsheeUIProvider`
+  configures it. A provider mounted below the application's own — a page that demonstrates
+  a different configuration, or any component that wraps a subtree in its own provider —
+  states only the themes *it* knows about, usually just the built-ins. Two separate halves
+  of that leaked, and both looked like "my custom theme does not apply":
+  
+  - **The available list became the nested provider's list.** `configure()` replaced the
+    themes, so `getAvailableThemes()` dropped the custom ones and `setTheme("midnight")`
+    failed validation and fell back to `defaultTheme`, resolving to `light`. The list now
+    only grows: a provider can add a theme but never take one away.
+  - **The theme stylesheet was written once, by whichever provider ran first.** React runs a
+    child's effects before its parent's, so the nested provider reached
+    `ensureThemeVarsStyle()` first and the stylesheet was created with `:root,
+    .theme-light` only; the application's own call then saw an existing element and
+    returned. The custom theme got its `theme-<name>` class but had no variables, so the
+    page painted with the light palette. The stylesheet is now built from the union of every
+    registration, rebuilt whenever that union changes, so the order providers mount in no
+    longer matters — and where two registrations state the same theme, the later one (the
+    application's) wins for the palette.
+  
+  Covered by `src/test/nested-provider-themes.test.tsx`, which mounts a nested provider
+  after the application's and asserts the custom theme is still available, still selectable,
+  lands as `theme-<name>` on the document, and has its variable block in the stylesheet.
+- Generate the classes the components actually use, and ship the section kit at one path.
+  
+  **The stylesheet scanned only one of the two packages that carry class names.** Component
+  classes live in `@asheeui/web`'s TSX *and* in the style maps under `@asheeui/core` —
+  `*-styles.ts`, the radius and size vocabularies. The `@source` pattern covered only
+  `./**/*.{ts,tsx}`, so every core-only utility was never generated: components rendered
+  without their padding and spacing, which reads as "some styles just don't apply". The
+  stylesheet now scans core as well, from source in the workspace and from `core/dist` in an
+  installed package, and it scans this package's own compiled `.js` so the published
+  `dist/index.css` states every class its components use. For a published consumer the
+  previous patterns matched no files at all, so this was the difference between a styled
+  application and an unstyled one.
+  
+  **The section kit was emitted at two different paths.** The rollup entry key still named
+  `components/section-kit/index` while the declaration files followed the source layout to
+  `components/layouts/section-kit/`, so `@asheeui/web/section-kit` shipped its
+  implementation and its types in different folders and the `types` condition pointed at a
+  file that did not exist. Both are now emitted at `components/layouts/section-kit/index`.
+  
+  The scan requirement is now asserted by `src/test/stylesheet-scan.test.ts`, because the
+  symptom is otherwise invisible until a page looks wrong.
+- Updated dependencies
+- Updated dependencies
+  - @asheeui/core@2.2.1
+
 ## 2.3.0
 
 ### Minor Changes

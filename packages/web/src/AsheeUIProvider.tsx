@@ -119,7 +119,9 @@ export function AsheeUIProvider({
     assertValidConfig(config);
     return resolveConfig(config);
   }, [config]);
-
+  
+  console.log("External Config", config)
+  console.log("Resolved Config", resolvedConfig)
   useIsomorphicLayoutEffect(() => {
     themeController.configure({
       defaultTheme: resolvedConfig.defaultTheme ?? "system",
