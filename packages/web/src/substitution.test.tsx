@@ -9,9 +9,9 @@
  */
 
 import { describe, expect, it } from "vitest";
-import { Form } from "./components/form";
-import { Image } from "./components/image";
-import { Link } from "./components/link";
+import { Form } from "./components/forms/form";
+import { Image } from "./components/data-display/image";
+import { Link } from "./components/navigation/link";
 import { renderToServerString } from "./test";
 
 /** Props the substituted component receives, in call order. */

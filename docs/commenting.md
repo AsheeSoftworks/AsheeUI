@@ -22,7 +22,7 @@ Every exported symbol in the codebase requires a TSDoc comment:
 
 Every file starts with a short header comment (two to four sentences) describing what the file contains and where it fits in the AsheeUI architecture. Categories include: primitive component, complex component, config type, hook, or utility.
 
-Example from `components/button/button-config.ts`:
+Example from `components/forms/button/button-config.ts`:
 
 ```ts
 /**
@@ -44,7 +44,7 @@ Every component's doc comment must include:
 4. An `@example` block showing basic JSX usage (short and realistic, no more than five or six lines)
 5. An `@see` tag pointing to closely related components or config types where useful
 
-Example from `components/button/Button.tsx`:
+Example from `components/forms/button/Button.tsx`:
 
 ```ts
 /**
@@ -121,7 +121,7 @@ For each prop, include as many of these as are true and relevant:
 
 ### Config-overridable prop example
 
-From `components/accordion/accordion-config.ts`:
+From `components/data-display/accordion/accordion-config.ts`:
 
 ```ts
 /**
@@ -135,7 +135,7 @@ variant?: AccordionVariant;
 
 ### Prop with default from component config
 
-From `components/card/card-config.ts`:
+From `components/data-display/card/card-config.ts`:
 
 ```ts
 /**
@@ -149,7 +149,7 @@ imagePosition?: InternalImagePosition;
 
 ### Prop with global theme fallback
 
-From `components/button/Button.tsx` (props interface):
+From `components/forms/button/Button.tsx` (props interface):
 
 ```ts
 /**
@@ -165,7 +165,7 @@ This prop can be set at any tier: instance prop overrides component config, whic
 
 ### Prop with coupling constraint
 
-From `components/card/Card.tsx` (props interface):
+From `components/data-display/card/Card.tsx` (props interface):
 
 ```ts
 /**
@@ -237,7 +237,7 @@ Example from `shared/variant.ts`:
 export type Variant = "solid" | "ghost" | "bordered" | "faded" | "underlined";
 ```
 
-Example from `components/card/card-config.ts`:
+Example from `components/data-display/card/card-config.ts`:
 
 ```ts
 /**

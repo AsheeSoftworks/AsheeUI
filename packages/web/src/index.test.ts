@@ -1,6 +1,6 @@
 import { getAllComponentDefaults } from "@asheeui/core";
 import { describe, expect, it } from "vitest";
-import * as AsheeUI from "./index";
+import * as AsheeUI from "./";
 
 /**
  * Public surface tests (`TEST-037`). These import only through the package

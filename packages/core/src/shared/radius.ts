@@ -5,7 +5,7 @@
  * component variants and states.
  */
 
-import type { Variant } from ".";
+import type { Variant } from "./";
 
 /**
  * The available size options for components like Button, Input, and Spinner.

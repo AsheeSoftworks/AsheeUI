@@ -44,8 +44,14 @@ export function resolveConfig(externalConfig: ExternalConfig): Config {
   const merged = mergeObject(defaultConfig, externalConfig);
 
   // generic mergeObject can't fall back keys it has no default for (custom themes) -
-  // re-resolve color specifically so unfilled fields inherit from `light` or `dark`
-  merged.color = resolveColorConfig(defaultColorConfig, externalConfig.color);
+  // re-resolve color specifically so unfilled fields inherit from `light` or `dark`.
+  // A custom theme that states no `extends` inherits the application's default theme
+  // family, so an app that defaults to dark does not get a light-based custom theme.
+  merged.color = resolveColorConfig(
+    defaultColorConfig,
+    externalConfig.color,
+    externalConfig.defaultTheme === "dark" ? "dark" : "light",
+  );
 
   // Component defaults live in a module-level registry that each component's
   // config module populates as an import side effect (`registerComponentDefaults`).

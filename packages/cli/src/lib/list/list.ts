@@ -182,23 +182,77 @@ async function resolvePublicEntry(packageRoot: string): Promise<string | null> {
 }
 
 /**
+ * Split a module specifier into the path segments below `components/`.
+ *
+ * A component lives in a category folder — `./components/forms/input` — except where the
+ * category and the component share a name, which `./components/typography` states with a
+ * single segment.
+ *
+ * @param specifier - Module specifier taken from an export statement.
+ * @returns The segments below `components/`, or `null` when the specifier does not
+ *   reference a module inside the `components/` directory.
+ */
+function componentSegments(specifier: string): string[] | null {
+  const normalized = specifier.replaceAll("\\", "/");
+  const marker = `/${COMPONENTS_DIRECTORY}/`;
+  const markerIndex = normalized.lastIndexOf(marker);
+  if (markerIndex === -1) return null;
+
+  const segments = normalized
+    .slice(markerIndex + marker.length)
+    .split("/")
+    .filter((segment) => segment && segment !== "." && segment !== "..");
+
+  // A specifier may name the module file rather than the folder — a built package
+  // emits `./components/forms/input/index.js` and `./components/button/Button.js` —
+  // and neither the file nor `index` is a component or a category.
+  if (segments.length > 0 && /\.[cm]?[jt]sx?$/.test(segments.at(-1) ?? "")) {
+    segments.pop();
+  }
+  if (segments.at(-1) === "index") segments.pop();
+
+  return segments.length === 0 ? null : segments;
+}
+
+/**
  * Derive a component name from a module specifier that re-exports a
- * component, for example `"./components/calendar"` to `"calendar"`.
+ * component, for example `"./components/forms/calendar"` to `"calendar"`.
+ *
+ * The name is the last segment, so a component's folder may be nested in a
+ * category without changing the name the consumer imports.
  *
  * @param specifier - Module specifier taken from an export statement.
  * @returns The component name, or `null` when the specifier does not
  *   reference a module inside the `components/` directory.
  */
 export function componentNameFromSpecifier(specifier: string): string | null {
-  const normalized = specifier.replaceAll("\\", "/");
-  const marker = `/${COMPONENTS_DIRECTORY}/`;
-  const markerIndex = normalized.lastIndexOf(marker);
-  if (markerIndex === -1) return null;
+  return componentSegments(specifier)?.at(-1) ?? null;
+}
 
-  const remainder = normalized.slice(markerIndex + marker.length);
-  const name = remainder.split("/")[0];
-  if (!name || name === "." || name === "..") return null;
-  return name;
+/**
+ * Derive the category a component belongs to from its module specifier, for
+ * example `"./components/forms/calendar"` to `"forms"`.
+ *
+ * A component that is its own category (`./components/typography`) reports that
+ * name as both its group and its name.
+ *
+ * @param specifier - Module specifier taken from an export statement.
+ * @returns The category name, or `null` when the specifier does not reference a
+ *   module inside the `components/` directory.
+ */
+export function componentGroupFromSpecifier(specifier: string): string | null {
+  return componentSegments(specifier)?.[0] ?? null;
+}
+
+/**
+ * One entry in the public component inventory: a component and its category.
+ */
+export interface ComponentEntry {
+  /** The component's public name, as the package exports it. */
+  name: string;
+
+  /** The category folder the component lives in. */
+  group: string;
 }
 
 /**
@@ -212,7 +266,7 @@ export function componentNameFromSpecifier(specifier: string): string | null {
 function collectComponentNames(
   pattern: RegExp,
   source: string,
-  names: Set<string>,
+  entries: Map<string, ComponentEntry>,
 ): void {
   pattern.lastIndex = 0;
 
@@ -220,11 +274,32 @@ function collectComponentNames(
   while (match !== null) {
     const isTypeOnly = Boolean(match[1]);
     const name = componentNameFromSpecifier(match[2]);
-    if (!isTypeOnly && name) {
-      names.add(name);
+    const group = componentGroupFromSpecifier(match[2]);
+    if (!isTypeOnly && name && group) {
+      entries.set(`${group}/${name}`, { name, group });
     }
     match = pattern.exec(source);
   }
+}
+
+/**
+ * Extract the public component inventory — name and category — declared by the
+ * source of a package entry module.
+ *
+ * @param entrySource - Source text of the public entry module.
+ * @returns The components, sorted by category and then by name.
+ */
+export function parsePublicComponents(entrySource: string): ComponentEntry[] {
+  const entries = new Map<string, ComponentEntry>();
+  collectComponentNames(EXPORT_FROM_PATTERN, entrySource, entries);
+
+  if (entries.size === 0) {
+    collectComponentNames(IMPORT_FROM_PATTERN, entrySource, entries);
+  }
+
+  return [...entries.values()].sort(
+    (a, b) => a.group.localeCompare(b.group) || a.name.localeCompare(b.name),
+  );
 }
 
 /**
@@ -243,14 +318,9 @@ function collectComponentNames(
  * @returns Sorted, de-duplicated component names.
  */
 export function parsePublicComponentNames(entrySource: string): string[] {
-  const names = new Set<string>();
-  collectComponentNames(EXPORT_FROM_PATTERN, entrySource, names);
-
-  if (names.size === 0) {
-    collectComponentNames(IMPORT_FROM_PATTERN, entrySource, names);
-  }
-
-  return [...names].sort();
+  return [
+    ...new Set(parsePublicComponents(entrySource).map((entry) => entry.name)),
+  ].sort();
 }
 
 /**
@@ -282,6 +352,36 @@ export async function discoverPublicComponents(
   try {
     const source = await fs.readFile(entry, "utf8");
     return parsePublicComponentNames(source);
+  } catch {
+    return [];
+  }
+}
+
+/**
+ * Discover the public component inventory of an installed or local
+ * `@asheeui/web` package, with each component's category.
+ *
+ * This is {@link discoverPublicComponents} with the category folder retained, which is
+ * what lets the CLI present the inventory the way the package arranges it.
+ *
+ * @param packageRoot - Absolute path of a `@asheeui/web` package root.
+ * @returns The components, sorted by category and then by name.
+ *
+ * @example
+ * ```ts
+ * const entries = await discoverComponentGroups("/proj/node_modules/@asheeui/web");
+ * console.log(entries[0]); // { name: "accordion", group: "data-display" }
+ * ```
+ */
+export async function discoverComponentGroups(
+  packageRoot: string,
+): Promise<ComponentEntry[]> {
+  const entry = await resolvePublicEntry(packageRoot);
+  if (!entry) return [];
+
+  try {
+    const source = await fs.readFile(entry, "utf8");
+    return parsePublicComponents(source);
   } catch {
     return [];
   }
@@ -370,4 +470,54 @@ export function renderComponentList(components: string[]): string {
   }
 
   return lines.join("\n");
+}
+
+/**
+ * Render the component inventory grouped by the category folder each component
+ * lives in.
+ *
+ * Each category is a heading with its component count, followed by the same aligned
+ * grid {@link renderComponentList} produces, indented under it.
+ *
+ * @param components - The inventory, as category and name.
+ * @returns A multi-line string ready to print to the terminal.
+ */
+export function renderGroupedComponentList(
+  components: ComponentEntry[],
+): string {
+  if (components.length === 0) {
+    return "No components found.";
+  }
+
+  const groups = new Map<string, string[]>();
+  for (const { name, group } of components) {
+    const names = groups.get(group);
+    if (names) names.push(name);
+    else groups.set(group, [name]);
+  }
+
+  const blocks: string[] = [];
+  for (const [group, names] of [...groups.entries()].sort(([a], [b]) =>
+    a.localeCompare(b),
+  )) {
+    const columnWidth = Math.max(...names.map((name) => name.length));
+    const columns = Math.min(MAX_COLUMNS, names.length);
+    const rows = Math.ceil(names.length / columns);
+    const lines = [`${group} (${names.length})`];
+
+    for (let row = 0; row < rows; row++) {
+      const cells: string[] = [];
+      for (let col = 0; col < columns; col++) {
+        const index = col * rows + row;
+        if (index < names.length) {
+          cells.push(names[index].padEnd(columnWidth));
+        }
+      }
+      lines.push(`  ${cells.join(" ".repeat(COLUMN_GAP)).trimEnd()}`);
+    }
+
+    blocks.push(lines.join("\n"));
+  }
+
+  return blocks.join("\n\n");
 }

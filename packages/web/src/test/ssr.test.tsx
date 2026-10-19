@@ -8,7 +8,7 @@
  */
 
 import { describe, expect, it } from "vitest";
-import { Badge } from "../components/badge";
+import { Badge } from "../components/data-display/badge";
 import {
   expectHydrationClean,
   renderHydrated,

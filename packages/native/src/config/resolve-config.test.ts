@@ -11,7 +11,7 @@
 import { getNativeComponentDefaults } from "./registry";
 import { NATIVE_FALLBACK_CONFIG, resolveNativeConfig } from "./resolve-config";
 // Importing the package's surface is what registers every component's defaults.
-import "../index";
+import "..";
 
 describe("native configuration resolution", () => {
   it("resolves the platform defaults when a consumer provides none", () => {

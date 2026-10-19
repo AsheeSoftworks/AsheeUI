@@ -1,5 +1,46 @@
 # @asheeui/core
 
+## 2.2.1
+
+### Patch Changes
+
+- Fix how a custom theme resolves its palette, and accept the `extends` key.
+  
+  Three defects, all of which made a custom theme look like the built-in light theme:
+  
+  - **`extends` was reported as an unknown key.** It is part of the public type
+    (`ExternalColorVariant.extends`) and the resolver has always implemented it, but the
+    configuration validator warned `color.<name>.extends: unknown key (expected one of …)`
+    on every load, as though the theme were misconfigured. `extends` is now accepted on a
+    custom theme, validated as `"light"` or `"dark"`, and still rejected on the built-in
+    themes, where it has no meaning.
+  - **A custom theme inherited the library's palette, not yours.** `extends: "light"` (or
+    `"dark"`) now inherits the theme *after* your overrides are merged in, so a custom theme
+    built on a palette you restyled no longer falls back to the colours that shipped with
+    the library.
+  - **A custom theme with no `extends` always inherited light.** It now inherits the family
+    of the application's `defaultTheme` when that is `light` or `dark`, so an application
+    that defaults to dark no longer gets a light-based custom theme. `defaultTheme:
+    "system"` keeps the documented light fallback, because a system default has no single
+    family to inherit.
+  
+  Declaring `color: { brand: { extends: "dark", primary: "#8b5cf6" } }` and selecting
+  `brand` now applies the class and resolves every value the theme does not state from the
+  dark palette.
+- Group the component folders into categories.
+  
+  `@asheeui/core`, `@asheeui/web` and `@asheeui/native` now arrange their components under
+  sibling category folders — `layouts`, `navigation`, `forms`, `feedback`, `overlays`,
+  `data-display`, `marketing`, `typography` and `system` — instead of one flat
+  `components/` directory, and the relative imports and module augmentations were rewritten
+  to match. **The public export surface is unchanged**: every component keeps its name, so
+  a consumer's imports and the `@asheeui/web/section-kit` subpath are unaffected.
+  
+  `asheeui list` follows the new arrangement. It derives a component's name from the last
+  path segment and its category from the first, prints the inventory grouped under a
+  heading per category with its count, and `--json` reports each entry as
+  `{ "name", "group" }` so a script can group it the same way.
+
 ## 2.2.0
 
 ### Minor Changes

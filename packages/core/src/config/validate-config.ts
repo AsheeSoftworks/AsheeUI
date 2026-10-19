@@ -164,11 +164,29 @@ function checkColor(
       continue;
     }
 
+    // A custom theme may state the built-in theme it extends. The built-in themes
+    // cannot: they are the palettes everything else inherits, so `extends` there has
+    // no meaning and is reported rather than silently ignored.
+    const isBuiltIn = themeName === "light" || themeName === "dark";
+    const allowed = isBuiltIn ? colourNames : [...colourNames, "extends"];
+
     for (const [colourName, value] of Object.entries(theme)) {
-      if (!colourNames.includes(colourName)) {
-        checkUnknownKey(issues, path, colourName, colourNames);
+      if (!allowed.includes(colourName)) {
+        checkUnknownKey(issues, path, colourName, allowed);
         continue;
       }
+
+      if (colourName === "extends") {
+        if (value !== "light" && value !== "dark") {
+          issues.push({
+            path: `${path}.extends`,
+            message: `expected "light" or "dark", received ${show(value)}`,
+            severity: "error",
+          });
+        }
+        continue;
+      }
+
       if (typeof value !== "string") {
         issues.push({
           path: `${path}.${colourName}`,

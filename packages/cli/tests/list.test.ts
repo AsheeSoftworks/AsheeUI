@@ -3,12 +3,26 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import {
+  componentGroupFromSpecifier,
   componentNameFromSpecifier,
+  discoverComponentGroups,
   discoverPublicComponents,
   parsePublicComponentNames,
+  parsePublicComponents,
   renderComponentList,
+  renderGroupedComponentList,
   resolveAsheeuiPackage,
 } from "../src/lib/list/list";
+
+/** Source of a public entry module whose components sit in category folders. */
+const GROUPED_ENTRY_SOURCE = [
+  'export * from "./components/forms/input";',
+  'export { Chip } from "./components/data-display/chip";',
+  // A category whose name is also the component's name.
+  'export * from "./components/typography";',
+  // Type-only exports do not create a public component.
+  'export type { MenuOption } from "./components/forms/menu";',
+].join("\n");
 
 let dir: string;
 
@@ -400,5 +414,83 @@ describe("public component inventory", () => {
     expect(components).not.toContain("scrollbar");
     expect(components).not.toContain("section-kit");
     expect(components).not.toContain("puck");
+  });
+
+  it("reports the category each component lives in", async () => {
+    const packageRoot = await resolveAsheeuiPackage({ cwd: dir });
+    if (!packageRoot) {
+      throw new Error("expected to resolve the renderer package");
+    }
+
+    const entries = await discoverComponentGroups(packageRoot);
+
+    expect(entries).toHaveLength([...PUBLIC_COMPONENT_INVENTORY].length);
+    expect(entries).toContainEqual({ name: "input", group: "forms" });
+    expect(entries).toContainEqual({ name: "navbar", group: "navigation" });
+    expect(entries).toContainEqual({ name: "stack", group: "layouts" });
+    // A component that is its own category reports both with the same name.
+    expect(entries).toContainEqual({ name: "typography", group: "typography" });
+  });
+});
+
+describe("parsePublicComponents", () => {
+  it("reads the category from the folder and the name from the component", () => {
+    const entries = parsePublicComponents(GROUPED_ENTRY_SOURCE);
+
+    expect(entries).toEqual([
+      { name: "chip", group: "data-display" },
+      { name: "input", group: "forms" },
+      { name: "typography", group: "typography" },
+    ]);
+  });
+
+  it("keeps the flat name list derived from the same surface", () => {
+    expect(parsePublicComponentNames(GROUPED_ENTRY_SOURCE)).toEqual([
+      "chip",
+      "input",
+      "typography",
+    ]);
+  });
+});
+
+describe("componentGroupFromSpecifier", () => {
+  it("maps a grouped specifier to its category", () => {
+    expect(componentGroupFromSpecifier("./components/forms/calendar")).toBe(
+      "forms",
+    );
+    expect(
+      componentGroupFromSpecifier("./components/data-display/table/index"),
+    ).toBe("data-display");
+  });
+
+  it("treats a single-segment specifier as its own category", () => {
+    expect(componentGroupFromSpecifier("./components/typography")).toBe(
+      "typography",
+    );
+  });
+
+  it("returns null outside the components directory", () => {
+    expect(componentGroupFromSpecifier("./theme/controller")).toBeNull();
+    expect(componentGroupFromSpecifier("./components")).toBeNull();
+  });
+});
+
+describe("renderGroupedComponentList", () => {
+  it("prints a heading per category with its count", () => {
+    const rendered = renderGroupedComponentList([
+      { name: "card", group: "data-display" },
+      { name: "chip", group: "data-display" },
+      { name: "input", group: "forms" },
+    ]);
+
+    expect(rendered).toContain("data-display (2)");
+    expect(rendered).toContain("forms (1)");
+    expect(rendered).toContain("card");
+    expect(rendered).toContain("chip");
+    expect(rendered).toContain("input");
+  });
+
+  it("handles an empty inventory", () => {
+    expect(renderGroupedComponentList([])).toBe("No components found.");
   });
 });

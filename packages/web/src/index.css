@@ -13,8 +13,27 @@
 
 @layer base, utilities;
 
-/* Tell Tailwind v4 to scan asheeui components for utility classes */
+/*
+ * Tell Tailwind v4 where the class names it must generate live.
+ *
+ * A component's classes are not all in this package. The style maps that carry them —
+ * radius and size vocabularies, every component's `*-styles.ts` — are in `@asheeui/core`,
+ * and a stylesheet that scanned only `./` left half of them ungenerated: components
+ * rendered without their padding and spacing, which looks like "some styles just don't
+ * apply". The patterns below cover the two shapes this file is consumed in:
+ *
+ * - from source (this repository, or a workspace link): `./` holds the TSX, and core is a
+ *   sibling package's source;
+ * - from the published package: this file sits in `dist/`, so the classes are in the
+ *   compiled `.js` beside it, and core is installed beside this package under the same
+ *   scope (`../../core/dist`).
+ *
+ * A pattern that matches nothing is ignored, so both shapes can be listed at once.
+ */
 @source "./**/*.{ts,tsx}";
+@source "./**/*.js";
+@source "../../core/src/**/*.{ts,tsx}";
+@source "../../core/dist/**/*.js";
 
 @theme inline {
   /**

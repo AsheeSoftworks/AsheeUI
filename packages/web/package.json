@@ -1,6 +1,6 @@
 {
   "name": "@asheeui/web",
-  "version": "2.3.0",
+  "version": "2.3.1",
   "description": "Accessible and customizable React primitives engineered with Tailwind CSS.",
   "author": "Ashee Softworks <asheesoftworks@gmail.com>",
   "homepage": "https://asheeui.com",
@@ -41,9 +41,9 @@
     },
     "./styles.css": "./src/index.css",
     "./section-kit": {
-      "types": "./src/components/section-kit/index.ts",
-      "import": "./src/components/section-kit/index.ts",
-      "default": "./src/components/section-kit/index.ts"
+      "types": "./src/components/layouts/section-kit/index.ts",
+      "import": "./src/components/layouts/section-kit/index.ts",
+      "default": "./src/components/layouts/section-kit/index.ts"
     },
     "./src/*": "./src/*"
   },
@@ -65,9 +65,9 @@
       },
       "./styles.css": "./dist/index.css",
       "./section-kit": {
-        "types": "./dist/components/section-kit/index.d.ts",
-        "import": "./dist/components/section-kit/index.js",
-        "default": "./dist/components/section-kit/index.js"
+        "types": "./dist/components/layouts/section-kit/index.d.ts",
+        "import": "./dist/components/layouts/section-kit/index.js",
+        "default": "./dist/components/layouts/section-kit/index.js"
       }
     }
   },
