@@ -20,6 +20,12 @@ import { AsheeNativeProvider } from "../../provider/AsheeNativeProvider";
 import { type ToastContextType, useToast } from "./ToastContext";
 import { ToastProvider } from "./ToastProvider";
 
+// The first render in this file builds both providers and resolves the configuration
+// cascade and the styling for the message layer, which costs far more than the
+// interaction it precedes and, on a loaded worker, more than the default five seconds.
+// The timeout is raised for the file rather than for whichever test happens to be first.
+jest.setTimeout(20000);
+
 /** The toast API the last render received, which the tests drive directly. */
 let api: ToastContextType;
 

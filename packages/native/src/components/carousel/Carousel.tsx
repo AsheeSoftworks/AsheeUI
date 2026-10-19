@@ -54,6 +54,7 @@ import {
 import type {
   NativeScrollEvent,
   NativeSyntheticEvent,
+  ScrollViewInstance,
   StyleProp,
   ViewProps,
   ViewStyle,
@@ -244,7 +245,7 @@ export function Carousel({
   const [width, setWidth] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
   const [ownIndex, setOwnIndex] = useState<number>(() => defaultIndex ?? 0);
-  const scroller = useRef<ScrollView>(null);
+  const scroller = useRef<ScrollViewInstance>(null);
 
   const isControlled = index !== undefined;
   const activeIndex = isControlled ? index : ownIndex;

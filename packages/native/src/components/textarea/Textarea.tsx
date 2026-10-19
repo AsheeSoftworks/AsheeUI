@@ -48,7 +48,7 @@ import {
  */
 export interface TextareaProps
   extends NativeTextareaConfig,
-    Omit<TextInputProps, "children" | "style" | "multiline"> {
+    Omit<TextInputProps, "children" | "style" | "multiline" | "rows"> {
   /** The field's label, which also names the control. */
   label?: string;
 

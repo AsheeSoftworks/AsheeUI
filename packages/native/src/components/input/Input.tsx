@@ -48,7 +48,7 @@ import {
  */
 export interface InputProps
   extends NativeInputConfig,
-    Omit<TextInputProps, "children" | "style"> {
+    Omit<TextInputProps, "children" | "multiline" | "style"> {
   /** The field's label, which also names the control. */
   label?: string;
 

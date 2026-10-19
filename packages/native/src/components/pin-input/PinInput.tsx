@@ -36,7 +36,7 @@ import {
   sanitizePinValue,
 } from "@asheeui/core";
 import { Fragment, useRef, useState } from "react";
-import type { TextInput as PlatformTextInput } from "react-native";
+import type { TextInputInstance } from "react-native";
 import { Pressable, TextInput, View } from "react-native";
 import { useAsheeNativeConfig } from "../../provider/AsheeNativeProvider";
 import { classNames } from "../../utils/class-names";
@@ -166,7 +166,7 @@ export function PinInput({
   const sectionConfig = config.components.pininput;
   const [typedValue, setTypedValue] = useState(defaultValue ?? "");
   const [isFocused, setIsFocused] = useState(false);
-  const fieldRef = useRef<PlatformTextInput>(null);
+  const fieldRef = useRef<TextInputInstance>(null);
 
   const resolvedLength = resolveCascade<number>(
     length,

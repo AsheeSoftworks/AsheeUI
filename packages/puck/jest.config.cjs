@@ -24,7 +24,15 @@ module.exports = {
   preset: "@react-native/jest-preset",
   rootDir: ".",
   testMatch: ["<rootDir>/src/native/**/*.test.ts?(x)"],
+  // Jest merges a preset's `moduleNameMapper` *after* this object, so the keys
+  // declared here come first and win the first-match rule. The two `react-native`
+  // subpaths the preset maps to specific files therefore have to be declared ahead
+  // of the generic rule below: with the generic rule first, `react-native/setup-env`
+  // resolves to `<react-native>/setup-env` and the suite fails to load with
+  // "Could not locate module react-native/setup-env".
   moduleNameMapper: {
+    "^react-native/setup-env$": `${path.dirname(require.resolve("react-native"))}/src/setup-env.js`,
+    "^react-native/react-private-interface$": `${path.dirname(require.resolve("react-native"))}/src/react-private-interface.js`,
     "^react-native($|/.*)": `${path.dirname(require.resolve("react-native"))}/$1`,
     "^react$": require.resolve("react"),
     "^@asheeui/core$": "<rootDir>/../core/src/index.ts",
