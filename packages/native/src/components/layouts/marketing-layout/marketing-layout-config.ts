@@ -48,9 +48,8 @@ registerNativeComponentDefaults(
 /**
  * The values the marketing composition falls back to when no tier provides one.
  */
-export const FALLBACK_NATIVE_MARKETING_LAYOUT_CONFIG: Required<NativeMarketingLayoutConfig> =
-  {
-    skipLink: true,
-    skipLinkLabel: "Skip to content",
-    background: "default",
-  };
+export const FALLBACK_NATIVE_MARKETING_LAYOUT_CONFIG = {
+  skipLink: true,
+  skipLinkLabel: "Skip to content",
+  background: "default",
+} satisfies NativeMarketingLayoutConfig;

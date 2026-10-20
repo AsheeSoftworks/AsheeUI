@@ -29,8 +29,8 @@ import type { StyleProp, ViewProps, ViewStyle } from "react-native";
 import { View } from "react-native";
 import { useAsheeNativeConfig } from "../../../provider/AsheeNativeProvider";
 import { classNames } from "../../../utils/class-names";
-import { Spinner } from "../spinner/Spinner";
 import { Text } from "../../typography/text/Text";
+import { Spinner } from "../spinner/Spinner";
 import {
   FALLBACK_NATIVE_LOADING_STATE_CONFIG,
   type NativeLoadingStateConfig,

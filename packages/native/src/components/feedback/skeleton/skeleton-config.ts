@@ -48,7 +48,7 @@ registerNativeComponentDefaults("skeleton", defaultNativeSkeletonConfig);
 /**
  * The values the placeholder falls back to when no tier provides one.
  */
-export const FALLBACK_NATIVE_SKELETON_CONFIG: Required<NativeSkeletonConfig> = {
+export const FALLBACK_NATIVE_SKELETON_CONFIG = {
   radius: "sm",
   isAnimated: true,
-};
+} satisfies NativeSkeletonConfig;

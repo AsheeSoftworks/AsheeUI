@@ -16,7 +16,7 @@ async function clickFirstDay(user: ReturnType<typeof createUser>) {
     .filter((button) => /^\d{1,2}$/.test(button.textContent ?? ""));
 
   expect(dayButtons.length).toBeGreaterThan(0);
-  await user.click(dayButtons[0]);
+  await user.click(dayButtons[0]!);
 }
 
 describe("Calendar", () => {
@@ -43,6 +43,35 @@ describe("Calendar", () => {
     expect(
       screen.getByRole("button", { name: "Next month" }),
     ).toBeInTheDocument();
+  });
+
+  // The default placeholder names the field's own task rather than the surface
+  // that hosts it, so a reader is told what will be collected in each mode.
+  it("names the field's task in its default placeholder", () => {
+    const date = renderWithProvider(<Calendar label="Date" />);
+
+    expect(date.getByRole("textbox")).toHaveAttribute(
+      "placeholder",
+      "Select a date",
+    );
+    date.unmount();
+
+    const time = renderWithProvider(<Calendar label="Time" mode="time" />);
+
+    expect(time.getByRole("textbox")).toHaveAttribute(
+      "placeholder",
+      "Select a time",
+    );
+    time.unmount();
+
+    const dateAndTime = renderWithProvider(
+      <Calendar label="Date and time" mode="datetime" />,
+    );
+
+    expect(dateAndTime.getByRole("textbox")).toHaveAttribute(
+      "placeholder",
+      "Select a date and time",
+    );
   });
 
   it("reports the selected day and closes", async () => {
@@ -185,5 +214,50 @@ describe("Calendar", () => {
     await waitFor(() => {
       expect(screen.queryByRole("grid")).toBeNull();
     });
+  });
+
+  // A month grid is a grid of weeks, so Home and End move within the row the
+  // reader is on rather than to the ends of the month.
+  it("moves to the ends of the focused week with Home and End", async () => {
+    const user = createUser();
+    const { getByRole } = renderWithProvider(
+      <Calendar
+        label="Date"
+        mode="datetime"
+        selected={new Date(2026, 4, 14)}
+      />,
+    );
+
+    await user.click(getByRole("textbox"));
+
+    const grid = screen.getByRole("grid");
+
+    /** The day the grid's keyboard navigation is currently on. */
+    function navigatedDay(): HTMLButtonElement | null {
+      for (const cell of within(grid).getAllByRole("gridcell")) {
+        const button = cell.querySelector("button");
+
+        if (button?.tabIndex === 0) return button;
+      }
+
+      return null;
+    }
+
+    // 14 May 2026 is a Thursday, so its week runs from Sunday the 10th to
+    // Saturday the 16th.
+    const start = navigatedDay();
+
+    expect(start).toHaveAccessibleName("14 May 2026");
+    start?.focus();
+
+    await pressKey(user, "Home");
+
+    expect(navigatedDay()).toHaveAccessibleName("10 May 2026");
+    expect(navigatedDay()).toHaveFocus();
+
+    await pressKey(user, "End");
+
+    expect(navigatedDay()).toHaveAccessibleName("16 May 2026");
+    expect(navigatedDay()).toHaveFocus();
   });
 });

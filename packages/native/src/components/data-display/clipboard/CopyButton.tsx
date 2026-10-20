@@ -18,6 +18,7 @@ import {
   NATIVE_CLIPBOARD_COPIED_GLYPH,
   NATIVE_CLIPBOARD_COPY_GLYPH,
   NATIVE_CLIPBOARD_STATUS_CLASS,
+  type Radius,
   resolveCascade,
 } from "@asheeui/core";
 import type { ReactNode } from "react";
@@ -50,6 +51,12 @@ export interface CopyButtonProps extends BaseCopyButtonProps {
   copiedAnnouncement?: string;
 
   /**
+   * Announcement made through the status region when the copy fails.
+   * Without it the region says which control failed — `Copy failed` by default.
+   */
+  errorAnnouncement?: string;
+
+  /**
    * How long the copied state lasts, in milliseconds.
    * Defaults to `components.clipboard.timeout`.
    */
@@ -80,6 +87,7 @@ export interface CopyButtonProps extends BaseCopyButtonProps {
  * @param props.label - Name of the control before a copy.
  * @param props.copiedLabel - Name of the control after a copy.
  * @param props.copiedAnnouncement - Announcement made after a copy.
+ * @param props.errorAnnouncement - Announcement made after a failed copy.
  * @param props.timeout - How long the copied state lasts.
  * @param props.onCopy - Called after a successful copy.
  * @param props.onError - Called after a failed copy.
@@ -103,9 +111,11 @@ export function CopyButton({
   label,
   copiedLabel,
   copiedAnnouncement,
+  errorAnnouncement,
   timeout,
   onCopy,
   onError,
+  radius,
   copyIcon,
   copiedIcon,
   ...rest
@@ -127,17 +137,39 @@ export function CopyButton({
     FALLBACK_NATIVE_CLIPBOARD_CONFIG.copiedLabel,
   );
 
+  // The rounding used to be Button's alone, so `components.clipboard.radius` was declared,
+  // registered and never read. It resolves here like the rest of the section, and the
+  // application's `defaultRadius` — which Button also reads — stays the tier below it, so an
+  // unconfigured control rounds exactly as it did before.
+  const resolvedRadius = resolveCascade<Radius>(
+    radius,
+    sectionConfig?.radius,
+    config.defaultRadius,
+    FALLBACK_NATIVE_CLIPBOARD_CONFIG.radius,
+  );
+
   return (
     <Clipboard
       value={value}
       timeout={timeout}
       onCopy={onCopy}
       onError={onError}>
-      {({ copied, copy }) => {
+      {({ copied, error, copy }) => {
         const wording = copied ? resolvedCopiedLabel : resolvedLabel;
         const affordance = copied
           ? (copiedIcon ?? NATIVE_CLIPBOARD_COPIED_GLYPH)
           : (copyIcon ?? NATIVE_CLIPBOARD_COPY_GLYPH);
+
+        // The region reports both outcomes: a failed copy is a change of state the reader is
+        // not otherwise told about, since the label stays put.
+        let announcement = "";
+
+        if (copied) {
+          announcement =
+            copiedAnnouncement ?? `${String(resolvedCopiedLabel)}: ${value}`;
+        } else if (error) {
+          announcement = errorAnnouncement ?? `${String(resolvedLabel)} failed`;
+        }
 
         return (
           <>
@@ -145,6 +177,7 @@ export function CopyButton({
               variant={rest.variant ?? sectionConfig?.variant ?? undefined}
               color={rest.color ?? sectionConfig?.color ?? undefined}
               size={rest.size ?? sectionConfig?.size ?? undefined}
+              radius={resolvedRadius}
               // A worded label is the control's name; the glyph beside it is decoration, and
               // naming the control here is what keeps the glyph out of what a reader hears.
               // A label that is not text has no name to state, so the consumer names it.
@@ -166,10 +199,7 @@ export function CopyButton({
               accessibilityLiveRegion={NATIVE_ANNOUNCEMENT_LIVE_REGION.status}
               className={NATIVE_CLIPBOARD_STATUS_CLASS}
               testID="clipboard-status">
-              {copied
-                ? (copiedAnnouncement ??
-                  `${String(resolvedCopiedLabel)}: ${value}`)
-                : ""}
+              {announcement}
             </Text>
           </>
         );

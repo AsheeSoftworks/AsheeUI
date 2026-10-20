@@ -37,7 +37,7 @@ export interface ContainerProps extends BaseContainerProps {
    *
    * @default "div"
    */
-  as?: ElementType;
+  as?: ElementType | undefined;
 
   /**
    * Maximum content width.
@@ -46,7 +46,7 @@ export interface ContainerProps extends BaseContainerProps {
    *
    * @default "lg"
    */
-  size?: ContainerSize;
+  size?: ContainerSize | undefined;
 }
 
 /**
@@ -77,25 +77,25 @@ export interface ContainerProps extends BaseContainerProps {
 export const Container = forwardRef<HTMLDivElement, ContainerProps>(
   ({ as, size, gutter, centered, className, ...rest }, ref) => {
     const config = useAsheeConfig();
-    const sectionConfig = config.components?.container;
+    const containerConfig = config.components?.container;
 
     const resolvedSize = resolveCascade<ContainerSize>(
       size,
-      sectionConfig?.size,
+      containerConfig?.size,
       undefined,
       FALLBACK_CONTAINER_CONFIG.size,
     );
 
     const resolvedGutter = resolveCascade<boolean>(
       gutter,
-      sectionConfig?.gutter,
+      containerConfig?.gutter,
       undefined,
       FALLBACK_CONTAINER_CONFIG.gutter,
     );
 
     const resolvedCentered = resolveCascade<boolean>(
       centered,
-      sectionConfig?.centered,
+      containerConfig?.centered,
       undefined,
       FALLBACK_CONTAINER_CONFIG.centered,
     );

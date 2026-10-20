@@ -1,6 +1,12 @@
 import type { ReactNode } from "react";
-import { describe, expect, it } from "vitest";
-import { queryOverlay, renderWithProvider } from "../../../test";
+import { describe, expect, it, vi } from "vitest";
+import {
+  expectFocused,
+  fireEvent,
+  makeConfig,
+  renderWithProvider,
+  userEvent,
+} from "../../../test";
 import { Link } from "./Link";
 
 describe("Link", () => {
@@ -31,8 +37,8 @@ describe("Link", () => {
       href,
       children,
     }: {
-      href?: string;
-      children?: ReactNode;
+      href?: string | undefined;
+      children?: ReactNode | undefined;
     }) {
       return (
         <a data-testid="custom-link" href={href}>
@@ -50,18 +56,82 @@ describe("Link", () => {
     expect(getByTestId("custom-link")).toHaveAttribute("href", "/docs");
   });
 
-  it("removes the destination and exposes a disabled state", () => {
-    const { getByText } = renderWithProvider(
-      <Link href="/docs" disabled>
+  // TanStack Router and React Router name a destination `to`. Before this, a project using either had to
+  // write <Link href={...} component={RouterLink} componentProps={{ to: ... }} /> at every call site.
+  it("accepts `to` as a destination for a router component", () => {
+    function RouterLink({
+      to,
+      children,
+    }: {
+      to?: string | undefined;
+      children?: ReactNode | undefined;
+    }) {
+      return (
+        <a data-testid="router-link" href={to}>
+          {children}
+        </a>
+      );
+    }
+
+    const { getByTestId } = renderWithProvider(
+      <Link to="/concepts/cascade" component={RouterLink}>
+        The cascade
+      </Link>,
+    );
+
+    expect(getByTestId("router-link")).toHaveAttribute(
+      "href",
+      "/concepts/cascade",
+    );
+  });
+
+  it("treats `to` as the href when no router component is given", () => {
+    const { getByRole } = renderWithProvider(
+      <Link to="/components">Components</Link>,
+    );
+
+    expect(getByRole("link", { name: "Components" })).toHaveAttribute(
+      "href",
+      "/components",
+    );
+  });
+
+  // A disabled link used to drop its `href`, which turned the anchor into a generic
+  // element: the link role and the tab stop went with it, so `aria-disabled` stopped
+  // meaning "disabled link" and a keyboard user could never reach it. The element keeps
+  // its destination and its role, and the press is refused in the click handler instead
+  // — the same contract the rest of the library applies to a disabled control.
+  it("keeps a disabled link reachable and announced, and refuses its press", async () => {
+    const user = userEvent.setup();
+    const onClick = vi.fn();
+    const { getByRole } = renderWithProvider(
+      <Link href="/docs" disabled onClick={onClick}>
         Docs
       </Link>,
     );
-    const anchor = getByText("Docs").closest("a");
+    const link = getByRole("link", { name: "Docs" });
 
-    expect(anchor).not.toBeNull();
-    expect(anchor).not.toHaveAttribute("href");
-    expect(anchor).toHaveAttribute("aria-disabled", "true");
-    expect(queryOverlay("link")).toBeNull();
+    expect(link).toHaveAttribute("href", "/docs");
+    expect(link).toHaveAttribute("aria-disabled", "true");
+
+    await user.tab();
+    expectFocused(link);
+
+    // `fireEvent.click` reports whether the event's default action survived.
+    expect(fireEvent.click(link)).toBe(false);
+    expect(onClick).not.toHaveBeenCalled();
+  });
+
+  // The colour is the last tier of the cascade: the global default resolves before the
+  // component's own fallback, which is what the documentation now states.
+  it("resolves its colour through the global default before the fallback", () => {
+    const { getByRole } = renderWithProvider(<Link href="/docs">Docs</Link>, {
+      config: makeConfig({ defaultColor: "danger" }),
+    });
+
+    expect(getByRole("link", { name: "Docs" }).className).toContain(
+      "text-danger",
+    );
   });
 
   it("renders leading and trailing content around the label", () => {

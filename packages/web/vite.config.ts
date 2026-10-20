@@ -137,8 +137,9 @@ export default defineConfig({
       // graph reaches, and the main entry deliberately does not reach the kit — an
       // application that never composes a band does not load it — so the subpath has
       // to be an entry of its own or it would ship declarations without an
-      // implementation. The kit is the one internal module another package composes
-      // with: the Puck integration draws a band's heading and action row through it.
+      // implementation. The kit is public in its own right — it has its own documentation
+      // page — and another package composes with it: the Puck integration draws a band's
+      // heading and action row through it.
       entry: {
         index: resolve(__dirname, "src/index.ts"),
         // The key is the emitted path, and it mirrors the source tree so the

@@ -12,6 +12,13 @@
  * platform already uses for this, which comes from an edge a thumb can reach. The vocabulary
  * is shared; the shape of the panel is the platform's.
  *
+ * The drawer's two dismissal switches are named the way the modal names them:
+ * `closeOnBackdropClick` and `closeOnEscape`. The drawer used to spell them
+ * `closeOnOverlayClick` and `closeOnEsc`, and those remain as deprecated aliases so existing
+ * code keeps working. `DrawerConfig` itself keeps the old spelling because the native
+ * renderer still reads (and registers) it; `DrawerConfigOptions` adds the canonical names,
+ * which is the shape `components.drawer` accepts on the web.
+ *
  * The module registers nothing and imports no renderer. Its side effect is a type
  * augmentation: declaring `drawer` here is what makes `components.drawer` a known
  * configuration section without either renderer restating it.
@@ -44,39 +51,78 @@ export interface DrawerConfig {
    *
    * @default "md"
    */
-  size?: DrawerSize;
+  size?: DrawerSize | undefined;
 
   /**
    * The edge the drawer comes from.
    *
    * @default "right"
    */
-  placement?: DrawerPlacement;
+  placement?: DrawerPlacement | undefined;
 
   /**
    * Whether the drawer moves when it appears and disappears.
    *
    * @default true
    */
-  animated?: boolean;
+  animated?: boolean | undefined;
 
   /**
    * Whether pressing the dimmed area around the drawer dismisses it.
    *
+   * Deprecated alias of `closeOnBackdropClick`, the canonical name the drawer
+   * shares with the modal. Kept because the native renderer still registers and
+   * reads this spelling; prefer the canonical name in new code.
+   *
    * @default true
+   * @deprecated Use `closeOnBackdropClick`.
    */
-  closeOnOverlayClick?: boolean;
+  closeOnOverlayClick?: boolean | undefined;
 
   /**
    * Whether the platform's own way out dismisses the drawer.
    *
+   * Deprecated alias of `closeOnEscape`, the canonical name the drawer shares
+   * with the modal. Kept because the native renderer still registers and reads
+   * this spelling; prefer the canonical name in new code.
+   *
+   * @default true
+   * @deprecated Use `closeOnEscape`.
+   */
+  closeOnEsc?: boolean | undefined;
+}
+
+/**
+ * The drawer options `components.drawer` accepts on the web.
+ *
+ * This is `DrawerConfig` plus the canonical dismissal names, which both layers
+ * now spell the same way. The deprecated aliases on `DrawerConfig` stay valid,
+ * so either spelling configures the web drawer.
+ */
+export interface DrawerConfigOptions extends DrawerConfig {
+  /**
+   * Whether pressing the dimmed area around the drawer dismisses it.
+   *
+   * The canonical spelling, shared with the modal; prefer it over the
+   * deprecated `closeOnOverlayClick` alias.
+   *
    * @default true
    */
-  closeOnEsc?: boolean;
+  closeOnBackdropClick?: boolean | undefined;
+
+  /**
+   * Whether the platform's own way out dismisses the drawer.
+   *
+   * The canonical spelling, shared with the modal; prefer it over the
+   * deprecated `closeOnEsc` alias.
+   *
+   * @default true
+   */
+  closeOnEscape?: boolean | undefined;
 }
 
 declare module "../../../registry" {
   interface ComponentTypeConfigRegistry {
-    drawer: DrawerConfig;
+    drawer: DrawerConfigOptions;
   }
 }

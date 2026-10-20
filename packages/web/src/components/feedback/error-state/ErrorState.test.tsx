@@ -11,6 +11,7 @@ import { describe, expect, it, vi } from "vitest";
 import {
   expectHydrationClean,
   makeComponentConfig,
+  makeConfig,
   renderToServerString,
   renderWithProvider,
   userEvent,
@@ -40,6 +41,23 @@ describe("ErrorState", () => {
     expect(getByText("Page not found")).toBeTruthy();
   });
 
+  it("stays silent under a configured empty-state announcement", () => {
+    // A failure stated as `none` is a deliberate silence, so it must not inherit a
+    // `components.emptystate.role` the empty presentation would resolve.
+    const { queryByRole, getByText } = renderWithProvider(
+      <ErrorState title="Page not found" role="none" />,
+      {
+        config: makeConfig({
+          components: { emptystate: { role: "status" } },
+        }),
+      },
+    );
+
+    expect(queryByRole("status")).toBeNull();
+    expect(queryByRole("alert")).toBeNull();
+    expect(getByText("Page not found")).toBeTruthy();
+  });
+
   it("offers a retry control that runs the handler", async () => {
     const onRetry = vi.fn();
     const { getByRole, queryByRole } = renderWithProvider(
@@ -57,6 +75,67 @@ describe("ErrorState", () => {
     const { queryByRole } = renderWithProvider(<ErrorState title="Failed" />);
 
     expect(queryByRole("button", { name: "Try again" })).toBeNull();
+  });
+
+  it("keeps the configured actions ahead of the retry, in the documented order", () => {
+    const { getAllByRole } = renderWithProvider(
+      <ErrorState
+        title="Failed"
+        primaryAction={{ label: "Go to invoices" }}
+        secondaryAction={{ label: "Read the docs" }}
+        onRetry={() => undefined}
+      />,
+    );
+
+    // The configured pair is the consumer's statement of where the reader can go
+    // and leads the row; the retry is the framework's recovery path and follows.
+    // When nothing is configured, the retry is the only control and therefore first.
+    const names = getAllByRole("button").map((button) => button.textContent);
+
+    expect(names).toEqual(["Go to invoices", "Read the docs", "Try again"]);
+  });
+
+  it("takes a node as its retry label, so the control can carry an icon", () => {
+    const { getByRole } = renderWithProvider(
+      <ErrorState
+        title="Failed"
+        onRetry={() => undefined}
+        retryLabel={
+          <>
+            <span aria-hidden="true">↻</span> Reload invoices
+          </>
+        }
+      />,
+    );
+
+    expect(
+      getByRole("button", { name: /Reload invoices/ }),
+    ).toBeInTheDocument();
+  });
+
+  it("takes a node as its disclosure label", () => {
+    const { getByText } = renderWithProvider(
+      <ErrorState
+        title="Failed"
+        detail="detail"
+        detailLabel={<em>What went wrong</em>}
+      />,
+    );
+
+    expect(getByText("What went wrong").tagName).toBe("EM");
+  });
+
+  it("renders its title at the outline level it is asked for", () => {
+    const first = renderWithProvider(<ErrorState title="Failed" />);
+
+    expect(first.getByText("Failed").tagName).toBe("H2");
+    first.unmount();
+
+    const nested = renderWithProvider(
+      <ErrorState title="Failed" titleAs="h4" />,
+    );
+
+    expect(nested.getByText("Failed").tagName).toBe("H4");
   });
 
   it("keeps the technical message behind a disclosure", () => {

@@ -37,6 +37,7 @@ import {
   NATIVE_TAB_BAR_CLASS,
   NATIVE_TAB_BAR_ITEM_ACTIVE_CLASS,
   NATIVE_TAB_BAR_ITEM_CLASS,
+  NAVBAR_BRAND_TEXT_CLASS,
   type NavbarAlign,
   type NavbarLink,
   type NavbarLinkItem,
@@ -48,8 +49,8 @@ import { ScrollView, View } from "react-native";
 import { Container } from "../../../layout/Container";
 import { useAsheeNativeConfig } from "../../../provider/AsheeNativeProvider";
 import { classNames } from "../../../utils/class-names";
-import { Link } from "../link";
 import { Text } from "../../typography/text/Text";
+import { Link } from "../link";
 import {
   FALLBACK_NATIVE_NAVBAR_CONFIG,
   type NativeNavbarConfig,
@@ -280,7 +281,12 @@ export function Navbar({
                 underline="never"
                 component={link?.component}
                 componentProps={link?.props}
-                className={NATIVE_NAVBAR_BRAND_CLASS}>
+                // The brand's layout is the wrapper's, and its typography is the link's. Stating
+                // the layout twice nested one row in another with the same box, so the link
+                // receives the typographic half instead. That half is `font-semibold
+                // text-foreground`, which states no layout and compiles on both renderers, so
+                // the core constant is the platform's too rather than being restated here.
+                className={NAVBAR_BRAND_TEXT_CLASS}>
                 {brand}
               </Link>
             ) : typeof brand === "string" ? (

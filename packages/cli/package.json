@@ -1,7 +1,7 @@
 {
   "name": "@asheeui/cli",
-  "version": "0.7.3",
-  "description": "Scaffold and maintain AsheeUI in an existing React app, with framework detection, provider wiring, a doctor command, and a playground command that copies an official playground application.",
+  "version": "1.0.0",
+  "description": "Scaffold and maintain AsheeUI in an existing React app, with framework detection, provider wiring, and doctor, fix and list commands.",
   "author": "Ashee Softworks <asheesoftworks@gmail.com>",
   "homepage": "https://asheeui.com",
   "repository": {
@@ -22,9 +22,7 @@
     "nextjs",
     "vite",
     "tanstack-start",
-    "setup",
-    "playground",
-    "playgrounds"
+    "setup"
   ],
   "bin": {
     "asheeui": "./dist/index.mjs"
@@ -51,7 +49,6 @@
   },
   "files": [
     "dist",
-    "templates",
     "LICENSE",
     "NOTICE"
   ],

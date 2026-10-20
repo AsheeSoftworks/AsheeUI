@@ -28,7 +28,7 @@ export interface ResizableScreenConfig {
    *
    * @default 50
    */
-  defaultSize?: number;
+  defaultSize?: number | undefined;
 
   /**
    * Minimum size of the primary panel as a percentage (0-100).
@@ -36,7 +36,7 @@ export interface ResizableScreenConfig {
    *
    * @default 20
    */
-  minSize?: number;
+  minSize?: number | undefined;
 
   /**
    * Maximum size of the primary panel as a percentage (0-100).
@@ -44,7 +44,7 @@ export interface ResizableScreenConfig {
    *
    * @default 80
    */
-  maxSize?: number;
+  maxSize?: number | undefined;
 
   /**
    * Step size in percentage points for keyboard resizing.
@@ -52,7 +52,7 @@ export interface ResizableScreenConfig {
    *
    * @default 2
    */
-  step?: number;
+  step?: number | undefined;
 
   /**
    * The orientation of the split layout.
@@ -60,7 +60,7 @@ export interface ResizableScreenConfig {
    *
    * @default "horizontal"
    */
-  orientation?: ResizableOrientation;
+  orientation?: ResizableOrientation | undefined;
 
   /**
    * Whether to hide the resize handle.
@@ -68,7 +68,23 @@ export interface ResizableScreenConfig {
    *
    * @default false
    */
-  hideHandle?: boolean;
+  hideHandle?: boolean | undefined;
+
+  /**
+   * Minimum width of the resizable container in pixels.
+   * Used when the container has no explicit width from its parent.
+   *
+   * @default 200
+   */
+  minContainerWidth?: number | undefined;
+
+  /**
+   * Minimum height of the resizable container in pixels.
+   * Used when the container has no explicit height from its parent.
+   *
+   * @default 200
+   */
+  minContainerHeight?: number | undefined;
 }
 
 /**
@@ -80,6 +96,8 @@ export const defaultResizableScreenConfig: ResizableScreenConfig = {
   maxSize: 80,
   step: 2,
   orientation: "horizontal",
+  minContainerWidth: 200,
+  minContainerHeight: 200,
 };
 
 /**
@@ -87,15 +105,16 @@ export const defaultResizableScreenConfig: ResizableScreenConfig = {
  * These values are used when instance props, component config,
  * and global defaults are all undefined.
  */
-export const FALLBACK_RESIZABLE_SCREEN_CONFIG: Required<ResizableScreenConfig> =
-  {
-    defaultSize: 50,
-    minSize: 20,
-    maxSize: 80,
-    step: 2,
-    orientation: "horizontal",
-    hideHandle: false,
-  } as const;
+export const FALLBACK_RESIZABLE_SCREEN_CONFIG = {
+  defaultSize: 50,
+  minSize: 20,
+  maxSize: 80,
+  step: 2,
+  orientation: "horizontal",
+  hideHandle: false,
+  minContainerWidth: 200,
+  minContainerHeight: 200,
+} as const satisfies ResizableScreenConfig;
 
 declare module "@asheeui/core" {
   interface ComponentTypeConfigRegistry {

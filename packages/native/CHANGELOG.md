@@ -1,5 +1,117 @@
 # @asheeui/native
 
+## 2.4.0
+
+### Minor Changes
+
+- Give every band the heading level it should have had, and make the configuration types tell the
+  truth.
+  
+  **Headings**
+  
+  - `SectionHeading` renders `<h2>` at **every** size, and `titleAs` is the one lever — up to `h1`
+    when the band really is the page's title, down to `h3` inside a card. Before, the large sizes
+    silently became `<h1>`: a page composing a hero and a closing call to action rendered two.
+  - `Hero`, `CTA`, `FeatureGrid`, `Testimonials` and `PricingCard` all expose `titleAs`;
+    `FeatureGrid` and `Testimonials` also expose `headingSize`.
+  - Every band now renders a **named** `<section>` — `aria-labelledby` pointing at its own heading —
+    so it is a `region` landmark rather than an anonymous grouping. A consumer's own `aria-label` or
+    `aria-labelledby` still wins.
+  - `AuthLayout`'s title follows the same rule and is now an `<h2>`.
+  - `EmptyState` and `ErrorState` gained `titleAs` as well, so a state can sit at the right level.
+  
+  **Marketing**
+  
+  - `PricingCard`'s `highlighted` is instance-only: it is no longer part of `PricingCardConfig`, so
+    `components.pricingcard.highlighted: true` can no longer recommend **every** plan.
+  - `FeatureGridLink.mapProps` lets a feature's link state its own destination (`to` for a router)
+    instead of always receiving `href`.
+  - A testimonial's avatar is decorative now (`alt=""`), so the person's name is announced once, by
+    the caption.
+  - `Card` merges a link's `className` into its own classes instead of letting it replace the whole
+    string.
+  
+  **Configuration that now behaves as documented**
+  
+  - A custom theme's name is an ordinary string: `color: { midnight: … }`, `defaultTheme: "midnight"`
+    and `themeController.setTheme("midnight")` all compile without a registry declaration or a cast.
+    Existence is still validated at runtime, so a typo in `defaultTheme` throws.
+  - `extends` may name another **declared** custom theme, in any declaration order; an undeclared name
+    is still rejected, and a cycle now warns in development instead of being silently mis-based.
+  - `color-scheme` is written on every theme application, so a runtime switch moves the browser's own
+    surfaces with it.
+  - Only the outermost provider emits the pre-paint script and owns the document's default theme: a
+    nested provider adds themes to the controller and the stylesheet, but no longer sets the default
+    or paints over the application.
+  - `availableThemes` is `readonly ThemeName[]`, the same type `setTheme` takes.
+  - `Input` no longer reads the global `defaultVariant` (the field family never did); its registration
+    is what keeps fields `bordered`.
+  - `HStack`/`VStack` now honour `components.stack.direction` and `.align`; the preset value sits below
+    the component config, and those two axes are no longer registered defaults.
+  - `Page`'s parts accept only the options they act on: `<Page sticky>`, `<PageHeader spacing>`,
+    `<PageContent sticky>` and `<PageFooter spacing>` are type errors instead of silent no-ops.
+    `PageContent.className` styles the rendered element; `innerClassName` styles the inner column.
+  - `DocsLayout` gained `stickyNavigation` (registered `true`); `ResizableScreen`'s container
+    minimums are configuration too (`components.resizableScreen`, registered 200).
+  - `LoadingState`'s registered floor is `md`, and it finally binds: the state claims more room than
+    its own content, which was the point of the option.
+  - A `Sidebar` inside a `SidebarLayout` column no longer nests a second complementary landmark, and
+    `navLabel` defaults to `"Sidebar navigation"` so the two landmarks have distinct names.
+  
+  **Smaller corrections**
+  
+  - `Toast`'s default treatment follows the application's `defaultVariant` (it no longer registers
+    `variant`), its manual dismissal plays the exit animation, its landmark names carry the placement,
+    and `useToast()` outside a provider warns once in development.
+  - The spinner's rotation is inside `motion-safe`.
+  - `Button`'s busy ring matches the control's size.
+  - `EmptyState`'s announcement is configurable (`components.emptystate.role`, default `none`), the
+    same decision `ErrorState` already exposed.
+  - `DataTable` and `RowList` take `rowCount` for a remote list and `searchDebounce` (registered `0`)
+    for a search that hits a server; `components.datatable.loadingLabel` says what is loading.
+  - `DataTable`'s empty state is a status only while it answers a query, and its loading region is
+    labelled `Loading results` by default.
+  - `DataTable` can now be paged and counted from one page of rows.
+- Bring the native renderer back into agreement with the web renderer.
+  
+  Every fix below was made on web first because the component promised the behaviour: the native
+  renderer carried the same defect, and now states the same rule in the platform's vocabulary.
+  
+  - `Image` no longer registers a `radius`, so a picture follows the application's `defaultRadius`;
+    and the skeleton no longer pulses forever when there is no source.
+  - `Avatar` retries a new `src` after a failure instead of showing the initials for the life of the
+    slot.
+  - `Chip` gives its `avatar` slot a scale of its own (16, 20 and 24), instead of sizing a portrait
+    with the icon map.
+  - `Card` resolves its `variant` through the cascade rather than pinning `bordered`, and maps the
+    shared treatment vocabulary onto the surfaces it draws. **Note:** native's platform
+    `defaultVariant` is `solid`, so an unconfigured native card now renders its filled surface
+    rather than a border. State `components.card.variant` to keep the bordered look.
+  - `Carousel` hides non-active pages from assistive technology and from focus, resolves `variant`
+    through the shared `resolveCarouselVariant` instead of casting and silently falling back,
+    sentences its two arrow labels, and does not start autoplay when the device asks for less motion.
+  - `Marquee` renders one copy in a scrollable frame when motion is declined instead of clipping the
+    overflow, keeps its duplicate copy out of the focus order, pauses while focus is inside it, and
+    agrees with its registered defaults about `pauseOnHover` and `fadeEdges`.
+  - `Clipboard` reports failure instead of success when there is nothing to copy, announces a failed
+    copy through `errorAnnouncement`, and honours `components.clipboard.radius`.
+  - `Accordion` resolves `disableAnimation` through the cascade, and keeps a disabled item reachable
+    and announced through `accessibilityState` instead of removing it with `disabled`.
+  - `Sidebar` names a collapsed row, honours `SidebarSection.disabled`, and keeps its footer.
+  - `Tabs` falls back to the first tab when `activeId` names none, so the bar is always operable.
+  - `Stepper` scales its labels with `size` as well as its markers, keeping `md` unchanged.
+  - `Navbar` states its brand's layout once instead of on two nested elements.
+  - `RowList` announces an empty result only while it answers a query, not on first paint, and
+    formats its row count through the shared `rowCountLabel` template.
+
+### Patch Changes
+
+- Updated dependencies
+- Updated dependencies
+- Updated dependencies
+- Updated dependencies
+  - @asheeui/core@2.3.0
+
 ## 2.3.1
 
 ### Patch Changes

@@ -62,26 +62,26 @@ export interface RadioProps extends BaseRadioProps {
    * Label text for the radio.
    * Displayed next to the radio button.
    */
-  label?: ReactNode;
+  label?: ReactNode | undefined;
 
   /**
    * Description text shown below the label.
    * Provides additional context for the option.
    */
-  description?: ReactNode;
+  description?: ReactNode | undefined;
 
   /**
    * Whether the radio is checked.
    * For controlled usage.
    */
-  checked?: boolean;
+  checked?: boolean | undefined;
 
   /**
    * Whether the radio is initially checked.
    * For uncontrolled usage.
    * @default false
    */
-  defaultChecked?: boolean;
+  defaultChecked?: boolean | undefined;
 
   /**
    * Callback fired when the radio state changes.

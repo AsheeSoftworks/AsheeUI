@@ -51,13 +51,13 @@ export interface SwitchProps extends BaseSwitchProps {
    * Label text for the switch.
    * Displayed next to the toggle.
    */
-  label?: string;
+  label?: string | undefined;
 
   /**
    * Description text shown below the label.
    * Provides additional context for the switch.
    */
-  description?: string;
+  description?: string | undefined;
 
   /**
    * Whether the field is required.
@@ -65,7 +65,7 @@ export interface SwitchProps extends BaseSwitchProps {
    *
    * @default false
    */
-  required?: boolean;
+  required?: boolean | undefined;
 
   /**
    * Whether the switch is in a loading state.
@@ -73,25 +73,27 @@ export interface SwitchProps extends BaseSwitchProps {
    *
    * @default false
    */
-  isLoading?: boolean;
+  isLoading?: boolean | undefined;
 
   /**
    * Controlled checked state.
    * When provided, the component becomes controlled.
    */
-  checked?: boolean;
+  checked?: boolean | undefined;
 
   /**
    * Uncontrolled initial checked state.
    * @default false
    */
-  defaultChecked?: boolean;
+  defaultChecked?: boolean | undefined;
 
   /**
    * Callback fired when the switch state changes.
    * Receives the new checked state and the change event.
    */
-  onChange?: (checked: boolean, event: ChangeEvent<HTMLInputElement>) => void;
+  onChange?:
+    | ((checked: boolean, event: ChangeEvent<HTMLInputElement>) => void)
+    | undefined;
 }
 
 // ─── Component Implementation ─────────────────────────────────────────────────

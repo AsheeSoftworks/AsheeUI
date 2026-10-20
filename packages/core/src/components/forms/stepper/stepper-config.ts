@@ -33,31 +33,31 @@ export interface StepperConfig {
    *
    * @default "responsive"
    */
-  orientation?: StepperOrientation;
+  orientation?: StepperOrientation | undefined;
 
   /**
    * Density of the step markers and their labels.
    *
    * @default "md"
    */
-  size?: Size;
+  size?: Size | undefined;
 
   /**
    * Whether each step's description is shown under its label.
    *
    * @default true
    */
-  showDescriptions?: boolean;
+  showDescriptions?: boolean | undefined;
 }
 
 /**
  * The values a stepper falls back to when no tier provides one.
  */
-export const FALLBACK_STEPPER_CONFIG: Required<StepperConfig> = {
+export const FALLBACK_STEPPER_CONFIG = {
   orientation: "responsive",
   size: "md",
   showDescriptions: true,
-};
+} satisfies StepperConfig;
 
 declare module "../../../registry" {
   interface ComponentTypeConfigRegistry {

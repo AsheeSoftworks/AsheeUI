@@ -35,7 +35,7 @@ export type HeroMediaPosition = "end" | "start";
  */
 export interface HeroConfig extends SectionBlockOptions {
   /** Side the media occupies from the `lg` breakpoint upwards. */
-  mediaPosition?: HeroMediaPosition;
+  mediaPosition?: HeroMediaPosition | undefined;
 }
 
 declare module "../../../registry" {

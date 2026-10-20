@@ -47,32 +47,32 @@ export interface SidebarItem<T = string> {
   label: ReactNode;
 
   /** Destination of the item. */
-  href?: string;
+  href?: string | undefined;
 
   /** Leading icon element. */
-  icon?: ReactNode;
+  icon?: ReactNode | undefined;
 
   /** Optional trailing badge element or count. */
-  badge?: ReactNode;
+  badge?: ReactNode | undefined;
 
   /**
    * Roles the item is shown to.
    * When provided, the item is only shown to a reader whose role matches.
    */
-  roles?: string[];
+  roles?: string[] | undefined;
 
   /**
    * Disables click interaction.
    *
    * @default false
    */
-  disabled?: boolean;
+  disabled?: boolean | undefined;
 
   /** Target for the destination, such as `"_blank"`. Read by the web alone. */
-  target?: string;
+  target?: string | undefined;
 
   /** Relationship of the destination. Read by the web alone. */
-  rel?: string;
+  rel?: string | undefined;
 }
 
 /**
@@ -84,20 +84,20 @@ export interface SidebarSection<T = string> {
   id: T;
 
   /** Display label, shown as a section header when the sidebar is expanded. */
-  label?: ReactNode;
+  label?: ReactNode | undefined;
 
   /** The items within the section. */
-  items?: SidebarItem<T>[];
+  items?: SidebarItem<T>[] | undefined;
 
   /** Roles the section is shown to, in the same sense as an item's. */
-  roles?: string[];
+  roles?: string[] | undefined;
 
   /**
    * Disables interaction for the whole section.
    *
    * @default false
    */
-  disabled?: boolean;
+  disabled?: boolean | undefined;
 }
 
 /**
@@ -110,10 +110,10 @@ export type SidebarItems<T = string> = SidebarItem<T>[] | SidebarSection<T>[];
  */
 export interface SidebarActiveOptionConfig {
   /** Visual variant of the active item. */
-  variant?: Variant;
+  variant?: Variant | undefined;
 
   /** Theme colour of the active item. */
-  color?: Color;
+  color?: Color | undefined;
 }
 
 /**
@@ -121,10 +121,10 @@ export interface SidebarActiveOptionConfig {
  */
 export interface SidebarInactiveOptionConfig {
   /** Visual variant of inactive items. */
-  variant?: Variant;
+  variant?: Variant | undefined;
 
   /** Theme colour of inactive items. */
-  color?: Color;
+  color?: Color | undefined;
 }
 
 /**
@@ -132,13 +132,13 @@ export interface SidebarInactiveOptionConfig {
  */
 export interface SidebarOptionsConfig {
   /** Corner rounding of individual navigation items. */
-  radius?: Radius;
+  radius?: Radius | undefined;
 
   /** Styling of the active navigation item. */
-  active?: SidebarActiveOptionConfig;
+  active?: SidebarActiveOptionConfig | undefined;
 
   /** Styling of inactive navigation items. */
-  inactive?: SidebarInactiveOptionConfig;
+  inactive?: SidebarInactiveOptionConfig | undefined;
 }
 
 /**
@@ -155,20 +155,20 @@ export interface SidebarTooltipConfig {
    *
    * @default true
    */
-  show?: boolean;
+  show?: boolean | undefined;
 
   /**
    * Placement of the hint relative to the item.
    *
    * @default "right"
    */
-  placement?: TooltipPlacement;
+  placement?: TooltipPlacement | undefined;
 
   /** Visual variant of the hint. */
-  variant?: Variant;
+  variant?: Variant | undefined;
 
   /** Theme colour of the hint. */
-  color?: Color;
+  color?: Color | undefined;
 }
 
 /**
@@ -184,36 +184,36 @@ export interface SidebarConfig {
    *
    * @default "md"
    */
-  size?: SidebarSizeKey;
+  size?: SidebarSizeKey | undefined;
 
   /**
    * Visual style variant.
    *
    * @default "default"
    */
-  variant?: SidebarVariant;
+  variant?: SidebarVariant | undefined;
 
   /**
    * Corner rounding of the sidebar.
    */
-  radius?: Radius;
+  radius?: Radius | undefined;
 
   /**
    * How the sidebar's navigation items are treated.
    */
-  options?: SidebarOptionsConfig;
+  options?: SidebarOptionsConfig | undefined;
 
   /**
    * What a collapsed item says when it is asked.
    */
-  tooltip?: SidebarTooltipConfig;
+  tooltip?: SidebarTooltipConfig | undefined;
 
   /**
    * Whether the collapse control is shown.
    *
    * @default true
    */
-  showCollapseButton?: boolean;
+  showCollapseButton?: boolean | undefined;
 
   /**
    * Whether the sidebar moves when it is collapsed or expanded.
@@ -224,21 +224,21 @@ export interface SidebarConfig {
    *
    * @default true
    */
-  animated?: boolean;
+  animated?: boolean | undefined;
 
   /**
    * Initial collapsed state, for an uncontrolled sidebar.
    *
    * @default false
    */
-  defaultCollapsed?: boolean;
+  defaultCollapsed?: boolean | undefined;
 
   /**
    * Whether the sidebar can be collapsed.
    *
    * @default true
    */
-  collapsible?: boolean;
+  collapsible?: boolean | undefined;
 }
 
 /**
@@ -249,10 +249,10 @@ export interface SidebarConfig {
  */
 export interface SidebarLinkSubstitution {
   /** Component that replaces the framework's own element for every item. */
-  component?: ElementType;
+  component?: ElementType | undefined;
 
   /** Additional props for that component. */
-  props?: Record<string, unknown>;
+  props?: Record<string, unknown> | undefined;
 }
 
 declare module "../../../registry" {

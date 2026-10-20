@@ -14,9 +14,11 @@ import {
   cn,
   NAVBAR_ACTIONS_CLASS,
   NAVBAR_BRAND_CLASS,
+  NAVBAR_BRAND_TEXT_CLASS,
   NAVBAR_INNER_CLASS,
   NAVBAR_LINK_ACTIVE_CLASS,
   NAVBAR_LINK_CLASS,
+  NAVBAR_LINK_LIST_CLASS,
   NAVBAR_LINKS_CENTER_CLASS,
   NAVBAR_LINKS_CLASS,
   NAVBAR_LINKS_END_CLASS,
@@ -58,26 +60,26 @@ import { FALLBACK_NAVBAR_CONFIG, type NavbarConfig } from "./navbar-config";
 export type { NavbarLink, NavbarLinkItem } from "@asheeui/core";
 
 type BaseNavbarProps = NavbarConfig &
-  Omit<HTMLAttributes<HTMLElement>, "color" | "title">;
+  Omit<HTMLAttributes<HTMLElement>, "color">;
 
 /**
  * Props for the Navbar component.
  */
 export interface NavbarProps extends BaseNavbarProps {
   /** Brand content, typically a logo and a product name. */
-  brand?: ReactNode;
+  brand?: ReactNode | undefined;
 
   /** Destination of the brand. */
-  brandHref?: string;
+  brandHref?: string | undefined;
 
   /** The navigation links. */
-  links?: NavbarLinkItem[];
+  links?: NavbarLinkItem[] | undefined;
 
   /** Actions shown at the trailing edge, typically a sign-in and a signup. */
-  actions?: ReactNode;
+  actions?: ReactNode | undefined;
 
   /** Substitution applied to every link the bar renders. */
-  link?: NavbarLink;
+  link?: NavbarLink | undefined;
 
   /**
    * Name of the navigation landmark.
@@ -85,30 +87,30 @@ export interface NavbarProps extends BaseNavbarProps {
    *
    * @default "Main"
    */
-  label?: string;
+  label?: string | undefined;
 
   /**
    * Accessible name of the control that opens the mobile panel.
    *
    * @default "Menu"
    */
-  mobileLabel?: string;
+  mobileLabel?: string | undefined;
 
   /** Optional second row under the bar, for a search field or a toolbar. */
-  secondary?: ReactNode;
+  secondary?: ReactNode | undefined;
 
   /**
    * Whether the mobile panel is open, for a consumer that owns the state.
    * Leave it unset to let the bar manage its own panel.
    */
-  mobileOpen?: boolean;
+  mobileOpen?: boolean | undefined;
 
   /**
    * Called when the mobile panel should open or close.
    * A router-integration consumer uses it to close the panel after a
    * navigation.
    */
-  onMobileOpenChange?: (open: boolean) => void;
+  onMobileOpenChange?: ((open: boolean) => void) | undefined;
 
   /**
    * Element to render the bar as.
@@ -116,7 +118,7 @@ export interface NavbarProps extends BaseNavbarProps {
    *
    * @default "header"
    */
-  as?: ElementType;
+  as?: ElementType | undefined;
 }
 
 /**
@@ -125,9 +127,10 @@ export interface NavbarProps extends BaseNavbarProps {
  * The bar is a banner landmark that contains a named navigation landmark, so a
  * reader can jump to the navigation rather than wading through it. On a narrow
  * screen the links move into a disclosure that the reader opens with a labelled
- * control: the control reports its state with `aria-expanded` and points at the
- * panel with `aria-controls`, and Escape closes the panel and returns focus to
- * the control.
+ * control: the control reports its state with `aria-expanded`, points at the
+ * panel with `aria-controls` while the panel it names exists, and Escape closes
+ * the open panel and returns focus to the control. Escape elsewhere in the bar —
+ * in a search field in the second row, say — is left to whatever owns it.
  *
  * @param props - Navbar configuration options and element attributes.
  * @param props.brand - Brand content.
@@ -182,11 +185,11 @@ function NavbarLinkList({
   className,
   onNavigate,
 }: {
-  id?: string;
+  id?: string | undefined;
   links: NavbarLinkItem[];
-  link?: NavbarLink;
+  link?: NavbarLink | undefined;
   className: string;
-  onNavigate?: () => void;
+  onNavigate?: (() => void) | undefined;
 }) {
   return (
     <ul id={id} className={className}>
@@ -246,6 +249,7 @@ export const Navbar = forwardRef<HTMLElement, NavbarProps>(
     );
 
     const panelId = useId();
+    const panelRef = useRef<HTMLElement>(null);
     const toggleRef = useRef<HTMLButtonElement>(null);
     const [internalOpen, setInternalOpen] = useState(false);
 
@@ -262,8 +266,21 @@ export const Navbar = forwardRef<HTMLElement, NavbarProps>(
       [isControlled, onMobileOpenChange],
     );
 
-    const handlePanelKeyDown = (event: KeyboardEvent<HTMLElement>) => {
-      if (event.key !== "Escape") return;
+    // Escape belongs to the disclosure rather than to the whole bar. A bar that acts on
+    // every Escape inside it takes the key away from whatever the reader is doing — a
+    // search field in the second row, for instance — and moves focus out of it even when
+    // there is no panel open at all. Only an open panel, reached from inside it or from
+    // the control that owns it, closes and restores focus.
+    const handleBarKeyDown = (event: KeyboardEvent<HTMLElement>) => {
+      if (event.key !== "Escape" || !open) return;
+
+      const target = event.target;
+      if (!(target instanceof Node)) return;
+
+      const inPanel = panelRef.current?.contains(target) ?? false;
+      const onToggle = toggleRef.current?.contains(target) ?? false;
+      if (!inPanel && !onToggle) return;
+
       setOpen(false);
       toggleRef.current?.focus();
     };
@@ -286,7 +303,7 @@ export const Navbar = forwardRef<HTMLElement, NavbarProps>(
                 href={brandHref}
                 component={link?.component}
                 componentProps={link?.props}
-                className={NAVBAR_BRAND_CLASS}>
+                className={NAVBAR_BRAND_TEXT_CLASS}>
                 {brand}
               </Link>
             ) : (
@@ -296,8 +313,12 @@ export const Navbar = forwardRef<HTMLElement, NavbarProps>(
         )}
 
         {links && links.length > 0 && (
-          <nav aria-label={label} className={cn("min-w-0", linksClass)}>
-            <NavbarLinkList links={links} link={link} className="flex" />
+          <nav aria-label={label} className={linksClass}>
+            <NavbarLinkList
+              links={links}
+              link={link}
+              className={NAVBAR_LINK_LIST_CLASS}
+            />
           </nav>
         )}
 
@@ -311,7 +332,10 @@ export const Navbar = forwardRef<HTMLElement, NavbarProps>(
             className={NAVBAR_TOGGLE_CLASS}
             aria-label={mobileLabel}
             aria-expanded={open}
-            aria-controls={panelId}
+            // `aria-controls` may only name an element that exists: the panel is only
+            // rendered while it is open, so the attribute appears with it and goes away
+            // with it, rather than pointing at an id nothing carries.
+            aria-controls={open ? panelId : undefined}
             onClick={() => setOpen(!open)}>
             {open ? <ChevronUpIcon /> : <ChevronDownIcon />}
           </Button>
@@ -322,7 +346,7 @@ export const Navbar = forwardRef<HTMLElement, NavbarProps>(
     );
 
     const panel = open && links && links.length > 0 && (
-      <nav aria-label={label}>
+      <nav ref={panelRef} aria-label={label}>
         <NavbarLinkList
           id={panelId}
           links={links}
@@ -350,7 +374,7 @@ export const Navbar = forwardRef<HTMLElement, NavbarProps>(
           resolved.position === "sticky" && NAVBAR_POSITION_CLASS,
           className,
         )}
-        onKeyDown={handlePanelKeyDown}
+        onKeyDown={handleBarKeyDown}
         {...rest}>
         {resolved.contained ? (
           <Container size={resolved.containerSize}>{body}</Container>

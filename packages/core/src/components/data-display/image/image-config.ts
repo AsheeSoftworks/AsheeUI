@@ -37,7 +37,7 @@ export type ImageFit = "cover" | "contain" | "fill" | "none" | "scale-down";
  * - `auto`: Uses the image's intrinsic ratio.
  * - `square`: 1 / 1.
  * - `video`: 16 / 9.
- * - `portrait`: 4 / 5.
+ * - `portrait`: 3 / 4.
  */
 export type ImageRatioKey = "auto" | "square" | "video" | "portrait";
 
@@ -60,7 +60,7 @@ export interface ImageConfig {
    *
    * @default "cover"
    */
-  fit?: ImageFit;
+  fit?: ImageFit | undefined;
 
   /**
    * Container aspect ratio.
@@ -68,7 +68,7 @@ export interface ImageConfig {
    *
    * @default "auto"
    */
-  ratio?: ImageRatioKey;
+  ratio?: ImageRatioKey | undefined;
 
   /**
    * Corner rounding.
@@ -76,7 +76,7 @@ export interface ImageConfig {
    *
    * @default "md"
    */
-  radius?: Radius;
+  radius?: Radius | undefined;
 
   /**
    * Native image loading strategy.
@@ -84,7 +84,7 @@ export interface ImageConfig {
    *
    * @default "lazy"
    */
-  loading?: ImageLoading;
+  loading?: ImageLoading | undefined;
 
   /**
    * Shows a shimmering placeholder until the image loads.
@@ -92,7 +92,7 @@ export interface ImageConfig {
    *
    * @default true
    */
-  showSkeleton?: boolean;
+  showSkeleton?: boolean | undefined;
 }
 
 declare module "../../../registry" {

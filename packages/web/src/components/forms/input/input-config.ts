@@ -21,7 +21,16 @@ export type { InputConfig } from "@asheeui/core";
  * An input is the field family's plainest member, so it registers the family's web
  * defaults rather than a second copy of them: a consumer who configures
  * `components.field` finds the same values under `components.input`.
+ *
+ * `fullWidth` is the one value restated: a text field is a control, and a control
+ * fills the column it is placed in unless it is told not to. Registering the filling
+ * value here is what keeps `fullWidth={false}` meaning "do not fill" without making
+ * every existing field narrower, and it keeps the prop's documented default and its
+ * rendered behaviour the same thing.
  */
-export const defaultInputConfig: InputConfig = defaultFieldConfig;
+export const defaultInputConfig: InputConfig = {
+  ...defaultFieldConfig,
+  fullWidth: true,
+};
 
 registerComponentDefaults("input", defaultInputConfig);

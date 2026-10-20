@@ -10,6 +10,7 @@ import {
   renderToServerString,
   renderWithProvider,
 } from "../../../test";
+import { CTA } from "../cta/CTA";
 import { Hero } from "./Hero";
 
 describe("Hero", () => {
@@ -23,11 +24,69 @@ describe("Hero", () => {
     );
 
     expectAccessibleName(
-      getByRole("heading", { level: 1 }),
+      getByRole("heading", { level: 2 }),
       "Run your campaigns here",
     );
     expect(getByText("Everything in one place")).toBeDefined();
     expect(getByText("Messages, templates and results.")).toBeDefined();
+  });
+
+  it("is a named region, so a reader navigating by region hears the headline", () => {
+    const { getByRole } = renderWithProvider(
+      <Hero title="Run your campaigns here" />,
+    );
+
+    expect(
+      getByRole("region", { name: "Run your campaigns here" }).tagName,
+    ).toBe("SECTION");
+  });
+
+  it("can raise its headline when the hero is the page's own title", () => {
+    const { getByRole } = renderWithProvider(
+      <Hero title="Run your campaigns here" titleAs="h1" />,
+    );
+
+    expect(
+      getByRole("heading", { level: 1, name: "Run your campaigns here" })
+        .tagName,
+    ).toBe("H1");
+  });
+
+  it("keeps one h1 on a page composed of a hero and a call to action", () => {
+    // The docs' own marketing exemplar composes the two, which is what made the
+    // two level-one headings reachable in the first place.
+    const { container, getByRole } = renderWithProvider(
+      <>
+        <Hero title="Run your campaigns here" />
+        <CTA title="Send your first campaign" />
+      </>,
+    );
+
+    expect(
+      getByRole("heading", { level: 2, name: "Run your campaigns here" }),
+    ).toBeDefined();
+    expect(
+      getByRole("heading", { level: 2, name: "Send your first campaign" }),
+    ).toBeDefined();
+    expect(container.querySelectorAll("h1")).toHaveLength(0);
+  });
+
+  it("leaves its text column as wide as the container asks when it has no media", () => {
+    // A measure on the column capped the headline and the action row too, which
+    // made `containerSize` unobservable. The description keeps its own measure.
+    const { container, getByText } = renderWithProvider(
+      <Hero
+        title="Headline"
+        description="Supporting sentence."
+        containerSize="xl"
+      />,
+    );
+    const description = getByText("Supporting sentence.");
+    const column = description.parentElement?.parentElement as HTMLElement;
+
+    expect(container.querySelector(".max-w-7xl")).not.toBeNull();
+    expect(column.className).not.toContain("max-w-2xl");
+    expect(description.className).toContain("max-w-2xl");
   });
 
   it("renders configured actions through the framework Button", () => {

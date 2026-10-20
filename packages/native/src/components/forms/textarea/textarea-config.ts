@@ -60,7 +60,7 @@ registerNativeComponentDefaults("textarea", defaultNativeTextareaConfig);
 /**
  * The values the field falls back to when no tier provides one.
  */
-export const FALLBACK_NATIVE_TEXTAREA_CONFIG: Required<NativeTextareaConfig> = {
+export const FALLBACK_NATIVE_TEXTAREA_CONFIG = {
   size: "md",
   radius: "md",
   variant: "bordered",
@@ -69,4 +69,4 @@ export const FALLBACK_NATIVE_TEXTAREA_CONFIG: Required<NativeTextareaConfig> = {
   rows: 4,
   isDisabled: false,
   required: false,
-};
+} satisfies NativeTextareaConfig;

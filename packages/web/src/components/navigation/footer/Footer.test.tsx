@@ -2,6 +2,7 @@
  * Behaviour tests for the Footer pattern.
  */
 
+import { FOOTER_BOTTOM_LINKS_CLASS } from "@asheeui/core";
 import { describe, expect, it } from "vitest";
 import {
   expectHydrationClean,
@@ -55,6 +56,44 @@ describe("Footer", () => {
 
     expect(getByRole("navigation", { name: "Legal" })).toBeDefined();
     expect(getByRole("navigation", { name: "Social" })).toBeDefined();
+  });
+
+  // The legal row's layout is the footer's own row class. The literal it used to carry
+  // duplicated that constant verbatim, so the two could drift apart silently.
+  it("lays the legal row out with the footer's own row class", () => {
+    const { getByRole } = renderWithProvider(
+      <Footer legal={[{ label: "Privacy", href: "/privacy" }]} />,
+    );
+    const nav = getByRole("navigation", { name: "Legal" });
+    const list = nav.querySelector("ul") as HTMLElement;
+
+    expect(list.className).toBe(FOOTER_BOTTOM_LINKS_CLASS);
+  });
+
+  // A landmark's name is consumer-facing text: "Legal" and "Social" are the defaults a
+  // consumer gets, not names it is stuck with.
+  it("takes the legal and social landmark names from props", () => {
+    const { getByRole, queryByRole } = renderWithProvider(
+      <Footer
+        legal={[{ label: "Privacidad", href: "/privacidad" }]}
+        social={[{ label: "Mastodon", href: "https://example.social/@ashee" }]}
+        legalLabel="Aviso legal"
+        socialLabel="Redes sociales"
+      />,
+    );
+
+    expect(getByRole("navigation", { name: "Aviso legal" })).toBeDefined();
+    expect(getByRole("navigation", { name: "Redes sociales" })).toBeDefined();
+    expect(queryByRole("navigation", { name: "Legal" })).toBeNull();
+    expect(queryByRole("navigation", { name: "Social" })).toBeNull();
+  });
+
+  it("forwards the native title attribute like every other element attribute", () => {
+    const { getByRole } = renderWithProvider(
+      <Footer copyright="Ashee" title="Site footer" />,
+    );
+
+    expect(getByRole("contentinfo").getAttribute("title")).toBe("Site footer");
   });
 
   it("renders an action area in the brand column", () => {

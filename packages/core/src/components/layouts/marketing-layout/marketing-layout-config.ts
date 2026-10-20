@@ -36,21 +36,21 @@ export interface MarketingLayoutConfig {
    *
    * @default true
    */
-  skipLink?: boolean;
+  skipLink?: boolean | undefined;
 
   /**
    * Wording of the skip link, where one is rendered.
    *
    * @default "Skip to content"
    */
-  skipLinkLabel?: string;
+  skipLinkLabel?: string | undefined;
 
   /**
    * Background the composition paints.
    *
    * @default "default"
    */
-  background?: MarketingLayoutBackground;
+  background?: MarketingLayoutBackground | undefined;
 }
 
 declare module "../../../registry" {

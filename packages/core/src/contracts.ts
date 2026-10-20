@@ -20,16 +20,16 @@ import type { ColorRole, Radius, Size, Space, Variant } from "./tokens";
  */
 export interface ThemedContract {
   /** Visual treatment. */
-  variant?: Variant;
+  variant?: Variant | undefined;
 
   /** Semantic colour role. */
-  color?: ColorRole;
+  color?: ColorRole | undefined;
 
   /** Density. */
-  size?: Size;
+  size?: Size | undefined;
 
   /** Corner rounding. */
-  radius?: Radius;
+  radius?: Radius | undefined;
 }
 
 /**
@@ -37,7 +37,7 @@ export interface ThemedContract {
  */
 export interface TextContract {
   /** The text to render. */
-  children?: string;
+  children?: string | undefined;
 
   /** Semantic typography role, which resolves size, weight, leading and tracking. */
   role?:
@@ -54,13 +54,13 @@ export interface TextContract {
     | "overline";
 
   /** Semantic colour role for the text. */
-  tone?: ColorRole | "muted" | "default";
+  tone?: ColorRole | "muted" | "default" | undefined;
 
   /** Horizontal alignment. */
-  align?: "left" | "center" | "right";
+  align?: "left" | "center" | "right" | undefined;
 
   /** Whether to truncate instead of wrapping. */
-  truncate?: boolean;
+  truncate?: boolean | undefined;
 }
 
 /**
@@ -68,19 +68,19 @@ export interface TextContract {
  */
 export interface ButtonContract extends ThemedContract {
   /** The button's visible label, and its accessible name. */
-  children?: string;
+  children?: string | undefined;
 
   /** Whether the button stretches to its container's width. */
-  fullWidth?: boolean;
+  fullWidth?: boolean | undefined;
 
   /** Whether the button is disabled. */
-  isDisabled?: boolean;
+  isDisabled?: boolean | undefined;
 
   /** Whether the button shows a pending state and blocks interaction. */
-  isLoading?: boolean;
+  isLoading?: boolean | undefined;
 
   /** Called when the button is activated. */
-  onPress?: () => void;
+  onPress?: (() => void) | undefined;
 }
 
 /**
@@ -88,19 +88,19 @@ export interface ButtonContract extends ThemedContract {
  */
 export interface CardContract extends ThemedContract {
   /** The card's title. */
-  title?: string;
+  title?: string | undefined;
 
   /** The card's supporting text. */
-  description?: string;
+  description?: string | undefined;
 
   /** Content rendered before the title, typically an accent element. */
-  header?: React.ReactNode;
+  header?: React.ReactNode | undefined;
 
   /** Content rendered after the body, typically actions. */
-  footer?: React.ReactNode;
+  footer?: React.ReactNode | undefined;
 
   /** Whether the whole card is interactive. */
-  isPressable?: boolean;
+  isPressable?: boolean | undefined;
 }
 
 /**
@@ -108,19 +108,19 @@ export interface CardContract extends ThemedContract {
  */
 export interface StackContract {
   /** The axis the children are laid out along. */
-  direction?: "row" | "column";
+  direction?: "row" | "column" | undefined;
 
   /** Space between children, from the shared spacing scale. */
-  gap?: Space;
+  gap?: Space | undefined;
 
   /** Cross-axis alignment of the children. */
-  align?: "start" | "center" | "end" | "stretch";
+  align?: "start" | "center" | "end" | "stretch" | undefined;
 
   /** Main-axis distribution of the children, where the platform supports it. */
-  justify?: "start" | "center" | "end" | "between";
+  justify?: "start" | "center" | "end" | "between" | undefined;
 
   /** Whether children wrap onto another line. */
-  wrap?: boolean;
+  wrap?: boolean | undefined;
 }
 
 /**
@@ -128,7 +128,7 @@ export interface StackContract {
  */
 export interface BadgeContract extends ThemedContract {
   /** The label's text. */
-  children?: string;
+  children?: string | undefined;
 }
 
 /**
@@ -136,32 +136,32 @@ export interface BadgeContract extends ThemedContract {
  */
 export interface InputContract extends ThemedContract {
   /** The field's label. */
-  label?: string;
+  label?: string | undefined;
 
   /** The current value, for a consumer that owns it. */
-  value?: string;
+  value?: string | undefined;
 
   /** The initial value, for a consumer that does not. */
-  defaultValue?: string;
+  defaultValue?: string | undefined;
 
   /** Called with the next value whenever it changes. */
-  onChangeText?: (value: string) => void;
+  onChangeText?: ((value: string) => void) | undefined;
 
   /** Hint text shown while the field is empty. */
-  placeholder?: string;
+  placeholder?: string | undefined;
 
   /** Description shown under the label. */
-  description?: string;
+  description?: string | undefined;
 
   /** Validation message shown under the field. */
-  message?: string;
+  message?: string | undefined;
 
   /** Validation status, which selects the message's tone. */
-  status?: "default" | "error" | "warning" | "success";
+  status?: "default" | "error" | "warning" | "success" | undefined;
 
   /** Whether the field is disabled. */
-  isDisabled?: boolean;
+  isDisabled?: boolean | undefined;
 
   /** Whether the field accepts several lines. */
-  multiline?: boolean;
+  multiline?: boolean | undefined;
 }

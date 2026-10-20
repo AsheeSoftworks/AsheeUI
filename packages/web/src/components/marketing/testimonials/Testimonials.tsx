@@ -22,6 +22,7 @@ import {
   forwardRef,
   type HTMLAttributes,
   type ReactNode,
+  useId,
 } from "react";
 import { useAsheeConfig } from "../../../libs/context";
 import { Avatar } from "../../data-display/avatar/Avatar";
@@ -29,7 +30,10 @@ import { Card } from "../../data-display/card/Card";
 import { Container } from "../../layouts/container/Container";
 import { Grid } from "../../layouts/grid/Grid";
 import { Section } from "../../layouts/section/Section";
-import { SectionHeading } from "../../layouts/section-kit/SectionHeading";
+import {
+  SectionHeading,
+  type SectionHeadingSize,
+} from "../../layouts/section-kit/SectionHeading";
 import { Typography } from "../../typography/Typography";
 import {
   FALLBACK_TESTIMONIALS_CONFIG,
@@ -46,16 +50,33 @@ type BaseTestimonialsProps = TestimonialsConfig &
  */
 export interface TestimonialsProps extends BaseTestimonialsProps {
   /** Short label above the heading. */
-  eyebrow?: ReactNode;
+  eyebrow?: ReactNode | undefined;
 
   /** Heading of the band. */
-  title?: ReactNode;
+  title?: ReactNode | undefined;
 
   /** Supporting sentence under the heading. */
-  description?: ReactNode;
+  description?: ReactNode | undefined;
 
   /** The quotes to show. */
   items: TestimonialItem[];
+
+  /**
+   * Element the heading renders as.
+   *
+   * Defaults to `h2`. A wall nested under an existing section heading passes
+   * `h3`, so the outline stays in order.
+   *
+   * @default "h2"
+   */
+  titleAs?: ElementType | undefined;
+
+  /**
+   * Size of the heading, which selects its typography role.
+   *
+   * @default "md"
+   */
+  headingSize?: SectionHeadingSize | undefined;
 
   /**
    * Element to render the band as.
@@ -63,10 +84,10 @@ export interface TestimonialsProps extends BaseTestimonialsProps {
    *
    * @default "section"
    */
-  as?: ElementType;
+  as?: ElementType | undefined;
 
   /** Content below the quotes. */
-  children?: ReactNode;
+  children?: ReactNode | undefined;
 }
 
 /**
@@ -75,13 +96,24 @@ export interface TestimonialsProps extends BaseTestimonialsProps {
  * Testimonials renders each quote as a `figure` with its attribution in a
  * `figcaption`, inside a list element, so a screen reader announces the set. The
  * picture goes through `Avatar`, so its substitution API and its initials
- * fallback apply without the consumer doing anything.
+ * fallback apply without the consumer doing anything. The avatar is passed an
+ * empty `alt`, which hides it from assistive technology: the `figcaption` already
+ * prints the person's name, so naming the picture too would announce the same
+ * person twice.
+ *
+ * The band is a `section` landmark, and it names itself with the heading it
+ * renders: it points `aria-labelledby` at that heading, so a reader navigating
+ * by region hears the heading rather than an unnamed region. A band rendered
+ * without a `title` has nothing to be named by, so it stays unnamed. A
+ * consumer's own `aria-labelledby` wins over the generated one.
  *
  * @param props - Testimonials configuration options and element attributes.
  * @param props.items - The quotes to show.
  * @param props.title - Heading of the band.
  * @param props.eyebrow - Short label above the heading.
  * @param props.description - Supporting sentence under the heading.
+ * @param props.titleAs - Element the heading renders as. Defaults to "h2".
+ * @param props.headingSize - Size of the heading. Defaults to "md".
  * @param props.columns - Columns from the smallest viewport. Defaults to 1.
  * @param props.columnsMd - Columns from `md` upwards. Defaults to 2.
  * @param props.columnsLg - Columns from `lg` upwards. Defaults to 3.
@@ -107,6 +139,8 @@ export const Testimonials = forwardRef<HTMLElement, TestimonialsProps>(
       title,
       description,
       items,
+      titleAs,
+      headingSize,
       columns,
       columnsMd,
       columnsLg,
@@ -124,6 +158,11 @@ export const Testimonials = forwardRef<HTMLElement, TestimonialsProps>(
     ref,
   ) => {
     const config = useAsheeConfig();
+    // The band names itself with the heading it renders, so it is a region
+    // rather than an unnamed `section`. `useId` keeps the pair stable across
+    // the server render and the hydration.
+    const headingId = useId();
+    const hasTitle = title !== undefined && title !== null;
 
     const resolved = resolveConfigCascade<
       TestimonialsConfig,
@@ -152,6 +191,9 @@ export const Testimonials = forwardRef<HTMLElement, TestimonialsProps>(
           description={description}
           align={resolved.align}
           className={TESTIMONIAL_HEADING_CLASS}
+          titleAs={titleAs}
+          size={headingSize}
+          titleId={hasTitle ? headingId : undefined}
         />
         <Grid
           columns={resolved.columns}
@@ -170,6 +212,10 @@ export const Testimonials = forwardRef<HTMLElement, TestimonialsProps>(
                     <Avatar
                       name={item.name}
                       src={item.avatarSrc}
+                      // The caption already prints the name, so the picture is
+                      // decoration: an empty alt hides it from assistive
+                      // technology while the initials still derive from `name`.
+                      alt=""
                       size="sm"
                       component={item.avatarComponent}
                       componentProps={item.avatarComponentProps}
@@ -200,6 +246,7 @@ export const Testimonials = forwardRef<HTMLElement, TestimonialsProps>(
         background={resolved.background}
         contained={false}
         className={className}
+        aria-labelledby={hasTitle ? headingId : undefined}
         {...rest}>
         {resolved.contained ? (
           <Container size={resolved.containerSize}>{body}</Container>

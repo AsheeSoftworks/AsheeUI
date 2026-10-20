@@ -54,11 +54,11 @@ export function getNewCursorPosition(
 
   let digitCount = 0;
   for (let i = 0; i < newValue.length; i++) {
-    if (/\d/.test(newValue[i])) digitCount++;
+    if (/\d/.test(newValue[i] ?? "")) digitCount++;
     if (digitCount > digitCountBefore) {
       let dCount = 0;
       for (let j = 0; j < newValue.length; j++) {
-        if (/\d/.test(newValue[j])) dCount++;
+        if (/\d/.test(newValue[j] ?? "")) dCount++;
         if (dCount === digitCountBefore + 1) {
           return j + 1;
         }

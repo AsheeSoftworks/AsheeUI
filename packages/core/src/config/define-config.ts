@@ -23,7 +23,8 @@ import type { ExternalConfig } from "./config";
  *   defaultTheme: 'dark',
  *   defaultVariant: 'ghost',
  *   components: {
- *     Button: {
+ *     // The key is the component's registration name, not its export name.
+ *     button: {
  *       radius: 'lg'
  *     }
  *   }

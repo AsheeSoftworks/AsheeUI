@@ -40,6 +40,11 @@ export const THEME_VARS_STYLE_ID = "ashee-theme-vars";
  * The provider renders that element into the server output, and again while
  * that output is hydrated, because those are the only places where a browser
  * runs it. A client-only render is covered by {@link ensureThemeVarsStyle}.
+ *
+ * Only the provider that owns the document renders it. A provider mounted below the
+ * application's own states its own theme list and default theme, and a script of its own
+ * would run later in the parse and paint *its* default — the override the controller's
+ * union rule exists to prevent. See `AsheeUIProvider`.
  */
 export const THEME_SCRIPT_ID = "ashee-theme-script";
 
@@ -94,6 +99,7 @@ const SCROLLBAR_VAR_MAP = {
   trackRadius: "--ashee-scrollbar-track-radius",
   thumbBorder: "--ashee-scrollbar-thumb-border",
   gutter: "--ashee-scrollbar-gutter",
+  fallbackWidth: "--ashee-scrollbar-fallback-width",
 } as const;
 
 /** The structural scrollbar configuration once it is resolved into the config. */
@@ -123,6 +129,7 @@ function buildScrollbarCss(
     trackRadius: scrollbar.trackRadius ?? scrollbar.radius,
     thumbBorder: scrollbar.thumbBorder,
     gutter: scrollbar.gutter,
+    fallbackWidth: scrollbar.fallbackWidth,
   };
 
   const declarations = Object.entries(SCROLLBAR_VAR_MAP)

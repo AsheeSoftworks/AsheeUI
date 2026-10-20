@@ -43,38 +43,52 @@ type BaseLinkProps = LinkConfig &
 export interface LinkProps extends BaseLinkProps {
   /**
    * The destination URL of the link.
+   *
+   * Ignored when `to` is also given; `to` is the more specific of the two.
    */
-  href?: string;
+  href?: string | undefined;
+
+  /**
+   * A route destination, for a framework router passed through `component`.
+   *
+   * TanStack Router and React Router name a link's destination `to`, so a substituted `component` needs that
+   * prop rather than `href`. When `component` is set this is forwarded as `to`; without a router it becomes
+   * the native anchor's `href`, so the same call site works before and after a router exists.
+   */
+  to?: string | undefined;
 
   /**
    * Whether the link points to an external resource.
    * When true, adds an external link icon and appropriate rel attributes.
    */
-  isExternal?: boolean;
+  isExternal?: boolean | undefined;
 
   /**
    * Whether the link is in a disabled state.
-   * Disabled links cannot be clicked and appear dimmed.
+   * Disabled links cannot be followed and appear dimmed, but they stay links: the
+   * element keeps its destination and its role, so a keyboard user can still reach
+   * it and it is announced as an unavailable link rather than as plain text. The
+   * press is refused instead of the element being taken apart.
    *
    * @default false
    */
-  disabled?: boolean;
+  disabled?: boolean | undefined;
 
   /**
    * Icon rendered before the link text.
    */
-  startIcon?: ReactNode;
+  startIcon?: ReactNode | undefined;
 
   /**
    * Icon rendered after the link text.
    * If not provided and isExternal is true, an ExternalLinkIcon is shown.
    */
-  endIcon?: ReactNode;
+  endIcon?: ReactNode | undefined;
 
   /**
    * The link text content.
    */
-  children?: ReactNode;
+  children?: ReactNode | undefined;
 
   /**
    * Component that replaces the native anchor, such as a framework router link.
@@ -82,13 +96,13 @@ export interface LinkProps extends BaseLinkProps {
    * The substitution API is shared with `Image` and `Form`: `component` names
    * the component and `componentProps` carries the props it needs.
    */
-  component?: ElementType;
+  component?: ElementType | undefined;
 
   /**
    * Additional props for `component` (for example `{ prefetch: true }`).
    * These take precedence over the props the framework passes itself.
    */
-  componentProps?: Record<string, unknown>;
+  componentProps?: Record<string, unknown> | undefined;
 }
 
 /**
@@ -110,7 +124,8 @@ export interface LinkProps extends BaseLinkProps {
  * @param props - Link configuration options and native anchor props.
  * @param props.href - The destination URL.
  * @param props.variant - Visual style variant. Defaults to "default".
- * @param props.color - Theme accent color. Defaults to "primary".
+ * @param props.color - Theme accent color. Resolves through the global
+ * `defaultColor` first, then "primary".
  * @param props.size - Font size scale. Defaults to "md".
  * @param props.underline - Underline behavior. Defaults to "hover".
  * @param props.isExternal - Whether the link is external. Defaults to false.
@@ -175,6 +190,7 @@ export const Link = forwardRef<HTMLAnchorElement, LinkProps>(
   (
     {
       href,
+      to,
       variant,
       color,
       size,
@@ -197,6 +213,9 @@ export const Link = forwardRef<HTMLAnchorElement, LinkProps>(
   ) => {
     const config = useAsheeConfig();
     const sectionConfig = config.components?.link;
+
+    // One destination, two spellings: `to` for a router component, `href` for everything else.
+    const destination = href ?? to;
 
     // ─── 1. Token Resolvers ──────────────────────────────────────────────────
 
@@ -298,7 +317,14 @@ export const Link = forwardRef<HTMLAnchorElement, LinkProps>(
 
     // Base props passed to both native <a> and custom component
     const baseLinkProps = {
-      href: disabled ? undefined : href,
+      // A disabled link keeps its destination. Without a destination the anchor degrades to a
+      // generic element: it loses the link role, `aria-disabled` stops being a disabled
+      // link, and a keyboard user cannot reach it at all. The press is refused in
+      // `handleClick` instead, which is how the rest of the library treats a disabled
+      // control, and the pointer is refused by the disabled classes.
+      // A substituted router gets the prop it expects (`to`); a native anchor always gets a URL, so `to`
+      // alone renders something that works even before a router is wired up.
+      ...(component && to ? { to } : { href: destination }),
       target: targetAttr,
       rel: relAttr,
       "aria-disabled": disabled,

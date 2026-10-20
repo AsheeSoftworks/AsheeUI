@@ -8,7 +8,13 @@
 "use client";
 
 import type { Color, Size } from "@asheeui/core";
-import { cn, resolveCascade, resolveClassKey } from "@asheeui/core";
+import {
+  cn,
+  LINK_ICON_SIZE_CLASS,
+  LINK_SIZE_CLASS,
+  resolveCascade,
+  resolveClassKey,
+} from "@asheeui/core";
 import {
   type ElementType,
   forwardRef,
@@ -39,7 +45,7 @@ export interface BreadcrumbItem {
    * Stable identifier for the step.
    * Defaults to the step's position in the trail.
    */
-  id?: string | number;
+  id?: string | number | undefined;
 
   /**
    * Visible label of the step.
@@ -51,35 +57,49 @@ export interface BreadcrumbItem {
    * Without one the step is presented as text, which is what the current
    * location of the trail needs.
    */
-  href?: string;
+  href?: string | undefined;
 
   /**
    * Content before the label, typically an icon.
    */
-  icon?: ReactNode;
+  icon?: ReactNode | undefined;
 
   /**
    * Whether this step is the current location.
    * Defaults to the last step of the trail, unless another step marks itself
    * as the current location.
    */
-  isCurrent?: boolean;
+  isCurrent?: boolean | undefined;
 
   /**
    * Whether the step leads to an external resource.
    */
-  isExternal?: boolean;
+  isExternal?: boolean | undefined;
 
   /**
    * Component that replaces the anchor for this step, such as a framework
    * router link. Passed to {@link Link} as its `component`.
    */
-  component?: ElementType;
+  component?: ElementType | undefined;
 
   /**
    * Additional props for that component, passed to {@link Link}.
    */
-  componentProps?: Record<string, unknown>;
+  componentProps?: Record<string, unknown> | undefined;
+}
+
+/**
+ * Substitution applied to every linked step of a trail.
+ *
+ * It is the same shape the Navbar and the Footer take, so a consumer learns one
+ * substitution and uses it on all three patterns.
+ */
+export interface BreadcrumbLink {
+  /** Component that replaces the anchor, such as a framework router link. */
+  component?: ElementType | undefined;
+
+  /** Additional props for that component. */
+  props?: Record<string, unknown> | undefined;
 }
 
 type BaseBreadcrumbProps = BreadcrumbConfig &
@@ -98,7 +118,7 @@ export interface BreadcrumbProps extends BaseBreadcrumbProps {
    * Content shown between two steps.
    * It is decoration and is not read by assistive technology.
    */
-  separator?: ReactNode;
+  separator?: ReactNode | undefined;
 
   /**
    * Name of the navigation landmark.
@@ -107,7 +127,16 @@ export interface BreadcrumbProps extends BaseBreadcrumbProps {
    *
    * @default "Breadcrumb"
    */
-  label?: string;
+  label?: string | undefined;
+
+  /**
+   * Substitution applied to every linked step of the trail.
+   *
+   * A trail that keeps a framework router is the common case, so the
+   * substitution is offered once for the whole trail as well as per step; a
+   * step's own `component` wins over it.
+   */
+  link?: BreadcrumbLink | undefined;
 }
 
 /**
@@ -120,13 +149,14 @@ export interface BreadcrumbProps extends BaseBreadcrumbProps {
  * leads nowhere.
  *
  * Linked steps are rendered through the framework's {@link Link} primitive, so
- * a consumer keeps its router link by passing `component` on the step (or
- * on the whole trail through the framework's substitution pattern).
+ * a consumer keeps its router link by passing `link` for the whole trail, or
+ * `component` on a single step when only one step needs it.
  *
  * @param props - Breadcrumb configuration options and navigation attributes.
  * @param props.items - The trail, from the root to the current location.
  * @param props.separator - Content between two steps. Decorative.
  * @param props.label - Name of the navigation landmark. Defaults to "Breadcrumb".
+ * @param props.link - Substitution applied to every linked step.
  * @param props.size - Text and spacing scale. Defaults to "md".
  * @param props.color - Colour of the links. Defaults to the configured value.
  * @param props.className - Extra classes applied last.
@@ -151,6 +181,7 @@ export const Breadcrumb = forwardRef<HTMLElement, BreadcrumbProps>(
       items,
       separator,
       label = "Breadcrumb",
+      link,
       size,
       color,
       className,
@@ -195,6 +226,22 @@ export const Breadcrumb = forwardRef<HTMLElement, BreadcrumbProps>(
       FALLBACK_BREADCRUMB_CONFIG.size,
     );
 
+    // The current location is the one step `Link` does not draw, so the trail borrows
+    // Link's own scale for it: the same gap between an icon and its label, and the same
+    // box around the icon, as every linked step beside it. A fixed gap would differ from
+    // the linked steps at every density but one.
+    const linkSizeClass = resolveClassKey(
+      resolvedSizeKey,
+      LINK_SIZE_CLASS,
+      FALLBACK_BREADCRUMB_CONFIG.size,
+    );
+
+    const linkIconSizeClass = resolveClassKey(
+      resolvedSizeKey,
+      LINK_ICON_SIZE_CLASS,
+      FALLBACK_BREADCRUMB_CONFIG.size,
+    );
+
     const resolvedSeparator = separator ?? (
       <ChevronRightIcon aria-hidden="true" />
     );
@@ -236,8 +283,18 @@ export const Breadcrumb = forwardRef<HTMLElement, BreadcrumbProps>(
                 {isCurrent || !item.href ? (
                   <span
                     aria-current={isCurrent ? "page" : undefined}
-                    className={BREADCRUMB_CURRENT_CLASS}>
-                    {item.icon}
+                    className={cn(BREADCRUMB_CURRENT_CLASS, linkSizeClass)}>
+                    {item.icon && (
+                      // The same slot `Link` gives a linked step's icon, so an icon
+                      // reads the same size wherever the step it belongs to sits.
+                      <span
+                        className={cn(
+                          "inline-flex items-center justify-center shrink-0",
+                          linkIconSizeClass,
+                        )}>
+                        {item.icon}
+                      </span>
+                    )}
                     {item.label}
                   </span>
                 ) : (
@@ -246,8 +303,11 @@ export const Breadcrumb = forwardRef<HTMLElement, BreadcrumbProps>(
                     color={resolvedColorKey}
                     size={resolvedSizeKey}
                     isExternal={item.isExternal}
-                    component={item.component}
-                    componentProps={item.componentProps}
+                    component={item.component ?? link?.component}
+                    componentProps={{
+                      ...link?.props,
+                      ...item.componentProps,
+                    }}
                     startIcon={item.icon}
                     className={cn(fontClass, "min-w-0 truncate")}>
                     {item.label}

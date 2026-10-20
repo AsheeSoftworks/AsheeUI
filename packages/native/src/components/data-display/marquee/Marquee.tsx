@@ -14,8 +14,11 @@
  * has not been measured yet stands still rather than jumping.
  *
  * The movement answers to the platform's motion setting (`useReduceMotion`) as the web's
- * answers to the reader's preference, and to `isAnimated`, and the content is then read in
- * place.
+ * answers to the reader's preference, and to `isAnimated`. With the movement stopped the
+ * content is not clipped: it is rendered once, inside a frame that scrolls and wraps, so
+ * everything that does not fit can still be read — the platform's version of the web's still
+ * frame. A reader who cannot rest a pointer on the frame stops the loop by focusing it, which
+ * is the platform's statement of the web's `group-focus-within` pause.
  */
 
 import {
@@ -28,6 +31,8 @@ import {
   NATIVE_MARQUEE_PAUSE_ON_HOVER_CLASS,
   NATIVE_MARQUEE_SET_AXIS_CLASS,
   NATIVE_MARQUEE_SET_CLASS,
+  NATIVE_MARQUEE_STILL_FRAME_CLASS,
+  NATIVE_MARQUEE_STILL_SET_CLASS,
   NATIVE_MARQUEE_TRACK_AXIS_CLASS,
   NATIVE_MARQUEE_TRACK_CLASS,
   resolveConfigCascade,
@@ -37,7 +42,6 @@ import {
   type ReactNode,
   useCallback,
   useEffect,
-  useMemo,
   useRef,
   useState,
 } from "react";
@@ -45,6 +49,7 @@ import {
   Animated,
   Easing,
   type LayoutChangeEvent,
+  ScrollView,
   type StyleProp,
   View,
   type ViewProps,
@@ -86,11 +91,12 @@ export interface MarqueeProps
 /**
  * Content that moves in a loop.
  *
- * The primitive never hides the content it was given: both copies are in the tree, and the
- * second is kept out of the accessibility tree rather than out of the screen, so a reader
- * hears the items once while the loop still has something to move into place. With the
- * platform asking for less motion, or with `isAnimated` false, the content stands still and
- * reads exactly the same.
+ * The primitive never hides the content it was given. While it moves, both copies are in the
+ * tree and the second is kept out of the accessibility tree and out of the focus order, so a
+ * reader hears and tabs to the items once while the loop still has something to move into
+ * place. With the platform asking for less motion, or with `isAnimated` false, the content is
+ * shown once and reads in place, in a frame that scrolls and wraps instead of clipping what
+ * does not fit.
  *
  * @param props - The marquee's options and the platform's view props.
  * @param props.children - The items to show.
@@ -98,9 +104,10 @@ export interface MarqueeProps
  * @param props.direction - The direction it moves in. Defaults to "forward".
  * @param props.speed - A preset or a number of seconds per cycle. Defaults to "normal".
  * @param props.gap - The gap between items, as a CSS length. Defaults to "1.5rem".
- * @param props.pauseOnHover - Whether a resting pointer stops the movement. Defaults to
- * false. The platform has no pointer, so this resolves and does nothing; see
- * `NATIVE_MARQUEE_PAUSE_ON_HOVER_CLASS`.
+ * @param props.pauseOnHover - Whether focus inside the frame stops the movement. Defaults to
+ * false. The platform has no pointer, so the pointer's half resolves and does nothing; the
+ * focus half is the pause a keyboard or remote reader uses, and it is the platform's version
+ * of the web's `group-focus-within` pause; see `NATIVE_MARQUEE_PAUSE_ON_HOVER_CLASS`.
  * @param props.fadeEdges - Whether the edges fade. Defaults to false. The platform paints
  * no gradient, so this resolves and does nothing; see `NATIVE_MARQUEE_FADE_CLASS`.
  * @param props.isAnimated - Whether the content moves. Defaults to true. The platform's
@@ -131,6 +138,8 @@ export function Marquee({
   itemClassName,
   className,
   style,
+  onFocus,
+  onBlur,
   ...rest
 }: MarqueeProps) {
   const config = useAsheeNativeConfig();
@@ -159,6 +168,13 @@ export function Marquee({
 
   const translate = useRef(new Animated.Value(0)).current;
   const [setExtent, setSetExtent] = useState(0);
+  const [hasFocus, setHasFocus] = useState(false);
+
+  // The web pauses the loop for a pointer resting on the frame and for keyboard focus inside
+  // it (`group-focus-within`). A touch screen has no pointer to rest, so the platform's pause
+  // is the focus one: a reader who moves through the content with a keyboard or a remote
+  // stops the loop by landing on it, which is the mechanism WCAG 2.2.2 asks for.
+  const isPaused = resolved.pauseOnHover && hasFocus;
 
   const measureSet = useCallback(
     (event: LayoutChangeEvent) => {
@@ -182,7 +198,18 @@ export function Marquee({
     const from = resolved.direction === "reverse" ? -distance : 0;
     const to = resolved.direction === "reverse" ? 0 : -distance;
 
-    translate.setValue(from);
+    // A pause holds the frame where the platform stopped it, so the animated value is left
+    // alone while focus is inside it. Resuming starts the next pass from the beginning: a
+    // natively driven animation's position cannot be read back from JavaScript, and the loop
+    // has no end for that to be visible against. This is the one place the platform differs
+    // from the web, which resumes its CSS animation where it paused.
+    if (!isPaused) {
+      translate.setValue(from);
+    }
+
+    if (isPaused) {
+      return;
+    }
 
     const loop = Animated.loop(
       Animated.timing(translate, {
@@ -199,55 +226,70 @@ export function Marquee({
       loop.stop();
     };
   }, [
-    moves,
-    setExtent,
-    resolvedGap,
     durationSeconds,
+    isPaused,
+    moves,
     resolved.direction,
+    resolvedGap,
+    setExtent,
     translate,
   ]);
 
-  const sets = useMemo(
-    () =>
-      [children, children].map((set, setIndex) => {
-        const setPrefix = setIndex === 0 ? "primary" : "secondary";
-        const isCopy = setIndex === 1;
+  /**
+   * Render one copy of the content.
+   *
+   * The gap between items belongs to the copy, so one copy plus the gap is exactly the
+   * distance the loop travels and the seam has nothing to jump.
+   *
+   * @param setIndex - 0 for the copy the reader reads, 1 for the copy the loop moves into
+   * place.
+   * @returns The rendered copy.
+   */
+  const renderSet = useCallback(
+    (setIndex: number) => {
+      const setPrefix = setIndex === 0 ? "primary" : "secondary";
+      const isCopy = setIndex === 1;
 
-        return (
-          <View
-            key={`${setPrefix}-set`}
-            testID="marquee-set"
-            // The copy is the same content read again, so it is kept out of the
-            // accessibility tree while staying on the screen the loop moves through.
-            accessibilityElementsHidden={isCopy}
-            importantForAccessibility={isCopy ? "no-hide-descendants" : "auto"}
-            className={classNames(
-              NATIVE_MARQUEE_SET_CLASS,
-              NATIVE_MARQUEE_SET_AXIS_CLASS[resolved.axis],
-            )}
-            style={{ gap: resolvedGap }}
-            onLayout={isCopy ? undefined : measureSet}>
-            {set.map((item, itemIndex) => {
-              const itemKey =
-                isValidElement(item) && item.key
-                  ? `${setPrefix}-${item.key}`
-                  : `${setPrefix}-item-${itemIndex}`;
+      return (
+        <View
+          key={`${setPrefix}-set`}
+          testID="marquee-set"
+          // The copy is the same content read again: it stays on the screen the loop moves
+          // through, but it is out of the accessibility tree and out of the focus order, so a
+          // link inside a marquee is a tab stop once rather than twice.
+          accessibilityElementsHidden={isCopy}
+          importantForAccessibility={isCopy ? "no-hide-descendants" : "auto"}
+          accessible={isCopy ? false : undefined}
+          focusable={isCopy ? false : undefined}
+          className={classNames(
+            NATIVE_MARQUEE_SET_CLASS,
+            (moves
+              ? NATIVE_MARQUEE_SET_AXIS_CLASS
+              : NATIVE_MARQUEE_STILL_SET_CLASS)[resolved.axis],
+          )}
+          style={{ gap: resolvedGap }}
+          onLayout={isCopy ? undefined : measureSet}>
+          {children.map((item, itemIndex) => {
+            const itemKey =
+              isValidElement(item) && item.key
+                ? `${setPrefix}-${item.key}`
+                : `${setPrefix}-item-${itemIndex}`;
 
-              return (
-                <View
-                  key={itemKey}
-                  className={classNames(
-                    NATIVE_MARQUEE_ITEM_CLASS,
-                    itemClassName,
-                  )}>
-                  {item}
-                </View>
-              );
-            })}
-          </View>
-        );
-      }),
-    [children, itemClassName, measureSet, resolved.axis, resolvedGap],
+            return (
+              <View
+                key={itemKey}
+                className={classNames(
+                  NATIVE_MARQUEE_ITEM_CLASS,
+                  itemClassName,
+                )}>
+                {item}
+              </View>
+            );
+          })}
+        </View>
+      );
+    },
+    [children, itemClassName, measureSet, moves, resolved.axis, resolvedGap],
   );
 
   return (
@@ -260,21 +302,40 @@ export function Marquee({
         className,
       )}
       style={style}
+      onFocus={(event) => {
+        setHasFocus(true);
+        onFocus?.(event);
+      }}
+      onBlur={(event) => {
+        setHasFocus(false);
+        onBlur?.(event);
+      }}
       {...rest}>
-      <Animated.View
-        testID="marquee-track"
-        className={classNames(
-          NATIVE_MARQUEE_TRACK_CLASS,
-          NATIVE_MARQUEE_TRACK_AXIS_CLASS[resolved.axis],
-        )}
-        style={{
-          gap: resolvedGap,
-          transform: isVertical
-            ? [{ translateY: translate }]
-            : [{ translateX: translate }],
-        }}>
-        {sets}
-      </Animated.View>
+      {moves ? (
+        <Animated.View
+          testID="marquee-track"
+          className={classNames(
+            NATIVE_MARQUEE_TRACK_CLASS,
+            NATIVE_MARQUEE_TRACK_AXIS_CLASS[resolved.axis],
+          )}
+          style={{
+            gap: resolvedGap,
+            transform: isVertical
+              ? [{ translateY: translate }]
+              : [{ translateX: translate }],
+          }}>
+          {renderSet(0)}
+          {renderSet(1)}
+        </Animated.View>
+      ) : (
+        // One copy, no duplicate, in a frame that scrolls and wraps: nothing the reader can
+        // read is left outside the frame.
+        <ScrollView
+          testID="marquee-still-frame"
+          className={NATIVE_MARQUEE_STILL_FRAME_CLASS[resolved.axis]}>
+          {renderSet(0)}
+        </ScrollView>
+      )}
     </View>
   );
 }

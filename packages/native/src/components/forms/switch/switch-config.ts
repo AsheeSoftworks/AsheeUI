@@ -57,11 +57,11 @@ registerNativeComponentDefaults("switch", defaultNativeSwitchConfig);
 /**
  * The values the switch falls back to when no tier provides one.
  */
-export const FALLBACK_NATIVE_SWITCH_CONFIG: Required<NativeSwitchConfig> = {
+export const FALLBACK_NATIVE_SWITCH_CONFIG = {
   size: "md",
   radius: "full",
   variant: "solid",
   color: "primary",
   isDisabled: false,
   required: false,
-};
+} satisfies NativeSwitchConfig;

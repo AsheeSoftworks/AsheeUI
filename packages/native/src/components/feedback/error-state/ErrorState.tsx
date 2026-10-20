@@ -31,8 +31,8 @@ import { Pressable, View } from "react-native";
 import { useAsheeNativeConfig } from "../../../provider/AsheeNativeProvider";
 import { classNames } from "../../../utils/class-names";
 import { Button } from "../../forms/button/Button";
-import { EmptyState } from "../empty-state/EmptyState";
 import { Text } from "../../typography/text/Text";
+import { EmptyState } from "../empty-state/EmptyState";
 import {
   FALLBACK_NATIVE_ERROR_STATE_CONFIG,
   type NativeErrorStateConfig,
@@ -166,7 +166,10 @@ export function ErrorState({
       type="error"
       size={resolved.size}
       panel={resolved.panel}
-      role={resolved.role === "none" ? undefined : resolved.role}
+      // `none` is passed through rather than dropped: the empty state resolves an
+      // unstated role through `components.emptystate`, and a failure that was
+      // deliberately silent must stay silent whatever that configuration says.
+      role={resolved.role}
       icon={icon}
       title={title}
       description={description}
@@ -187,7 +190,14 @@ export function ErrorState({
         <View className={NATIVE_ERROR_STATE_DETAIL_CLASS}>
           <Pressable
             accessibilityRole="button"
-            accessibilityLabel={resolved.detailLabel}
+            // The label may be a node, and a platform accessibility name has to
+            // be text: a plain label is used as the name, and anything else is
+            // left to the text the control renders.
+            accessibilityLabel={
+              typeof resolved.detailLabel === "string"
+                ? resolved.detailLabel
+                : undefined
+            }
             accessibilityState={{ expanded: isDetailOpen }}
             onPress={() => setIsDetailOpen((isOpen) => !isOpen)}
             className={NATIVE_ERROR_STATE_DETAIL_SUMMARY_CLASS}>

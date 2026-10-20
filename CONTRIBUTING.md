@@ -54,7 +54,7 @@ Every package is released except `@asheeui/native`, which is written and tested 
 deliberately held back: a package is published when a consumer can build a real screen
 with it, and its component set is complete, so what the release waits on is a
 consumer's own screens rather than another increment. The reason is in
-[React Native](docs/native.md).
+[React Native](https://docs.asheeui.com/platforms/native).
 
 The workspace also contains private packages that are never published: the
 end-to-end gallery (`packages/e2e-gallery`) and the playground applications that
@@ -80,6 +80,53 @@ pinned in an override, and the lockfile is what guarantees a single copy. React 
 the case that matters most: `pnpm why react` must report one version, and
 `@types/react` must match the major that is installed.
 
+### Workspace tools need `tsx`
+
+Each package's `main` and `exports` point at `./src/index.ts` rather than at `dist`, so
+one workspace package imports another's TypeScript directly and the workspace never
+needs a build to typecheck or test itself. The published manifest is different:
+`publishConfig` rewrites those entries to `dist`, which is what a consumer installs.
+
+The consequence for tooling inside this repository is that Node cannot import a
+package's entry on its own: `node scripts/thing.mjs` fails inside the TypeScript
+source — `ERR_UNSUPPORTED_DIR_IMPORT` on a barrel that re-exports a folder,
+`ERR_UNKNOWN_FILE_EXTENSION` on a `.ts` file — even though the same import works in a
+bundled application. A workspace tool that reads a package's runtime entry (the docs
+gate reading `COMPONENT_SUPPORT`, a script importing a package rather than a file by
+path) has to run through a TypeScript loader. The documentation site does that with
+`tsx`: its `validate` script is `tsx scripts/check-content.mjs`, and `tsx` is a dev
+dependency of the app that owns the script, not of the root manifest. Add it where the
+tool lives and run the tool through it.
+
+A package's `tsconfig` path mapping is not a runtime mapping. `packages/web` maps
+`@asheeui/core` to `../core/dist/index.d.ts` so its typecheck reads the built
+declarations; a loader that honours `paths` will try to execute that `.d.ts` and fail
+with `ERR_MODULE_NOT_FOUND`. A runtime tool therefore belongs at the repository root or
+in an app whose tsconfig has no such mapping, not inside a renderer package.
+
+Use `tsx` for that import only. A script that reads files as text, parses JSON, or
+walks directories is plain Node and should stay plain Node. Do not "fix" the error by
+pointing the package entry at `dist`: that would require a build before every
+typecheck and would break the workspace's source-level resolution.
+
+## Where the documentation lives
+
+The documentation is **not** in this repository. It is the site at <https://docs.asheeui.com>, built from its
+own repository (`apps/docs` when the two are checked out side by side), which owns the content tree, the
+demo registry, the content gate and the publish pipeline.
+
+That changes two things for a contributor here:
+
+- **A page you want to change** is in the site's `content/` folder, not in this repository. The links at the
+  end of `README.md` point at the published URLs, and every page is also available as Markdown by appending
+  `.md` to its URL — useful for grepping the corpus without cloning anything.
+- **The content gate** (`pnpm validate`) runs in the site repository. This repository keeps the checks it can
+  own: the test suite, the build, Biome, the native parity check, the changeset check, and the distribution
+  check that packs every package and builds a real consumer from the tarballs.
+
+The site consumes the packages here through `workspace:*` links while they are unreleased, so a component you
+change is visible in a local docs build immediately.
+
 ## Development Workflow
 
 1. Create a feature branch off `main` (see
@@ -103,7 +150,7 @@ gallery and the playground applications are all included.
 
 4. Add or update tests for any behavior change. New exported APIs must ship
    with TSDoc/JSDoc annotations and an `@example`, per the
-   [commenting standards](docs/commenting.md).
+   [commenting standards](https://docs.asheeui.com/project/commenting).
 5. Generate a changeset when you modify any `packages/*` code.
 
 ## Testing Local Changes
@@ -293,7 +340,7 @@ git push origin feat/my-change
 - [ ] Changes follow the existing code style enforced by Biome.
 - [ ] Commits are small, focused, and clearly described.
 - [ ] You agree your contribution is licensed under the project's license (see
-      [docs/licensing.md](docs/licensing.md)).
+      [Licensing](https://docs.asheeui.com/project/licensing)).
 
 ## Licensing of contributions
 
@@ -336,7 +383,7 @@ Every component file opens with a file-level header comment that describes what
 the file contains. Public components, hooks, functions, and types document
 their props with `@param`, list a runnable `@example`, and cross-link related
 types and components with `@see`. The full standard lives in
-[docs/commenting.md](docs/commenting.md).
+[Commenting](https://docs.asheeui.com/project/commenting).
 
 The shape used across the library looks like this:
 
@@ -450,4 +497,4 @@ a person who can defend it. A change whose author cannot say what it does and wh
 not ready, whether a person or a model produced it.
 
 The process this work follows is described in
-[How AsheeUI is built](docs/published-process.md).
+[How AsheeUI is built](https://docs.asheeui.com/project/how-asheeui-is-built).

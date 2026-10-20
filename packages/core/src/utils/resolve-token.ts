@@ -6,7 +6,7 @@
  * values like variant, color, size, and radius.
  */
 
-import type { DeepPartial } from "./types";
+import type { Concrete, DeepPartial } from "./types";
 
 /**
  * Resolves a value using the standard cascade precedence order.
@@ -22,10 +22,10 @@ import type { DeepPartial } from "./types";
  * @example
  * ```tsx
  * const variant = resolveCascade(
- *   props.variant,          // 'ghost'
- *   config.Button.variant,  // 'solid'
- *   theme.defaultVariant,   // 'faded'
- *   'solid'                 // hard fallback
+ *   props.variant,               // 'ghost'
+ *   config.components?.button?.variant, // 'solid'
+ *   theme.defaultVariant,        // 'faded'
+ *   'solid'                      // hard fallback
  * );
  * // Returns 'ghost' because instance prop takes precedence
  * ```
@@ -52,9 +52,9 @@ export function resolveCascade<T>(
  * @example
  * ```tsx
  * const animate = resolveAnimate(
- *   props.animate,           // false
- *   config.Button.animate,   // true
- *   true                     // hard fallback
+ *   props.animate,                // false
+ *   config.components?.button?.animate, // true
+ *   true                          // hard fallback
  * );
  * // Returns false because instance prop takes precedence
  * ```
@@ -81,9 +81,9 @@ export function resolveAnimate<T>(
  * @example
  * ```tsx
  * const radius = resolveRadiusKey(
- *   props.radius,          // 'lg'
- *   config.Button.radius,  // 'md'
- *   theme.defaultRadius,   // 'sm'
+ *   props.radius,                 // 'lg'
+ *   config.components?.button?.radius, // 'md'
+ *   theme.defaultRadius,          // 'sm'
  * );
  * // Returns 'lg' because instance prop takes precedence
  * ```
@@ -133,7 +133,7 @@ export function resolveConfigCascade<C extends object, F extends C>(
   instance: Partial<C>,
   section: DeepPartial<C> | undefined,
   fallback: F,
-): F {
+): Concrete<F> {
   const resolved = { ...fallback } as Record<string, unknown>;
   const sectionValues = section as Record<string, unknown> | undefined;
 
@@ -147,7 +147,7 @@ export function resolveConfigCascade<C extends object, F extends C>(
       (fallback as Record<string, unknown>)[key];
   }
 
-  return resolved as F;
+  return resolved as Concrete<F>;
 }
 
 /**
@@ -182,9 +182,16 @@ export function resolveConfigCascade<C extends object, F extends C>(
  * ```
  */
 export function resolveClassKey<TKey extends PropertyKey>(
-  key: TKey,
+  /*
+   * `undefined` is part of the contract rather than an accident: an optional prop that reaches a class map is
+   * still an optional prop, and making every call site prove otherwise is what the `exactOptionalPropertyTypes`
+   * sweep turned into ~150 arguments. The fallback key is the answer for a missing one, which is the same answer
+   * the map gives for a key it does not carry.
+   */
+  key: TKey | undefined,
   classMap: Record<TKey, string>,
   fallbackKey: TKey,
 ): string {
-  return classMap[key] ?? classMap[fallbackKey] ?? "";
+  const chosen = key ?? fallbackKey;
+  return classMap[chosen] ?? classMap[fallbackKey] ?? "";
 }

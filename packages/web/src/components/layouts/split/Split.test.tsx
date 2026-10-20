@@ -41,8 +41,8 @@ describe("Split", () => {
     expect(root.className).toContain("lg:flex-row");
     expect(root.className).toContain("gap-6");
     expect(root.className).toContain("items-stretch");
-    expect(panes[0].className).toContain("lg:basis-1/2");
-    expect(panes[1].className).toContain("lg:basis-1/2");
+    expect(panes[0]!.className).toContain("lg:basis-1/2");
+    expect(panes[1]!.className).toContain("lg:basis-1/2");
   });
 
   it("divides the width by the ratio it is given", () => {
@@ -57,8 +57,8 @@ describe("Split", () => {
       ).container,
     );
 
-    expect(panes[0].className).toContain("md:basis-1/3");
-    expect(panes[1].className).toContain("md:basis-2/3");
+    expect(panes[0]!.className).toContain("md:basis-1/3");
+    expect(panes[1]!.className).toContain("md:basis-2/3");
   });
 
   it("draws a divider between the panes, following the flex direction", () => {
@@ -80,8 +80,8 @@ describe("Split", () => {
       ).container,
     );
 
-    expect(panes[1].className).toContain("sticky");
-    expect(panes[0].className).not.toContain("sticky");
+    expect(panes[1]!.className).toContain("sticky");
+    expect(panes[0]!.className).not.toContain("sticky");
   });
 
   it("renders one pane when the layout has one", () => {
@@ -99,8 +99,8 @@ describe("Split", () => {
       ).container,
     );
 
-    expect(panes[0].textContent).toBe("first");
-    expect(panes[1].textContent).toBe("second");
+    expect(panes[0]!.textContent).toBe("first");
+    expect(panes[1]!.textContent).toBe("second");
   });
 
   it("resolves its defaults through configuration", () => {
@@ -121,8 +121,8 @@ describe("Split", () => {
     expect(root.className).toContain("sm:flex-row");
     expect(root.className).toContain("gap-2");
     expect(root.className).toContain("sm:divide-x");
-    expect(panes[0].className).toContain("sm:basis-2/3");
-    expect(panes[1].className).toContain("sm:basis-1/3");
+    expect(panes[0]!.className).toContain("sm:basis-2/3");
+    expect(panes[1]!.className).toContain("sm:basis-1/3");
   });
 
   it("lets an instance prop win over the configured value", () => {

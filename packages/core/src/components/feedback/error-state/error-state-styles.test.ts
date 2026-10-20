@@ -33,6 +33,18 @@ describe("the failed region's technical detail on both renderers", () => {
     expect(NATIVE_ERROR_STATE_DETAIL_SUMMARY_CLASS.length).toBeGreaterThan(0);
   });
 
+  it("draws the library's focus ring on the only focusable control it has", () => {
+    // Every other control in the library draws this ring; the disclosure would be
+    // the one surface whose focus treatment depended on the browser.
+    expect(ERROR_STATE_DETAIL_SUMMARY_CLASS).toContain("focus-visible:ring-2");
+    expect(ERROR_STATE_DETAIL_SUMMARY_CLASS).toContain(
+      "focus-visible:ring-primary",
+    );
+    expect(ERROR_STATE_DETAIL_SUMMARY_CLASS).toContain(
+      "focus-visible:ring-offset-2",
+    );
+  });
+
   it("keeps the technical text as it was written, in a monospaced box", () => {
     // A stack trace is read as it was printed, on either platform.
     expect(ERROR_STATE_DETAIL_BODY_CLASS).toContain("font-mono");

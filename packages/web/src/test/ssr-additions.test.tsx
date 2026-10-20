@@ -12,29 +12,29 @@
  */
 
 import { describe, expect, it } from "vitest";
-import { AuthLayout } from "../components/layouts/auth-layout/AuthLayout";
 import { Clipboard } from "../components/data-display/clipboard/Clipboard";
 import { CopyButton } from "../components/data-display/clipboard/CopyButton";
-import { Container } from "../components/layouts/container/Container";
-import { CTA } from "../components/marketing/cta/CTA";
 import { EmptyState } from "../components/feedback/empty-state/EmptyState";
-import { FeatureGrid } from "../components/marketing/feature-grid/FeatureGrid";
-import { Footer } from "../components/navigation/footer/Footer";
+import { PinInput } from "../components/forms/pin-input/PinInput";
+import { AuthLayout } from "../components/layouts/auth-layout/AuthLayout";
+import { Container } from "../components/layouts/container/Container";
 import { Grid } from "../components/layouts/grid/Grid";
-import { Hero } from "../components/marketing/hero/Hero";
-import { Navbar } from "../components/navigation/navbar/Navbar";
 import {
   Page,
   PageContent,
   PageFooter,
   PageHeader,
 } from "../components/layouts/page/Page";
-import { PinInput } from "../components/forms/pin-input/PinInput";
-import { PricingCard } from "../components/marketing/pricing-card/PricingCard";
 import { Section } from "../components/layouts/section/Section";
 import { SidebarLayout } from "../components/layouts/sidebar-layout/SidebarLayout";
 import { HStack, Stack, VStack } from "../components/layouts/stack/Stack";
+import { CTA } from "../components/marketing/cta/CTA";
+import { FeatureGrid } from "../components/marketing/feature-grid/FeatureGrid";
+import { Hero } from "../components/marketing/hero/Hero";
+import { PricingCard } from "../components/marketing/pricing-card/PricingCard";
 import { Testimonials } from "../components/marketing/testimonials/Testimonials";
+import { Footer } from "../components/navigation/footer/Footer";
+import { Navbar } from "../components/navigation/navbar/Navbar";
 import { renderToServerString } from "./";
 
 describe("1.1 additions server rendering (DOM-free environment)", () => {

@@ -73,7 +73,7 @@ the authority the project granted it. The boundary is part of the design rather 
 a property of the current model.
 
 The full statement, including what evidence a reader can check and what the process
-does not claim, is in [How AsheeUI is built](docs/published-process.md).
+does not claim, is in [How AsheeUI is built](https://docs.asheeui.com/project/how-asheeui-is-built).
 
 The process is maintained by Ashee Softworks, with the measurements of the experiments
 run against it. The company's site is at
@@ -102,7 +102,7 @@ the two events will be documented as the launch proceeds.
 - The sections a marketing page is made of (`Navbar`, `Hero`, `FeatureGrid`,
   `CTA`, `Testimonials`, `PricingCard`, `Footer`), each taking its actions as
   configuration.
-- A [Puck](docs/puck.md) integration behind its own entry point, so the same
+- A [Puck](https://docs.asheeui.com/platforms/puck) integration behind its own entry point, so the same
   components power a React application, a visual editor and a published page.
 - Native Tailwind CSS v4 token integration with variant, color, radius, size
   and spacing scales shared across every component.
@@ -128,7 +128,7 @@ integration is a package of its own, `@asheeui/puck`.
 
 Coming from the unscoped `asheeui` package, the dependency becomes `asheeui`
 and two specifiers move: `asheeui/styles` becomes `@asheeui/web/styles` and
-`asheeui/puck` becomes `@asheeui/puck`. [Migration](docs/migration.md) lists
+`asheeui/puck` becomes `@asheeui/puck`. [Migration](https://docs.asheeui.com/migration) lists
 every change.
 
 **npm**
@@ -260,7 +260,7 @@ export function Home() {
 }
 ```
 
-A [Puck](docs/puck.md) editor builds the same page from the same components:
+A [Puck](https://docs.asheeui.com/platforms/puck) editor builds the same page from the same components:
 
 ```tsx
 import { PuckPage, asheePuckConfig } from "@asheeui/puck";
@@ -286,20 +286,20 @@ npx asheeui list     # list the components this version exports
 
 | Document | Covers |
 | --- | --- |
-| [Installation](docs/installation.md) | Requirements, the stylesheet import, wrapping the root, where the root is per framework, troubleshooting |
-| [Release 2.0.0](docs/release-2.0.0.md) | What this release adds: the completed layout layer, the page compositions, the new components and the native component set |
-| [Layouts](docs/layouts.md) | The layout layer, the four compositions, the responsiveness rules and the native equivalents |
-| [Release 1.1.0](docs/release-1.1.0.md) | What the 1.1 release added: the layout system, the page components and the Puck integration |
-| [Release 1.0.0](docs/release-1.0.0.md) | The upgrade guide from 0.7.0: what breaks a build, what changed in behaviour, what is new |
-| [Configuration](docs/configuration.md) | The cascade, the global and per-component keys, the theme system, scrollbars, validation |
-| [Components](docs/components.md) | The component set, the shared prop axes, the substitution API, the field contract |
-| [Puck](docs/puck.md) | The block registry, the configuration boundary, the published-page path, what is deferred |
-| [React Native](docs/native.md) | The shared layer, what is shared and what is not, the layout kit, the responsive vocabulary, native setup, testing and accessibility |
-| [Licensing](docs/licensing.md) | The Apache-2.0 terms, what redistribution requires, the trademark position, the MIT transition |
-| [Accessibility](docs/accessibility.md) | The conformance target, keyboard behaviour, structure, known limits |
-| [CLI](docs/cli.md) | The optional scaffolding, checking and repair commands |
-| [Migration](docs/migration.md) | The deprecation policy in force from 1.0 and every breaking change with its migration |
-| [Commenting standard](docs/commenting.md) | How the source documents itself |
+| [Installation](https://docs.asheeui.com/getting-started/installation) | Requirements, the stylesheet import, wrapping the root, where the root is per framework, troubleshooting |
+| [Release 2.0.0](https://docs.asheeui.com/releases/2.0.0) | What this release adds: the completed layout layer, the page compositions, the new components and the native component set |
+| [Layouts](https://docs.asheeui.com/guides/page-compositions) | The layout layer, the four compositions, the responsiveness rules and the native equivalents |
+| [Release 1.1.0](https://docs.asheeui.com/releases/1.1.0) | What the 1.1 release added: the layout system, the page components and the Puck integration |
+| [Release 1.0.0](https://docs.asheeui.com/releases/1.0.0) | The upgrade guide from 0.7.0: what breaks a build, what changed in behaviour, what is new |
+| [Configuration](https://docs.asheeui.com/concepts/configuration) | The cascade, the global and per-component keys, the theme system, scrollbars, validation |
+| [Components](https://docs.asheeui.com/components) | The component set, the shared prop axes, the substitution API, the field contract |
+| [Puck](https://docs.asheeui.com/platforms/puck) | The block registry, the configuration boundary, the published-page path, what is deferred |
+| [React Native](https://docs.asheeui.com/platforms/native) | The shared layer, what is shared and what is not, the layout kit, the responsive vocabulary, native setup, testing and accessibility |
+| [Licensing](https://docs.asheeui.com/project/licensing) | The Apache-2.0 terms, what redistribution requires, the trademark position, the MIT transition |
+| [Accessibility](https://docs.asheeui.com/concepts/accessibility) | The conformance target, keyboard behaviour, structure, known limits |
+| [CLI](https://docs.asheeui.com/getting-started/cli) | The optional scaffolding, checking and repair commands |
+| [Migration](https://docs.asheeui.com/migration) | The deprecation policy in force from 1.0 and every breaking change with its migration |
+| [Commenting standard](https://docs.asheeui.com/project/commenting) | How the source documents itself |
 
 ## LLM & AI Assistant Support
 
@@ -314,7 +314,7 @@ via `https://asheeui.com/llms.txt`.
 - GitHub repository: https://github.com/AsheeSoftworks/AsheeUI
 - Browse the components: https://github.com/AsheeSoftworks/AsheeUI/tree/main/packages/web/src/components
 - Releases: https://github.com/AsheeSoftworks/AsheeUI/releases
-- Commenting and JSDoc standards: https://github.com/AsheeSoftworks/AsheeUI/blob/main/docs/commenting.md
+- Commenting and JSDoc standards: https://github.com/AsheeSoftworks/AsheeUI/blob/main/https://docs.asheeui.com/project/commenting
 
 ## Contributing
 
@@ -326,5 +326,5 @@ workflow, and the coding conventions. All participation follows our
 
 AsheeUI is licensed under the [Apache License 2.0](LICENSE). You may use, modify
 and distribute it, including commercially, provided the copyright, patent and
-attribution notices are kept; see [Licensing](docs/licensing.md) for what that
+attribution notices are kept; see [Licensing](https://docs.asheeui.com/project/licensing) for what that
 means in practice, including the trademark position.

@@ -48,11 +48,11 @@ registerNativeComponentDefaults("split", defaultNativeSplitConfig);
 /**
  * The values the split falls back to when no tier provides one.
  */
-export const FALLBACK_NATIVE_SPLIT_CONFIG: Required<NativeSplitConfig> = {
+export const FALLBACK_NATIVE_SPLIT_CONFIG = {
   stackAt: "lg",
   ratio: "equal",
   gap: "lg",
   align: "stretch",
   divider: false,
   stickyEnd: false,
-};
+} satisfies NativeSplitConfig;

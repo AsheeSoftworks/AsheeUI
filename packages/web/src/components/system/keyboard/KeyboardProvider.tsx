@@ -9,9 +9,17 @@
 
 import type { Color, Variant } from "@asheeui/core";
 import { resolveCascade, resolveRadiusKey } from "@asheeui/core";
-import { type ReactNode, useCallback, useMemo, useRef, useState } from "react";
+import {
+  type ReactNode,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { useAsheeConfig } from "../../../libs/context";
 import {
+  isInsideKeyboard,
   KeyboardContext,
   type KeyboardContextType,
   type KeyboardElement,
@@ -41,18 +49,12 @@ export interface KeyboardProviderProps extends KeyboardConfig {
   /**
    * Extra CSS classes for the keyboard container.
    */
-  className?: string;
+  className?: string | undefined;
 
   /**
    * Extra CSS classes for individual keys.
    */
-  keyClassName?: string;
-
-  /**
-   * Whether the keyboard system is globally disabled.
-   * @default false
-   */
-  disabled?: boolean;
+  keyClassName?: string | undefined;
 }
 
 // ─── Provider Component ───────────────────────────────────────────────────────
@@ -76,7 +78,7 @@ export interface KeyboardProviderProps extends KeyboardConfig {
  * @param props.defaultLayout - Default layout name. Defaults to "default".
  * @param props.size - Size scale for keyboard keys. Defaults to "md".
  * @param props.autoShiftBack - Auto switch back from shift. Defaults to true.
- * @param props.closeDelay - Close delay in milliseconds. Defaults to 120.
+ * @param props.closeDelay - Close delay in milliseconds. Defaults to 500.
  * @param props.variant - Visual variant for keys.
  * @param props.color - Theme color for keys.
  * @param props.radius - Corner rounding for keys.
@@ -116,7 +118,7 @@ export function KeyboardProvider({
   defaultLayout,
   size,
   autoShiftBack,
-  closeDelay: closeDelayProp = 120,
+  closeDelay: closeDelayProp,
   variant,
   color,
   radius,
@@ -211,6 +213,24 @@ export function KeyboardProvider({
 
   const closeTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  /**
+   * The active field's id, readable from a timeout whose closure predates the
+   * latest render. The timeout has to compare the field it was scheduled for
+   * with the field that is active *now*, or a close meant for the field being
+   * left would close the keyboard another field just opened.
+   */
+  const activeInputIdRef = useRef<string | null>(null);
+
+  const setActiveInput = useCallback((id: string | null) => {
+    activeInputIdRef.current = id;
+    setActiveInputId(id);
+  }, []);
+
+  /** Put the layout back to the provider's default while no field owns it. */
+  const resetLayout = useCallback(() => {
+    setCurrentLayout(resolvedDefaultLayout);
+  }, [resolvedDefaultLayout]);
+
   // ─── Merged Config ──────────────────────────────────────────────────────
 
   const mergedConfig = useMemo<KeyboardConfig>(
@@ -258,17 +278,29 @@ export function KeyboardProvider({
         closeTimeoutRef.current = null;
       }
 
-      setActiveInputId(id);
+      // The field whose keyboard is already open: focus came back to it before
+      // the close delay elapsed, or a key press asked it to take focus back.
+      // This is not a new open, so the layout the reader chose survives unless
+      // the caller states one explicitly.
+      if (isOpen && activeInputIdRef.current === id) {
+        setActiveElement(el);
+        if (options?.layout) setCurrentLayout(options.layout);
+        return;
+      }
+
+      setActiveInput(id);
       setActiveElement(el);
       setOverrideOptions(options || {});
 
-      // Use provided layout or fallback to default
+      // A field that stated a layout opens that layout; everything else opens
+      // the provider's default. Nothing resets this after the open — the
+      // reset happens on close — so a per-field choice survives.
       const layoutToUse = options?.layout ?? resolvedDefaultLayout;
       setCurrentLayout(layoutToUse);
 
       setIsOpen(true);
     },
-    [resolvedDisabled, resolvedDefaultLayout],
+    [resolvedDisabled, resolvedDefaultLayout, isOpen, setActiveInput],
   );
 
   const requestClose = useCallback(
@@ -279,18 +311,27 @@ export function KeyboardProvider({
         clearTimeout(closeTimeoutRef.current);
       }
       closeTimeoutRef.current = setTimeout(() => {
-        setActiveInputId((current) => {
-          if (current === id) {
-            setIsOpen(false);
-            setActiveElement(null);
-            setOverrideOptions({});
-          }
-          return current;
-        });
         closeTimeoutRef.current = null;
+
+        // Focus moved into the keyboard itself — a keyboard-only reader tabbed
+        // to a key — so this is not a close. Keeping the comparison inside the
+        // timeout also covers handlers that were called without the event.
+        if (
+          typeof document !== "undefined" &&
+          isInsideKeyboard(document.activeElement)
+        ) {
+          return;
+        }
+
+        if (activeInputIdRef.current !== id) return;
+
+        setIsOpen(false);
+        setActiveElement(null);
+        setOverrideOptions({});
+        resetLayout();
       }, resolvedCloseDelay);
     },
-    [resolvedDisabled, resolvedCloseDelay],
+    [resolvedDisabled, resolvedCloseDelay, resetLayout],
   );
 
   const forceClose = useCallback(() => {
@@ -300,9 +341,17 @@ export function KeyboardProvider({
     }
     setIsOpen(false);
     setActiveElement(null);
-    setActiveInputId(null);
+    setActiveInput(null);
     setOverrideOptions({});
-  }, []);
+    resetLayout();
+  }, [resetLayout, setActiveInput]);
+
+  // `disabled` is not a pause: turning it on while the keyboard is open has to
+  // forget the open state and the field it belonged to, or turning it back off
+  // re-shows a keyboard nobody opened.
+  useEffect(() => {
+    if (resolvedDisabled) forceClose();
+  }, [resolvedDisabled, forceClose]);
 
   const setLayout = useCallback((layout: LayoutName) => {
     setCurrentLayout(layout);

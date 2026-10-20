@@ -23,7 +23,9 @@ import {
   AUTH_PANEL_PADDING_CLASS,
   type AuthLayoutConfig,
   cn,
+  RADIUS_CLASS,
   resolveConfigCascade,
+  resolveRadiusKey,
 } from "@asheeui/core";
 import {
   type ElementType,
@@ -43,13 +45,13 @@ type BaseAuthLayoutProps = AuthLayoutConfig &
  */
 export interface AuthLayoutProps extends BaseAuthLayoutProps {
   /** Brand content above the heading, typically a logo and product name. */
-  brand?: ReactNode;
+  brand?: ReactNode | undefined;
 
   /** The heading of the page, for example "Sign in". */
-  title?: ReactNode;
+  title?: ReactNode | undefined;
 
   /** Supporting sentence under the heading. */
-  description?: ReactNode;
+  description?: ReactNode | undefined;
 
   /** The form itself. */
   children: ReactNode;
@@ -58,13 +60,14 @@ export interface AuthLayoutProps extends BaseAuthLayoutProps {
    * Content under the form, typically the link to the other route.
    * It is rendered inside the panel, under the form.
    */
-  footer?: ReactNode;
+  footer?: ReactNode | undefined;
 
   /**
    * Product media beside the form from the `lg` breakpoint upwards, such as a
-   * screenshot. On a narrow screen the media stacks above the form.
+   * screenshot. Below it the media stacks in the flow where `mediaPosition`
+   * puts it: above the form for `start`, below it for `end` (the default).
    */
-  media?: ReactNode;
+  media?: ReactNode | undefined;
 
   /**
    * Element to render the shell as.
@@ -72,7 +75,7 @@ export interface AuthLayoutProps extends BaseAuthLayoutProps {
    *
    * @default "div"
    */
-  as?: ElementType;
+  as?: ElementType | undefined;
 }
 
 /**
@@ -118,7 +121,7 @@ export interface AuthLayoutProps extends BaseAuthLayoutProps {
  *
  * @see Page - The shell for an authenticated page.
  */
-export const AuthLayout = forwardRef<HTMLDivElement, AuthLayoutProps>(
+export const AuthLayout = forwardRef<HTMLElement, AuthLayoutProps>(
   (
     {
       brand,
@@ -151,6 +154,16 @@ export const AuthLayout = forwardRef<HTMLDivElement, AuthLayoutProps>(
     const hasMedia = Boolean(media);
     const Component: ElementType = as ?? "div";
 
+    // The panel is a surface like any other, so its corners follow the
+    // application's `defaultRadius`; `md` is the hard fallback for the case where
+    // no configuration supplies one.
+    const panelRadius = resolveRadiusKey(
+      undefined,
+      undefined,
+      config.defaultRadius,
+      "md",
+    );
+
     const mediaColumn = hasMedia && (
       <div
         className={cn(
@@ -182,6 +195,7 @@ export const AuthLayout = forwardRef<HTMLDivElement, AuthLayoutProps>(
               AUTH_FORM_WRAPPER_CLASS,
               AUTH_CONTENT_SIZE_CLASS[resolved.contentSize],
               resolved.panel && AUTH_PANEL_CLASS,
+              resolved.panel && RADIUS_CLASS[panelRadius],
               resolved.panel && AUTH_PANEL_PADDING_CLASS,
             )}>
             {brand}

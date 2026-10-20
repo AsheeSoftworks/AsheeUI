@@ -32,13 +32,21 @@ export type NativeImageConfig = Omit<ImageConfig, "loading">;
  * The defaults the Image registers with the native registry.
  *
  * They are the web's own values: a picture fills its frame on both platforms, keeps its
- * source's proportions unless the consumer states a ratio, takes the framework's radius
- * and claims its space while it loads.
+ * source's proportions unless the consumer states a ratio and claims its space while it
+ * loads.
+ *
+ * `radius` is deliberately not registered. Registering a value here would make the component
+ * tier always answer, and the application's `defaultRadius` would never reach the picture.
+ * That is a per-component choice, not a rule: a component that registers a radius keeps it,
+ * and the application's default cannot reach it; one that leaves the radius unregistered —
+ * this one — inherits `defaultRadius`. Several other components do register a radius on
+ * purpose, which is why their rounding ignores the application's default.
+ * {@link FALLBACK_NATIVE_IMAGE_CONFIG} still states `md` for the case where no tier answers at
+ * all.
  */
 export const defaultNativeImageConfig: NativeImageConfig = {
   fit: "cover",
   ratio: "auto",
-  radius: "md",
   showSkeleton: true,
 };
 
@@ -53,9 +61,9 @@ registerNativeComponentDefaults("image", defaultNativeImageConfig);
 /**
  * The values the picture falls back to when no tier provides one.
  */
-export const FALLBACK_NATIVE_IMAGE_CONFIG: Required<NativeImageConfig> = {
+export const FALLBACK_NATIVE_IMAGE_CONFIG = {
   fit: "cover",
   ratio: "auto",
   radius: "md",
   showSkeleton: true,
-};
+} satisfies NativeImageConfig;

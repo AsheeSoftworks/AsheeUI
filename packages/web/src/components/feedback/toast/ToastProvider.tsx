@@ -27,6 +27,25 @@ import {
   type ToastShowOptions,
 } from "./toast-config";
 
+// ─── Placement names ─────────────────────────────────────────────────────────
+
+/**
+ * The reader-facing name of each placement.
+ *
+ * A placement group is a labelled region, so two groups on one screen must not
+ * share a name: a landmark list showing "Notifications" twice tells a reader
+ * nothing about which corner of the window each one is in. The placement is part
+ * of the name for that reason, in words rather than in a token.
+ */
+const PLACEMENT_LABEL: Record<ToastPlacement, string> = {
+  "top-right": "top right",
+  "top-left": "top left",
+  "bottom-right": "bottom right",
+  "bottom-left": "bottom left",
+  "top-center": "top centre",
+  "bottom-center": "bottom centre",
+};
+
 // ─── Component Props ──────────────────────────────────────────────────────────
 
 /**
@@ -42,14 +61,14 @@ export interface ToastProviderProps extends ToastConfig {
   /**
    * Extra classes for the toast container.
    */
-  className?: string;
+  className?: string | undefined;
 
   /**
    * Custom portal target element.
    * When portal is enabled, toasts are rendered into this element.
    * Defaults to document.body.
    */
-  portalTarget?: HTMLElement | null;
+  portalTarget?: HTMLElement | null | undefined;
 }
 
 // ─── Provider Component ───────────────────────────────────────────────────────
@@ -378,7 +397,7 @@ export function ToastProvider({
       ).map(([placementKey, items]) => (
         <section
           key={placementKey}
-          aria-label="Notifications"
+          aria-label={`Notifications (${PLACEMENT_LABEL[placementKey]})`}
           className={cn(
             "fixed flex flex-col gap-3 pointer-events-none p-4 max-h-screen scrollbar-hide overflow-hidden",
             PLACEMENT_CLASSES[placementKey],

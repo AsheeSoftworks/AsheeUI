@@ -27,7 +27,7 @@ export interface SkeletonConfig {
    *
    * @default "sm"
    */
-  radius?: Radius;
+  radius?: Radius | undefined;
 
   /**
    * Whether the placeholder pulses while it waits.
@@ -39,7 +39,7 @@ export interface SkeletonConfig {
    *
    * @default true
    */
-  isAnimated?: boolean;
+  isAnimated?: boolean | undefined;
 }
 
 declare module "../../../registry" {

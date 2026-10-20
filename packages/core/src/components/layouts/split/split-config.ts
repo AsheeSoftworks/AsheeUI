@@ -51,28 +51,28 @@ export interface SplitConfig {
    *
    * @default "lg"
    */
-  stackAt?: SplitStackAt;
+  stackAt?: SplitStackAt | undefined;
 
   /**
    * How the panes divide the width.
    *
    * @default "equal"
    */
-  ratio?: SplitRatio;
+  ratio?: SplitRatio | undefined;
 
   /**
    * Space between the two panes.
    *
    * @default "lg"
    */
-  gap?: Space;
+  gap?: Space | undefined;
 
   /**
    * Cross-axis alignment of the panes.
    *
    * @default "stretch"
    */
-  align?: SplitAlign;
+  align?: SplitAlign | undefined;
 
   /**
    * Whether a border is drawn between the panes on the wide layout.
@@ -80,7 +80,7 @@ export interface SplitConfig {
    *
    * @default false
    */
-  divider?: boolean;
+  divider?: boolean | undefined;
 
   /**
    * Whether the second pane sticks to the top of the viewport while the first pane
@@ -88,7 +88,7 @@ export interface SplitConfig {
    *
    * @default false
    */
-  stickyEnd?: boolean;
+  stickyEnd?: boolean | undefined;
 }
 
 declare module "../../../registry" {

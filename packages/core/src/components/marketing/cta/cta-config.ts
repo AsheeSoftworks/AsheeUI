@@ -32,7 +32,7 @@ export type CtaPanel = "bordered" | "muted" | "plain";
  */
 export interface CtaConfig extends SectionBlockOptions {
   /** Panel treatment. */
-  panel?: CtaPanel;
+  panel?: CtaPanel | undefined;
 }
 
 declare module "../../../registry" {

@@ -39,7 +39,7 @@ export interface BadgeConfig {
    *
    * @default "faded"
    */
-  variant?: BadgeVariant;
+  variant?: BadgeVariant | undefined;
 
   /**
    * Theme accent color.
@@ -47,7 +47,7 @@ export interface BadgeConfig {
    *
    * @default "primary"
    */
-  color?: Color;
+  color?: Color | undefined;
 
   /**
    * Height and font-size scale.
@@ -55,7 +55,7 @@ export interface BadgeConfig {
    *
    * @default "md"
    */
-  size?: Size;
+  size?: Size | undefined;
 
   /**
    * Corner rounding.
@@ -63,7 +63,7 @@ export interface BadgeConfig {
    *
    * @default "full"
    */
-  radius?: Radius;
+  radius?: Radius | undefined;
 }
 
 /**

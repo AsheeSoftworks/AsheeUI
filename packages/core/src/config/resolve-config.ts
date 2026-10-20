@@ -15,13 +15,19 @@ import { resolveColorConfig } from "./resolve-color";
 
 /**
  * Resolves the final configuration by merging user-provided external
- * configuration with default configuration and component-registered defaults.
+ * configuration with the default configuration. Component-registered defaults
+ * are merged later, when `components` is read (see below).
  *
  * The resolution pipeline follows this order:
  * 1. Start with the default configuration.
- * 2. Merge in component-registered defaults from the registry.
- * 3. Merge in the user-provided external configuration.
- * 4. Resolve the color configuration separately to handle custom theme inheritance.
+ * 2. Merge in the user-provided external configuration.
+ * 3. Resolve the color configuration separately to handle custom theme inheritance.
+ *
+ * Component-registered defaults are not part of this pipeline. The resolved
+ * object exposes `components` as a lazy getter that merges the registry with the
+ * user's component configuration (which wins) on every access, because the
+ * registry is populated as component modules are evaluated and may still be
+ * incomplete at resolve time.
  *
  * @param externalConfig - The user-provided external configuration.
  * @returns The fully resolved configuration.
@@ -31,7 +37,8 @@ import { resolveColorConfig } from "./resolve-color";
  * const config = resolveConfig({
  *   defaultTheme: 'dark',
  *   components: {
- *     Button: { variant: 'ghost' }
+ *     // The key is the component's registration name, not its export name.
+ *     button: { variant: 'ghost' }
  *   }
  * });
  * ```

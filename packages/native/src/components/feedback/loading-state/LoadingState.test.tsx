@@ -66,7 +66,7 @@ describe("Native LoadingState", () => {
   it("claims room so the screen does not jump when the content arrives", async () => {
     const view = await renderLoading(<LoadingState testID="state" />);
 
-    expect(classesOf(view, "state")).toContain("min-h-24");
+    expect(classesOf(view, "state")).toContain("min-h-48");
   });
 
   it("keeps the framework's spinner out of assistive technology, because the region carries the news", async () => {

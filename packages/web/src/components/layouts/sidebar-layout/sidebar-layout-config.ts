@@ -34,8 +34,8 @@ registerComponentDefaults("sidebarlayout", defaultSidebarLayoutConfig);
 /**
  * Hard fallback values used when no config tier provides a value.
  */
-export const FALLBACK_SIDEBAR_LAYOUT_CONFIG: Required<SidebarLayoutConfig> = {
+export const FALLBACK_SIDEBAR_LAYOUT_CONFIG = {
   side: "start",
   sidebarWidth: "md",
   stickySidebar: true,
-};
+} satisfies SidebarLayoutConfig;

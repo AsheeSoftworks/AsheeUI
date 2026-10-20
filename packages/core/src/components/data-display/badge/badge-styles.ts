@@ -83,15 +83,28 @@ export const BADGE_GAP_CLASS: Record<Size, string> = {
 };
 
 /**
+ * The layout of the box an icon sits in.
+ *
+ * The badge gives its icon the same kind of slot the chip does rather than styling the
+ * drawing from the root, so which node a consumer passes cannot change how it is laid
+ * out.
+ */
+export const BADGE_SLOT_CLASS =
+  "inline-flex items-center justify-center shrink-0";
+
+/**
  * CSS classes for icon size based on size.
- * Applied to the icon slot so an icon matches the badge's scale. The web alone has
- * this affordance: it can style the SVG a consumer passed in, where a native icon
- * is a component with a size prop of its own.
+ * Applied to the icon slot so an icon matches the badge's scale. The slot is stated and
+ * so is the SVG inside it: a consumer's icon is usually an SVG that carries a size of
+ * its own, and a box around it only clips what it draws. Stating both is what makes the
+ * same node render the same size in a badge and in a chip, whose icon slot states the
+ * pair too — the web alone has this affordance, because a native icon is a component
+ * with a size prop of its own.
  */
 export const BADGE_ICON_SIZE_CLASS: Record<Size, string> = {
-  sm: "[&_svg]:size-3",
-  md: "[&_svg]:size-3.5",
-  lg: "[&_svg]:size-4",
+  sm: "size-3 [&_svg]:size-3",
+  md: "size-3.5 [&_svg]:size-3.5",
+  lg: "size-4 [&_svg]:size-4",
 };
 
 // ─── Native ───────────────────────────────────────────────────────────────────

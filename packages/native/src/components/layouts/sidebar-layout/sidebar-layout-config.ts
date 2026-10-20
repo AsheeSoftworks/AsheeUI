@@ -48,9 +48,8 @@ registerNativeComponentDefaults(
 /**
  * The values the shell falls back to when no tier provides one.
  */
-export const FALLBACK_NATIVE_SIDEBAR_LAYOUT_CONFIG: Required<NativeSidebarLayoutConfig> =
-  {
-    side: "start",
-    sidebarWidth: "md",
-    stickySidebar: true,
-  };
+export const FALLBACK_NATIVE_SIDEBAR_LAYOUT_CONFIG = {
+  side: "start",
+  sidebarWidth: "md",
+  stickySidebar: true,
+} satisfies NativeSidebarLayoutConfig;

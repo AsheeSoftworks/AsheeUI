@@ -45,10 +45,10 @@ registerNativeComponentDefaults("page", defaultNativePageConfig);
 /**
  * The values the page parts fall back to when no tier provides one.
  */
-export const FALLBACK_NATIVE_PAGE_CONFIG: Required<NativePageConfig> = {
+export const FALLBACK_NATIVE_PAGE_CONFIG = {
   contained: true,
   containerSize: "lg",
   spacing: "md",
   sticky: true,
   divider: true,
-};
+} satisfies NativePageConfig;

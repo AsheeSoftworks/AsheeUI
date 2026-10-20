@@ -47,10 +47,9 @@ registerNativeComponentDefaults("authlayout", defaultNativeAuthLayoutConfig);
 /**
  * The values the shell falls back to when no tier provides one.
  */
-export const FALLBACK_NATIVE_AUTH_LAYOUT_CONFIG: Required<NativeAuthLayoutConfig> =
-  {
-    panel: true,
-    align: "center",
-    mediaPosition: "end",
-    contentSize: "sm",
-  };
+export const FALLBACK_NATIVE_AUTH_LAYOUT_CONFIG = {
+  panel: true,
+  align: "center",
+  mediaPosition: "end",
+  contentSize: "sm",
+} satisfies NativeAuthLayoutConfig;

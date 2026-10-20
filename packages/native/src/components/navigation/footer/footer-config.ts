@@ -53,9 +53,9 @@ registerNativeComponentDefaults("footer", defaultNativeFooterConfig);
 /**
  * The values the footer falls back to when no tier provides one.
  */
-export const FALLBACK_NATIVE_FOOTER_CONFIG: Required<NativeFooterConfig> = {
+export const FALLBACK_NATIVE_FOOTER_CONFIG = {
   variant: "bordered",
   spacing: "lg",
   contained: true,
   containerSize: "lg",
-};
+} satisfies NativeFooterConfig;

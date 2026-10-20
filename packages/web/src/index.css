@@ -50,6 +50,18 @@
   --color-success: var(--ashee-success);
 
   /**
+   * The ink that sits on a solid colour fill.
+   *
+   * A solid variant is a saturated fill, and the ink on it is white — the same in either theme, because the fill
+   * is the same saturated colour either way. The token exists so the solid variants do not hard-code `text-white`
+   * (a raw palette colour, which the library's own scanner rejects), not to make the ink theme-dependent.
+   *
+   * `background` and `secondary` do not use it: those fills are the page and the muted surface, where white text
+   * was invisible. They take `text-foreground`.
+   */
+  --color-on-solid: white;
+
+  /**
    * Scrollbar configuration variables.
    * These are set by the scrollbar configuration.
    */
@@ -81,6 +93,17 @@
   * {
     scrollbar-color: var(--ashee-scrollbar-thumb) var(--ashee-scrollbar-track);
     scrollbar-width: var(--ashee-scrollbar-fallback-width, thin);
+  }
+
+  /**
+   * The gutter is reserved on the page, not on every element.
+   *
+   * `scrollbar-gutter: stable` reserves space for a scrollbar inside the element that sets it. Applied to `*`,
+   * it reserved that space inside every `overflow: hidden` box — an Avatar's 40px circle got a 30px content
+   * box and clipped its picture and initials into a flat-edged "D". A gutter only means anything where a
+   * scrollbar can appear, so it belongs on the root.
+   */
+  html {
     scrollbar-gutter: var(--ashee-scrollbar-gutter, stable);
   }
 
@@ -115,13 +138,20 @@
 
   /**
    * Disabled state styling for form elements.
+   *
+   * The tint is derived from the theme's foreground rather than hard-coded, so
+   * it follows light, dark and custom palettes instead of staying a fixed grey.
    */
   input:disabled,
   textarea:disabled,
   select:disabled {
     opacity: 0.6;
     cursor: not-allowed;
-    background-color: #f5f5f521;
+    background-color: color-mix(
+      in oklab,
+      var(--ashee-foreground) 8%,
+      transparent
+    );
   }
 
   /**

@@ -54,13 +54,12 @@ registerNativeComponentDefaults("multiSelect", defaultNativeMultiSelectConfig);
 /**
  * The values the field falls back to when no tier provides one.
  */
-export const FALLBACK_NATIVE_MULTI_SELECT_CONFIG: Required<NativeMultiSelectConfig> =
-  {
-    size: "md",
-    radius: "md",
-    variant: "bordered",
-    color: "primary",
-    status: "default",
-    isDisabled: false,
-    required: false,
-  };
+export const FALLBACK_NATIVE_MULTI_SELECT_CONFIG = {
+  size: "md",
+  radius: "md",
+  variant: "bordered",
+  color: "primary",
+  status: "default",
+  isDisabled: false,
+  required: false,
+} satisfies NativeMultiSelectConfig;

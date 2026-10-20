@@ -39,9 +39,9 @@ export interface SwitchConfig extends FieldConfig {}
 /**
  * The values a switch falls back to when no tier provides one.
  */
-export const FALLBACK_SWITCH_CONFIG: Required<SwitchConfig> = {
+export const FALLBACK_SWITCH_CONFIG = {
   ...FALLBACK_FIELD_CONFIG,
-};
+} satisfies SwitchConfig;
 
 declare module "../../../registry" {
   interface ComponentTypeConfigRegistry {

@@ -9,7 +9,8 @@
  * `portal` and `zIndex` are the two options left out: they are about where a layer sits in a
  * document, and the platform has no document. Everything else carries its documented meaning,
  * including the delay, which is how long a reader rests on the trigger before the hint appears
- * — a long press here, and a pointer resting there.
+ * — a long press here, and a pointer resting there — and how long it then stays after the press
+ * ends, which is the platform's own hide timer rather than a document behaviour.
  */
 
 import type { TooltipConfig } from "@asheeui/core";
@@ -48,7 +49,7 @@ registerNativeComponentDefaults("tooltip", defaultNativeTooltipConfig);
 /**
  * The values the hint falls back to when no tier provides one.
  */
-export const FALLBACK_NATIVE_TOOLTIP_CONFIG: Required<NativeTooltipConfig> = {
+export const FALLBACK_NATIVE_TOOLTIP_CONFIG = {
   size: "md",
   placement: "top",
   variant: "solid",
@@ -58,4 +59,4 @@ export const FALLBACK_NATIVE_TOOLTIP_CONFIG: Required<NativeTooltipConfig> = {
   radius: "md",
   showArrow: false,
   className: "",
-};
+} satisfies NativeTooltipConfig;

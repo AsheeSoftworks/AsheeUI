@@ -34,6 +34,7 @@ import {
   useFocus,
   useHover,
   useInteractions,
+  useMergeRefs,
   useRole,
 } from "@floating-ui/react";
 import {
@@ -42,6 +43,7 @@ import {
   isValidElement,
   type ReactElement,
   type ReactNode,
+  type Ref,
   useRef,
   useState,
 } from "react";
@@ -62,15 +64,21 @@ type BaseTooltipProps = TooltipConfig;
 export interface TooltipProps extends BaseTooltipProps {
   /**
    * The content to display inside the tooltip.
-   * When empty or null, the tooltip is not shown.
+   * A `null`, `undefined`, boolean or empty-string value is no hint at all and leaves the
+   * trigger on its own; anything else is content, so `0` — a remaining count — is shown.
    */
   content: ReactNode;
 
   /**
-   * The child element that triggers the tooltip.
-   * Can be any React element or a string.
+   * The single element that triggers the tooltip.
+   *
+   * It has to be an element rather than text: the hint opens on the trigger's hover or on
+   * its focus, and a string can be neither hovered as a control nor reached with a
+   * keyboard, so a hint on one would be pointer-only. Pass a focusable element — a button,
+   * a link, a field — and give it its own accessible name, because the hint describes the
+   * control rather than naming it.
    */
-  children: ReactElement | ReactNode;
+  children: ReactElement;
 
   /**
    * Whether the tooltip is disabled.
@@ -78,7 +86,7 @@ export interface TooltipProps extends BaseTooltipProps {
    *
    * @default false
    */
-  isDisabled?: boolean;
+  isDisabled?: boolean | undefined;
 }
 
 /**
@@ -94,16 +102,24 @@ export interface TooltipProps extends BaseTooltipProps {
  * accessible with keyboard focus support.
  *
  * @param props - Tooltip configuration options.
- * @param props.content - The content to display inside the tooltip.
- * @param props.children - The child element that triggers the tooltip.
+ * @param props.content - The content to display inside the tooltip. Absent and empty
+ * values are no hint; a `0` is content.
+ * @param props.children - The single element that triggers the tooltip. Its hover and its
+ * focus both open the hint, so it has to be an element a keyboard reader can reach.
  * @param props.isDisabled - Whether the tooltip is disabled. Defaults to false.
- * @param props.variant - Visual style variant. Defaults to "solid".
- * @param props.color - Theme accent color. Defaults to "secondary".
+ * @param props.variant - Visual style variant. Not registered by the component, so it
+ * resolves from the application's `defaultVariant` and `"solid"` is only the fallback the
+ * cascade reaches when nothing else supplies a value.
+ * @param props.color - Theme accent color. Not registered either: it resolves from the
+ * application's `defaultColor`, so an unconfigured application renders `"primary"` and
+ * `"secondary"` is only the fallback.
  * @param props.size - Size scale. Defaults to "md".
  * @param props.placement - Placement relative to the trigger. Defaults to "top".
  * @param props.delay - Delay before showing/hiding. Defaults to 200.
  * @param props.offset - Offset from the trigger. Defaults to 8.
- * @param props.radius - Corner rounding. Defaults to "md".
+ * @param props.radius - Corner rounding. Like `variant` and `color` it is not registered,
+ * so it follows the application's `defaultRadius` (`"xs"` out of the box); `"md"` is only
+ * the fallback.
  * @param props.showArrow - Whether to show a pointer arrow. Defaults to false.
  * @param props.portal - Whether to render the tooltip through `FloatingPortal`
  * at the document body level. Defaults to false, which renders the tooltip in
@@ -303,26 +319,48 @@ export const Tooltip = forwardRef<HTMLDivElement, TooltipProps>(
       resolvedZIndex,
     );
 
+    const childProps = (children.props ?? {}) as Record<string, unknown>;
+
+    // The trigger's own `ref`, wherever the running React keeps it: 19 makes `ref` an
+    // ordinary prop, so a consumer's ref arrives in `children.props`, while earlier
+    // versions still hold it on the element itself.
+    const childRef =
+      (childProps.ref as Ref<Element> | undefined) ??
+      (children as unknown as { ref?: Ref<Element> }).ref;
+
+    // The two refs are chained rather than one replacing the other. Spreading the child's
+    // props after `refs.setReference` used to hand the trigger to the consumer's ref alone,
+    // which left the hint with no reference to measure and pinned it at the origin.
+    const referenceRef = useMergeRefs([refs.setReference, childRef]);
+
+    // Nothing to say, or nothing to say it about: the trigger renders on its own, with the
+    // props it was given and no hint attached.
+    if (isDisabled || !hasContent(content)) {
+      return <>{children}</>;
+    }
+
+    const referenceProps = getReferenceProps({
+      ...childProps,
+      // Floating UI's merge order lets the props given here win, so the hint's own id has
+      // to be composed with the description the trigger may already state — otherwise a
+      // field with a description loses it for as long as the hint is open.
+      "aria-describedby": composeDescribedBy(
+        childProps["aria-describedby"],
+        isOpen ? context.floatingId : undefined,
+      ),
+      ref: referenceRef,
+    });
+
     const trigger = isValidElement(children) ? (
-      cloneElement(
-        children,
-        getReferenceProps({
-          ref: refs.setReference,
-          ...(children.props as Record<string, unknown>),
-        }),
-      )
+      cloneElement(children, referenceProps)
     ) : (
-      <span
-        ref={refs.setReference}
-        {...getReferenceProps()}
-        className="inline-flex">
+      // Unreachable through the type, which asks for an element: an untyped consumer that
+      // passes text anyway still gets a tab stop, so the hint is not pointer-only.
+      // biome-ignore lint/a11y/noNoninteractiveTabindex: the trigger the type demands is an element; this tab stop only exists for a child the type already refuses.
+      <span {...referenceProps} className="inline-flex" tabIndex={0}>
         {children}
       </span>
     );
-
-    if (!content || isDisabled) {
-      return <>{children}</>;
-    }
 
     // Shared by both rendering modes below. When `portal` is enabled the node is
     // appended to `document.body` and needs a `z-index` derived from the
@@ -357,10 +395,16 @@ export const Tooltip = forwardRef<HTMLDivElement, TooltipProps>(
           )}>
           {content}
           {resolvedShowArrow && (
+            // The pointer carries the bubble's own surface and border rather than a
+            // separate colour: filled with the border token it read as a wedge lying on
+            // top of the hint. Floating UI paints two paths, so the outline takes the
+            // border and the fill path's inner stroke takes the surface, which is what
+            // closes the seam where the two meet.
             <FloatingArrow
               ref={arrowRef}
               context={context}
-              className="fill-current text-border"
+              strokeWidth={1}
+              className="fill-background [&>path:first-of-type]:stroke-border [&>path:last-of-type]:stroke-background"
             />
           )}
         </div>
@@ -381,3 +425,50 @@ export const Tooltip = forwardRef<HTMLDivElement, TooltipProps>(
 );
 
 Tooltip.displayName = "Tooltip";
+
+/**
+ * Whether a hint says anything.
+ *
+ * `content` is a node, so only an absent or empty one means "no hint": a `0` — a remaining
+ * count — is content the caller meant to say, and so is any element. A boolean is not,
+ * because React draws nothing for one, so `content={hasMore && "3 left"}` does not leave
+ * an empty bubble behind.
+ *
+ * @param content - The hint's content.
+ * @returns `true` when the hint has something to say.
+ */
+function hasContent(content: ReactNode): boolean {
+  if (content === null || content === undefined) return false;
+  if (typeof content === "boolean") return false;
+  if (typeof content === "string") return content.length > 0;
+
+  return true;
+}
+
+/**
+ * Compose the description an element already states with the hint's own id.
+ *
+ * A trigger is allowed to arrive with `aria-describedby` of its own — a field beside its
+ * help text, say — and opening a hint must add to that rather than replace it. Duplicate
+ * ids are dropped, so a hint reopened on an element that already names it does not repeat
+ * itself.
+ *
+ * @param existing - The element's own `aria-describedby`, as it arrived in its props.
+ * @param floatingId - The id of the hint, or `undefined` while it is closed.
+ * @returns The composed description, or `undefined` when there is nothing to describe with.
+ */
+function composeDescribedBy(
+  existing: unknown,
+  floatingId: string | undefined,
+): string | undefined {
+  const ids =
+    typeof existing === "string"
+      ? existing.split(/\s+/).filter((id) => id.length > 0)
+      : [];
+
+  if (floatingId !== undefined && !ids.includes(floatingId)) {
+    ids.push(floatingId);
+  }
+
+  return ids.length > 0 ? ids.join(" ") : undefined;
+}

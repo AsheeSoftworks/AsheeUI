@@ -42,7 +42,7 @@ export interface RadioConfig extends Omit<InputConfig, "variant"> {
    *
    * @default "default"
    */
-  variant?: RadioVariant;
+  variant?: RadioVariant | undefined;
 }
 
 /**
@@ -51,11 +51,11 @@ export interface RadioConfig extends Omit<InputConfig, "variant"> {
  * The rounding is `full` and the variant is `default`, which together are what make a
  * radio read as a circle a consumer picks rather than as a second checkbox.
  */
-export const FALLBACK_RADIO_CONFIG: Required<RadioConfig> = {
+export const FALLBACK_RADIO_CONFIG = {
   ...FALLBACK_FIELD_CONFIG,
   radius: "full",
   variant: "default",
-};
+} satisfies RadioConfig;
 
 declare module "../../../registry" {
   interface ComponentTypeConfigRegistry {

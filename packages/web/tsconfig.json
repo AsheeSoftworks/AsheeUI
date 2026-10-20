@@ -6,7 +6,9 @@
     "types": ["node"],
     "paths": {
       "@asheeui/core": ["../core/dist/index.d.ts"]
-    }
+    },
+    "exactOptionalPropertyTypes": true,
+    "noUncheckedIndexedAccess": true
   },
   "include": ["src"]
 }

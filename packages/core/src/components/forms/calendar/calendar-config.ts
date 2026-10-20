@@ -19,6 +19,7 @@
  * The module registers nothing and imports no renderer.
  */
 
+import type { Concrete } from "../../../utils/types";
 import {
   FALLBACK_FIELD_CONFIG,
   type FieldConfig,
@@ -55,7 +56,7 @@ export interface CalendarConfig extends FieldConfig {
    *
    * @default "date"
    */
-  mode?: CalendarMode;
+  mode?: CalendarMode | undefined;
 }
 
 /**
@@ -63,7 +64,7 @@ export interface CalendarConfig extends FieldConfig {
  *
  * The family's fallbacks with the calendar's own mode beside them: a date field.
  */
-export const FALLBACK_CALENDAR_CONFIG: Required<FieldConfig> & {
+export const FALLBACK_CALENDAR_CONFIG: Concrete<FieldConfig> & {
   mode: CalendarMode;
 } = {
   ...FALLBACK_FIELD_CONFIG,

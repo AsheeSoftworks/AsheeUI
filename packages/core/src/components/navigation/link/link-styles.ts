@@ -15,7 +15,6 @@
 
 import type { Size } from "../../../shared/radius";
 import type { Color } from "../../../shared/variant";
-import type { ColorRole } from "../../../tokens";
 import type { LinkUnderline, LinkVariant } from "./link-config";
 
 /** Font size and the gap beside the icons, at each density. */
@@ -32,10 +31,16 @@ export const LINK_ICON_SIZE_CLASS: Record<Size, string> = {
   lg: "size-4.5",
 };
 
-/** The colour of the text, with its hover state, on the web. */
-export const LINK_COLOR_CLASS: Record<Color | string, string> = {
+/**
+ * The colour of the text, with its hover state, on the web.
+ *
+ * The map is exhaustive over the colour roles, so a role added to the vocabulary and
+ * forgotten here is a type error rather than an unresolved class. It carries exactly the
+ * roles {@link NATIVE_LINK_COLOR_CLASS} carries, which is what keeps the two renderers
+ * from drifting apart.
+ */
+export const LINK_COLOR_CLASS: Record<Color, string> = {
   none: "text-foreground hover:text-foreground/80",
-  default: "text-foreground hover:text-foreground/80",
   primary: "text-primary hover:text-primary/80",
   secondary: "text-secondary hover:text-secondary/80",
   success: "text-success hover:text-success/80",
@@ -62,8 +67,14 @@ export const LINK_UNDERLINE_CLASS: Record<LinkUnderline, string> = {
 /** Shared classes for every native link. */
 export const NATIVE_LINK_BASE_CLASS = "flex-row items-center shrink-0";
 
-/** The colour of the text on the platform, which has no pointer to hover with. */
-export const NATIVE_LINK_COLOR_CLASS: Record<ColorRole, string> = {
+/**
+ * The colour of the text on the platform, which has no pointer to hover with.
+ *
+ * Typed as the web map is — `Color` rather than `ColorRole` — so the two maps must name
+ * the same roles: the vocabulary is shared, and stating it the same way on both sides
+ * makes a divergence a compile error instead of a silently unresolved class.
+ */
+export const NATIVE_LINK_COLOR_CLASS: Record<Color, string> = {
   none: "text-foreground",
   primary: "text-primary",
   secondary: "text-secondary",

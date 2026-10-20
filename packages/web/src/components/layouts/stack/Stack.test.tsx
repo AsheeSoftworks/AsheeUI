@@ -53,7 +53,9 @@ describe("Stack", () => {
         <VStack gap="sm">b</VStack>
       </>,
     );
-    const [row, column] = Array.from(container.children) as HTMLElement[];
+    const stacks = Array.from(container.children) as HTMLElement[];
+    const row = stacks[0]!;
+    const column = stacks[1]!;
 
     expect(row.className).toContain("flex-row");
     expect(row.className).toContain("items-center");
@@ -61,6 +63,41 @@ describe("Stack", () => {
     expect(column.className).toContain("flex-col");
     expect(column.className).toContain("items-stretch");
     expect(column.className).toContain("gap-2");
+  });
+
+  it("lets configuration override a preset's direction and alignment", () => {
+    const { container } = renderWithProvider(
+      <>
+        <HStack>a</HStack>
+        <VStack>b</VStack>
+      </>,
+      {
+        config: makeComponentConfig("stack", {
+          direction: "column",
+          align: "end",
+        }),
+      },
+    );
+    const stacks = Array.from(container.children) as HTMLElement[];
+    const row = stacks[0]!;
+    const column = stacks[1]!;
+
+    // The preset's row/centre values sit below the component configuration, so
+    // `components.stack` reaches both presets.
+    expect(row.className).toContain("flex-col");
+    expect(row.className).toContain("items-end");
+    expect(column.className).toContain("flex-col");
+    expect(column.className).toContain("items-end");
+  });
+
+  it("lets an instance alignment win over the preset and the configuration", () => {
+    const { container } = renderWithProvider(<HStack align="start">a</HStack>, {
+      config: makeComponentConfig("stack", { align: "end" }),
+    });
+
+    expect((container.firstElementChild as HTMLElement).className).toContain(
+      "items-start",
+    );
   });
 
   it("carries the consumer's class last, so it wins", () => {

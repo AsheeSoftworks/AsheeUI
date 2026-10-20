@@ -10,7 +10,10 @@
 
 import { describe, expect, it } from "vitest";
 import { FALLBACK_CALENDAR_CONFIG } from "./forms/calendar/calendar-config";
-import { FALLBACK_FIELD_CONFIG, type FieldStatus } from "./forms/field/field-config";
+import {
+  FALLBACK_FIELD_CONFIG,
+  type FieldStatus,
+} from "./forms/field/field-config";
 import {
   FIELD_STATUS_BORDER_CLASS,
   FIELD_STATUS_TEXT_CLASS,

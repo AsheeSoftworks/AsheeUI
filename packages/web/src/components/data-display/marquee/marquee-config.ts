@@ -37,13 +37,18 @@ registerComponentDefaults("marquee", defaultMarqueeConfig);
  * Hard fallback values used when no config tier provides a value.
  * These values are used when instance props, component config,
  * and global defaults are all undefined.
+ *
+ * They agree with {@link defaultMarqueeConfig}: a fallback that differed from the value
+ * registered one tier up would make an option change meaning when the section it was
+ * configured in happened not to resolve, so `pauseOnHover` and `fadeEdges` are `false`
+ * here exactly as they are there and in the documented defaults.
  */
 export const FALLBACK_MARQUEE_CONFIG = {
   axis: "x" as const,
   direction: "forward" as const,
   speed: "normal" as const,
   gap: "1.5rem",
-  pauseOnHover: true,
-  fadeEdges: true,
+  pauseOnHover: false,
+  fadeEdges: false,
   isAnimated: true,
 } as const;

@@ -40,7 +40,7 @@ export interface StackProps extends BaseStackProps {
    *
    * @default "div"
    */
-  as?: ElementType;
+  as?: ElementType | undefined;
 
   /**
    * Space between children, from the shared spacing scale.
@@ -49,7 +49,7 @@ export interface StackProps extends BaseStackProps {
    *
    * @default "md"
    */
-  gap?: Space;
+  gap?: Space | undefined;
 }
 
 /**
@@ -84,42 +84,78 @@ export interface StackProps extends BaseStackProps {
  * @see VStack - A column stack with stretched items.
  * @see Grid - The two-dimensional equivalent.
  */
-export const Stack = forwardRef<HTMLDivElement, StackProps>(
-  ({ as, direction, gap, align, justify, wrap, className, ...rest }, ref) => {
+export const Stack = forwardRef<HTMLDivElement, StackProps>((props, ref) => (
+  <StackBase ref={ref} {...props} />
+));
+
+Stack.displayName = "Stack";
+
+/**
+ * The props of the internal stack renderer.
+ *
+ * The preset fields are not part of `StackProps`: they are the values `HStack`
+ * and `VStack` contribute to the cascade, one tier below the component
+ * configuration, so an application can override a preset's direction or
+ * alignment without having to restate every usage.
+ */
+interface StackBaseProps extends StackProps {
+  /** Direction contributed by a preset, below `components.stack.direction`. */
+  presetDirection?: StackDirection | undefined;
+
+  /** Alignment contributed by a preset, below `components.stack.align`. */
+  presetAlign?: StackAlign | undefined;
+}
+
+const StackBase = forwardRef<HTMLDivElement, StackBaseProps>(
+  (
+    {
+      as,
+      direction,
+      gap,
+      align,
+      justify,
+      wrap,
+      presetDirection,
+      presetAlign,
+      className,
+      ...rest
+    },
+    ref,
+  ) => {
     const config = useAsheeConfig();
-    const sectionConfig = config.components?.stack;
+    const stackConfig = config.components?.stack;
 
     const resolvedDirection = resolveCascade<StackDirection>(
       direction,
-      sectionConfig?.direction,
+      stackConfig?.direction,
       undefined,
-      FALLBACK_STACK_CONFIG.direction,
+      presetDirection ?? FALLBACK_STACK_CONFIG.direction,
     );
 
     const resolvedGap = resolveCascade<Space>(
       gap,
-      sectionConfig?.gap,
+      stackConfig?.gap,
       undefined,
       FALLBACK_STACK_CONFIG.gap,
     );
 
     const resolvedAlign = resolveCascade<StackAlign>(
       align,
-      sectionConfig?.align,
+      stackConfig?.align,
       undefined,
-      FALLBACK_STACK_CONFIG.align,
+      presetAlign ?? FALLBACK_STACK_CONFIG.align,
     );
 
     const resolvedJustify = resolveCascade<StackJustify>(
       justify,
-      sectionConfig?.justify,
+      stackConfig?.justify,
       undefined,
       FALLBACK_STACK_CONFIG.justify,
     );
 
     const resolvedWrap = resolveCascade<boolean>(
       wrap,
-      sectionConfig?.wrap,
+      stackConfig?.wrap,
       undefined,
       FALLBACK_STACK_CONFIG.wrap,
     );
@@ -144,7 +180,7 @@ export const Stack = forwardRef<HTMLDivElement, StackProps>(
   },
 );
 
-Stack.displayName = "Stack";
+StackBase.displayName = "StackBase";
 
 /**
  * Props for the {@link HStack} preset.
@@ -156,9 +192,13 @@ export type HStackProps = Omit<StackProps, "direction">;
 /**
  * A row stack with centred items.
  *
- * `HStack` is `Stack` with `direction="row"` and `align="center"`, which is the
- * arrangement most toolbars, media rows and action groups want. It shares the
- * Stack component's configuration, so `components.stack` restyles both.
+ * `HStack` is `Stack` with a row direction and centred items, which is the
+ * arrangement most toolbars, media rows and action groups want.
+ *
+ * The preset contributes `row` and `center` below the component configuration:
+ * `components.stack.direction` and `components.stack.align` override them, and
+ * an instance prop overrides both. So `components.stack` really does restyle
+ * both presets, and a preset is a starting point rather than a restriction.
  *
  * @param props - The same options as {@link StackProps}, without `direction`.
  * @returns The rendered stack.
@@ -173,7 +213,13 @@ export type HStackProps = Omit<StackProps, "direction">;
  */
 export const HStack = forwardRef<HTMLDivElement, HStackProps>(
   ({ align, ...rest }, ref) => (
-    <Stack ref={ref} direction="row" align={align ?? "center"} {...rest} />
+    <StackBase
+      ref={ref}
+      align={align}
+      presetDirection="row"
+      presetAlign="center"
+      {...rest}
+    />
   ),
 );
 
@@ -187,8 +233,11 @@ export type VStackProps = Omit<StackProps, "direction">;
 /**
  * A column stack with stretched items.
  *
- * `VStack` is `Stack` with `direction="column"` and `align="stretch"`, the
- * arrangement a form, a card body or a settings panel wants.
+ * `VStack` is `Stack` with a column direction and stretched items, the
+ * arrangement a form, a card body or a settings panel wants. Like `HStack`, the
+ * preset supplies its direction and alignment below the component
+ * configuration, so `components.stack` can restyle it and an instance prop still
+ * wins.
  *
  * @param props - The same options as {@link StackProps}, without `direction`.
  * @returns The rendered stack.
@@ -203,7 +252,13 @@ export type VStackProps = Omit<StackProps, "direction">;
  */
 export const VStack = forwardRef<HTMLDivElement, VStackProps>(
   ({ align, ...rest }, ref) => (
-    <Stack ref={ref} direction="column" align={align ?? "stretch"} {...rest} />
+    <StackBase
+      ref={ref}
+      align={align}
+      presetDirection="column"
+      presetAlign="stretch"
+      {...rest}
+    />
   ),
 );
 

@@ -33,6 +33,16 @@ describe("PricingCard", () => {
     expect(getByText("10,000 messages")).toBeDefined();
   });
 
+  it("forwards the plan name's heading level through titleAs", () => {
+    const { getByRole } = renderWithProvider(
+      <PricingCard name="Growth" price="$29" titleAs="h4" />,
+    );
+
+    expect(getByRole("heading", { level: 4, name: "Growth" }).tagName).toBe(
+      "H4",
+    );
+  });
+
   it("says which lines are not included, in wording as well as in style", () => {
     const { getByText } = renderWithProvider(
       <PricingCard name="Growth" price="$29" features={FEATURES} />,
@@ -55,6 +65,24 @@ describe("PricingCard", () => {
     expect(container.innerHTML).toContain("ring-primary");
   });
 
+  it("recommends only the plan that says it is recommended", () => {
+    // `highlighted` used to resolve through the cascade, so a theme that set it
+    // recommended every plan. It is an instance prop now.
+    const { container } = renderWithProvider(
+      <>
+        <PricingCard id="plain" name="Starter" price="$9" />
+        <PricingCard id="recommended" name="Growth" price="$29" highlighted />
+      </>,
+    );
+
+    expect(
+      (container.querySelector("#recommended") as HTMLElement).className,
+    ).toContain("ring-primary");
+    expect(
+      (container.querySelector("#plain") as HTMLElement).className,
+    ).not.toContain("ring-primary");
+  });
+
   it("renders configured actions through the framework Button", () => {
     const { getByRole } = renderWithProvider(
       <PricingCard
@@ -67,21 +95,22 @@ describe("PricingCard", () => {
     expect(getByRole("link", { name: "Choose Growth" })).toBeDefined();
   });
 
-  it("resolves its defaults through configuration", () => {
+  it("resolves its surface and density through configuration", () => {
     const { container } = renderWithProvider(
       <PricingCard name="Growth" price="$29" />,
       {
         config: makeComponentConfig("pricingcard", {
           variant: "elevated",
           size: "sm",
-          highlighted: true,
         }),
       },
     );
 
     expect(container.innerHTML).toContain("shadow-md");
-    expect(container.innerHTML).toContain("ring-primary");
     expect(container.querySelector(".p-4")).not.toBeNull();
+    // The recommendation is not a configuration option, so the theme cannot
+    // mark every plan it renders as the recommended one.
+    expect(container.innerHTML).not.toContain("ring-primary");
   });
 
   it("renders on the server and hydrates without a mismatch", () => {

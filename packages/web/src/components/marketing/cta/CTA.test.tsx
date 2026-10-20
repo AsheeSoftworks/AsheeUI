@@ -12,15 +12,32 @@ import {
 import { CTA } from "./CTA";
 
 describe("CTA", () => {
-  it("renders a section landmark with its headline and description", () => {
+  it("renders a named section landmark with its headline and description", () => {
     const { getByRole, getByText } = renderWithProvider(
       <CTA title="Send your first campaign" description="No card required." />,
     );
 
+    // A band is a section of a page rather than the page's own title, so its
+    // headline is a level two heading and the band names itself with it.
     expect(
-      getByRole("heading", { name: "Send your first campaign" }),
-    ).toBeDefined();
+      getByRole("heading", { level: 2, name: "Send your first campaign" })
+        .tagName,
+    ).toBe("H2");
+    expect(
+      getByRole("region", { name: "Send your first campaign" }).tagName,
+    ).toBe("SECTION");
     expect(getByText("No card required.")).toBeDefined();
+  });
+
+  it("can raise its headline when the band is the page's only heading", () => {
+    const { getByRole } = renderWithProvider(
+      <CTA title="Send your first campaign" titleAs="h1" />,
+    );
+
+    expect(
+      getByRole("heading", { level: 1, name: "Send your first campaign" })
+        .tagName,
+    ).toBe("H1");
   });
 
   it("panelises its content by default and can be told not to", () => {

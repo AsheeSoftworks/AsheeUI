@@ -48,6 +48,10 @@ export const BREADCRUMB_LIST_CLASS =
  * Classes for the current location.
  * It is presented in the foreground colour so it reads as the end of the
  * trail rather than as another link.
+ *
+ * It states no gap between an icon and its label: that gap comes from the same
+ * size map `Link` uses for a linked step, so the current location and the steps
+ * beside it space an icon identically at every density.
  */
 export const BREADCRUMB_CURRENT_CLASS =
-  "inline-flex items-center gap-1.5 min-w-0 truncate font-medium text-foreground";
+  "inline-flex items-center min-w-0 truncate font-medium text-foreground";

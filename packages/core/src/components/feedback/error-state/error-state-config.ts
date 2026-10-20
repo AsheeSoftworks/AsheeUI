@@ -18,6 +18,7 @@
  * known configuration section without either renderer restating it.
  */
 
+import type { ReactNode } from "react";
 import type { Size } from "../../../shared/radius";
 
 /**
@@ -44,35 +45,42 @@ export interface ErrorStateConfig {
    *
    * @default "md"
    */
-  size?: Size;
+  size?: Size | undefined;
 
   /**
    * Whether the state is drawn as a panel.
    *
    * @default true
    */
-  panel?: boolean;
+  panel?: boolean | undefined;
 
   /**
    * How the state is announced.
    *
    * @default "alert"
    */
-  role?: ErrorStateRole;
+  role?: ErrorStateRole | undefined;
 
   /**
    * Wording of the retry control.
    *
+   * It takes a node rather than a string, so the control can carry an icon the way
+   * a hand-written `Button` can. What a reader hears is the text the node renders.
+   *
    * @default "Try again"
    */
-  retryLabel?: string;
+  retryLabel?: ReactNode | undefined;
 
   /**
    * Wording of the disclosure that holds the technical detail.
    *
+   * A node, as {@link retryLabel} is: the disclosure is a control, and a control's
+   * name may be drawn rather than written. A platform that needs a plain name for
+   * assistive technology uses the node's text where it has one.
+   *
    * @default "Technical details"
    */
-  detailLabel?: string;
+  detailLabel?: ReactNode | undefined;
 }
 
 declare module "../../../registry" {

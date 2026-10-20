@@ -20,8 +20,9 @@ export type {
 
 /**
  * Default config values registered for the Split component.
- * The breakpoint and the ratio are pinned; alignment, divider and stickiness
- * stay unset so a consumer's own value is the only one the cascade sees.
+ * The breakpoint, the ratio, the gap and the alignment are pinned; the divider
+ * and the stickiness stay unset so the hard fallback answers them and a
+ * consumer's own value is the only one the cascade sees.
  */
 export const defaultSplitConfig: SplitConfig = {
   stackAt: "lg",
@@ -35,11 +36,11 @@ registerComponentDefaults("split", defaultSplitConfig);
 /**
  * Hard fallback values used when no config tier provides a value.
  */
-export const FALLBACK_SPLIT_CONFIG: Required<SplitConfig> = {
+export const FALLBACK_SPLIT_CONFIG = {
   stackAt: "lg",
   ratio: "equal",
   gap: "lg",
   align: "stretch",
   divider: false,
   stickyEnd: false,
-};
+} satisfies SplitConfig;

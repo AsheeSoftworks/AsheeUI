@@ -9,6 +9,7 @@ import {
   renderToServerString,
   renderWithProvider,
 } from "../../../test";
+import { Sidebar } from "../../navigation/sidebar/Sidebar";
 import { SidebarLayout } from "./SidebarLayout";
 
 describe("SidebarLayout", () => {
@@ -20,6 +21,28 @@ describe("SidebarLayout", () => {
     );
 
     expect(getByRole("complementary", { name: "Sidebar" })).toBeDefined();
+  });
+
+  it("adds one complementary landmark and one navigation landmark for a Sidebar", () => {
+    const { container, getAllByRole } = renderWithProvider(
+      <SidebarLayout
+        sidebar={
+          <Sidebar items={[{ id: "home", label: "Home" }]} activeKey="home" />
+        }>
+        <main>Body</main>
+      </SidebarLayout>,
+    );
+
+    // The column is the complementary landmark; the Sidebar inside it renders
+    // no second `aside`, so the two complementary landmarks do not nest.
+    const complementary = getAllByRole("complementary");
+    expect(complementary).toHaveLength(1);
+    expect(complementary[0]).toHaveAccessibleName("Sidebar");
+    expect(container.querySelectorAll("aside")).toHaveLength(1);
+
+    const navigation = getAllByRole("navigation");
+    expect(navigation).toHaveLength(1);
+    expect(navigation[0]).toHaveAccessibleName("Sidebar navigation");
   });
 
   it("puts the header and the footer outside the two columns", () => {

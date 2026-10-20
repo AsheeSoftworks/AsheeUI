@@ -1,5 +1,10 @@
 import { describe, expect, it, vi } from "vitest";
-import { createUser, expectDescribedBy, renderWithProvider } from "../../../test";
+import {
+  createUser,
+  expectDescribedBy,
+  makeComponentConfig,
+  renderWithProvider,
+} from "../../../test";
 import { Textarea } from "./Textarea";
 
 describe("Textarea", () => {
@@ -69,5 +74,40 @@ describe("Textarea", () => {
 
     expect(textarea).toHaveAttribute("name", "notes");
     expect(textarea).toHaveAttribute("placeholder", "Write here");
+  });
+
+  // The box and the single-line field are the same field family, so they round
+  // the same way: `full` is a pill in both rather than a value one of them
+  // silently rewrites.
+  it("honours a full radius, as the Input does", () => {
+    const { getByLabelText } = renderWithProvider(
+      <Textarea label="Notes" radius="full" />,
+    );
+    const textarea = getByLabelText("Notes");
+
+    expect(textarea.className).toContain("rounded-full");
+    expect(textarea.className).not.toContain("rounded-xl");
+  });
+
+  it("fills its column by default and sizes to its content when told not to", () => {
+    const full = renderWithProvider(<Textarea label="Notes" />);
+
+    expect(full.container.firstElementChild).toHaveClass("w-full");
+    full.unmount();
+
+    const inline = renderWithProvider(
+      <Textarea label="Notes" fullWidth={false} />,
+    );
+
+    expect(inline.container.firstElementChild).toHaveClass("inline-block");
+    expect(inline.container.firstElementChild).not.toHaveClass("w-full");
+  });
+
+  it("takes its width from configuration", () => {
+    const { container } = renderWithProvider(<Textarea label="Notes" />, {
+      config: makeComponentConfig("textarea", { fullWidth: false }),
+    });
+
+    expect(container.firstElementChild).toHaveClass("inline-block");
   });
 });

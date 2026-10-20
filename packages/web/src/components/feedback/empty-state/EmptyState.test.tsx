@@ -39,6 +39,36 @@ describe("EmptyState", () => {
     expect(live.firstElementChild?.getAttribute("role")).toBe("alert");
   });
 
+  it("takes its announcement from configuration, the way ErrorState does", () => {
+    const { container } = renderWithProvider(<EmptyState title="Empty" />, {
+      config: makeComponentConfig("emptystate", { role: "status" }),
+    });
+
+    expect(container.firstElementChild?.getAttribute("role")).toBe("status");
+  });
+
+  it("lets an instance announcement win over the configured one", () => {
+    const { container } = renderWithProvider(
+      <EmptyState title="Empty" role="alert" />,
+      { config: makeComponentConfig("emptystate", { role: "status" }) },
+    );
+
+    expect(container.firstElementChild?.getAttribute("role")).toBe("alert");
+  });
+
+  it("renders its title as an h2 by default and at the level it is asked for", () => {
+    const first = renderWithProvider(<EmptyState title="Empty" />);
+
+    expect(first.getByText("Empty").tagName).toBe("H2");
+    first.unmount();
+
+    const nested = renderWithProvider(
+      <EmptyState title="Empty" titleAs="h4" />,
+    );
+
+    expect(nested.getByText("Empty").tagName).toBe("H4");
+  });
+
   it("colours its icon badge by tone", () => {
     const { container } = renderWithProvider(
       <EmptyState title="Failed" type="error" icon={<span>!</span>} />,

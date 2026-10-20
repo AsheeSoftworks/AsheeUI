@@ -1,5 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 import { createUser, pressKey, renderWithProvider } from "../../../test";
+import type { ColumnDef } from "../table/table-config";
 import { Table } from "./Table";
 
 interface Row {
@@ -59,7 +60,8 @@ describe("Table", () => {
     const row = getByText("Ada").closest("tr");
 
     expect(row).toHaveAttribute("tabindex", "-1");
-    expect(row).toHaveAttribute("aria-selected", "false");
+    // A row of a plain table is not a selected option, so it states nothing.
+    expect(row).not.toHaveAttribute("aria-current");
   });
 
   it("activates a clickable row with the pointer and the keyboard", async () => {
@@ -89,7 +91,7 @@ describe("Table", () => {
     expect(handleClick).toHaveBeenCalledTimes(3);
   });
 
-  it("exposes the selected row", () => {
+  it("exposes the selected row as the current one", () => {
     const { getByText } = renderWithProvider(
       <Table
         data={DATA}
@@ -100,13 +102,103 @@ describe("Table", () => {
       />,
     );
 
+    // `aria-current` is announced on any element; `aria-selected` belongs to a
+    // grid and would say nothing here.
     expect(getByText("Linus").closest("tr")).toHaveAttribute(
-      "aria-selected",
+      "aria-current",
       "true",
     );
-    expect(getByText("Ada").closest("tr")).toHaveAttribute(
-      "aria-selected",
-      "false",
+    expect(getByText("Ada").closest("tr")).not.toHaveAttribute("aria-current");
+  });
+
+  it("scrolls inside its own box, so the header sticks to the table", () => {
+    const { getByRole } = renderWithProvider(
+      <Table data={DATA} columns={COLUMNS} />,
     );
+    const container = getByRole("table").parentElement as HTMLElement;
+
+    // No `scrollable` utility exists in this package, so the container states
+    // the scroll with Tailwind's own class.
+    expect(container.className).toContain("overflow-auto");
+    expect(container.className).not.toContain("scrollable");
+  });
+
+  it("merges the consumer's grid classes onto the table, last", () => {
+    const { getByRole } = renderWithProvider(
+      <Table data={DATA} columns={COLUMNS} gridClasses="table-fixed w-auto" />,
+    );
+    const table = getByRole("table");
+
+    expect(table.className).toContain("table-fixed");
+    // The consumer's width wins over the table's own `w-full`.
+    expect(table.className).toContain("w-auto");
+    expect(table.className).not.toContain("w-full");
+  });
+
+  it("names the table with a caption", () => {
+    const { getByRole, getByText } = renderWithProvider(
+      <Table data={DATA} columns={COLUMNS} caption="Team members" />,
+    );
+
+    expect(getByRole("table")).toHaveAccessibleName("Team members");
+    expect(getByText("Team members").tagName).toBe("CAPTION");
+  });
+
+  it("names the table with the attributes it is given", () => {
+    const { getByRole } = renderWithProvider(
+      <Table data={DATA} columns={COLUMNS} aria-label="Team" />,
+    );
+
+    // The name belongs to the table, not to the element around it.
+    expect(getByRole("table")).toHaveAccessibleName("Team");
+  });
+
+  it("states a column's sort order on its header cell", () => {
+    const sortedColumns: ColumnDef<Row>[] = [
+      {
+        id: "name",
+        header: "Name",
+        cell: (row) => row.name,
+        sortDirection: "ascending",
+      },
+      { id: "role", header: "Role", cell: (row) => row.role },
+    ];
+    const { getByRole } = renderWithProvider(
+      <Table data={DATA} columns={sortedColumns} />,
+    );
+
+    expect(getByRole("columnheader", { name: "Name" })).toHaveAttribute(
+      "aria-sort",
+      "ascending",
+    );
+    // A column that states no order says nothing rather than "none".
+    expect(getByRole("columnheader", { name: "Role" })).not.toHaveAttribute(
+      "aria-sort",
+    );
+  });
+
+  it("keys two identically labelled columns apart", () => {
+    const error = vi.spyOn(console, "error").mockImplementation(() => {});
+
+    const duplicateColumns: ColumnDef<Row>[] = [
+      { header: "Value", cell: (row) => row.name },
+      { header: "Value", cell: (row) => row.role },
+    ];
+
+    const { getAllByRole, getByText, rerender } = renderWithProvider(
+      <Table data={DATA} columns={duplicateColumns} />,
+    );
+
+    expect(getAllByRole("columnheader", { name: "Value" })).toHaveLength(2);
+    expect(getByText("Ada")).toBeInTheDocument();
+
+    // A reorder must not re-use a key for a different column.
+    rerender(<Table data={DATA} columns={[...duplicateColumns].reverse()} />);
+
+    expect(getAllByRole("columnheader", { name: "Value" })).toHaveLength(2);
+    // Keys come from the column's position, so there is no duplicate-key warning.
+    expect(error).not.toHaveBeenCalled();
+
+    error.mockRestore();
   });
 });

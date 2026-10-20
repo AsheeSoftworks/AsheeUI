@@ -58,61 +58,65 @@ export interface FileUploadProps extends BaseFileUploadProps {
   /**
    * The files that have been chosen, which the field lists and can remove.
    */
-  files?: File[];
+  files?: File[] | undefined;
 
   /**
    * Called with the file the reader removed.
    * Its presence is what draws a remove control beside each file.
    */
-  onRemove?: (file: File) => void;
+  onRemove?: ((file: File) => void) | undefined;
 
   /**
    * Largest file the field accepts, in bytes.
    * A larger file is left out and reported here rather than being passed on to
    * be rejected later.
    */
-  maxSize?: number;
+  maxSize?: number | undefined;
 
   /**
    * Label of the field.
    */
-  label?: string;
+  label?: string | undefined;
 
   /**
    * Description shown under the label.
    */
-  description?: string;
+  description?: string | undefined;
 
   /**
    * Message shown under the field.
    */
-  message?: string;
+  message?: string | undefined;
 
   /**
    * Validation status of the field.
    *
    * @default "default"
    */
-  status?: FieldStatus;
+  status?: FieldStatus | undefined;
 
   /**
    * Whether the field is unavailable.
    *
    * @default false
    */
-  isDisabled?: boolean;
+  isDisabled?: boolean | undefined;
 
   /**
    * Whether the field must be filled in before the form is submitted.
    *
+   * The requirement is stated on the hidden file picker as well as on the label,
+   * so the browser refuses an empty submission instead of the field only looking
+   * required.
+   *
    * @default false
    */
-  required?: boolean;
+  required?: boolean | undefined;
 
   /**
    * Extra classes for the field wrapper.
    */
-  className?: string;
+  className?: string | undefined;
 }
 
 /**
@@ -139,6 +143,8 @@ export interface FileUploadProps extends BaseFileUploadProps {
  * @param props.message - Message under the field.
  * @param props.status - Validation status. Defaults to "default".
  * @param props.isDisabled - Whether the field is unavailable. Defaults to false.
+ * @param props.required - Whether the field must be filled in before submission.
+ * Defaults to false.
  * @param props.size - Density of the zone. Defaults to "md".
  * @param props.buttonLabel - Name of the control. Defaults to "Choose files".
  * @param props.hint - Instruction in the zone. Defaults to "Drag files here".
@@ -280,6 +286,7 @@ export const FileUpload = forwardRef<HTMLInputElement, FileUploadProps>(
             type="file"
             className={FILE_UPLOAD_INPUT_CLASS}
             disabled={isDisabled}
+            required={required}
             onChange={handleChange}
           />
 

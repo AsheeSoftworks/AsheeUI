@@ -217,6 +217,30 @@ describe("FileUpload", () => {
     expect(ref.current).toBe(getByLabelText("Attachments"));
   });
 
+  it("states the requirement on the picker as well as on the label", () => {
+    const required = renderWithProvider(
+      <FileUpload
+        label="Attachments"
+        required
+        onFilesSelected={() => undefined}
+      />,
+    );
+    const requiredInput = required.getByLabelText(/Attachments/);
+
+    // The marker and the attribute come from the same prop, so the field cannot
+    // look required while the browser accepts an empty submission.
+    expect(requiredInput).toBeRequired();
+    expect(required.getByText("*")).toBeTruthy();
+    required.unmount();
+
+    const optional = renderWithProvider(
+      <FileUpload label="Attachments" onFilesSelected={() => undefined} />,
+    );
+
+    expect(optional.getByLabelText("Attachments")).not.toBeRequired();
+    expect(optional.queryByText("*")).toBeNull();
+  });
+
   it("renders on the server and hydrates without a mismatch", () => {
     const markup = renderToServerString(
       <FileUpload label="Attachments" onFilesSelected={() => undefined} />,

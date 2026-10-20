@@ -8,4 +8,4 @@ export {
   resolveBaseZIndex,
   resolveFloatingZIndex,
 } from "./stacking";
-export type { DeepPartial } from "./types";
+export type { Concrete, DeepPartial } from "./types";

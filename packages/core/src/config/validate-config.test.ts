@@ -76,18 +76,87 @@ describe("validateConfig", () => {
     ).toEqual([]);
   });
 
+  it("accepts a custom theme that extends another custom theme, declared before or after it", () => {
+    // `brand` names `midnight` before `midnight` is declared. The resolver follows the
+    // dependency graph, so the declaration order is not a reason to reject the name.
+    expect(
+      validateConfig(
+        asConfig({
+          color: {
+            brand: { extends: "midnight", primary: "#8b5cf6" },
+            midnight: { extends: "dark", background: "#0b0b12" },
+          },
+        }),
+      ),
+    ).toEqual([]);
+
+    expect(
+      validateConfig(
+        asConfig({
+          color: {
+            midnight: { extends: "dark", background: "#0b0b12" },
+            brand: { extends: "midnight", primary: "#8b5cf6" },
+          },
+        }),
+      ),
+    ).toEqual([]);
+  });
+
+  it("errors when a custom theme extends something that is not declared", () => {
+    const issues = validateConfig(
+      asConfig({
+        color: {
+          brand: { extends: "sepia", primary: "#fff" },
+          midnight: { extends: "dark" },
+        },
+      }),
+    );
+
+    expect(issues).toEqual([
+      {
+        path: "color.brand.extends",
+        // The message names what would have been accepted, so the typo is visible.
+        message: expect.stringContaining('"sepia"'),
+        severity: "error",
+      },
+    ]);
+    expect(issues[0].message).toContain('"light", "dark", "brand", "midnight"');
+  });
+
+  it("warns when two custom themes extend each other", () => {
+    // The resolver terminates on a cycle, so this configuration still resolves; the warning
+    // says the palette is not the one the circle describes rather than refusing to start.
+    expect(
+      warningPaths({
+        color: {
+          a: { extends: "b" },
+          b: { extends: "a" },
+        },
+      }),
+    ).toEqual(["color.a.extends"]);
+  });
+
+  it("warns when a custom theme extends itself", () => {
+    expect(warningPaths({ color: { brand: { extends: "brand" } } })).toEqual([
+      "color.brand.extends",
+    ]);
+  });
+
+  it("does not warn about a chain that only reaches a built-in theme", () => {
+    expect(
+      warningPaths({
+        color: {
+          a: { extends: "b" },
+          b: { extends: "dark" },
+        },
+      }),
+    ).toEqual([]);
+  });
+
   it("warns when a built-in theme tries to extend another theme", () => {
     expect(warningPaths({ color: { light: { extends: "dark" } } })).toEqual([
       "color.light.extends",
     ]);
-  });
-
-  it("errors when a custom theme extends something that is not built in", () => {
-    expect(
-      errorPaths(
-        asConfig({ color: { brand: { extends: "sepia", primary: "#fff" } } }),
-      ),
-    ).toEqual(["color.brand.extends"]);
   });
 
   it("warns about unknown keys instead of failing", () => {

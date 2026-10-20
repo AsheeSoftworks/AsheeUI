@@ -22,19 +22,19 @@ export interface PasswordInputProps
    * Function that returns the aria-label for the toggle button.
    * Receives the current visibility state and returns a label string.
    */
-  toggleAriaLabel?: (show: boolean) => string;
+  toggleAriaLabel?: ((show: boolean) => string) | undefined;
 
   /**
    * Icon shown when password is hidden (show button).
    * Defaults to EyeIcon.
    */
-  offIcon?: ReactNode;
+  offIcon?: ReactNode | undefined;
 
   /**
    * Icon shown when password is visible (hide button).
    * Defaults to EyeOffIcon.
    */
-  onIcon?: ReactNode;
+  onIcon?: ReactNode | undefined;
 }
 
 /**

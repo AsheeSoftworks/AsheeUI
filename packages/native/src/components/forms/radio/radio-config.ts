@@ -53,11 +53,11 @@ registerNativeComponentDefaults("radio", defaultNativeRadioConfig);
 /**
  * The values a radio falls back to when no tier provides one.
  */
-export const FALLBACK_NATIVE_RADIO_CONFIG: Required<NativeRadioConfig> = {
+export const FALLBACK_NATIVE_RADIO_CONFIG = {
   size: "md",
   radius: "full",
   variant: "default",
   color: "primary",
   status: "default",
   isDisabled: false,
-};
+} satisfies NativeRadioConfig;

@@ -1,3 +1,4 @@
+import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import type { ImageFit, ImageRatioKey } from "./image-config";
 import {
@@ -75,6 +76,17 @@ describe("the image's ratio", () => {
     // on the ratio itself rather than on the syntax that expresses it.
     expect(IMAGE_RATIO_CLASS.portrait).toBe("aspect-[3/4]");
     expect(NATIVE_IMAGE_ASPECT_RATIO.portrait).toBe(3 / 4);
+  });
+
+  it("describes the portrait ratio as the 3 / 4 shape both renderers draw", () => {
+    // The ratio type's documentation is the only place the shape is stated in
+    // prose, so it has to name the ratio the maps actually render.
+    const source = readFileSync(new URL("./image-config.ts", import.meta.url), {
+      encoding: "utf8",
+    });
+
+    expect(source).toContain("`portrait`: 3 / 4");
+    expect(source).not.toContain("4 / 5");
   });
 });
 

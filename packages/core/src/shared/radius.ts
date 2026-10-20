@@ -3,22 +3,24 @@
  * This file defines the common size and radius types used across the component
  * library, along with utility functions for applying radius styles based on
  * component variants and states.
+ *
+ * The scales themselves are declared once, in `../tokens`: the unions below are
+ * derived from the `SIZE` and `RADIUS_STEP` token maps, and every `Record` keyed
+ * by them fails to compile until it states a newly added token.
  */
 
+import type { Radius, Size } from "../tokens";
 import type { Variant } from "./";
 
 /**
- * The available size options for components like Button, Input, and Spinner.
- * "sm" is small, "md" is medium (default), and "lg" is large.
+ * The available size and radius options for components.
+ *
+ * `Size` is derived from the `SIZE` map in `../tokens` ("sm" is small, "md" is
+ * medium and the default, "lg" is large). `Radius` is derived from the
+ * `RADIUS_STEP` map there and runs from "none" (square corners) to "full"
+ * (circular or pill shapes).
  */
-export type Size = "sm" | "md" | "lg";
-
-/**
- * The available radius options for components.
- * These control the border-radius of elements, with "none" being square
- * corners and "full" creating circular or pill shapes.
- */
-export type Radius = "none" | "xs" | "sm" | "md" | "lg" | "xl" | "full";
+export type { Radius, Size };
 
 /**
  * CSS class mapping for radius values.

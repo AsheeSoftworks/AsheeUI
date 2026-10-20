@@ -41,8 +41,8 @@ registerNativeComponentDefaults("avatar", defaultNativeAvatarConfig);
 /**
  * The values the avatar falls back to when no tier provides one.
  */
-export const FALLBACK_NATIVE_AVATAR_CONFIG: Required<NativeAvatarConfig> = {
+export const FALLBACK_NATIVE_AVATAR_CONFIG = {
   size: "md",
   radius: "full",
   color: "primary",
-};
+} satisfies NativeAvatarConfig;

@@ -61,12 +61,33 @@ export const CHIP_GAP_CLASS: Record<Size, string> = {
 
 /**
  * CSS classes for chip icon size based on size.
- * Controls the dimensions of icons, avatars, and close buttons.
+ * Controls the dimensions of the slot an icon or the remove control sits in, and of
+ * the drawing inside it.
+ *
+ * The slot is stated and so is the SVG, because the two are not the same rule: a
+ * consumer's icon is usually an SVG that carries a size of its own, and a box around
+ * it only clips what it draws. Stating both is what makes a bare inline SVG the size
+ * the density asks for, and it is what the badge states too — the same node has to
+ * render the same size in both siblings.
  */
 export const CHIP_ICON_SIZE_CLASS: Record<Size, string> = {
-  sm: "w-3 h-3",
-  md: "w-3.5 h-3.5",
-  lg: "w-4 h-4",
+  sm: "size-3 [&_svg]:size-3",
+  md: "size-3.5 [&_svg]:size-3.5",
+  lg: "size-4 [&_svg]:size-4",
+};
+
+/**
+ * CSS classes for the avatar slot's diameter based on size.
+ *
+ * An avatar is a picture of something rather than a glyph beside it, so it takes more
+ * of the chip than an icon does: 16, 20 and 24 points inside chips that are 24, 28
+ * and 32, which leaves the same four points of breathing room at every density. It is
+ * a map of its own for that reason — reusing the icon's would draw a face at 12.
+ */
+export const CHIP_AVATAR_SIZE_CLASS: Record<Size, string> = {
+  sm: "size-4",
+  md: "size-5",
+  lg: "size-6",
 };
 
 /**
@@ -101,9 +122,16 @@ export const CHIP_DOT_CLASS = "shrink-0 rounded-full";
 export const CHIP_SLOT_CLASS =
   "inline-flex items-center justify-center shrink-0";
 
-/** The box around an avatar, which clips it to a circle. */
+/**
+ * The box around an avatar, which clips it to a circle.
+ *
+ * The diameter comes from {@link CHIP_AVATAR_SIZE_CLASS}; what is stated here is what
+ * has to hold whatever the consumer puts inside. A node that states a diameter of its
+ * own — the framework's `Avatar` does — is held to the slot rather than cropped by it,
+ * so a face is scaled into the circle instead of being cut to a smaller one.
+ */
 export const CHIP_AVATAR_CLASS =
-  "inline-flex items-center justify-center shrink-0 scrollbar-hide overflow-hidden rounded-full";
+  "inline-flex items-center justify-center shrink-0 scrollbar-hide overflow-hidden rounded-full [&>*]:max-h-full [&>*]:max-w-full";
 
 /** The web chip's remove control. */
 export const CHIP_CLOSE_CLASS =
@@ -151,8 +179,12 @@ export const NATIVE_CHIP_GAP_CLASS: Record<Size, string> = {
 };
 
 /**
- * The size of the box an avatar, an icon or the remove control sits in, per density.
- * The web's three sizes are 12, 14 and 16 points; these state the same three.
+ * The size of the box an icon or the remove control sits in, per density, on the native
+ * renderer. The web's three icon sizes are 12, 14 and 16 points; these state the same three.
+ *
+ * An avatar gets a larger box of its own on both renderers — {@link CHIP_AVATAR_SIZE_CLASS}
+ * here and `NATIVE_CHIP_AVATAR_SIZE_CLASS` in the native package (16, 20 and 24) — because a
+ * face drawn at 12 is a smudge. This map therefore sizes icons, not avatars.
  */
 export const NATIVE_CHIP_ICON_SIZE_CLASS: Record<Size, string> = {
   sm: "h-3 w-3",

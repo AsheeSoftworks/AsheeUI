@@ -13,6 +13,7 @@
  * therefore whatever the consumer asked for.
  */
 
+import type { TypographySize } from "../../../shared/typography";
 import type { Size } from "../../../tokens";
 import type { StepperOrientation } from "./stepper-config";
 
@@ -58,13 +59,28 @@ export const STEPPER_MARKER_STATE_CLASS: Record<StepperStepState, string> = {
 
 /** The label of each step, and the tone that follows its state. */
 export const STEPPER_LABEL_CLASS: Record<StepperStepState, string> = {
-  complete: "text-sm font-medium text-foreground",
-  current: "text-sm font-medium text-foreground",
-  upcoming: "text-sm font-medium text-foreground/60",
+  complete: "font-medium text-foreground",
+  current: "font-medium text-foreground",
+  upcoming: "font-medium text-foreground/60",
 };
 
 /** The description under a label. */
 export const STEPPER_DESCRIPTION_CLASS = "text-xs text-foreground/60";
+
+/**
+ * The typography size the step label takes for each density.
+ *
+ * The label is what names the step, so it scales with the marker beside it: a
+ * `lg` stepper whose labels stayed at one size would be a larger badge with the
+ * same small text. The value is a typography *token* rather than a class, because
+ * both renderers resolve it through the same typography scale instead of each
+ * stating a font size.
+ */
+export const STEPPER_LABEL_SIZE_TOKEN: Record<Size, TypographySize> = {
+  sm: "xs",
+  md: "sm",
+  lg: "md",
+};
 
 /**
  * The rule between two steps.

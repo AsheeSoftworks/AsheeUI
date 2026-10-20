@@ -1,316 +1,144 @@
+#!/usr/bin/env node
 /**
- * Prove that a copied playground installs, verifies itself and builds.
+ * Prove that a published manifest points at files that exist.
  *
- * The repository verifies the templates' contents, but only an installation proves
- * the distribution works: the copied project has to install the framework, run its
- * own tests and build both of its entries, outside this repository and without any
- * of its packages. Two defects reached `main` that no content check could see — a
- * copied project whose TypeScript configuration reached into the repository, and a
- * template that carried a build artifact — and both were found by installing one.
- * This is that installation, for every target, as a command.
+ * What gets published is not `package.json` — it is `package.json` with `publishConfig`
+ * merged over it, and the two disagree on purpose: the source manifest points at `src` so the
+ * monorepo can import each other's TypeScript, while the published one points at `dist`.
  *
- * Run from the repository root after `pnpm build`:
+ * That disagreement is where published packages break. A `publishConfig` entry naming a file
+ * the build does not emit — a `types` condition pointing at a `.d.ts` that lives somewhere
+ * else, a `style` entry for a stylesheet the build no longer writes — installs cleanly and
+ * fails for the consumer, which is the worst place to find it.
  *
- * ```sh
+ * This check resolves every path the *published* manifest promises and fails if any is
+ * absent. It checks build output, so build first:
+ *
+ * ```bash
+ * pnpm build
  * pnpm verify:distribution
- * pnpm verify:distribution --targets vite
- * pnpm verify:distribution --published      # the version on the registry, not a tarball
  * ```
  *
- * The framework and the platform-neutral core it depends on are installed from the
- * tarballs `pnpm pack` produces, which are the manifests and file sets the registry
- * serves because `publishConfig` is applied to them. `--published` leaves the
- * template's released ranges in place instead, which is what a run after a release
- * should check.
+ * A manifest can promise a file that exists and still ship a package a consumer cannot use
+ * — a subpath the `exports` map does not expose, a stylesheet a bundler cannot resolve, a
+ * dependency still written as `workspace:^`. So the second half of the check packs every
+ * publishable package, installs the tarballs into a throwaway Vite application outside the
+ * workspace, and builds it. `verify-consumer.mjs` owns that step and is called from here,
+ * not behind a separate script: install-only failures are what this check exists for.
+ *
+ * Exit code 1 means a manifest promises a file that is not there, publishes no file list,
+ * declares no files at all, or that a consumer build from the tarballs failed.
  */
-
-import { spawn } from "node:child_process";
-import { promises as fs } from "node:fs";
-import { tmpdir } from "node:os";
-import { dirname, join, resolve } from "node:path";
+import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
+import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { verifyConsumer } from "./verify-consumer.mjs";
 
-/** The repository, which holds the packages and the playgrounds. */
-const repositoryRoot = resolve(dirname(fileURLToPath(import.meta.url)), "..");
+const ROOT = dirname(dirname(fileURLToPath(import.meta.url)));
 
-/** Arguments, with the switches separated from the values. */
-const args = process.argv.slice(2);
-const keep = args.includes("--keep");
-const published = args.includes("--published");
+/** Every publishable package directory: the umbrella at the root, plus `packages/*`. */
+function packageDirectories() {
+  const directories = [ROOT];
+  const packages = join(ROOT, "packages");
 
-/**
- * The value of a `--name value` argument.
- *
- * @param name - The argument's name, including its dashes.
- * @returns The value, or undefined when the argument is absent.
- */
-function argumentValue(name) {
-  const index = args.indexOf(name);
-
-  return index === -1 ? undefined : args[index + 1];
-}
-
-/** The targets to verify. */
-const targets = (argumentValue("--targets") ?? "next,vite,tanstack")
-  .split(",")
-  .map((target) => target.trim())
-  .filter(Boolean);
-
-/** Where the copied projects are made. */
-const workspace = resolve(
-  argumentValue("--workspace") ??
-    join(tmpdir(), `asheeui-distribution-${Date.now()}`),
-);
-
-/**
- * Quote a token for a shell.
- *
- * Windows runs the commands through `cmd.exe`, which receives one command line:
- * a path holding a space is read as two words, so a Node installed under
- * `C:\Program Files` is looked for at `C:\Program`. Every token is quoted before
- * it is joined, and a token without a space is left as it is.
- *
- * @param token - The executable or one of its arguments.
- * @returns The token, quoted when it could be split.
- */
-function quote(token) {
-  return /[\s"]/.test(token) ? `"${token.replaceAll('"', '\\"')}"` : token;
-}
-
-/**
- * Run a command and wait for it.
- *
- * @param command - The executable.
- * @param parameters - Its arguments.
- * @param cwd - The directory to run it in.
- * @param quiet - Whether to discard what the command prints, for a step whose
- * output is a file rather than a report.
- * @returns Nothing, once the command has exited successfully.
- */
-async function run(command, parameters, cwd, quiet = false) {
-  // A package manager is a shim on Windows — `pnpm` is `pnpm.cmd`, and Windows
-  // cannot launch a `.cmd` without a shell — so the shell resolves the command:
-  // POSIX runs it directly, Windows runs it through `cmd.exe`. The shell builds
-  // one command line out of the tokens, so they are quoted for it first.
-  const shell = process.platform === "win32";
-  const launcher = shell ? quote(command) : command;
-  const launcherParameters = shell ? parameters.map(quote) : parameters;
-
-  await new Promise((finished, failed) => {
-    const child = spawn(launcher, launcherParameters, {
-      cwd,
-      shell,
-      stdio: quiet ? ["ignore", "ignore", "inherit"] : "inherit",
-    });
-
-    child.on("error", failed);
-    child.on("close", (code) =>
-      code === 0
-        ? finished()
-        : failed(
-            new Error(
-              `${launcher} ${launcherParameters.join(" ")} exited with ${code}`,
-            ),
-          ),
-    );
-  });
-}
-
-/**
- * Require that a path exists, and say what to run when it does not.
- *
- * @param path - The path that has to exist.
- * @param guidance - What to tell the caller to do about it.
- */
-async function requireFile(path, guidance) {
-  const exists = await fs
-    .access(path)
-    .then(() => true)
-    .catch(() => false);
-
-  if (!exists) throw new Error(`${path} is missing; ${guidance}`);
-}
-
-/**
- * Read a JSON file.
- *
- * @param path - Absolute path of the file.
- * @returns The parsed contents.
- */
-async function readJson(path) {
-  return JSON.parse(await fs.readFile(path, "utf8"));
-}
-
-/**
- * Pack the packages the way the registry serves them.
- *
- * The web package depends on the core package, and a packed manifest carries a
- * released version range rather than the workspace protocol, so installing the
- * web tarball on its own asks the registry for a core release that does not exist
- * yet. Both are packed, and the caller points the project at both.
- *
- * @returns The paths of the tarballs, by package name.
- */
-async function packLibrary() {
-  const packDirectory = join(workspace, "pack");
-  const tarballs = {};
-
-  await fs.rm(packDirectory, { recursive: true, force: true });
-  await fs.mkdir(packDirectory, { recursive: true });
-
-  for (const name of ["core", "web"]) {
-    const directory = join(packDirectory, name);
-
-    await requireFile(
-      join(repositoryRoot, `packages/${name}/dist/index.js`),
-      "run `pnpm build` first",
-    );
-    await fs.mkdir(directory, { recursive: true });
-
-    await run(
-      "pnpm",
-      ["pack", "--pack-destination", directory],
-      join(repositoryRoot, `packages/${name}`),
-      true,
-    );
-
-    const packed = (await fs.readdir(directory)).find((file) =>
-      file.endsWith(".tgz"),
-    );
-
-    if (!packed) throw new Error(`pnpm pack produced no ${name} tarball`);
-
-    tarballs[name] = join(directory, packed);
+  if (existsSync(packages)) {
+    for (const entry of readdirSync(packages, { withFileTypes: true })) {
+      if (entry.isDirectory()) directories.push(join(packages, entry.name));
+    }
   }
 
-  return tarballs;
+  return directories;
 }
 
-/**
- * Copy one playground into the workspace.
- *
- * @param target - The playground to copy.
- * @returns The directory the project was copied into.
- */
-async function copyPlayground(target) {
-  const directory = join(workspace, target);
-  const cli = join(repositoryRoot, "packages/cli/dist/index.mjs");
-
-  await fs.rm(directory, { recursive: true, force: true });
-  await requireFile(cli, "run `pnpm build` first");
-
-  await run(
-    process.execPath,
-    [cli, "playground", target, directory, "--force"],
-    repositoryRoot,
-  );
-
-  return directory;
-}
+/** Manifest fields that promise a file, either directly or as a name-to-path map. */
+const PROMISING_FIELDS = ["main", "module", "types", "style", "bin"];
 
 /**
- * Point a copied project at the packed packages, unless a published run asked for
- * the released ranges.
+ * Collect every file path a manifest promises.
  *
- * The web package is installed from its own tarball. The core package is what that
- * tarball depends on, and the packed manifest asks for a published version, so an
- * override points it at the packed tarball too — which is how a consumer resolves
- * it once both packages are released together.
- *
- * @param directory - The copied project.
- * @param tarballs - The packed packages by name, when there are any.
+ * `exports` is nested by design — subpath, then condition, then path — so it is walked rather
+ * than read. A promise about a file starts with `./`; anything else (`node`, `browser`) is a
+ * condition name and is skipped by shape. A glob names a family of files, so it is left to the
+ * build to prove rather than asserted here.
  */
-async function installFrom(directory, tarballs) {
-  if (!tarballs) return;
+function promisedPaths(manifest) {
+  const paths = new Set();
 
-  const path = join(directory, "package.json");
-  const manifest = await readJson(path);
+  const collect = (value) => {
+    if (typeof value === "string") paths.add(value);
+    else if (value && typeof value === "object") {
+      for (const nested of Object.values(value)) collect(nested);
+    }
+  };
 
-  manifest.dependencies["@asheeui/web"] = `file:${tarballs.web}`;
+  for (const field of PROMISING_FIELDS) collect(manifest[field]);
+  collect(manifest.exports);
 
-  await fs.writeFile(path, `${JSON.stringify(manifest, null, 2)}\n`, "utf8");
-
-  // pnpm reads its settings, `overrides` among them, from the workspace file, and
-  // ignores a `pnpm` field in the manifest. The value is quoted because a Windows
-  // path is written with backslashes, which a double-quoted YAML scalar would read
-  // as escapes.
-  await fs.writeFile(
-    join(directory, "pnpm-workspace.yaml"),
-    `overrides:\n  "@asheeui/core": 'file:${tarballs.core}'\n`,
-    "utf8",
+  return [...paths].filter(
+    (path) => path.startsWith("./") && !path.includes("*"),
   );
 }
 
-/**
- * Verify one target: install it, run its tests, build it.
- *
- * @param target - The playground to verify.
- * @param tarballs - The packed packages by name, when there are any.
- * @returns The stage that failed, or undefined when everything passed.
- */
-async function verify(target, tarballs) {
-  let stage = "copy";
+const problems = [];
+const checked = [];
 
-  try {
-    const directory = await copyPlayground(target);
+for (const directory of packageDirectories()) {
+  const manifestPath = join(directory, "package.json");
+  if (!existsSync(manifestPath)) continue;
 
-    await installFrom(directory, tarballs);
+  const manifest = JSON.parse(readFileSync(manifestPath, "utf8"));
+  if (manifest.private === true) continue;
 
-    stage = "install";
-    await run("pnpm", ["install", "--no-frozen-lockfile"], directory);
+  // The published manifest is the source one with `publishConfig` merged over it.
+  const { publishConfig = {}, ...published } = manifest;
+  Object.assign(published, publishConfig);
 
-    stage = "test";
-    await run("pnpm", ["test"], directory);
+  const name = manifest.name ?? directory;
+  const promised = promisedPaths(published);
 
-    stage = "build";
-    await run("pnpm", ["build"], directory);
+  // A meta-package that only aggregates dependencies has no entry points of its own, so it has
+  // no promises to check. It is not the same thing as a package that forgot to declare them.
+  const declaresEntryPoints = [...PROMISING_FIELDS, "exports", "files"].some(
+    (field) => published[field] !== undefined,
+  );
+  if (!declaresEntryPoints) continue;
 
-    return undefined;
-  } catch (error) {
-    console.error(`\n${target}: ${stage} failed — ${error.message}\n`);
+  if (promised.length === 0) {
+    problems.push(`${name}: the published manifest promises no files at all`);
+    continue;
+  }
 
-    return stage;
+  for (const path of promised) {
+    const resolved = join(directory, path.slice(2));
+    if (!existsSync(resolved) || !statSync(resolved).isFile()) {
+      problems.push(`${name}: promises ${path}, which the build did not emit`);
+      continue;
+    }
+    checked.push(`${name} → ${path}`);
+  }
+
+  // A published package with no file list ships whatever happens to be in the directory.
+  if (!Array.isArray(published.files) || published.files.length === 0) {
+    problems.push(`${name}: publishes no \`files\` list`);
   }
 }
 
-if (targets.length === 0) {
-  console.error("no targets to verify");
-  process.exit(1);
-}
-
-await fs.mkdir(workspace, { recursive: true });
-
-console.log(
-  `verifying ${targets.join(", ")} in ${workspace}${published ? " against the published range" : " against packed tarballs"}\n`,
-);
-
-const tarballs = published ? undefined : await packLibrary();
-const results = new Map();
-
-for (const target of targets) {
-  console.log(`\n=== ${target} ===\n`);
-  results.set(target, await verify(target, tarballs));
-}
-
-console.log(`\n${"-".repeat(60)}`);
-
-for (const [target, failure] of results) {
+if (problems.length > 0) {
+  console.log(`Distribution: ${problems.length} problem(s)\n`);
+  for (const problem of problems) console.log(`  ${problem}`);
   console.log(
-    `${target.padEnd(12)} ${failure ? `${failure} failed` : "installs, verifies itself and builds"}`,
-  );
-}
-
-const failed = [...results.values()].filter(Boolean);
-
-if (failed.length > 0) {
-  console.error(
-    `\n${failed.length} of ${results.size} targets failed; the projects are under ${workspace}`,
+    "\nBuild first: these promises are about dist, and dist is what `pnpm build` writes.",
   );
   process.exit(1);
 }
 
-if (!keep) await fs.rm(workspace, { recursive: true, force: true });
+console.log(`Distribution: ${checked.length} promised file(s) exist.`);
 
-console.log(
-  `\nall ${results.size} targets install, verify themselves and build${keep ? ` (kept in ${workspace})` : ""}`,
-);
+try {
+  console.log(verifyConsumer());
+} catch (error) {
+  console.log(
+    `\nDistribution: the packed tarballs do not build a consumer.\n\n${error instanceof Error ? error.message : String(error)}`,
+  );
+  process.exit(1);
+}

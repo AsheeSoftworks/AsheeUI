@@ -49,15 +49,14 @@ registerNativeComponentDefaults("featuregrid", defaultNativeFeatureGridConfig);
 /**
  * The values the grid falls back to when no tier provides one.
  */
-export const FALLBACK_NATIVE_FEATURE_GRID_CONFIG: Required<NativeFeatureGridConfig> =
-  {
-    columns: 1,
-    columnsMd: 2,
-    columnsLg: 3,
-    gap: "lg",
-    spacing: "lg",
-    background: "none",
-    align: "center",
-    containerSize: "lg",
-    contained: true,
-  };
+export const FALLBACK_NATIVE_FEATURE_GRID_CONFIG = {
+  columns: 1,
+  columnsMd: 2,
+  columnsLg: 3,
+  gap: "lg",
+  spacing: "lg",
+  background: "none",
+  align: "center",
+  containerSize: "lg",
+  contained: true,
+} satisfies NativeFeatureGridConfig;

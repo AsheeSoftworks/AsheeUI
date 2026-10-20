@@ -26,15 +26,16 @@ export type NativePricingCardConfig = PricingCardConfig;
  * The defaults the PricingCard registers with the native registry.
  *
  * They are the web's own values: a plan is a bordered surface at the framework's largest
- * density, and it is not the recommended one until an application says so. The platform
- * adds nothing to them, because a pricing table is the same table on a phone: what differs
- * is that a phone shows one plan per screen, which is the consumer's layout decision rather
- * than the card's.
+ * density. The platform adds nothing to them, because a pricing table is the same table on a
+ * phone: what differs is that a phone shows one plan per screen, which is the consumer's
+ * layout decision rather than the card's.
+ *
+ * `highlighted` is not registered: a recommendation describes one plan among its siblings, so
+ * it is an instance prop rather than a theme option.
  */
 export const defaultNativePricingCardConfig: NativePricingCardConfig = {
   variant: "bordered",
   size: "lg",
-  highlighted: false,
 };
 
 declare module "../../../config/registry" {
@@ -48,9 +49,7 @@ registerNativeComponentDefaults("pricingcard", defaultNativePricingCardConfig);
 /**
  * The values the PricingCard falls back to when no tier provides one.
  */
-export const FALLBACK_NATIVE_PRICING_CARD_CONFIG: Required<NativePricingCardConfig> =
-  {
-    variant: "bordered",
-    size: "lg",
-    highlighted: false,
-  };
+export const FALLBACK_NATIVE_PRICING_CARD_CONFIG = {
+  variant: "bordered",
+  size: "lg",
+} satisfies NativePricingCardConfig;

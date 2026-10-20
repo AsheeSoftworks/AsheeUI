@@ -7,7 +7,12 @@
  * it configures any other component, through `components.<name>`.
  */
 
-import type { ContainerSize, SectionBackground, Space } from "@asheeui/core";
+import type {
+  Concrete,
+  ContainerSize,
+  SectionBackground,
+  Space,
+} from "@asheeui/core";
 import { registerNativeComponentDefaults } from "../config/registry";
 import type { NativeBreakpoint } from "../hooks/use-breakpoint";
 
@@ -148,20 +153,19 @@ registerNativeComponentDefaults("section", defaultNativeSectionConfig);
 registerNativeComponentDefaults("centered", defaultNativeCenteredConfig);
 
 /** The values the native Container falls back to. */
-export const FALLBACK_NATIVE_CONTAINER_CONFIG: Required<NativeContainerConfig> =
-  {
-    size: "lg",
-    gutter: true,
-  };
+export const FALLBACK_NATIVE_CONTAINER_CONFIG = {
+  size: "lg",
+  gutter: true,
+} satisfies NativeContainerConfig;
 
 /** The values the native Stack falls back to. */
-export const FALLBACK_NATIVE_STACK_CONFIG: Required<NativeStackConfig> = {
+export const FALLBACK_NATIVE_STACK_CONFIG = {
   direction: "column",
   gap: "md",
   align: "stretch",
   justify: "start",
   wrap: false,
-};
+} satisfies NativeStackConfig;
 
 /**
  * The values the native Grid falls back to.
@@ -172,7 +176,7 @@ export const FALLBACK_NATIVE_STACK_CONFIG: Required<NativeStackConfig> = {
  * states "inherit the count below me", which is the same rule the web grid gets from
  * the order of its class variants.
  */
-export const FALLBACK_NATIVE_GRID_CONFIG: Required<
+export const FALLBACK_NATIVE_GRID_CONFIG: Concrete<
   Pick<NativeGridConfig, "columns" | "gap">
 > &
   Pick<NativeGridConfig, "columnsMd" | "columnsLg"> = {
@@ -183,16 +187,16 @@ export const FALLBACK_NATIVE_GRID_CONFIG: Required<
 };
 
 /** The values the native Section falls back to. */
-export const FALLBACK_NATIVE_SECTION_CONFIG: Required<NativeSectionConfig> = {
+export const FALLBACK_NATIVE_SECTION_CONFIG = {
   spacing: "md",
   background: "none",
-};
+} satisfies NativeSectionConfig;
 
 /** The values the native Centered falls back to. */
-export const FALLBACK_NATIVE_CENTERED_CONFIG: Required<NativeCenteredConfig> = {
+export const FALLBACK_NATIVE_CENTERED_CONFIG = {
   axis: "both",
   minHeight: "none",
-};
+} satisfies NativeCenteredConfig;
 
 /**
  * Resolve how many columns a grid shows at a breakpoint.

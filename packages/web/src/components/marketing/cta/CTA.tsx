@@ -15,6 +15,7 @@ import {
   CTA_INNER_CLASS,
   CTA_PANEL_CLASS,
   cn,
+  resolveClassKey,
   resolveConfigCascade,
 } from "@asheeui/core";
 import {
@@ -22,6 +23,7 @@ import {
   forwardRef,
   type HTMLAttributes,
   type ReactNode,
+  useId,
 } from "react";
 import { useAsheeConfig } from "../../../libs/context";
 import { Container } from "../../layouts/container/Container";
@@ -40,7 +42,7 @@ export interface CtaProps extends BaseCtaProps {
   /**
    * Short label above the title.
    */
-  eyebrow?: ReactNode;
+  eyebrow?: ReactNode | undefined;
 
   /**
    * The headline of the band.
@@ -50,17 +52,30 @@ export interface CtaProps extends BaseCtaProps {
   /**
    * Supporting sentence under the headline.
    */
-  description?: ReactNode;
+  description?: ReactNode | undefined;
+
+  /**
+   * Element the headline renders as.
+   *
+   * Defaults to `h2`, because a closing band is a section of a page rather than
+   * the page's own title: a page that puts a hero and a CTA on the same screen
+   * gains one `h1`, not two. A page whose CTA really is the only heading passes
+   * `titleAs="h1"`, and a CTA nested under an existing section heading passes
+   * `h3` or lower.
+   *
+   * @default "h2"
+   */
+  titleAs?: ElementType | undefined;
 
   /**
    * The emphasised action of the band.
    */
-  primaryAction?: ActionConfig;
+  primaryAction?: ActionConfig | undefined;
 
   /**
    * The supporting action of the band.
    */
-  secondaryAction?: ActionConfig;
+  secondaryAction?: ActionConfig | undefined;
 
   /**
    * Element to render the band as.
@@ -68,12 +83,12 @@ export interface CtaProps extends BaseCtaProps {
    *
    * @default "section"
    */
-  as?: ElementType;
+  as?: ElementType | undefined;
 
   /**
    * Content below the actions, for example a small print line.
    */
-  children?: ReactNode;
+  children?: ReactNode | undefined;
 }
 
 /**
@@ -85,12 +100,18 @@ export interface CtaProps extends BaseCtaProps {
  * through `children`, so the framework never couples a layout pattern to an
  * application's subscription flow.
  *
+ * The band is a `section` landmark, and it names itself with its own headline:
+ * it points `aria-labelledby` at the heading it renders, so a reader navigating
+ * by region hears the headline rather than an unnamed region. A consumer's own
+ * `aria-labelledby` wins over the generated one.
+ *
  * @param props - CTA configuration options and element attributes.
  * @param props.title - The headline of the band.
  * @param props.eyebrow - Short label above the headline.
  * @param props.description - Supporting sentence under the headline.
  * @param props.primaryAction - The emphasised action.
  * @param props.secondaryAction - The supporting action.
+ * @param props.titleAs - Element the headline renders as. Defaults to "h2".
  * @param props.align - Content alignment. Defaults to "center".
  * @param props.spacing - Vertical padding. Defaults to "lg".
  * @param props.background - Background treatment. Defaults to "none".
@@ -122,6 +143,7 @@ export const CTA = forwardRef<HTMLElement, CtaProps>(
       description,
       primaryAction,
       secondaryAction,
+      titleAs,
       align,
       spacing,
       background,
@@ -136,6 +158,10 @@ export const CTA = forwardRef<HTMLElement, CtaProps>(
     ref,
   ) => {
     const config = useAsheeConfig();
+    // The band names itself with the headline it renders, so it is a region
+    // rather than an unnamed `section`. `useId` keeps the pair stable across
+    // the server render and the hydration.
+    const headingId = useId();
 
     const resolved = resolveConfigCascade<CtaConfig, Required<CtaConfig>>(
       { align, spacing, background, panel, containerSize, contained },
@@ -144,7 +170,12 @@ export const CTA = forwardRef<HTMLElement, CtaProps>(
     );
 
     const body = (
-      <div className={CTA_PANEL_CLASS[resolved.panel]}>
+      <div
+        className={resolveClassKey(
+          resolved.panel,
+          CTA_PANEL_CLASS,
+          "bordered",
+        )}>
         <div
           className={cn(
             CTA_INNER_CLASS,
@@ -156,6 +187,8 @@ export const CTA = forwardRef<HTMLElement, CtaProps>(
             description={description}
             align={resolved.align}
             size="lg"
+            titleAs={titleAs}
+            titleId={headingId}
           />
           <ActionGroup
             primaryAction={primaryAction}
@@ -175,6 +208,7 @@ export const CTA = forwardRef<HTMLElement, CtaProps>(
         background={resolved.background}
         contained={false}
         className={className}
+        aria-labelledby={headingId}
         {...rest}>
         {resolved.contained ? (
           <Container size={resolved.containerSize}>{body}</Container>

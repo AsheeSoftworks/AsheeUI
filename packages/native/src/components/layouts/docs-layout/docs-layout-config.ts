@@ -28,6 +28,7 @@ export const defaultNativeDocsLayoutConfig: NativeDocsLayoutConfig = {
   navigationLabel: "Documentation",
   tocLabel: "On this page",
   navigationWidth: "md",
+  stickyNavigation: true,
   stickyToc: true,
   skipLink: true,
   skipLinkLabel: "Skip to content",
@@ -44,12 +45,12 @@ registerNativeComponentDefaults("docslayout", defaultNativeDocsLayoutConfig);
 /**
  * The values the composition falls back to when no tier provides one.
  */
-export const FALLBACK_NATIVE_DOCS_LAYOUT_CONFIG: Required<NativeDocsLayoutConfig> =
-  {
-    navigationLabel: "Documentation",
-    tocLabel: "On this page",
-    navigationWidth: "md",
-    stickyToc: true,
-    skipLink: true,
-    skipLinkLabel: "Skip to content",
-  };
+export const FALLBACK_NATIVE_DOCS_LAYOUT_CONFIG = {
+  navigationLabel: "Documentation",
+  tocLabel: "On this page",
+  navigationWidth: "md",
+  stickyNavigation: true,
+  stickyToc: true,
+  skipLink: true,
+  skipLinkLabel: "Skip to content",
+} satisfies NativeDocsLayoutConfig;

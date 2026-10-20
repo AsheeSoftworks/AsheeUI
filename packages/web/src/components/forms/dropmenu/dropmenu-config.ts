@@ -23,7 +23,7 @@ export interface DropmenuConfig extends InputConfig {
    * Configuration for the dropdown menu.
    * Controls the menu's visual appearance and behavior.
    */
-  menu?: MenuConfig;
+  menu?: MenuConfig | undefined;
 }
 
 /**

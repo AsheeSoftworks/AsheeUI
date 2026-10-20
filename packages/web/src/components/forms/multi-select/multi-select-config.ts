@@ -6,7 +6,7 @@
  * and provides fallback values for the cascade resolution system.
  */
 
-import type { Color, Radius, Size, Variant } from "@asheeui/core";
+import type { Color, Concrete, Radius, Size, Variant } from "@asheeui/core";
 import { registerComponentDefaults } from "@asheeui/core";
 import { FALLBACK_FIELD_CONFIG, type FieldConfig } from "../field/field-config";
 import { defaultInputConfig, type InputConfig } from "../input";
@@ -20,22 +20,22 @@ export interface MultiSelectChipConfig {
   /**
    * Visual style variant for chips.
    */
-  variant?: Variant;
+  variant?: Variant | undefined;
 
   /**
    * Theme accent color for chips.
    */
-  color?: Color;
+  color?: Color | undefined;
 
   /**
    * Corner rounding for chips.
    */
-  radius?: Radius;
+  radius?: Radius | undefined;
 
   /**
    * Size scale for chips.
    */
-  size?: Size;
+  size?: Size | undefined;
 }
 
 /**
@@ -49,13 +49,13 @@ export interface MultiSelectConfig extends InputConfig {
    * Configuration for the dropdown menu.
    * Controls the menu's visual appearance and behavior.
    */
-  menu?: MenuConfig;
+  menu?: MenuConfig | undefined;
 
   /**
    * Configuration for selected value chips.
    * Controls the appearance of chips in the selected values section.
    */
-  chip?: MultiSelectChipConfig;
+  chip?: MultiSelectChipConfig | undefined;
 }
 
 /**
@@ -74,8 +74,8 @@ export const defaultMultiSelectConfig: MultiSelectConfig = {
  * These values are used when instance props, component config,
  * and global defaults are all undefined.
  */
-export const FALLBACK_MULTI_SELECT_CONFIG: Required<FieldConfig> & {
-  chip: Required<MultiSelectChipConfig>;
+export const FALLBACK_MULTI_SELECT_CONFIG: Concrete<FieldConfig> & {
+  chip: Concrete<MultiSelectChipConfig>;
 } = {
   ...FALLBACK_FIELD_CONFIG,
   chip: {

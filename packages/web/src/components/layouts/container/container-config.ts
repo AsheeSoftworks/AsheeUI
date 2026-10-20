@@ -35,7 +35,7 @@ export interface ContainerConfig {
    *
    * @default "lg"
    */
-  size?: ContainerSize;
+  size?: ContainerSize | undefined;
 
   /**
    * Whether to reserve a horizontal gutter.
@@ -44,7 +44,7 @@ export interface ContainerConfig {
    *
    * @default true
    */
-  gutter?: boolean;
+  gutter?: boolean | undefined;
 
   /**
    * Whether to centre the content horizontally.
@@ -53,7 +53,7 @@ export interface ContainerConfig {
    *
    * @default true
    */
-  centered?: boolean;
+  centered?: boolean | undefined;
 }
 
 /**
@@ -76,8 +76,8 @@ registerComponentDefaults("container", defaultContainerConfig);
 /**
  * Hard fallback values used when no config tier provides a value.
  */
-export const FALLBACK_CONTAINER_CONFIG: Required<ContainerConfig> = {
+export const FALLBACK_CONTAINER_CONFIG = {
   size: "lg",
   gutter: true,
   centered: true,
-};
+} satisfies ContainerConfig;

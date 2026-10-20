@@ -50,42 +50,54 @@ export interface ModalConfig {
    *
    * @default "md"
    */
-  size?: ModalSizeKey;
+  size?: ModalSizeKey | undefined;
 
   /**
    * Where the modal sits vertically.
    *
    * @default "center"
    */
-  position?: ModalPosition;
+  position?: ModalPosition | undefined;
 
   /**
    * Corner rounding.
    *
-   * @default "lg"
+   * Resolves from the application's `defaultRadius` before this fallback, so an
+   * unconfigured application draws the corners its own default names — the
+   * framework states `xs` — and `lg` answers only when the application states no
+   * default at all. Set `components.modal.radius` to pin the modal's rounding
+   * for every dialog.
+   *
+   * @default "lg" (hard fallback; the application's `defaultRadius` wins first)
    */
-  radius?: Radius;
+  radius?: Radius | undefined;
 
   /**
    * Whether the modal moves when it appears and disappears.
    *
    * @default true
    */
-  animated?: boolean;
+  animated?: boolean | undefined;
 
   /**
    * Whether pressing the dimmed area around the modal dismisses it.
    *
+   * This canonical name is shared with the drawer, whose deprecated
+   * `closeOnOverlayClick` alias names the same gesture.
+   *
    * @default true
    */
-  closeOnBackdropClick?: boolean;
+  closeOnBackdropClick?: boolean | undefined;
 
   /**
    * Whether the platform's own way out dismisses the modal.
    *
+   * This canonical name is shared with the drawer, whose deprecated
+   * `closeOnEsc` alias names the same gesture.
+   *
    * @default true
    */
-  closeOnEscape?: boolean;
+  closeOnEscape?: boolean | undefined;
 }
 
 declare module "../../../registry" {

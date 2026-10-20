@@ -66,7 +66,7 @@ describe("Form", () => {
     fireEvent.submit(form);
 
     expect(onSubmit).toHaveBeenCalledTimes(1);
-    expect(onSubmit.mock.calls[0][0]).toHaveProperty("type", "submit");
+    expect(onSubmit.mock.calls[0]![0]).toHaveProperty("type", "submit");
   });
 
   it("submits from the control it renders", async () => {

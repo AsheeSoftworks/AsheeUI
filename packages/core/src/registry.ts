@@ -19,7 +19,7 @@ export type ComponentConfigRegistry = ComponentTypeConfigRegistry;
 
 /**
  * Internal storage for component default configurations.
- * Maps component names to their default configuration objects.
+ * Maps registration names to their default configuration objects.
  */
 const defaultsRegistry = new Map<string, unknown>();
 
@@ -29,12 +29,17 @@ const defaultsRegistry = new Map<string, unknown>();
  * The registered defaults are used as fallback values when component-level
  * props are not provided.
  *
- * @param name - The component identifier (e.g., "Button", "Input").
+ * The `name` is the component's registration name, which is the key written
+ * under `components` in a consumer's configuration. It is the component's export
+ * name lowercased, except for `multiSelect` and `resizableScreen`, which keep
+ * their camelCase spelling.
+ *
+ * @param name - The registration name (e.g., "button", "input").
  * @param config - The default configuration object for the component.
  *
  * @example
  * ```tsx
- * registerComponentDefaults('Button', {
+ * registerComponentDefaults('button', {
  *   variant: 'solid',
  *   color: 'primary',
  *   size: 'md',
@@ -54,12 +59,12 @@ export function registerComponentDefaults<
  * Retrieves the default configuration for a component.
  * Returns undefined if no defaults have been registered for the component.
  *
- * @param name - The component identifier (e.g., "Button", "Input").
+ * @param name - The registration name (e.g., "button", "input").
  * @returns The default configuration object for the component, or undefined.
  *
  * @example
  * ```tsx
- * const defaults = getComponentDefaults('Button');
+ * const defaults = getComponentDefaults('button');
  * if (defaults) {
  *   // Use default values as fallbacks
  *   const variant = props.variant ?? defaults.variant;
@@ -84,7 +89,7 @@ export function getComponentDefaults<K extends keyof ComponentConfigRegistry>(
  * @example
  * ```tsx
  * const allDefaults = getAllComponentDefaults();
- * // Returns: { Button: { variant: 'solid', ... }, Input: { size: 'md', ... } }
+ * // Returns: { button: { variant: 'solid', ... }, input: { size: 'md', ... } }
  * ```
  */
 export function getAllComponentDefaults(): Partial<ComponentConfigRegistry> {

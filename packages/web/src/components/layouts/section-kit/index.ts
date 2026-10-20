@@ -1,11 +1,13 @@
 /**
- * Internal section kit for AsheeUI.
+ * The section kit for AsheeUI.
  *
  * The kit holds the parts the framework's patterns share: the heading block
  * (`SectionHeading`), the configured action group (`ActionGroup`) and the skip
- * link the page compositions lead with (`SkipLink`). It is an internal helper
- * module, like the field and menu helpers: it is deliberately not exported from
- * the package entry point and is not part of the public component inventory.
+ * link the page compositions lead with (`SkipLink`). It is public, and it is
+ * public through its own subpath — `@asheeui/web/section-kit` — rather than the
+ * package entry point, because it is the composition vocabulary rather than the
+ * component inventory; `https://docs.asheeui.com/components/layouts/section` documents it
+ * under "The section kit". Import from that subpath in application code.
  */
 
 export * from "./ActionGroup";

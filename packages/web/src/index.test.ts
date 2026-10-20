@@ -109,6 +109,9 @@ describe("public entry point", () => {
     expect(AsheeUI).not.toHaveProperty("Menu");
     expect(AsheeUI).not.toHaveProperty("useMenuFloating");
     expect(AsheeUI).not.toHaveProperty("defaultScrollbarConfig");
+    // The section kit is public through `@asheeui/web/section-kit` rather than
+    // through this entry point, so its parts are absent here on purpose.
+    expect(AsheeUI).not.toHaveProperty("SkipLink");
   });
 
   it("keeps component-internal helpers and contexts out of the public surface", () => {
@@ -121,7 +124,6 @@ describe("public entry point", () => {
     expect(AsheeUI).not.toHaveProperty("useRadioGroupContext");
     expect(AsheeUI).not.toHaveProperty("formatFileSize");
     expect(AsheeUI).not.toHaveProperty("describeRejectedFiles");
-    expect(AsheeUI).not.toHaveProperty("SkipLink");
   });
 
   it("keeps every component's class maps out of the public surface", () => {

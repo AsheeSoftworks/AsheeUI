@@ -57,13 +57,12 @@ registerNativeComponentDefaults(
 /**
  * The values the field falls back to when no tier provides one.
  */
-export const FALLBACK_NATIVE_AUTOCOMPLETE_CONFIG: Required<NativeAutocompleteConfig> =
-  {
-    size: "md",
-    radius: "md",
-    variant: "bordered",
-    color: "primary",
-    status: "default",
-    isDisabled: false,
-    required: false,
-  };
+export const FALLBACK_NATIVE_AUTOCOMPLETE_CONFIG = {
+  size: "md",
+  radius: "md",
+  variant: "bordered",
+  color: "primary",
+  status: "default",
+  isDisabled: false,
+  required: false,
+} satisfies NativeAutocompleteConfig;

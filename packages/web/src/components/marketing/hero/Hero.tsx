@@ -14,7 +14,6 @@ import type { ActionConfig } from "@asheeui/core";
 import {
   cn,
   HERO_CENTERED_CLASS,
-  HERO_DESCRIPTION_MEASURE_CLASS,
   HERO_LAYOUT_CLASS,
   HERO_MEDIA_CLASS,
   HERO_MEDIA_FIRST_CLASS,
@@ -26,6 +25,7 @@ import {
   forwardRef,
   type HTMLAttributes,
   type ReactNode,
+  useId,
 } from "react";
 import { useAsheeConfig } from "../../../libs/context";
 import { Container } from "../../layouts/container/Container";
@@ -44,7 +44,7 @@ export interface HeroProps extends BaseHeroProps {
   /**
    * Short label above the title, for example the product category.
    */
-  eyebrow?: ReactNode;
+  eyebrow?: ReactNode | undefined;
 
   /**
    * The headline.
@@ -54,23 +54,35 @@ export interface HeroProps extends BaseHeroProps {
   /**
    * Supporting sentence under the headline.
    */
-  description?: ReactNode;
+  description?: ReactNode | undefined;
+
+  /**
+   * Element the headline renders as.
+   *
+   * Defaults to `h2`, because a band is a section of a page rather than the
+   * page's own title. A landing page whose hero *is* the page title — nothing
+   * above it but the navigation — passes `titleAs="h1"`, and a hero nested
+   * under an existing section heading passes `h3` or lower.
+   *
+   * @default "h2"
+   */
+  titleAs?: ElementType | undefined;
 
   /**
    * The emphasised action of the hero.
    */
-  primaryAction?: ActionConfig;
+  primaryAction?: ActionConfig | undefined;
 
   /**
    * The supporting action of the hero.
    */
-  secondaryAction?: ActionConfig;
+  secondaryAction?: ActionConfig | undefined;
 
   /**
    * Content placed beside the text column from the `lg` breakpoint upwards,
    * typically an illustration or a product screenshot.
    */
-  media?: ReactNode;
+  media?: ReactNode | undefined;
 
   /**
    * Element to render the hero band as.
@@ -78,12 +90,12 @@ export interface HeroProps extends BaseHeroProps {
    *
    * @default "section"
    */
-  as?: ElementType;
+  as?: ElementType | undefined;
 
   /**
    * Content below the actions, for example a row of customer logos.
    */
-  children?: ReactNode;
+  children?: ReactNode | undefined;
 }
 
 /**
@@ -94,8 +106,10 @@ export interface HeroProps extends BaseHeroProps {
  * single component rather than a set of headline, subtitle and action
  * components, because the arrangement between them is the point.
  *
- * The hero is a `section` landmark and is named by its own heading, so a reader
- * navigating by region hears the headline rather than an unnamed region.
+ * The hero is a `section` landmark, and it names itself with its own headline:
+ * the band points `aria-labelledby` at the heading it renders, so a reader
+ * navigating by region hears the headline rather than an unnamed region. A
+ * consumer's own `aria-labelledby` wins over the generated one.
  *
  * @param props - Hero configuration options and element attributes.
  * @param props.title - The headline.
@@ -104,6 +118,7 @@ export interface HeroProps extends BaseHeroProps {
  * @param props.primaryAction - The emphasised action.
  * @param props.secondaryAction - The supporting action.
  * @param props.media - Content beside the text column.
+ * @param props.titleAs - Element the headline renders as. Defaults to "h2".
  * @param props.align - Text alignment. Defaults to "start".
  * @param props.spacing - Vertical padding. Defaults to "xl".
  * @param props.background - Background treatment. Defaults to "none".
@@ -137,6 +152,7 @@ export const Hero = forwardRef<HTMLElement, HeroProps>(
       primaryAction,
       secondaryAction,
       media,
+      titleAs,
       align,
       spacing,
       background,
@@ -151,6 +167,10 @@ export const Hero = forwardRef<HTMLElement, HeroProps>(
     ref,
   ) => {
     const config = useAsheeConfig();
+    // The band names itself with the headline it renders, so it is a region
+    // rather than an unnamed `section`. `useId` keeps the pair stable across
+    // the server render and the hydration.
+    const headingId = useId();
 
     const resolved = resolveConfigCascade<HeroConfig, Required<HeroConfig>>(
       { align, spacing, background, mediaPosition, containerSize, contained },
@@ -162,17 +182,15 @@ export const Hero = forwardRef<HTMLElement, HeroProps>(
 
     const text = (
       <div
-        className={cn(
-          HERO_TEXT_COLUMN_CLASS,
-          centered && HERO_CENTERED_CLASS,
-          !media && HERO_DESCRIPTION_MEASURE_CLASS,
-        )}>
+        className={cn(HERO_TEXT_COLUMN_CLASS, centered && HERO_CENTERED_CLASS)}>
         <SectionHeading
           eyebrow={eyebrow}
           title={title}
           description={description}
           align={resolved.align}
           size="xl"
+          titleAs={titleAs}
+          titleId={headingId}
         />
         <ActionGroup
           primaryAction={primaryAction}
@@ -206,6 +224,7 @@ export const Hero = forwardRef<HTMLElement, HeroProps>(
         background={resolved.background}
         contained={false}
         className={className}
+        aria-labelledby={headingId}
         {...rest}>
         {resolved.contained ? (
           <Container size={resolved.containerSize}>{body}</Container>

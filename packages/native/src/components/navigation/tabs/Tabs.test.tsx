@@ -4,7 +4,8 @@
  * The tests state the component's contract: the triggers form a tablist whose triggers are
  * tabs, the first tab is the one selected at first, selecting another reveals its panel and
  * hides the one before, a consumer who owns the selection is told about every change and
- * decides what happens, a disabled tab cannot be selected and says so, and the bar's
+ * decides what happens, a selection that names no tab still leaves the first one selected and
+ * reachable, a disabled tab cannot be selected and says so, and the bar's
  * treatment and the triggers' styling resolve through the configuration cascade.
  */
 
@@ -75,6 +76,28 @@ describe("Native Tabs", () => {
     );
 
     expect(view.getByText("9 active")).toBeTruthy();
+  });
+
+  // A controlled `activeId` naming no tab must not leave every trigger unreachable: the bar
+  // falls back to the first tab, which is the tab the panel already falls back to, so there is
+  // always one selected and one reachable trigger rather than a bar of unselected tabs.
+  it("falls back to the first tab when the selection names no tab", async () => {
+    const view = await renderTabs(
+      <Tabs testID="tabs" tabs={TABS} activeId="vanished" />,
+    );
+    const first = view.getByRole("tab", { name: "Invoices" });
+
+    expect(first.props.accessibilityState).toMatchObject({ selected: true });
+    expect(
+      view.getByRole("tab", { name: "Clients" }).props.accessibilityState,
+    ).toMatchObject({ selected: false });
+    // A selected trigger that is disabled would still be unreachable, so the fallback states
+    // the first tab as one a reader can reach.
+    expect(
+      (first.props.accessibilityState as { disabled?: boolean }).disabled,
+    ).toBeFalsy();
+    // The panel shows the tab the bar now reports as selected, rather than a second answer.
+    expect(view.getByText("42 open")).toBeTruthy();
   });
 
   it("reports every change to a consumer who owns the selection, and decides nothing itself", async () => {

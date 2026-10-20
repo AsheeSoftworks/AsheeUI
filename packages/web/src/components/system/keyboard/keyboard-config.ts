@@ -53,27 +53,27 @@ export interface KeyboardStylingOptions {
    * Size scale for keyboard keys.
    * Controls the height, font size, and padding of individual keys.
    */
-  size?: KeyboardSizeKey;
+  size?: KeyboardSizeKey | undefined;
 
   /**
    * Visual style variant for keyboard keys.
    */
-  variant?: Variant;
+  variant?: Variant | undefined;
 
   /**
    * Theme accent color for keyboard keys.
    */
-  color?: Color;
+  color?: Color | undefined;
 
   /**
    * Corner rounding for keyboard keys.
    */
-  radius?: Radius;
+  radius?: Radius | undefined;
 
   /**
    * Whether to render the keyboard in a Floating UI portal.
    */
-  portal?: boolean;
+  portal?: boolean | undefined;
 }
 
 /**
@@ -87,38 +87,38 @@ export interface KeyboardConfig extends KeyboardStylingOptions {
    * The layouts available for the keyboard.
    * Maps layout names to arrays of row strings.
    */
-  layouts?: KeyboardLayouts;
+  layouts?: KeyboardLayouts | undefined;
 
   /**
    * Display mappings for special keys.
    * Maps tokens like "{bksp}" to display labels.
    */
-  display?: KeyDisplayMap;
+  display?: KeyDisplayMap | undefined;
 
   /**
    * The default layout to show when the keyboard opens.
    * @default "default"
    */
-  defaultLayout?: LayoutName;
+  defaultLayout?: LayoutName | undefined;
 
   /**
    * Delay in milliseconds before closing the keyboard on blur.
    * @default 500
    */
-  closeDelay?: number;
+  closeDelay?: number | undefined;
 
   /**
    * Whether to automatically switch back from shift after a key press.
    * @default true
    */
-  autoShiftBack?: boolean;
+  autoShiftBack?: boolean | undefined;
 
   /**
    * Whether the keyboard system is globally disabled.
    * When true, all keyboard interactions are prevented.
    * @default false
    */
-  disabled?: boolean;
+  disabled?: boolean | undefined;
 }
 
 /**
@@ -163,6 +163,24 @@ export const defaultKeyDisplay: KeyDisplayMap = {
   "{abc}": "ABC",
   "{space}": "space",
   "{clear}": "C",
+};
+
+/**
+ * Accessible names for the named keys.
+ *
+ * The default display draws a glyph (`⌫`, `⇧`, `?123`), which a screen reader
+ * announces as a symbol rather than as the action the key performs. The name
+ * below is what assistive technology reads; the glyph stays the visible label,
+ * and `display` only changes what is seen.
+ */
+export const defaultKeyAccessibleLabels: Record<string, string> = {
+  "{bksp}": "Backspace",
+  "{enter}": "Enter",
+  "{shift}": "Shift",
+  "{symbols}": "Symbols",
+  "{abc}": "Letters",
+  "{space}": "Space",
+  "{clear}": "Clear",
 };
 
 /**

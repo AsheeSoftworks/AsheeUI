@@ -30,42 +30,42 @@ export interface ActionConfig {
    * Destination of the action.
    * With one, the action renders as a link; without one, as a button.
    */
-  href?: string;
+  href?: string | undefined;
 
   /**
    * Visual style of the action.
    * Defaults to the emphasis the pattern gives that position: the primary
    * action is solid and the secondary action is bordered.
    */
-  variant?: Variant;
+  variant?: Variant | undefined;
 
   /**
    * Accent colour of the action.
    */
-  color?: Color;
+  color?: Color | undefined;
 
   /**
    * Density of the action.
    */
-  size?: Size;
+  size?: Size | undefined;
 
   /**
    * Corner rounding of the action.
    */
-  radius?: Radius;
+  radius?: Radius | undefined;
 
   /**
    * Content before the label, typically an icon.
    */
-  icon?: ReactNode;
+  icon?: ReactNode | undefined;
 
   /**
    * Component that replaces the anchor, such as a framework router link.
    */
-  component?: ElementType;
+  component?: ElementType | undefined;
 
   /**
    * Props for that component.
    */
-  componentProps?: Record<string, unknown>;
+  componentProps?: Record<string, unknown> | undefined;
 }

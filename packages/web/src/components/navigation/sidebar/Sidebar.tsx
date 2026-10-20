@@ -27,8 +27,11 @@ import {
 } from "@asheeui/core";
 import {
   type ElementType,
+  forwardRef,
   type HTMLAttributes,
+  type ReactElement,
   type ReactNode,
+  type Ref,
   useCallback,
   useEffect,
   useMemo,
@@ -39,6 +42,7 @@ import { ChevronLeftIcon } from "../../../icons/ChevronLeftIcon";
 import { ChevronRightIcon } from "../../../icons/ChevronRightIcon";
 import { useAsheeConfig } from "../../../libs/context";
 import { Button } from "../../forms/button/Button";
+import { useWithinSidebarColumn } from "../../layouts/sidebar-layout/sidebar-column";
 import { Tooltip } from "../../overlays/tooltip/Tooltip";
 import type { TooltipPlacement } from "../../overlays/tooltip/tooltip-config";
 import type {
@@ -74,7 +78,7 @@ export interface SidebarOptionProps extends SidebarOptionsConfig {
   /**
    * Class override applied to every navigation item.
    */
-  itemClassName?: string;
+  itemClassName?: string | undefined;
 }
 
 /**
@@ -86,13 +90,13 @@ export interface SidebarLinkProps {
    * Custom link component (e.g., Next.js Link, TanStack Router Link).
    * When provided, this component is used instead of the native <a> tag.
    */
-  component?: ElementType;
+  component?: ElementType | undefined;
 
   /**
    * Additional props to pass to the custom link component (e.g. { prefetch: true }).
    * These take precedence over the component's own props.
    */
-  props?: Record<string, unknown>;
+  props?: Record<string, unknown> | undefined;
 }
 
 /**
@@ -103,91 +107,91 @@ export interface SidebarProps<T = string> extends BaseSidebarProps {
    * List of navigation items or sections.
    * Can be a flat array of items or an array of sections.
    */
-  items?: SidebarItems<T>;
+  items?: SidebarItems<T> | undefined;
 
   /**
    * Key of currently active item.
    * Used to highlight the selected navigation item.
    */
-  activeKey?: T;
+  activeKey?: T | undefined;
 
   /**
    * Selection callback fired when an item is clicked.
    * Receives the clicked item object.
    */
-  onSelect?: (item: SidebarItem<T>) => void;
+  onSelect?: ((item: SidebarItem<T>) => void) | undefined;
 
   /**
    * Controlled collapsed drawer state.
    * When provided, the component becomes controlled.
    */
-  isCollapsed?: boolean;
+  isCollapsed?: boolean | undefined;
 
   /**
    * Callback when collapse state changes.
    * Receives the new collapsed state.
    */
-  onCollapseChange?: (collapsed: boolean) => void;
+  onCollapseChange?: ((collapsed: boolean) => void) | undefined;
 
   /**
    * Title displayed in the sidebar header when expanded.
    */
-  title?: ReactNode;
+  title?: ReactNode | undefined;
 
   /**
    * Header back button click handler.
    * When provided, a back button is shown in the header.
    */
-  onBack?: () => void;
+  onBack?: (() => void) | undefined;
 
   /**
    * Custom back button icon element.
    * Defaults to ArrowLeftIcon.
    */
-  backIcon?: ReactNode;
+  backIcon?: ReactNode | undefined;
 
   /**
    * Optional user role string to filter item visibility against item.roles.
    * Items and sections with roles that don't match this role are hidden.
    */
-  userRole?: string;
+  userRole?: string | undefined;
 
   /**
    * Footer slot element.
    * Rendered at the bottom of the sidebar.
    */
-  footer?: ReactNode;
+  footer?: ReactNode | undefined;
 
   /**
    * Header section class override.
    */
-  headerClassName?: string;
+  headerClassName?: string | undefined;
 
   /**
    * Navigation container class override.
    */
-  bodyClassName?: string;
+  bodyClassName?: string | undefined;
 
   /**
    * Options configuration for the sidebar's navigation items
    * (radius and active/inactive styling), plus item-local props.
    */
-  options?: SidebarOptionProps;
+  options?: SidebarOptionProps | undefined;
 
   /**
    * Tooltip configuration for collapsed sidebar items.
    */
-  tooltip?: SidebarTooltipConfig;
+  tooltip?: SidebarTooltipConfig | undefined;
 
   /**
    * Section label class override.
    */
-  sectionLabelClassName?: string;
+  sectionLabelClassName?: string | undefined;
 
   /**
    * Footer class override.
    */
-  footerClassName?: string;
+  footerClassName?: string | undefined;
 
   /**
    * Anchor tag props passthrough (native <a> or custom link).
@@ -201,8 +205,39 @@ export interface SidebarProps<T = string> extends BaseSidebarProps {
    * Link configuration for navigation items.
    * Provides the custom link component and props forwarded to it.
    */
-  link?: SidebarLinkProps;
+  link?: SidebarLinkProps | undefined;
+
+  /**
+   * Accessible name of the navigation landmark inside the sidebar.
+   *
+   * The nav inside the sidebar is the landmark a reader jumps to, and it needs
+   * its own name so two sidebars on one page are distinguishable in a landmark
+   * list. On its own, the sidebar is also an `aside` — a complementary landmark
+   * — which a consumer can name through the usual `aria-label` attribute. Inside
+   * a `SidebarLayout` column the layout already provides that complementary
+   * landmark, so the sidebar renders no second one and only this navigation
+   * landmark is added.
+   *
+   * @default "Sidebar navigation"
+   */
+  navLabel?: string | undefined;
 }
+
+/**
+ * The sidebar's public type.
+ *
+ * `forwardRef` erases the component's generic key type, so the wrapped
+ * component is cast back to this callable type. It keeps `Sidebar<T>` usable
+ * with a consumer's own key type and accepts a forwarded `ref` to the root
+ * element — the `aside` on its own, or the column's `div` inside a
+ * `SidebarLayout`.
+ */
+type SidebarComponent = {
+  <T = string>(
+    props: SidebarProps<T> & { ref?: Ref<HTMLElement> },
+  ): ReactElement | null;
+  displayName?: string | undefined;
+};
 
 /**
  * A collapsible navigation sidebar with support for sections, items,
@@ -235,7 +270,10 @@ export interface SidebarProps<T = string> extends BaseSidebarProps {
  * @param props.tooltip - Tooltip configuration for collapsed items (show, placement, variant, color).
  * @param props.showCollapseButton - Whether the collapse button is shown. Defaults to true.
  * @param props.collapsible - Whether the sidebar can be collapsed. Defaults to true.
+ * @param props.animated - Whether the sidebar transitions between widths. Defaults to true.
  * @param props.link - Link configuration for navigation items (component and props).
+ * @param props.navLabel - Accessible name of the navigation landmark. Defaults
+ * to "Sidebar navigation".
  *
  * @example
  * ```tsx
@@ -277,37 +315,51 @@ export interface SidebarProps<T = string> extends BaseSidebarProps {
  * @see SidebarConfig - The configuration type for component defaults.
  * @see useAsheeConfig - Hook for accessing the global configuration.
  */
-export function Sidebar<T = string>({
-  items: itemsProp,
-  activeKey,
-  onSelect,
-  isCollapsed: isCollapsedProp,
-  onCollapseChange,
-  title,
-  onBack,
-  backIcon,
-  userRole,
-  footer,
-  variant,
-  size,
-  radius,
-  options,
-  showCollapseButton: showCollapseButtonProp,
-  collapsible: collapsibleProp,
-  defaultCollapsed: defaultCollapsedProp,
-  tooltip,
-  headerClassName,
-  bodyClassName,
-  sectionLabelClassName,
-  footerClassName,
-  anchorProps,
-  link,
-  className,
-  style,
-  ...props
-}: SidebarProps<T>) {
+export const Sidebar = forwardRef(SidebarInner) as SidebarComponent;
+
+function SidebarInner<T = string>(
+  {
+    items: itemsProp,
+    activeKey,
+    onSelect,
+    isCollapsed: isCollapsedProp,
+    onCollapseChange,
+    title,
+    onBack,
+    backIcon,
+    userRole,
+    footer,
+    variant,
+    size,
+    radius,
+    options,
+    animated: animatedProp,
+    showCollapseButton: showCollapseButtonProp,
+    collapsible: collapsibleProp,
+    defaultCollapsed: defaultCollapsedProp,
+    tooltip,
+    headerClassName,
+    bodyClassName,
+    sectionLabelClassName,
+    footerClassName,
+    anchorProps,
+    link,
+    navLabel = "Sidebar navigation",
+    className,
+    style,
+    ...props
+  }: SidebarProps<T>,
+  ref: Ref<HTMLElement>,
+) {
   const config = useAsheeConfig();
   const sectionConfig = config.components?.sidebar;
+
+  // Inside a `SidebarLayout` column the layout has already rendered the
+  // complementary landmark, so rendering another `aside` here would nest one
+  // complementary landmark inside another. The column's landmark is the region;
+  // this component contributes the navigation landmark inside it.
+  const withinSidebarColumn = useWithinSidebarColumn();
+  const Column: ElementType = withinSidebarColumn ? "div" : "aside";
 
   // Resolve collapsible and collapse button visibility
   const resolvedCollapsible = resolveCascade<boolean>(
@@ -329,6 +381,16 @@ export function Sidebar<T = string>({
     sectionConfig?.defaultCollapsed,
     undefined,
     FALLBACK_SIDEBAR_CONFIG.defaultCollapsed,
+  );
+
+  // `animated` is part of the shared sidebar contract, so it resolves like any
+  // other option; when it is off the sidebar lays out its new width without a
+  // transition, as `Drawer` and `Modal` do.
+  const resolvedAnimated = resolveCascade<boolean>(
+    animatedProp,
+    sectionConfig?.animated,
+    undefined,
+    FALLBACK_SIDEBAR_CONFIG.animated,
   );
 
   const [internalCollapsed, setInternalCollapsed] = useState(
@@ -520,8 +582,9 @@ export function Sidebar<T = string>({
     : SIDEBAR_EXPANDED_WIDTH_CLASS[resolvedSizeKey];
 
   // Render a single item - simplified with only itemVariant and active state
-  const renderItem = (item: SidebarItem<T>) => {
+  const renderItem = (item: SidebarItem<T>, isSectionDisabled = false) => {
     const isActive = item.id === activeKey;
+    const isDisabled = isSectionDisabled || item.disabled === true;
 
     const linkClassName = cn(
       "w-full flex items-center gap-3 transition-all truncate no-underline",
@@ -530,7 +593,7 @@ export function Sidebar<T = string>({
       isActive && "font-medium",
       // Use resolved variant classes - active items use activeItemVariant
       isActive ? activeVariantClasses : inactiveVariantClasses,
-      item.disabled && "opacity-50 cursor-not-allowed pointer-events-none",
+      isDisabled && "opacity-50 cursor-not-allowed pointer-events-none",
       resolveClassKey(
         resolvedItemVariant === "underlined" ? "none" : resolvedItemRadiusKey,
         RADIUS_CLASS,
@@ -541,14 +604,17 @@ export function Sidebar<T = string>({
 
     const LinkComponent = link?.component || "a";
     const linkProps = {
-      href: item.disabled ? undefined : item.href,
+      href: isDisabled ? undefined : item.href,
       target: item.target,
       rel: item.rel,
+      // A disabled row is still a row, so it says so rather than pretending to
+      // be an ordinary destination.
+      "aria-disabled": isDisabled ? true : undefined,
       // The active item is the page the consumer is on, which is what
       // `aria-current` conveys (`COMP-044`).
       "aria-current": isActive ? "page" : undefined,
       onClick: (e: React.MouseEvent<HTMLAnchorElement>) =>
-        handleItemClick(e, item),
+        isDisabled ? e.preventDefault() : handleItemClick(e, item),
       className: linkClassName,
       ...anchorProps,
       ...(link?.props ?? {}),
@@ -566,7 +632,12 @@ export function Sidebar<T = string>({
           </span>
         )}
 
-        {!isCollapsed && (
+        {isCollapsed ? (
+          // The icon is the only visible content once collapsed, and a tooltip
+          // is a description rather than a name, so the label stays in the
+          // accessibility tree as visually hidden text.
+          <span className="sr-only">{item.label}</span>
+        ) : (
           <>
             <span className="truncate flex-1 text-left">{item.label}</span>
             {item.badge && <span className="shrink-0">{item.badge}</span>}
@@ -596,27 +667,42 @@ export function Sidebar<T = string>({
   const renderSection = (section: SidebarSection<T>) => {
     if (!section.items || section.items.length === 0) return null;
 
+    // A disabled section keeps its rows on screen — they are still information
+    // about what the application offers — but none of them can act, which is
+    // what `SidebarSection.disabled` states.
+    const isSectionDisabled = section.disabled === true;
+
     return (
-      <div key={String(section.id)} className="flex flex-col gap-0.5">
+      <div
+        key={String(section.id)}
+        className="flex flex-col gap-0.5"
+        aria-disabled={isSectionDisabled ? true : undefined}>
         {!isCollapsed && section.label && (
           <div
             className={cn(
               "text-foreground/70 font-medium uppercase tracking-wider truncate",
               SIDEBAR_SECTION_LABEL_CLASS[resolvedSizeKey],
               sectionLabelClassName,
+              isSectionDisabled && "opacity-50",
             )}>
             {section.label}
           </div>
         )}
-        {section.items.map(renderItem)}
+        {section.items.map((item) => renderItem(item, isSectionDisabled))}
       </div>
     );
   };
 
   return (
-    <aside
+    <Column
+      // The root is an `aside` on its own and a `div` inside a `SidebarLayout`
+      // column, and both carry the consumer's `HTMLElement` ref.
+      ref={ref as Ref<HTMLDivElement>}
       className={cn(
-        "h-full flex flex-col transition-all duration-200 select-none shrink-0",
+        "h-full flex flex-col select-none shrink-0",
+        // The width moves only when the contract asks it to; `animated: false`
+        // lays the new width out directly.
+        resolvedAnimated && "transition-all duration-200",
         widthClass,
         SIDEBAR_VARIANT_CLASS[resolvedVariantKey],
         resolveClassKey(
@@ -666,6 +752,7 @@ export function Sidebar<T = string>({
 
       {/* Navigation Body */}
       <nav
+        aria-label={navLabel}
         className={cn(
           "flex-1 overflow-y-auto py-3 px-2 flex flex-col gap-3 scrollable-hidden",
           bodyClassName,
@@ -673,52 +760,55 @@ export function Sidebar<T = string>({
         {filteredSections.map(renderSection)}
       </nav>
 
-      {/* Footer with Collapse Button - simplified */}
-      {resolvedShowCollapseButton && resolvedCollapsible && (
+      {/* Footer slot and collapse control. The footer belongs to the consumer
+          and renders whenever it is given, whatever the collapse settings are;
+          only the control is gated. A collapsed sidebar keeps its footer
+          wrapper for the control but hides the slot, as the native renderer
+          does. */}
+      {(footer || (resolvedShowCollapseButton && resolvedCollapsible)) && (
         <div
           className={cn(
             "border-t border-border shrink-0",
             isCollapsed ? "p-2" : "p-3",
             footerClassName,
           )}>
-          {!isCollapsed && footer && <div className="mb-2">{footer}</div>}
+          {!isCollapsed && footer && (
+            <div
+              className={cn(
+                resolvedShowCollapseButton && resolvedCollapsible && "mb-2",
+              )}>
+              {footer}
+            </div>
+          )}
 
-          <Button
-            icon
-            aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
-            variant={resolvedItemVariant}
-            color="secondary"
-            size={resolvedSizeKey}
-            radius={resolvedItemRadiusKey}
-            onClick={handleCollapseToggle}
-            className={cn(
-              "w-full",
-              isCollapsed ? "justify-center px-0" : "justify-start",
-            )}>
-            <span className="flex items-center gap-2">
-              {isCollapsed ? (
-                <ChevronRightIcon className="size-4" />
-              ) : (
-                <>
-                  <ChevronLeftIcon className="size-4" />
-                  <span className="text-sm">Collapse</span>
-                </>
-              )}
-            </span>
-          </Button>
+          {resolvedShowCollapseButton && resolvedCollapsible && (
+            <Button
+              icon
+              aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+              variant={resolvedItemVariant}
+              color="secondary"
+              size={resolvedSizeKey}
+              radius={resolvedItemRadiusKey}
+              onClick={handleCollapseToggle}
+              className={cn(
+                "w-full",
+                isCollapsed ? "justify-center px-0" : "justify-start",
+              )}>
+              <span className="flex items-center gap-2">
+                {isCollapsed ? (
+                  <ChevronRightIcon className="size-4" />
+                ) : (
+                  <>
+                    <ChevronLeftIcon className="size-4" />
+                    <span className="text-sm">Collapse</span>
+                  </>
+                )}
+              </span>
+            </Button>
+          )}
         </div>
       )}
-
-      {!resolvedShowCollapseButton && footer && (
-        <div
-          className={cn(
-            "border-t border-border shrink-0 p-3",
-            footerClassName,
-          )}>
-          {footer}
-        </div>
-      )}
-    </aside>
+    </Column>
   );
 }
 

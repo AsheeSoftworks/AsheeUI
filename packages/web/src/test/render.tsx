@@ -19,7 +19,7 @@ import { AsheeUIProvider } from "../AsheeUIProvider";
 /** Options for {@link renderWithProvider}. */
 export interface ProviderRenderOptions extends Omit<RenderOptions, "wrapper"> {
   /** Global configuration supplied to the provider. */
-  config?: ExternalConfig;
+  config?: ExternalConfig | undefined;
 }
 
 /**

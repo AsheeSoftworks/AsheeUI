@@ -1,8 +1,8 @@
 /**
  * Scrollbar configuration for AsheeUI.
- * This file defines the structural (non-color) theming options for scrollbars.
- * Color properties (thumb/track) are handled separately through ColorVariant
- * in the theme system. This config controls shape, size, and behavior which
+ * This file defines the structural (non-colour) theming options for scrollbars.
+ * Colour properties (thumb/track) are handled separately through ColorVariant
+ * in the theme system. This config controls shape, size, and behaviour which
  * are theme-agnostic. It registers the default configuration with the
  * component registry for theme-level overrides.
  */
@@ -10,9 +10,9 @@
 import { registerComponentDefaults } from "@asheeui/core";
 
 /**
- * Structural (non-color) scrollbar theming.
- * Thumb/track colors already live in ColorVariant (scrollbarThumb/scrollbarTrack)
- * per theme - this config controls shape/behavior, which is theme-agnostic.
+ * Structural (non-colour) scrollbar theming.
+ * Thumb/track colours already live in ColorVariant (scrollbarThumb/scrollbarTrack)
+ * per theme - this config controls shape/behaviour, which is theme-agnostic.
  */
 export interface ScrollbarConfig {
   /**
@@ -34,7 +34,7 @@ export interface ScrollbarConfig {
    * When provided, overrides the radius for the track only.
    * Falls back to the main radius when omitted.
    */
-  trackRadius?: string;
+  trackRadius?: string | undefined;
 
   /**
    * Creates an "inset" thumb look via a transparent border plus background-clip.

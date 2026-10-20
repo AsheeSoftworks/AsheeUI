@@ -57,19 +57,21 @@ export interface AutocompleteProps
    * Controlled selected value, shown as its option label.
    * When allowCustomValue is true, this can be a free-form string.
    */
-  value?: string | number;
+  value?: string | number | undefined;
 
   /**
    * Callback fired with the selected value and option.
    * Called when a suggestion is selected from the dropdown.
    */
-  onValueChange?: (value: string | number, option?: MenuOption) => void;
+  onValueChange?:
+    | ((value: string | number, option?: MenuOption) => void)
+    | undefined;
 
   /**
    * Callback fired whenever the raw input text changes.
    * Called on every keystroke, providing the current input value.
    */
-  onInputChange?: (inputValue: string) => void;
+  onInputChange?: ((inputValue: string) => void) | undefined;
 
   /**
    * Allows free-form values that are not in the options list.
@@ -80,19 +82,19 @@ export interface AutocompleteProps
    *
    * @default false
    */
-  allowCustomValue?: boolean;
+  allowCustomValue?: boolean | undefined;
 
   /**
    * Content rendered below the options list.
    * Useful for adding "Add new" buttons or status messages.
    */
-  belowList?: ReactNode;
+  belowList?: ReactNode | undefined;
 
   /**
    * Menu configuration overrides including portal, portalTarget, className, and visual styles.
    * All menu-related props should be passed through this object.
    */
-  menu?: MenuProps;
+  menu?: MenuProps | undefined;
 }
 
 /**
@@ -166,7 +168,6 @@ export interface AutocompleteProps
  *   onValueChange={(value) => console.log('Selected:', value)}
  *   placeholder="Type a fruit name..."
  *   belowList={<button onClick={addNew}>Add new fruit</button>}
- *   isClearable
  *   menu={{
  *     className: "custom-dropdown",
  *     portal: false,

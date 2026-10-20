@@ -36,25 +36,25 @@ export type FooterVariant = "solid" | "muted" | "bordered";
  */
 export interface FooterLinkItem {
   /** Stable identifier for the link. Defaults to its position in the list. */
-  id?: string | number;
+  id?: string | number | undefined;
 
   /** Visible name of the link, and the accessible name of its control. */
   label: ReactNode;
 
   /** Destination of the link. */
-  href?: string;
+  href?: string | undefined;
 
   /** Content before the label, typically an icon or a social mark. */
-  icon?: ReactNode;
+  icon?: ReactNode | undefined;
 
   /** Whether the link leaves the site, which the web marks on the anchor. */
-  isExternal?: boolean;
+  isExternal?: boolean | undefined;
 
   /** Component that replaces the anchor for this link only. Read by the web alone. */
-  component?: ElementType;
+  component?: ElementType | undefined;
 
   /** Additional props for that component. Read by the web alone. */
-  componentProps?: Record<string, unknown>;
+  componentProps?: Record<string, unknown> | undefined;
 }
 
 /**
@@ -62,7 +62,7 @@ export interface FooterLinkItem {
  */
 export interface FooterGroup {
   /** Stable identifier for the group. Defaults to its position in the list. */
-  id?: string | number;
+  id?: string | number | undefined;
 
   /** Title of the column, which also names its navigation landmark. */
   title: string;
@@ -79,16 +79,16 @@ export interface FooterGroup {
  */
 export interface FooterConfig {
   /** Surface treatment. */
-  variant?: FooterVariant;
+  variant?: FooterVariant | undefined;
 
   /** Vertical padding of the footer. */
-  spacing?: Space;
+  spacing?: Space | undefined;
 
   /** Whether the footer wraps its content in a container, so the framework's maximum width and gutter apply. */
-  contained?: boolean;
+  contained?: boolean | undefined;
 
   /** Maximum content width. */
-  containerSize?: ContainerSize;
+  containerSize?: ContainerSize | undefined;
 }
 
 declare module "../../../registry" {

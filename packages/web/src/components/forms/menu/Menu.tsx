@@ -52,7 +52,7 @@ export type MenuProps = MenuConfig & {
   /**
    * Extra CSS classes for the menu container.
    */
-  className?: string;
+  className?: string | undefined;
 };
 
 /**
@@ -96,7 +96,7 @@ export interface MenuComponentProps {
    *
    * @default true
    */
-  isPositioned?: boolean;
+  isPositioned?: boolean | undefined;
 
   /**
    * Available options to display in the menu.
@@ -107,7 +107,7 @@ export interface MenuComponentProps {
    * Currently selected values.
    * Used to highlight selected options with a checkmark.
    */
-  selectedValues?: (string | number)[];
+  selectedValues?: (string | number)[] | undefined;
 
   /**
    * Callback fired when an option is selected.
@@ -119,75 +119,77 @@ export interface MenuComponentProps {
    * Whether search input is shown in the menu.
    * @default true
    */
-  isSearch?: boolean;
+  isSearch?: boolean | undefined;
 
   /**
    * Placeholder text for the search input.
    * @default "Search..."
    */
-  searchPlaceholder?: string;
+  searchPlaceholder?: string | undefined;
 
   /**
    * Name attribute for the search input.
    * @default "menu-search"
    */
-  searchInputName?: string;
+  searchInputName?: string | undefined;
 
   /**
    * Controlled search query value.
    */
-  searchQuery?: string;
+  searchQuery?: string | undefined;
 
   /**
    * Callback fired when the search query changes.
    */
-  onSearchChange?: (query: string) => void;
+  onSearchChange?: ((query: string) => void) | undefined;
 
   /**
    * Content rendered below the options list.
    */
-  belowList?: ReactNode;
+  belowList?: ReactNode | undefined;
 
   /**
    * Configuration for menu items from the parent component.
    */
-  menuConfig?: MenuConfig;
+  menuConfig?: MenuConfig | undefined;
 
   /**
    * Props override for menu configuration.
    * Includes className, portal, portalTarget, and visual style options.
    */
-  menuProps?: MenuProps;
+  menuProps?: MenuProps | undefined;
 
   /**
    * Custom render function for each option.
    * Receives the option and a boolean indicating if it's selected.
    */
-  renderOption?: (option: MenuOption, isSelected: boolean) => ReactNode;
+  renderOption?:
+    | ((option: MenuOption, isSelected: boolean) => ReactNode)
+    | undefined;
 
   /**
    * Initial focus target for the FloatingFocusManager.
    */
-  initialFocus?: number | React.RefObject<HTMLElement>;
+  initialFocus?: number | React.RefObject<HTMLElement> | undefined;
 
   /**
    * Whether to return focus to the trigger after closing.
    * @default false
    */
-  returnFocus?: boolean;
+  returnFocus?: boolean | undefined;
 
   /**
    * Index of the option that keyboard navigation treats as current.
    * When omitted, the menu tracks the current option itself.
    */
-  activeIndex?: number | null;
+  activeIndex?: number | null | undefined;
 
   /**
    * Called when the current option changes through keyboard navigation.
    * A consumer that keeps focus in its own trigger uses this to mirror the
    * current option in `aria-activedescendant`.
    */
-  onActiveIndexChange?: (index: number | null) => void;
+  onActiveIndexChange?: ((index: number | null) => void) | undefined;
 
   /**
    * Whether the listbox accepts more than one selection.
@@ -195,7 +197,7 @@ export interface MenuComponentProps {
    *
    * @default false
    */
-  isMultiSelectable?: boolean;
+  isMultiSelectable?: boolean | undefined;
 }
 
 /**
@@ -208,7 +210,9 @@ interface MenuOptionsListProps {
   filteredOptions: MenuOption[];
   selectedValues: (string | number)[];
   onOptionSelect: (option: MenuOption) => void;
-  renderOption?: (option: MenuOption, isSelected: boolean) => ReactNode;
+  renderOption?:
+    | ((option: MenuOption, isSelected: boolean) => ReactNode)
+    | undefined;
   itemVariant: Variant;
   itemColor: Color;
   activeItemVariant: Variant;

@@ -50,30 +50,30 @@ export interface DocsLayoutProps extends BaseDocsLayoutProps {
    * Left out, the composition is a two-column page; supplied, the contents take
    * the third column on a large screen and are hidden below it.
    */
-  toc?: ReactNode;
+  toc?: ReactNode | undefined;
 
   /**
    * Content above everything, typically a `Navbar` with the site's brand and
    * search.
    */
-  header?: ReactNode;
+  header?: ReactNode | undefined;
 
   /**
    * Content below everything.
    */
-  footer?: ReactNode;
+  footer?: ReactNode | undefined;
 
   /**
    * The article.
    */
-  children?: ReactNode;
+  children?: ReactNode | undefined;
 
   /**
    * Identifier of the article region, which the skip link points at.
    *
    * @default "main-content"
    */
-  mainId?: string;
+  mainId?: string | undefined;
 
   /**
    * Element to render the page shell as.
@@ -81,7 +81,7 @@ export interface DocsLayoutProps extends BaseDocsLayoutProps {
    *
    * @default "div"
    */
-  as?: ElementType;
+  as?: ElementType | undefined;
 }
 
 /**
@@ -106,12 +106,14 @@ export interface DocsLayoutProps extends BaseDocsLayoutProps {
  * @param props.children - The article.
  * @param props.mainId - Identifier of the article region. Defaults to
  * "main-content".
- * @param props.navigationLabel - Name of the navigation landmark. Defaults to
- * "Documentation".
+ * @param props.navigationLabel - Name of the navigation column, a complementary
+ * landmark. Defaults to "Documentation".
  * @param props.tocLabel - Name of the contents landmark. Defaults to "On this
  * page".
  * @param props.navigationWidth - Width of the navigation column from `lg`.
  * Defaults to "md".
+ * @param props.stickyNavigation - Keep the navigation column in view. Defaults
+ * to true.
  * @param props.stickyToc - Keep the contents in view. Defaults to true.
  * @param props.skipLink - Render a skip link. Defaults to true.
  * @param props.as - Element to render. Defaults to "div".
@@ -122,7 +124,15 @@ export interface DocsLayoutProps extends BaseDocsLayoutProps {
  * <DocsLayout
  *   header={<Navbar brand="AsheeUI" links={links} />}
  *   navigation={<Sidebar items={sections} activeKey="layout" />}
- *   toc={<TableOfContents items={headings} />}>
+ *   toc={
+ *     <VStack gap="xs">
+ *       {headings.map((heading) => (
+ *         <Link key={heading.id} href={`#${heading.id}`}>
+ *           {heading.text}
+ *         </Link>
+ *       ))}
+ *     </VStack>
+ *   }>
  *   <Typography role="display">Layout</Typography>
  *   <Typography role="body-md">A page is composed from the layout layer.</Typography>
  * </DocsLayout>
@@ -131,7 +141,7 @@ export interface DocsLayoutProps extends BaseDocsLayoutProps {
  * @see MarketingLayout - The marketing composition.
  * @see SidebarLayout - The application shell the composition builds on.
  */
-export const DocsLayout = forwardRef<HTMLDivElement, DocsLayoutProps>(
+export const DocsLayout = forwardRef<HTMLElement, DocsLayoutProps>(
   (
     {
       navigation,
@@ -143,6 +153,7 @@ export const DocsLayout = forwardRef<HTMLDivElement, DocsLayoutProps>(
       navigationLabel,
       tocLabel,
       navigationWidth,
+      stickyNavigation,
       stickyToc,
       skipLink,
       skipLinkLabel,
@@ -162,6 +173,7 @@ export const DocsLayout = forwardRef<HTMLDivElement, DocsLayoutProps>(
         navigationLabel,
         tocLabel,
         navigationWidth,
+        stickyNavigation,
         stickyToc,
         skipLink,
         skipLinkLabel,
@@ -192,7 +204,8 @@ export const DocsLayout = forwardRef<HTMLDivElement, DocsLayoutProps>(
           footer={footer}
           sidebar={navigation}
           sidebarLabel={resolved.navigationLabel}
-          sidebarWidth={resolved.navigationWidth}>
+          sidebarWidth={resolved.navigationWidth}
+          stickySidebar={resolved.stickyNavigation}>
           {toc ? (
             <Split
               stackAt="xl"

@@ -1,5 +1,25 @@
 # @asheeui/cli
 
+## 1.0.0
+
+### Major Changes
+
+- Remove the `playground` command.
+  
+  It copied an application from templates the package shipped, but the applications it targeted no
+  longer exist in this repository, no documentation describes them, and its test asserted nothing
+  about what had been copied. Shipping a command that cannot work is worse than not shipping it.
+  
+  - `asheeui playground` and its `pg` alias are gone; `init`, `doctor`, `list` and `fix` remain.
+  - The package no longer publishes `templates/` (next, vite and tanstack), so it is markedly
+    smaller.
+  - A new test pins the command registry and the help output, so a stale command cannot come back
+    unnoticed.
+  
+  `scripts/verify-distribution.mjs` no longer copies a playground either: it now resolves every path
+  the published manifests promise (`publishConfig` merged over `package.json`) and fails if the
+  build did not emit it, which is the defect class it was really catching.
+
 ## 0.7.3
 
 ### Patch Changes

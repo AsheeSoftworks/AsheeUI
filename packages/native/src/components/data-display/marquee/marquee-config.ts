@@ -54,14 +54,17 @@ registerNativeComponentDefaults("marquee", defaultNativeMarqueeConfig);
  *
  * They are the web's own fallback values, including the two the platform cannot act on
  * (`pauseOnHover` and `fadeEdges`): the option still resolves, so a value one platform
- * cannot honour does not silently become a different value here.
+ * cannot honour does not silently become a different value here. They also agree with
+ * {@link defaultNativeMarqueeConfig}: a fallback that differed from the value registered one
+ * tier up would make an option change meaning when the section it was configured in happened
+ * not to resolve.
  */
-export const FALLBACK_NATIVE_MARQUEE_CONFIG: Required<NativeMarqueeConfig> = {
+export const FALLBACK_NATIVE_MARQUEE_CONFIG = {
   axis: "x",
   direction: "forward",
   speed: "normal",
   gap: "1.5rem",
-  pauseOnHover: true,
-  fadeEdges: true,
+  pauseOnHover: false,
+  fadeEdges: false,
   isAnimated: true,
-};
+} satisfies NativeMarqueeConfig;

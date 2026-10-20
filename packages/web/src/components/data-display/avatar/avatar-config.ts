@@ -17,6 +17,9 @@ export type { AvatarConfig } from "@asheeui/core";
  * Default config values registered for the Avatar component.
  *
  * `color` is intentionally absent so it inherits from the global `defaultColor`.
+ * `radius` is registered, so it is pinned: an avatar is a circle, and the
+ * application's `defaultRadius` does not reach it. State
+ * `components.avatar.radius` or the instance prop instead.
  */
 export const defaultAvatarConfig: AvatarConfig = {
   size: "md",
@@ -30,8 +33,8 @@ registerComponentDefaults("avatar", defaultAvatarConfig);
  * These values are used when instance props, component config,
  * and global defaults are all undefined.
  */
-export const FALLBACK_AVATAR_CONFIG: Required<AvatarConfig> = {
+export const FALLBACK_AVATAR_CONFIG = {
   size: "md",
   radius: "full",
   color: "primary",
-} as const;
+} as const satisfies AvatarConfig;

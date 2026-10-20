@@ -1,3 +1,5 @@
+import { readFile } from "node:fs/promises";
+import { join } from "node:path";
 import { describe, expect, it, vi } from "vitest";
 import {
   createUser,
@@ -92,7 +94,7 @@ describe("Autocomplete", () => {
 
     const activeId = input.getAttribute("aria-activedescendant");
 
-    expect(activeId).toBe(options[0].id);
+    expect(activeId).toBe(options[0]!.id);
     expect(document.getElementById(activeId as string)).toBe(options[0]);
   });
 
@@ -114,7 +116,7 @@ describe("Autocomplete", () => {
 
     const options = within(screen.getByRole("listbox")).getAllByRole("option");
 
-    expect(input.getAttribute("aria-activedescendant")).toBe(options[1].id);
+    expect(input.getAttribute("aria-activedescendant")).toBe(options[1]!.id);
 
     await pressKey(user, "Enter");
 
@@ -163,5 +165,23 @@ describe("Autocomplete", () => {
     const status = screen.getByRole("status");
 
     expect(status).toHaveTextContent("No options found");
+  });
+
+  // A documentation example is copy-paste code, so an example that passes a prop
+  // the component does not have hands the reader a type error. `isClearable`
+  // belongs to Calendar and Dropmenu: this field has no clear control, so the
+  // example must not offer one. Adding a clear control here means adding it to
+  // the example, the props and this test together.
+  it("keeps its documented example to props the component accepts", async () => {
+    // The suite runs from the package root (`packages/web`), which is where the
+    // component's source sits.
+    const source = await readFile(
+      join(process.cwd(), "src/components/forms/autocomplete/Autocomplete.tsx"),
+      "utf8",
+    );
+    const examples = source.slice(source.indexOf("@example"));
+
+    expect(examples).toContain("<Autocomplete");
+    expect(examples).not.toContain("isClearable");
   });
 });

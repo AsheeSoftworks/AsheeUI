@@ -11,7 +11,7 @@
  * may still pass their own Tailwind classes through `className`, because
  * AsheeUI remains Tailwind-native.
  *
- * @see `docs/docs/asheeui-typography-specification-proposal.md` for the approved specification.
+ * @see https://docs.asheeui.com/components/typography/typography for the roles, the scale and the element each role renders.
  */
 
 "use client";
@@ -25,6 +25,7 @@ import {
   type TypographyAlign,
   type TypographyLeading,
   type TypographyRole,
+  type TypographyRoleTokens,
   type TypographySize,
   type TypographyTone,
   type TypographyTracking,
@@ -59,32 +60,32 @@ export interface TypographyProps
    * Element to render.
    * Defaults to the semantic element implied by the resolved role.
    */
-  as?: ElementType;
+  as?: ElementType | undefined;
 
   /**
    * Size token override. Replaces the size part of the role's treatment.
    */
-  size?: TypographySize;
+  size?: TypographySize | undefined;
 
   /**
    * Font-weight token override.
    */
-  weight?: TypographyWeight;
+  weight?: TypographyWeight | undefined;
 
   /**
    * Line-height token override.
    */
-  leading?: TypographyLeading;
+  leading?: TypographyLeading | undefined;
 
   /**
    * Letter-spacing token override.
    */
-  tracking?: TypographyTracking;
+  tracking?: TypographyTracking | undefined;
 
   /**
    * Content to render.
    */
-  children?: ReactNode;
+  children?: ReactNode | undefined;
 }
 
 /**
@@ -157,19 +158,25 @@ export const Typography = forwardRef<HTMLElement, TypographyProps>(
       FALLBACK_TYPOGRAPHY_CONFIG.truncate,
     );
 
-    // Instance token props win over configured role overrides.
+    // Instance token props win over configured role overrides. An undefined
+    // token is left out of the overrides entirely, so a partial record never
+    // carries an explicit undefined.
     const configuredOverrides = sectionConfig?.roles?.[resolvedRole];
-    const mergedOverrides = {
-      size: size ?? configuredOverrides?.size,
-      weight: weight ?? configuredOverrides?.weight,
-      leading: leading ?? configuredOverrides?.leading,
-      tracking: tracking ?? configuredOverrides?.tracking,
+    const mergedSize = size ?? configuredOverrides?.size;
+    const mergedWeight = weight ?? configuredOverrides?.weight;
+    const mergedLeading = leading ?? configuredOverrides?.leading;
+    const mergedTracking = tracking ?? configuredOverrides?.tracking;
+    const mergedOverrides: Partial<TypographyRoleTokens> = {
+      ...(mergedSize !== undefined && { size: mergedSize }),
+      ...(mergedWeight !== undefined && { weight: mergedWeight }),
+      ...(mergedLeading !== undefined && { leading: mergedLeading }),
+      ...(mergedTracking !== undefined && { tracking: mergedTracking }),
     };
     const hasOverrides =
-      mergedOverrides.size !== undefined ||
-      mergedOverrides.weight !== undefined ||
-      mergedOverrides.leading !== undefined ||
-      mergedOverrides.tracking !== undefined;
+      mergedSize !== undefined ||
+      mergedWeight !== undefined ||
+      mergedLeading !== undefined ||
+      mergedTracking !== undefined;
 
     const resolvedRoleClass = hasOverrides
       ? resolveTypographyRoleClass(resolvedRole, mergedOverrides)

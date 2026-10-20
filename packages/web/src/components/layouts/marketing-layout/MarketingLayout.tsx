@@ -43,20 +43,20 @@ export interface MarketingLayoutProps extends BaseMarketingLayoutProps {
    * The framework's `Navbar` renders a `header` landmark, so it belongs here
    * unwrapped; a consumer's own navigation element does too.
    */
-  navigation?: ReactNode;
+  navigation?: ReactNode | undefined;
 
   /**
    * The page's footer, below the main region.
    * The framework's `Footer` renders a `footer` landmark, so it belongs here
    * unwrapped.
    */
-  footer?: ReactNode;
+  footer?: ReactNode | undefined;
 
   /**
    * The page's sections, in the order they appear: a hero, then the supporting
    * sections, then the closing call to action.
    */
-  children?: ReactNode;
+  children?: ReactNode | undefined;
 
   /**
    * Identifier of the main region, which the skip link points at.
@@ -64,7 +64,7 @@ export interface MarketingLayoutProps extends BaseMarketingLayoutProps {
    *
    * @default "main-content"
    */
-  mainId?: string;
+  mainId?: string | undefined;
 
   /**
    * Element to render the shell as.
@@ -72,7 +72,7 @@ export interface MarketingLayoutProps extends BaseMarketingLayoutProps {
    *
    * @default "div"
    */
-  as?: ElementType;
+  as?: ElementType | undefined;
 }
 
 /**
@@ -116,7 +116,7 @@ export interface MarketingLayoutProps extends BaseMarketingLayoutProps {
  * @see DocsLayout - The documentation composition.
  * @see SidebarLayout - The application shell, for a page with a navigation column.
  */
-export const MarketingLayout = forwardRef<HTMLDivElement, MarketingLayoutProps>(
+export const MarketingLayout = forwardRef<HTMLElement, MarketingLayoutProps>(
   (
     {
       navigation,

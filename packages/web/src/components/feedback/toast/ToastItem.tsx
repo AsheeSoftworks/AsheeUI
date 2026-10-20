@@ -96,7 +96,7 @@ export interface ToastItemProps extends ToastItemData {
    * Theme color of the toast.
    * Overrides the auto-detected color from the type.
    */
-  color?: Color;
+  color?: Color | undefined;
 
   /**
    * Corner rounding of the toast.
@@ -106,7 +106,7 @@ export interface ToastItemProps extends ToastItemData {
   /**
    * Whether the toast has animations.
    */
-  animated?: boolean;
+  animated?: boolean | undefined;
 }
 
 /**
@@ -217,7 +217,9 @@ export function ToastItem({
   );
 
   const animState = TOAST_ANIMATION_STATE[placement];
-  const animationClass = animated
+  // The animation follows the same resolved value as the timer: a toast the
+  // configuration animates has to draw the keyframe in the first place.
+  const animationClass = resolvedAnimated
     ? isExiting
       ? animState.exit
       : animState.enter
@@ -267,7 +269,7 @@ export function ToastItem({
       {dismissible && (
         <button
           type="button"
-          onClick={() => onDismiss(id)}
+          onClick={handleDismiss}
           aria-label="Dismiss notification"
           className="shrink-0 p-1 rounded-md opacity-70 hover:opacity-100 hover:bg-foreground/10 transition-all cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-current">
           <CloseIcon className="w-4 h-4" />

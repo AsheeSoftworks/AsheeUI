@@ -12,15 +12,25 @@ import {
   registerComponentDefaults,
 } from "@asheeui/core";
 
-export type { EmptyStateConfig, EmptyStateType } from "@asheeui/core";
+export type {
+  EmptyStateConfig,
+  EmptyStateRole,
+  EmptyStateType,
+} from "@asheeui/core";
 
 /**
  * Default config values registered for the EmptyState component.
+ *
+ * `role` is registered as `"none"` because an empty state is silent by default:
+ * one that was part of the page's first markup was not a change, and announcing it
+ * would describe something that never happened. A product whose empty states answer
+ * a query states `status` once, here.
  */
 export const defaultEmptyStateConfig: EmptyStateConfig = {
   type: "info",
   size: "md",
   panel: false,
+  role: "none",
 };
 
 registerComponentDefaults("emptystate", defaultEmptyStateConfig);
@@ -28,8 +38,9 @@ registerComponentDefaults("emptystate", defaultEmptyStateConfig);
 /**
  * Hard fallback values used when no config tier provides a value.
  */
-export const FALLBACK_EMPTY_STATE_CONFIG: Required<EmptyStateConfig> = {
+export const FALLBACK_EMPTY_STATE_CONFIG = {
   type: "info",
   size: "md",
   panel: false,
-};
+  role: "none",
+} satisfies EmptyStateConfig;

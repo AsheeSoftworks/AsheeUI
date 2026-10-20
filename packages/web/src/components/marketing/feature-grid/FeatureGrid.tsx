@@ -21,13 +21,17 @@ import {
   forwardRef,
   type HTMLAttributes,
   type ReactNode,
+  useId,
 } from "react";
 import { useAsheeConfig } from "../../../libs/context";
 import { Card } from "../../data-display/card/Card";
 import { Container } from "../../layouts/container/Container";
 import { Grid } from "../../layouts/grid/Grid";
 import { Section } from "../../layouts/section/Section";
-import { SectionHeading } from "../../layouts/section-kit/SectionHeading";
+import {
+  SectionHeading,
+  type SectionHeadingSize,
+} from "../../layouts/section-kit/SectionHeading";
 import { Typography } from "../../typography/Typography";
 import {
   FALLBACK_FEATURE_GRID_CONFIG,
@@ -50,12 +54,41 @@ export interface FeatureGridLink {
   /**
    * Component that replaces the anchor, such as a framework router link.
    */
-  component?: ElementType;
+  component?: ElementType | undefined;
 
   /**
-   * Additional props for that component.
+   * Props for that component, applied to every feature card that has a
+   * destination. The feature's own destination is added to them unless
+   * `mapProps` states it instead, and a `className` here is merged into the
+   * card's classes rather than replacing them.
    */
-  props?: Record<string, unknown>;
+  props?: Record<string, unknown> | undefined;
+
+  /**
+   * Maps one feature to the props its link component receives.
+   *
+   * By default the framework passes `{ ...props, href: item.href }`, which is
+   * the web's own anchor vocabulary. A router that names its destination
+   * differently states it here, so the adapter stays with the consumer that
+   * knows the router rather than with the band:
+   *
+   * ```tsx
+   * <FeatureGrid
+   *   items={items}
+   *   link={{ component: Link, mapProps: (item) => ({ to: item.href }) }}
+   * />
+   * ```
+   *
+   * The returned props are merged over `props` and replace the default `href`
+   * injection.
+   *
+   * @param item - The feature whose card is being linked.
+   * @param index - Position of the feature in `items`.
+   * @returns The props passed to the link component.
+   */
+  mapProps?:
+    | ((item: FeatureItem, index: number) => Record<string, unknown>)
+    | undefined;
 }
 
 type BaseFeatureGridProps = FeatureGridConfig &
@@ -66,19 +99,36 @@ type BaseFeatureGridProps = FeatureGridConfig &
  */
 export interface FeatureGridProps extends BaseFeatureGridProps {
   /** Short label above the heading. */
-  eyebrow?: ReactNode;
+  eyebrow?: ReactNode | undefined;
 
   /** Heading of the band. */
-  title?: ReactNode;
+  title?: ReactNode | undefined;
 
   /** Supporting sentence under the heading. */
-  description?: ReactNode;
+  description?: ReactNode | undefined;
 
   /** The features to show. */
   items: FeatureItem[];
 
   /** Substitution applied to the link of every feature card. */
-  link?: FeatureGridLink;
+  link?: FeatureGridLink | undefined;
+
+  /**
+   * Element the heading renders as.
+   *
+   * Defaults to `h2`. A grid nested under an existing section heading passes
+   * `h3`, so the outline stays in order.
+   *
+   * @default "h2"
+   */
+  titleAs?: ElementType | undefined;
+
+  /**
+   * Size of the heading, which selects its typography role.
+   *
+   * @default "md"
+   */
+  headingSize?: SectionHeadingSize | undefined;
 
   /**
    * Element to render the band as.
@@ -86,10 +136,10 @@ export interface FeatureGridProps extends BaseFeatureGridProps {
    *
    * @default "section"
    */
-  as?: ElementType;
+  as?: ElementType | undefined;
 
   /** Content below the grid. */
-  children?: ReactNode;
+  children?: ReactNode | undefined;
 }
 
 /**
@@ -101,11 +151,19 @@ export interface FeatureGridProps extends BaseFeatureGridProps {
  * and three from the `lg` breakpoint by default, and every part of that is
  * configurable through `components.featuregrid`.
  *
+ * The band is a `section` landmark, and it names itself with the heading it
+ * renders: it points `aria-labelledby` at that heading, so a reader navigating
+ * by region hears the heading rather than an unnamed region. A band rendered
+ * without a `title` has nothing to be named by, so it stays unnamed. A
+ * consumer's own `aria-labelledby` wins over the generated one.
+ *
  * @param props - FeatureGrid configuration options and element attributes.
  * @param props.items - The features to show.
  * @param props.title - Heading of the band.
  * @param props.eyebrow - Short label above the heading.
  * @param props.description - Supporting sentence under the heading.
+ * @param props.titleAs - Element the heading renders as. Defaults to "h2".
+ * @param props.headingSize - Size of the heading. Defaults to "md".
  * @param props.columns - Columns from the smallest viewport. Defaults to 1.
  * @param props.columnsMd - Columns from `md` upwards. Defaults to 2.
  * @param props.columnsLg - Columns from `lg` upwards. Defaults to 3.
@@ -137,6 +195,8 @@ export const FeatureGrid = forwardRef<HTMLElement, FeatureGridProps>(
       description,
       items,
       link,
+      titleAs,
+      headingSize,
       columns,
       columnsMd,
       columnsLg,
@@ -154,6 +214,11 @@ export const FeatureGrid = forwardRef<HTMLElement, FeatureGridProps>(
     ref,
   ) => {
     const config = useAsheeConfig();
+    // The band names itself with the heading it renders, so it is a region
+    // rather than an unnamed `section`. `useId` keeps the pair stable across
+    // the server render and the hydration.
+    const headingId = useId();
+    const hasTitle = title !== undefined && title !== null;
 
     const resolved = resolveConfigCascade<
       FeatureGridConfig,
@@ -182,6 +247,9 @@ export const FeatureGrid = forwardRef<HTMLElement, FeatureGridProps>(
           description={description}
           align={resolved.align}
           className={FEATURE_HEADING_CLASS}
+          titleAs={titleAs}
+          size={headingSize}
+          titleId={hasTitle ? headingId : undefined}
         />
         <Grid
           columns={resolved.columns}
@@ -199,7 +267,12 @@ export const FeatureGrid = forwardRef<HTMLElement, FeatureGridProps>(
                   item.href
                     ? {
                         component: link?.component,
-                        componentProps: { ...link?.props, href: item.href },
+                        componentProps: {
+                          ...link?.props,
+                          ...(link?.mapProps
+                            ? link.mapProps(item, index)
+                            : { href: item.href }),
+                        },
                       }
                     : undefined
                 }>
@@ -232,6 +305,7 @@ export const FeatureGrid = forwardRef<HTMLElement, FeatureGridProps>(
         background={resolved.background}
         contained={false}
         className={className}
+        aria-labelledby={hasTitle ? headingId : undefined}
         {...rest}>
         {resolved.contained ? (
           <Container size={resolved.containerSize}>{body}</Container>

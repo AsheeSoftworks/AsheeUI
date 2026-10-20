@@ -20,7 +20,9 @@ export type { BadgeConfig, BadgeVariant };
  * Default config values registered for the Badge component.
  *
  * `variant` and `color` are intentionally absent so they inherit from the
- * global `defaultVariant` and `defaultColor`.
+ * global `defaultVariant` and `defaultColor`. `radius` is registered, so it is
+ * pinned: a badge is a pill, and the application's `defaultRadius` does not reach
+ * it. State `components.badge.radius` or the instance prop instead.
  */
 export const defaultBadgeConfig: BadgeConfig = {
   size: "md",
@@ -34,9 +36,9 @@ registerComponentDefaults("badge", defaultBadgeConfig);
  * These values are used when instance props, component config,
  * and global defaults are all undefined.
  */
-export const FALLBACK_BADGE_CONFIG: Required<BadgeConfig> = {
+export const FALLBACK_BADGE_CONFIG = {
   variant: "faded",
   color: "primary",
   size: "md",
   radius: "full",
-} as const;
+} as const satisfies BadgeConfig;

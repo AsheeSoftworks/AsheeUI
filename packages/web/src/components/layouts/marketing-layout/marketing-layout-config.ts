@@ -35,9 +35,8 @@ registerComponentDefaults("marketinglayout", defaultMarketingLayoutConfig);
 /**
  * Hard fallback values used when no config tier provides a value.
  */
-export const FALLBACK_MARKETING_LAYOUT_CONFIG: Required<MarketingLayoutConfig> =
-  {
-    skipLink: true,
-    skipLinkLabel: "Skip to content",
-    background: "default",
-  };
+export const FALLBACK_MARKETING_LAYOUT_CONFIG = {
+  skipLink: true,
+  skipLinkLabel: "Skip to content",
+  background: "default",
+} satisfies MarketingLayoutConfig;

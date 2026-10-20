@@ -4,13 +4,18 @@
  * The tests state the bar's contract: it holds the brand, its destinations and its actions; it states
  * its destinations as a tab list named by the name the web gives its navigation landmark; it marks
  * the destination of the current page as selected rather than styling it alone; it renders the brand
- * as a destination when it has one; its surface, its alignment and its width resolve through the
- * configuration cascade, and its sticky option states no rule because the platform pins a bar by
+ * as a destination when it has one, with the brand's layout on its wrapper and its type on the link
+ * rather than stating one string on both; its surface, its alignment and its width resolve through
+ * the configuration cascade, and its sticky option states no rule because the platform pins a bar by
  * where the screen places it; the web's disclosure changes nothing here, because the platform keeps
  * every destination in reach; and the bar at the edge draws the same destinations the same way, which
  * is the platform's other half of a navigation.
  */
 
+import {
+  NATIVE_NAVBAR_BRAND_CLASS,
+  NAVBAR_BRAND_TEXT_CLASS,
+} from "@asheeui/core";
 import {
   type ReactTestInstance,
   type RenderResult,
@@ -163,6 +168,31 @@ describe("Native Navbar", () => {
     );
     expect(destinationOf(asText, "Ashee SMS").props.accessibilityRole).toBe(
       undefined,
+    );
+  });
+
+  // The brand's layout and its typography are two decisions. Stating the whole string on the
+  // wrapper and again on the link inside it nested one box in another box, so the layout stays
+  // on the wrapper and the type goes on the link.
+  it("splits the brand's layout from its typographic treatment", async () => {
+    const view = await renderBar(
+      <Navbar testID="bar" brand="Ashee SMS" brandHref="/" links={LINKS} />,
+    );
+    const link = destinationOf(view, "Ashee SMS");
+    const wrapper = link.parent as ReactTestInstance;
+
+    expect(NATIVE_NAVBAR_BRAND_CLASS).toContain("shrink-0");
+    expect(NATIVE_NAVBAR_BRAND_CLASS).not.toContain("font-semibold");
+    expect(NAVBAR_BRAND_TEXT_CLASS).toContain("font-semibold");
+
+    expect((wrapper.props as { className?: string }).className).toBe(
+      NATIVE_NAVBAR_BRAND_CLASS,
+    );
+    expect((link.props as { className?: string }).className).toContain(
+      NAVBAR_BRAND_TEXT_CLASS,
+    );
+    expect((link.props as { className?: string }).className).not.toContain(
+      NATIVE_NAVBAR_BRAND_CLASS,
     );
   });
 });

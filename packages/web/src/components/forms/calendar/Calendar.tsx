@@ -54,7 +54,7 @@ export interface CalendarPickerProps extends CalendarPickerConfig {
   /**
    * Extra CSS classes for the calendar popover.
    */
-  className?: string;
+  className?: string | undefined;
 }
 
 // ─── Component Interface ──────────────────────────────────────────────────────
@@ -79,19 +79,19 @@ export interface CalendarProps extends BaseCalendarProps {
    * The currently selected date.
    * Pass null for no selection.
    */
-  selected?: Date | null;
+  selected?: Date | null | undefined;
 
   /**
    * Callback fired when the selected date changes.
    * Receives the new date or null if cleared.
    */
-  onChange?: (date: Date | null) => void;
+  onChange?: ((date: Date | null) => void) | undefined;
 
   /**
    * Picker configuration overrides including portal, portalTarget, and className.
    * All picker-related props should be passed through this object.
    */
-  picker?: CalendarPickerProps;
+  picker?: CalendarPickerProps | undefined;
 
   /**
    * Whether a clear button is shown in the input.
@@ -99,7 +99,7 @@ export interface CalendarProps extends BaseCalendarProps {
    *
    * @default false
    */
-  isClearable?: boolean;
+  isClearable?: boolean | undefined;
 
   /**
    * Whether future dates are disabled in the calendar.
@@ -107,7 +107,7 @@ export interface CalendarProps extends BaseCalendarProps {
    *
    * @default false
    */
-  disableFuture?: boolean;
+  disableFuture?: boolean | undefined;
 }
 
 /**

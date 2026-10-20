@@ -136,11 +136,75 @@ function checkUnknownKey(
   });
 }
 
-/** Validate the theme map: theme entries, colour names, and colour values. */
+/**
+ * Report a cycle in the `extends` chain among the declared themes.
+ *
+ * The resolver terminates on a cycle by starting each theme in it from the application's
+ * default family, so a cycle is not a crash. It is still a mistake worth reporting: no theme
+ * in the circle can name a base, and the palette that reaches the screen is not the one the
+ * configuration describes. It is a warning rather than an error because the configuration
+ * resolves, and rejecting it here would newly fail an application that works today.
+ *
+ * @param issues - The issue list to append to.
+ * @param color - The theme map, already checked for shape and unknown keys.
+ * @param builtInThemes - The theme names the library always provides.
+ */
+function checkExtendsCycles(
+  issues: ConfigIssue[],
+  color: Record<string, unknown>,
+  builtInThemes: readonly string[],
+): void {
+  /** One custom theme's `extends` target, for the edges that stay among declared themes. */
+  const edges = new Map<string, string>();
+
+  for (const [themeName, theme] of Object.entries(color)) {
+    if (builtInThemes.includes(themeName) || !isPlainObject(theme)) continue;
+
+    const base = theme.extends;
+    if (typeof base !== "string" || builtInThemes.includes(base)) continue;
+    if (!Object.hasOwn(color, base)) continue;
+
+    edges.set(themeName, base);
+  }
+
+  /** Themes already reported as part of a circle. */
+  const reported = new Set<string>();
+
+  for (const start of edges.keys()) {
+    if (reported.has(start)) continue;
+
+    /** The walk so far, and where each theme on it sits. */
+    const walk: string[] = [];
+    const positions = new Map<string, number>();
+    let current: string | undefined = start;
+
+    while (current !== undefined && !reported.has(current)) {
+      const at = positions.get(current);
+
+      if (at !== undefined) {
+        const cycle = walk.slice(at);
+        for (const name of cycle) reported.add(name);
+        issues.push({
+          path: `color.${cycle[0]}.extends`,
+          message: `the extends chain is circular (${[...cycle, cycle[0]].join(" → ")}); each theme in it starts from the default family instead of the base it names`,
+          severity: "warning",
+        });
+        break;
+      }
+
+      positions.set(current, walk.length);
+      walk.push(current);
+      current = edges.get(current);
+    }
+  }
+}
+
+/** Validate the theme map: theme entries, colour names, colour values, and `extends`. */
 function checkColor(
   issues: ConfigIssue[],
   color: ExternalConfig["color"],
   colourNames: readonly string[],
+  builtInThemes: readonly string[],
 ): void {
   if (color === undefined) return;
 
@@ -151,6 +215,15 @@ function checkColor(
       severity: "error",
     });
     return;
+  }
+
+  // `extends` may name any theme declared in this same object, not just the built-ins: a
+  // custom theme extending another custom theme is resolved as a dependency graph, so the
+  // declaration order does not matter and the name only has to be declared. A name that is
+  // neither built in nor declared is a real mistake, because nothing can resolve it.
+  const themeNames = [...builtInThemes];
+  for (const themeName of Object.keys(color)) {
+    if (!themeNames.includes(themeName)) themeNames.push(themeName);
   }
 
   for (const [themeName, theme] of Object.entries(color)) {
@@ -164,7 +237,7 @@ function checkColor(
       continue;
     }
 
-    // A custom theme may state the built-in theme it extends. The built-in themes
+    // A custom theme may state the theme it extends. The built-in themes
     // cannot: they are the palettes everything else inherits, so `extends` there has
     // no meaning and is reported rather than silently ignored.
     const isBuiltIn = themeName === "light" || themeName === "dark";
@@ -177,10 +250,10 @@ function checkColor(
       }
 
       if (colourName === "extends") {
-        if (value !== "light" && value !== "dark") {
+        if (typeof value !== "string" || !themeNames.includes(value)) {
           issues.push({
             path: `${path}.extends`,
-            message: `expected "light" or "dark", received ${show(value)}`,
+            message: `expected a built-in or declared theme (one of ${list(themeNames)}), received ${show(value)}`,
             severity: "error",
           });
         }
@@ -196,6 +269,8 @@ function checkColor(
       }
     }
   }
+
+  checkExtendsCycles(issues, color, builtInThemes);
 }
 
 /** Validate the typography component configuration and its role overrides. */
@@ -353,7 +428,7 @@ export function validateConfig(config: ExternalConfig): ConfigIssue[] {
   checkEnum(issues, "defaultColor", source.defaultColor, colourNames);
   checkEnum(issues, "defaultRadius", source.defaultRadius, RADII);
 
-  checkColor(issues, config.color, colourNames);
+  checkColor(issues, config.color, colourNames, builtInThemes);
   checkComponents(issues, config.components);
 
   return issues;

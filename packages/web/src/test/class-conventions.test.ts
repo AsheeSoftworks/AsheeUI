@@ -1,10 +1,16 @@
 // @vitest-environment node
 /**
  * Repository-wide check for dynamically constructed Tailwind utility names
- * (`ROAD-009` work item 2, Hard Rule 5).
+ * (`ROAD-009` work item 2, Hard Rule 5) and for raw palette colours.
  *
  * The file runs in the Node environment because it only reads source text and
  * needs `import.meta.url` to be a `file:` URL so the source tree can be located.
+ *
+ * The walk covers every package that carries utility classes, not only this
+ * one: most of the class strings live in `@asheeui/core`'s `*-styles.ts` style
+ * maps, and `@asheeui/native` has its own. A scanner rooted at `packages/web/src`
+ * alone left those unchecked, so the rules held by discipline rather than by
+ * test.
  */
 
 import { promises as fs } from "node:fs";
@@ -14,9 +20,31 @@ import { describe, expect, it } from "vitest";
 import { scanForDynamicUtilityClasses, scanForRawPaletteColours } from "./";
 
 const SOURCE_ROOT = fileURLToPath(new URL("..", import.meta.url));
+const CORE_SOURCE_ROOT = fileURLToPath(
+  new URL("../../../core/src", import.meta.url),
+);
+const NATIVE_SOURCE_ROOT = fileURLToPath(
+  new URL("../../../native/src", import.meta.url),
+);
+/** The `packages/` directory, used to label a finding with its package. */
+const PACKAGES_ROOT = fileURLToPath(new URL("../../..", import.meta.url));
+
+const SOURCE_ROOTS = [SOURCE_ROOT, CORE_SOURCE_ROOT, NATIVE_SOURCE_ROOT];
+
+/**
+ * The tree and its contents, remembered between the two scanners.
+ *
+ * Both scanners walk the same ~650 files, and a scanner never changes the tree,
+ * so reading it once keeps the file cheap rather than paying for the walk twice.
+ */
+const fileLists = new Map<string, string[]>();
+const sources = new Map<string, string>();
 
 /** Collect every source file under `directory`, skipping tests and the scanner. */
 async function listSourceFiles(directory: string): Promise<string[]> {
+  const remembered = fileLists.get(directory);
+  if (remembered) return remembered;
+
   const entries = await fs.readdir(directory, { withFileTypes: true });
   const files: string[] = [];
 
@@ -32,26 +60,49 @@ async function listSourceFiles(directory: string): Promise<string[]> {
     files.push(full);
   }
 
+  fileLists.set(directory, files);
   return files;
+}
+
+/** Read a source file, once per test run. */
+async function readSource(file: string): Promise<string> {
+  const remembered = sources.get(file);
+  if (remembered !== undefined) return remembered;
+
+  const source = await fs.readFile(file, "utf8");
+  sources.set(file, source);
+  return source;
 }
 
 /** Run a scanner over every library source file and report the findings. */
 async function findOffenders(
-  scan: (source: string) => string[],
+  scan: (
+    source: string,
+    options?: { requireClassContext?: boolean },
+  ) => string[],
 ): Promise<string[]> {
-  const files = await listSourceFiles(SOURCE_ROOT);
-  const offenders: string[] = [];
+  // Read the three trees in parallel: the walk is hundreds of files, and the
+  // suite should not pay for them one round trip at a time.
+  const files = (await Promise.all(SOURCE_ROOTS.map(listSourceFiles))).flat();
 
   expect(files.length).toBeGreaterThan(50);
 
-  for (const file of files) {
-    const source = await fs.readFile(file, "utf8");
-    for (const finding of scan(source)) {
-      offenders.push(`${relative(SOURCE_ROOT, file)}: ${finding}`);
-    }
-  }
+  const perFile = await Promise.all(
+    files.map(async (file) => {
+      const source = await readSource(file);
+      // A style map holds class strings with no `className` on the line, so the
+      // context check is turned off for it. Every other file keeps it.
+      const options = file.endsWith("-styles.ts")
+        ? { requireClassContext: false }
+        : undefined;
 
-  return offenders;
+      return scan(source, options).map(
+        (finding) => `${relative(PACKAGES_ROOT, file)}: ${finding}`,
+      );
+    }),
+  );
+
+  return perFile.flat();
 }
 
 describe("dynamic utility class scanner", () => {
@@ -103,6 +154,17 @@ describe("dynamic utility class scanner", () => {
     ).toEqual([]);
   });
 
+  it("flags a constructed utility inside a style map, where no class context is spelled", () => {
+    const styleMap = `export const PADDING = { sm: "p-2", md: \`p-\${scale}\` };`;
+
+    // Only a class-name context is scanned by default, so a style map needs the
+    // relaxation that the repository walk applies to `*-styles.ts`.
+    expect(scanForDynamicUtilityClasses(styleMap)).toEqual([]);
+    expect(
+      scanForDynamicUtilityClasses(styleMap, { requireClassContext: false }),
+    ).toHaveLength(1);
+  });
+
   it("finds no dynamically constructed utility names in the library source", async () => {
     expect(await findOffenders(scanForDynamicUtilityClasses)).toEqual([]);
   });
@@ -142,5 +204,19 @@ describe("raw palette colour scanner", () => {
 
   it("finds no raw palette colours in the library source", async () => {
     expect(await findOffenders(scanForRawPaletteColours)).toEqual([]);
+  });
+});
+
+describe("the source trees the scanners walk", () => {
+  it("walks the core style maps and the native package, not only this package", async () => {
+    const coreFiles = await listSourceFiles(CORE_SOURCE_ROOT);
+    const nativeFiles = await listSourceFiles(NATIVE_SOURCE_ROOT);
+
+    // The style maps are where most class strings live; they are the reason the
+    // walk leaves `packages/web/src`.
+    expect(
+      coreFiles.filter((file) => file.endsWith("-styles.ts")).length,
+    ).toBeGreaterThan(30);
+    expect(nativeFiles.length).toBeGreaterThan(50);
   });
 });

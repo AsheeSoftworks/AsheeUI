@@ -39,7 +39,7 @@ export interface GridProps extends BaseGridProps {
    *
    * @default "div"
    */
-  as?: ElementType;
+  as?: ElementType | undefined;
 
   /**
    * Column count from the smallest viewport upwards.
@@ -48,24 +48,24 @@ export interface GridProps extends BaseGridProps {
    *
    * @default 1
    */
-  columns?: GridColumns;
+  columns?: GridColumns | undefined;
 
   /**
    * Column count from the `md` breakpoint upwards.
    */
-  columnsMd?: GridColumns;
+  columnsMd?: GridColumns | undefined;
 
   /**
    * Column count from the `lg` breakpoint upwards.
    */
-  columnsLg?: GridColumns;
+  columnsLg?: GridColumns | undefined;
 
   /**
    * Space between cells, from the shared spacing scale.
    *
    * @default "md"
    */
-  gap?: Space;
+  gap?: Space | undefined;
 }
 
 /**
@@ -73,9 +73,13 @@ export interface GridProps extends BaseGridProps {
  *
  * Grid states its column count per breakpoint rather than as a single number, so
  * a deck of cards is one column on a phone, two on a tablet and three on a
- * desktop without writing media queries by hand. A column count left undefined
- * inherits the value of the next smaller breakpoint through the cascade, so a
- * grid that never changes shape only has to state `columns`.
+ * desktop without writing media queries by hand. The counts are CSS min-width
+ * variants, so `columnsMd` and `columnsLg` only add a rule from their breakpoint
+ * upwards and the base `columns` class keeps applying below them: a column count
+ * left undefined inherits the smaller breakpoint's count through the variant
+ * order, not through the configuration cascade (neither responsive option has a
+ * cascade fallback). A grid that never changes shape only has to state
+ * `columns`.
  *
  * @param props - Grid configuration options and element attributes.
  * @param props.columns - Columns from the smallest viewport. Defaults to 1.
@@ -113,28 +117,28 @@ export const Grid = forwardRef<HTMLDivElement, GridProps>(
     ref,
   ) => {
     const config = useAsheeConfig();
-    const sectionConfig = config.components?.grid;
+    const gridConfig = config.components?.grid;
 
     const resolvedColumns = resolveCascade<GridColumns>(
       columns,
-      sectionConfig?.columns,
+      gridConfig?.columns,
       undefined,
       FALLBACK_GRID_CONFIG.columns,
     );
 
-    const resolvedColumnsMd = columnsMd ?? sectionConfig?.columnsMd;
-    const resolvedColumnsLg = columnsLg ?? sectionConfig?.columnsLg;
+    const resolvedColumnsMd = columnsMd ?? gridConfig?.columnsMd;
+    const resolvedColumnsLg = columnsLg ?? gridConfig?.columnsLg;
 
     const resolvedGap = resolveCascade<Space>(
       gap,
-      sectionConfig?.gap,
+      gridConfig?.gap,
       undefined,
       FALLBACK_GRID_CONFIG.gap,
     );
 
     const resolvedAlign = resolveCascade<GridAlign>(
       align,
-      sectionConfig?.align,
+      gridConfig?.align,
       undefined,
       FALLBACK_GRID_CONFIG.align,
     );

@@ -28,7 +28,7 @@ registerComponentDefaults("table", defaultTableConfig);
  * These values are used when instance props, component config,
  * and global defaults are all undefined.
  */
-export const FALLBACK_TABLE_CONFIG: Required<TableConfig> = {
+export const FALLBACK_TABLE_CONFIG = {
   size: "md",
   variant: "grid",
   color: "primary",
@@ -37,4 +37,4 @@ export const FALLBACK_TABLE_CONFIG: Required<TableConfig> = {
   headerClassName: "",
   rowClassName: "",
   cellClassName: "",
-} as const;
+} as const satisfies TableConfig;

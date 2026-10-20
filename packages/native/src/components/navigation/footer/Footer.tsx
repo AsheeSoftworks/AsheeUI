@@ -39,8 +39,8 @@ import { Container } from "../../../layout/Container";
 import { SECTION_SPACING_CLASS } from "../../../layout/layout-styles";
 import { useAsheeNativeConfig } from "../../../provider/AsheeNativeProvider";
 import { classNames } from "../../../utils/class-names";
-import { Link } from "../link";
 import { Text } from "../../typography/text/Text";
+import { Link } from "../link";
 import {
   FALLBACK_NATIVE_FOOTER_CONFIG,
   type NativeFooterConfig,

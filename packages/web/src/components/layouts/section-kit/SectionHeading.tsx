@@ -1,12 +1,13 @@
 /**
  * Section heading helper for AsheeUI.
  *
- * This file provides the internal `SectionHeading` component. It is the one
+ * This file provides the public `SectionHeading` component. It is the one
  * implementation of the eyebrow, title and description block that the
  * framework's patterns share, so a hero, a feature grid, a testimonial wall and
- * a pricing card present their heading the same way. It is an internal helper:
- * it is not exported from the package entry point and is not part of the public
- * component inventory.
+ * a pricing card present their heading the same way. It is public through the
+ * `@asheeui/web/section-kit` subpath rather than the package entry point, and
+ * is documented on the section page (https://docs.asheeui.com/components/layouts/section)
+ * under "The section kit".
  */
 
 import {
@@ -15,6 +16,7 @@ import {
   SECTION_BLOCK_DESCRIPTION_CLASS,
   SECTION_BLOCK_HEADING_ALIGN_CLASS,
   SECTION_BLOCK_HEADING_CLASS,
+  SECTION_BLOCK_HEADING_ELEMENT,
   SECTION_BLOCK_HEADING_ROLE,
   type SectionBlockAlign,
   type SectionBlockHeadingSize,
@@ -39,58 +41,71 @@ export type SectionHeadingSize = SectionBlockHeadingSize;
 export type SectionHeadingAlign = SectionBlockAlign;
 
 /**
- * Props for the internal SectionHeading helper.
+ * Props for the public SectionHeading helper.
  */
 export interface SectionHeadingProps {
   /**
    * Short label above the title, for example the category of a section.
    */
-  eyebrow?: ReactNode;
+  eyebrow?: ReactNode | undefined;
 
   /**
    * The heading itself.
    */
-  title?: ReactNode;
+  title?: ReactNode | undefined;
 
   /**
    * Supporting sentence under the title.
    */
-  description?: ReactNode;
+  description?: ReactNode | undefined;
 
   /**
    * Horizontal alignment of the block.
    *
    * @default "start"
    */
-  align?: SectionHeadingAlign;
+  align?: SectionHeadingAlign | undefined;
 
   /**
    * Element the title renders as.
-   * Defaults to the element the resolved typography role implies.
+   *
+   * Defaults to `h2` at **every** size, because a heading block belongs to a
+   * band — a section of a page — rather than to the page itself: two bands on
+   * one page must not produce two `h1`s. Pass `h1` when the block really is the
+   * page's own title, and `h3` or lower when it sits under an existing section
+   * heading.
+   *
+   * @default "h2"
    */
-  titleAs?: ElementType;
+  titleAs?: ElementType | undefined;
 
   /**
    * Size of the title.
    *
+   * The size selects the typography role, so it decides the visual step only;
+   * the element is `titleAs`.
+   *
    * @default "md"
    */
-  size?: SectionHeadingSize;
+  size?: SectionHeadingSize | undefined;
 
   /**
    * Identifier applied to the title element, so a section can point at it with
    * `aria-labelledby`.
    */
-  titleId?: string;
+  titleId?: string | undefined;
 
   /**
    * Additional classes for the wrapper.
    */
-  className?: string;
+  className?: string | undefined;
 }
 
 /**
  * The eyebrow, title and description block the patterns share.
+ *
+ * The title's element is `h2` unless `titleAs` says otherwise — at every size,
+ * so a page of bands keeps one `h1` — and its visual step comes from `size`.
  *
  * @param props - The heading content and its presentation options.
  * @returns The rendered heading block, or null when it has nothing to show.
@@ -113,6 +128,8 @@ export function SectionHeading({
   }
 
   const centered = align === "center";
+  const TitleElement: ElementType =
+    titleAs ?? SECTION_BLOCK_HEADING_ELEMENT[size];
 
   return (
     <div
@@ -128,7 +145,7 @@ export function SectionHeading({
       )}
       {title && (
         <Typography
-          as={titleAs}
+          as={TitleElement}
           id={titleId}
           role={SECTION_BLOCK_HEADING_ROLE[size]}
           className={centered ? "text-balance" : "text-pretty"}>

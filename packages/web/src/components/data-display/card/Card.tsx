@@ -8,7 +8,7 @@
  */
 "use client";
 
-import type { Size } from "@asheeui/core";
+import type { Size, Variant } from "@asheeui/core";
 import {
   cn,
   RADIUS_CLASS,
@@ -29,6 +29,7 @@ import {
 } from "react";
 import { useAsheeConfig } from "../../../libs/context";
 import { Image } from "../image/Image";
+import type { ImageFit, ImageRatioKey } from "../image/image-config";
 import {
   type CardConfig,
   type CardImageConfig,
@@ -36,6 +37,7 @@ import {
   type CardImagePosition,
   type CardVariant,
   FALLBACK_CARD_CONFIG,
+  resolveCardVariant,
 } from "./card-config";
 import {
   CARD_GAP_CLASS,
@@ -56,7 +58,7 @@ export interface CardImageProps extends CardImageConfig {
    * Source URL of the card image.
    * When provided, displays an image in the card.
    */
-  src?: string;
+  src?: string | undefined;
 
   /**
    * Alternative text for the card image.
@@ -64,21 +66,32 @@ export interface CardImageProps extends CardImageConfig {
    *
    * @default ""
    */
-  alt?: string;
+  alt?: string | undefined;
 
   /**
    * Custom image component to render the card image with instead of
    * the native `<img>` tag (e.g. `next/image`).
    */
-  component?: ElementType;
+  component?: ElementType | undefined;
 
   /**
    * Additional props forwarded to the image component
    * (e.g. `{ priority: true, sizes: "..." }`).
    * These take precedence over the props the framework passes itself.
    */
-  componentProps?: Record<string, unknown>;
+  componentProps?: Record<string, unknown> | undefined;
 }
+
+/**
+ * The headings the card title can render as.
+ *
+ * Restricted to the heading elements rather than any {@link ElementType}: the
+ * title is a section heading, and a `titleAs` that named a `<div>` or a `<p>`
+ * would remove the card from the document's outline while looking like it kept
+ * it. Pick the level that fits the surrounding outline — `h3` under an `h2`
+ * section, `h2` under an `h1`, and so on.
+ */
+export type CardTitleElement = "h1" | "h2" | "h3" | "h4" | "h5" | "h6";
 
 // biome-ignore lint/suspicious/noEmptyInterface: Config type kept so link props can extend it
 export interface CardLinkConfig {}
@@ -91,14 +104,17 @@ export interface CardLinkProps extends CardLinkConfig {
    * When provided, the card root becomes this component and `componentProps`
    * are forwarded to it.
    */
-  component?: ElementType;
+  component?: ElementType | undefined;
 
   /**
    * Additional props forwarded to the link component
    * (e.g. `{ href: "/blog/post-1" }`).
-   * These take precedence over the props the framework passes itself.
+   *
+   * They take precedence over the props the framework passes itself — with one
+   * exception: a `className` here is appended to the card's own classes through
+   * `cn` rather than replacing them, so a link cannot drop the card's surface.
    */
-  componentProps?: Record<string, unknown>;
+  componentProps?: Record<string, unknown> | undefined;
 }
 
 /**
@@ -112,7 +128,7 @@ export interface CardProps extends BaseCardProps {
    *
    * @default false
    */
-  isClickable?: boolean;
+  isClickable?: boolean | undefined;
 
   /**
    * Disables interactive states and dims card opacity.
@@ -120,56 +136,69 @@ export interface CardProps extends BaseCardProps {
    *
    * @default false
    */
-  isDisabled?: boolean;
+  isDisabled?: boolean | undefined;
 
   /**
    * Link configuration for the card.
    * When provided, the card root renders as the given link component
    * (e.g. `next/link`) with `props` forwarded to it.
    */
-  link?: CardLinkProps;
+  link?: CardLinkProps | undefined;
 
   /**
    * Heading content rendered above the body.
    * Typically a string or React element.
    */
-  title?: ReactNode;
+  title?: ReactNode | undefined;
+
+  /**
+   * The heading element the title renders as.
+   *
+   * The title's level must follow the outline it sits in: a card under a
+   * section `h2` renders an `h3`, a card that is the first content of a page
+   * needs an `h1`, and a card nested under an `h3` needs an `h4`. Only the
+   * heading elements are accepted, so the title cannot lose its place in the
+   * document outline.
+   *
+   * @default "h3"
+   */
+  titleAs?: CardTitleElement | undefined;
 
   /**
    * Supporting text rendered under the title.
    * Typically a string providing additional context.
    */
-  description?: ReactNode;
+  description?: ReactNode | undefined;
 
   /**
    * Custom header node rendered above the title.
    * Useful for adding icons, badges, or metadata.
    */
-  header?: ReactNode;
+  header?: ReactNode | undefined;
 
   /**
    * Explicit body content; falls back to `children`.
    * Use this when you need to explicitly set the body content.
    */
-  body?: ReactNode;
+  body?: ReactNode | undefined;
 
   /**
    * Footer node rendered at the bottom of the content column.
    * Typically used for actions or additional metadata.
    */
-  footer?: ReactNode;
+  footer?: ReactNode | undefined;
 
   /**
    * Image configuration for the card.
    * Includes src, alt, position, ratio, fit, loading, the custom image
    * component, and props forwarded to it.
    */
-  image?: CardImageProps;
+  image?: CardImageProps | undefined;
 
   /**
    * Card body content, used when `body` is not provided.
    */
-  children?: ReactNode;
+  children?: ReactNode | undefined;
 }
 
 /**
@@ -184,10 +213,14 @@ export interface CardProps extends BaseCardProps {
  *
  * The component automatically handles accessibility attributes including
  * role, tabIndex, aria-disabled, and proper keyboard interaction with
- * Enter and Space keys.
+ * Enter and Space keys. A card that renders a real link stays in the tab
+ * order even when `isClickable` is `false`, because the option states
+ * whether the card itself reacts to input, not whether the anchor exists.
  *
  * @param props - Card configuration options and HTML div element props.
- * @param props.variant - Visual style variant. Defaults to "bordered".
+ * @param props.variant - Visual style variant. Defaults to "bordered"; a shared
+ *   treatment the card cannot draw resolves to the nearest card surface it can
+ *   (see {@link resolveCardVariant}).
  * @param props.size - Content density scale. Defaults to "md".
  * @param props.radius - Corner rounding. Defaults to "md".
  * @param props.animate - Press animation. Defaults to true.
@@ -195,6 +228,7 @@ export interface CardProps extends BaseCardProps {
  * @param props.isDisabled - Disabled state. Defaults to false.
  * @param props.link - Link configuration for the card (component and props).
  * @param props.title - Heading content.
+ * @param props.titleAs - Heading element the title renders as. Defaults to "h3".
  * @param props.description - Supporting text.
  * @param props.header - Custom header node.
  * @param props.body - Explicit body content.
@@ -276,6 +310,7 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(
       isDisabled = false,
       link,
       title,
+      titleAs,
       description,
       header,
       body,
@@ -292,37 +327,57 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(
     ref,
   ) => {
     const config = useAsheeConfig();
-    const sectionConfig = config.components?.card as CardConfig | undefined;
+    const cardConfig = config.components?.card as CardConfig | undefined;
 
     const generatedId = useId();
     const cardId = id ?? generatedId;
 
     const resolvedSizeKey = resolveCascade<Size>(
       size,
-      sectionConfig?.size,
+      cardConfig?.size,
       undefined,
       FALLBACK_CARD_CONFIG.size,
     );
 
-    const resolvedVariantKey = resolveCascade<CardVariant>(
-      variant,
-      sectionConfig?.variant,
-      config.defaultVariant as CardVariant | undefined,
-      FALLBACK_CARD_CONFIG.variant,
+    const resolvedVariantKey = resolveCardVariant(
+      resolveCascade<Variant | CardVariant>(
+        variant,
+        cardConfig?.variant,
+        config.defaultVariant,
+        FALLBACK_CARD_CONFIG.variant,
+      ),
     );
 
     const resolvedRadiusKey = resolveRadiusKey(
       radius,
-      sectionConfig?.radius,
+      cardConfig?.radius,
       config.defaultRadius,
       FALLBACK_CARD_CONFIG.radius,
     );
 
     const resolvedImagePos = resolveCascade<CardImagePosition>(
       image?.position,
-      sectionConfig?.image.position,
+      cardConfig?.image?.position,
       undefined,
       FALLBACK_CARD_CONFIG.image.position,
+    );
+
+    // The image options are configurable per card, so both the ratio and the fit
+    // are resolved through the cascade: an application states
+    // `components.card.image.ratio` once and every card honours it, and an
+    // instance still overrides it.
+    const resolvedImageRatio = resolveCascade<ImageRatioKey>(
+      image?.ratio,
+      cardConfig?.image?.ratio,
+      undefined,
+      FALLBACK_CARD_CONFIG.image.ratio,
+    );
+
+    const resolvedImageFit = resolveCascade<ImageFit>(
+      image?.fit,
+      cardConfig?.image?.fit,
+      undefined,
+      FALLBACK_CARD_CONFIG.image.fit,
     );
 
     // Mirrors the Sidebar's link handling: a custom link component renders the
@@ -333,9 +388,23 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(
 
     const resolvedClickable = isClickable ?? Boolean(isLink || onClick);
 
+    // A link renders an element the browser itself puts in the tab order, so an
+    // explicit `isClickable={false}` — which opts out of the *card's* own pointer
+    // and keyboard handling — must not delete the anchor from it. A custom link
+    // component renders its own anchor (or router link), and a native anchor is
+    // focusable only when it carries an href.
+    const linkHref = link?.componentProps?.href;
+    const rendersRealLink =
+      isLink &&
+      (Boolean(link?.component) ||
+        (linkHref !== undefined && linkHref !== null));
+
+    // Focus follows what the card renders: an interactive card, or any real link.
+    const isFocusable = !isDisabled && (resolvedClickable || rendersRealLink);
+
     const resolvedAnimate = resolveAnimate<boolean>(
       animate,
-      sectionConfig?.animate,
+      cardConfig?.animate,
       FALLBACK_CARD_CONFIG.animate,
     );
 
@@ -365,19 +434,26 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(
 
     const resolvedLoading = resolveCascade<CardImageLoading>(
       image?.loading,
-      sectionConfig?.image.loading,
+      cardConfig?.image?.loading,
       undefined,
       FALLBACK_CARD_CONFIG.image.loading,
     );
 
-    const variantClass =
-      CARD_VARIANT_CLASS[resolvedVariantKey] ?? CARD_VARIANT_CLASS.bordered;
+    // `resolveCardVariant` guarantees a card surface, so the class map answers for
+    // every value the cascade can produce — including a shared treatment the card
+    // does not draw — and a card never renders without a variant treatment.
+    const variantClass = CARD_VARIANT_CLASS[resolvedVariantKey];
 
     // The link's own `onClick` is invoked from `handleClick` instead of being
     // spread onto the root, so the card's disabled guard and its `onClick` prop
     // still run — and the link handler still fires — when both are provided.
-    const { onClick: linkOnClick, ...linkRestProps } = (link?.componentProps ??
-      {}) as Record<string, unknown>;
+    // Its `className` is merged into the card's classes instead of being spread
+    // last, because spreading it last would replace the card's whole surface.
+    const {
+      onClick: linkOnClick,
+      className: linkClassName,
+      ...linkRestProps
+    } = (link?.componentProps ?? {}) as Record<string, unknown>;
 
     /**
      * Handles click events on the card.
@@ -460,8 +536,8 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(
         <Image
           src={image.src}
           alt={image.alt}
-          ratio={image?.ratio ?? "video"}
-          fit={image.fit ?? "cover"}
+          ratio={resolvedImageRatio}
+          fit={resolvedImageFit}
           className={positionStyles}
           component={image.component}
           componentProps={finalImageProps}
@@ -516,13 +592,15 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(
 
     const bodyContent = body ?? children;
 
+    const TitleElement: ElementType = titleAs ?? "h3";
+
     return (
       <LinkComponent
         ref={ref}
         id={cardId}
-        tabIndex={resolvedClickable && !isDisabled ? 0 : -1}
+        tabIndex={isFocusable ? 0 : -1}
         role={resolvedClickable ? (isLink ? "link" : "button") : undefined}
-        aria-disabled={isDisabled}
+        aria-disabled={isDisabled || undefined}
         onClick={handleClick}
         onKeyDown={handleKeyDown}
         className={cn(
@@ -538,6 +616,7 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(
             "motion-safe:transition-transform motion-safe:duration-100 motion-safe:active:scale-[0.99]",
           isDisabled && "opacity-50 pointer-events-none select-none",
           className,
+          linkClassName as string | undefined,
         )}
         style={style}
         {...rest}
@@ -558,9 +637,9 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(
             <div className={cn("flex flex-col z-10", headerGapClass)}>
               {header}
               {title && (
-                <h3 className="font-semibold leading-tight tracking-tight text-foreground text-lg md:text-xl">
+                <TitleElement className="font-semibold leading-tight tracking-tight text-foreground text-lg md:text-xl">
                   {title}
-                </h3>
+                </TitleElement>
               )}
               {description && (
                 <p className="text-sm text-muted-foreground leading-relaxed">

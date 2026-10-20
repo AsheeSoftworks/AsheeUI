@@ -55,7 +55,7 @@ registerNativeComponentDefaults("dropmenu", defaultNativeDropmenuConfig);
 /**
  * The values the select falls back to when no tier provides one.
  */
-export const FALLBACK_NATIVE_DROPMENU_CONFIG: Required<NativeDropmenuConfig> = {
+export const FALLBACK_NATIVE_DROPMENU_CONFIG = {
   size: "md",
   radius: "md",
   variant: "bordered",
@@ -63,4 +63,4 @@ export const FALLBACK_NATIVE_DROPMENU_CONFIG: Required<NativeDropmenuConfig> = {
   status: "default",
   isDisabled: false,
   required: false,
-};
+} satisfies NativeDropmenuConfig;

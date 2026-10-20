@@ -34,11 +34,11 @@ export const defaultSpinnerConfig: SpinnerConfig = {
  * These values are used when instance props, component config,
  * and global defaults are all undefined.
  */
-export const FALLBACK_SPINNER_CONFIG: Required<SpinnerConfig> = {
+export const FALLBACK_SPINNER_CONFIG = {
   size: "md",
   color: "primary",
   speed: SPINNER_FALLBACK_SPEED,
   className: "",
-};
+} satisfies SpinnerConfig;
 
 registerComponentDefaults("spinner", defaultSpinnerConfig);

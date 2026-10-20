@@ -34,7 +34,7 @@ export interface FormProps extends BaseFormProps {
   /**
    * The fields and other content of the form.
    */
-  children?: ReactNode;
+  children?: ReactNode | undefined;
 
   /**
    * Legend that groups the fields.
@@ -43,7 +43,7 @@ export interface FormProps extends BaseFormProps {
    * describing. A form whose fields are already grouped by other landmarks
    * omits it and names itself with `aria-label` or `aria-labelledby`.
    */
-  legend?: string;
+  legend?: string | undefined;
 
   /**
    * Label of the submit control.
@@ -51,7 +51,7 @@ export interface FormProps extends BaseFormProps {
    * submit control, so no consumer has to rebuild one. Without it the
    * consumer places its own control.
    */
-  submitLabel?: string;
+  submitLabel?: string | undefined;
 
   /**
    * Whether a submission is in progress.
@@ -60,7 +60,7 @@ export interface FormProps extends BaseFormProps {
    *
    * @default false
    */
-  isPending?: boolean;
+  isPending?: boolean | undefined;
 
   /**
    * Component that replaces the native `form` element, such as a framework
@@ -69,12 +69,12 @@ export interface FormProps extends BaseFormProps {
    * The substitution API is shared with `Link` and `Image`: `component` names
    * the component and `componentProps` carries the props it needs.
    */
-  component?: ElementType;
+  component?: ElementType | undefined;
 
   /**
    * Additional props for `component`.
    */
-  componentProps?: Record<string, unknown>;
+  componentProps?: Record<string, unknown> | undefined;
 }
 
 /**

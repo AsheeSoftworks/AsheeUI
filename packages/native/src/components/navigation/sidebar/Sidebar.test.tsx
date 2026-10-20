@@ -5,7 +5,9 @@
  * flat list as one unnamed section; a row is a link a screen reader can find, the row of the page
  * being shown is reported as selected rather than only styled, a row that cannot be used is
  * reported as disabled and sends no press, and a press reports the row and follows the destination
- * the row names; the destination belongs to the component the consumer names, when it names one;
+ * the row names; a section that is disabled keeps its rows on screen and refuses their presses; a
+ * collapsed row keeps its name even though the icon is all it draws; the destination belongs to the
+ * component the consumer names, when it names one;
  * the rows and sections the consumer's role does not name are left out, and so is a section left
  * with nothing; the collapse control folds the sidebar to an icon rail and unfolds it again, and
  * reports the request rather than deciding when its owner holds the state; a sidebar that cannot
@@ -195,6 +197,47 @@ describe("Native Sidebar", () => {
     expect(openDestination).not.toHaveBeenCalled();
   });
 
+  it("honours a disabled section without taking its rows off the screen", async () => {
+    const onSelect = jest.fn();
+    const view = await renderSidebar(
+      <Sidebar
+        testID="sidebar"
+        items={[
+          {
+            id: "workspace",
+            label: "Workspace",
+            disabled: true,
+            items: [
+              { id: "dashboard", label: "Dashboard", href: "/dashboard" },
+              { id: "campaigns", label: "Campaigns", href: "/campaigns" },
+            ],
+          },
+        ]}
+        onSelect={onSelect}
+      />,
+    );
+    const row = view.getByRole("link", { name: "Dashboard" });
+
+    // A disabled section is still a section: its rows say what the application offers, so they
+    // are drawn, and dimmed, rather than removed.
+    expect(view.getByText("Campaigns")).toBeTruthy();
+    expect(view.getByText("Workspace")).toBeTruthy();
+    expect((row.props as { className?: string }).className).toContain(
+      "opacity-50",
+    );
+
+    // Neither the row nor the section pretends to be usable.
+    expect(row).toBeDisabled();
+    expect(
+      (view.getByText("Workspace").parent as { props: object }).props,
+    ).toMatchObject({ accessibilityState: { disabled: true } });
+
+    await fireEvent.press(row);
+
+    expect(onSelect).not.toHaveBeenCalled();
+    expect(openDestination).not.toHaveBeenCalled();
+  });
+
   it("reports the row that was pressed and follows the destination it names", async () => {
     const onSelect = jest.fn();
     const view = await renderSidebar(
@@ -287,6 +330,21 @@ describe("Native Sidebar", () => {
     );
 
     expect(classesOf(view, "sidebar")).toContain("w-18");
+  });
+
+  it("keeps a collapsed row named, even though the icon is all it draws", async () => {
+    const view = await renderSidebar(
+      <Sidebar testID="sidebar" items={WORKSPACE} isCollapsed />,
+    );
+
+    // Collapsed, the icon is the only thing the row shows, so the row states the name it no
+    // longer draws. A tooltip is a description rather than a name, so the hint is not the word
+    // the row is reached by.
+    expect(view.getByRole("link", { name: "Dashboard" })).toBeTruthy();
+    expect(view.getByRole("link", { name: "Campaigns" })).toBeTruthy();
+    expect(view.getByHintText("Dashboard")).toBeTruthy();
+    // The label moves into the row's name rather than being drawn twice.
+    expect(view.queryByText("Dashboard")).toBeNull();
   });
 
   it("folds to an icon rail when the control is pressed, and unfolds again", async () => {

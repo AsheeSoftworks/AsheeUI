@@ -15,6 +15,7 @@ import {
   BADGE_HEIGHT_CLASS,
   BADGE_ICON_SIZE_CLASS,
   BADGE_PADDING_CLASS,
+  BADGE_SLOT_CLASS,
   cn,
   RADIUS_CLASS,
   resolveBadgeVariant,
@@ -23,7 +24,12 @@ import {
   resolveRadiusKey,
   resolveVariantClass,
 } from "@asheeui/core";
-import { forwardRef, type HTMLAttributes, type ReactNode } from "react";
+import {
+  forwardRef,
+  type HTMLAttributes,
+  type ReactNode,
+  useEffect,
+} from "react";
 import { useAsheeConfig } from "../../../libs/context";
 import {
   type BadgeConfig,
@@ -35,6 +41,30 @@ type BaseBadgeProps = BadgeConfig &
   Omit<HTMLAttributes<HTMLSpanElement>, "color" | "content">;
 
 /**
+ * Whether the badge has content of its own to show.
+ *
+ * A `null`, `undefined`, boolean or empty-string child draws nothing, and a badge in
+ * that state is the icon-only badge `label` exists to name. Anything else — text, a
+ * node, a list — is content the reader can see, and therefore the badge's name.
+ *
+ * @param children - The badge's content.
+ * @returns `true` when the badge draws content of its own.
+ */
+function hasContent(children: ReactNode): boolean {
+  if (
+    children === null ||
+    children === undefined ||
+    typeof children === "boolean"
+  ) {
+    return false;
+  }
+
+  if (typeof children === "string") return children.trim().length > 0;
+
+  return true;
+}
+
+/**
  * Configuration options for the Badge component.
  */
 export interface BadgeProps extends BaseBadgeProps {
@@ -43,25 +73,31 @@ export interface BadgeProps extends BaseBadgeProps {
    * Typically a short piece of text. Omit it when the badge shows only an icon
    * and pass `label` instead so the badge still has an accessible name.
    */
-  children?: ReactNode;
+  children?: ReactNode | undefined;
 
   /**
    * Text that stands in for the badge's content.
    * Use it when the badge shows only an icon: the text is rendered for
    * assistive technology and the visible content is treated as decoration. A
    * badge with visible text does not need it, because its text is its content.
+   *
+   * It names a badge that has no content of its own. When `children` is given
+   * as well, the content wins: it is what the reader sees, so it is also what
+   * assistive technology reads, and `label` is ignored (a development warning
+   * says so). The pair never leaves the badge announcing a name the visible
+   * text contradicts.
    */
-  label?: string;
+  label?: string | undefined;
 
   /**
    * Content rendered before the badge text, typically an icon.
    */
-  startContent?: ReactNode;
+  startContent?: ReactNode | undefined;
 
   /**
    * Content rendered after the badge text, typically an icon.
    */
-  endContent?: ReactNode;
+  endContent?: ReactNode | undefined;
 }
 
 /**
@@ -74,12 +110,17 @@ export interface BadgeProps extends BaseBadgeProps {
  * carries no interaction of its own: pointer events, focus, and keyboard
  * behaviour belong to whatever it is placed inside.
  *
+ * Its content is its name. `label` names the badge that has none — an
+ * icon-only one — and is left out of the reading when visible content is
+ * there, so the badge never announces a name its text contradicts.
+ *
  * Consumer `className` is appended last, so it can restyle or reposition the
  * badge without fighting the framework's classes.
  *
  * @param props - Badge configuration options and span attributes.
- * @param props.children - Badge text or content.
- * @param props.label - Text that stands in for the content of an icon-only badge.
+ * @param props.children - Badge text or content, which is also its name.
+ * @param props.label - Name of an icon-only badge. Ignored when `children` is
+ * given, with a development warning.
  * @param props.variant - Visual style variant. Defaults to the configured value.
  * @param props.color - Theme accent colour. Defaults to the configured value.
  * @param props.size - Density scale. Defaults to "md".
@@ -188,6 +229,30 @@ export const Badge = forwardRef<HTMLSpanElement, BadgeProps>(
       FALLBACK_BADGE_CONFIG.radius,
     );
 
+    // A label names the badge that has nothing visible to be named by. When the
+    // badge does draw content, that content is what the reader sees, so it is
+    // what assistive technology reads too: the two never disagree.
+    const showsLabel = Boolean(label) && !hasContent(children);
+    const ignoresLabel = Boolean(label) && hasContent(children);
+
+    useEffect(() => {
+      if (!ignoresLabel) return;
+
+      console.warn(
+        "[Badge] `label` is ignored because `children` is given: the visible " +
+          "content is the badge's name, and an `aria-hidden` copy beside a label " +
+          "would announce a name the text contradicts. Pass the icon as " +
+          "`startContent` and drop `children` to name an icon-only badge.",
+      );
+    }, [ignoresLabel]);
+
+    // The icon slot states the density's box and the drawing inside it, so an icon
+    // is the same size here as it is in a chip, whatever node the consumer passed.
+    const iconSlot = (content: ReactNode) =>
+      hasContent(content) ? (
+        <span className={cn(BADGE_SLOT_CLASS, iconClass)}>{content}</span>
+      ) : null;
+
     return (
       <span
         ref={ref}
@@ -197,31 +262,30 @@ export const Badge = forwardRef<HTMLSpanElement, BadgeProps>(
           paddingClass,
           fontClass,
           gapClass,
-          iconClass,
           radiusClass,
           resolveVariantClass(resolvedVariantKey, resolvedColorKey),
           className,
         )}
         {...props}>
-        {/* A label replaces the visible content as the badge's name: the icon
-            and any text are decoration next to it. Without a label the visible
-            content is the name, which is what a text badge wants. */}
-        {label ? (
+        {/* A label names an icon-only badge: the icon and the markup beside it
+            are decoration next to the name. Without one the visible content is
+            the name, which is what a text badge wants. */}
+        {showsLabel ? (
           <>
             <span className="sr-only">{label}</span>
             <span
               aria-hidden="true"
               className={cn("inline-flex items-center", gapClass)}>
-              {startContent}
+              {iconSlot(startContent)}
               {children}
-              {endContent}
+              {iconSlot(endContent)}
             </span>
           </>
         ) : (
           <>
-            {startContent}
+            {iconSlot(startContent)}
             {children}
-            {endContent}
+            {iconSlot(endContent)}
           </>
         )}
       </span>

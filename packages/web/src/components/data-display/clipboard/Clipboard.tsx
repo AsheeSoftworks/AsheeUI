@@ -41,6 +41,10 @@ export interface ClipboardState {
   /**
    * Copy the component's value, or the given text.
    *
+   * An empty target is a failed copy rather than a successful write of nothing:
+   * it resolves to `false`, sets `error` and calls `onError`, exactly as a
+   * refused write does, so a consumer is never told that nothing was copied.
+   *
    * @param text - Text to copy instead of the component's value.
    * @returns Whether the copy succeeded.
    */
@@ -55,19 +59,19 @@ export interface ClipboardState {
  */
 export interface ClipboardProps {
   /** Text copied when `copy` is called without an argument. */
-  value?: string;
+  value?: string | undefined;
 
   /**
    * How long the copied state lasts, in milliseconds.
    * Defaults to `components.clipboard.timeout`, then to the framework fallback.
    */
-  timeout?: number;
+  timeout?: number | undefined;
 
   /** Called after a successful copy. */
-  onCopy?: (text: string) => void;
+  onCopy?: ((text: string) => void) | undefined;
 
   /** Called after a failed copy. */
-  onError?: (error: unknown) => void;
+  onError?: ((error: unknown) => void) | undefined;
 
   /** Renders the control, using the clipboard state. */
   children: (state: ClipboardState) => ReactNode;
@@ -177,7 +181,19 @@ export function Clipboard({
 
   const copy = useCallback(
     async (text?: string) => {
-      const target = text ?? value ?? "";
+      const target = text ?? value;
+
+      // Writing nothing is not a copy, and reporting it as one is the one lie a
+      // copy control must not tell: a bare `copy()` on a `Clipboard` with no
+      // `value` — or a `CopyButton` with `value=""` — would otherwise clear the
+      // error state, rename the control "Copied" and announce a success.
+      if (!target) {
+        clearTimer();
+        setError(true);
+        setCopied(false);
+        onError?.(new Error("There is nothing to copy"));
+        return false;
+      }
 
       try {
         const succeeded = await writeToClipboard(target);

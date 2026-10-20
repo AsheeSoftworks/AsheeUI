@@ -41,32 +41,32 @@ export interface TabItem {
   id: string | number;
 
   /** Primary display text. */
-  label?: ReactNode;
+  label?: ReactNode | undefined;
 
   /** Legacy display text, kept for compatibility with the `name` prop. */
-  name?: ReactNode;
+  name?: ReactNode | undefined;
 
   /** Content shown before the label. */
-  icon?: ReactNode;
+  icon?: ReactNode | undefined;
 
   /** Content shown after the label, typically a count or a status. */
-  badge?: ReactNode;
+  badge?: ReactNode | undefined;
 
   /** The panel this tab reveals when it is selected. */
-  content?: ReactNode;
+  content?: ReactNode | undefined;
 
   /**
    * Whether the tab can be selected.
    *
    * @default false
    */
-  disabled?: boolean;
+  disabled?: boolean | undefined;
 
   /** Treatment of this trigger while it is selected, overriding the component's. */
-  activeVariant?: Variant;
+  activeVariant?: Variant | undefined;
 
   /** Colour role of this trigger while it is selected, overriding the component's. */
-  activeColor?: Color;
+  activeColor?: Color | undefined;
 
   /** Additional tab metadata. */
   [key: string]: unknown;
@@ -74,22 +74,22 @@ export interface TabItem {
 
 /** Visual styling of a selected trigger. */
 export interface TabsActiveOptionConfig {
-  radius?: Radius;
-  variant?: Variant;
-  color?: Color;
+  radius?: Radius | undefined;
+  variant?: Variant | undefined;
+  color?: Color | undefined;
 }
 
 /** Visual styling of an unselected trigger. */
 export interface TabsInactiveOptionConfig {
-  radius?: Radius;
-  variant?: Variant;
-  color?: Color;
+  radius?: Radius | undefined;
+  variant?: Variant | undefined;
+  color?: Color | undefined;
 }
 
 /** The styling of both states of a trigger. */
 export interface TabsOptionsConfig {
-  active?: TabsActiveOptionConfig;
-  inactive?: TabsInactiveOptionConfig;
+  active?: TabsActiveOptionConfig | undefined;
+  inactive?: TabsInactiveOptionConfig | undefined;
 }
 
 /**
@@ -104,24 +104,24 @@ export interface TabsConfig {
    *
    * @default "md"
    */
-  size?: Size;
+  size?: Size | undefined;
 
   /**
    * Visual style variant of the bar.
    *
    * @default "underline"
    */
-  variant?: TabsVariant;
+  variant?: TabsVariant | undefined;
 
   /**
    * Corner rounding of the bar.
    *
    * @default "md"
    */
-  radius?: Radius;
+  radius?: Radius | undefined;
 
   /** Styling of a selected and an unselected trigger. */
-  options?: TabsOptionsConfig;
+  options?: TabsOptionsConfig | undefined;
 }
 
 declare module "../../../registry" {

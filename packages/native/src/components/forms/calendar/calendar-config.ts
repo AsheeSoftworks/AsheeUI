@@ -60,7 +60,7 @@ registerNativeComponentDefaults("calendar", defaultNativeCalendarConfig);
  * The values the date field falls back to when no tier provides one.
  * The family's fallbacks with the calendar's own mode beside them: a date field.
  */
-export const FALLBACK_NATIVE_CALENDAR_CONFIG: Required<NativeCalendarConfig> = {
+export const FALLBACK_NATIVE_CALENDAR_CONFIG = {
   size: "md",
   radius: "md",
   variant: "bordered",
@@ -69,4 +69,4 @@ export const FALLBACK_NATIVE_CALENDAR_CONFIG: Required<NativeCalendarConfig> = {
   mode: "date",
   isDisabled: false,
   required: false,
-};
+} satisfies NativeCalendarConfig;

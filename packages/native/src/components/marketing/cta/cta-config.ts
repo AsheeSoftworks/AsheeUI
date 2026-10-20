@@ -45,11 +45,11 @@ registerNativeComponentDefaults("cta", defaultNativeCtaConfig);
 /**
  * The values the CTA falls back to when no tier provides one.
  */
-export const FALLBACK_NATIVE_CTA_CONFIG: Required<NativeCtaConfig> = {
+export const FALLBACK_NATIVE_CTA_CONFIG = {
   align: "center",
   spacing: "lg",
   background: "none",
   panel: "bordered",
   containerSize: "lg",
   contained: true,
-};
+} satisfies NativeCtaConfig;

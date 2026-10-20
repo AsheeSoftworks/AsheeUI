@@ -64,7 +64,9 @@ export interface AvatarProps
 
   /**
    * Picture of the represented entity.
-   * When it is missing or fails to load, the avatar shows its fallback.
+   * When it is missing or fails to load, the avatar shows its fallback. A new source is
+   * a new picture, so a slot that a list recycled for another entity tries it rather
+   * than keeping the fallback the previous one earned.
    */
   src?: string;
 
@@ -148,7 +150,12 @@ export function Avatar({
 }: AvatarProps) {
   const config = useAsheeNativeConfig();
   const sectionConfig = config.components.avatar;
-  const [hasImageError, setHasImageError] = useState(false);
+  // The source whose load failed, rather than a bare "has failed" flag: a list recycles
+  // an avatar slot, so a fresh `src` is a fresh picture and must get its own chance.
+  // Comparing the two resets the fallback as soon as the source changes — during the
+  // render that sees the new source, without an effect and without a frame of stale
+  // initials.
+  const [failedSrc, setFailedSrc] = useState<string | null>(null);
 
   const resolvedSize = resolveCascade<Size>(
     size,
@@ -190,7 +197,7 @@ export function Avatar({
   );
 
   const accessibleName = alt ?? name;
-  const showsPicture = Boolean(src) && !hasImageError;
+  const showsPicture = Boolean(src) && failedSrc !== src;
 
   return (
     <View
@@ -222,7 +229,7 @@ export function Avatar({
           showSkeleton={false}
           component={component}
           componentProps={componentProps}
-          onError={() => setHasImageError(true)}
+          onError={() => setFailedSrc(src ?? null)}
           // The framework's own picture class, because the picture inside an avatar is
           // the same picture the image module draws: it fills the frame it is given.
           className={NATIVE_IMAGE_PICTURE_FILL_CLASS}

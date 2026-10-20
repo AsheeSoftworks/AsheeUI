@@ -83,8 +83,10 @@ export interface DrawerProps
  * @param props.size - How much of the screen it takes. Defaults to the configured value.
  * @param props.placement - The edge it comes from. Defaults to the configured value.
  * @param props.animated - Whether it moves when it appears. Defaults to the configured value.
- * @param props.closeOnOverlayClick - Whether pressing outside dismisses it.
- * @param props.closeOnEsc - Whether the platform's own way out dismisses it.
+ * @param props.closeOnBackdropClick - Whether pressing outside dismisses it (canonical name, shared with the Modal).
+ * @param props.closeOnEscape - Whether the platform's own way out dismisses it (canonical name, shared with the Modal).
+ * @param props.closeOnOverlayClick - Deprecated alias of `closeOnBackdropClick`.
+ * @param props.closeOnEsc - Deprecated alias of `closeOnEscape`.
  * @param props.overlay - Overrides the dimmed layer.
  * @param props.content - Overrides the sheet.
  * @param props.className - Extra classes applied last.
@@ -106,6 +108,8 @@ export function Drawer({
   size,
   placement,
   animated,
+  closeOnBackdropClick: closeOnBackdropClickProp,
+  closeOnEscape: closeOnEscapeProp,
   closeOnOverlayClick,
   closeOnEsc,
   overlay,
@@ -135,17 +139,21 @@ export function Drawer({
     undefined,
     FALLBACK_NATIVE_DRAWER_CONFIG.animated,
   );
+  // The canonical names come first, and the deprecated aliases are read only when the
+  // canonical spelling is absent. The registered default uses the alias spelling so a
+  // consumer's override under either name is visible to this resolution instead of being
+  // shadowed by a registered value.
   const resolvedCloseOnOverlay = resolveCascade<boolean>(
-    closeOnOverlayClick,
-    sectionConfig?.closeOnOverlayClick,
+    closeOnBackdropClickProp ?? closeOnOverlayClick,
+    sectionConfig?.closeOnBackdropClick ?? sectionConfig?.closeOnOverlayClick,
     undefined,
-    FALLBACK_NATIVE_DRAWER_CONFIG.closeOnOverlayClick,
+    FALLBACK_NATIVE_DRAWER_CONFIG.closeOnBackdropClick,
   );
   const resolvedCloseOnEsc = resolveCascade<boolean>(
-    closeOnEsc,
-    sectionConfig?.closeOnEsc,
+    closeOnEscapeProp ?? closeOnEsc,
+    sectionConfig?.closeOnEscape ?? sectionConfig?.closeOnEsc,
     undefined,
-    FALLBACK_NATIVE_DRAWER_CONFIG.closeOnEsc,
+    FALLBACK_NATIVE_DRAWER_CONFIG.closeOnEscape,
   );
 
   const edge = NATIVE_DRAWER_SHEET_EDGE[resolvedPlacement];

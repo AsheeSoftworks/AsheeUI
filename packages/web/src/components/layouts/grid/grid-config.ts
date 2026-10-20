@@ -14,17 +14,9 @@ import {
 } from "@asheeui/core";
 
 /**
- * Column counts a grid can declare.
- *
- * The counts are shared layout vocabulary rather than a web idea: `@asheeui/core` declares
- * them, so a grid and a feature grid name one type on both platforms. This module re-exports
- * them so code that already reaches for them here keeps working. Only the counts the
- * framework's own layouts use are offered, so the class map stays small and every entry is a
- * complete literal.
- */
-/**
- * Cross-axis alignment of the grid's items.
- * `stretch` makes every cell fill the row height, which is what a row of cards wants.
+ * The shared grid vocabulary, re-exported so code that already reaches for it
+ * here keeps working. The types themselves are declared in `@asheeui/core`, so a
+ * grid and a feature grid name one type on both platforms.
  */
 export type { GridAlign, GridColumns };
 
@@ -40,31 +32,31 @@ export interface GridConfig {
    *
    * @default 1
    */
-  columns?: GridColumns;
+  columns?: GridColumns | undefined;
 
   /**
    * Column count from the `md` breakpoint upwards.
    */
-  columnsMd?: GridColumns;
+  columnsMd?: GridColumns | undefined;
 
   /**
    * Column count from the `lg` breakpoint upwards.
    */
-  columnsLg?: GridColumns;
+  columnsLg?: GridColumns | undefined;
 
   /**
    * Space between cells.
    *
    * @default "md"
    */
-  gap?: Space;
+  gap?: Space | undefined;
 
   /**
    * Cross-axis alignment of the cells.
    *
    * @default "stretch"
    */
-  align?: GridAlign;
+  align?: GridAlign | undefined;
 }
 
 /**
@@ -89,10 +81,8 @@ registerComponentDefaults("grid", defaultGridConfig);
  * `columnsMd` and `columnsLg` have no fallback on purpose: an unstated
  * breakpoint inherits the value below it rather than forcing a column count.
  */
-export const FALLBACK_GRID_CONFIG: Required<
-  Pick<GridConfig, "columns" | "gap" | "align">
-> = {
+export const FALLBACK_GRID_CONFIG = {
   columns: 1,
   gap: "md",
   align: "stretch",
-};
+} satisfies Pick<GridConfig, "columns" | "gap" | "align">;

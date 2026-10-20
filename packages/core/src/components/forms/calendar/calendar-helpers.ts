@@ -101,17 +101,21 @@ export function formatDisplay(date: Date, mode: CalendarMode): string {
 /**
  * What the field says while it holds nothing, for each mode.
  *
+ * The words name the field's own task rather than the component that happens to
+ * host it, so a reader is told what will be collected rather than which surface
+ * will collect it.
+ *
  * @param mode - What the field collects.
  * @returns The placeholder.
  */
 export function getDefaultPlaceholder(mode: CalendarMode): string {
   switch (mode) {
     case "date":
-      return "Dropmenu date...";
+      return "Select a date";
     case "time":
-      return "Dropmenu time...";
+      return "Select a time";
     case "datetime":
-      return "Dropmenu date & time...";
+      return "Select a date and time";
   }
 }
 

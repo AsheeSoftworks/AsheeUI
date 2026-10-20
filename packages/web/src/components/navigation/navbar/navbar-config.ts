@@ -35,10 +35,10 @@ registerComponentDefaults("navbar", defaultNavbarConfig);
 /**
  * Hard fallback values used when no config tier provides a value.
  */
-export const FALLBACK_NAVBAR_CONFIG: Required<NavbarConfig> = {
+export const FALLBACK_NAVBAR_CONFIG = {
   position: "sticky",
   variant: "solid",
   align: "start",
   contained: true,
   containerSize: "lg",
-};
+} satisfies NavbarConfig;

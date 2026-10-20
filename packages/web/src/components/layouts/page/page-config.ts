@@ -15,8 +15,9 @@ export type { PageConfig } from "@asheeui/core";
 
 /**
  * Default config values registered for the page parts.
- * Contained, sticky and divider are the shell's shape and are pinned; the width and the
- * rhythm are stated as well, so a page reads the same wherever it is rendered.
+ * Every option is registered so that the part which owns it resolves it: the containment and
+ * the width on all three parts, the rhythm on the content area, the stickiness on the header
+ * and the separators on the header and the footer. The shell itself applies none of them.
  */
 export const defaultPageConfig: PageConfig = {
   contained: true,
@@ -31,10 +32,10 @@ registerComponentDefaults("page", defaultPageConfig);
 /**
  * Hard fallback values used when no config tier provides a value.
  */
-export const FALLBACK_PAGE_CONFIG: Required<PageConfig> = {
+export const FALLBACK_PAGE_CONFIG = {
   contained: true,
   containerSize: "lg",
   spacing: "md",
   sticky: true,
   divider: true,
-};
+} satisfies PageConfig;

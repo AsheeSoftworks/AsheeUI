@@ -6,6 +6,7 @@ import {
   NATIVE_SPINNER_HEAD_CLASS,
   NATIVE_SPINNER_SIZE_CLASS,
   NATIVE_SPINNER_TRACK_CLASS,
+  SPINNER_BASE_CLASS,
   SPINNER_COLOR_CLASS,
   SPINNER_SIZE_CLASS,
 } from "./spinner-styles";
@@ -40,6 +41,21 @@ describe("the web spinner's class maps", () => {
     for (const value of Object.values(SPINNER_COLOR_CLASS)) {
       expect(value.startsWith("text-")).toBe(true);
     }
+  });
+
+  it("draws `none` as the ink of a filled surface, not as an inherited colour", () => {
+    // `none` is what a spinner over a solid surface wants: the same colour the
+    // surface paints its content in. Nothing in the map inherits; a spinner that
+    // should take the surrounding text colour is given `text-current` explicitly.
+    expect(SPINNER_COLOR_CLASS.none).toBe("text-background");
+    expect(SPINNER_COLOR_CLASS.none).not.toBe("text-current");
+  });
+
+  it("rotates inside `motion-safe`, as the skeleton's shimmer does", () => {
+    // A reader who asked for reduced motion gets a still ring; the status region's
+    // label, not the movement, carries the wait.
+    expect(SPINNER_BASE_CLASS.split(" ")).toContain("motion-safe:animate-spin");
+    expect(SPINNER_BASE_CLASS).not.toMatch(/(?:^|\s)animate-spin(?:\s|$)/);
   });
 });
 

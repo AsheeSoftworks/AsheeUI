@@ -43,36 +43,38 @@ export interface AvatarProps extends BaseAvatarProps {
    * Supplies the initials the avatar falls back to and, unless `alt` overrides
    * it, the name assistive technology reads.
    */
-  name?: string;
+  name?: string | undefined;
 
   /**
    * Picture of the represented entity.
-   * When it is missing or fails to load, the avatar shows its fallback.
+   * When it is missing or fails to load, the avatar shows its fallback. A new
+   * source is a new picture, so a slot that a list recycled for another entity
+   * tries it rather than keeping the fallback the previous one earned.
    */
-  src?: string;
+  src?: string | undefined;
 
   /**
    * Name assistive technology reads, instead of `name`.
    * Use it when the entity's name is not the wording the avatar should carry.
    */
-  alt?: string;
+  alt?: string | undefined;
 
   /**
    * Component that replaces the picture inside the avatar, passed to
    * {@link Image}. This is how a consumer keeps a framework image working
    * inside an avatar.
    */
-  component?: ElementType;
+  component?: ElementType | undefined;
 
   /**
    * Additional props for that component, passed to {@link Image}.
    */
-  componentProps?: Record<string, unknown>;
+  componentProps?: Record<string, unknown> | undefined;
 
   /**
    * Content shown in place of the initials when there is no picture.
    */
-  fallback?: ReactNode;
+  fallback?: ReactNode | undefined;
 }
 
 /**
@@ -140,7 +142,12 @@ export const Avatar = forwardRef<HTMLDivElement, AvatarProps>(
   ) => {
     const config = useAsheeConfig();
     const sectionConfig = config.components?.avatar as AvatarConfig | undefined;
-    const [hasImageError, setHasImageError] = useState(false);
+    // The source whose load failed, rather than a bare "has failed" flag: a list
+    // recycles an avatar slot, so a fresh `src` is a fresh picture and must get its
+    // own chance. Comparing the two resets the fallback as soon as the source
+    // changes — during the render that sees the new source, without an effect and
+    // without a frame of stale initials.
+    const [failedSrc, setFailedSrc] = useState<string | null>(null);
 
     const resolvedSizeKey = resolveCascade<Size>(
       size,
@@ -182,7 +189,7 @@ export const Avatar = forwardRef<HTMLDivElement, AvatarProps>(
     );
 
     const accessibleName = alt ?? name;
-    const showsPicture = Boolean(src) && !hasImageError;
+    const showsPicture = Boolean(src) && failedSrc !== src;
 
     return (
       <div
@@ -203,14 +210,20 @@ export const Avatar = forwardRef<HTMLDivElement, AvatarProps>(
             fit="cover"
             radius={resolvedRadiusKey as Radius}
             showSkeleton={false}
-            onError={() => setHasImageError(true)}
-            className="size-full"
+            onError={() => setFailedSrc(src ?? null)}
+            // `shrink-0` keeps a `size-full` child from being squeezed by the flex container. The flat edge
+            // that used to show here was the reserved scrollbar gutter (see the stylesheet); this is the
+            // second half of the same guarantee, so neither alone can reintroduce it.
+            className="size-full shrink-0"
           />
         ) : (
           <span
             aria-hidden="true"
             className={cn(
               AVATAR_FALLBACK_CLASS,
+              // Same guarantee as the image: the initials fill the circle rather than shrinking to the
+              // width of the letters.
+              "shrink-0",
               fontClass,
               resolveVariantClass(AVATAR_FALLBACK_VARIANT, resolvedColorKey),
             )}>

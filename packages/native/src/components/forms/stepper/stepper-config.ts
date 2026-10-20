@@ -40,8 +40,8 @@ registerNativeComponentDefaults("stepper", defaultNativeStepperConfig);
 /**
  * The values the stepper falls back to when no tier provides one.
  */
-export const FALLBACK_NATIVE_STEPPER_CONFIG: Required<NativeStepperConfig> = {
+export const FALLBACK_NATIVE_STEPPER_CONFIG = {
   orientation: "responsive",
   size: "md",
   showDescriptions: true,
-};
+} satisfies NativeStepperConfig;

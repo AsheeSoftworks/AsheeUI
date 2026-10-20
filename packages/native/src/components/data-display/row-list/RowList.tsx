@@ -14,6 +14,9 @@
  * component — `SearchInput`, `EmptyState`, `LoadingState`, `Pagination`, `Card`, `Text` — so
  * a consumer that restyles one of them restyles the list too.
  *
+ * An empty presentation that answers a query is a result, and is announced as one; a list that
+ * is empty in the page's first markup is not a change, so it is shown without being announced.
+ *
  * Three things the platform states rather than draws. The web gives a table a caption, a
  * header row and row-scoped semantics that let a reader jump between cells; the platform has
  * neither a header row nor cell semantics, so a column's header is stated as the label of
@@ -25,6 +28,7 @@
 
 import {
   type ColumnDef,
+  formatRowCountLabel,
   NATIVE_ANNOUNCEMENT_LIVE_REGION,
   NATIVE_ROW_LIST_CLASS,
   NATIVE_ROW_LIST_COUNT_CLASS,
@@ -41,18 +45,18 @@ import {
   NATIVE_ROW_LIST_WRAPPER_CLASS,
   resolveConfigCascade,
 } from "@asheeui/core";
-import { type ReactNode, useMemo, useState } from "react";
+import { type ReactNode, useEffect, useMemo, useRef, useState } from "react";
 import type { StyleProp, ViewProps, ViewStyle } from "react-native";
 import { View } from "react-native";
 import { useAsheeNativeConfig } from "../../../provider/AsheeNativeProvider";
 import { classNames } from "../../../utils/class-names";
-import { Card } from "../card/Card";
 import { EmptyState } from "../../feedback/empty-state/EmptyState";
 import { LoadingState } from "../../feedback/loading-state/LoadingState";
-import { Pagination } from "../../navigation/pagination/Pagination";
 import { SearchInput } from "../../forms/search-input/SearchInput";
 import { SectionHeading } from "../../layouts/section-kit/SectionHeading";
+import { Pagination } from "../../navigation/pagination/Pagination";
 import { Text } from "../../typography/text/Text";
+import { Card } from "../card/Card";
 import {
   FALLBACK_NATIVE_DATA_TABLE_CONFIG,
   FALLBACK_NATIVE_TABLE_CONFIG,
@@ -115,6 +119,21 @@ export interface RowListProps<TData>
   /** Called with the page the reader asked for. */
   onPageChange?: (page: number) => void;
 
+  /**
+   * How many rows there are in all, for a consumer that holds one page of them.
+   *
+   * The page count and the count sentence are derived from `data`, so a consumer holding one
+   * page of a remote list would get one page in the pager and a count of that page alone —
+   * even though `page` and `onPageChange` exist for exactly that consumer. Stating the total
+   * here makes the pager count every page and the sentence report the size of the result set,
+   * while the rows drawn are still the `data` that was handed in.
+   *
+   * Without it the rows are the whole list, which is what a list that searches its own rows
+   * has always done. A consumer that searches on the server should state the total of the
+   * current query, because a query is a new result set.
+   */
+  rowCount?: number;
+
   /** Whether the rows are still arriving, which the list states rather than hiding. */
   isLoading?: boolean;
 
@@ -144,9 +163,12 @@ export interface RowListProps<TData>
  * @param props.selectedRowKey - The key of the chosen row.
  * @param props.searchAccessor - Reads the text a row is searched by.
  * @param props.onSearchChange - Called with the query whenever it changes.
+ * @param props.searchDebounce - How long to wait after typing stops before reporting the
+ * query. Defaults to 0.
  * @param props.page - The page, for a consumer that owns it.
  * @param props.defaultPage - The page to open first. Defaults to 1.
  * @param props.onPageChange - Called with the page the reader asked for.
+ * @param props.rowCount - How many rows there are in all, when the consumer holds one page.
  * @param props.isLoading - Whether the rows are still arriving.
  * @param props.variant - Surface each row is drawn on. Defaults to "grid".
  * @param props.size - Density of each row. Defaults to "md".
@@ -182,9 +204,11 @@ export function RowList<TData>({
   selectedRowKey,
   searchAccessor,
   onSearchChange,
+  searchDebounce,
   page,
   defaultPage = 1,
   onPageChange,
+  rowCount,
   isLoading = false,
   size,
   variant,
@@ -195,6 +219,8 @@ export function RowList<TData>({
   paginated,
   pageSize,
   showRowCount,
+  rowCountLabel,
+  loadingLabel,
   emptyTitle,
   emptyDescription,
   className,
@@ -219,9 +245,12 @@ export function RowList<TData>({
     {
       searchable,
       searchLabel,
+      searchDebounce,
       paginated,
       pageSize,
       showRowCount,
+      rowCountLabel,
+      loadingLabel,
       emptyTitle,
       emptyDescription,
     },
@@ -232,6 +261,35 @@ export function RowList<TData>({
   const [query, setQuery] = useState("");
   const [internalPage, setInternalPage] = useState(defaultPage);
   const currentPage = page ?? internalPage;
+
+  // A debounced query is a timer, so the list owns it: the field reports what the reader
+  // typed, and the list decides when that becomes a search. A zero wait is the historical
+  // behaviour and takes the synchronous path below.
+  const searchDebounceMs = Math.max(0, resolved.searchDebounce ?? 0);
+  const searchTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const pendingQuery = useRef<string | null>(null);
+
+  const cancelPendingSearch = () => {
+    if (searchTimer.current !== null) {
+      clearTimeout(searchTimer.current);
+      searchTimer.current = null;
+    }
+
+    pendingQuery.current = null;
+  };
+
+  // The pending query is dropped on unmount: there is no list left to report it to.
+  useEffect(
+    () => () => {
+      if (searchTimer.current !== null) {
+        clearTimeout(searchTimer.current);
+        searchTimer.current = null;
+      }
+
+      pendingQuery.current = null;
+    },
+    [],
+  );
 
   const searchEnabled =
     resolved.searchable && Boolean(searchAccessor || onSearchChange);
@@ -249,20 +307,34 @@ export function RowList<TData>({
   }, [data, query, searchAccessor, searchEnabled]);
 
   const rowsPerPage = Math.max(1, resolved.pageSize);
-  const pageCount = Math.max(1, Math.ceil(rows.length / rowsPerPage));
+  // How large the result set is. A consumer holding one page of a remote list states it with
+  // `rowCount`; otherwise the rows it was handed are the whole list, which is what every list
+  // did before the prop existed.
+  const totalRows = rowCount ?? rows.length;
+  const pageCount = Math.max(1, Math.ceil(totalRows / rowsPerPage));
   const activePage = Math.min(Math.max(1, currentPage), pageCount);
 
   const visibleRows = resolved.paginated
     ? rows.slice((activePage - 1) * rowsPerPage, activePage * rowsPerPage)
     : rows;
 
-  const firstRow = rows.length === 0 ? 0 : (activePage - 1) * rowsPerPage + 1;
+  const firstRow = totalRows === 0 ? 0 : (activePage - 1) * rowsPerPage + 1;
   const lastRow = resolved.paginated
-    ? Math.min(activePage * rowsPerPage, rows.length)
+    ? Math.min(activePage * rowsPerPage, totalRows)
     : rows.length;
-  const rowCountText = `Showing ${firstRow} to ${lastRow} of ${rows.length}`;
+  const rowCountText = formatRowCountLabel(resolved.rowCountLabel, {
+    first: firstRow,
+    last: lastRow,
+    total: totalRows,
+  });
 
-  const handleSearch = (next: string) => {
+  // An empty presentation that answers a query is a result, and results are announced; one that
+  // is part of the page's first markup is not a change, and is not announced as one.
+  const isQueryResult = query.trim().length > 0;
+
+  // What a query does once it takes effect: it becomes the filter, the reader goes back to
+  // the first page of the new result set, and the consumer is told.
+  const commitSearch = (next: string) => {
     setQuery(next);
 
     // A query is a new result set, so the reader starts at its first page.
@@ -275,6 +347,33 @@ export function RowList<TData>({
     }
 
     onSearchChange?.(next);
+  };
+
+  // The timer fires outside React's render, so it reaches the latest commit through a ref
+  // rather than through the closure that scheduled it.
+  const commitSearchRef = useRef(commitSearch);
+  useEffect(() => {
+    commitSearchRef.current = commitSearch;
+  });
+
+  const handleSearch = (next: string) => {
+    if (searchDebounceMs === 0) {
+      commitSearch(next);
+      return;
+    }
+
+    // Each keystroke restarts the wait, so only the query the reader stopped on is reported.
+    cancelPendingSearch();
+    pendingQuery.current = next;
+    searchTimer.current = setTimeout(() => {
+      searchTimer.current = null;
+      const pending = pendingQuery.current;
+      pendingQuery.current = null;
+
+      if (pending !== null) {
+        commitSearchRef.current(pending);
+      }
+    }, searchDebounceMs);
   };
 
   const handlePageChange = (next: number) => {
@@ -311,10 +410,13 @@ export function RowList<TData>({
 
       <View className={NATIVE_ROW_LIST_REGION_CLASS}>
         {isLoading ? (
-          <LoadingState />
+          <LoadingState label={resolved.loadingLabel} />
         ) : visibleRows.length === 0 ? (
           <EmptyState
-            role="status"
+            // The sentence that explains an empty result is announced only when the result
+            // replaced other rows. A list that is empty in the page's first markup is not a
+            // change, and is not announced as one.
+            role={isQueryResult ? "status" : undefined}
             title={resolved.emptyTitle}
             description={resolved.emptyDescription}
           />

@@ -55,13 +55,13 @@ export interface ButtonLinkProps {
    * Custom link component (e.g. `next/link`, TanStack Router `Link`).
    * When provided, this component is used instead of the native `<a>` tag.
    */
-  component?: ElementType;
+  component?: ElementType | undefined;
 
   /**
    * Additional props to pass to the link component (e.g. `{ prefetch: true }`).
    * These take precedence over the button's own props.
    */
-  props?: Record<string, unknown>;
+  props?: Record<string, unknown> | undefined;
 }
 
 /**
@@ -76,7 +76,7 @@ export interface ButtonProps extends BaseButtonProps {
    *
    * @default false
    */
-  isDisabled?: boolean;
+  isDisabled?: boolean | undefined;
 
   /**
    * Shows a loading spinner and blocks interaction.
@@ -84,7 +84,7 @@ export interface ButtonProps extends BaseButtonProps {
    *
    * @default false
    */
-  isLoading?: boolean;
+  isLoading?: boolean | undefined;
 
   /**
    * Native button type.
@@ -92,7 +92,7 @@ export interface ButtonProps extends BaseButtonProps {
    *
    * @default "button"
    */
-  type?: "button" | "submit" | "reset";
+  type?: "button" | "submit" | "reset" | undefined;
 
   /**
    * Switches to the compact icon-only layout.
@@ -100,31 +100,31 @@ export interface ButtonProps extends BaseButtonProps {
    *
    * @default false
    */
-  icon?: boolean;
+  icon?: boolean | undefined;
 
   /**
    * Content rendered at the start of the button.
    * Typically an icon or adornment.
    */
-  startContent?: ReactNode;
+  startContent?: ReactNode | undefined;
 
   /**
    * Content rendered at the end of the button.
    * Typically an icon, badge, or adornment.
    */
-  endContent?: ReactNode;
+  endContent?: ReactNode | undefined;
 
   /**
    * Renders the button as a link to this URL.
    * The root element becomes an `<a>`, or `link.component` when provided.
    */
-  href?: string;
+  href?: string | undefined;
 
   /**
    * Link configuration for the button.
    * Provides the custom link component and props forwarded to it.
    */
-  link?: ButtonLinkProps;
+  link?: ButtonLinkProps | undefined;
 }
 
 /**
@@ -141,10 +141,10 @@ export interface ButtonProps extends BaseButtonProps {
  * Icon-only buttons should provide an aria-label for accessibility.
  *
  * @param props - Button configuration options and native button props.
- * @param props.variant - Visual style variant. Defaults to "bordered".
- * @param props.color - Theme accent color. Defaults to "primary".
+ * @param props.variant - Visual style variant. Defaults to the application's `defaultVariant`.
+ * @param props.color - Theme accent color. Defaults to the application's `defaultColor`.
  * @param props.size - Density scale. Defaults to "md".
- * @param props.radius - Corner rounding. Defaults to "md".
+ * @param props.radius - Corner rounding. Defaults to the application's `defaultRadius`.
  * @param props.animate - Press animation. Defaults to true.
  * @param props.fullWidth - Full-width layout. Defaults to false.
  * @param props.isDisabled - Disabled state. Defaults to false.
@@ -330,7 +330,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         className={sharedClassName}
         {...rest}
         {...linkRestProps}>
-        {isLoading && <Spinner className={resolvedSizeKey} />}
+        {isLoading && <Spinner size={resolvedSizeKey} />}
         {/* A busy control keeps its own name: "Loading" on its own does not say
             which action is running, so the state is carried by `aria-busy` and
             the label stays in the name. */}

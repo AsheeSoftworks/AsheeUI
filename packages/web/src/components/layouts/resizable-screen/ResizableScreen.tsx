@@ -16,6 +16,7 @@ import {
   type ReactNode,
   type PointerEvent as ReactPointerEvent,
   useCallback,
+  useEffect,
   useRef,
   useState,
 } from "react";
@@ -43,38 +44,24 @@ export interface ResizableScreenProps extends BaseResizableScreenProps {
    * Initial size of the first panel as a percentage (0-100).
    * Alias for defaultSize for backward compatibility.
    */
-  left?: number;
+  left?: number | undefined;
 
   /**
    * Controlled size percentage (0-100) for the primary panel.
    * When provided, the component becomes controlled.
    */
-  size?: number;
+  size?: number | undefined;
 
   /**
    * Callback fired when pane size changes.
    * Receives the new size percentage of the primary panel.
    */
-  onSizeChange?: (size: number) => void;
+  onSizeChange?: ((size: number) => void) | undefined;
 
   /**
    * Additional custom styling for the resize handle bar container.
    */
-  handleClassName?: string;
-
-  /**
-   * Minimum height of the resizable container in pixels.
-   * Used when the container has no explicit height from its parent.
-   * @default 200
-   */
-  minContainerHeight?: number;
-
-  /**
-   * Minimum width of the resizable container in pixels.
-   * Used when the container has no explicit width from its parent.
-   * @default 200
-   */
-  minContainerWidth?: number;
+  handleClassName?: string | undefined;
 }
 
 /**
@@ -102,8 +89,10 @@ export interface ResizableScreenProps extends BaseResizableScreenProps {
  * @param props.orientation - Layout orientation. Defaults to "horizontal".
  * @param props.hideHandle - Whether to hide the resize handle. Defaults to false.
  * @param props.handleClassName - Extra classes for the handle bar.
- * @param props.minContainerHeight - Minimum container height in pixels. Defaults to 200.
- * @param props.minContainerWidth - Minimum container width in pixels. Defaults to 200.
+ * @param props.minContainerHeight - Minimum container height in pixels. Resolved
+ * through the cascade and defaulting to 200.
+ * @param props.minContainerWidth - Minimum container width in pixels. Resolved
+ * through the cascade and defaulting to 200.
  * @param props.className - Extra classes for the container.
  *
  * @example
@@ -159,8 +148,8 @@ export const ResizableScreen = forwardRef<HTMLDivElement, ResizableScreenProps>(
       hideHandle,
       onSizeChange,
       handleClassName,
-      minContainerHeight = 200,
-      minContainerWidth = 200,
+      minContainerHeight,
+      minContainerWidth,
       className,
       style,
       ...props
@@ -214,11 +203,44 @@ export const ResizableScreen = forwardRef<HTMLDivElement, ResizableScreenProps>(
       FALLBACK_RESIZABLE_SCREEN_CONFIG.defaultSize,
     );
 
+    const resolvedMinContainerWidth = resolveCascade<number>(
+      minContainerWidth,
+      sectionConfig?.minContainerWidth,
+      undefined,
+      FALLBACK_RESIZABLE_SCREEN_CONFIG.minContainerWidth,
+    );
+
+    const resolvedMinContainerHeight = resolveCascade<number>(
+      minContainerHeight,
+      sectionConfig?.minContainerHeight,
+      undefined,
+      FALLBACK_RESIZABLE_SCREEN_CONFIG.minContainerHeight,
+    );
+
+    // An inverted pair cannot be honoured: `min > max` would clamp every value to
+    // `max`, which reads as a stuck handle rather than as the mistake it is. The
+    // bounds are stated in the order a separator needs (`aria-valuemin` below
+    // `aria-valuemax`) and a development warning names the mistake.
+    const lowerBound = Math.min(resolvedMinSize, resolvedMaxSize);
+    const upperBound = Math.max(resolvedMinSize, resolvedMaxSize);
+
+    useEffect(() => {
+      if (process.env.NODE_ENV === "production") return;
+      if (resolvedMinSize > resolvedMaxSize) {
+        console.warn(
+          `[AsheeUI] ResizableScreen: minSize (${resolvedMinSize}) is greater than maxSize (${resolvedMaxSize}). The bounds are treated as ${lowerBound}–${upperBound} so the panel stays resizable.`,
+        );
+      }
+    }, [resolvedMinSize, resolvedMaxSize, lowerBound, upperBound]);
+
     const initialSize = size ?? left ?? resolvedDefaultSize;
 
     const [internalSize, setInternalSize] = useState<number>(initialSize);
     const [isDragging, setIsDragging] = useState<boolean>(false);
     const containerRef = useRef<HTMLDivElement | null>(null);
+    const dragOriginRef = useRef<{ pointer: number; size: number } | null>(
+      null,
+    );
 
     const isControlled = size !== undefined;
     const currentSize = isControlled ? size : internalSize;
@@ -228,9 +250,8 @@ export const ResizableScreen = forwardRef<HTMLDivElement, ResizableScreenProps>(
     // cross-axis size, and use CSS `minWidth` / `minHeight` as fallbacks.
 
     const clampSize = useCallback(
-      (val: number) =>
-        Math.min(Math.max(val, resolvedMinSize), resolvedMaxSize),
-      [resolvedMinSize, resolvedMaxSize],
+      (val: number) => Math.min(Math.max(val, lowerBound), upperBound),
+      [lowerBound, upperBound],
     );
 
     const updateSize = useCallback(
@@ -248,24 +269,35 @@ export const ResizableScreen = forwardRef<HTMLDivElement, ResizableScreenProps>(
 
     const handlePointerDown = (e: ReactPointerEvent<HTMLElement>) => {
       e.preventDefault();
-      e.currentTarget.setPointerCapture(e.pointerId);
+      // Pointer capture is an enhancement; a test environment or an older
+      // engine may not implement it.
+      e.currentTarget.setPointerCapture?.(e.pointerId);
+      dragOriginRef.current = {
+        pointer: resolvedOrientation === "horizontal" ? e.clientX : e.clientY,
+        size: currentSize,
+      };
       setIsDragging(true);
     };
 
     const handlePointerMove = (e: ReactPointerEvent<HTMLElement>) => {
-      if (!isDragging || !containerRef.current) return;
+      const dragOrigin = dragOriginRef.current;
+      if (!isDragging || !dragOrigin || !containerRef.current) return;
 
       const rect = containerRef.current.getBoundingClientRect();
       const isHorizontal = resolvedOrientation === "horizontal";
 
       const totalSize = isHorizontal ? rect.width : rect.height;
-      const currentPos = isHorizontal
-        ? e.clientX - rect.left
-        : e.clientY - rect.top;
+      const pointer = isHorizontal ? e.clientX : e.clientY;
 
       if (totalSize > 0) {
-        const calculatedPercentage = (currentPos / totalSize) * 100;
-        updateSize(calculatedPercentage);
+        // Measure the pointer's travel from where the drag began rather than the
+        // pointer's offset from the container's edge. The handle is the boundary
+        // between the panes, and its own width — as well as the point inside it
+        // that the drag started from — belongs to the handle, not to the size, so
+        // it must not be counted into the panel's percentage.
+        const deltaPercentage =
+          ((pointer - dragOrigin.pointer) / totalSize) * 100;
+        updateSize(dragOrigin.size + deltaPercentage);
       }
     };
 
@@ -276,6 +308,7 @@ export const ResizableScreen = forwardRef<HTMLDivElement, ResizableScreenProps>(
         } catch {
           // Ignore capture release edge cases
         }
+        dragOriginRef.current = null;
         setIsDragging(false);
       }
     };
@@ -295,10 +328,10 @@ export const ResizableScreen = forwardRef<HTMLDivElement, ResizableScreenProps>(
         updateSize(currentSize + resolvedStep);
       } else if (e.key === "Home") {
         e.preventDefault();
-        updateSize(resolvedMinSize);
+        updateSize(lowerBound);
       } else if (e.key === "End") {
         e.preventDefault();
-        updateSize(resolvedMaxSize);
+        updateSize(upperBound);
       }
     };
 
@@ -326,9 +359,10 @@ export const ResizableScreen = forwardRef<HTMLDivElement, ResizableScreenProps>(
               : "row-resize"
             : "default",
           // Ensure sensible minimums so the component works even when no
-          // ancestor provides a definite size. These are fallbacks only.
-          minHeight: `${minContainerHeight}px`,
-          minWidth: `${minContainerWidth}px`,
+          // ancestor provides a definite size. These are fallbacks only, and
+          // resolve through the cascade like every other visual token.
+          minHeight: `${resolvedMinContainerHeight}px`,
+          minWidth: `${resolvedMinContainerWidth}px`,
           ...style,
         }}
         {...props}>
@@ -355,9 +389,12 @@ export const ResizableScreen = forwardRef<HTMLDivElement, ResizableScreenProps>(
             role="separator"
             tabIndex={0}
             aria-valuenow={Math.round(currentSize)}
-            aria-valuemin={resolvedMinSize}
-            aria-valuemax={resolvedMaxSize}
-            aria-orientation={isHorizontal ? "horizontal" : "vertical"}
+            aria-valuemin={lowerBound}
+            aria-valuemax={upperBound}
+            // A side-by-side split is divided by a vertical separator; a stacked
+            // split by a horizontal one. The orientation describes the separator,
+            // not the axis the panes are laid out on.
+            aria-orientation={isHorizontal ? "vertical" : "horizontal"}
             aria-label="Resize panel split"
             onPointerDown={handlePointerDown}
             onPointerMove={handlePointerMove}
@@ -394,7 +431,8 @@ export const ResizableScreen = forwardRef<HTMLDivElement, ResizableScreenProps>(
               : "transition-[width,height] duration-150 ease-out",
           )}
           style={{
-            [isHorizontal ? "width" : "height"]: `${100 - currentSize}%`,
+            // The secondary panel takes the room the primary panel leaves, so it
+            // states only its growth; a width here would be dead with `flex: 1`.
             flex: 1,
           }}>
           {child2}

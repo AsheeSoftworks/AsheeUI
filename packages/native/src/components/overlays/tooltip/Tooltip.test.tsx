@@ -2,14 +2,15 @@
  * Behaviour tests for the native Tooltip.
  *
  * The tests state the component's contract: the hint is stated as the trigger's accessibility
- * hint, so a reader using assistive technology is told it without finding the gesture; a long
- * press reveals it and releasing hides it; a placement that names a side resolves to the
- * vertical direction it reads from, at the distance the offset states; the arrow is drawn when
- * it is asked for; a disabled hint never appears; and the treatment, the colour and the size
- * resolve through the configuration cascade.
+ * hint when it is a string — node content has no string to state, and is read when the hint is
+ * open instead; a long press reveals it and the closing delay hides it, so a press that ends
+ * does not blink it out; a placement that names a side resolves to the vertical direction it
+ * reads from, at the distance the offset states; the arrow is drawn when it is asked for; a
+ * disabled hint never appears; and the treatment, the colour and the size resolve through the
+ * configuration cascade.
  */
 
-import { fireEvent, render } from "@testing-library/react-native";
+import { act, fireEvent, render } from "@testing-library/react-native";
 import type { ReactElement } from "react";
 import { Text } from "react-native";
 import { AsheeNativeProvider } from "../../../provider/AsheeNativeProvider";
@@ -82,6 +83,22 @@ describe("Native Tooltip", () => {
     );
   });
 
+  it("reads node content once the hint is open, because the platform's hint is text", async () => {
+    const view = await renderTooltip(
+      <Tooltip content={<Text>Kept for seven years</Text>}>{TRIGGER}</Tooltip>,
+    );
+
+    // A node has no string to state on the trigger, and the module says so rather than
+    // claiming a statement the platform cannot make.
+    expect(
+      view.getByText("Archived").parent?.props.accessibilityHint,
+    ).toBeUndefined();
+
+    await fireEvent(view.getByText("Archived").parent, "longPress");
+
+    expect(view.getByText("Kept for seven years")).toBeTruthy();
+  });
+
   it("says nothing until the reader rests on the trigger", async () => {
     const view = await renderTooltip(
       <Tooltip content="Kept for seven years">{TRIGGER}</Tooltip>,
@@ -94,15 +111,85 @@ describe("Native Tooltip", () => {
     expect(view.getByText("Kept for seven years")).toBeTruthy();
   });
 
-  it("puts the hint away when the press ends", async () => {
+  it("keeps the hint up for the closing delay and then puts it away", async () => {
+    jest.useFakeTimers();
+
     const view = await renderTooltip(
-      <Tooltip content="Kept for seven years">{TRIGGER}</Tooltip>,
+      <Tooltip content="Kept for seven years" delay={{ open: 300, close: 150 }}>
+        {TRIGGER}
+      </Tooltip>,
+    );
+
+    // The opening half is the platform's long press, so it waits the stated time; the test
+    // cannot read that timer back from the tree, and the closing half is what it observes.
+    await fireEvent(view.getByText("Archived").parent, "longPress");
+    await fireEvent(view.getByText("Archived").parent, "pressOut");
+
+    await act(async () => {
+      jest.advanceTimersByTime(149);
+    });
+
+    expect(view.getByText("Kept for seven years")).toBeTruthy();
+
+    await act(async () => {
+      jest.advanceTimersByTime(1);
+    });
+
+    expect(view.queryByText("Kept for seven years")).toBeNull();
+
+    jest.useRealTimers();
+  });
+
+  it("calls the hide off when the reader presses again before it elapses", async () => {
+    jest.useFakeTimers();
+
+    const view = await renderTooltip(
+      <Tooltip content="Kept for seven years" delay={{ open: 200, close: 100 }}>
+        {TRIGGER}
+      </Tooltip>,
     );
 
     await fireEvent(view.getByText("Archived").parent, "longPress");
     await fireEvent(view.getByText("Archived").parent, "pressOut");
 
+    // The reader comes back inside the closing window, so the pending hide is called off and
+    // the hint stays up rather than vanishing from underneath them.
+    await fireEvent(view.getByText("Archived").parent, "longPress");
+
+    await act(async () => {
+      jest.advanceTimersByTime(100);
+    });
+
+    expect(view.getByText("Kept for seven years")).toBeTruthy();
+
+    jest.useRealTimers();
+  });
+
+  it("reads a number as both halves of the wait, as the shared contract states", async () => {
+    jest.useFakeTimers();
+
+    const view = await renderTooltip(
+      <Tooltip content="Kept for seven years" delay={250}>
+        {TRIGGER}
+      </Tooltip>,
+    );
+
+    await fireEvent(view.getByText("Archived").parent, "longPress");
+    await fireEvent(view.getByText("Archived").parent, "pressOut");
+
+    await act(async () => {
+      jest.advanceTimersByTime(249);
+    });
+
+    expect(view.getByText("Kept for seven years")).toBeTruthy();
+
+    await act(async () => {
+      jest.advanceTimersByTime(1);
+    });
+
     expect(view.queryByText("Kept for seven years")).toBeNull();
+
+    jest.useRealTimers();
   });
 
   it("places the hint above its trigger for a placement that reads from the top", async () => {

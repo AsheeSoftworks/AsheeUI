@@ -52,7 +52,7 @@ export interface ChipConfig {
    *
    * @default "bordered"
    */
-  variant?: ChipVariant;
+  variant?: ChipVariant | undefined;
 
   /**
    * Theme accent color.
@@ -60,7 +60,7 @@ export interface ChipConfig {
    *
    * @default "primary"
    */
-  color?: Color;
+  color?: Color | undefined;
 
   /**
    * Height and font-size scale.
@@ -68,7 +68,7 @@ export interface ChipConfig {
    *
    * @default "md"
    */
-  size?: ChipSizeKey;
+  size?: ChipSizeKey | undefined;
 
   /**
    * Corner rounding.
@@ -76,7 +76,7 @@ export interface ChipConfig {
    *
    * @default "full"
    */
-  radius?: ChipRadiusKey;
+  radius?: ChipRadiusKey | undefined;
 }
 
 /**

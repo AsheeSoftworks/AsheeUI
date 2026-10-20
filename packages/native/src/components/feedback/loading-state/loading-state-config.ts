@@ -20,12 +20,18 @@ export type NativeLoadingStateConfig = LoadingStateConfig;
 
 /**
  * The defaults the LoadingState registers with the native registry.
+ *
+ * The registered claim (`md`) is a step above the room the registered density
+ * (`md`) already takes, so the floor binds: a `sm` claim would sit under the
+ * padding and the indicator and would reserve nothing at all. It is the same
+ * pairing the web state registers, so the region claims the same room on both
+ * platforms.
  */
 export const defaultNativeLoadingStateConfig: NativeLoadingStateConfig = {
   label: "Loading",
   size: "md",
   panel: false,
-  minHeight: "sm",
+  minHeight: "md",
 };
 
 declare module "../../../config/registry" {
@@ -42,10 +48,9 @@ registerNativeComponentDefaults(
 /**
  * The values the state falls back to when no tier provides one.
  */
-export const FALLBACK_NATIVE_LOADING_STATE_CONFIG: Required<NativeLoadingStateConfig> =
-  {
-    label: "Loading",
-    size: "md",
-    panel: false,
-    minHeight: "sm",
-  };
+export const FALLBACK_NATIVE_LOADING_STATE_CONFIG = {
+  label: "Loading",
+  size: "md",
+  panel: false,
+  minHeight: "md",
+} satisfies NativeLoadingStateConfig;

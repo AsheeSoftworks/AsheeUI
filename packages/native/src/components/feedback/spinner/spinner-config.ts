@@ -48,9 +48,9 @@ registerNativeComponentDefaults("spinner", defaultNativeSpinnerConfig);
 /**
  * The values the spinner falls back to when no tier provides one.
  */
-export const FALLBACK_NATIVE_SPINNER_CONFIG: Required<NativeSpinnerConfig> = {
+export const FALLBACK_NATIVE_SPINNER_CONFIG = {
   size: "md",
   color: "primary",
   speed: SPINNER_FALLBACK_SPEED,
   className: "",
-};
+} satisfies NativeSpinnerConfig;

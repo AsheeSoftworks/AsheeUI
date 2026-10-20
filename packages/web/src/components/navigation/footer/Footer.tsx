@@ -34,8 +34,8 @@ import {
 } from "react";
 import { useAsheeConfig } from "../../../libs/context";
 import { Container } from "../../layouts/container/Container";
-import { Link } from "../link";
 import { Typography } from "../../typography/Typography";
+import { Link } from "../link";
 import { FALLBACK_FOOTER_CONFIG, type FooterConfig } from "./footer-config";
 
 /**
@@ -57,42 +57,63 @@ export type { FooterGroup, FooterLinkItem };
  */
 export interface FooterLink {
   /** Component that replaces the anchor, such as a framework router link. */
-  component?: ElementType;
+  component?: ElementType | undefined;
 
   /** Additional props for that component. */
-  props?: Record<string, unknown>;
+  props?: Record<string, unknown> | undefined;
 }
 
 type BaseFooterProps = FooterConfig &
-  Omit<HTMLAttributes<HTMLElement>, "color" | "title">;
+  Omit<HTMLAttributes<HTMLElement>, "color">;
 
 /**
  * Props for the Footer component.
  */
 export interface FooterProps extends BaseFooterProps {
   /** Brand content, typically a logo and a product name. */
-  brand?: ReactNode;
+  brand?: ReactNode | undefined;
 
   /** Short description under the brand. */
-  description?: ReactNode;
+  description?: ReactNode | undefined;
 
   /** The navigation groups. */
-  groups?: FooterGroup[];
+  groups?: FooterGroup[] | undefined;
 
-  /** Social links, rendered as a row of icon links under the groups. */
-  social?: FooterLinkItem[];
+  /**
+   * Social links, rendered as a row in the lower region beside the legal links.
+   *
+   * They are ordinary links: an `icon` passed on the item sits before its `label`, and
+   * the label is what names the link, so there is no icon-only presentation to opt into.
+   */
+  social?: FooterLinkItem[] | undefined;
 
   /** Legal links, rendered beside the copyright line. */
-  legal?: FooterLinkItem[];
+  legal?: FooterLinkItem[] | undefined;
+
+  /**
+   * Name of the legal landmark.
+   * The landmark's name is consumer-facing text, so it is translatable.
+   *
+   * @default "Legal"
+   */
+  legalLabel?: string | undefined;
+
+  /**
+   * Name of the social landmark.
+   * The landmark's name is consumer-facing text, so it is translatable.
+   *
+   * @default "Social"
+   */
+  socialLabel?: string | undefined;
 
   /** The copyright line. */
-  copyright?: ReactNode;
+  copyright?: ReactNode | undefined;
 
   /** Action area in the brand column, typically a newsletter signup. */
-  newsletter?: ReactNode;
+  newsletter?: ReactNode | undefined;
 
   /** Substitution applied to every link the footer renders. */
-  link?: FooterLink;
+  link?: FooterLink | undefined;
 
   /**
    * Element to render the footer as.
@@ -100,7 +121,7 @@ export interface FooterProps extends BaseFooterProps {
    *
    * @default "footer"
    */
-  as?: ElementType;
+  as?: ElementType | undefined;
 }
 
 /**
@@ -108,16 +129,19 @@ export interface FooterProps extends BaseFooterProps {
  *
  * Each navigation group is its own `nav` landmark named by the group's title, so
  * a reader can jump straight to the column they want, and the social and legal
- * rows are named landmarks as well. The footer renders nothing it was not given:
- * a consumer that passes only a copyright line gets an accessible one-line
- * footer.
+ * rows are named landmarks as well — their names are `socialLabel` and
+ * `legalLabel`, because a landmark's name is text a consumer has to be able to
+ * translate. The footer renders nothing it was not given: a consumer that passes
+ * only a copyright line gets an accessible one-line footer.
  *
  * @param props - Footer configuration options and element attributes.
  * @param props.brand - Brand content.
  * @param props.description - Short description under the brand.
  * @param props.groups - The navigation groups.
  * @param props.social - Social links.
+ * @param props.socialLabel - Name of the social landmark. Defaults to "Social".
  * @param props.legal - Legal links.
+ * @param props.legalLabel - Name of the legal landmark. Defaults to "Legal".
  * @param props.copyright - The copyright line.
  * @param props.newsletter - Action area in the brand column.
  * @param props.link - Substitution for every link.
@@ -156,7 +180,7 @@ function FooterLinkList({
   className,
 }: {
   links: FooterLinkItem[];
-  link?: FooterLink;
+  link?: FooterLink | undefined;
   className: string;
 }) {
   return (
@@ -185,7 +209,9 @@ export const Footer = forwardRef<HTMLElement, FooterProps>(
       description,
       groups,
       social,
+      socialLabel = "Social",
       legal,
+      legalLabel = "Legal",
       copyright,
       newsletter,
       link,
@@ -265,16 +291,16 @@ export const Footer = forwardRef<HTMLElement, FooterProps>(
 
             <div className={FOOTER_BOTTOM_LINKS_CLASS}>
               {legal && legal.length > 0 && (
-                <nav aria-label="Legal">
+                <nav aria-label={legalLabel}>
                   <FooterLinkList
                     links={legal}
                     link={link}
-                    className="flex flex-wrap items-center gap-4"
+                    className={FOOTER_BOTTOM_LINKS_CLASS}
                   />
                 </nav>
               )}
               {social && social.length > 0 && (
-                <nav aria-label="Social">
+                <nav aria-label={socialLabel}>
                   <FooterLinkList
                     links={social}
                     link={link}

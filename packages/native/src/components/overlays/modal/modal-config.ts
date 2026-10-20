@@ -47,11 +47,11 @@ registerNativeComponentDefaults("modal", defaultNativeModalConfig);
 /**
  * The values the modal falls back to when no tier provides one.
  */
-export const FALLBACK_NATIVE_MODAL_CONFIG: Required<NativeModalConfig> = {
+export const FALLBACK_NATIVE_MODAL_CONFIG = {
   size: "md",
   position: "center",
   radius: "lg",
   animated: true,
   closeOnBackdropClick: true,
   closeOnEscape: true,
-};
+} satisfies NativeModalConfig;

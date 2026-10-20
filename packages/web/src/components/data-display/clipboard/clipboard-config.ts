@@ -15,6 +15,9 @@ export type { ClipboardConfig };
 
 /**
  * Default config values registered for the clipboard components.
+ *
+ * `radius` is intentionally absent so the control inherits the application's
+ * `defaultRadius` — the fallback below is only the last tier of the cascade.
  */
 export const defaultClipboardConfig: ClipboardConfig = {
   timeout: 2000,
@@ -30,7 +33,7 @@ registerComponentDefaults("clipboard", defaultClipboardConfig);
 /**
  * Hard fallback values used when no config tier provides a value.
  */
-export const FALLBACK_CLIPBOARD_CONFIG: Required<ClipboardConfig> = {
+export const FALLBACK_CLIPBOARD_CONFIG = {
   timeout: 2000,
   label: "Copy",
   copiedLabel: "Copied",
@@ -38,4 +41,4 @@ export const FALLBACK_CLIPBOARD_CONFIG: Required<ClipboardConfig> = {
   color: "primary",
   size: "sm",
   radius: "sm",
-};
+} satisfies ClipboardConfig;

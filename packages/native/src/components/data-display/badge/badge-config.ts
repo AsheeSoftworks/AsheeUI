@@ -24,11 +24,10 @@ export type NativeBadgeConfig = BadgeConfig;
  * The defaults the Badge registers with the native registry.
  *
  * `color` and `radius` are deliberately absent so they inherit from the platform's
- * configuration. `variant` is not, and that is the one place the two platforms'
- * registered defaults differ: a native surface's platform default treatment is the
- * filled `solid` that suits a button, and a status label that shouts by default is a
- * defect rather than a style choice, so the badge pins the low-emphasis treatment
- * instead. A consumer's own configuration still outranks it.
+ * configuration. `variant` is not: a status label that shouts by default is a defect
+ * rather than a style choice, so the badge pins the low-emphasis `faded` treatment — the
+ * same value both platforms now use as their global default — and a consumer's own
+ * component section still outranks it.
  */
 export const defaultNativeBadgeConfig: NativeBadgeConfig = {
   variant: "faded",
@@ -47,9 +46,9 @@ registerNativeComponentDefaults("badge", defaultNativeBadgeConfig);
 /**
  * The values the badge falls back to when no tier provides one.
  */
-export const FALLBACK_NATIVE_BADGE_CONFIG: Required<NativeBadgeConfig> = {
+export const FALLBACK_NATIVE_BADGE_CONFIG = {
   variant: "faded",
   color: "primary",
   size: "sm",
   radius: "full",
-};
+} satisfies NativeBadgeConfig;

@@ -35,9 +35,9 @@ registerComponentDefaults("authlayout", defaultAuthLayoutConfig);
 /**
  * Hard fallback values used when no config tier provides a value.
  */
-export const FALLBACK_AUTH_LAYOUT_CONFIG: Required<AuthLayoutConfig> = {
+export const FALLBACK_AUTH_LAYOUT_CONFIG = {
   panel: true,
   align: "center",
   mediaPosition: "end",
   contentSize: "sm",
-};
+} satisfies AuthLayoutConfig;

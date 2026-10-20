@@ -47,7 +47,7 @@ export interface MarqueeConfig {
    *
    * @default "x"
    */
-  axis?: MarqueeAxis;
+  axis?: MarqueeAxis | undefined;
 
   /**
    * The direction of the marquee animation.
@@ -55,7 +55,7 @@ export interface MarqueeConfig {
    *
    * @default "forward"
    */
-  direction?: MarqueeDirection;
+  direction?: MarqueeDirection | undefined;
 
   /**
    * The speed of the marquee animation.
@@ -64,7 +64,7 @@ export interface MarqueeConfig {
    *
    * @default "normal"
    */
-  speed?: MarqueeSpeedPreset | number;
+  speed?: MarqueeSpeedPreset | number | undefined;
 
   /**
    * The gap between marquee items, stated as a CSS length.
@@ -77,7 +77,7 @@ export interface MarqueeConfig {
    *
    * @default "1.5rem"
    */
-  gap?: string;
+  gap?: string | undefined;
 
   /**
    * Whether the marquee pauses on hover.
@@ -87,7 +87,7 @@ export interface MarqueeConfig {
    *
    * @default false
    */
-  pauseOnHover?: boolean;
+  pauseOnHover?: boolean | undefined;
 
   /**
    * Whether the marquee has fading edges.
@@ -97,7 +97,7 @@ export interface MarqueeConfig {
    *
    * @default false
    */
-  fadeEdges?: boolean;
+  fadeEdges?: boolean | undefined;
 
   /**
    * Whether the content moves.
@@ -109,7 +109,7 @@ export interface MarqueeConfig {
    *
    * @default true
    */
-  isAnimated?: boolean;
+  isAnimated?: boolean | undefined;
 }
 
 declare module "../../../registry" {

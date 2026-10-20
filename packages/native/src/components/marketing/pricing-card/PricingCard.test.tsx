@@ -152,12 +152,12 @@ describe("Native PricingCard", () => {
     expect(openDestination).toHaveBeenCalledWith("https://example.com/signup");
   });
 
-  it("resolves its treatment, density and recommendation through the cascade", async () => {
+  it("resolves its treatment and density through the cascade", async () => {
     const view = await renderCard(
       <PricingCard testID="plan" name="Growth" price="$29" />,
       {
         components: {
-          pricingcard: { variant: "elevated", size: "sm", highlighted: true },
+          pricingcard: { variant: "elevated", size: "sm" },
         },
       },
     );
@@ -168,7 +168,8 @@ describe("Native PricingCard", () => {
     // surface: the platform's card paints no shadow.
     expect(classes).toContain("bg-secondary");
     expect(classes).toContain("p-3");
-    expect(classes).toContain("border-primary");
+    // The recommendation is not a theme option, so the cascade cannot mark the plan.
+    expect(classes).not.toContain("border-primary");
   });
 
   it("renders with only a plan and an amount", async () => {

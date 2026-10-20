@@ -44,41 +44,41 @@ export interface RadioGroupProps {
    * Name attribute for all radio inputs in the group.
    * Auto-generated if not provided.
    */
-  name?: string;
+  name?: string | undefined;
 
   /**
    * Controlled selected value.
    */
-  value?: string;
+  value?: string | undefined;
 
   /**
    * Uncontrolled initial selected value.
    */
-  defaultValue?: string;
+  defaultValue?: string | undefined;
 
   /**
    * Callback fired when the selection changes.
    * Receives the new selected value.
    */
-  onChange?: (value: string) => void;
+  onChange?: ((value: string) => void) | undefined;
 
   /**
    * Size scale for all radios in the group.
    * @default "md"
    */
-  size?: FieldSizeKey;
+  size?: FieldSizeKey | undefined;
 
   /**
    * Theme accent color for all radios in the group.
    * @default "primary"
    */
-  color?: Color;
+  color?: Color | undefined;
 
   /**
    * Visual style variant for all radios in the group.
    * @default "default"
    */
-  variant?: RadioVariant;
+  variant?: RadioVariant | undefined;
 
   /**
    * Layout orientation of the radio group.
@@ -86,51 +86,51 @@ export interface RadioGroupProps {
    * - `vertical`: Radios are laid out in a column.
    * @default "vertical"
    */
-  orientation?: "horizontal" | "vertical";
+  orientation?: "horizontal" | "vertical" | undefined;
 
   /**
    * Validation status for the group.
    * @default "default"
    */
-  status?: FieldStatus;
+  status?: FieldStatus | undefined;
 
   /**
    * Label text for the group.
    */
-  label?: string;
+  label?: string | undefined;
 
   /**
    * Alignment of the label relative to the group.
    * @default "left"
    */
-  labelAlign?: LabelAlign;
+  labelAlign?: LabelAlign | undefined;
 
   /**
    * Description text shown below the label.
    */
-  description?: string;
+  description?: string | undefined;
 
   /**
    * Validation message shown below the group.
    */
-  message?: string;
+  message?: string | undefined;
 
   /**
    * Whether the field is required.
    * @default false
    */
-  required?: boolean;
+  required?: boolean | undefined;
 
   /**
    * Whether all radios in the group are disabled.
    * @default false
    */
-  disabled?: boolean;
+  disabled?: boolean | undefined;
 
   /**
    * Extra CSS classes for the group container.
    */
-  className?: string;
+  className?: string | undefined;
 }
 
 // ─── Component Implementation ─────────────────────────────────────────────────

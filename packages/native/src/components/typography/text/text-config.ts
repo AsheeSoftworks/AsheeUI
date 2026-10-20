@@ -82,9 +82,9 @@ registerNativeComponentDefaults("text", defaultNativeTextConfig);
 /**
  * The values the text falls back to when no tier provides one.
  */
-export const FALLBACK_NATIVE_TEXT_CONFIG: Required<NativeTextConfig> = {
+export const FALLBACK_NATIVE_TEXT_CONFIG = {
   role: "body-md",
   tone: "default",
   align: "left",
   truncate: false,
-};
+} satisfies NativeTextConfig;

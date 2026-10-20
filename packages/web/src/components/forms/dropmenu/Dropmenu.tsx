@@ -68,88 +68,88 @@ export interface DropmenuProps
   /**
    * Controlled selected value.
    */
-  value?: string | number;
+  value?: string | number | undefined;
 
   /**
    * Native change event handler.
    * Receives a synthetic change event.
    */
-  onChange?: (e: React.ChangeEvent<HTMLSelectElement>) => void;
+  onChange?: ((e: React.ChangeEvent<HTMLSelectElement>) => void) | undefined;
 
   /**
    * Value change handler.
    * Receives the new selected value directly.
    */
-  onValueChange?: (value: string | number) => void;
+  onValueChange?: ((value: string | number) => void) | undefined;
 
   /**
    * Whether search input is shown in the dropdown.
    *
    * @default false
    */
-  isSearch?: boolean;
+  isSearch?: boolean | undefined;
 
   /**
    * Placeholder text for the search input.
    *
    * @default "Search options..."
    */
-  searchPlaceholder?: string;
+  searchPlaceholder?: string | undefined;
 
   /**
    * Name attribute for the search input.
    *
    * @default "select-search"
    */
-  searchInputName?: string;
+  searchInputName?: string | undefined;
 
   /**
    * Initial value for uncontrolled usage.
    */
-  initialValue?: string | number;
+  initialValue?: string | number | undefined;
 
   /**
    * Content rendered below the options list.
    * Useful for adding "Add new" buttons or status messages.
    */
-  belowList?: ReactNode;
+  belowList?: ReactNode | undefined;
 
   /**
    * Placeholder text shown when no value is selected.
    *
    * @default "Dropmenu..."
    */
-  placeholder?: string;
+  placeholder?: string | undefined;
 
   /**
    * Name attribute for the select.
    */
-  name?: string;
+  name?: string | undefined;
 
   /**
    * Content rendered at the start of the button.
    * Typically an icon or adornment.
    */
-  startContent?: ReactNode;
+  startContent?: ReactNode | undefined;
 
   /**
    * Content rendered at the end of the button.
    * Typically an icon, badge, or adornment.
    */
-  endContent?: ReactNode;
+  endContent?: ReactNode | undefined;
 
   /**
    * Whether the select is disabled.
    *
    * @default false
    */
-  disabled?: boolean;
+  disabled?: boolean | undefined;
 
   /**
    * Menu configuration overrides including portal, portalTarget, className, and visual styles.
    * All menu-related props should be passed through this object.
    */
-  menu?: MenuProps;
+  menu?: MenuProps | undefined;
 }
 
 /**

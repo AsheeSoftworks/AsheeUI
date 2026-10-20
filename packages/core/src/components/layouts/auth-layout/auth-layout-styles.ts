@@ -24,8 +24,14 @@ export const AUTH_FORM_COLUMN_CENTERED_CLASS = "justify-center";
 /** The form wrapper, which owns the measure of the form. */
 export const AUTH_FORM_WRAPPER_CLASS = "mx-auto flex w-full flex-col gap-6";
 
-/** The panel treatment of the form wrapper. */
-export const AUTH_PANEL_CLASS = "rounded-md border border-border bg-background";
+/**
+ * The panel treatment of the form wrapper.
+ *
+ * The corners are not stated here: the panel is a surface like every other, so
+ * its radius resolves from the application's `defaultRadius` (see `RADIUS_CLASS`)
+ * and the web component appends that class.
+ */
+export const AUTH_PANEL_CLASS = "border border-border bg-background";
 
 /** Padding of the panel at each content width. */
 export const AUTH_PANEL_PADDING_CLASS = "p-6 md:p-8";

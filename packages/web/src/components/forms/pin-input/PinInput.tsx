@@ -73,41 +73,41 @@ type BasePinInputProps = PinInputConfig &
  */
 export interface PinInputProps extends BasePinInputProps {
   /** The code, for a consumer that owns the value. */
-  value?: string;
+  value?: string | undefined;
 
   /** The initial code, for a consumer that does not. */
-  defaultValue?: string;
+  defaultValue?: string | undefined;
 
   /** Called with the whole code whenever it changes. */
-  onValueChange?: (value: string) => void;
+  onValueChange?: ((value: string) => void) | undefined;
 
   /**
    * Called once when the code reaches its full length.
    * It fires once per completion, not on every keystroke, so a consumer can
    * submit from it.
    */
-  onComplete?: (value: string) => void;
+  onComplete?: ((value: string) => void) | undefined;
 
   /** Label of the field, shown above the boxes. */
-  label?: string;
+  label?: string | undefined;
 
   /** Alignment of the label. @default "left" */
-  labelAlign?: LabelAlign;
+  labelAlign?: LabelAlign | undefined;
 
   /** Description under the label. */
-  description?: string;
+  description?: string | undefined;
 
   /** Validation message under the boxes. */
-  message?: string;
+  message?: string | undefined;
 
   /** Validation status, which colours the message. @default "default" */
-  status?: FieldStatus;
+  status?: FieldStatus | undefined;
 
   /** Whether the field is required. @default false */
-  required?: boolean;
+  required?: boolean | undefined;
 
   /** Whether the label shows a pending state. @default false */
-  isLoading?: boolean;
+  isLoading?: boolean | undefined;
 
   /**
    * Accessible name of the group of boxes.
@@ -115,13 +115,13 @@ export interface PinInputProps extends BasePinInputProps {
    *
    * @default "Verification code"
    */
-  groupLabel?: string;
+  groupLabel?: string | undefined;
 
   /**
    * Draw a separator after this many boxes.
    * Purely presentational grouping, hidden from assistive technology.
    */
-  separatorAfter?: number;
+  separatorAfter?: number | undefined;
 }
 
 /**

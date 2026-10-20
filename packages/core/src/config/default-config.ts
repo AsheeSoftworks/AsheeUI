@@ -10,8 +10,8 @@ import type { Config } from "./config";
 
 /**
  * The default AsheeUI configuration.
- * Uses a light theme by default, with solid primary buttons,
- * medium border radius, and no component-specific overrides.
+ * Uses a light theme by default, with faded primary buttons, an extra-small
+ * border radius, and no component-specific overrides.
  */
 export const defaultConfig: Config = {
   /**
@@ -22,9 +22,13 @@ export const defaultConfig: Config = {
   /**
    * Default border radius for components.
    *
-   * `xs` is deliberate: AsheeUI's visual language is boxy by design. Components
-   * inherit this value rather than pinning their own, so a consumer can restyle
-   * the whole library through this one key.
+   * `xs` is deliberate: AsheeUI's visual language is boxy by design. A component
+   * that leaves `radius` unregistered inherits this value, so a consumer can
+   * restyle those components through this one key. A component that registers a
+   * radius of its own — a pill badge, a circular avatar, a radio, a switch, or a
+   * surface whose rounding the framework fixes (an alert, a toast) — keeps it,
+   * and this key never reaches it; each such component says so in its config
+   * module.
    * @default "xs"
    */
   defaultRadius: "xs",

@@ -33,9 +33,9 @@ registerComponentDefaults("footer", defaultFooterConfig);
 /**
  * Hard fallback values used when no config tier provides a value.
  */
-export const FALLBACK_FOOTER_CONFIG: Required<FooterConfig> = {
+export const FALLBACK_FOOTER_CONFIG = {
   variant: "bordered",
   spacing: "lg",
   contained: true,
   containerSize: "lg",
-};
+} satisfies FooterConfig;

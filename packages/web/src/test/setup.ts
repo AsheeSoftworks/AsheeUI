@@ -39,8 +39,8 @@ class IntersectionObserverStub {
 }
 
 const globalWithObservers = globalThis as typeof globalThis & {
-  ResizeObserver?: typeof ResizeObserver;
-  IntersectionObserver?: typeof IntersectionObserver;
+  ResizeObserver?: typeof ResizeObserver | undefined;
+  IntersectionObserver?: typeof IntersectionObserver | undefined;
 };
 
 globalWithObservers.ResizeObserver ??=

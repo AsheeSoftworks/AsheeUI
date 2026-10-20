@@ -11,10 +11,18 @@ import type {
   ColorVariant,
   DefaultColorConfig,
   ExternalColorConfig,
-  ExternalColorVariant,
   KnownThemeName,
-  ThemeName,
 } from "../theme/color";
+
+/**
+ * Whether a theme name is one of the built-in themes.
+ *
+ * @param name - The theme name to test.
+ * @returns `true` for `light` and `dark`.
+ */
+function isBuiltIn(name: string): name is KnownThemeName {
+  return name === "light" || name === "dark";
+}
 
 /**
  * Resolves the final color configuration by merging user-provided
@@ -28,6 +36,13 @@ import type {
  * The built-in themes are merged **first**, and a custom theme inherits from
  * the merged result, so a custom theme that extends `dark` inherits the
  * consumer's `dark` overrides rather than the library's original palette.
+ *
+ * A custom theme may also extend another custom theme, in any declaration order.
+ * The palettes are resolved as a dependency graph rather than in insertion order, so a
+ * theme that names one declared *later* in the same `color` object inherits it instead of
+ * silently receiving the library's light palette. A cycle (`a extends b`, `b extends a`)
+ * has no base to inherit, so each theme in it starts from `inheritFrom`, and the resolution
+ * terminates instead of recursing forever.
  *
  * @param defaults - The default color configuration with built-in themes.
  * @param external - Optional user-provided external color configuration.
@@ -55,35 +70,73 @@ export function resolveColorConfig(
   const result = { ...defaults } as ColorConfig;
   if (!external) return result;
 
-  const entries = Object.entries(external) as [
-    ThemeName,
-    ExternalColorConfig[keyof ExternalColorConfig],
-  ][];
-
   // Built-in themes first: a custom theme may extend one, and it has to see the
   // consumer's overrides rather than the palette that shipped with the library.
-  for (const [key, userValue] of entries) {
-    if (key !== "light" && key !== "dark") continue;
-    if (!userValue) continue;
+  for (const name of Object.keys(defaults) as KnownThemeName[]) {
+    const overrides = external[name];
+    if (!overrides) continue;
 
-    result[key] = {
-      ...defaults[key],
-      ...(userValue as Partial<ColorVariant>),
+    result[name] = {
+      ...defaults[name],
+      ...overrides,
     };
   }
 
-  for (const [key, userValue] of entries) {
-    if (key === "light" || key === "dark") continue;
-    if (!userValue) continue;
+  const customNames = Object.keys(external).filter(
+    (name) => !isBuiltIn(name) && Boolean(external[name]),
+  );
+  const customThemes = new Set(customNames);
 
-    const { extends: baseName, ...overrides } =
-      userValue as ExternalColorVariant;
-    const base = result[baseName ?? inheritFrom] ?? defaults.light;
+  /** The palette a custom theme starts from when nothing else is named. */
+  const inheritBase = (): ColorVariant => result[inheritFrom] ?? defaults.light;
 
-    (result as Record<string, ColorVariant>)[key] = {
-      ...base,
-      ...overrides,
-    };
+  /** Palettes already resolved, keyed by theme name. */
+  const resolved = new Map<string, ColorVariant>();
+
+  /** Themes on the current resolution path, so a cycle is detected rather than followed. */
+  const resolving = new Set<string>();
+
+  /**
+   * Resolve one custom theme, resolving the theme it extends first.
+   *
+   * @param name - The custom theme to resolve.
+   * @returns The fully resolved palette for `name`.
+   */
+  const resolveTheme = (name: string): ColorVariant => {
+    const done = resolved.get(name);
+    if (done) return done;
+
+    const { extends: declaredBase, ...overrides } = external[name];
+
+    let base: ColorVariant;
+    if (declaredBase === undefined) {
+      base = inheritBase();
+    } else if (resolving.has(declaredBase)) {
+      // A cycle: `name` is already being resolved further up the chain, so following it
+      // again would never reach a base. The application's default family is where an
+      // unstated `extends` starts, so it is where a circle starts too.
+      base = inheritBase();
+    } else if (customThemes.has(declaredBase)) {
+      // The theme being extended is another custom theme. It may be declared later in the
+      // object, so it is resolved here rather than read from a partly filled result —
+      // reading it in insertion order is what made a forward reference fall back to light.
+      resolving.add(name);
+      base = resolveTheme(declaredBase);
+      resolving.delete(name);
+    } else {
+      // A name that is neither built in nor declared: the historical fallback.
+      base = result[declaredBase] ?? defaults.light;
+    }
+
+    const palette = { ...base, ...overrides };
+    resolved.set(name, palette);
+    return palette;
+  };
+
+  // Assign in declaration order, so the generated CSS keeps the order the consumer wrote
+  // even though the palettes are resolved in dependency order.
+  for (const name of customNames) {
+    (result as Record<string, ColorVariant>)[name] = resolveTheme(name);
   }
 
   return result;

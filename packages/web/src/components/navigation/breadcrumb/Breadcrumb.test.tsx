@@ -20,15 +20,23 @@ function RouterLink({
   className,
   children,
 }: {
-  href?: string;
-  className?: string;
-  children?: ReactNode;
+  href?: string | undefined;
+  className?: string | undefined;
+  children?: ReactNode | undefined;
 }) {
   return (
     <a data-router-link="true" href={href} className={className}>
       {children}
     </a>
   );
+}
+
+/** The gap utilities an element's class list declares. */
+function gapsOf(element: HTMLElement): string[] {
+  return element.className
+    .split(/\s+/)
+    .filter((className) => /^gap-/.test(className))
+    .sort();
 }
 
 describe("Breadcrumb", () => {
@@ -113,6 +121,91 @@ describe("Breadcrumb", () => {
     );
 
     expect(container.querySelector('[data-router-link="true"]')).not.toBeNull();
+  });
+
+  // The trail-level substitution was documented but did not exist: a consumer that keeps
+  // a router had to repeat `component` on every step. It is offered once for the trail,
+  // as the Navbar and the Footer offer it.
+  it("applies a trail-level link substitution to every linked step", () => {
+    const { container } = renderWithProvider(
+      <Breadcrumb
+        link={{ component: RouterLink }}
+        items={[
+          { label: "Home", href: "/" },
+          { label: "Invoices", href: "/invoices" },
+          { label: "INV-0042" },
+        ]}
+      />,
+    );
+
+    expect(
+      container.querySelectorAll('[data-router-link="true"]'),
+    ).toHaveLength(2);
+  });
+
+  it("lets a step's own component win over the trail's substitution", () => {
+    function StepLink({
+      href,
+      className,
+      children,
+    }: {
+      href?: string | undefined;
+      className?: string | undefined;
+      children?: ReactNode | undefined;
+    }) {
+      return (
+        <a data-step-link="true" href={href} className={className}>
+          {children}
+        </a>
+      );
+    }
+
+    const { container } = renderWithProvider(
+      <Breadcrumb
+        link={{ component: RouterLink }}
+        items={[
+          { label: "Home", href: "/" },
+          { label: "Invoices", href: "/invoices", component: StepLink },
+          { label: "INV-0042" },
+        ]}
+      />,
+    );
+
+    expect(
+      container.querySelectorAll('[data-router-link="true"]'),
+    ).toHaveLength(1);
+    expect(container.querySelectorAll('[data-step-link="true"]')).toHaveLength(
+      1,
+    );
+  });
+
+  // The current location was drawn with a bare icon and a fixed gap, so at most one
+  // density matched its neighbours. It now uses Link's own icon slot and Link's own size
+  // map — the gap and the icon box a linked step beside it gets.
+  it("gives the current step's icon the same slot and gap as a linked step", () => {
+    for (const size of ["sm", "md", "lg"] as const) {
+      const { container, unmount } = renderWithProvider(
+        <Breadcrumb
+          size={size}
+          items={[
+            { label: "Invoices", href: "/invoices", icon: <span>mark</span> },
+            { label: "INV-0042", icon: <span>mark</span> },
+          ]}
+        />,
+      );
+
+      const linked = container.querySelector("a") as HTMLElement;
+      const current = container.querySelector(
+        '[aria-current="page"]',
+      ) as HTMLElement;
+      const linkedSlot = linked.firstElementChild as HTMLElement;
+      const currentSlot = current.firstElementChild as HTMLElement;
+
+      expect(currentSlot.className).toBe(linkedSlot.className);
+      expect(gapsOf(current)).toEqual(gapsOf(linked));
+
+      unmount();
+    }
   });
 
   it("resolves the configured scale and colour", () => {

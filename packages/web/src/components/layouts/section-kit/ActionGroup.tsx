@@ -1,13 +1,14 @@
 /**
  * Action group helper for AsheeUI.
  *
- * This file provides the internal `ActionGroup` component, which renders the
+ * This file provides the public `ActionGroup` component, which renders the
  * configured actions a pattern takes (`primaryAction`, `secondaryAction`)
  * through the public Button. Configured actions therefore render exactly like
  * hand-written buttons and inherit the framework's configuration cascade,
  * variant and colour resolution, loading and disabled behaviour, and accessible
- * name handling. It is an internal helper and is not part of the public
- * component inventory.
+ * name handling. It is public through the `@asheeui/web/section-kit` subpath
+ * rather than the package entry point, and is documented on the section page
+ * (https://docs.asheeui.com/components/layouts/section) under "The section kit".
  */
 
 import type { ActionConfig } from "@asheeui/core";
@@ -21,20 +22,20 @@ import type { ReactNode } from "react";
 import { Button } from "../../forms/button/Button";
 
 /**
- * Props for the internal ActionGroup helper.
+ * Props for the public ActionGroup helper.
  */
 export interface ActionGroupProps {
   /**
    * The emphasised action of the pattern.
    * Renders as a solid button or link.
    */
-  primaryAction?: ActionConfig;
+  primaryAction?: ActionConfig | undefined;
 
   /**
    * The supporting action of the pattern.
    * Renders as a bordered button or link.
    */
-  secondaryAction?: ActionConfig;
+  secondaryAction?: ActionConfig | undefined;
 
   /**
    * Horizontal alignment of the group on a wide screen.
@@ -42,19 +43,27 @@ export interface ActionGroupProps {
    *
    * @default "start"
    */
-  align?: SectionBlockAlign;
+  align?: SectionBlockAlign | undefined;
 
   /**
    * Additional classes for the wrapper.
    */
-  className?: string;
+  className?: string | undefined;
 
   /**
-   * Content rendered alongside the configured actions, inside the same group.
-   * It is the way a pattern places an action that carries a handler, because a
-   * configured action describes a destination rather than a React callback.
+   * Content rendered inside the group, after the configured actions.
+   *
+   * A configured action describes a destination rather than a React callback,
+   * so a consumer composing directly with the kit puts a handler-carrying
+   * `Button` here and it lands in the same row as the configured actions.
+   *
+   * The shipped patterns do not use it that way: `Hero`, `CTA` and
+   * `PricingCard` place their own `children` *below* the row, because each
+   * documents that slot as content under the actions (a logo row, a small-print
+   * line, a plan's notes). A button that carries a handler and belongs in the
+   * row is therefore a direct use of this helper, or a consumer's own row.
    */
-  children?: ReactNode;
+  children?: ReactNode | undefined;
 }
 
 /**

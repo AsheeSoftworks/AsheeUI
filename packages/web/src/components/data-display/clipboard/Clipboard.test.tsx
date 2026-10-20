@@ -94,6 +94,50 @@ describe("Clipboard", () => {
 
     expect(writeText).toHaveBeenCalledWith("INV-9999");
   });
+
+  it("fails instead of copying nothing when there is no text", async () => {
+    const user = userEvent.setup();
+    const writeText = installClipboard();
+    const errors: unknown[] = [];
+    const results: boolean[] = [];
+
+    // Neither a `Clipboard` with no `value` nor an explicit empty string has
+    // anything to write, so both must take the failure path: no clipboard call,
+    // `false` from `copy()`, `error` set and `onError` told.
+    const { getByRole, getByText, queryByText } = renderWithProvider(
+      <Clipboard onError={(error) => errors.push(error)}>
+        {({ copied, error, copy }) => (
+          <>
+            <button
+              type="button"
+              onClick={async () => {
+                results.push(await copy());
+              }}>
+              {copied ? "Copied" : error ? "Failed" : "Copy"}
+            </button>
+            <button
+              type="button"
+              onClick={async () => {
+                results.push(await copy(""));
+              }}>
+              Copy empty
+            </button>
+          </>
+        )}
+      </Clipboard>,
+    );
+
+    await user.click(getByRole("button", { name: "Copy" }));
+    await waitFor(() => expect(results).toHaveLength(1));
+    await user.click(getByRole("button", { name: "Copy empty" }));
+    await waitFor(() => expect(results).toHaveLength(2));
+
+    expect(writeText).not.toHaveBeenCalled();
+    expect(results).toEqual([false, false]);
+    expect(errors).toHaveLength(2);
+    await waitFor(() => expect(getByText("Failed")).toBeDefined());
+    expect(queryByText("Copied")).toBeNull();
+  });
 });
 
 describe("CopyButton", () => {
@@ -150,5 +194,68 @@ describe("CopyButton", () => {
     expect(html).toContain("Copy");
     expect(html).toContain("<button");
     expectHydrationClean(<CopyButton value="INV-1042" />);
+  });
+
+  it("announces a failed copy instead of claiming success", async () => {
+    const user = userEvent.setup();
+    const writeText = installClipboard();
+    const errors: unknown[] = [];
+
+    const { getByRole, getByText } = renderWithProvider(
+      <CopyButton
+        value=""
+        onError={(error) => {
+          errors.push(error);
+        }}
+      />,
+    );
+
+    await user.click(getByRole("button", { name: "Copy" }));
+
+    expect(writeText).not.toHaveBeenCalled();
+    expect(errors).toHaveLength(1);
+
+    // The label stays where it was — a control that could not copy must not
+    // rename itself "Copied" — and the region says what went wrong instead.
+    expect(getByRole("button", { name: "Copy" })).toBeDefined();
+    expect(getByRole("status").textContent).toBe("Copy failed");
+    expect(getByText("Copy failed")).toBeDefined();
+  });
+
+  it("uses the failure announcement it is given", async () => {
+    const user = userEvent.setup();
+    installClipboard();
+
+    const { getByRole } = renderWithProvider(
+      <CopyButton value="" errorAnnouncement="Nothing to copy" />,
+    );
+
+    await user.click(getByRole("button", { name: "Copy" }));
+
+    expect(getByRole("status").textContent).toBe("Nothing to copy");
+  });
+
+  it("resolves the control's radius through the cascade", () => {
+    const unconfigured = renderWithProvider(<CopyButton value="INV-1042" />);
+    expect(
+      unconfigured.getByRole("button", { name: "Copy" }).className,
+    ).toContain("rounded-xs");
+    unconfigured.unmount();
+
+    const themed = renderWithProvider(<CopyButton value="INV-1042" />, {
+      config: makeComponentConfig("clipboard", { radius: "full" }),
+    });
+    expect(themed.getByRole("button", { name: "Copy" }).className).toContain(
+      "rounded-full",
+    );
+    themed.unmount();
+
+    const instance = renderWithProvider(
+      <CopyButton value="INV-1042" radius="none" />,
+      { config: makeComponentConfig("clipboard", { radius: "full" }) },
+    );
+    expect(instance.getByRole("button", { name: "Copy" }).className).toContain(
+      "rounded-none",
+    );
   });
 });

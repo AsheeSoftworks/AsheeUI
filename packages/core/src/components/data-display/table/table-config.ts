@@ -27,6 +27,16 @@ import type { Color } from "../../../shared/variant";
 export type TableVariant = "grid" | "striped" | "bordered" | "ghost";
 
 /**
+ * The order a column's rows are already in.
+ *
+ * The values are ARIA's own, because the state this describes is announced by the header
+ * cell: the web renderer states it as `aria-sort`. `"none"` means the column is sorted but
+ * the order is neither ascending nor descending, which is not the same as a column that is
+ * not sorted at all — that one states nothing.
+ */
+export type ColumnSortDirection = "ascending" | "descending" | "none";
+
+/**
  * Column definition for the table.
  * Defines the header content and cell renderer for a column.
  *
@@ -38,7 +48,7 @@ export interface ColumnDef<TData = unknown> {
    * Optional explicit key for list rendering.
    * Used as the key prop for the column element.
    */
-  id?: string;
+  id?: string | undefined;
 
   /**
    * Header content or title.
@@ -51,6 +61,21 @@ export interface ColumnDef<TData = unknown> {
    * Receives the row data and returns the cell content.
    */
   cell: (row: TData) => ReactNode;
+
+  /**
+   * The order this column's rows are in, stated on the column's header cell.
+   *
+   * A table renders an order; it does not produce one, because an order is a decision about
+   * the data and the consumer already has one. Saying which order that is here is what lets
+   * the header cell announce it: the web renderer applies it as `aria-sort`. Leave it unset
+   * for a column that is not sorted, which states nothing rather than "none".
+   *
+   * The platform draws no header row — a row is a set of labelled lines — so it has no cell
+   * to state this on and resolves the value without using it.
+   *
+   * @default undefined
+   */
+  sortDirection?: ColumnSortDirection | undefined;
 }
 
 /**
@@ -66,7 +91,7 @@ export interface TableConfig {
    *
    * @default "md"
    */
-  size?: Size;
+  size?: Size | undefined;
 
   /**
    * Visual style variant.
@@ -74,7 +99,7 @@ export interface TableConfig {
    *
    * @default "grid"
    */
-  variant?: TableVariant;
+  variant?: TableVariant | undefined;
 
   /**
    * Theme accent color.
@@ -82,7 +107,7 @@ export interface TableConfig {
    *
    * @default "primary"
    */
-  color?: Color;
+  color?: Color | undefined;
 
   /**
    * Corner rounding.
@@ -90,31 +115,31 @@ export interface TableConfig {
    *
    * @default "md"
    */
-  radius?: Radius;
+  radius?: Radius | undefined;
 
   /**
    * Extra classes applied to the table container.
    */
-  className?: string;
+  className?: string | undefined;
 
   /**
    * Extra classes applied to the table header.
    * The platform has no header row — a row is a set of labelled lines — so this resolves
    * through the shared contract and changes nothing there.
    */
-  headerClassName?: string;
+  headerClassName?: string | undefined;
 
   /**
    * Extra classes applied to rows.
    * The platform applies them to each row it draws.
    */
-  rowClassName?: string;
+  rowClassName?: string | undefined;
 
   /**
    * Extra classes applied to cells.
    * The platform applies them to each labelled line it draws.
    */
-  cellClassName?: string;
+  cellClassName?: string | undefined;
 }
 
 declare module "../../../registry" {

@@ -43,13 +43,12 @@ registerNativeComponentDefaults("pininput", defaultNativePinInputConfig);
 /**
  * The values the field falls back to when no tier provides one.
  */
-export const FALLBACK_NATIVE_PIN_INPUT_CONFIG: Required<NativePinInputConfig> =
-  {
-    length: 4,
-    mode: "numeric",
-    size: "md",
-    masked: false,
-    radius: "sm",
-    isDisabled: false,
-    isInvalid: false,
-  };
+export const FALLBACK_NATIVE_PIN_INPUT_CONFIG = {
+  length: 4,
+  mode: "numeric",
+  size: "md",
+  masked: false,
+  radius: "sm",
+  isDisabled: false,
+  isInvalid: false,
+} satisfies NativePinInputConfig;

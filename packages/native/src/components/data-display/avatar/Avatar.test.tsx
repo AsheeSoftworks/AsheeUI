@@ -124,6 +124,50 @@ describe("Native Avatar", () => {
     expect(view.getByText("AL")).toBeTruthy();
   });
 
+  it("tries a new source after the previous one failed", async () => {
+    const view = await renderAvatar(
+      <Avatar testID="avatar" name="Ada Lovelace" src="/missing.png" />,
+    );
+    const [picture] = descendantsWithProp(view.getByTestId("avatar"), "source");
+
+    await fireEvent(picture, "error", new Error("The picture failed"));
+
+    expect(view.getByText("AL")).toBeTruthy();
+
+    // A list recycles an avatar slot, so the source it holds next is a fresh picture and
+    // must get its own chance.
+    await view.rerender(
+      <AsheeNativeProvider>
+        <Avatar testID="avatar" name="Ada Lovelace" src="/ada.png" />
+      </AsheeNativeProvider>,
+    );
+
+    const [retried] = descendantsWithProp(view.getByTestId("avatar"), "source");
+
+    expect(retried?.props.source).toEqual({ uri: "/ada.png" });
+    expect(view.queryByText("AL")).toBeNull();
+  });
+
+  it("keeps the fallback when the same source fails again", async () => {
+    const view = await renderAvatar(
+      <Avatar testID="avatar" name="Ada Lovelace" src="/missing.png" />,
+    );
+    const [picture] = descendantsWithProp(view.getByTestId("avatar"), "source");
+
+    await fireEvent(picture, "error", new Error("The picture failed"));
+
+    await view.rerender(
+      <AsheeNativeProvider>
+        <Avatar testID="avatar" name="Ada Lovelace" src="/missing.png" />
+      </AsheeNativeProvider>,
+    );
+
+    const avatar = view.getByTestId("avatar");
+
+    expect(descendantsWithProp(avatar, "source")).toHaveLength(0);
+    expect(view.getByText("AL")).toBeTruthy();
+  });
+
   it("resolves its diameter, rounding and accent through the cascade", async () => {
     const view = await renderAvatar(
       <Avatar testID="avatar" name="Ada Lovelace" />,

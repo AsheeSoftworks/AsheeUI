@@ -36,6 +36,7 @@ import { useState } from "react";
 import { Pressable, View } from "react-native";
 import { useAsheeNativeConfig } from "../../../provider/AsheeNativeProvider";
 import { classNames } from "../../../utils/class-names";
+import { Text } from "../../typography/text/Text";
 import { FieldShell } from "../field/FieldShell";
 import { PickerSheet, type PickerSheetOption } from "../picker/PickerSheet";
 import {
@@ -45,7 +46,6 @@ import {
   NATIVE_CHIP_ROW_CLASS,
   NATIVE_PICKER_TRIGGER_CLASS,
 } from "../picker/picker-styles";
-import { Text } from "../../typography/text/Text";
 import {
   FALLBACK_NATIVE_MULTI_SELECT_CONFIG,
   type NativeMultiSelectConfig,
