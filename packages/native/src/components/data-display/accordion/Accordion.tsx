@@ -16,8 +16,10 @@
  * platform has no way to hide a subtree from a reader while leaving it laid out, so
  * unmounting it is the honest answer rather than a visual-only collapse.
  *
- * A disabled item is reported as disabled and responds to nothing, which is the same
- * statement the web makes with the `disabled` attribute on the trigger.
+ * A disabled item is reported as disabled and responds to nothing. It is not removed from the
+ * screen once it is reached: the trigger stays in the reader's order and states
+ * `accessibilityState.disabled`, and the press is refused in `toggle`, which is the platform's
+ * statement of the web accordion's move from the `disabled` attribute to `aria-disabled`.
  */
 
 import {
@@ -151,7 +153,7 @@ export function Accordion({
   size,
   radius,
   allowMultiple,
-  disableAnimation = false,
+  disableAnimation,
   className,
   style,
   ...rest
@@ -182,6 +184,16 @@ export function Accordion({
     sectionConfig?.allowMultiple,
     undefined,
     FALLBACK_NATIVE_ACCORDION_CONFIG.allowMultiple,
+  );
+  // `disableAnimation` is a cascade axis like the others: a consumer can state it on the
+  // instance, in `components.accordion`, or nowhere at all. Destructuring it with a literal
+  // default would answer `false` before the config tier was asked, so the component-level
+  // option could never reach the platform's animator.
+  const resolvedDisableAnimation = resolveCascade<boolean>(
+    disableAnimation,
+    sectionConfig?.disableAnimation,
+    undefined,
+    FALLBACK_NATIVE_ACCORDION_CONFIG.disableAnimation,
   );
 
   // A treatment the accordion has none for — a global default stated for a filled
@@ -215,7 +227,7 @@ export function Accordion({
         ? []
         : [key];
 
-    if (!disableAnimation) {
+    if (!resolvedDisableAnimation) {
       LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
     }
 
@@ -259,8 +271,16 @@ export function Accordion({
                     : item.title
                   : undefined
               }
-              accessibilityState={{ expanded: isOpen, disabled: item.disabled }}
-              disabled={item.disabled}
+              // Only a disabled item states it, as the web only sets `aria-disabled` on one.
+              accessibilityState={{
+                expanded: isOpen,
+                disabled: item.disabled || undefined,
+              }}
+              // A disabled item is reported, not removed: the platform's `disabled` prop
+              // would take the trigger out of the reader's order, so a screen-reader user
+              // would never learn that the section exists but cannot be opened. The state
+              // above says the same thing and leaves the trigger reachable; the press is
+              // refused in `toggle`.
               onPress={() => toggle(key, item.disabled)}
               className={classNames(
                 NATIVE_ACCORDION_HEADER_CLASS,

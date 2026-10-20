@@ -130,7 +130,12 @@ describe("AsheeThemeScript", () => {
     // configuration only has an effect when the values are emitted.
     const script = emitScript({
       components: {
-        scrollbar: { width: "12px", radius: "6px", thumbBorder: "2px" },
+        scrollbar: {
+          width: "12px",
+          radius: "6px",
+          thumbBorder: "2px",
+          fallbackWidth: "auto",
+        },
       },
     });
 
@@ -138,6 +143,9 @@ describe("AsheeThemeScript", () => {
     expect(script).toContain("--ashee-scrollbar-thumb-border: 2px");
     // The track radius falls back to the radius when it is not configured.
     expect(script).toContain("--ashee-scrollbar-track-radius: 6px");
+    // `index.css` reads this variable with `thin` as its own fallback, so the
+    // configured keyword has to reach it to mean anything.
+    expect(script).toContain("--ashee-scrollbar-fallback-width: auto");
   });
 
   it("never applies a theme that has no CSS block", () => {

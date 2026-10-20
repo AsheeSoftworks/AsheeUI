@@ -44,6 +44,39 @@ describe("Avatar", () => {
     expect(getByText("GH")).toBeInTheDocument();
   });
 
+  it("tries a new picture after the previous one failed", () => {
+    // A list recycles the avatar slot for the next entity. The failure belonged to
+    // the old source, so the new one has to be tried rather than inheriting the
+    // fallback it never earned.
+    const { container, getByText, queryByText, rerender } = renderWithProvider(
+      <Avatar name="Grace Hopper" src="/grace.png" />,
+    );
+    fireEvent.error(container.querySelector("img") as HTMLImageElement);
+    expect(getByText("GH")).toBeInTheDocument();
+
+    rerender(<Avatar name="Grace Hopper" src="/grace-2.png" />);
+
+    expect(container.querySelector("img")).toHaveAttribute(
+      "src",
+      "/grace-2.png",
+    );
+    expect(queryByText("GH")).toBeNull();
+  });
+
+  it("keeps the fallback when the source that failed is rendered again", () => {
+    // The same source is the same answer: re-rendering must not retry it on every
+    // pass, which would flicker between the initials and a broken picture.
+    const { container, getByText, rerender } = renderWithProvider(
+      <Avatar name="Grace Hopper" src="/grace.png" />,
+    );
+    fireEvent.error(container.querySelector("img") as HTMLImageElement);
+
+    rerender(<Avatar name="Grace Hopper" src="/grace.png" />);
+
+    expect(getByText("GH")).toBeInTheDocument();
+    expect(container.querySelector("img")).toBeNull();
+  });
+
   it("accepts a fallback of its own", () => {
     const { getByText, queryByText } = renderWithProvider(
       <Avatar name="Ada Lovelace" fallback={<span>Guest</span>} />,
@@ -109,6 +142,28 @@ describe("Avatar", () => {
     expect(overriddenAvatar.className).toContain("size-8");
     expect(overriddenAvatar.className).toContain("rounded-full");
     expect(overridden.container.innerHTML).toContain("success");
+  });
+
+  // A circle with a flat right edge is what a flex item does when it shrinks: the avatar is a flex
+  // container, so the initials span and the picture both resolved `size-full` against their content and
+  // stopped short of the 40px circle, which then clipped them into a "D". `shrink-0` is the fix, so it is
+  // the thing worth asserting.
+  it("fills its circle instead of shrinking to its content", () => {
+    const initials = renderWithProvider(
+      <Avatar name="Ada Lovelace" color="success" />,
+    );
+    const fallback = within(initials.container).getByText("AL");
+
+    expect(fallback.className).toContain("shrink-0");
+    expect(fallback.className).toContain("size-full");
+
+    const picture = renderWithProvider(
+      <Avatar name="Ada Lovelace" src="/ada.png" />,
+    );
+    const image = picture.container.querySelector("img");
+
+    expect(image?.className).toContain("shrink-0");
+    expect(image?.className).toContain("size-full");
   });
 
   it("hydrates its server markup without a mismatch", () => {

@@ -12,10 +12,28 @@
  * class-name context. Complete interpolations of pre-computed class strings
  * (`${sizeClass}`) are lookups, not construction, and are not flagged.
  *
+ * Style-map modules (`*-styles.ts`) are the exception to the context rule: they
+ * hold class strings in plain objects, with no `className` or `cn(` on the line,
+ * so they are scanned with {@link DynamicUtilityScanOptions.requireClassContext}
+ * turned off.
+ *
  * Limits (deliberately biased toward false negatives over false positives):
  * a curried list of roots and context keywords is checked by substring, so an
  * unusual root or a class built across several source lines may go unreported.
  */
+
+/** Options for {@link scanForDynamicUtilityClasses}. */
+export interface DynamicUtilityScanOptions {
+  /**
+   * Whether a line must sit in a class-name context before it is scanned.
+   *
+   * `*-styles.ts` modules hold class strings in style maps and never spell
+   * `className`, so the repository walk turns this off for them.
+   *
+   * @default true
+   */
+  requireClassContext?: boolean | undefined;
+}
 
 /**
  * Roots of Tailwind utility families that must never be assembled at runtime.
@@ -131,9 +149,14 @@ const TOKEN_BOUNDARIES = new Set([
  * Find dynamically constructed utility names in a source string.
  *
  * @param source - Source text to scan.
+ * @param options - Scan options; style maps turn the context check off.
  * @returns A description of each finding, empty when the source is clean.
  */
-export function scanForDynamicUtilityClasses(source: string): string[] {
+export function scanForDynamicUtilityClasses(
+  source: string,
+  options: DynamicUtilityScanOptions = {},
+): string[] {
+  const { requireClassContext = true } = options;
   const findings: string[] = [];
   const lines = source.split("\n");
   const concatenated = new RegExp(
@@ -142,7 +165,12 @@ export function scanForDynamicUtilityClasses(source: string): string[] {
 
   for (const [index, line] of lines.entries()) {
     const context = [lines[index - 1], line].filter(Boolean).join("\n");
-    if (!CLASS_CONTEXT_HINTS.some((hint) => context.includes(hint))) continue;
+    if (
+      requireClassContext &&
+      !CLASS_CONTEXT_HINTS.some((hint) => context.includes(hint))
+    ) {
+      continue;
+    }
 
     findings.push(...findPartialInterpolations(line));
 
@@ -164,7 +192,7 @@ function findPartialInterpolations(line: string): string[] {
   while (match) {
     const end = match.index;
     let start = end;
-    while (start > 0 && !TOKEN_BOUNDARIES.has(line[start - 1])) {
+    while (start > 0 && !TOKEN_BOUNDARIES.has(line.charAt(start - 1))) {
       start -= 1;
     }
 

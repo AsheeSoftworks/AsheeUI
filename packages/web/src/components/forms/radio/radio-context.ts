@@ -20,42 +20,42 @@ export interface RadioContextValue {
   /**
    * Name attribute for all radio inputs in the group.
    */
-  name?: string;
+  name?: string | undefined;
 
   /**
    * Currently selected value in the group.
    */
-  value?: string;
+  value?: string | undefined;
 
   /**
    * Callback fired when the selection changes.
    */
-  onChange?: (value: string) => void;
+  onChange?: ((value: string) => void) | undefined;
 
   /**
    * Size scale for all radios in the group.
    */
-  size?: FieldSizeKey;
+  size?: FieldSizeKey | undefined;
 
   /**
    * Theme accent color for all radios in the group.
    */
-  color?: Color;
+  color?: Color | undefined;
 
   /**
    * Visual style variant for all radios in the group.
    */
-  variant?: RadioVariant;
+  variant?: RadioVariant | undefined;
 
   /**
    * Whether all radios in the group are disabled.
    */
-  disabled?: boolean;
+  disabled?: boolean | undefined;
 
   /**
    * Validation status for the group.
    */
-  status?: FieldStatus;
+  status?: FieldStatus | undefined;
 }
 
 /**

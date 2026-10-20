@@ -44,13 +44,13 @@ export interface SplitProps extends BaseSplitProps {
    * Left out when the layout has one pane only, which is what a page that grows
    * a second pane at a breakpoint starts as.
    */
-  start?: ReactNode;
+  start?: ReactNode | undefined;
 
   /**
    * The second pane.
    * Left out when the layout has one pane only.
    */
-  end?: ReactNode;
+  end?: ReactNode | undefined;
 
   /**
    * Element to render.
@@ -58,7 +58,7 @@ export interface SplitProps extends BaseSplitProps {
    *
    * @default "div"
    */
-  as?: ElementType;
+  as?: ElementType | undefined;
 }
 
 /**
@@ -92,7 +92,15 @@ export interface SplitProps extends BaseSplitProps {
  *   stackAt="xl"
  *   ratio="start"
  *   start={<Typography role="body-md">The article.</Typography>}
- *   end={<TableOfContents items={items} />}
+ *   end={
+ *     <VStack gap="xs">
+ *       {items.map((item) => (
+ *         <Link key={item.id} href={`#${item.id}`}>
+ *           {item.label}
+ *         </Link>
+ *       ))}
+ *     </VStack>
+ *   }
  *   stickyEnd
  * />
  * ```

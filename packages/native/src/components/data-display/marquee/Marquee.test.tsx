@@ -2,16 +2,25 @@
  * Behaviour tests for the native Marquee.
  *
  * The tests state the primitive's contract: the content is shown once and copied for the
- * loop, the copy is kept out of the accessibility tree rather than off the screen, the
- * movement follows the axis it is given and travels the distance one set plus the gap
- * covers, the cycle time comes from the shared presets, the gap is read from the shared CSS
- * length, and the loop yields to the platform's motion setting and to `isAnimated`.
+ * loop, the copy is kept out of the accessibility tree and out of the focus order rather than
+ * off the screen, the movement follows the axis it is given and travels the distance one set
+ * plus the gap covers, the cycle time comes from the shared presets, the gap is read from the
+ * shared CSS length, and the loop yields to the platform's motion setting and to `isAnimated`.
+ * With the movement stopped the content is shown once in a frame that scrolls and wraps, so
+ * nothing is clipped away, and a frame holding focus pauses the loop for a reader who cannot
+ * hover.
  *
  * The platform's animator reports to a native module a test environment does not have, so
  * the tests state what the component asks the animator for rather than how it looks while
  * it turns.
  */
 
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
+import {
+  NATIVE_MARQUEE_STILL_FRAME_CLASS,
+  NATIVE_MARQUEE_STILL_SET_CLASS,
+} from "@asheeui/core";
 import {
   act,
   fireEvent,
@@ -22,6 +31,10 @@ import type { ReactElement } from "react";
 import { AccessibilityInfo, Animated, Text } from "react-native";
 import { AsheeNativeProvider } from "../../../provider/AsheeNativeProvider";
 import { Marquee } from "./Marquee";
+import {
+  defaultNativeMarqueeConfig,
+  FALLBACK_NATIVE_MARQUEE_CONFIG,
+} from "./marquee-config";
 
 /** The items a test marquee carries. */
 const ITEMS = [<Text key="alpha">Alpha</Text>, <Text key="beta">Beta</Text>];
@@ -142,7 +155,7 @@ describe("Native Marquee", () => {
     ).toHaveLength(2);
   });
 
-  it("keeps the copy out of the accessibility tree", async () => {
+  it("keeps the copy out of the accessibility tree and out of the focus order", async () => {
     const view = await renderMarquee(<Marquee>{ITEMS}</Marquee>);
     const sets = view.getAllByTestId("marquee-set", {
       includeHiddenElements: true,
@@ -150,8 +163,12 @@ describe("Native Marquee", () => {
 
     expect(sets).toHaveLength(2);
     expect(sets[0].props.importantForAccessibility).toBe("auto");
+    expect(sets[0].props.focusable).toBeUndefined();
     expect(sets[1].props.importantForAccessibility).toBe("no-hide-descendants");
     expect(sets[1].props.accessibilityElementsHidden).toBe(true);
+    // A link inside the marquee is one tab stop rather than two.
+    expect(sets[1].props.accessible).toBe(false);
+    expect(sets[1].props.focusable).toBe(false);
   });
 
   it("moves along the axis it is given", async () => {
@@ -232,7 +249,7 @@ describe("Native Marquee", () => {
     expect(animationConfig().toValue).toBe(0);
   });
 
-  it("stands still when the platform asks for less motion", async () => {
+  it("shows the content once, in a frame that scrolls and wraps, when the platform asks for less motion", async () => {
     (AccessibilityInfo.isReduceMotionEnabled as jest.Mock).mockResolvedValue(
       true,
     );
@@ -244,8 +261,27 @@ describe("Native Marquee", () => {
     await reportSetSize(view, SET_SIZE);
 
     expect(loop).not.toHaveBeenCalled();
+    // Nothing moves, so there is no second copy to move into place.
+    expect(view.queryByTestId("marquee-track")).toBeNull();
+    expect(view.getAllByTestId("marquee-set")).toHaveLength(1);
     // The content is read in place rather than hidden: less motion is not less content.
     expect(view.getAllByText("Alpha")).toHaveLength(1);
+    expect(view.getAllByText("Beta")).toHaveLength(1);
+
+    // The frame scrolls and its single copy wraps, so whatever does not fit is reachable
+    // rather than clipped away by the frame that exists for the movement.
+    const frame = view.getByTestId("marquee-still-frame");
+
+    expect(frame).toBeTruthy();
+    // `F-90`: the still frame's classes come from the shared style module, so the null
+    // render is exactly the map the web family lives beside.
+    expect(frame.props.className).toBe(NATIVE_MARQUEE_STILL_FRAME_CLASS.x);
+
+    const [copy] = view.getAllByTestId("marquee-set");
+
+    expect(String(copy.props.className)).toContain(
+      NATIVE_MARQUEE_STILL_SET_CLASS.x,
+    );
   });
 
   it("stands still when it is told not to move", async () => {
@@ -256,7 +292,89 @@ describe("Native Marquee", () => {
     await reportSetSize(view, SET_SIZE);
 
     expect(loop).not.toHaveBeenCalled();
+    expect(view.queryByTestId("marquee-track")).toBeNull();
+    expect(view.getByTestId("marquee-still-frame")).toBeTruthy();
+    expect(view.getAllByTestId("marquee-set")).toHaveLength(1);
     expect(view.getAllByText("Beta")).toHaveLength(1);
+  });
+
+  it("stacks the single still copy on the vertical axis", async () => {
+    const view = await renderMarquee(
+      <Marquee axis="y" isAnimated={false}>
+        {ITEMS}
+      </Marquee>,
+    );
+
+    const [copy] = view.getAllByTestId("marquee-set");
+
+    expect(view.getByTestId("marquee-still-frame").props.className).toBe(
+      NATIVE_MARQUEE_STILL_FRAME_CLASS.y,
+    );
+    expect(String(copy.props.className)).toContain(
+      NATIVE_MARQUEE_STILL_SET_CLASS.y,
+    );
+    expect(String(copy.props.className)).toContain("flex-col");
+    expect(String(copy.props.className)).not.toContain("flex-wrap");
+  });
+
+  // `F-90`: the still-frame maps used to be declared in this component while every other
+  // marquee class map lived in `@asheeui/core`, so a change to the resting marquee had to
+  // be made twice. They are imported now, and the component declares no copy of its own.
+  it("reads its still-frame classes from the shared style module", () => {
+    const source = readFileSync(join(__dirname, "Marquee.tsx"), "utf8");
+
+    expect(source).toContain("NATIVE_MARQUEE_STILL_FRAME_CLASS");
+    expect(source).toContain("NATIVE_MARQUEE_STILL_SET_CLASS");
+    expect(source).not.toContain("const STILL_FRAME_CLASS");
+    expect(source).not.toContain("const STILL_SET_AXIS_CLASS");
+  });
+
+  it("stops the loop while the frame holds focus, and resumes when it lets go", async () => {
+    const view = await renderMarquee(
+      <Marquee testID="marquee" pauseOnHover>
+        {ITEMS}
+      </Marquee>,
+    );
+
+    await reportSetSize(view, SET_SIZE);
+
+    const animation = loop.mock.results[0]?.value as ReturnType<
+      typeof compositeAnimation
+    >;
+
+    expect(animation.start).toHaveBeenCalledTimes(1);
+
+    // A touch screen has no pointer to rest on the frame; focus is the pause a keyboard or
+    // remote reader can reach, and it is the platform's `group-focus-within`.
+    await act(async () => {
+      fireEvent(view.getByTestId("marquee"), "focus");
+    });
+
+    expect(animation.stop).toHaveBeenCalled();
+
+    await act(async () => {
+      fireEvent(view.getByTestId("marquee"), "blur");
+    });
+
+    expect(animation.start).toHaveBeenCalledTimes(2);
+  });
+
+  it("does not pause on focus unless pauseOnHover asked it to", async () => {
+    const view = await renderMarquee(
+      <Marquee testID="marquee">{ITEMS}</Marquee>,
+    );
+
+    await reportSetSize(view, SET_SIZE);
+
+    const animation = loop.mock.results[0]?.value as ReturnType<
+      typeof compositeAnimation
+    >;
+
+    await act(async () => {
+      fireEvent(view.getByTestId("marquee"), "focus");
+    });
+
+    expect(animation.stop).not.toHaveBeenCalled();
   });
 
   it("resolves its options through the cascade", async () => {
@@ -271,6 +389,20 @@ describe("Native Marquee", () => {
       toValue: -(SET_SIZE + 24),
       duration: 50_000,
     });
+  });
+
+  // `COMP-057`: the fallback said `pauseOnHover: true` and `fadeEdges: true` while the
+  // registered defaults and the documented defaults said false, so an option changed meaning
+  // when the fallback tier answered.
+  it("falls back to the values it registers", () => {
+    expect(FALLBACK_NATIVE_MARQUEE_CONFIG.pauseOnHover).toBe(false);
+    expect(FALLBACK_NATIVE_MARQUEE_CONFIG.fadeEdges).toBe(false);
+    expect(FALLBACK_NATIVE_MARQUEE_CONFIG.pauseOnHover).toBe(
+      defaultNativeMarqueeConfig.pauseOnHover,
+    );
+    expect(FALLBACK_NATIVE_MARQUEE_CONFIG.fadeEdges).toBe(
+      defaultNativeMarqueeConfig.fadeEdges,
+    );
   });
 
   it("renders safely when there are no items", async () => {

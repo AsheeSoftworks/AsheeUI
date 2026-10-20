@@ -43,12 +43,11 @@ registerNativeComponentDefaults("pagination", defaultNativePaginationConfig);
 /**
  * The values the collection footer falls back to when no tier provides one.
  */
-export const FALLBACK_NATIVE_PAGINATION_CONFIG: Required<NativePaginationConfig> =
-  {
-    size: "md",
-    variant: "bordered",
-    color: "primary",
-    radius: "md",
-    siblingCount: 1,
-    showEdges: false,
-  } as const;
+export const FALLBACK_NATIVE_PAGINATION_CONFIG = {
+  size: "md",
+  variant: "bordered",
+  color: "primary",
+  radius: "md",
+  siblingCount: 1,
+  showEdges: false,
+} as const satisfies NativePaginationConfig;

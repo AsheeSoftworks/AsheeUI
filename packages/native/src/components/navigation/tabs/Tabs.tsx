@@ -14,6 +14,10 @@
  * A bar of `underline` tabs marks its selected trigger with the framework's underlined
  * treatment and the rule under the bar, which is the same arrangement the web draws.
  *
+ * A controlled `activeId` that names no tab does not leave the bar unselected: the triggers, the
+ * panel and the selected state all fall back to the first tab, so the bar always has one tab a
+ * reader can reach.
+ *
  * One thing the web states and this does not: the bar is not an accessibility element of
  * its own. A container that is one hides the controls inside it from a reader, and a
  * container that is not is never reached, so a native tab bar is a row of tabs rather than
@@ -211,6 +215,14 @@ export function Tabs({
   const isControlled = activeIdProp !== undefined;
   const activeTabId = isControlled ? activeIdProp : ownActiveId;
 
+  // A controlled `activeId` naming no tab must not leave every trigger unreachable: the bar
+  // falls back to the first tab, which is the tab the panel already falls back to, so the bar
+  // always has one selected trigger and one a reader can reach.
+  const resolvedActiveId =
+    activeTabId !== undefined && tabs.some((tab) => tab.id === activeTabId)
+      ? activeTabId
+      : tabs[0]?.id;
+
   const select = (id: string | number) => {
     if (!isControlled) {
       setOwnActiveId(id);
@@ -219,7 +231,7 @@ export function Tabs({
     onChange?.(id);
   };
 
-  const activeTab = tabs.find((tab) => tab.id === activeTabId) ?? tabs[0];
+  const activeTab = tabs.find((tab) => tab.id === resolvedActiveId) ?? tabs[0];
 
   return (
     <View
@@ -241,7 +253,7 @@ export function Tabs({
             NATIVE_TABS_VARIANT_CONTENT_CLASS[resolvedVariant],
           )}>
           {tabs.map((tab) => {
-            const isActive = tab.id === activeTabId;
+            const isActive = tab.id === resolvedActiveId;
             const label = tab.label ?? tab.name;
 
             return (

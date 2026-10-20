@@ -236,4 +236,158 @@ describe("Modal", () => {
 
     expect(document.body.style.overflow).toBe("");
   });
+
+  // F-139: `onClose` was the only way out and the type said it was optional,
+  // so a modal mounted without it locked scroll and trapped focus forever. The
+  // component now draws a close control, so a visible way out always exists.
+  it("draws a close control and makes it the first stop in the dialog", async () => {
+    const user = createUser();
+    const onClose = vi.fn();
+
+    renderWithProvider(
+      <Modal isOpen aria-label="Close control dialog" onClose={onClose}>
+        <button type="button">Action</button>
+      </Modal>,
+    );
+
+    const dialog = screen.getByRole("dialog", {
+      name: "Close control dialog",
+    });
+    const close = screen.getByRole("button", { name: "Close dialog" });
+
+    expect(dialog).toContainElement(close);
+
+    await waitFor(() => {
+      expectFocused(dialog);
+    });
+
+    await user.tab();
+
+    // One Tab from the dialog reaches the way out before the consumer's content.
+    expect(close).toHaveFocus();
+
+    await user.click(close);
+
+    expect(onClose).toHaveBeenCalledTimes(1);
+  });
+
+  it("takes the close control's name from closeLabel", () => {
+    renderWithProvider(
+      <Modal isOpen onClose={() => {}} closeLabel="Dismiss dialog">
+        Modal content
+      </Modal>,
+    );
+
+    expect(
+      screen.getByRole("button", { name: "Dismiss dialog" }),
+    ).toBeInTheDocument();
+  });
+
+  // F-139: with both configurable gestures off, the built-in control is what
+  // keeps the dialog from being a keyboard trap.
+  it("still offers a way out when both dismissal switches are off", () => {
+    const onClose = vi.fn();
+
+    renderWithProvider(
+      <Modal
+        isOpen
+        onClose={onClose}
+        closeOnBackdropClick={false}
+        closeOnEscape={false}>
+        Modal content
+      </Modal>,
+    );
+
+    expect(
+      screen.getByRole("button", { name: "Close dialog" }),
+    ).toBeInTheDocument();
+  });
+
+  // F-139: a layer with no close handler cannot dismiss itself, so it must not
+  // take the page hostage. It stays visible and non-modal instead.
+  it("does not lock the page or trap focus when onClose is missing", async () => {
+    const user = createUser();
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+
+    renderWithProvider(
+      <>
+        <button type="button">Outside</button>
+        <Modal isOpen aria-label="No close handler">
+          Modal content
+        </Modal>
+      </>,
+    );
+
+    const dialog = screen.getByRole("dialog", { name: "No close handler" });
+
+    expect(dialog).not.toHaveAttribute("aria-modal");
+    expect(document.body.style.overflow).toBe("");
+    expect(
+      screen.queryByRole("button", { name: "Close dialog" }),
+    ).not.toBeInTheDocument();
+    expect(warn).toHaveBeenCalledWith(expect.stringContaining("onClose"));
+
+    await waitFor(() => {
+      expectFocused(dialog);
+    });
+
+    await user.tab();
+
+    // With no focus trap, focus can leave the layer: the floating focus guard
+    // is the first stop outside it, and the page itself is still reachable.
+    expect(dialog.contains(document.activeElement)).toBe(false);
+  });
+
+  // F-145: a stated width cleared the size's maximum and had no viewport cap,
+  // so a wide dialog overflowed a page whose scroll was locked.
+  it("keeps a viewport cap when width overrides the size", () => {
+    renderWithProvider(
+      <Modal isOpen width="1200px" onClose={() => {}}>
+        Modal content
+      </Modal>,
+    );
+
+    const dialog = screen.getByRole("dialog");
+
+    expect(dialog).toHaveClass("max-w-full");
+    expect(dialog).not.toHaveClass("max-w-lg");
+    expect(dialog.style.width).toBe("1200px");
+  });
+
+  // F-153: the props table said `lg`, but the radius resolves from the
+  // application's defaultRadius first. Pin the cascade the JSDoc now states.
+  it("resolves radius from the application's defaultRadius before the lg fallback", () => {
+    renderWithProvider(
+      <Modal isOpen onClose={() => {}}>
+        Modal content
+      </Modal>,
+      { config: { defaultRadius: "xl" } },
+    );
+
+    expect(screen.getByRole("dialog")).toHaveClass("rounded-xl");
+    expect(screen.getByRole("dialog")).not.toHaveClass("rounded-lg");
+  });
+
+  it("pins the modal's radius through its own section", () => {
+    renderWithProvider(
+      <Modal isOpen onClose={() => {}}>
+        Modal content
+      </Modal>,
+      { config: { components: { modal: { radius: "sm" } } } },
+    );
+
+    expect(screen.getByRole("dialog")).toHaveClass("rounded-sm");
+  });
+
+  // F-155: the modal and the drawer dim the page with one backdrop treatment.
+  it("dims the page with the shared backdrop token", () => {
+    renderWithProvider(
+      <Modal isOpen onClose={() => {}}>
+        Modal content
+      </Modal>,
+    );
+
+    expect(getOverlayBackdrop()).toHaveClass("backdrop-blur-xs");
+    expect(getOverlayBackdrop()).not.toHaveClass("backdrop-blur-md");
+  });
 });

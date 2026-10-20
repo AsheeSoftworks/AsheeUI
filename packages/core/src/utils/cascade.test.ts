@@ -32,9 +32,9 @@ describe("resolveCascade", () => {
 
 describe("resolveConfigCascade", () => {
   type Options = {
-    align?: string;
-    spacing?: string;
-    contained?: boolean;
+    align?: string | undefined;
+    spacing?: string | undefined;
+    contained?: boolean | undefined;
   };
 
   const fallback: Required<Options> = {

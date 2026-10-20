@@ -37,12 +37,12 @@ export interface CenteredProps extends BaseCenteredProps {
    *
    * @default "div"
    */
-  as?: ElementType;
+  as?: ElementType | undefined;
 
   /**
    * Content to place in the middle.
    */
-  children?: React.ReactNode;
+  children?: React.ReactNode | undefined;
 }
 
 /**
@@ -55,7 +55,8 @@ export interface CenteredProps extends BaseCenteredProps {
  * its parent and only its children are centred.
  *
  * @param props - Centered configuration options and element attributes.
- * @param props.axis - Axis to centre on. Defaults to "both".
+ * @param props.axis - Axis to centre on. Defaults to "both", which also centres
+ * the block's text.
  * @param props.minHeight - Vertical room to reserve first. Defaults to "none".
  * @param props.contained - Hold the content in a Container. Defaults to false.
  * @param props.containerSize - Maximum width when contained. Defaults to "lg".

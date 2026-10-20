@@ -36,7 +36,7 @@ registerComponentDefaults("testimonials", defaultTestimonialsConfig);
 /**
  * Hard fallback values used when no config tier provides a value.
  */
-export const FALLBACK_TESTIMONIALS_CONFIG: Required<TestimonialsConfig> = {
+export const FALLBACK_TESTIMONIALS_CONFIG = {
   columns: 1,
   columnsMd: 2,
   columnsLg: 3,
@@ -46,4 +46,4 @@ export const FALLBACK_TESTIMONIALS_CONFIG: Required<TestimonialsConfig> = {
   align: "center",
   containerSize: "lg",
   contained: true,
-};
+} satisfies TestimonialsConfig;

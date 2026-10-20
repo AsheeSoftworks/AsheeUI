@@ -50,12 +50,11 @@ registerNativeComponentDefaults("searchinput", defaultNativeSearchInputConfig);
 /**
  * The values the field falls back to when no tier provides one.
  */
-export const FALLBACK_NATIVE_SEARCH_INPUT_CONFIG: Required<NativeSearchInputConfig> =
-  {
-    size: "md",
-    color: "primary",
-    clearable: true,
-    label: "Search",
-    hideLabel: true,
-    isDisabled: false,
-  };
+export const FALLBACK_NATIVE_SEARCH_INPUT_CONFIG = {
+  size: "md",
+  color: "primary",
+  clearable: true,
+  label: "Search",
+  hideLabel: true,
+  isDisabled: false,
+} satisfies NativeSearchInputConfig;

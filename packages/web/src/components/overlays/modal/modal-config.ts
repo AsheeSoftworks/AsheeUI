@@ -27,11 +27,11 @@ registerComponentDefaults("modal", defaultModalConfig);
 /**
  * Hard fallback values used when no config tier provides a value.
  */
-export const FALLBACK_MODAL_CONFIG: Required<ModalConfig> = {
+export const FALLBACK_MODAL_CONFIG = {
   size: "md",
   position: "center",
   radius: "lg",
   animated: true,
   closeOnBackdropClick: true,
   closeOnEscape: true,
-} as const;
+} as const satisfies ModalConfig;

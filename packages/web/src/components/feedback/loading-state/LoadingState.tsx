@@ -15,6 +15,7 @@ import {
   LOADING_STATE_CLASS,
   LOADING_STATE_PANEL_CLASS,
   LOADING_STATE_SIZE_CLASS,
+  resolveClassKey,
   resolveConfigCascade,
   SPACE_MIN_HEIGHT_CLASS,
 } from "@asheeui/core";
@@ -25,15 +26,22 @@ import {
   type ReactNode,
 } from "react";
 import { useAsheeConfig } from "../../../libs/context";
-import { Spinner } from "../spinner/spinner";
 import { Typography } from "../../typography/Typography";
+import { Spinner } from "../spinner/spinner";
 import {
   FALLBACK_LOADING_STATE_CONFIG,
   type LoadingStateConfig,
 } from "./loading-state-config";
 
+/**
+ * The options and element attributes the state inherits.
+ *
+ * The ARIA `role` is deliberately not part of the inherited attributes: the state
+ * draws `role="status"` itself, the way `Typography` owns its own `role`, so a
+ * spread prop cannot turn the wait into an interrupting alert.
+ */
 type BaseLoadingStateProps = LoadingStateConfig &
-  Omit<HTMLAttributes<HTMLDivElement>, "color">;
+  Omit<HTMLAttributes<HTMLDivElement>, "color" | "role">;
 
 /**
  * Props for the LoadingState component.
@@ -42,13 +50,13 @@ export interface LoadingStateProps extends BaseLoadingStateProps {
   /**
    * Supporting sentence under the label, for example what is being fetched.
    */
-  description?: ReactNode;
+  description?: ReactNode | undefined;
 
   /**
    * Element that replaces the framework's spinner, for a progress bar or a
    * consumer's own indicator.
    */
-  indicator?: ReactNode;
+  indicator?: ReactNode | undefined;
 
   /**
    * Element to render.
@@ -56,12 +64,12 @@ export interface LoadingStateProps extends BaseLoadingStateProps {
    *
    * @default "div"
    */
-  as?: ElementType;
+  as?: ElementType | undefined;
 
   /**
    * Content below the label, for example a cancel control.
    */
-  children?: ReactNode;
+  children?: ReactNode | undefined;
 }
 
 /**
@@ -78,7 +86,8 @@ export interface LoadingStateProps extends BaseLoadingStateProps {
  * @param props.indicator - Element that replaces the framework's spinner.
  * @param props.size - Density of the indicator and the padding. Defaults to "md".
  * @param props.panel - Draw the state as a panel. Defaults to false.
- * @param props.minHeight - Room the state claims. Defaults to "sm".
+ * @param props.minHeight - Room the state claims. Defaults to "md", one step above the
+ * room the default density already takes.
  * @param props.as - Element to render. Defaults to "div".
  * @returns The rendered state.
  *
@@ -125,8 +134,8 @@ export const LoadingState = forwardRef<HTMLDivElement, LoadingStateProps>(
         role="status"
         className={cn(
           LOADING_STATE_CLASS,
-          LOADING_STATE_SIZE_CLASS[resolved.size],
-          SPACE_MIN_HEIGHT_CLASS[resolved.minHeight],
+          resolveClassKey(resolved.size, LOADING_STATE_SIZE_CLASS, "md"),
+          resolveClassKey(resolved.minHeight, SPACE_MIN_HEIGHT_CLASS, "md"),
           resolved.panel && LOADING_STATE_PANEL_CLASS,
           className,
         )}

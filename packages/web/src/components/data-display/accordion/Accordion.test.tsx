@@ -1,7 +1,9 @@
 import { describe, expect, it, vi } from "vitest";
 import {
   createUser,
-  expectState,
+  expectFocused,
+  makeComponentConfig,
+  pressArrow,
   pressKey,
   renderWithProvider,
   screen,
@@ -11,6 +13,11 @@ import { Accordion } from "./Accordion";
 const ITEMS = [
   { id: "first", title: "First", content: <p>First content</p> },
   { id: "second", title: "Second", content: <p>Second content</p> },
+];
+
+const THREE_ITEMS = [
+  ...ITEMS,
+  { id: "third", title: "Third", content: <p>Third content</p> },
 ];
 
 describe("Accordion", () => {
@@ -103,7 +110,11 @@ describe("Accordion", () => {
     expect(second).toHaveAttribute("aria-expanded", "false");
   });
 
-  it("does not open a disabled item", async () => {
+  // A disabled item used to carry the native `disabled` attribute, which takes
+  // the trigger out of the tab order: a reader never learned the section existed.
+  // The rest of the library reports `aria-disabled` and keeps the control
+  // reachable; the press is refused in `handleToggle` instead.
+  it("keeps a disabled item in the tab order and refuses its press", async () => {
     const user = createUser();
     const items = [
       {
@@ -116,11 +127,122 @@ describe("Accordion", () => {
     const { getByRole } = renderWithProvider(<Accordion items={items} />);
     const trigger = getByRole("button", { name: /Locked/ });
 
-    expectState(trigger, { disabled: true });
+    expect(trigger).toHaveAttribute("aria-disabled", "true");
+    expect(trigger).not.toBeDisabled();
+
+    await user.tab();
+    expectFocused(trigger);
 
     await user.click(trigger);
 
     expect(trigger).toHaveAttribute("aria-expanded", "false");
+  });
+
+  it("states aria-disabled only for a disabled item", () => {
+    const { getByRole } = renderWithProvider(<Accordion items={ITEMS} />);
+
+    expect(getByRole("button", { name: /First/ })).not.toHaveAttribute(
+      "aria-disabled",
+    );
+  });
+
+  it("moves focus between headers with the arrow keys, Home and End", async () => {
+    const user = createUser();
+    const { getByRole } = renderWithProvider(<Accordion items={THREE_ITEMS} />);
+    const first = getByRole("button", { name: /First/ });
+    const second = getByRole("button", { name: /Second/ });
+    const third = getByRole("button", { name: /Third/ });
+
+    first.focus();
+
+    await pressArrow(user, "ArrowDown");
+    expectFocused(second);
+    // Moving focus is not opening: the header still has to be activated.
+    expect(second).toHaveAttribute("aria-expanded", "false");
+
+    await pressArrow(user, "ArrowDown");
+    expectFocused(third);
+
+    // The walk wraps at both ends of the stack.
+    await pressArrow(user, "ArrowDown");
+    expectFocused(first);
+
+    await pressArrow(user, "ArrowUp");
+    expectFocused(third);
+
+    await pressKey(user, "Home");
+    expectFocused(first);
+
+    await pressKey(user, "End");
+    expectFocused(third);
+  });
+
+  it("skips a disabled header when navigating with the keyboard", async () => {
+    const user = createUser();
+    const items = [
+      { id: "first", title: "First", content: <p>First content</p> },
+      {
+        id: "locked",
+        title: "Locked",
+        content: <p>Locked content</p>,
+        disabled: true,
+      },
+      { id: "third", title: "Third", content: <p>Third content</p> },
+    ];
+    const { getByRole } = renderWithProvider(<Accordion items={items} />);
+    const first = getByRole("button", { name: /First/ });
+    const locked = getByRole("button", { name: /Locked/ });
+    const third = getByRole("button", { name: /Third/ });
+
+    first.focus();
+
+    await pressArrow(user, "ArrowDown");
+    expectFocused(third);
+
+    await pressArrow(user, "ArrowUp");
+    expectFocused(first);
+
+    await pressKey(user, "End");
+    expectFocused(third);
+
+    // The disabled header is still reachable in the tab order; it is only the
+    // walk that steps over it.
+    locked.focus();
+    expectFocused(locked);
+
+    await pressKey(user, "Home");
+    expectFocused(first);
+  });
+
+  // `disableAnimation` was destructured with a literal default, so the
+  // component-level option never reached the render: only the prop did.
+  it("resolves disableAnimation from component configuration", () => {
+    const { container } = renderWithProvider(<Accordion items={ITEMS} />, {
+      config: makeComponentConfig("accordion", { disableAnimation: true }),
+    });
+
+    expect(container.querySelector('[data-state="closed"]')).toHaveClass(
+      "transition-none",
+    );
+  });
+
+  it("keeps the animation by default and lets the prop override configuration", () => {
+    const plain = renderWithProvider(<Accordion items={ITEMS} />);
+
+    expect(
+      plain.container.querySelector('[data-state="closed"]'),
+    ).not.toHaveClass("transition-none");
+
+    // The instance is the first tier: an explicit `false` wins over the
+    // configured `true`, which is the order every other axis resolves in.
+    const overridden = renderWithProvider(
+      <Accordion items={ITEMS} disableAnimation={false} />,
+      { config: makeComponentConfig("accordion", { disableAnimation: true }) },
+    );
+
+    expect(
+      overridden.container.querySelector('[data-state="closed"]'),
+    ).not.toHaveClass("transition-none");
   });
 
   // Defect register (M1, D-10): a collapsed panel kept its content mounted

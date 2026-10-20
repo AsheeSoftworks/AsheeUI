@@ -14,8 +14,22 @@ export type KnownThemeName = "light" | "dark";
 
 /**
  * Registry of available color themes in AsheeUI.
- * Currently supports the built-in "light" and "dark" themes.
- * This interface serves as the constraint for theme name resolution.
+ *
+ * The two built-in themes are stated here, and the interface stays open: a consumer may
+ * still augment it to declare the names its application uses,
+ *
+ * ```ts
+ * declare module "@asheeui/core" {
+ *   interface AsheeColorRegistry {
+ *     midnight: true;
+ *   }
+ * }
+ * ```
+ *
+ * but that augmentation is no longer required. {@link ThemeName} accepts any string, so a
+ * custom theme needs no registry entry to be a theme as far as the types are concerned.
+ * The interface is kept because it is published API: an augmentation written for an earlier
+ * release has to keep compiling.
  */
 export interface AsheeColorRegistry {
   light: true;
@@ -24,10 +38,16 @@ export interface AsheeColorRegistry {
 
 /**
  * All available theme names in AsheeUI.
- * This is derived from the AsheeColorRegistry and includes both
- * built-in themes and any custom themes defined by the user.
+ *
+ * A theme name is the key under `color` in the configuration, and any string is one:
+ * `light` and `dark` ship with the library, and `"midnight"` is a theme as soon as a
+ * configuration declares it. The union with `string & {}` keeps `light` and `dark`
+ * discoverable in completion while accepting a name the library has never heard of —
+ * closing the type over the built-ins made the documented custom-theme declaration fail
+ * to compile (`TS2353` on the palette key, `TS2322` on `defaultTheme`, `TS2345` on
+ * `setTheme`), which forced every consumer to cast.
  */
-export type ThemeName = keyof AsheeColorRegistry;
+export type ThemeName = KnownThemeName | (string & {});
 
 /**
  * The complete set of color variables required for a single theme.
@@ -104,36 +124,80 @@ export type DefaultColorConfig = Record<KnownThemeName, ColorVariant>;
 
 /**
  * Full color configuration.
- * Built-in themes are strictly required. Custom augmented themes are optional
- * on default/unmerged configs, but enforced via ExternalColorConfig.
+ * Built-in themes are strictly required; every other key is a custom theme and is
+ * optional, because a resolved configuration only holds the themes a consumer declared.
  */
 export type ColorConfig = Record<KnownThemeName, ColorVariant> &
-  Partial<Record<Exclude<ThemeName, KnownThemeName>, ColorVariant>>;
+  Partial<Record<string, ColorVariant>>;
 
 /**
  * A color variant that can be partially defined.
- * Custom themes can extend a known theme to inherit its colors.
+ * Custom themes can extend any theme, built in or custom, to inherit its colors.
  */
 export type ExternalColorVariant = Partial<ColorVariant> & {
   /**
    * Optional theme to extend.
-   * When provided, the custom theme will inherit colors from the specified
-   * built-in theme, with any explicitly defined colors overriding the inherited values.
+   * When provided, the custom theme inherits colors from the theme it names, with any
+   * explicitly defined colors overriding the inherited values.
+   *
+   * The name may be a built-in theme (`light`/`dark`, including the consumer's overrides of
+   * them) or another custom theme declared in the same `color` object, in any declaration
+   * order. `ThemeName` is the narrowest type that can state that: which names are declared is
+   * known only at runtime, so the configuration validator checks the declared set and rejects
+   * a name that is neither built in nor declared.
    */
-  extends?: KnownThemeName;
+  extends?: ThemeName | undefined;
 };
-
-type CustomThemeName = Exclude<ThemeName, KnownThemeName>;
 
 /**
  * External color configuration format.
- * Built-in themes can be partially overridden, while custom themes
- * must provide at least a partial color variant (with optional extension).
+ * Built-in themes can be partially overridden, while custom themes provide at least a
+ * partial color variant (with optional extension). The key is the theme's name, and any
+ * name is accepted: `midnight` needs no registry entry, no module augmentation and no cast.
  */
-export type ExternalColorConfig = Partial<
-  Record<KnownThemeName, Partial<ColorVariant>>
-> &
-  Record<CustomThemeName, ExternalColorVariant>;
+export type ExternalColorConfig = Record<string, ExternalColorVariant>;
+
+/**
+ * Compile-time guard: a theme map the types have to accept.
+ *
+ * The constraint is what makes the guard enforce anything. A bare
+ * `Map extends ExternalColorConfig ? true : never` alias resolves to `never` when the map is
+ * rejected, and an unused alias that resolves to `never` is not a compile error, so it would
+ * only look like a check. Instantiating this with a rejected map fails the constraint.
+ */
+type AcceptedColorConfig<T extends ExternalColorConfig> = T;
+
+/**
+ * Compile-time guard: the documented custom-theme declaration has to compile as written,
+ * without a registry entry and without a cast. `ExternalColorConfig` is the half of that
+ * declaration this file can state; `defaultTheme` and `setTheme` are checked in
+ * `packages/web/src/test/custom-theme.test.tsx`, where those symbols live.
+ */
+type _CustomThemeDeclarationCompiles = AcceptedColorConfig<{
+  midnight: { extends: "dark"; background: string; primary: string };
+}>;
+
+/**
+ * Compile-time guard: `extends` may name another custom theme, so it cannot be closed over
+ * the built-ins. Closing it made `brand: { extends: "midnight" }` fail to compile, and typed
+ * code could not reach the resolver's cross-theme support at all.
+ */
+type _CustomThemeExtendsDeclaredTheme = AcceptedColorConfig<{
+  brand: { extends: "midnight"; primary: string };
+  midnight: { extends: "dark"; background: string };
+}>;
+
+/**
+ * The two guards above, kept in one place a compiler can see.
+ *
+ * They are checks rather than values, so nothing reads them — and a consumer whose build enables
+ * `noUnusedLocals` reports them. Referencing them here keeps the checks alive without inventing a
+ * runtime object to carry them. Not part of the API: ignore it.
+ */
+export type _ColorConfigGuards = [
+  _CustomThemeDeclarationCompiles,
+  _CustomThemeExtendsDeclaredTheme,
+];
 
 /**
  * The default color configuration for AsheeUI.

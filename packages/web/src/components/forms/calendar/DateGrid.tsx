@@ -74,7 +74,7 @@ interface DateGridProps {
    *
    * @default false
    */
-  disableFuture?: boolean;
+  disableFuture?: boolean | undefined;
 }
 
 /**
@@ -153,8 +153,8 @@ export const DateGrid = memo(function DateGrid({
 
   /**
    * Keyboard navigation for the day grid (defect register D-26): the arrow keys
-   * move by day and by week, Home and End move to the ends of the week, and
-   * PageUp and PageDown move by month.
+   * move by day and by week, Home and End move to the first and last day of the
+   * focused week, and PageUp and PageDown move by month.
    */
   function handleGridKeyDown(event: React.KeyboardEvent<HTMLDivElement>): void {
     switch (event.key) {
@@ -173,6 +173,16 @@ export const DateGrid = memo(function DateGrid({
       case "ArrowDown":
         event.preventDefault();
         moveNavigatedDate(7);
+        return;
+      case "Home":
+        // Weeks begin on Sunday, so the day of the week is the distance back to
+        // the first cell of the row the reader is on.
+        event.preventDefault();
+        moveNavigatedDate(-navigatedDate.getDay());
+        return;
+      case "End":
+        event.preventDefault();
+        moveNavigatedDate(6 - navigatedDate.getDay());
         return;
       case "PageUp":
         event.preventDefault();

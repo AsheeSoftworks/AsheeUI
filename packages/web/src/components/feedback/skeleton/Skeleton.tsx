@@ -40,14 +40,14 @@ export interface SkeletonProps extends BaseSkeletonProps {
    *
    * @default false
    */
-  isBusy?: boolean;
+  isBusy?: boolean | undefined;
 
   /**
    * Text announced while the placeholder is a busy status.
    *
    * @default "Loading"
    */
-  label?: string;
+  label?: string | undefined;
 }
 
 /**

@@ -43,46 +43,58 @@ export interface StackConfig {
   /**
    * Flex direction.
    *
+   * Not registered, so the hard fallback answers it for a plain `Stack`, the
+   * `HStack`/`VStack` presets contribute their own direction below this tier, and
+   * a value stated here overrides both.
+   *
    * @default "column"
    */
-  direction?: StackDirection;
+  direction?: StackDirection | undefined;
 
   /**
    * Space between children.
    *
    * @default "md"
    */
-  gap?: Space;
+  gap?: Space | undefined;
 
   /**
    * Cross-axis alignment of the children.
    *
+   * Not registered, for the same reason as `direction`: the presets state their
+   * own alignment below this tier and a value here overrides them.
+   *
    * @default "stretch"
    */
-  align?: StackAlign;
+  align?: StackAlign | undefined;
 
   /**
    * Main-axis distribution of the children.
    *
    * @default "start"
    */
-  justify?: StackJustify;
+  justify?: StackJustify | undefined;
 
   /**
    * Whether children wrap onto another line when they run out of room.
    *
    * @default false
    */
-  wrap?: boolean;
+  wrap?: boolean | undefined;
 }
 
 /**
  * Default config values registered for the Stack component.
+ *
+ * `direction` and `align` are deliberately not registered. `HStack` and `VStack`
+ * contribute their own direction and alignment below the component tier, and a
+ * registered value would outrank them and make the presets ignore
+ * `components.stack.direction`/`.align` forever. Leaving the two options
+ * unregistered means the hard fallback still states the plain `Stack`'s column
+ * and stretch, a preset states its own pair, and configuration outranks both.
  */
 export const defaultStackConfig: StackConfig = {
-  direction: "column",
   gap: "md",
-  align: "stretch",
   justify: "start",
   wrap: false,
 };
@@ -98,10 +110,10 @@ registerComponentDefaults("stack", defaultStackConfig);
 /**
  * Hard fallback values used when no config tier provides a value.
  */
-export const FALLBACK_STACK_CONFIG: Required<StackConfig> = {
+export const FALLBACK_STACK_CONFIG = {
   direction: "column",
   gap: "md",
   align: "stretch",
   justify: "start",
   wrap: false,
-};
+} satisfies StackConfig;

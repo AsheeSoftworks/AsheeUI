@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
+import { SECTION_BLOCK_DESCRIPTION_CLASS } from "../../../shared/section-block";
 import {
   HERO_CENTERED_CLASS,
-  HERO_DESCRIPTION_MEASURE_CLASS,
   HERO_LAYOUT_CLASS,
   HERO_MEDIA_CLASS,
   HERO_MEDIA_FIRST_CLASS,
@@ -52,8 +52,11 @@ describe("the hero's columns", () => {
     expect(HERO_CENTERED_CLASS).toContain("text-center");
   });
 
-  it("measures a description that has no media beside it, on the web", () => {
-    expect(HERO_DESCRIPTION_MEASURE_CLASS).toBe("max-w-2xl");
+  it("leaves the text column as wide as the band's container, on the web", () => {
+    // A measure on the column would cap the headline and the action row too, and would make
+    // `containerSize` unobservable; the description keeps its own measure instead.
+    expect(HERO_TEXT_COLUMN_CLASS).not.toContain("max-w-");
+    expect(SECTION_BLOCK_DESCRIPTION_CLASS).toBe("max-w-2xl");
     expect(HERO_MEDIA_CLASS).toBe("min-w-0");
   });
 

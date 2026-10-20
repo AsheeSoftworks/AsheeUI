@@ -40,8 +40,8 @@ import type { TextInputInstance } from "react-native";
 import { Pressable, TextInput, View } from "react-native";
 import { useAsheeNativeConfig } from "../../../provider/AsheeNativeProvider";
 import { classNames } from "../../../utils/class-names";
-import { FieldShell } from "../field/FieldShell";
 import { Text } from "../../typography/text/Text";
+import { FieldShell } from "../field/FieldShell";
 import {
   FALLBACK_NATIVE_PIN_INPUT_CONFIG,
   type NativePinInputConfig,

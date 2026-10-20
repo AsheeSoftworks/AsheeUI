@@ -36,10 +36,10 @@ import { useState } from "react";
 import { Pressable } from "react-native";
 import { useAsheeNativeConfig } from "../../../provider/AsheeNativeProvider";
 import { classNames } from "../../../utils/class-names";
+import { Text } from "../../typography/text/Text";
 import { FieldShell } from "../field/FieldShell";
 import { PickerSheet, type PickerSheetOption } from "../picker/PickerSheet";
 import { NATIVE_PICKER_TRIGGER_CLASS } from "../picker/picker-styles";
-import { Text } from "../../typography/text/Text";
 import {
   FALLBACK_NATIVE_DROPMENU_CONFIG,
   type NativeDropmenuConfig,

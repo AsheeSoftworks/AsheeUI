@@ -41,9 +41,9 @@ registerNativeComponentDefaults("chip", defaultNativeChipConfig);
 /**
  * The values the chip falls back to when no tier provides one.
  */
-export const FALLBACK_NATIVE_CHIP_CONFIG: Required<NativeChipConfig> = {
+export const FALLBACK_NATIVE_CHIP_CONFIG = {
   size: "md",
   variant: "bordered",
   color: "primary",
   radius: "full",
-};
+} satisfies NativeChipConfig;

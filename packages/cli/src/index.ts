@@ -2,8 +2,9 @@
 /**
  * AsheeUI CLI entry point.
  *
- * Wires every supported command (`init`, `doctor`, `list`, `fix`) onto a
- * shared `commander` program instance and begins argument parsing.
+ * Parses `process.argv` against the program built in `./program`, which wires
+ * every supported command (`init`, `doctor`, `list`, `fix`) onto a shared
+ * `commander` instance.
  *
  * This module has no runtime exports: it is intended to be executed
  * directly through the `asheeui` bin defined in `package.json`.
@@ -15,37 +16,14 @@
  * asheeui doctor
  * ```
  */
-import { Command } from "commander";
-import { version } from "../package.json";
-import { registerDoctorCommand } from "./commands/doctor";
-import { registerFixCommand } from "./commands/fix";
-import { registerInitCommand } from "./commands/init";
-import { registerListCommand } from "./commands/list";
-import { registerPlaygroundCommand } from "./commands/playground";
+import { createProgram } from "./program";
 
-/**
- * Root `commander` program instance shared by every CLI subcommand.
- *
- * @returns A configured `Command` representing the `asheeui` CLI.
- */
-const program = new Command();
-program
-  .name("asheeui")
-  .description("Ashee UI CLI")
-  .version(version)
-  .showHelpAfterError()
-  .showSuggestionAfterError();
-
-registerInitCommand(program);
-registerDoctorCommand(program);
-registerListCommand(program);
-registerFixCommand(program);
-registerPlaygroundCommand(program);
-
-program.parseAsync(process.argv).catch((error: unknown) => {
-  // A command that fails should report one clear line, not a stack trace, and
-  // should still leave a non-zero exit code for scripts and CI.
-  const message = error instanceof Error ? error.message : String(error);
-  console.error(`asheeui: ${message}`);
-  process.exitCode = 1;
-});
+createProgram()
+  .parseAsync(process.argv)
+  .catch((error: unknown) => {
+    // A command that fails should report one clear line, not a stack trace, and
+    // should still leave a non-zero exit code for scripts and CI.
+    const message = error instanceof Error ? error.message : String(error);
+    console.error(`asheeui: ${message}`);
+    process.exitCode = 1;
+  });

@@ -15,7 +15,9 @@ import type { ContainerSize } from "../container/container-config";
  * The axes a Centered block can centre on.
  *
  * - `both`: centres horizontally and vertically, the arrangement a sign-in card
- *   or an empty page wants.
+ *   or an empty page wants. It also centres the block's text (`text-center`),
+ *   because a block centred on both axes is almost always a short statement; the
+ *   other two axes leave the text alignment alone.
  * - `horizontal`: centres sideways only, for a heading or a single control.
  * - `vertical`: centres vertically only, when the block's own width is intended.
  */
@@ -31,9 +33,12 @@ export interface CenteredConfig {
   /**
    * The axis the content is centred on.
    *
+   * `both` also applies `text-center`; `horizontal` and `vertical` centre the box
+   * only and leave the text alignment to the content.
+   *
    * @default "both"
    */
-  axis?: CenteredAxis;
+  axis?: CenteredAxis | undefined;
 
   /**
    * Vertical room the block reserves before centring.
@@ -42,7 +47,7 @@ export interface CenteredConfig {
    *
    * @default "none"
    */
-  minHeight?: Space;
+  minHeight?: Space | undefined;
 
   /**
    * Whether the content is held in a {@link Container}.
@@ -51,14 +56,14 @@ export interface CenteredConfig {
    *
    * @default false
    */
-  contained?: boolean;
+  contained?: boolean | undefined;
 
   /**
    * Maximum content width when `contained` is on.
    *
    * @default "lg"
    */
-  containerSize?: ContainerSize;
+  containerSize?: ContainerSize | undefined;
 }
 
 /**
@@ -83,9 +88,9 @@ registerComponentDefaults("centered", defaultCenteredConfig);
 /**
  * Hard fallback values used when no config tier provides a value.
  */
-export const FALLBACK_CENTERED_CONFIG: Required<CenteredConfig> = {
+export const FALLBACK_CENTERED_CONFIG = {
   axis: "both",
   minHeight: "none",
   contained: false,
   containerSize: "lg",
-};
+} satisfies CenteredConfig;

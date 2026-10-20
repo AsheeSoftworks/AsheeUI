@@ -36,14 +36,14 @@ export interface SectionConfig {
    *
    * @default "lg"
    */
-  spacing?: Space;
+  spacing?: Space | undefined;
 
   /**
    * Background treatment.
    *
    * @default "none"
    */
-  background?: SectionBackground;
+  background?: SectionBackground | undefined;
 
   /**
    * Whether the section wraps its children in a {@link Container}.
@@ -52,21 +52,21 @@ export interface SectionConfig {
    *
    * @default false
    */
-  contained?: boolean;
+  contained?: boolean | undefined;
 
   /**
    * Maximum content width used when the section is contained.
    *
    * @default "lg"
    */
-  containerSize?: ContainerSize;
+  containerSize?: ContainerSize | undefined;
 
   /**
    * Whether to draw a separator line above the section.
    *
    * @default false
    */
-  divider?: boolean;
+  divider?: boolean | undefined;
 }
 
 /**
@@ -91,10 +91,10 @@ registerComponentDefaults("section", defaultSectionConfig);
 /**
  * Hard fallback values used when no config tier provides a value.
  */
-export const FALLBACK_SECTION_CONFIG: Required<SectionConfig> = {
+export const FALLBACK_SECTION_CONFIG = {
   spacing: "lg",
   background: "none",
   contained: false,
   containerSize: "lg",
   divider: false,
-};
+} satisfies SectionConfig;

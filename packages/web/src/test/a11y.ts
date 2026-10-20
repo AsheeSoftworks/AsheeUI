@@ -55,11 +55,11 @@ export function expectAccessibleName(
 export function expectState(
   element: HTMLElement,
   state: {
-    disabled?: boolean;
-    expanded?: boolean;
-    selected?: boolean;
-    checked?: boolean;
-    current?: string;
+    disabled?: boolean | undefined;
+    expanded?: boolean | undefined;
+    selected?: boolean | undefined;
+    checked?: boolean | undefined;
+    current?: string | undefined;
   },
 ): void {
   if (state.disabled !== undefined) {

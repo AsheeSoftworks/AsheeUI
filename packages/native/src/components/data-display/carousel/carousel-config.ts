@@ -9,8 +9,9 @@
  *
  * `variant` and `radius` are deliberately absent, as they are on the web, so they inherit
  * from the platform's configuration. A treatment the carousel has none for — the platform's
- * filled default, which is stated for a control — becomes the treatment it documents, which
- * is the same guard the accordion uses.
+ * filled default, which is stated for a control — is landed on the nearest frame it can draw
+ * by the shared `resolveCarouselVariant`, the same rule the web carousel uses, so no renderer
+ * needs a cast or a silent fallback of its own.
  */
 
 import type { CarouselConfig } from "@asheeui/core";

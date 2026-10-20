@@ -75,7 +75,7 @@ describe("Stepper", () => {
 
     expect(onStepChange).toHaveBeenCalledWith(2);
     // The step the reader is on is not a control, because there is nowhere to go.
-    expect(getAllByRole("listitem")[1].querySelector("button")).toBeNull();
+    expect(getAllByRole("listitem")[1]!.querySelector("button")).toBeNull();
   });
 
   it("reports progress only when it is given nothing to change", () => {
@@ -110,6 +110,28 @@ describe("Stepper", () => {
     expect(getByRole("list").className).not.toContain("md:flex-row");
     expect(getByRole("list").querySelector(".size-6")).toBeTruthy();
     expect(queryByText("Where it ships")).toBeNull();
+  });
+
+  it("scales the step labels with the density as well as the markers", () => {
+    const small = renderWithProvider(
+      <Stepper steps={steps} currentStep={0} size="sm" />,
+    );
+
+    expect(small.getByText("Cart")).toHaveClass("text-xs");
+    small.unmount();
+
+    const medium = renderWithProvider(
+      <Stepper steps={steps} currentStep={0} />,
+    );
+
+    expect(medium.getByText("Cart")).toHaveClass("text-sm");
+    medium.unmount();
+
+    const large = renderWithProvider(
+      <Stepper steps={steps} currentStep={0} size="lg" />,
+    );
+
+    expect(large.getByText("Cart")).toHaveClass("text-base");
   });
 
   it("lets an instance prop win over the configured value", () => {

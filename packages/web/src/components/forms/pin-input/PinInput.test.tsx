@@ -68,12 +68,16 @@ describe("PinInput", () => {
     const { container } = renderWithProvider(
       <PinInput
         length={4}
-        onValueChange={(value) => values.push(value)}
-        onComplete={(value) => completions.push(value)}
+        onValueChange={(value) => {
+          values.push(value);
+        }}
+        onComplete={(value) => {
+          completions.push(value);
+        }}
       />,
     );
 
-    await user.type(boxes(container)[0], "1234");
+    await user.type(boxes(container)[0]!, "1234");
 
     expect(values).toEqual(["1", "12", "123", "1234"]);
     expect(completions).toEqual(["1234"]);
@@ -84,17 +88,17 @@ describe("PinInput", () => {
     const user = userEvent.setup();
     const { container } = renderWithProvider(<PinInput mode="numeric" />);
 
-    await user.type(boxes(container)[0], "1a2");
+    await user.type(boxes(container)[0]!, "1a2");
 
-    expect(boxes(container)[0].value).toBe("1");
-    expect(boxes(container)[1].value).toBe("2");
+    expect(boxes(container)[0]!.value).toBe("1");
+    expect(boxes(container)[1]!.value).toBe("2");
   });
 
   it("deletes backwards and packs the remaining characters together", async () => {
     const user = userEvent.setup();
     const { container } = renderWithProvider(<PinInput defaultValue="1234" />);
 
-    boxes(container)[3].focus();
+    boxes(container)[3]!.focus();
     await user.keyboard("{Backspace}");
     expect(boxes(container).map((box) => box.value)).toEqual([
       "1",
@@ -103,7 +107,7 @@ describe("PinInput", () => {
       "",
     ]);
 
-    boxes(container)[0].focus();
+    boxes(container)[0]!.focus();
     await user.keyboard("{Backspace}");
     expect(boxes(container).map((box) => box.value)).toEqual([
       "2",
@@ -117,7 +121,7 @@ describe("PinInput", () => {
 describe("PinInput interaction and configuration", () => {
   it("fills the boxes from the start when the whole code is pasted", () => {
     const { container } = renderWithProvider(<PinInput length={6} />);
-    const input = boxes(container)[2];
+    const input = boxes(container)[2]!;
 
     fireEvent.paste(input, {
       clipboardData: { getData: () => "9876" },
@@ -137,7 +141,7 @@ describe("PinInput interaction and configuration", () => {
     const { container } = renderWithProvider(
       <PinInput length={4} defaultValue="12" />,
     );
-    const input = boxes(container)[1];
+    const input = boxes(container)[1]!;
 
     fireEvent.paste(input, {
       clipboardData: { getData: () => "987" },
@@ -153,7 +157,7 @@ describe("PinInput interaction and configuration", () => {
 
   it("distributes a code that arrives in one box, as an autofill does", () => {
     const { container } = renderWithProvider(<PinInput length={4} />);
-    const input = boxes(container)[0];
+    const input = boxes(container)[0]!;
 
     fireEvent.change(input, { target: { value: "1234" } });
 
@@ -170,7 +174,7 @@ describe("PinInput interaction and configuration", () => {
     const { container } = renderWithProvider(<PinInput length={4} />);
     const input = boxes(container);
 
-    input[1].focus();
+    input[1]!.focus();
     await user.keyboard("{ArrowRight}");
     expect(document.activeElement).toBe(input[2]);
 
@@ -193,7 +197,7 @@ describe("PinInput interaction and configuration", () => {
     }
 
     const { container } = renderWithProvider(<Controlled />);
-    await user.type(boxes(container)[0], "12");
+    await user.type(boxes(container)[0]!, "12");
 
     expect(boxes(container).map((box) => box.value)).toEqual([
       "1",
@@ -263,7 +267,7 @@ describe("PinInput interaction and configuration", () => {
     });
 
     expect(boxes(container)).toHaveLength(6);
-    expect(boxes(container)[0].className).toContain("h-14");
+    expect(boxes(container)[0]!.className).toContain("h-14");
   });
 
   it("renders on the server and hydrates without a mismatch", () => {

@@ -92,4 +92,44 @@ describe("Tabs", () => {
     expect(onChange).toHaveBeenCalledWith("second");
     expect(second).toHaveAttribute("aria-selected", "false");
   });
+
+  // Only the selected panel is mounted, so a trigger pointing at any other
+  // panel named an element that was never rendered.
+  it("points only the selected trigger at the mounted panel", async () => {
+    const user = createUser();
+    const { getByRole } = renderWithProvider(<Tabs tabs={TABS} />);
+    const first = getByRole("tab", { name: "First" });
+    const second = getByRole("tab", { name: "Second" });
+
+    expect(first).toHaveAttribute("aria-controls", getByRole("tabpanel").id);
+    expect(second).not.toHaveAttribute("aria-controls");
+
+    await user.click(second);
+
+    expect(second).toHaveAttribute("aria-controls", getByRole("tabpanel").id);
+    expect(first).not.toHaveAttribute("aria-controls");
+  });
+
+  // A controlled `activeId` naming no tab used to leave every trigger
+  // `aria-selected="false"` and `tabIndex={-1}`: the bar had no reachable tab,
+  // while the panel fell back to the first tab. Selection now falls back too.
+  it("falls back to the first tab when activeId names no tab", () => {
+    const { getByRole } = renderWithProvider(
+      <Tabs tabs={TABS} activeId="missing" />,
+    );
+
+    expect(getByRole("tab", { name: "First" })).toHaveAttribute(
+      "aria-selected",
+      "true",
+    );
+    expect(getByRole("tab", { name: "First" })).toHaveAttribute(
+      "tabindex",
+      "0",
+    );
+    expect(getByRole("tab", { name: "Second" })).toHaveAttribute(
+      "tabindex",
+      "-1",
+    );
+    expect(getByRole("tabpanel")).toHaveTextContent("First panel");
+  });
 });

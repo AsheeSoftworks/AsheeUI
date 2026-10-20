@@ -42,10 +42,9 @@ registerNativeComponentDefaults("fileupload", defaultNativeFileUploadConfig);
 /**
  * The values the field falls back to when no tier provides one.
  */
-export const FALLBACK_NATIVE_FILE_UPLOAD_CONFIG: Required<NativeFileUploadConfig> =
-  {
-    buttonLabel: "Choose files",
-    hint: "Pick a file to upload",
-    size: "md",
-    isDisabled: false,
-  };
+export const FALLBACK_NATIVE_FILE_UPLOAD_CONFIG = {
+  buttonLabel: "Choose files",
+  hint: "Pick a file to upload",
+  size: "md",
+  isDisabled: false,
+} satisfies NativeFileUploadConfig;

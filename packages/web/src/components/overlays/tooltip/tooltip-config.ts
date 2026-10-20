@@ -37,7 +37,7 @@ registerComponentDefaults("tooltip", defaultTooltipConfig);
 /**
  * Hard fallback values used when no config tier provides a value.
  */
-export const FALLBACK_TOOLTIP_CONFIG: Required<TooltipConfig> = {
+export const FALLBACK_TOOLTIP_CONFIG = {
   size: "md",
   placement: "top",
   variant: "solid",
@@ -49,4 +49,4 @@ export const FALLBACK_TOOLTIP_CONFIG: Required<TooltipConfig> = {
   portal: false,
   zIndex: ASHEE_LAYER.tooltip,
   className: "",
-} as const;
+} as const satisfies TooltipConfig;

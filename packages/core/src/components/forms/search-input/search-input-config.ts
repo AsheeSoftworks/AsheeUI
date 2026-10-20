@@ -25,21 +25,21 @@ export interface SearchInputConfig {
    *
    * @default "md"
    */
-  size?: Size;
+  size?: Size | undefined;
 
   /**
    * Accent colour of the field's focus ring.
    *
    * @default "primary"
    */
-  color?: Color;
+  color?: Color | undefined;
 
   /**
    * Whether the field offers a control that empties it.
    *
    * @default true
    */
-  clearable?: boolean;
+  clearable?: boolean | undefined;
 
   /**
    * Visible name of the field.
@@ -48,14 +48,14 @@ export interface SearchInputConfig {
    *
    * @default "Search"
    */
-  label?: string;
+  label?: string | undefined;
 
   /**
    * Whether the name is available to assistive technology only.
    *
    * @default true
    */
-  hideLabel?: boolean;
+  hideLabel?: boolean | undefined;
 }
 
 /**
@@ -64,13 +64,13 @@ export interface SearchInputConfig {
  * The name is stated rather than left empty, because a field whose name is empty is
  * announced as "search" and nothing else.
  */
-export const FALLBACK_SEARCH_INPUT_CONFIG: Required<SearchInputConfig> = {
+export const FALLBACK_SEARCH_INPUT_CONFIG = {
   size: "md",
   color: "primary",
   clearable: true,
   label: "Search",
   hideLabel: true,
-};
+} satisfies SearchInputConfig;
 
 declare module "../../../registry" {
   interface ComponentTypeConfigRegistry {

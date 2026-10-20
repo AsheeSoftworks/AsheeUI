@@ -47,7 +47,7 @@ export interface TabsOptionProps extends TabsOptionsConfig {
   /**
    * Class name for individual tab trigger buttons.
    */
-  tabClassName?: string;
+  tabClassName?: string | undefined;
 }
 
 type BaseTabsProps = Omit<TabsConfig, "options"> &
@@ -67,19 +67,19 @@ export interface TabsProps extends BaseTabsProps {
    * Controlled active tab identifier.
    * When provided, the component becomes controlled.
    */
-  activeId?: string | number;
+  activeId?: string | number | undefined;
 
   /**
    * Default active tab identifier for uncontrolled state.
    * Used as the initial active tab when not controlled.
    */
-  defaultActiveId?: string | number;
+  defaultActiveId?: string | number | undefined;
 
   /**
    * Callback fired when active tab changes.
    * Receives the new active tab ID.
    */
-  onChange?: (id: string | number) => void;
+  onChange?: ((id: string | number) => void) | undefined;
 
   /**
    * Full width stretch tabs inside container.
@@ -87,23 +87,23 @@ export interface TabsProps extends BaseTabsProps {
    *
    * @default false
    */
-  fullWidth?: boolean;
+  fullWidth?: boolean | undefined;
 
   /**
    * Class name for the tablist container.
    */
-  tabListClassName?: string;
+  tabListClassName?: string | undefined;
 
   /**
    * Options configuration for the tab items (active/inactive styling),
    * plus the instance-only tab class override.
    */
-  options?: TabsOptionProps;
+  options?: TabsOptionProps | undefined;
 
   /**
    * Class name for the tab content panel wrapper.
    */
-  tabPanelClassName?: string;
+  tabPanelClassName?: string | undefined;
 }
 
 // ─── Component Implementation ─────────────────────────────────────────────────
@@ -202,12 +202,24 @@ export const Tabs = forwardRef<HTMLDivElement, TabsProps>(
     );
 
     // Controlled / Uncontrolled active state resolution
-    const [internalActiveId, setInternalActiveId] = useState<string | number>(
-      () => defaultActiveId ?? tabs[0]?.id,
-    );
+    const [internalActiveId, setInternalActiveId] = useState<
+      string | number | undefined
+    >(() => defaultActiveId ?? tabs[0]?.id);
 
     const isControlled = activeIdProp !== undefined;
     const activeTabId = isControlled ? activeIdProp : internalActiveId;
+
+    // A controlled `activeId` naming no tab must not leave every trigger
+    // unreachable: the trigger bar falls back to the first tab, which is the
+    // same tab the panel already falls back to, so the component always has one
+    // selected and one focusable trigger.
+    const resolvedActiveId = useMemo(
+      () =>
+        activeTabId !== undefined && tabs.some((tab) => tab.id === activeTabId)
+          ? activeTabId
+          : tabs[0]?.id,
+      [activeTabId, tabs],
+    );
 
     // ─── 1. Token Resolvers (4-Tier Cascade) ──────────────────────────────────
 
@@ -345,16 +357,16 @@ export const Tabs = forwardRef<HTMLDivElement, TabsProps>(
         }
       }
 
-      if (nextIndex !== -1 && tabs[nextIndex]) {
-        const nextTab = tabs[nextIndex];
+      const nextTab = nextIndex === -1 ? undefined : tabs[nextIndex];
+      if (nextTab) {
         handleTabChange(nextTab.id);
         tabRefs.current.get(nextTab.id)?.focus();
       }
     };
 
     const activeTab = useMemo(
-      () => tabs.find((tab) => tab.id === activeTabId) ?? tabs[0],
-      [tabs, activeTabId],
+      () => tabs.find((tab) => tab.id === resolvedActiveId) ?? tabs[0],
+      [tabs, resolvedActiveId],
     );
 
     // Variant-driven container layout classes
@@ -386,7 +398,7 @@ export const Tabs = forwardRef<HTMLDivElement, TabsProps>(
             tabListClassName,
           )}>
           {tabs.map((tab, index) => {
-            const isActive = tab.id === activeTabId;
+            const isActive = tab.id === resolvedActiveId;
             const tabTitle = tab.label ?? tab.name;
             const tabHeaderId = `${baseId}-tab-${tab.id}`;
             const panelId = `${baseId}-panel-${tab.id}`;
@@ -406,7 +418,10 @@ export const Tabs = forwardRef<HTMLDivElement, TabsProps>(
                 type="button"
                 role="tab"
                 aria-selected={isActive}
-                aria-controls={panelId}
+                // Only the selected panel is mounted, so only the selected
+                // trigger can point at one. Every other trigger's `aria-controls`
+                // would name an element that is never rendered.
+                aria-controls={isActive ? panelId : undefined}
                 aria-disabled={tab.disabled}
                 tabIndex={isActive ? 0 : -1}
                 radius={

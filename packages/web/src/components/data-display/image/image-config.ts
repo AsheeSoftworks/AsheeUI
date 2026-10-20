@@ -20,11 +20,18 @@ export type {
 
 /**
  * Default config values registered for the Image component.
+ *
+ * `radius` is intentionally absent so it can inherit from the application's
+ * `defaultRadius`, unlike the components that register a radius as part of their
+ * shape or family (Alert, Badge, Avatar, Chip, Skeleton, Toast, Pagination,
+ * Tabs, Radio, Switch and the Form's submit control). Registering a value here
+ * would make the component tier always answer, and the application's default
+ * would never reach the picture. {@link FALLBACK_IMAGE_CONFIG} still states `md`
+ * for the case where no tier answers at all.
  */
 export const defaultImageConfig: ImageConfig = {
   fit: "cover",
   ratio: "auto",
-  radius: "md",
   loading: "lazy",
   showSkeleton: true,
 };

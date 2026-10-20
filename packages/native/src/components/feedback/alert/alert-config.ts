@@ -47,8 +47,8 @@ registerNativeComponentDefaults("alert", defaultNativeAlertConfig);
 /**
  * The values the alert falls back to when no tier provides one.
  */
-export const FALLBACK_NATIVE_ALERT_CONFIG: Required<NativeAlertConfig> = {
+export const FALLBACK_NATIVE_ALERT_CONFIG = {
   type: "info",
   variant: "faded",
   radius: "md",
-};
+} satisfies NativeAlertConfig;

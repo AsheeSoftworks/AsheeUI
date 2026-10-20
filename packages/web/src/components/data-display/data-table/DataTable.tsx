@@ -20,24 +20,28 @@ import {
   DATA_TABLE_SEARCH_CLASS,
   DATA_TABLE_TOOLBAR_CLASS,
   DATA_TABLE_TOOLBAR_GROUP_CLASS,
+  formatRowCountLabel,
   resolveConfigCascade,
 } from "@asheeui/core";
 import {
   type ElementType,
   type HTMLAttributes,
   type ReactNode,
+  useEffect,
+  useId,
   useMemo,
+  useRef,
   useState,
 } from "react";
 import { useAsheeConfig } from "../../../libs/context";
 import { EmptyState } from "../../feedback/empty-state/EmptyState";
 import { LoadingState } from "../../feedback/loading-state/LoadingState";
-import { Pagination } from "../../navigation/pagination/Pagination";
 import { SearchInput } from "../../forms/search-input/SearchInput";
 import { SectionHeading } from "../../layouts/section-kit/SectionHeading";
+import { Pagination } from "../../navigation/pagination/Pagination";
+import { Typography } from "../../typography/Typography";
 import { Table } from "../table/Table";
 import type { ColumnDef, TableConfig } from "../table/table-config";
-import { Typography } from "../../typography/Typography";
 import {
   type DataTableConfig,
   FALLBACK_DATA_TABLE_CONFIG,
@@ -65,12 +69,12 @@ export interface DataTableProps<TData>
   /**
    * Heading above the toolbar.
    */
-  title?: ReactNode;
+  title?: ReactNode | undefined;
 
   /**
    * Sentence under the heading.
    */
-  description?: ReactNode;
+  description?: ReactNode | undefined;
 
   /**
    * Reads the text a row is searched by.
@@ -78,41 +82,73 @@ export interface DataTableProps<TData>
    * rendered, because a field that cannot search would be a control that does
    * nothing.
    */
-  searchAccessor?: (row: TData) => string;
+  searchAccessor?: ((row: TData) => string) | undefined;
 
   /**
    * Called with the query whenever it changes.
    * Supplying it is what a consumer that searches on the server does: the table
    * then reports the query and leaves the filtering to the consumer.
    */
-  onSearchChange?: (query: string) => void;
+  onSearchChange?: ((query: string) => void) | undefined;
 
   /**
    * The page, for a consumer that owns it.
    */
-  page?: number;
+  page?: number | undefined;
 
   /**
    * The page to open first, for a consumer that does not.
    *
    * @default 1
    */
-  defaultPage?: number;
+  defaultPage?: number | undefined;
 
   /**
    * Called with the page the reader asked for.
    */
-  onPageChange?: (page: number) => void;
+  onPageChange?: ((page: number) => void) | undefined;
+
+  /**
+   * How many rows there are in all, for a consumer that holds one page of them.
+   *
+   * The page count and the count sentence are derived from `data`, so a consumer holding
+   * one page of a remote list would get one page in the pager and a count of that page
+   * alone — even though `page` and `onPageChange` exist for exactly that consumer. Stating
+   * the total here makes the pager draw every page and the sentence report the size of the
+   * result set, while the rows shown are still the `data` that was handed in.
+   *
+   * Without it the rows are the whole list, which is what a table that filters its own
+   * rows has always done. A consumer that searches on the server should state the total
+   * of the current query, because a query is a new result set.
+   */
+  rowCount?: number | undefined;
 
   /**
    * Identifies a row, so the table can keep its rows stable as they change.
    */
-  rowKeyAccessor?: (row: TData) => string | number;
+  rowKeyAccessor?: ((row: TData) => string | number) | undefined;
+
+  /**
+   * The key of the row that is currently chosen.
+   * The table marks that row as chosen for the eye, with the accent, and for
+   * assistive technology, with `aria-current`.
+   */
+  selectedRowKey?: string | number | undefined;
+
+  /**
+   * Names the table, rendered as its `<caption>`.
+   *
+   * Without it, the table is named by the `title` above it through
+   * `aria-labelledby`, so the heading names the structure it belongs to rather
+   * than floating above it. Supply it to name the table something other than
+   * the heading says, or to name a table that has no heading.
+   */
+  caption?: ReactNode | undefined;
 
   /**
    * Called when a row is activated, which also makes the rows interactive.
    */
-  onRowClick?: (row: TData) => void;
+  onRowClick?: ((row: TData) => void) | undefined;
 
   /**
    * Whether the rows are still loading.
@@ -121,12 +157,12 @@ export interface DataTableProps<TData>
    *
    * @default false
    */
-  isLoading?: boolean;
+  isLoading?: boolean | undefined;
 
   /**
    * Controls the consumer places beside the search control.
    */
-  toolbar?: ReactNode;
+  toolbar?: ReactNode | undefined;
 
   /**
    * Element to render the wrapper as.
@@ -134,7 +170,7 @@ export interface DataTableProps<TData>
    *
    * @default "div"
    */
-  as?: ElementType;
+  as?: ElementType | undefined;
 }
 
 /**
@@ -146,26 +182,45 @@ export interface DataTableProps<TData>
  * consumer that restyles `Table`, `Pagination`, `EmptyState`, `LoadingState` or
  * `SearchInput` restyles the table too.
  *
+ * The table is named in the accessibility tree: by `caption` when the consumer
+ * gives one, and otherwise by the `title` above it, which is wired to the table
+ * with `aria-labelledby` rather than left floating over it. An empty result is a
+ * live region while it is the answer to a query, so the sentence that explains
+ * the empty table is announced rather than only the count.
+ *
  * Searching is client-side when `searchAccessor` is given and the consumer's own
  * when `onSearchChange` is given; the two may be combined, with the consumer
  * replacing the rows. A new query starts at the first page, because a query is a
- * new result set.
+ * new result set. `searchDebounce` waits for the reader to pause before it reports
+ * the query, which is what a consumer that searches on the server wants; its
+ * default of `0` reports every keystroke.
  *
  * @param props - DataTable configuration options and element attributes.
  * @param props.data - The rows, in the order they are shown.
  * @param props.columns - The columns, in order.
- * @param props.title - Heading above the toolbar.
+ * @param props.title - Heading above the toolbar, which names the table when no
+ * caption is given.
  * @param props.description - Sentence under the heading.
+ * @param props.caption - Names the table, rendered as its `<caption>`.
  * @param props.searchAccessor - Reads the text a row is searched by.
  * @param props.onSearchChange - Called with the query as it changes.
+ * @param props.searchDebounce - How long to wait after typing stops before reporting the
+ * query. Defaults to 0.
  * @param props.page - The page, for a controlled consumer.
  * @param props.defaultPage - The page to open first. Defaults to 1.
  * @param props.onPageChange - Called with the page the reader asked for.
+ * @param props.rowCount - How many rows there are in all, when the consumer holds one page.
+ * @param props.rowKeyAccessor - Identifies a row.
+ * @param props.selectedRowKey - The key of the row that is currently chosen.
  * @param props.pageSize - How many rows a page holds. Defaults to 10.
  * @param props.paginated - Divide the rows into pages. Defaults to true.
  * @param props.showRowCount - Report how many rows are shown. Defaults to true.
+ * @param props.rowCountLabel - The sentence the count is stated with. Defaults to
+ * "Showing {first} to {last} of {total}".
  * @param props.isLoading - Replace the rows with a loading region. Defaults to
  * false.
+ * @param props.loadingLabel - What the loading region says while the rows arrive.
+ * Defaults to "Loading results".
  * @param props.toolbar - Controls placed beside the search control.
  * @param props.emptyTitle - What the table says when it has nothing to show.
  * @param props.emptyDescription - The sentence under that title.
@@ -194,18 +249,24 @@ export function DataTable<TData>({
   columns,
   title,
   description,
+  caption,
   searchAccessor,
   onSearchChange,
+  searchDebounce,
   page,
   defaultPage = 1,
   onPageChange,
+  rowCount,
   rowKeyAccessor,
+  selectedRowKey,
   onRowClick,
   pageSize,
   paginated,
   searchable,
   searchLabel,
   showRowCount,
+  rowCountLabel,
+  loadingLabel,
   emptyTitle,
   emptyDescription,
   isLoading = false,
@@ -227,9 +288,12 @@ export function DataTable<TData>({
     {
       searchable,
       searchLabel,
+      searchDebounce,
       paginated,
       pageSize,
       showRowCount,
+      rowCountLabel,
+      loadingLabel,
       emptyTitle,
       emptyDescription,
     },
@@ -237,9 +301,42 @@ export function DataTable<TData>({
     FALLBACK_DATA_TABLE_CONFIG,
   );
 
+  // The heading's id, so the table can be named by the heading it sits under
+  // instead of the two being unrelated elements.
+  const headingId = useId();
+
   const [query, setQuery] = useState("");
   const [internalPage, setInternalPage] = useState(defaultPage);
   const currentPage = page ?? internalPage;
+
+  // A debounced query is a timer, so it is owned here rather than in the search field: the
+  // field reports what the reader typed, and the table decides when that becomes a search.
+  // A zero wait is the historical behaviour and takes the synchronous path below.
+  const searchDebounceMs = Math.max(0, resolved.searchDebounce ?? 0);
+  const searchTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const pendingQuery = useRef<string | null>(null);
+
+  const cancelPendingSearch = () => {
+    if (searchTimer.current !== null) {
+      clearTimeout(searchTimer.current);
+      searchTimer.current = null;
+    }
+
+    pendingQuery.current = null;
+  };
+
+  // The pending query is dropped on unmount: there is no table left to report it to.
+  useEffect(
+    () => () => {
+      if (searchTimer.current !== null) {
+        clearTimeout(searchTimer.current);
+        searchTimer.current = null;
+      }
+
+      pendingQuery.current = null;
+    },
+    [],
+  );
 
   const searchEnabled =
     resolved.searchable && Boolean(searchAccessor || onSearchChange);
@@ -257,20 +354,37 @@ export function DataTable<TData>({
   }, [data, query, searchAccessor, searchEnabled]);
 
   const rowsPerPage = Math.max(1, resolved.pageSize);
-  const pageCount = Math.max(1, Math.ceil(rows.length / rowsPerPage));
+  // How large the result set is. A consumer holding one page of a remote list states it with
+  // `rowCount`; otherwise the rows it was handed are the whole list, which is what every
+  // table did before the prop existed.
+  const totalRows = rowCount ?? rows.length;
+  const pageCount = Math.max(1, Math.ceil(totalRows / rowsPerPage));
   const activePage = Math.min(Math.max(1, currentPage), pageCount);
 
   const visibleRows = resolved.paginated
     ? rows.slice((activePage - 1) * rowsPerPage, activePage * rowsPerPage)
     : rows;
 
-  const firstRow = rows.length === 0 ? 0 : (activePage - 1) * rowsPerPage + 1;
+  const firstRow = totalRows === 0 ? 0 : (activePage - 1) * rowsPerPage + 1;
   const lastRow = resolved.paginated
-    ? Math.min(activePage * rowsPerPage, rows.length)
+    ? Math.min(activePage * rowsPerPage, totalRows)
     : rows.length;
-  const rowCountText = `Showing ${firstRow} to ${lastRow} of ${rows.length}`;
+  // The count is a sentence, so it is written by a template rather than by the
+  // component: the default says what the component has always said, and another
+  // template says it in another language or shape.
+  const rowCountText = formatRowCountLabel(resolved.rowCountLabel, {
+    first: firstRow,
+    last: lastRow,
+    total: totalRows,
+  });
 
-  const handleSearch = (next: string) => {
+  // An empty presentation that answers a query is a result, and results are
+  // announced; one that is part of the page's first markup is not.
+  const isQueryResult = query.trim().length > 0;
+
+  // What a query does once it takes effect: it becomes the filter, the reader goes back to
+  // the first page of the new result set, and the consumer is told.
+  const commitSearch = (next: string) => {
     setQuery(next);
 
     // A query is a new result set, so the reader starts at its first page.
@@ -285,6 +399,33 @@ export function DataTable<TData>({
     onSearchChange?.(next);
   };
 
+  // The timer fires outside React's render, so it reaches the latest commit through a ref
+  // rather than through the closure that scheduled it.
+  const commitSearchRef = useRef(commitSearch);
+  useEffect(() => {
+    commitSearchRef.current = commitSearch;
+  });
+
+  const handleSearch = (next: string) => {
+    if (searchDebounceMs === 0) {
+      commitSearch(next);
+      return;
+    }
+
+    // Each keystroke restarts the wait, so only the query the reader stopped on is reported.
+    cancelPendingSearch();
+    pendingQuery.current = next;
+    searchTimer.current = setTimeout(() => {
+      searchTimer.current = null;
+      const pending = pendingQuery.current;
+      pendingQuery.current = null;
+
+      if (pending !== null) {
+        commitSearchRef.current(pending);
+      }
+    }, searchDebounceMs);
+  };
+
   const handlePageChange = (next: number) => {
     if (page === undefined) {
       setInternalPage(next);
@@ -295,12 +436,18 @@ export function DataTable<TData>({
 
   const Component: ElementType = as ?? "div";
   const hasHeading = Boolean(title || description);
+  const hasTitle = Boolean(title);
+  const hasCaption = caption !== undefined && caption !== null;
 
   return (
     <Component className={cn(DATA_TABLE_CLASS, className)} {...rest}>
       {hasHeading && (
         <div className={DATA_TABLE_HEADING_CLASS}>
-          <SectionHeading title={title} description={description} />
+          <SectionHeading
+            title={title}
+            description={description}
+            titleId={hasTitle ? headingId : undefined}
+          />
         </div>
       )}
 
@@ -322,10 +469,19 @@ export function DataTable<TData>({
 
       <div className={DATA_TABLE_REGION_CLASS}>
         {isLoading ? (
-          <LoadingState />
+          // The table knows what is loading, so the region that reports the wait
+          // names it rather than announcing the generic sentence.
+          <LoadingState label={resolved.loadingLabel} />
         ) : visibleRows.length === 0 ? (
           <EmptyState
             panel
+            // The sentence that explains an empty result is announced only when
+            // the result replaced other rows. A table that is empty in the
+            // page's first markup is not a change, and is not announced as one —
+            // stated as `none` rather than left unset, so a configured
+            // `components.emptystate.role` cannot turn the first paint into an
+            // announcement the table did not have.
+            role={isQueryResult ? "status" : "none"}
             title={resolved.emptyTitle}
             description={resolved.emptyDescription}
           />
@@ -338,6 +494,11 @@ export function DataTable<TData>({
             color={color}
             radius={radius}
             rowKeyAccessor={rowKeyAccessor}
+            selectedRowKey={selectedRowKey}
+            caption={caption}
+            // A caption names the table, so the heading is wired in only when
+            // there is no caption to name it instead.
+            aria-labelledby={!hasCaption && hasTitle ? headingId : undefined}
             handleClick={onRowClick}
             isClickable={Boolean(onRowClick)}
           />

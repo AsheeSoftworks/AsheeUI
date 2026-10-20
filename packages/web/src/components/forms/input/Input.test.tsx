@@ -1,6 +1,13 @@
+import { getComponentDefaults, registerComponentDefaults } from "@asheeui/core";
 import { describe, expect, it, vi } from "vitest";
-import { createUser, expectDescribedBy, renderWithProvider } from "../../../test";
+import {
+  createUser,
+  expectDescribedBy,
+  makeComponentConfig,
+  renderWithProvider,
+} from "../../../test";
 import { Input } from "./Input";
+import { defaultInputConfig } from "./input-config";
 
 describe("Input", () => {
   it("associates its label and accepts typing", async () => {
@@ -127,5 +134,80 @@ describe("Input", () => {
     );
 
     expect(getByLabelText(/Email/)).toBeRequired();
+  });
+
+  it("honours a full radius, as the field family does", () => {
+    const { getByLabelText } = renderWithProvider(
+      <Input label="Email" radius="full" />,
+    );
+
+    expect(getByLabelText("Email").className).toContain("rounded-full");
+  });
+
+  it("does not take its surface from the application's defaultVariant", () => {
+    // The field family states its own surface: the registered `bordered` and the
+    // family fallback answer, so a button-oriented global default never restyles a
+    // control. Input passes `undefined` at the global tier for exactly this reason.
+    const { getByLabelText } = renderWithProvider(<Input label="Email" />, {
+      config: { defaultVariant: "solid" },
+    });
+    const input = getByLabelText("Email");
+
+    expect(input.className).toContain("bg-transparent");
+    expect(input.className).not.toContain("bg-primary ");
+  });
+
+  it("still takes a variant stated for the input itself", () => {
+    const { getByLabelText } = renderWithProvider(<Input label="Email" />, {
+      config: { components: { input: { variant: "solid" } } },
+    });
+
+    expect(getByLabelText("Email").className).toContain("bg-primary ");
+  });
+
+  it("keeps the family's surface when no registration states a variant", () => {
+    // Pins the reason the global tier is `undefined` (F-191). A field still does
+    // not read `defaultVariant` when the registered variant is absent, because the
+    // family's fallback is the field's surface, not the application's control
+    // treatment. The registry has no unregister API, so restore what was there.
+    const registered = getComponentDefaults("input");
+    registerComponentDefaults("input", {
+      ...defaultInputConfig,
+      variant: undefined,
+    });
+
+    try {
+      const { getByLabelText } = renderWithProvider(<Input label="Email" />, {
+        config: { defaultVariant: "solid" },
+      });
+      const input = getByLabelText("Email");
+
+      expect(input.className).toContain("bg-transparent");
+      expect(input.className).not.toContain("bg-primary ");
+    } finally {
+      if (registered) registerComponentDefaults("input", registered);
+    }
+  });
+
+  it("fills its column by default and sizes to its content when told not to", () => {
+    const full = renderWithProvider(<Input label="Email" />);
+
+    expect(full.container.firstElementChild).toHaveClass("w-full");
+    full.unmount();
+
+    const inline = renderWithProvider(
+      <Input label="Email" fullWidth={false} />,
+    );
+
+    expect(inline.container.firstElementChild).toHaveClass("inline-block");
+    expect(inline.container.firstElementChild).not.toHaveClass("w-full");
+  });
+
+  it("takes its width from configuration", () => {
+    const { container } = renderWithProvider(<Input label="Email" />, {
+      config: makeComponentConfig("input", { fullWidth: false }),
+    });
+
+    expect(container.firstElementChild).toHaveClass("inline-block");
   });
 });

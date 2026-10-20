@@ -35,7 +35,7 @@ export interface SpinnerConfig {
    *
    * @default "md"
    */
-  size?: Size;
+  size?: Size | undefined;
 
   /**
    * Colour role the ring takes.
@@ -44,19 +44,19 @@ export interface SpinnerConfig {
    *
    * @default "primary"
    */
-  color?: Color;
+  color?: Color | undefined;
 
   /**
    * How long one full rotation takes, as a CSS duration.
    *
    * @default "0.75s"
    */
-  speed?: string;
+  speed?: string | undefined;
 
   /**
    * Extra classes appended last, so a consumer's own classes win.
    */
-  className?: string;
+  className?: string | undefined;
 }
 
 /**

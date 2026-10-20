@@ -19,7 +19,10 @@ export { FALLBACK_RADIO_CONFIG } from "@asheeui/core";
 
 /**
  * Default config values registered for the Radio component.
- * Sets radius to "full" for circular radio buttons.
+ * Sets radius to "full" for circular radio buttons. That radius is registered,
+ * so it is pinned: a radio is a circle, and the application's `defaultRadius`
+ * does not reach it. State `components.radio.radius` or the instance prop
+ * instead.
  */
 export const defaultRadioConfig: RadioConfig = {
   ...defaultInputConfig,

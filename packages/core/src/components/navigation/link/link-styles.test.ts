@@ -3,6 +3,7 @@ import type { Size } from "../../../shared/radius";
 import type { ColorRole } from "../../../tokens";
 import type { LinkUnderline, LinkVariant } from "./link-config";
 import {
+  LINK_COLOR_CLASS,
   LINK_ICON_SIZE_CLASS,
   LINK_SIZE_CLASS,
   LINK_UNDERLINE_CLASS,
@@ -62,9 +63,19 @@ describe("the link's emphasis and colour", () => {
     );
   });
 
-  it("describes every colour role the platform names", () => {
+  it("describes every colour role on both platforms", () => {
+    expect(Object.keys(LINK_COLOR_CLASS).sort()).toEqual([...COLOURS].sort());
     expect(Object.keys(NATIVE_LINK_COLOR_CLASS).sort()).toEqual(
       [...COLOURS].sort(),
+    );
+  });
+
+  // The two maps are exhaustive over the same vocabulary. A key that no colour role
+  // names — the old `default` entry was one — resolves no class and hides a role the
+  // other renderer does describe, so the maps must say exactly the same thing.
+  it("names the same colours on the web as on the platform", () => {
+    expect(Object.keys(LINK_COLOR_CLASS).sort()).toEqual(
+      Object.keys(NATIVE_LINK_COLOR_CLASS).sort(),
     );
   });
 
@@ -72,6 +83,7 @@ describe("the link's emphasis and colour", () => {
     for (const colour of COLOURS) {
       const hue = colour === "none" ? "foreground" : colour;
 
+      expect(LINK_COLOR_CLASS[colour]).toContain(hue);
       expect(NATIVE_LINK_COLOR_CLASS[colour]).toContain(hue);
     }
   });

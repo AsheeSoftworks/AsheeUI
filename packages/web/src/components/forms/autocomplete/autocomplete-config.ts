@@ -22,7 +22,7 @@ export interface AutocompleteConfig extends InputConfig {
    * Configuration for the dropdown menu that displays suggestions.
    * Controls the menu's visual appearance and behavior.
    */
-  menu?: MenuConfig;
+  menu?: MenuConfig | undefined;
 }
 
 /**
@@ -39,9 +39,9 @@ export const defaultAutocompleteConfig: AutocompleteConfig = {
  * These values are used when instance props, component config,
  * and global defaults are all undefined.
  */
-export const FALLBACK_AUTOCOMPLETE_CONFIG: Required<FieldConfig> = {
+export const FALLBACK_AUTOCOMPLETE_CONFIG = {
   ...FALLBACK_FIELD_CONFIG,
-};
+} satisfies FieldConfig;
 
 declare module "@asheeui/core" {
   interface ComponentTypeConfigRegistry {

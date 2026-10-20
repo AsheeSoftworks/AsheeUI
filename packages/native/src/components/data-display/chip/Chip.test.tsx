@@ -84,6 +84,31 @@ describe("Native Chip", () => {
     ).toBe(true);
   });
 
+  it("gives the avatar a larger box than the icons around it", async () => {
+    const view = await renderChip(
+      <Chip
+        testID="chip"
+        size="lg"
+        avatar={<Text>AL</Text>}
+        onClose={() => {}}
+        closeLabel="Remove AL">
+        React
+      </Chip>,
+    );
+    const chip = view.getByTestId("chip");
+    const avatarSlot = descendantsWithProp(chip, "className").find((node) =>
+      String(node.props.className).includes("overflow-hidden rounded-full"),
+    );
+
+    // A picture gets the 24-point box of its own scale, not a glyph's 16.
+    expect(String(avatarSlot?.props.className)).toContain("h-6 w-6");
+    expect(String(avatarSlot?.props.className)).not.toContain("h-4 w-4");
+    // The icon map is untouched: the remove control still takes the icon's box.
+    expect(String(view.getByLabelText("Remove AL").props.className)).toContain(
+      "h-4 w-4",
+    );
+  });
+
   it("gives the remove control its own name and fires it", async () => {
     const onClose = jest.fn();
     const view = await renderChip(
@@ -162,8 +187,9 @@ describe("Native Chip", () => {
   });
 
   it("resolves its density, rounding and colour through the cascade", async () => {
-    // The platform's default treatment is solid, so the colour shows in the surface rather
-    // than in a border; the assertion keeps to what the pair of options produces.
+    // The platform now shares the web's `faded` default treatment, so the colour shows as a
+    // tinted surface plus its accent border rather than a solid fill; the assertion keeps
+    // to what the pair of options produces.
     const view = await renderChip(<Chip testID="chip">React</Chip>, {
       components: { chip: { size: "lg", radius: "md", color: "danger" } },
     });

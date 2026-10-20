@@ -11,13 +11,16 @@
  *    screen reader would have to reach beside it.
  * 3. The steps are pressable controls when the consumer can move between them, and plain rows
  *    when it cannot, because a control that does nothing is worse than no control.
+ *
+ * The label is not one of those: it names the step, so it takes the typography role its density
+ * resolves to and scales with the marker beside it. `md` resolves to the size the label has always
+ * used, so only the other densities move.
  */
 
 import {
   NATIVE_STEPPER_CONNECTOR_CLASS,
   NATIVE_STEPPER_DESCRIPTION_CLASS,
   NATIVE_STEPPER_ITEM_CLASS,
-  NATIVE_STEPPER_LABEL_CLASS,
   NATIVE_STEPPER_LIST_CLASS,
   NATIVE_STEPPER_MARKER_CLASS,
   NATIVE_STEPPER_MARKER_FONT_CLASS,
@@ -39,6 +42,11 @@ import {
   FALLBACK_NATIVE_STEPPER_CONFIG,
   type NativeStepperConfig,
 } from "./stepper-config";
+import {
+  NATIVE_STEPPER_LABEL_ROLE,
+  NATIVE_STEPPER_LABEL_TONE,
+  NATIVE_STEPPER_LABEL_WEIGHT_CLASS,
+} from "./stepper-styles";
 
 /**
  * One step of a sequence.
@@ -179,7 +187,12 @@ export function Stepper({
 
         const text = (
           <View className={NATIVE_STEPPER_TEXT_CLASS}>
-            <Text role="label" className={NATIVE_STEPPER_LABEL_CLASS[state]}>
+            {/* The label is what names the step, so it takes the role the density names and
+                scales with the marker beside it; `md` resolves to the size it always had. */}
+            <Text
+              role={NATIVE_STEPPER_LABEL_ROLE[resolvedSize]}
+              tone={NATIVE_STEPPER_LABEL_TONE[state]}
+              className={NATIVE_STEPPER_LABEL_WEIGHT_CLASS}>
               {step.label}
             </Text>
             {resolvedShowDescriptions && step.description && (

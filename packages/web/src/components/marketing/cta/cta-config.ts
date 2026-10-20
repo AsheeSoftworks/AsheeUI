@@ -30,11 +30,11 @@ registerComponentDefaults("cta", defaultCtaConfig);
 /**
  * Hard fallback values used when no config tier provides a value.
  */
-export const FALLBACK_CTA_CONFIG: Required<CtaConfig> = {
+export const FALLBACK_CTA_CONFIG = {
   align: "center",
   spacing: "lg",
   background: "none",
   panel: "bordered",
   containerSize: "lg",
   contained: true,
-};
+} satisfies CtaConfig;

@@ -55,6 +55,19 @@ function classesOf(view: RenderResult, testID: string): string {
   );
 }
 
+/**
+ * Read the classes of the copy control.
+ *
+ * @param view - The rendered tree.
+ * @returns The button's class string.
+ */
+function buttonClassesOf(view: RenderResult): string {
+  return String(
+    (view.getByRole("button", { name: "Copy" }).props as { className?: string })
+      .className ?? "",
+  );
+}
+
 beforeEach(() => {
   write.mockReset();
   write.mockResolvedValue(true);
@@ -117,6 +130,51 @@ describe("Native Clipboard", () => {
     });
 
     expect(write).toHaveBeenCalledWith("INV-9999");
+  });
+
+  it("treats an empty target as a failed copy rather than a successful write of nothing", async () => {
+    const errors: unknown[] = [];
+    const copied: string[] = [];
+    const results: boolean[] = [];
+
+    const view = await renderClipboard(
+      <Clipboard
+        onError={(error) => errors.push(error)}
+        onCopy={(text) => copied.push(text)}>
+        {({ copied: isCopied, error, copy }) => (
+          <>
+            <Button
+              onPress={async () => {
+                results.push(await copy());
+              }}>
+              {isCopied ? "Copied" : error ? "Failed" : "Copy"}
+            </Button>
+            <Button
+              onPress={async () => {
+                results.push(await copy(""));
+              }}>
+              Copy empty
+            </Button>
+          </>
+        )}
+      </Clipboard>,
+    );
+
+    await act(async () => {
+      fireEvent.press(view.getByRole("button", { name: "Copy" }));
+    });
+    await act(async () => {
+      fireEvent.press(view.getByRole("button", { name: "Copy empty" }));
+    });
+
+    // Nothing was written, and the component said so twice: on the first call there is no
+    // value, on the second the text handed in is empty.
+    expect(write).not.toHaveBeenCalled();
+    expect(results).toEqual([false, false]);
+    expect(errors).toHaveLength(2);
+    expect(copied).toHaveLength(0);
+    expect(view.getByText("Failed")).toBeTruthy();
+    expect(view.queryByText("Copied")).toBeNull();
   });
 
   it("ends the copied state after the timeout it was given", async () => {
@@ -261,7 +319,71 @@ describe("Native CopyButton", () => {
     });
 
     expect(errors).toEqual([cause]);
+    // The label stays where it was — a control that could not copy must not rename itself
+    // "Copied" — and the status region says what went wrong instead.
     expect(view.getByRole("button", { name: "Copy" })).toBeTruthy();
-    expect(view.getByTestId("clipboard-status").props.children).toBe("");
+    expect(view.getByTestId("clipboard-status").props.children).toBe(
+      "Copy failed",
+    );
+  });
+
+  it("announces a failure with the wording it is given", async () => {
+    write.mockRejectedValueOnce(new Error("The platform refused the write"));
+
+    const view = await renderClipboard(
+      <CopyButton value="INV-1042" errorAnnouncement="Nothing to copy" />,
+    );
+
+    await act(async () => {
+      fireEvent.press(view.getByRole("button", { name: "Copy" }));
+    });
+
+    expect(view.getByTestId("clipboard-status").props.children).toBe(
+      "Nothing to copy",
+    );
+  });
+
+  it("announces a failed copy instead of claiming success when there is nothing to copy", async () => {
+    const errors: unknown[] = [];
+
+    const view = await renderClipboard(
+      <CopyButton value="" onError={(error) => errors.push(error)} />,
+    );
+
+    await act(async () => {
+      fireEvent.press(view.getByRole("button", { name: "Copy" }));
+    });
+
+    expect(write).not.toHaveBeenCalled();
+    expect(errors).toHaveLength(1);
+    expect(view.getByRole("button", { name: "Copy" })).toBeTruthy();
+    expect(view.getByTestId("clipboard-status").props.children).toBe(
+      "Copy failed",
+    );
+  });
+
+  it("rounds the control by the application's default when nothing configures it", async () => {
+    const view = await renderClipboard(<CopyButton value="INV-1042" />);
+
+    // The application's `defaultRadius` is the tier the control has always rounded by, so an
+    // unconfigured control is unchanged.
+    expect(buttonClassesOf(view)).toContain("rounded-md");
+  });
+
+  it("rounds the control by components.clipboard.radius", async () => {
+    const view = await renderClipboard(<CopyButton value="INV-1042" />, {
+      components: { clipboard: { radius: "full" } },
+    });
+
+    expect(buttonClassesOf(view)).toContain("rounded-full");
+  });
+
+  it("lets the instance's radius win over the configured one", async () => {
+    const view = await renderClipboard(
+      <CopyButton value="INV-1042" radius="none" />,
+      { components: { clipboard: { radius: "full" } } },
+    );
+
+    expect(buttonClassesOf(view)).toContain("rounded-none");
   });
 });

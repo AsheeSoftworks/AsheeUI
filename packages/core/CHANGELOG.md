@@ -1,5 +1,171 @@
 # @asheeui/core
 
+## 2.3.0
+
+### Minor Changes
+
+- Share the contracts both renderers need, and delete a second copy of the precedence rule.
+  
+  **New exports**
+  
+  - `ColumnSortDirection` and `ColumnDef.sortDirection`, so a header cell can state its sort as
+    `aria-sort` on web while the native renderer ignores the field it cannot draw.
+  - `DATA_TABLE_ROW_COUNT_LABEL`, `RowCountLabelValues` and `formatRowCountLabel`, so the "showing
+    N of M" sentence is a template a product can translate rather than a hard-coded English string.
+    `DataTableConfig` gains `rowCountLabel`; the default is the existing wording.
+  - `resolveCarouselVariant`, which maps the shared treatment vocabulary onto the two frames a
+    carousel draws (`solid`, `faded` and `underlined` → `bordered`; `bordered` and `ghost` kept), so
+    neither renderer has to cast or silently fall back.
+  - `NAVBAR_BRAND_TEXT_CLASS` and `NAVBAR_LINK_LIST_CLASS`, `CHIP_AVATAR_SIZE_CLASS`,
+    `BADGE_SLOT_CLASS`, `PAGINATION_LINK_CONTROL_CLASS` and `STEPPER_LABEL_SIZE_TOKEN` — the class
+    and size maps the two renderers now resolve from instead of hard-coding.
+  
+  **Behaviour**
+  
+  - The Calendar's default placeholders are `"Select a date"`, `"Select a time"` and `"Select a
+    date and time"`; they previously read `"Dropmenu date..."`, a copy-paste of another component's
+    wording.
+  - `portrait`'s documented ratio is 3 / 4, which is what both renderers draw.
+  - `LINK_COLOR_CLASS` is typed `Record<Color, string>` and no longer carries a `default` key no
+    colour has, so a missing role is a compile error rather than a silent miss.
+  
+  **Removed**
+  
+  - `src/cascade.ts`, an unused duplicate of `resolveCascade`/`resolveConfigCascade`. It was never
+    exported and never imported; `utils/resolve-token.ts` is the single implementation.
+- Give every band the heading level it should have had, and make the configuration types tell the
+  truth.
+  
+  **Headings**
+  
+  - `SectionHeading` renders `<h2>` at **every** size, and `titleAs` is the one lever — up to `h1`
+    when the band really is the page's title, down to `h3` inside a card. Before, the large sizes
+    silently became `<h1>`: a page composing a hero and a closing call to action rendered two.
+  - `Hero`, `CTA`, `FeatureGrid`, `Testimonials` and `PricingCard` all expose `titleAs`;
+    `FeatureGrid` and `Testimonials` also expose `headingSize`.
+  - Every band now renders a **named** `<section>` — `aria-labelledby` pointing at its own heading —
+    so it is a `region` landmark rather than an anonymous grouping. A consumer's own `aria-label` or
+    `aria-labelledby` still wins.
+  - `AuthLayout`'s title follows the same rule and is now an `<h2>`.
+  - `EmptyState` and `ErrorState` gained `titleAs` as well, so a state can sit at the right level.
+  
+  **Marketing**
+  
+  - `PricingCard`'s `highlighted` is instance-only: it is no longer part of `PricingCardConfig`, so
+    `components.pricingcard.highlighted: true` can no longer recommend **every** plan.
+  - `FeatureGridLink.mapProps` lets a feature's link state its own destination (`to` for a router)
+    instead of always receiving `href`.
+  - A testimonial's avatar is decorative now (`alt=""`), so the person's name is announced once, by
+    the caption.
+  - `Card` merges a link's `className` into its own classes instead of letting it replace the whole
+    string.
+  
+  **Configuration that now behaves as documented**
+  
+  - A custom theme's name is an ordinary string: `color: { midnight: … }`, `defaultTheme: "midnight"`
+    and `themeController.setTheme("midnight")` all compile without a registry declaration or a cast.
+    Existence is still validated at runtime, so a typo in `defaultTheme` throws.
+  - `extends` may name another **declared** custom theme, in any declaration order; an undeclared name
+    is still rejected, and a cycle now warns in development instead of being silently mis-based.
+  - `color-scheme` is written on every theme application, so a runtime switch moves the browser's own
+    surfaces with it.
+  - Only the outermost provider emits the pre-paint script and owns the document's default theme: a
+    nested provider adds themes to the controller and the stylesheet, but no longer sets the default
+    or paints over the application.
+  - `availableThemes` is `readonly ThemeName[]`, the same type `setTheme` takes.
+  - `Input` no longer reads the global `defaultVariant` (the field family never did); its registration
+    is what keeps fields `bordered`.
+  - `HStack`/`VStack` now honour `components.stack.direction` and `.align`; the preset value sits below
+    the component config, and those two axes are no longer registered defaults.
+  - `Page`'s parts accept only the options they act on: `<Page sticky>`, `<PageHeader spacing>`,
+    `<PageContent sticky>` and `<PageFooter spacing>` are type errors instead of silent no-ops.
+    `PageContent.className` styles the rendered element; `innerClassName` styles the inner column.
+  - `DocsLayout` gained `stickyNavigation` (registered `true`); `ResizableScreen`'s container
+    minimums are configuration too (`components.resizableScreen`, registered 200).
+  - `LoadingState`'s registered floor is `md`, and it finally binds: the state claims more room than
+    its own content, which was the point of the option.
+  - A `Sidebar` inside a `SidebarLayout` column no longer nests a second complementary landmark, and
+    `navLabel` defaults to `"Sidebar navigation"` so the two landmarks have distinct names.
+  
+  **Smaller corrections**
+  
+  - `Toast`'s default treatment follows the application's `defaultVariant` (it no longer registers
+    `variant`), its manual dismissal plays the exit animation, its landmark names carry the placement,
+    and `useToast()` outside a provider warns once in development.
+  - The spinner's rotation is inside `motion-safe`.
+  - `Button`'s busy ring matches the control's size.
+  - `EmptyState`'s announcement is configurable (`components.emptystate.role`, default `none`), the
+    same decision `ErrorState` already exposed.
+  - `DataTable` and `RowList` take `rowCount` for a remote list and `searchDebounce` (registered `0`)
+    for a search that hits a server; `components.datatable.loadingLabel` says what is loading.
+  - `DataTable`'s empty state is a status only while it answers a query, and its loading region is
+    labelled `Loading results` by default.
+  - `DataTable` can now be paged and counted from one page of rows.
+- Make overlays dismissible by design, and stop them closing each other.
+  
+  **A layer with no way out**
+  
+  - `Modal` and `Drawer` now draw their own close control — top-right, first in the tab order, named
+    by the new `closeLabel` prop (`"Close dialog"` / `"Close drawer"`) — so a layer can always be
+    left without a pointer, whichever dismissal switches are off.
+  - `onClose` stays optional, but a layer mounted without one is no longer allowed to hold the page:
+    it renders non-modally (no scroll lock, no focus trap, no `aria-modal`) and warns in development.
+    Previously it locked the scroll and trapped focus with no way out.
+  
+  **One Escape, one layer**
+  
+  - Both layers now share a layer stack (`packages/web/src/libs/layer-stack.ts`): <kbd>Escape</kbd> is
+    offered to the topmost layer only and is marked handled, so a confirmation modal above a drawer
+    closes the modal and leaves the drawer. The top layer claims the key even when its own
+    `closeOnEscape` is false, so a disabled modal cannot close the drawer beneath it.
+  
+  **One vocabulary for the two switches**
+  
+  - Both layers accept `closeOnBackdropClick` and `closeOnEscape`. The drawer's
+    `closeOnOverlayClick` / `closeOnEsc` still work and are deprecated, in props and in
+    `components.drawer`; the canonical name wins when both are set at the same tier. Native's drawer
+    now reads the canonical pair too.
+  
+  **Drawer and modal behaviour**
+  
+  - The drawer panel scrolls (`overflow-y-auto`), so content taller than the panel is reachable.
+  - `overlay.className` and `content.className` now **merge** with the component's classes instead of
+    replacing them; the overlay blur is `backdrop-blur-xs` on both layers.
+  - `animated={false}` unmounts the drawer immediately on close instead of waiting 250 ms.
+  - A stated modal `width` keeps a viewport cap, so a wide dialog shrinks on a narrow screen instead
+    of overflowing behind a scroll lock.
+  - The separator on `ResizableScreen` reports the divider's own axis: a side-by-side split is a
+    vertical separator, a stacked one horizontal. It was inverted.
+  
+  **Tooltip**
+  
+  - `children` must be a single **element**; a string is a compile error (an untyped child still gets a
+    focusable wrapper, so nothing becomes unreachable).
+  - A trigger that already has `aria-describedby` keeps it — the hint's id is added, not substituted.
+  - A `ref` on the trigger no longer overwrites the floating reference, so positioning survives
+    React 19's ref-as-prop.
+  - `content={0}` renders; `null`, `undefined`, `""` and booleans mean no hint.
+  - The arrow is drawn in the bubble's surface and border rather than the border colour alone.
+  - On native, `delay` honours its `close` half: a number states both, an object without `close` hides
+    immediately.
+
+### Patch Changes
+
+- A link can name its destination the way a router does, a clipped circle stops cutting itself, and solid variants have an ink token.
+  
+  `Link` accepts `to` alongside `href`. A substituted router component — TanStack Router, React Router, anything
+  that names destinations `to` — receives it directly, so a call site no longer needs `componentProps={{ to: ... }}`.
+  Without a `component`, `to` becomes the anchor's `href`, and when both are given `to` wins.
+  
+  `Avatar` no longer clips itself into a "D" shape. The cause was the stylesheet: `scrollbar-gutter: stable` was
+  applied to `*`, which reserves scrollbar space *inside* every element that clips, so a 40px circle got a 30px
+  content box and cut off its picture and initials. The gutter is reserved on `html` now, where a scrollbar can
+  actually appear, and the avatar's children carry `shrink-0` so a flex parent cannot squeeze them either.
+  
+  Solid variants use a new `on-solid` token instead of `text-white`. Two of them were painting white text on the
+  `background` and `secondary` fills, which is invisible in a light theme; `on-solid` derives from the palette's
+  background, so a solid fill gets dark ink in a dark theme and white ink in a light one.
+
 ## 2.2.1
 
 ### Patch Changes

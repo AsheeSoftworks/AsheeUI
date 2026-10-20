@@ -1,10 +1,14 @@
 /**
  * The PricingCard's configuration face, shared by both platforms.
  *
- * One plan states the same three things on both platforms: how its surface is treated,
- * how much room its body takes, and whether it is the recommended plan. Those are named
- * here, once, so `components.pricingcard` means the same thing in a web application and in
- * a native one.
+ * One plan states the same two things on both platforms: how its surface is treated and
+ * how much room its body takes. Those are named here, once, so `components.pricingcard`
+ * means the same thing in a web application and in a native one.
+ *
+ * Whether a plan is the *recommended* one is deliberately not here. A recommendation
+ * describes one plan among its siblings, so both renderers take it as an instance prop: a
+ * value resolved through the cascade would mark every plan a theme renders as the
+ * recommended one.
  *
  * The module registers nothing and imports no renderer. Its side effect is a type
  * augmentation: declaring `pricingcard` here is what makes `components.pricingcard` a known
@@ -22,7 +26,7 @@ import type { Size } from "../../../shared/radius";
  */
 export interface PricingFeatureItem {
   /** Stable identifier for the line. Defaults to its position in the list. */
-  id?: string | number;
+  id?: string | number | undefined;
 
   /** What the line says. */
   label: ReactNode;
@@ -34,7 +38,7 @@ export interface PricingFeatureItem {
    *
    * @default true
    */
-  included?: boolean;
+  included?: boolean | undefined;
 }
 
 /**
@@ -60,13 +64,10 @@ export type PricingCardVariant = "bordered" | "elevated";
  */
 export interface PricingCardConfig {
   /** Surface treatment. @default "bordered" */
-  variant?: PricingCardVariant;
+  variant?: PricingCardVariant | undefined;
 
   /** Density of the card padding. @default "lg" */
-  size?: Size;
-
-  /** Whether the card is the recommended plan. @default false */
-  highlighted?: boolean;
+  size?: Size | undefined;
 }
 
 declare module "../../../registry" {

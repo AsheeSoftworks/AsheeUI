@@ -49,7 +49,7 @@ export function nextOptionIndex(
         : reachable.length - 1
       : (position + delta + reachable.length) % reachable.length;
 
-  return reachable[nextPosition];
+  return reachable[nextPosition] ?? null;
 }
 
 /**
@@ -66,7 +66,9 @@ export function edgeOptionIndex(
   const reachable = enabledOptionIndexes(options);
   if (reachable.length === 0) return null;
 
-  return edge === "first" ? reachable[0] : reachable[reachable.length - 1];
+  return (
+    (edge === "first" ? reachable[0] : reachable[reachable.length - 1]) ?? null
+  );
 }
 
 /**
@@ -81,7 +83,7 @@ export function matchingOptionIndex(
   prefix: string,
 ): number | null {
   const match = enabledOptionIndexes(options).find((index) =>
-    options[index].label.toLowerCase().startsWith(prefix.toLowerCase()),
+    options[index]?.label.toLowerCase().startsWith(prefix.toLowerCase()),
   );
 
   return match ?? null;

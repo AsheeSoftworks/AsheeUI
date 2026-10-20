@@ -45,7 +45,7 @@ export interface SectionProps extends BaseSectionProps {
    *
    * @default "section"
    */
-  as?: ElementType;
+  as?: ElementType | undefined;
 
   /**
    * Vertical padding, from the shared spacing scale.
@@ -54,7 +54,7 @@ export interface SectionProps extends BaseSectionProps {
    *
    * @default "lg"
    */
-  spacing?: Space;
+  spacing?: Space | undefined;
 }
 
 /**

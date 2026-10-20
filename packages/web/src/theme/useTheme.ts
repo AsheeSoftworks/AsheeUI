@@ -28,7 +28,7 @@ import { type ThemeSelection, themeController } from "./controller";
  *   const { theme, setTheme, availableThemes } = useTheme();
  *
  *   return (
- *     <select value={theme} onChange={(e) => setTheme(e.target.value as ThemeSelection)}>
+ *     <select value={theme} onChange={(e) => setTheme(e.target.value)}>
  *       {availableThemes.map(t => (
  *         <option key={t} value={t}>{t}</option>
  *       ))}
@@ -99,6 +99,15 @@ export function useTheme() {
     /**
      * The list of available theme names in the application.
      * This does not include "system" as it is not a theme name.
+     *
+     * The element type is the same `ThemeName` `setTheme` accepts, so a picker built
+     * from this list needs no cast:
+     *
+     * ```tsx
+     * availableThemes.map((name) => (
+     *   <Button key={name} onClick={() => setTheme(name)}>{name}</Button>
+     * ));
+     * ```
      */
     availableThemes: themeController.getAvailableThemes(),
   };

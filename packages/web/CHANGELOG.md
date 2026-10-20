@@ -1,5 +1,245 @@
 # @asheeui/web
 
+## 2.4.0
+
+### Minor Changes
+
+- Give every band the heading level it should have had, and make the configuration types tell the
+  truth.
+  
+  **Headings**
+  
+  - `SectionHeading` renders `<h2>` at **every** size, and `titleAs` is the one lever — up to `h1`
+    when the band really is the page's title, down to `h3` inside a card. Before, the large sizes
+    silently became `<h1>`: a page composing a hero and a closing call to action rendered two.
+  - `Hero`, `CTA`, `FeatureGrid`, `Testimonials` and `PricingCard` all expose `titleAs`;
+    `FeatureGrid` and `Testimonials` also expose `headingSize`.
+  - Every band now renders a **named** `<section>` — `aria-labelledby` pointing at its own heading —
+    so it is a `region` landmark rather than an anonymous grouping. A consumer's own `aria-label` or
+    `aria-labelledby` still wins.
+  - `AuthLayout`'s title follows the same rule and is now an `<h2>`.
+  - `EmptyState` and `ErrorState` gained `titleAs` as well, so a state can sit at the right level.
+  
+  **Marketing**
+  
+  - `PricingCard`'s `highlighted` is instance-only: it is no longer part of `PricingCardConfig`, so
+    `components.pricingcard.highlighted: true` can no longer recommend **every** plan.
+  - `FeatureGridLink.mapProps` lets a feature's link state its own destination (`to` for a router)
+    instead of always receiving `href`.
+  - A testimonial's avatar is decorative now (`alt=""`), so the person's name is announced once, by
+    the caption.
+  - `Card` merges a link's `className` into its own classes instead of letting it replace the whole
+    string.
+  
+  **Configuration that now behaves as documented**
+  
+  - A custom theme's name is an ordinary string: `color: { midnight: … }`, `defaultTheme: "midnight"`
+    and `themeController.setTheme("midnight")` all compile without a registry declaration or a cast.
+    Existence is still validated at runtime, so a typo in `defaultTheme` throws.
+  - `extends` may name another **declared** custom theme, in any declaration order; an undeclared name
+    is still rejected, and a cycle now warns in development instead of being silently mis-based.
+  - `color-scheme` is written on every theme application, so a runtime switch moves the browser's own
+    surfaces with it.
+  - Only the outermost provider emits the pre-paint script and owns the document's default theme: a
+    nested provider adds themes to the controller and the stylesheet, but no longer sets the default
+    or paints over the application.
+  - `availableThemes` is `readonly ThemeName[]`, the same type `setTheme` takes.
+  - `Input` no longer reads the global `defaultVariant` (the field family never did); its registration
+    is what keeps fields `bordered`.
+  - `HStack`/`VStack` now honour `components.stack.direction` and `.align`; the preset value sits below
+    the component config, and those two axes are no longer registered defaults.
+  - `Page`'s parts accept only the options they act on: `<Page sticky>`, `<PageHeader spacing>`,
+    `<PageContent sticky>` and `<PageFooter spacing>` are type errors instead of silent no-ops.
+    `PageContent.className` styles the rendered element; `innerClassName` styles the inner column.
+  - `DocsLayout` gained `stickyNavigation` (registered `true`); `ResizableScreen`'s container
+    minimums are configuration too (`components.resizableScreen`, registered 200).
+  - `LoadingState`'s registered floor is `md`, and it finally binds: the state claims more room than
+    its own content, which was the point of the option.
+  - A `Sidebar` inside a `SidebarLayout` column no longer nests a second complementary landmark, and
+    `navLabel` defaults to `"Sidebar navigation"` so the two landmarks have distinct names.
+  
+  **Smaller corrections**
+  
+  - `Toast`'s default treatment follows the application's `defaultVariant` (it no longer registers
+    `variant`), its manual dismissal plays the exit animation, its landmark names carry the placement,
+    and `useToast()` outside a provider warns once in development.
+  - The spinner's rotation is inside `motion-safe`.
+  - `Button`'s busy ring matches the control's size.
+  - `EmptyState`'s announcement is configurable (`components.emptystate.role`, default `none`), the
+    same decision `ErrorState` already exposed.
+  - `DataTable` and `RowList` take `rowCount` for a remote list and `searchDebounce` (registered `0`)
+    for a search that hits a server; `components.datatable.loadingLabel` says what is loading.
+  - `DataTable`'s empty state is a status only while it answers a query, and its loading region is
+    labelled `Loading results` by default.
+  - `DataTable` can now be paged and counted from one page of rows.
+- Fix the on-screen keyboard, and make the styling rules enforced rather than assumed.
+  
+  **The keyboard**
+  
+  - A field's `layout` now applies. `enableVirtualKeyboard={{ layout: "numeric" }}` opens the numeric
+    keypad for that field; the layout resets to the provider's default when the keyboard closes, and
+    refocusing a field whose keyboard is already open keeps the current layout. Before, the provider
+    reset the layout on every open, so a field's choice was silently discarded.
+  - `closeDelay` has one default again: **500 ms**. It was effectively 120 ms, because a destructure
+    default shadowed the registered value and the fallback, so configuration never reached it.
+  - The keys are reachable from the keyboard: tabbing into the keyboard no longer dismisses it, arrow
+    keys move between keys, and activating a key leaves focus on that key instead of pulling it back
+    to the field. Previously the first Tab out of the field closed the very thing it reached.
+  - Named keys announce their action — Backspace, Enter, Shift, Symbols, Letters, Space, Clear — while
+    still drawing their glyphs.
+  - Setting `disabled` while the keyboard is open closes it; clearing it does not re-show a keyboard
+    nobody opened.
+  - `{shift}` is honoured in every layout, including custom ones, and returns to the layout it came
+    from.
+  - The keyboard section carries `data-ashee-keyboard`, and `KEYBOARD_CONTAINER_ATTRIBUTE`,
+    `isInsideKeyboard` and `defaultKeyAccessibleLabels` are exported.
+  
+  **Scrollbars and styling**
+  
+  - `components.scrollbar.fallbackWidth` now reaches the page: the pre-paint theme script emits
+    `--ashee-scrollbar-fallback-width`, which the stylesheet reads for `scrollbar-width`.
+  - The disabled field background is derived from the theme
+    (`color-mix(in oklab, var(--ashee-foreground) 8%, transparent)`) instead of a fixed hex, so it
+    follows a dark or custom palette.
+  - The class-convention scanners now walk `@asheeui/core` and `@asheeui/native` as well as
+    `@asheeui/web`, so the 60-odd style dictionaries those packages own are held to the same rules as
+    the components — and the scan is faster than before, because the files are read in parallel and
+    cached across the two scanners.
+- A link can name its destination the way a router does, a clipped circle stops cutting itself, and solid variants have an ink token.
+  
+  `Link` accepts `to` alongside `href`. A substituted router component — TanStack Router, React Router, anything
+  that names destinations `to` — receives it directly, so a call site no longer needs `componentProps={{ to: ... }}`.
+  Without a `component`, `to` becomes the anchor's `href`, and when both are given `to` wins.
+  
+  `Avatar` no longer clips itself into a "D" shape. The cause was the stylesheet: `scrollbar-gutter: stable` was
+  applied to `*`, which reserves scrollbar space *inside* every element that clips, so a 40px circle got a 30px
+  content box and cut off its picture and initials. The gutter is reserved on `html` now, where a scrollbar can
+  actually appear, and the avatar's children carry `shrink-0` so a flex parent cannot squeeze them either.
+  
+  Solid variants use a new `on-solid` token instead of `text-white`. Two of them were painting white text on the
+  `background` and `secondary` fills, which is invisible in a light theme; `on-solid` derives from the palette's
+  background, so a solid fill gets dark ink in a dark theme and white ink in a light one.
+- Make overlays dismissible by design, and stop them closing each other.
+  
+  **A layer with no way out**
+  
+  - `Modal` and `Drawer` now draw their own close control — top-right, first in the tab order, named
+    by the new `closeLabel` prop (`"Close dialog"` / `"Close drawer"`) — so a layer can always be
+    left without a pointer, whichever dismissal switches are off.
+  - `onClose` stays optional, but a layer mounted without one is no longer allowed to hold the page:
+    it renders non-modally (no scroll lock, no focus trap, no `aria-modal`) and warns in development.
+    Previously it locked the scroll and trapped focus with no way out.
+  
+  **One Escape, one layer**
+  
+  - Both layers now share a layer stack (`packages/web/src/libs/layer-stack.ts`): <kbd>Escape</kbd> is
+    offered to the topmost layer only and is marked handled, so a confirmation modal above a drawer
+    closes the modal and leaves the drawer. The top layer claims the key even when its own
+    `closeOnEscape` is false, so a disabled modal cannot close the drawer beneath it.
+  
+  **One vocabulary for the two switches**
+  
+  - Both layers accept `closeOnBackdropClick` and `closeOnEscape`. The drawer's
+    `closeOnOverlayClick` / `closeOnEsc` still work and are deprecated, in props and in
+    `components.drawer`; the canonical name wins when both are set at the same tier. Native's drawer
+    now reads the canonical pair too.
+  
+  **Drawer and modal behaviour**
+  
+  - The drawer panel scrolls (`overflow-y-auto`), so content taller than the panel is reachable.
+  - `overlay.className` and `content.className` now **merge** with the component's classes instead of
+    replacing them; the overlay blur is `backdrop-blur-xs` on both layers.
+  - `animated={false}` unmounts the drawer immediately on close instead of waiting 250 ms.
+  - A stated modal `width` keeps a viewport cap, so a wide dialog shrinks on a narrow screen instead
+    of overflowing behind a scroll lock.
+  - The separator on `ResizableScreen` reports the divider's own axis: a side-by-side split is a
+    vertical separator, a stacked one horizontal. It was inverted.
+  
+  **Tooltip**
+  
+  - `children` must be a single **element**; a string is a compile error (an untyped child still gets a
+    focusable wrapper, so nothing becomes unreachable).
+  - A trigger that already has `aria-describedby` keeps it — the hint's id is added, not substituted.
+  - A `ref` on the trigger no longer overwrites the floating reference, so positioning survives
+    React 19's ref-as-prop.
+  - `content={0}` renders; `null`, `undefined`, `""` and booleans mean no hint.
+  - The arrow is drawn in the bubble's surface and border rather than the border colour alone.
+  - On native, `delay` honours its `close` half: a number states both, an object without `close` hides
+    immediately.
+- Correct the behaviour of the components that documented one thing and did another, and add the
+  props those components needed to be usable at all.
+  
+  **Accessibility, where the element and the announcement disagreed**
+  
+  - `Link` keeps its `href` when `disabled`: the press is refused, `aria-disabled` states the
+    condition, and the destination stays in the tab order. A link that vanished from the keyboard was
+    a control a reader could not be told about.
+  - `Chip` is a tab stop only when it is pressable, and gains `role="button"` when it is. Its remove
+    control is now reachable from the keyboard: the root's key handler no longer intercepts
+    keydowns bubbling from the button, so <kbd>Enter</kbd> and <kbd>Space</kbd> close the chip
+    instead of running the chip's own press.
+  - `Accordion` headers move between each other with the arrow keys (<kbd>Home</kbd> and
+    <kbd>End</kbd> included) and a disabled header keeps `aria-disabled` rather than the native
+    `disabled` attribute, so it stays reachable and announced.
+  - `Carousel` marks non-active slides `inert` (and `aria-hidden`), so a keyboard or screen-reader
+    user no longer enters slides that are off-screen, and the active indicator carries
+    `aria-current`.
+  - `Table` states a chosen row with `aria-current` rather than `aria-selected`, which a plain
+    `<table>` does not expose; `DataTable`'s empty result is announced while it answers a query; the
+    header of a data table names the table through `aria-labelledby`.
+  - `Tabs` emits `aria-controls` only on the selected trigger — the only panel that exists — and an
+    `activeId` naming no tab falls back to the first, so the bar always has a reachable trigger.
+  - `Sidebar` names a collapsed row (the label is rendered visually hidden rather than removed),
+    names its `<nav>` with the new `navLabel`, and honours `SidebarSection.disabled`.
+  - `Marquee` pauses on keyboard focus as well as hover, and under `prefers-reduced-motion` — or
+    `isAnimated={false}` — renders a single copy in a frame that scrolls instead of clipping the
+    overflow. The duplicate copy is `inert` while the track moves, so its content is one tab stop.
+  - `Badge` prefers its visible content over `label` when both are given, with a development warning:
+    a name that contradicts the text beside it is worse than no name.
+  
+  **Configuration that was declared and never read**
+  
+  - `components.accordion.disableAnimation`, `components.carousel.disableAnimation`,
+    `components.sidebar.animated`, `components.clipboard.radius`, `components.card.image.ratio`,
+    `components.card.image.fit`, `components.datatable.rowCountLabel` and
+    `components.pagination.size` (in link mode) now reach the component.
+  - `Image` no longer registers a `radius`, so a picture follows the application's `defaultRadius`
+    like every other rounded component; `md` remains its fallback.
+  - `Textarea` honours `radius="full"` instead of clamping it to `xl`, matching `Input`.
+  - `Input` and `Textarea` resolve `fullWidth` (default `true`, unchanged rendering) and render it,
+    so an inline field shrinks to its content with its label and message.
+  
+  **New props and behaviour**
+  
+  - `Card` takes `titleAs` for its heading level, resolves its image ratio and fit through the
+    cascade, keeps a real link focusable when `isClickable={false}`, and maps the shared variant
+    vocabulary onto the four surfaces it draws (`solid` → `elevated`).
+  - `Table` and `DataTable` take `caption`; `ColumnDef` gains `sortDirection`, which states itself as
+    `aria-sort`; `DataTable` takes `selectedRowKey` (it is marked, not managed).
+  - `Pagination` takes `link` for a router's own anchor, sizes its link controls, calls
+    `onPageChange` in link mode, and removes the destination and tab stop from an unavailable
+    control instead of leaving an address that cannot be visited.
+  - `Breadcrumb` takes a trail-level `link`, with a step's own component still winning.
+  - `Footer` takes `legalLabel` and `socialLabel`, so its two landmark names can be translated.
+  - `Clipboard`'s `CopyButton` takes `errorAnnouncement` and announces a failed copy; `copy()` reports
+    failure instead of claiming it copied an empty string.
+  - `FileUpload` forwards `required` to the file input, so the browser refuses an empty submission.
+  - `Calendar` moves to the ends of the focused week with <kbd>Home</kbd> and <kbd>End</kbd>.
+  - `Stepper`'s `size` scales the step labels as well as the markers.
+  - `Navbar` wraps crowded destinations instead of painting them over the actions, and leaves
+    <kbd>Escape</kbd> alone unless focus is inside its panel.
+  - `Page` and its parts no longer spread their configuration props onto the DOM.
+  - `Carousel`, `Card`, `Chip`, `Badge` and `Table` no longer emit an `aria-disabled="false"` or an
+    `aria-selected="false"` state that says nothing.
+
+### Patch Changes
+
+- Updated dependencies
+- Updated dependencies
+- Updated dependencies
+- Updated dependencies
+  - @asheeui/core@2.3.0
+
 ## 2.3.1
 
 ### Patch Changes

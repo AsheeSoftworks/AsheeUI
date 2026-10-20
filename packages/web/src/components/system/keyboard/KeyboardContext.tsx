@@ -29,37 +29,37 @@ export interface KeyboardOpenOptions {
    * The layout to show when the keyboard opens.
    * Overrides the provider's default layout.
    */
-  layout?: LayoutName;
+  layout?: LayoutName | undefined;
 
   /**
    * Size for this keyboard instance.
    * Overrides the provider's size setting.
    */
-  size?: KeyboardSizeKey;
+  size?: KeyboardSizeKey | undefined;
 
   /**
    * Variant for this keyboard instance.
    * Overrides the provider's variant setting.
    */
-  variant?: Variant;
+  variant?: Variant | undefined;
 
   /**
    * Color for this keyboard instance.
    * Overrides the provider's color setting.
    */
-  color?: Color;
+  color?: Color | undefined;
 
   /**
    * Radius for this keyboard instance.
    * Overrides the provider's radius setting.
    */
-  radius?: Radius;
+  radius?: Radius | undefined;
 
   /**
    * Portal setting for this keyboard instance.
    * Overrides the provider's portal setting.
    */
-  portal?: boolean;
+  portal?: boolean | undefined;
 }
 
 /**
@@ -155,6 +155,32 @@ export interface KeyboardContextType {
  * React context for the keyboard state.
  */
 export const KeyboardContext = createContext<KeyboardContextType | null>(null);
+
+// ─── Focus Helpers ─────────────────────────────────────────────────────────
+
+/**
+ * Attribute that marks the on-screen keyboard's container in the DOM.
+ *
+ * The keyboard is rendered in a portal, so it is not a descendant of the field
+ * that opened it. The attribute is how the field's blur handler can tell that
+ * the focus moved *into* the keyboard — to one of its keys — rather than away
+ * from it.
+ */
+export const KEYBOARD_CONTAINER_ATTRIBUTE = "data-ashee-keyboard";
+
+/**
+ * Whether an element is the keyboard's container or sits inside it.
+ *
+ * @param target - The element receiving focus, when there is one.
+ * @returns True when the focus stayed within the on-screen keyboard.
+ */
+export function isInsideKeyboard(target: EventTarget | null): boolean {
+  return (
+    typeof Element !== "undefined" &&
+    target instanceof Element &&
+    target.closest(`[${KEYBOARD_CONTAINER_ATTRIBUTE}]`) !== null
+  );
+}
 
 // ─── Hook ──────────────────────────────────────────────────────────────────
 

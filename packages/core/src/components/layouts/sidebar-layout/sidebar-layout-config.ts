@@ -42,14 +42,14 @@ export interface SidebarLayoutConfig {
    *
    * @default "start"
    */
-  side?: SidebarLayoutSide;
+  side?: SidebarLayoutSide | undefined;
 
   /**
    * Width of the navigation column.
    *
    * @default "md"
    */
-  sidebarWidth?: SidebarLayoutWidth;
+  sidebarWidth?: SidebarLayoutWidth | undefined;
 
   /**
    * Whether the navigation column stays in view while the content scrolls.
@@ -58,7 +58,7 @@ export interface SidebarLayoutConfig {
    *
    * @default true
    */
-  stickySidebar?: boolean;
+  stickySidebar?: boolean | undefined;
 }
 
 declare module "../../../registry" {

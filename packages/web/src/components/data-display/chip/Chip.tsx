@@ -10,6 +10,7 @@
 
 import {
   CHIP_AVATAR_CLASS,
+  CHIP_AVATAR_SIZE_CLASS,
   CHIP_BASE_CLASS,
   CHIP_CLOSE_CLASS,
   CHIP_DISABLED_CLASS,
@@ -61,43 +62,47 @@ export interface ChipProps extends BaseChipProps {
    *
    * @default false
    */
-  isDisabled?: boolean;
+  isDisabled?: boolean | undefined;
 
   /**
    * Leading icon rendered before the content.
    * Typically used to add visual context to the chip.
    */
-  startIcon?: ReactNode;
+  startIcon?: ReactNode | undefined;
 
   /**
    * Trailing icon rendered after the content (hidden when closable).
    * When onClose is provided, this is replaced by the close button.
    */
-  endIcon?: ReactNode;
+  endIcon?: ReactNode | undefined;
 
   /**
    * Avatar node rendered before the content, replacing `startIcon`.
-   * Typically used for user or entity avatars.
+   * It sits in a slot larger than the icon slot, because a face needs more
+   * room than a glyph; a node that states a diameter of its own is scaled into
+   * that slot rather than cropped by it.
    */
-  avatar?: ReactNode;
+  avatar?: ReactNode | undefined;
 
   /**
    * Renders a small status dot.
    * Pass `true` for the current color, or a CSS color string.
    */
-  dot?: boolean | string;
+  dot?: boolean | string | undefined;
 
   /**
    * When provided, renders a remove button that fires this callback.
-   * Makes the chip closable with a close button.
+   * Makes the chip closable with a close button, which is keyboard-operable
+   * as any other `<button>` is — <kbd>Enter</kbd> and <kbd>Space</kbd> remove
+   * the chip without also pressing it.
    */
-  onClose?: (e: MouseEvent<HTMLButtonElement>) => void;
+  onClose?: ((e: MouseEvent<HTMLButtonElement>) => void) | undefined;
 
   /**
    * Custom remove icon shown inside the close button.
    * Overrides the default CloseIcon.
    */
-  closeIcon?: ReactNode;
+  closeIcon?: ReactNode | undefined;
 
   /**
    * Accessible name of the remove control.
@@ -106,26 +111,29 @@ export interface ChipProps extends BaseChipProps {
    *
    * @default "Remove chip"
    */
-  closeLabel?: string;
+  closeLabel?: string | undefined;
 
   /**
    * Chip content.
    * The label text to display inside the chip.
    */
-  children?: ReactNode;
+  children?: ReactNode | undefined;
 }
 
 /**
  * A compact element that represents an input, choice, or attribute.
  *
  * Chip displays short labels with optional avatars, icons, a status
- * dot, and an optional close button. When `onClose` is provided the
- * chip becomes keyboard-operable for removal. Visual tokens resolve
- * through the standard AsheeUI cascade.
+ * dot, and an optional close button. A closable chip is removable from the
+ * keyboard, because the remove control `onClose` adds is a real `<button>`;
+ * a chip with `onClick` is pressable from the keyboard as well, and only then
+ * is it a tab stop and a `button` role. Without `onClick` it is a token rather
+ * than a control: it takes no focus and exposes no role, and its only control
+ * is the remove button. Visual tokens resolve through the standard AsheeUI
+ * cascade.
  *
- * The component automatically handles accessibility attributes including
- * aria-disabled, proper focus management, and keyboard interaction for
- * both the chip and its close button.
+ * `isDisabled` refuses both the press and the close, and states the chip as
+ * disabled for as long as that is true.
  *
  * @param props - Chip configuration options and HTML div props.
  * @param props.variant - Visual style variant. Defaults to "bordered".
@@ -135,13 +143,14 @@ export interface ChipProps extends BaseChipProps {
  * @param props.isDisabled - Disabled state. Defaults to false.
  * @param props.startIcon - Leading icon.
  * @param props.endIcon - Trailing icon.
- * @param props.avatar - Avatar node.
+ * @param props.avatar - Avatar node, drawn in a slot larger than the icon's.
  * @param props.dot - Status dot.
- * @param props.onClose - Close callback.
+ * @param props.onClose - Close callback, fired by the remove control.
  * @param props.closeIcon - Custom close icon.
  * @param props.children - Chip label content.
  * @param props.className - Extra CSS classes for the chip.
- * @param props.onClick - Click handler for the chip.
+ * @param props.onClick - Click handler for the chip, which also makes it a
+ * pressable `button` with keyboard activation.
  *
  * @example
  * ```tsx
@@ -268,11 +277,22 @@ export const Chip = forwardRef<HTMLDivElement, ChipProps>(
       FALLBACK_CHIP_CONFIG.size,
     );
 
+    const avatarSizeClass = resolveClassKey(
+      resolvedSizeKey,
+      CHIP_AVATAR_SIZE_CLASS,
+      FALLBACK_CHIP_CONFIG.size,
+    );
+
     const radiusClass = resolveClassKey(
       resolvedRadiusKey,
       RADIUS_CLASS,
       FALLBACK_CHIP_CONFIG.radius,
     );
+
+    // A chip is a control only when it can be pressed. Without a handler the
+    // token has no press of its own to offer, and the remove control is its
+    // only target.
+    const isPressable = Boolean(onClick);
 
     const handleClose = (e: MouseEvent<HTMLButtonElement>) => {
       e.stopPropagation();
@@ -280,48 +300,39 @@ export const Chip = forwardRef<HTMLDivElement, ChipProps>(
       onClose?.(e);
     };
 
-    // Handle click events (mouse)
+    // Handle click events (mouse, or a keyboard activating a real button)
     const handleClick = (e: MouseEvent<HTMLDivElement>) => {
       if (isDisabled) return;
       onClick?.(e);
     };
 
-    // Handle keyboard events (enter/space)
+    // Keyboard activation of the chip itself. A keystroke that lands on anything
+    // inside the chip belongs to that node: the remove control is a real button,
+    // and the browser runs it on this same keystroke, so acting on the bubbled
+    // event would prevent the removal and call the chip's handler instead.
     const handleKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
+      if (e.target !== e.currentTarget) return;
       if (isDisabled) return;
 
-      if (e.key === "Enter" || e.key === " ") {
+      if (e.key === "Enter" || e.key === " " || e.key === "Spacebar") {
+        // Space scrolls the page by default; a button must not.
         e.preventDefault();
-        // Create a synthetic mouse event or call onClick directly
-        // We'll simulate a mouse event by creating a new object
-        const syntheticMouseEvent = {
-          ...e,
-          button: 0,
-          buttons: 1,
-          clientX: 0,
-          clientY: 0,
-          pageX: 0,
-          pageY: 0,
-          screenX: 0,
-          screenY: 0,
-          altKey: e.altKey,
-          ctrlKey: e.ctrlKey,
-          metaKey: e.metaKey,
-          shiftKey: e.shiftKey,
-          type: "click",
-        } as unknown as MouseEvent<HTMLDivElement>;
-
-        onClick?.(syntheticMouseEvent);
+        // `onClick` is typed for a pointer event, but this is the keyboard
+        // activating the same control. The handler receives the event that
+        // happened rather than a fabricated mouse event with coordinates the
+        // chip never had.
+        onClick?.(e as unknown as MouseEvent<HTMLDivElement>);
       }
     };
 
     return (
       <div
         ref={ref}
-        tabIndex={isDisabled ? -1 : 0}
-        aria-disabled={isDisabled}
-        onClick={handleClick}
-        onKeyDown={handleKeyDown}
+        role={isPressable ? "button" : undefined}
+        tabIndex={isPressable ? (isDisabled ? -1 : 0) : undefined}
+        aria-disabled={isDisabled || undefined}
+        onClick={isPressable ? handleClick : undefined}
+        onKeyDown={isPressable ? handleKeyDown : undefined}
         className={cn(
           CHIP_BASE_CLASS,
           CHIP_FOCUS_CLASS,
@@ -332,7 +343,7 @@ export const Chip = forwardRef<HTMLDivElement, ChipProps>(
           gapClass,
           radiusClass,
           isDisabled && CHIP_DISABLED_CLASS,
-          onClick && !isDisabled && CHIP_PRESSABLE_CLASS,
+          isPressable && !isDisabled && CHIP_PRESSABLE_CLASS,
           className,
         )}
         style={style}
@@ -351,7 +362,9 @@ export const Chip = forwardRef<HTMLDivElement, ChipProps>(
 
         {/* Avatar */}
         {avatar && (
-          <span className={cn(CHIP_AVATAR_CLASS, iconSizeClass)}>{avatar}</span>
+          <span className={cn(CHIP_AVATAR_CLASS, avatarSizeClass)}>
+            {avatar}
+          </span>
         )}
 
         {/* Start Icon */}

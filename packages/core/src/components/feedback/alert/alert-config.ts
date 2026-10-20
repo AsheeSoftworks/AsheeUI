@@ -44,7 +44,7 @@ export interface AlertConfig {
    *
    * @default "info"
    */
-  type?: AlertType;
+  type?: AlertType | undefined;
 
   /**
    * Visual style variant.
@@ -53,14 +53,14 @@ export interface AlertConfig {
    *
    * @default "faded"
    */
-  variant?: Exclude<Variant, "underlined">;
+  variant?: Exclude<Variant, "underlined"> | undefined;
 
   /**
    * Corner rounding.
    *
    * @default "md"
    */
-  radius?: Radius;
+  radius?: Radius | undefined;
 }
 
 declare module "../../../registry" {

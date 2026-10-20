@@ -17,8 +17,13 @@ import type { ColorRole } from "../../../tokens";
  * The rotation is a CSS animation on a decoration, so the element is taken out of
  * the text flow and told never to shrink; both the size and the colour of the ring
  * come from the maps below, drawn in `currentColor`.
+ *
+ * The rotation is stated through the `motion-safe` variant rather than unconditionally,
+ * because the skeleton's shimmer is: a reader who asked for reduced motion gets a still
+ * ring on a status region that still says what is loading, which is the same answer the
+ * placeholder gives. The label, not the movement, is what carries the wait.
  */
-export const SPINNER_BASE_CLASS = "animate-spin shrink-0";
+export const SPINNER_BASE_CLASS = "motion-safe:animate-spin shrink-0";
 
 /**
  * The classes the web spinner's size resolves to.
@@ -33,8 +38,10 @@ export const SPINNER_SIZE_CLASS: Record<Size, string> = {
  * The classes the web spinner's colour resolves to.
  *
  * The ring is drawn in `currentColor`, so the colour role is a text colour here.
- * `none` is the surface's own foreground, which is what a spinner over a filled
- * surface wants to inherit.
+ * `none` is the ink a filled surface paints its content in — the background token,
+ * which is what a spinner over a solid surface matches — not an inherited colour.
+ * A spinner that should take the surrounding text colour is given `text-current`
+ * through `className`; nothing in this map inherits.
  */
 export const SPINNER_COLOR_CLASS: Record<ColorRole, string> = {
   none: "text-background",

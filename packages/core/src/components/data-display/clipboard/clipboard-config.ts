@@ -27,26 +27,27 @@ export interface ClipboardConfig {
    *
    * @default 2000
    */
-  timeout?: number;
+  timeout?: number | undefined;
 
   /** Name of the copy control. @default "Copy" */
-  label?: string;
+  label?: string | undefined;
 
   /** Name of the copy control once the text is on the clipboard.
    * @default "Copied" */
-  copiedLabel?: string;
+  copiedLabel?: string | undefined;
 
   /** Visual style of the copy control. @default "bordered" */
-  variant?: Variant;
+  variant?: Variant | undefined;
 
   /** Accent colour of the copy control. @default "primary" */
-  color?: Color;
+  color?: Color | undefined;
 
   /** Density of the copy control. @default "sm" */
-  size?: Size;
+  size?: Size | undefined;
 
-  /** Corner rounding of the copy control. Defaults to the framework radius. */
-  radius?: Radius;
+  /** Corner rounding of the copy control.
+   * Defaults to the application's `defaultRadius`. */
+  radius?: Radius | undefined;
 }
 
 declare module "../../../registry" {

@@ -14,7 +14,10 @@
  * as its label, because the platform ships no icon set. A press on a row reports the selection and
  * follows the destination, which is what a click on the web's anchor does. A collapsed row explains
  * itself through the framework's native `Tooltip`, which the platform shows on a long press rather
- * than while a pointer rests. The platform has no media for the hint to escape, so a hint belongs to
+ * than while a pointer rests, and states its name on the row itself, because the icon is all it
+ * draws and a hint is a description rather than a name. A disabled section keeps its rows on screen
+ * and refuses their presses, which is what the shared contract says a section's `disabled` means.
+ * The platform has no media for the hint to escape, so a hint belongs to
  * the row it describes. Colour is not inherited from a row, so a row's label carries the role the
  * web's row passes down. And the width transition and the pointer cursor the web states are not
  * declared here, because a class cannot promise movement the platform does not have; the option
@@ -48,6 +51,7 @@ import {
   NATIVE_SIDEBAR_SECTION_LABEL_ROLE,
   NATIVE_SIDEBAR_TITLE_ROLE,
   NATIVE_SIDEBAR_VARIANT_CLASS,
+  NATIVE_VISUALLY_HIDDEN_CLASS,
   type Radius,
   resolveCascade,
   resolveClassKey,
@@ -69,9 +73,9 @@ import { useAsheeNativeConfig } from "../../../provider/AsheeNativeProvider";
 import { classNames } from "../../../utils/class-names";
 import { openDestination } from "../../../utils/open-destination";
 import { Button } from "../../forms/button/Button";
-import { Link } from "../link/Link";
-import { Text } from "../../typography/text/Text";
 import { Tooltip } from "../../overlays/tooltip/Tooltip";
+import { Text } from "../../typography/text/Text";
+import { Link } from "../link/Link";
 import {
   FALLBACK_NATIVE_SIDEBAR_CONFIG,
   type NativeSidebarConfig,
@@ -492,8 +496,13 @@ export function Sidebar<T = string>({
 
   // One navigation row: the framework's own link, because a row leads somewhere, with the row's
   // own metrics and treatment on top of it.
-  const renderItem = (item: SidebarItem<T>) => {
+  //
+  // A row can be unavailable on its own or because the section that holds it is. Either way it is
+  // still a row — it says what the application offers — but it cannot act, which is what
+  // `SidebarSection.disabled` states on the web too.
+  const renderItem = (item: SidebarItem<T>, isSectionDisabled = false) => {
     const isActive = item.id === activeKey;
+    const isDisabled = isSectionDisabled || item.disabled === true;
 
     const rowClasses = classNames(
       NATIVE_SIDEBAR_ITEM_BASE_CLASS,
@@ -501,7 +510,7 @@ export function Sidebar<T = string>({
       isCollapsed ? "justify-center px-0" : "justify-start",
       isActive && NATIVE_SIDEBAR_ITEM_ACTIVE_CLASS,
       isActive ? activeSurfaceClass : inactiveSurfaceClass,
-      item.disabled && NATIVE_SIDEBAR_ITEM_DISABLED_CLASS,
+      isDisabled && NATIVE_SIDEBAR_ITEM_DISABLED_CLASS,
       resolveClassKey(
         resolvedItemVariant === "underlined" ? "none" : resolvedItemRadiusKey,
         NATIVE_RADIUS_CLASS,
@@ -520,16 +529,23 @@ export function Sidebar<T = string>({
         // The active row is the page the consumer is on, which is what `aria-current` says on
         // the web; the platform states the same thing as the row being selected.
         accessibilityState={{
-          disabled: Boolean(item.disabled),
+          disabled: isDisabled,
           selected: isActive,
         }}
+        // Collapsed, the icon is the only thing the row draws, so the row states its name
+        // itself. The web keeps the label in the accessibility tree as visually hidden text;
+        // the platform names the control it is, which is the same fact in the vocabulary it
+        // has. The tooltip stays a description — a hint — rather than becoming the name.
+        accessibilityLabel={
+          isCollapsed && typeof item.label === "string" ? item.label : undefined
+        }
         component={link?.component}
         componentProps={link?.props}
-        disabled={item.disabled}
+        disabled={isDisabled}
         className={rowClasses}
         href={item.href}
         onPress={
-          item.disabled
+          isDisabled
             ? undefined
             : () => {
                 // A press reports the selection, which is what the web's click handler does.
@@ -554,38 +570,44 @@ export function Sidebar<T = string>({
           </View>
         )}
 
-        {!isCollapsed && (
-          <>
-            {typeof item.label === "string" ? (
-              // The platform's text takes one line and gives the room back to the row, which is
-              // what the web's truncating span does.
-              <Text
-                truncate
-                role={NATIVE_SIDEBAR_ITEM_ROLE[resolvedSizeKey]}
-                className={labelTextClasses}>
-                {item.label}
-              </Text>
-            ) : (
-              // A consumer's own label is its own element, so the platform cannot restate its
-              // type; it only gives it the room the icon and the badge leave.
-              <View className={NATIVE_SIDEBAR_ITEM_LABEL_CLASS}>
-                {item.label}
-              </View>
-            )}
+        {typeof item.label === "string" ? (
+          // The platform's text takes one line and gives the room back to the row, which is
+          // what the web's truncating span does. Collapsed, the row is named above instead, so
+          // the label is not drawn a second time.
+          !isCollapsed && (
+            <Text
+              truncate
+              role={NATIVE_SIDEBAR_ITEM_ROLE[resolvedSizeKey]}
+              className={labelTextClasses}>
+              {item.label}
+            </Text>
+          )
+        ) : (
+          // A consumer's own label is its own element, so the platform cannot restate its
+          // type; it only gives it the room the icon and the badge leave. The type is not a
+          // string, so it cannot name the row from a prop: collapsed, it stays in the tree
+          // through the platform's visually hidden treatment, which is what the web's
+          // `sr-only` span does with the same element.
+          <View
+            className={classNames(
+              NATIVE_SIDEBAR_ITEM_LABEL_CLASS,
+              isCollapsed && NATIVE_VISUALLY_HIDDEN_CLASS,
+            )}>
+            {item.label}
+          </View>
+        )}
 
-            {item.badge && (
-              <View className={NATIVE_SIDEBAR_ITEM_BADGE_CLASS}>
-                {typeof item.badge === "string" ||
-                typeof item.badge === "number" ? (
-                  // A badge written as a count is text, and the platform renders a text node
-                  // through its own component rather than inside a view.
-                  <Text role="label">{item.badge}</Text>
-                ) : (
-                  item.badge
-                )}
-              </View>
+        {!isCollapsed && item.badge && (
+          <View className={NATIVE_SIDEBAR_ITEM_BADGE_CLASS}>
+            {typeof item.badge === "string" ||
+            typeof item.badge === "number" ? (
+              // A badge written as a count is text, and the platform renders a text node
+              // through its own component rather than inside a view.
+              <Text role="label">{item.badge}</Text>
+            ) : (
+              item.badge
             )}
-          </>
+          </View>
         )}
       </Link>
     );
@@ -611,33 +633,40 @@ export function Sidebar<T = string>({
   const renderSection = (section: SidebarSection<T>) => {
     if (!section.items || section.items.length === 0) return null;
 
+    // A disabled section keeps its rows on screen — they are still information about what the
+    // application offers — but none of them can act, which is what `SidebarSection.disabled`
+    // states. The section says so itself as well, and its label stays where it is and stays
+    // readable, dimmed with the rows exactly as the web dims it, so the section still says what
+    // it is rather than disappearing.
+    const isSectionDisabled = section.disabled === true;
+
+    const labelClasses = classNames(
+      NATIVE_SIDEBAR_SECTION_LABEL_CLASS[resolvedSizeKey],
+      sectionLabelClassName,
+      isSectionDisabled && "opacity-50",
+    );
+
     return (
-      <View key={String(section.id)} className={NATIVE_SIDEBAR_SECTION_CLASS}>
+      <View
+        key={String(section.id)}
+        className={NATIVE_SIDEBAR_SECTION_CLASS}
+        accessibilityState={isSectionDisabled ? { disabled: true } : undefined}>
         {!isCollapsed &&
           section.label &&
           (typeof section.label === "string" ? (
             <Text
               numberOfLines={1}
               role={NATIVE_SIDEBAR_SECTION_LABEL_ROLE}
-              className={classNames(
-                NATIVE_SIDEBAR_SECTION_LABEL_CLASS[resolvedSizeKey],
-                sectionLabelClassName,
-              )}>
+              className={labelClasses}>
               {section.label}
             </Text>
           ) : (
             // A consumer's own label is its own element, so the platform only gives it the
             // placement and the spacing a label has.
-            <View
-              className={classNames(
-                NATIVE_SIDEBAR_SECTION_LABEL_CLASS[resolvedSizeKey],
-                sectionLabelClassName,
-              )}>
-              {section.label}
-            </View>
+            <View className={labelClasses}>{section.label}</View>
           ))}
 
-        {section.items.map(renderItem)}
+        {section.items.map((item) => renderItem(item, isSectionDisabled))}
       </View>
     );
   };

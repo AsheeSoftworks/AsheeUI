@@ -45,23 +45,28 @@ export interface ImageProps extends BaseImageProps {
    * Fallback source shown when the primary `src` fails to load.
    * When the primary image fails to load, this source is used instead.
    */
-  fallbackSrc?: string;
+  fallbackSrc?: string | undefined;
 
   /**
    * Custom image component to use instead of the native `<img>` tag
    * (e.g. `next/image`).
    * When provided, the component renders this instead of img.
    */
-  component?: ElementType;
+  component?: ElementType | undefined;
 
   /**
    * Additional props for `component` (for example `{ priority: true }`).
+   *
+   * These are forwarded as given, `loading` and `priority` included: the
+   * substituted component's own loading behaviour is the consumer's to state.
+   * `Image` only supplies `loading="eager"` when neither this nor the instance's
+   * own `loading` states one.
    *
    * If `component` is set and neither `width`/`height` nor `fill`
    * are provided here, `fill: true` is applied automatically since
    * this component is container/ratio driven.
    */
-  componentProps?: Record<string, unknown>;
+  componentProps?: Record<string, unknown> | undefined;
 }
 
 /**
@@ -285,32 +290,29 @@ export const Image = forwardRef<HTMLImageElement, ImageProps>(
       className,
     );
 
-    // ─── FIX: Force eager loading for custom image components ──────────────
-    // Next.js Image with priority or lazy loading can cause script errors
-    // when used with AsheeUIProvider. Force eager loading as a safeguard.
+    // ─── Substituted component's loading behaviour ─────────────────────────
+    // A custom component owns how it loads. The props it is given are forwarded
+    // as stated, so a `componentProps.loading` or `priority` (or the element's own
+    // `loading` prop) is never overwritten here. The eager value is only a default
+    // for a component that stated nothing, so a framework's loader is not handed
+    // the browser's deferral by default.
     let finalImageProps = { ...(componentPropsProp ?? {}) };
 
     if (isCustomComponent) {
-      // Check if user set loading="lazy" or priority
-      const hasLazy = componentPropsProp?.loading === "lazy";
+      const requestedLoading = componentPropsProp?.loading ?? loading;
       const hasPriority = componentPropsProp?.priority === true;
 
-      if (hasLazy || hasPriority) {
+      if (hasPriority && requestedLoading === "lazy") {
         console.warn(
-          `[Image] ${
-            hasLazy ? '`loading="lazy"`' : "`priority={true}`"
-          } with custom image component may cause rendering issues. ` +
-            `Consider using \`loading="eager"\` and removing \`priority\` for this image.`,
+          '[Image] `priority: true` and `loading="lazy"` contradict each other: ' +
+            "a priority image is fetched immediately. Both are forwarded as given, " +
+            "so the substituted component decides which one wins.",
         );
       }
 
-      // Force loading to "eager" if custom component is used
-      finalImageProps = {
-        ...finalImageProps,
-        loading: "eager",
-        // Remove priority if present to avoid conflicts
-        ...(finalImageProps.priority !== undefined && { priority: false }),
-      };
+      if (requestedLoading === undefined) {
+        finalImageProps = { ...finalImageProps, loading: "eager" };
+      }
     }
 
     // `key` must be passed as a literal JSX attribute, never spread - React strips
@@ -331,11 +333,17 @@ export const Image = forwardRef<HTMLImageElement, ImageProps>(
 
     // ─── 4. Render ──────────────────────────────────────────────────────────
 
+    // A substituted component cannot fall back to the browser's own broken-image
+    // behaviour, so with no usable source nothing mounts at all. The placeholder
+    // must not then animate for a picture that can never arrive: there is no load
+    // event to settle it.
     const canRenderImage = !isCustomComponent || hasValidSrc;
+    const isSkeletonVisible =
+      resolvedShowSkeleton && !isLoaded && canRenderImage;
 
     return (
       <span className={cn("relative block w-full", ratioClass, radiusClass)}>
-        {resolvedShowSkeleton && !isLoaded && (
+        {isSkeletonVisible && (
           <span
             aria-hidden="true"
             className={cn(

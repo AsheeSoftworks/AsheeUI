@@ -19,6 +19,7 @@
 import {
   type ActionConfig,
   type ColorRole,
+  type EmptyStateRole,
   NATIVE_ANNOUNCEMENT_LIVE_REGION,
   NATIVE_EMPTY_STATE_ACTIONS_CLASS,
   NATIVE_EMPTY_STATE_CLASS,
@@ -71,11 +72,12 @@ export interface EmptyStateProps
 
   /**
    * How the state is announced.
-   * Leave it unset for a state that is part of the screen's initial markup. Pass
-   * `"status"` or `"alert"` for a state that replaces content after an asynchronous
-   * result, so the change is announced.
+   * It resolves instance → `components.emptystate` → `"none"`. Leave `"none"` for
+   * a state that is part of the screen's initial markup; pass `"status"` or
+   * `"alert"` for a state that replaces content after an asynchronous result, so
+   * the change is announced.
    */
-  role?: "status" | "alert";
+  role?: EmptyStateRole;
 
   /**
    * Actions that carry a React handler.
@@ -109,10 +111,12 @@ function pressFor(action: ActionConfig): (() => void) | undefined {
 /**
  * A region with nothing in it.
  *
- * EmptyState covers the empty, the "no results" and the failed presentations of a
- * region. Loading is deliberately not one of them: a loading region is a `Skeleton`
- * or a `Spinner`, and pretending an in-progress region is empty would tell the reader
- * the wrong thing.
+ * EmptyState covers the empty and the "no results" presentations of a region. A
+ * region that could not be filled because something failed is `ErrorState`, which
+ * composes this state with the failure's tone, a retry and the technical detail.
+ * Loading is deliberately not one of the presentations either: a loading region is
+ * a `Skeleton` or a `Spinner`, and pretending an in-progress region is empty would
+ * tell the reader the wrong thing.
  *
  * @param props - The state's options and the platform's view props.
  * @param props.title - What the region is.
@@ -163,18 +167,26 @@ export function EmptyState({
     NativeEmptyStateConfig,
     Required<NativeEmptyStateConfig>
   >(
-    { type, size, panel },
+    { type, size, panel, role },
     config.components.emptystate,
     FALLBACK_NATIVE_EMPTY_STATE_CONFIG,
   );
+
+  const announcementRole = resolved.role === "none" ? undefined : resolved.role;
 
   return (
     <View
       // A state that is part of the screen takes no role: it is not a change, and
       // announcing it would interrupt a reader with news that is not news.
-      accessibilityRole={role ? resolveNativeAnnouncementRole(role) : undefined}
+      accessibilityRole={
+        announcementRole
+          ? resolveNativeAnnouncementRole(announcementRole)
+          : undefined
+      }
       accessibilityLiveRegion={
-        role ? NATIVE_ANNOUNCEMENT_LIVE_REGION[role] : undefined
+        announcementRole
+          ? NATIVE_ANNOUNCEMENT_LIVE_REGION[announcementRole]
+          : undefined
       }
       className={classNames(
         NATIVE_EMPTY_STATE_CLASS,

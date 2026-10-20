@@ -49,6 +49,7 @@ import {
   FALLBACK_NATIVE_CHIP_CONFIG,
   type NativeChipConfig,
 } from "./chip-config";
+import { NATIVE_CHIP_AVATAR_SIZE_CLASS } from "./chip-styles";
 
 /**
  * Props for the native Chip.
@@ -202,6 +203,13 @@ export function Chip({
     NATIVE_CHIP_ICON_SIZE_CLASS,
     FALLBACK_NATIVE_CHIP_CONFIG.size,
   );
+  // An avatar is a picture rather than a glyph, so it gets its own, larger box. Using
+  // the icon's map here would draw a face at 12 points.
+  const avatarSizeClass = resolveClassKey(
+    resolvedSize,
+    NATIVE_CHIP_AVATAR_SIZE_CLASS,
+    FALLBACK_NATIVE_CHIP_CONFIG.size,
+  );
   const radiusClass = resolveClassKey(
     resolvedRadius,
     NATIVE_RADIUS_CLASS,
@@ -240,7 +248,7 @@ export function Chip({
       ) : null}
 
       {avatar ? (
-        <View className={classNames(NATIVE_CHIP_AVATAR_CLASS, iconSizeClass)}>
+        <View className={classNames(NATIVE_CHIP_AVATAR_CLASS, avatarSizeClass)}>
           {avatar}
         </View>
       ) : null}

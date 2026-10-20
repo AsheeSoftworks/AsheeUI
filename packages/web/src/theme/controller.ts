@@ -53,7 +53,20 @@ export interface ThemeConfigInput {
    * This is used to validate stored preferences and to determine
    * which themes can be toggled through the toggleTheme method.
    */
-  themes: readonly string[];
+  themes: readonly ThemeName[];
+
+  /**
+   * Whether the caller is the provider that owns the document — the outermost
+   * `AsheeUIProvider` to render.
+   *
+   * The default theme belongs to that provider alone. A provider mounted below it (a page
+   * demonstrating its own configuration, a preview panel) states the themes it knows about
+   * but does not get to change what a first visit shows, so with nothing stored its own
+   * `defaultTheme` is not applied. See `configure()`.
+   *
+   * @default true
+   */
+  ownsDocument?: boolean | undefined;
 }
 
 /**
@@ -86,7 +99,7 @@ class ThemeController {
    * The list of available themes in the application.
    * Used for validation and cycling through themes.
    */
-  private availableThemes: readonly string[] = [];
+  private availableThemes: readonly ThemeName[] = [];
 
   /**
    * Set of listener functions that are called when the theme changes.
@@ -114,7 +127,7 @@ class ThemeController {
    * - Clears stale/invalid values from storage.
    * - Never writes to storage (only `setTheme` persists user intent).
    *
-   * The available list only ever grows. This controller is a single instance shared by
+   * **The available list only ever grows.** This controller is a single instance shared by
    * the whole application, and a provider may be mounted below the application's own —
    * a page that demonstrates its own configuration, for example. Such a provider states
    * the themes *it* knows about, which is usually just the built-ins, and taking its
@@ -122,18 +135,31 @@ class ThemeController {
    * it failed validation and silently fell back to the default theme, which looks exactly
    * like "my custom theme does not apply". A nested provider can therefore add a theme
    * but never remove one.
+   *
+   * **The default theme belongs to the provider that owns the document.** That is the
+   * outermost provider, and only it passes `ownsDocument`. A nested provider's
+   * `defaultTheme` describes its own subtree for the sake of the pre-paint script, not what
+   * a first visit to the application shows: if it were written here, a page that mounts a
+   * provider of its own — a docs demo, a preview panel — would replace the application's
+   * default, and every reader with no stored choice would silently land on the demo's
+   * theme. The rule is first-writer-wins only because the owner is the one writer; the
+   * same provider re-configuring (with a changed `defaultTheme`) still updates it.
    */
-  configure({ defaultTheme, themes }: ThemeConfigInput): void {
-    this.defaultTheme = defaultTheme;
+  configure({
+    defaultTheme,
+    themes,
+    ownsDocument = true,
+  }: ThemeConfigInput): void {
+    if (ownsDocument) {
+      this.defaultTheme = defaultTheme;
+    }
+
     this.availableThemes =
       this.availableThemes.length === 0
         ? themes
         : [...new Set([...this.availableThemes, ...themes])];
 
     if (typeof window === "undefined") {
-      console.log(
-        "[Theme] Running in non-browser environment, skipping localStorage operations.",
-      );
       return;
     }
 
@@ -144,14 +170,20 @@ class ThemeController {
 
     if (!hasValidStored) {
       if (stored !== null) {
-        console.log(
-          "[Theme] Invalid stored theme, removing from localStorage.",
-        );
+        // A stored value that names no available theme is a leftover — a theme the
+        // application has since removed, or a value written by another app on the same
+        // origin. Dropping it is the self-healing path, so it is not worth a warning on
+        // every load.
         window.localStorage.removeItem(THEME_STORAGE_KEY);
       }
     }
 
-    this.selection = hasValidStored ? (stored as ThemeSelection) : defaultTheme;
+    // Seeded from `this.defaultTheme`, which a nested provider has just declined to
+    // replace, so a first visit shows the application's default rather than the theme of
+    // whichever provider happened to mount first.
+    this.selection = hasValidStored
+      ? (stored as ThemeSelection)
+      : this.defaultTheme;
 
     this.applySelection();
 
@@ -214,9 +246,13 @@ class ThemeController {
 
   /**
    * Returns the list of available theme names.
+   *
+   * The element type is the same `ThemeName` `setTheme` accepts, so a picker can drive its
+   * options from this list and pass the chosen one straight back without a cast.
+   *
    * @returns The list of available themes configured in the controller.
    */
-  getAvailableThemes = (): readonly string[] => this.availableThemes;
+  getAvailableThemes = (): readonly ThemeName[] => this.availableThemes;
 
   /**
    * Cycles to the next theme in sequence (including "system" mode by default).
@@ -227,14 +263,21 @@ class ThemeController {
   toggleTheme = (): void => {
     // Deduplicate and filter available themes
     const uniqueThemes = Array.from(new Set(this.availableThemes)).filter(
-      (t) => t !== "system",
-    ) as ThemeSelection[];
+      (theme) => theme !== "system",
+    );
 
     const currentIndex = uniqueThemes.indexOf(this.selection);
     const nextIndex =
       currentIndex === -1 ? 0 : (currentIndex + 1) % uniqueThemes.length;
+    const next = uniqueThemes[nextIndex];
 
-    this.setTheme(uniqueThemes[nextIndex]);
+    // A provider that configured no themes leaves the list empty, and there is no next
+    // theme to select. Selecting `undefined` would sanitize to `undefined` as well, so
+    // the controller would end up with no selection at all rather than keeping the one
+    // it has.
+    if (next === undefined) return;
+
+    this.setTheme(next);
   };
 
   /**
@@ -283,7 +326,7 @@ class ThemeController {
    * @returns The resolved theme name.
    */
   private resolve(selection: ThemeSelection): ThemeName {
-    if (selection !== "system") return selection as ThemeName;
+    if (selection !== "system") return selection;
     return this.mediaQuery?.matches ? "dark" : "light";
   }
 
@@ -303,11 +346,13 @@ class ThemeController {
       this.availableThemes.length > 0 &&
       !this.availableThemes.includes(resolved)
     ) {
-      resolved = (
-        this.availableThemes.includes(this.defaultTheme)
-          ? this.defaultTheme
-          : this.availableThemes[0]
-      ) as ThemeName;
+      const fallback = this.availableThemes.includes(this.defaultTheme)
+        ? this.defaultTheme
+        : this.availableThemes[0];
+
+      // The list is non-empty here, so a fallback exists; keeping `resolved` when it
+      // does not is the only alternative to assigning `undefined` to a `ThemeName`.
+      resolved = fallback ?? resolved;
     }
 
     this.resolved = resolved;
@@ -324,6 +369,13 @@ class ThemeController {
       }
     }
     root.classList.add(cls);
+
+    // The pre-paint script writes this while the document is parsed, so a theme painted
+    // before hydration carries the right scheme. A theme switched after that — and any
+    // client-only render, which never runs the script — has to write it here as well, or
+    // the browser's own surfaces (scrollbars, form controls, the caret) keep the scheme of
+    // the theme that has just been replaced while the palette changes underneath them.
+    root.style.colorScheme = resolved;
   }
 }
 

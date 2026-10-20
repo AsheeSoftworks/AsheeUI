@@ -43,11 +43,10 @@ registerNativeComponentDefaults("errorstate", defaultNativeErrorStateConfig);
 /**
  * The values the state falls back to when no tier provides one.
  */
-export const FALLBACK_NATIVE_ERROR_STATE_CONFIG: Required<NativeErrorStateConfig> =
-  {
-    size: "md",
-    panel: true,
-    role: "alert",
-    retryLabel: "Try again",
-    detailLabel: "Technical details",
-  };
+export const FALLBACK_NATIVE_ERROR_STATE_CONFIG = {
+  size: "md",
+  panel: true,
+  role: "alert",
+  retryLabel: "Try again",
+  detailLabel: "Technical details",
+} satisfies NativeErrorStateConfig;

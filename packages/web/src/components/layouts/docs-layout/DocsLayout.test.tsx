@@ -105,6 +105,45 @@ describe("DocsLayout", () => {
     ).not.toContain("xl:sticky");
   });
 
+  it("keeps the navigation column in view by default", () => {
+    const { getByRole } = renderWithProvider(
+      <DocsLayout navigation={<span>Sections</span>}>
+        <p>Layout</p>
+      </DocsLayout>,
+    );
+
+    expect(
+      getByRole("complementary", { name: "Documentation" }).className,
+    ).toContain("lg:sticky");
+  });
+
+  it("lets a page stop the navigation column sticking", () => {
+    const { getByRole } = renderWithProvider(
+      <DocsLayout navigation={<span>Sections</span>} stickyNavigation={false}>
+        <p>Layout</p>
+      </DocsLayout>,
+    );
+
+    expect(
+      getByRole("complementary", { name: "Documentation" }).className,
+    ).not.toContain("lg:sticky");
+  });
+
+  it("takes the navigation stickiness from configuration", () => {
+    const { getByRole } = renderWithProvider(
+      <DocsLayout navigation={<span>Sections</span>}>
+        <p>Layout</p>
+      </DocsLayout>,
+      {
+        config: makeComponentConfig("docslayout", { stickyNavigation: false }),
+      },
+    );
+
+    expect(
+      getByRole("complementary", { name: "Documentation" }).className,
+    ).not.toContain("lg:sticky");
+  });
+
   it("puts the header and the footer outside the columns", () => {
     const { getByRole } = renderWithProvider(
       <DocsLayout

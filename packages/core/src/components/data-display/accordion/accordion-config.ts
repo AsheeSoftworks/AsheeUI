@@ -46,7 +46,7 @@ export interface AccordionItem {
    * An item without one is identified by its position, which is what a list without
    * ids means.
    */
-  id?: string;
+  id?: string | undefined;
 
   /** The item's header label. */
   title: ReactNode;
@@ -55,10 +55,10 @@ export interface AccordionItem {
   content: ReactNode;
 
   /** Secondary text shown under the title. */
-  subtitle?: ReactNode;
+  subtitle?: ReactNode | undefined;
 
   /** Content shown before the title. */
-  icon?: ReactNode;
+  icon?: ReactNode | undefined;
 
   /**
    * Whether the item's trigger is disabled.
@@ -66,7 +66,7 @@ export interface AccordionItem {
    *
    * @default false
    */
-  disabled?: boolean;
+  disabled?: boolean | undefined;
 }
 
 /**
@@ -81,21 +81,21 @@ export interface AccordionConfig {
    *
    * @default "separated"
    */
-  variant?: AccordionVariant;
+  variant?: AccordionVariant | undefined;
 
   /**
    * Padding and spacing scale.
    *
    * @default "md"
    */
-  size?: AccordionSizeKey;
+  size?: AccordionSizeKey | undefined;
 
   /**
    * Corner rounding.
    *
    * @default "md"
    */
-  radius?: Radius;
+  radius?: Radius | undefined;
 
   /**
    * Whether more than one item may stay open.
@@ -103,14 +103,14 @@ export interface AccordionConfig {
    *
    * @default false
    */
-  allowMultiple?: boolean;
+  allowMultiple?: boolean | undefined;
 
   /**
    * Whether opening and closing happen without animation.
    *
    * @default false
    */
-  disableAnimation?: boolean;
+  disableAnimation?: boolean | undefined;
 }
 
 declare module "../../../registry" {

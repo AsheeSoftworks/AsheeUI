@@ -21,20 +21,43 @@ export const NAVBAR_POSITION_CLASS = "sticky top-0 z-20";
 /** The bar's inner row. */
 export const NAVBAR_INNER_CLASS = "flex w-full items-center gap-4 py-3";
 
-/** The brand region. */
-export const NAVBAR_BRAND_CLASS =
-  "flex shrink-0 items-center gap-2 font-semibold text-foreground";
+/**
+ * The brand region: the box the brand is laid out in.
+ *
+ * This is the wrapper's layout and nothing else. A brand that is a link gets its
+ * typographic treatment from `NAVBAR_BRAND_TEXT_CLASS`, so the same layout classes are not
+ * stated on two nested elements.
+ */
+export const NAVBAR_BRAND_CLASS = "flex shrink-0 items-center gap-2";
 
-/** The desktop link list, next to the brand. */
-export const NAVBAR_LINKS_CLASS = "hidden items-center gap-1 md:flex";
+/** The typographic treatment of a brand that is a link, on the web. */
+export const NAVBAR_BRAND_TEXT_CLASS = "font-semibold text-foreground";
+
+/**
+ * The desktop list of destinations, next to the brand.
+ *
+ * A bar with more destinations than the row has room for has to give somewhere: the
+ * list can shrink (`min-w-0`) and its links wrap onto a second line, so it degrades
+ * instead of painting itself over the actions at the trailing edge.
+ */
+export const NAVBAR_LINKS_CLASS = "hidden min-w-0 items-center gap-1 md:flex";
 
 /** The desktop link list, centred in the bar. */
 export const NAVBAR_LINKS_CENTER_CLASS =
-  "hidden flex-1 items-center justify-center gap-1 md:flex";
+  "hidden min-w-0 flex-1 items-center justify-center gap-1 md:flex";
 
 /** The desktop link list, pushed to the trailing edge. */
 export const NAVBAR_LINKS_END_CLASS =
-  "hidden flex-1 items-center justify-end gap-1 md:flex";
+  "hidden min-w-0 flex-1 items-center justify-end gap-1 md:flex";
+
+/**
+ * The row the desktop links are drawn in.
+ *
+ * They wrap rather than overflow, which is what keeps a crowded bar readable instead of
+ * letting the links run over the action region.
+ */
+export const NAVBAR_LINK_LIST_CLASS =
+  "flex min-w-0 flex-wrap items-center gap-1";
 
 /** One navigation link. */
 export const NAVBAR_LINK_CLASS =

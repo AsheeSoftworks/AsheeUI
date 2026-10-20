@@ -26,7 +26,7 @@ import type { Space } from "../../../shared/spacing";
  */
 export interface TestimonialItem {
   /** Stable identifier for the quote. Defaults to its position in the list. */
-  id?: string | number;
+  id?: string | number | undefined;
 
   /** What the person said. */
   quote: ReactNode;
@@ -35,16 +35,16 @@ export interface TestimonialItem {
   name: string;
 
   /** Role or organisation of the person. */
-  role?: string;
+  role?: string | undefined;
 
   /** Picture of the person, passed to the framework's `Avatar`. */
-  avatarSrc?: string;
+  avatarSrc?: string | undefined;
 
   /** Component that replaces the avatar picture, such as a framework image. */
-  avatarComponent?: ElementType;
+  avatarComponent?: ElementType | undefined;
 
   /** Additional props for that component. */
-  avatarComponentProps?: Record<string, unknown>;
+  avatarComponentProps?: Record<string, unknown> | undefined;
 }
 
 /**
@@ -55,16 +55,16 @@ export interface TestimonialItem {
  */
 export interface TestimonialsConfig extends SectionBlockOptions {
   /** Columns from the smallest window upwards. */
-  columns?: GridColumns;
+  columns?: GridColumns | undefined;
 
   /** Columns from the `md` breakpoint upwards. */
-  columnsMd?: GridColumns;
+  columnsMd?: GridColumns | undefined;
 
   /** Columns from the `lg` breakpoint upwards. */
-  columnsLg?: GridColumns;
+  columnsLg?: GridColumns | undefined;
 
   /** Space between the quotes. */
-  gap?: Space;
+  gap?: Space | undefined;
 }
 
 declare module "../../../registry" {

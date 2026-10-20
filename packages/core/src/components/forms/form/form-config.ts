@@ -24,39 +24,39 @@ export interface FormConfig {
    *
    * @default "solid"
    */
-  submitVariant?: Variant;
+  submitVariant?: Variant | undefined;
 
   /**
    * Theme accent colour of the submit control.
    *
    * @default "primary"
    */
-  submitColor?: Color;
+  submitColor?: Color | undefined;
 
   /**
    * Size of the submit control.
    *
    * @default "md"
    */
-  submitSize?: Size;
+  submitSize?: Size | undefined;
 
   /**
    * Corner rounding of the submit control.
    *
    * @default "md"
    */
-  submitRadius?: Radius;
+  submitRadius?: Radius | undefined;
 }
 
 /**
  * The values a form falls back to when no tier provides one.
  */
-export const FALLBACK_FORM_CONFIG: Required<FormConfig> = {
+export const FALLBACK_FORM_CONFIG = {
   submitVariant: "solid",
   submitColor: "primary",
   submitSize: "md",
   submitRadius: "md",
-};
+} satisfies FormConfig;
 
 declare module "../../../registry" {
   interface ComponentTypeConfigRegistry {

@@ -1,3 +1,4 @@
+import type { ComponentProps } from "react";
 import { describe, expect, it, vi } from "vitest";
 import {
   createUser,
@@ -82,7 +83,7 @@ describe("Pagination", () => {
     const gaps = container.querySelectorAll('span[aria-hidden="true"]');
 
     expect(gaps).toHaveLength(2);
-    expect(gaps[0].textContent).toBe("\u2026");
+    expect(gaps[0]?.textContent).toBe("\u2026");
 
     expect(queryByRole("button", { name: "Page 7" })).toBeNull();
     expect(getByRole("button", { name: "Page 20" })).toBeInTheDocument();
@@ -110,6 +111,109 @@ describe("Pagination", () => {
       "/invoices?page=1",
     );
     expect(queryByRole("button", { name: /Page/ })).toBeNull();
+  });
+
+  // The link branch used a fixed `min-w-8 h-8` control box, so `size` (and
+  // `components.pagination.size`) only reached the button branch. The link
+  // controls now read the same resolved size through a static class map.
+  it("applies the size prop to link controls", () => {
+    const { getByRole } = renderWithProvider(
+      <Pagination
+        page={2}
+        pageCount={3}
+        size="lg"
+        hrefForPage={(target) => `/invoices?page=${target}`}
+      />,
+    );
+
+    expect(getByRole("link", { name: "Page 3" }).className).toContain("h-10");
+  });
+
+  it("applies the configured size to link controls", () => {
+    const { getByRole } = renderWithProvider(
+      <Pagination
+        page={2}
+        pageCount={3}
+        hrefForPage={(target) => `/invoices?page=${target}`}
+      />,
+      { config: makeComponentConfig("pagination", { size: "sm" }) },
+    );
+
+    expect(getByRole("link", { name: "Page 3" }).className).toContain("h-7");
+  });
+
+  // An unavailable link kept its `href`, so keyboard activation still went to a
+  // page the collection does not have. It now has no destination and no tab stop.
+  it("drops the destination and tab stop of an unavailable link", () => {
+    const { getByLabelText } = renderWithProvider(
+      <Pagination
+        page={1}
+        pageCount={5}
+        hrefForPage={(target) => `/invoices?page=${target}`}
+      />,
+    );
+    // Without a destination the element is no longer a link, which is the
+    // point: it is announced as unavailable and cannot be focused or followed.
+    const previous = getByLabelText("Previous page");
+
+    expect(previous.tagName).toBe("A");
+    expect(previous).not.toHaveAttribute("href");
+    expect(previous).toHaveAttribute("aria-disabled", "true");
+    expect(previous).toHaveAttribute("tabindex", "-1");
+  });
+
+  // Link mode had no press handler, so `onPageChange` was dead there. Both modes
+  // now report the chosen page; the link still follows its destination.
+  it("reports the chosen page from a link control as well", async () => {
+    const user = createUser();
+    const onPageChange = vi.fn();
+    const { getByRole } = renderWithProvider(
+      <Pagination
+        page={2}
+        pageCount={5}
+        onPageChange={onPageChange}
+        hrefForPage={(target) => `/invoices?page=${target}`}
+      />,
+    );
+
+    const pageThree = getByRole("link", { name: "Page 3" });
+    // Keep jsdom from attempting the navigation the anchor would perform.
+    pageThree.addEventListener("click", (event) => event.preventDefault());
+    await user.click(pageThree);
+
+    expect(onPageChange).toHaveBeenCalledWith(3);
+
+    const pageTwo = getByRole("link", { name: "Page 2" });
+    pageTwo.addEventListener("click", (event) => event.preventDefault());
+    await user.click(pageTwo);
+
+    expect(onPageChange).toHaveBeenCalledTimes(1);
+  });
+
+  // The link branch rendered `Link` with no substitution, so a paginated
+  // collection with real addresses could not keep its router.
+  it("substitutes the link component for every control", () => {
+    function RouterLink({
+      href,
+      ...rest
+    }: ComponentProps<"span"> & { href?: string }) {
+      return <span data-router-href={href} {...rest} />;
+    }
+
+    const { getByLabelText, queryByRole } = renderWithProvider(
+      <Pagination
+        page={2}
+        pageCount={3}
+        hrefForPage={(target) => `/invoices?page=${target}`}
+        link={{ component: RouterLink, props: { "data-router": "true" } }}
+      />,
+    );
+
+    const pageThree = getByLabelText("Page 3");
+
+    expect(pageThree).toHaveAttribute("data-router-href", "/invoices?page=3");
+    expect(pageThree).toHaveAttribute("data-router", "true");
+    expect(queryByRole("link")).toBeNull();
   });
 
   it("offers first and last controls when asked", () => {

@@ -23,6 +23,7 @@ export const defaultDocsLayoutConfig: DocsLayoutConfig = {
   navigationLabel: "Documentation",
   tocLabel: "On this page",
   navigationWidth: "md",
+  stickyNavigation: true,
   stickyToc: true,
   skipLink: true,
   skipLinkLabel: "Skip to content",
@@ -33,11 +34,12 @@ registerComponentDefaults("docslayout", defaultDocsLayoutConfig);
 /**
  * Hard fallback values used when no config tier provides a value.
  */
-export const FALLBACK_DOCS_LAYOUT_CONFIG: Required<DocsLayoutConfig> = {
+export const FALLBACK_DOCS_LAYOUT_CONFIG = {
   navigationLabel: "Documentation",
   tocLabel: "On this page",
   navigationWidth: "md",
+  stickyNavigation: true,
   stickyToc: true,
   skipLink: true,
   skipLinkLabel: "Skip to content",
-};
+} satisfies DocsLayoutConfig;

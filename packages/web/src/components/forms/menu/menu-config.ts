@@ -28,7 +28,7 @@ export interface MenuOption {
    *
    * @default false
    */
-  disabled?: boolean;
+  disabled?: boolean | undefined;
 
   /**
    * Allows arbitrary option metadata (e.g. icons, descriptions).
@@ -48,7 +48,7 @@ export interface MenuConfig {
    *
    * @default "md"
    */
-  radius?: Radius;
+  radius?: Radius | undefined;
 
   /**
    * Density scale of the dropdown menu.
@@ -56,7 +56,7 @@ export interface MenuConfig {
    *
    * @default "md"
    */
-  size?: Size;
+  size?: Size | undefined;
 
   /**
    * Variant for inactive (non-selected) options.
@@ -64,7 +64,7 @@ export interface MenuConfig {
    *
    * @default "ghost"
    */
-  itemVariant?: Variant;
+  itemVariant?: Variant | undefined;
 
   /**
    * Color for inactive options.
@@ -72,7 +72,7 @@ export interface MenuConfig {
    *
    * @default "primary"
    */
-  itemColor?: Color;
+  itemColor?: Color | undefined;
 
   /**
    * Variant for the selected option.
@@ -80,7 +80,7 @@ export interface MenuConfig {
    *
    * @default "faded"
    */
-  activeItemVariant?: Variant;
+  activeItemVariant?: Variant | undefined;
 
   /**
    * Color for the selected option.
@@ -88,7 +88,7 @@ export interface MenuConfig {
    *
    * @default "primary"
    */
-  activeItemColor?: Color;
+  activeItemColor?: Color | undefined;
 
   /**
    * Whether to lock body scroll when the dropdown is open.
@@ -99,7 +99,7 @@ export interface MenuConfig {
    *
    * @default true
    */
-  lockScroll?: boolean;
+  lockScroll?: boolean | undefined;
 
   /**
    * Whether to render the menu through Floating UI's `FloatingPortal`.
@@ -110,14 +110,14 @@ export interface MenuConfig {
    *
    * @see FloatingPortal - https://floating-ui.com/docs/FloatingPortal
    */
-  portal?: boolean;
+  portal?: boolean | undefined;
 
   /**
    * Custom portal target element for the menu.
    * When portal is enabled, the menu is rendered into this element.
    * Defaults to document.body.
    */
-  portalTarget?: HTMLElement | null;
+  portalTarget?: HTMLElement | null | undefined;
 }
 
 /**

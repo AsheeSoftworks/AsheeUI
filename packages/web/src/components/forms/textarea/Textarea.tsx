@@ -11,7 +11,6 @@ import {
   type Color,
   cn,
   RADIUS_CLASS,
-  type Radius,
   resolveCascade,
   resolveClassKey,
   resolveRadiusKey,
@@ -27,9 +26,12 @@ import React, {
   useRef,
 } from "react";
 import { useAsheeConfig } from "../../../libs/context";
+import {
+  type KeyboardOpenOptions,
+  useKeyboardField,
+} from "../../system/keyboard";
 import { FieldShell } from "../field/FieldShell";
 import type { FieldSizeKey, LabelAlign } from "../field/field-config";
-import { type KeyboardOpenOptions, useKeyboardField } from "../../system/keyboard";
 import {
   FALLBACK_TEXTAREA_CONFIG,
   type TextAreaConfig,
@@ -48,6 +50,30 @@ type BaseTextareaProps = TextAreaConfig &
   >;
 
 /**
+ * The width a field takes in the column it is placed in.
+ *
+ * A box is a control, so it fills its column by default; the consumer turns that off
+ * with `fullWidth={false}`, which lets the field size to its content and sit inline
+ * beside another one. Both strings are complete and static, so Tailwind can see them.
+ */
+const TEXTAREA_WIDTH_CLASS: Record<"full" | "inline", string> = {
+  full: "w-full",
+  inline: "inline-block w-auto",
+};
+
+/**
+ * The width a field resolves to when no tier states one.
+ *
+ * The family's neutral fallback is `false`, but a box is a control and fills the
+ * column it is placed in, so that is not the value this member bottoms out at. The
+ * registered component default states the same value; stating it here as well keeps
+ * the resolved width from depending on whether the bundler has evaluated the
+ * configuration module yet, because a server render and a client hydration disagreeing
+ * on this class would be a mismatch.
+ */
+const DEFAULT_FULL_WIDTH = true;
+
+/**
  * Configuration options for the Textarea component.
  */
 export interface TextareaProps extends BaseTextareaProps {
@@ -55,7 +81,7 @@ export interface TextareaProps extends BaseTextareaProps {
    * Label text for the textarea.
    * Displayed above the input field.
    */
-  label?: string;
+  label?: string | undefined;
 
   /**
    * Whether the textarea is in a loading state.
@@ -63,19 +89,19 @@ export interface TextareaProps extends BaseTextareaProps {
    *
    * @default false
    */
-  isLoading?: boolean;
+  isLoading?: boolean | undefined;
 
   /**
    * Description text shown below the label.
    * Provides additional context about the textarea.
    */
-  description?: string;
+  description?: string | undefined;
 
   /**
    * Validation message shown below the textarea.
    * Color is determined by the status prop.
    */
-  message?: string;
+  message?: string | undefined;
 
   /**
    * Whether the field is required.
@@ -83,7 +109,18 @@ export interface TextareaProps extends BaseTextareaProps {
    *
    * @default false
    */
-  required?: boolean;
+  required?: boolean | undefined;
+
+  /**
+   * Whether the field stretches to fill its parent's width.
+   *
+   * A box is a control, so it fills the column it is placed in unless it is told not
+   * to. Passing `false` sizes the field to its content and lets it sit inline, beside
+   * another field.
+   *
+   * @default true
+   */
+  fullWidth?: boolean | undefined;
 
   /**
    * Whether the virtual keyboard should be enabled for mobile devices.
@@ -94,7 +131,7 @@ export interface TextareaProps extends BaseTextareaProps {
    *
    * @default true
    */
-  enableVirtualKeyboard?: boolean | KeyboardOpenOptions;
+  enableVirtualKeyboard?: boolean | KeyboardOpenOptions | undefined;
 }
 
 // ─── Component Implementation ─────────────────────────────────────────────────
@@ -118,6 +155,8 @@ export interface TextareaProps extends BaseTextareaProps {
  * @param props.description - Description text.
  * @param props.message - Validation message.
  * @param props.required - Whether the field is required. Defaults to false.
+ * @param props.fullWidth - Whether the field fills its parent's width. Defaults to
+ * true; pass false to let it size to its content and sit inline.
  * @param props.enableVirtualKeyboard - Enable mobile virtual keyboard. Defaults to true.
  * @param props.rows - Number of visible text rows. Defaults to 4.
  * @param props.size - Size of the textarea. Defaults to "md".
@@ -194,6 +233,7 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
       description,
       message,
       required,
+      fullWidth,
       isLoading,
       rows,
       id,
@@ -277,22 +317,24 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
       FALLBACK_TEXTAREA_CONFIG.color,
     );
 
-    // ─── NEW: Filter out 'full' radius ──────────────────────────────────────
-    const filterRadius = (
-      radiusValue: Radius | undefined,
-    ): Radius | undefined => {
-      if (radiusValue === "full") return "xl";
-      return radiusValue;
-    };
-
+    // A radius is the consumer's decision, so the box rounds exactly as the
+    // text field beside it does: `full` is a pill in both, not a value one field
+    // silently rewrites.
     const resolvedRadiusKey = resolveRadiusKey(
-      filterRadius(radius),
-      filterRadius(sectionConfig?.radius),
+      radius,
+      sectionConfig?.radius,
       config.defaultRadius,
       FALLBACK_TEXTAREA_CONFIG.radius,
     );
 
     const resolvedStatus = status ?? FALLBACK_TEXTAREA_CONFIG.status;
+
+    const resolvedFullWidth = resolveCascade<boolean>(
+      fullWidth,
+      sectionConfig?.fullWidth,
+      undefined,
+      DEFAULT_FULL_WIDTH,
+    );
 
     const resolvedLabelAlign = resolveCascade<LabelAlign>(
       labelAlign,
@@ -328,42 +370,50 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
           );
 
     return (
-      <FieldShell
-        id={fieldId}
-        label={label}
-        labelAlign={resolvedLabelAlign}
-        description={description}
-        descriptionId={descriptionId}
-        message={message}
-        messageId={messageId}
-        status={resolvedStatus}
-        required={required}
-        isLoading={isLoading}>
-        <textarea
-          ref={internalRef}
+      // The width belongs to the field rather than to the box, so a field that is
+      // not full width takes its label and its message with it.
+      <div
+        className={cn(
+          TEXTAREA_WIDTH_CLASS[resolvedFullWidth ? "full" : "inline"],
+          "min-w-0",
+        )}>
+        <FieldShell
           id={fieldId}
-          disabled={disabled}
+          label={label}
+          labelAlign={resolvedLabelAlign}
+          description={description}
+          descriptionId={descriptionId}
+          message={message}
+          messageId={messageId}
+          status={resolvedStatus}
           required={required}
-          rows={resolvedRows}
-          aria-busy={isLoading}
-          aria-invalid={resolvedStatus === "error"}
-          aria-describedby={describedBy}
-          onFocus={handleFocus}
-          onBlur={handleBlur}
-          className={cn(
-            "resize-y w-full text-foreground outline-none transition-colors shrink-0",
-            "focus-visible:ring-2 focus-visible:ring-offset-2",
-            "disabled:pointer-events-none disabled:opacity-50",
-            TEXTAREA_SIZE_CLASS[resolvedSizeKey],
-            variantClass,
-            statusClass,
-            radiusClass,
-            className,
-          )}
-          style={style}
-          {...rest}
-        />
-      </FieldShell>
+          isLoading={isLoading}>
+          <textarea
+            ref={internalRef}
+            id={fieldId}
+            disabled={disabled}
+            required={required}
+            rows={resolvedRows}
+            aria-busy={isLoading}
+            aria-invalid={resolvedStatus === "error"}
+            aria-describedby={describedBy}
+            onFocus={handleFocus}
+            onBlur={handleBlur}
+            className={cn(
+              "resize-y w-full text-foreground outline-none transition-colors shrink-0",
+              "focus-visible:ring-2 focus-visible:ring-offset-2",
+              "disabled:pointer-events-none disabled:opacity-50",
+              TEXTAREA_SIZE_CLASS[resolvedSizeKey],
+              variantClass,
+              statusClass,
+              radiusClass,
+              className,
+            )}
+            style={style}
+            {...rest}
+          />
+        </FieldShell>
+      </div>
     );
   },
 );

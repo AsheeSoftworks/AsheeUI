@@ -15,6 +15,7 @@
  * a known configuration section without either renderer restating it.
  */
 
+import type { ReactNode } from "react";
 import type { Size } from "../../../shared/radius";
 import type { Space } from "../../../shared/spacing";
 
@@ -28,16 +29,21 @@ export interface LoadingStateConfig {
   /**
    * Text announced and shown while the region loads.
    *
+   * It takes a node rather than a string so the sentence can carry a glyph or an
+   * emphasised word, the way `EmptyState.title` and `ActionConfig.label` can. What
+   * a reader hears is still the text the node renders, so an icon passed alone
+   * names nothing.
+   *
    * @default "Loading"
    */
-  label?: string;
+  label?: ReactNode | undefined;
 
   /**
    * Density of the indicator and of the label.
    *
    * @default "md"
    */
-  size?: Size;
+  size?: Size | undefined;
 
   /**
    * Whether the state is drawn as a panel.
@@ -46,14 +52,18 @@ export interface LoadingStateConfig {
    *
    * @default false
    */
-  panel?: boolean;
+  panel?: boolean | undefined;
 
   /**
    * Room the state claims, so the page does not jump when the content arrives.
    *
-   * @default "sm"
+   * The registered claim is one step larger than the registered density's own
+   * padding and indicator, so the floor binds rather than sitting under the
+   * content it is supposed to reserve.
+   *
+   * @default "md"
    */
-  minHeight?: Space;
+  minHeight?: Space | undefined;
 }
 
 declare module "../../../registry" {

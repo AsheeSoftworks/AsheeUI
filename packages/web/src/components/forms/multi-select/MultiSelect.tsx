@@ -34,8 +34,8 @@ import {
 import { ChevronDownIcon } from "../../../icons/ChevronDownIcon";
 import { CloseIcon } from "../../../icons/CloseIcon";
 import { useAsheeConfig } from "../../../libs/context";
-import { Button } from "../button/Button";
 import { Chip } from "../../data-display/chip/Chip";
+import { Button } from "../button/Button";
 import { FieldShell } from "../field/FieldShell";
 import type { FieldSizeKey, LabelAlign } from "../field/field-config";
 import type { InputProps } from "../input/Input";
@@ -87,7 +87,7 @@ export interface MultiSelectChipProps extends MultiSelectChipConfig {
   /**
    * Class override applied to every selected value chip.
    */
-  className?: string;
+  className?: string | undefined;
 }
 
 /**
@@ -110,107 +110,107 @@ export interface MultiSelectProps
    * Array of selected option values. When omitted, the component keeps the
    * accumulated selection itself and reports every change through `onChange`.
    */
-  value?: (string | number)[];
+  value?: (string | number)[] | undefined;
 
   /**
    * Callback fired when the selection changes.
    * Receives the updated array of selected values.
    */
-  onChange?: (values: (string | number)[]) => void;
+  onChange?: ((values: (string | number)[]) => void) | undefined;
 
   /**
    * Label shown in the trigger when no items are selected.
    *
    * @default "Dropmenu Options..."
    */
-  InputLabel?: string;
+  InputLabel?: string | undefined;
 
   /**
    * Whether search input is shown in the dropdown.
    *
    * @default true
    */
-  isSearch?: boolean;
+  isSearch?: boolean | undefined;
 
   /**
    * Placeholder text for the search input.
    *
    * @default "Search..."
    */
-  searchPlaceholder?: string;
+  searchPlaceholder?: string | undefined;
 
   /**
    * Name attribute for the search input.
    *
    * @default "multiselect-search"
    */
-  searchInputName?: string;
+  searchInputName?: string | undefined;
 
   /**
    * Content rendered below the options list.
    * Useful for adding "Add new" buttons or status messages.
    */
-  belowList?: ReactNode;
+  belowList?: ReactNode | undefined;
 
   /**
    * Custom chip options for legacy or external control.
    * When provided, this overrides the derived chips from value.
    */
-  chipOptions?: MenuOption[];
+  chipOptions?: MenuOption[] | undefined;
 
   /**
    * Custom handler for removing a chip.
    * For legacy or external control patterns.
    */
-  handleRemoveChip?: (id: string | number) => void;
+  handleRemoveChip?: ((id: string | number) => void) | undefined;
 
   /**
    * Custom handler for adding a chip.
    * For legacy or external control patterns.
    */
-  handleAddChip?: (item: MenuOption) => void;
+  handleAddChip?: ((item: MenuOption) => void) | undefined;
 
   /**
    * Label shown above the chip list.
    */
-  chipLabel?: string;
+  chipLabel?: string | undefined;
 
   /**
    * Whether to hide the chip display section.
    *
    * @default false
    */
-  disableChipDisplay?: boolean;
+  disableChipDisplay?: boolean | undefined;
 
   /**
    * Extra classes for the container.
    */
-  containerClassName?: string;
+  containerClassName?: string | undefined;
 
   /**
    * Name attribute for the select.
    */
-  name?: string;
+  name?: string | undefined;
 
   /**
    * Whether the select is disabled.
    *
    * @default false
    */
-  disabled?: boolean;
+  disabled?: boolean | undefined;
 
   /**
    * Menu configuration overrides including portal, portalTarget, className, and visual styles.
    * All menu-related props should be passed through this object.
    */
-  menu?: MenuProps;
+  menu?: MenuProps | undefined;
 
   /**
    * Chip configuration overrides including color, size and radius,
    * plus the instance-only chip class override.
    * All chip-related props should be passed through this object.
    */
-  chip?: MultiSelectChipProps;
+  chip?: MultiSelectChipProps | undefined;
 }
 
 /**

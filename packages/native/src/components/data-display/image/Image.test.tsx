@@ -173,6 +173,42 @@ describe("Native Image", () => {
     expect(picture.props.resizeMode).toBe("contain");
   });
 
+  it("inherits the application's default radius when no tier states one", async () => {
+    const view = await renderImage(
+      <Image testID="frame" src="/photo.jpg" alt="A photo" />,
+      { defaultRadius: "lg" },
+    );
+
+    // Registering a component default would make the section tier always answer and the
+    // application's radius would never reach the picture.
+    expect(String(view.getByTestId("frame").props.className)).toContain(
+      "rounded-lg",
+    );
+  });
+
+  it("claims no space when there is no source for the picture to arrive from", async () => {
+    const view = await renderImage(<Image testID="frame" alt="A photo" />);
+    const frame = view.getByTestId("frame");
+
+    // There is no load event to settle a placeholder whose picture can never mount, so
+    // the picture must not claim the space forever.
+    expect(descendantsWithClass(frame, "absolute inset-0")).toHaveLength(0);
+  });
+
+  it("claims no space when a substituted component has no source", async () => {
+    function CustomImage({ src }: { src?: string }) {
+      return <Text testID="custom-image">{src}</Text>;
+    }
+
+    const view = await renderImage(
+      <Image testID="frame" src="" alt="A photo" component={CustomImage} />,
+    );
+    const frame = view.getByTestId("frame");
+
+    expect(descendantsWithClass(frame, "absolute inset-0")).toHaveLength(0);
+    expect(view.queryByTestId("custom-image")).toBeNull();
+  });
+
   it("states no ratio and no fixed height when the ratio is auto", async () => {
     const view = await renderImage(
       <Image testID="frame" src="/photo.jpg" alt="A photo" />,

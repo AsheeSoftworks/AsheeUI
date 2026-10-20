@@ -52,45 +52,59 @@ export interface TableProps<TData> extends BaseTableProps {
 
   /**
    * Optional Tailwind grid or layout utility classes.
-   * Used for custom grid layouts in the table.
+   * Merged last onto the `<table>` element, so a consumer's own layout classes win
+   * over the ones the component sets. Use it for a table whose columns are laid out
+   * differently from the default full-width one.
    */
-  gridClasses?: string;
+  gridClasses?: string | undefined;
+
+  /**
+   * Names the table, rendered as its `<caption>`.
+   *
+   * A table is a reading structure, so it is named the way a figure is: with a caption
+   * that belongs to it. The element is always rendered here, in the table's own markup,
+   * and `caption-bottom` places it below the rows. A table named by the heading above it
+   * can be labelled with `aria-labelledby` instead; the two name the same table.
+   */
+  caption?: ReactNode | undefined;
 
   /**
    * Accessor callback to return a unique key per row.
    * Used as the React key for each row element.
    */
-  rowKeyAccessor?: (row: TData) => string | number;
+  rowKeyAccessor?: ((row: TData) => string | number) | undefined;
 
   /**
    * Primary row click handler.
    * Called when a row is clicked.
    */
-  handleClick?: (data: TData, rowId?: string | number) => void;
+  handleClick?: ((data: TData, rowId?: string | number) => void) | undefined;
 
   /**
    * Primary row double-click handler.
    * Called when a row is double-clicked.
    */
-  handleDoubleClick?: (data: TData, rowId?: string | number) => void;
+  handleDoubleClick?:
+    | ((data: TData, rowId?: string | number) => void)
+    | undefined;
 
   /**
    * Key of currently selected row.
    * Highlights the row with the matching key.
    */
-  selectedRowKey?: string | number;
+  selectedRowKey?: string | number | undefined;
 
   /**
    * Display text or React element when data array is empty.
    * Shown in the table body when there are no rows.
    */
-  emptyMessage?: ReactNode;
+  emptyMessage?: ReactNode | undefined;
 
   /**
    * Enables interactive hover, active press animations, and click styling on rows.
    * When true, rows become clickable with visual feedback.
    */
-  isClickable?: boolean;
+  isClickable?: boolean | undefined;
 }
 
 /**
@@ -98,9 +112,12 @@ export interface TableProps<TData> extends BaseTableProps {
  *
  * Table renders a structured data grid with support for multiple variants
  * (grid, striped, bordered, ghost), configurable size and color tokens,
- * row selection highlighting, and interactive click handlers. It automatically
- * handles accessibility attributes including aria-selected for selected rows,
- * and keyboard interaction for clickable rows.
+ * row selection highlighting, and interactive click handlers. A selected row is
+ * marked with `aria-current`, which a plain table exposes, rather than
+ * `aria-selected`, which belongs to a `grid` and says nothing on a `table`.
+ * A table can name itself with `caption`, or be named by the heading above it
+ * through `aria-labelledby`, and a column states its sort order through
+ * `ColumnDef.sortDirection`, which is announced as `aria-sort`.
  *
  * Visual tokens resolve through the standard AsheeUI cascade: prop,
  * component config, global theme defaults, and the built-in fallback.
@@ -108,6 +125,8 @@ export interface TableProps<TData> extends BaseTableProps {
  * @param props - Table configuration options.
  * @param props.data - Array of row data objects.
  * @param props.columns - Column definition array.
+ * @param props.gridClasses - Layout classes merged last onto the `<table>`.
+ * @param props.caption - Names the table, rendered as its `<caption>`.
  * @param props.rowKeyAccessor - Function to generate unique row keys.
  * @param props.handleClick - Row click handler.
  * @param props.handleDoubleClick - Row double-click handler.
@@ -118,6 +137,9 @@ export interface TableProps<TData> extends BaseTableProps {
  * @param props.variant - Visual style variant. Defaults to "grid".
  * @param props.color - Theme accent color. Defaults to "primary".
  * @param props.radius - Corner rounding. Defaults to "md".
+ * @param props.aria-label - Accessible name, applied to the `<table>`.
+ * @param props.aria-labelledby - Id of the element naming the table, applied to the
+ * `<table>`.
  *
  * @example
  * ```tsx
@@ -154,6 +176,7 @@ export function Table<TData>({
   data = [],
   columns = [],
   gridClasses,
+  caption,
   rowKeyAccessor,
   handleClick,
   handleDoubleClick,
@@ -169,6 +192,8 @@ export function Table<TData>({
   cellClassName,
   className,
   style,
+  "aria-label": ariaLabel,
+  "aria-labelledby": ariaLabelledBy,
   ...props
 }: TableProps<TData>) {
   const config = useAsheeConfig();
@@ -248,7 +273,7 @@ export function Table<TData>({
     TABLE_COLOR_STYLES[resolvedColorKey] ?? TABLE_COLOR_STYLES.primary;
 
   const getRowKey = useCallback(
-    (row: TData, index: number): string | number => {
+    (row: TData, index: number): string | number | undefined => {
       if (rowKeyAccessor) {
         try {
           return rowKeyAccessor(row);
@@ -268,7 +293,11 @@ export function Table<TData>({
   return (
     <div
       className={cn(
-        "w-full h-full scrollable",
+        // The table scrolls inside its own box, which is what keeps the sticky
+        // header stuck to the table rather than to the page. The class is
+        // Tailwind's own: this repository defines no `scrollable` utility, and a
+        // component's layout classes live in the component.
+        "w-full h-full overflow-auto",
         resolvedVariantKey === "ghost"
           ? "border-0 shadow-none rounded-none"
           : cn("border border-border", radiusClass),
@@ -277,7 +306,20 @@ export function Table<TData>({
       )}
       style={style}
       {...props}>
-      <table className="w-full border-collapse text-left caption-bottom">
+      <table
+        aria-label={ariaLabel}
+        aria-labelledby={ariaLabelledBy}
+        className={cn(
+          "w-full border-collapse text-left caption-bottom",
+          // A consumer's layout classes are merged last, so they win.
+          gridClasses,
+        )}>
+        {caption !== undefined && caption !== null && (
+          <caption className="p-3 text-sm text-foreground/70">
+            {caption}
+          </caption>
+        )}
+
         {/* Table Header */}
         <thead
           className={cn(
@@ -287,16 +329,19 @@ export function Table<TData>({
           )}>
           <tr>
             {columns.map((column, colIdx) => {
-              const colKey =
-                column.id ??
-                (typeof column.header === "string"
-                  ? column.header
-                  : String(colIdx));
+              // A column is identified by its own id, or by where it sits. Its
+              // header is not an identity: two columns can read the same and a
+              // reorder would then re-use a key for a different column.
+              const colKey = column.id ?? String(colIdx);
 
               return (
                 <th
                   key={colKey}
                   scope="col"
+                  // Stated only for a column the consumer says is sorted, and
+                  // announced by the header cell, which is the only place a
+                  // reader is told the order.
+                  aria-sort={column.sortDirection}
                   className={cn(
                     "font-medium uppercase tracking-wider text-left align-middle truncate min-w-0",
                     paddingYClass,
@@ -336,7 +381,10 @@ export function Table<TData>({
                 <tr
                   key={String(rowKey)}
                   tabIndex={isInteractive ? 0 : -1}
-                  aria-selected={isSelected}
+                  // `aria-current` is exposed on any element and announced;
+                  // `aria-selected` belongs to a grid or a treegrid, so on a row
+                  // of a plain table it would say nothing at all.
+                  aria-current={isSelected ? "true" : undefined}
                   onClick={
                     isInteractive && handleClick
                       ? () => handleClick(row, rowKey)
@@ -369,11 +417,7 @@ export function Table<TData>({
                     rowClassName,
                   )}>
                   {columns.map((column, colIdx) => {
-                    const colKey =
-                      column.id ??
-                      (typeof column.header === "string"
-                        ? column.header
-                        : String(colIdx));
+                    const colKey = column.id ?? String(colIdx);
 
                     return (
                       <td

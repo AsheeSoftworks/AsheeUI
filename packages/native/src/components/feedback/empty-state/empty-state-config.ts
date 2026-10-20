@@ -20,11 +20,17 @@ export type NativeEmptyStateConfig = EmptyStateConfig;
 
 /**
  * The defaults the EmptyState registers with the native registry.
+ *
+ * `role` is registered as `"none"`: a state that is part of the screen's first
+ * markup is not a change, and announcing it would describe something that never
+ * happened. The decision is the same one the web state makes, so the two platforms
+ * read one configuration.
  */
 export const defaultNativeEmptyStateConfig: NativeEmptyStateConfig = {
   type: "info",
   size: "md",
   panel: false,
+  role: "none",
 };
 
 declare module "../../../config/registry" {
@@ -38,9 +44,9 @@ registerNativeComponentDefaults("emptystate", defaultNativeEmptyStateConfig);
 /**
  * The values the state falls back to when no tier provides one.
  */
-export const FALLBACK_NATIVE_EMPTY_STATE_CONFIG: Required<NativeEmptyStateConfig> =
-  {
-    type: "info",
-    size: "md",
-    panel: false,
-  };
+export const FALLBACK_NATIVE_EMPTY_STATE_CONFIG = {
+  type: "info",
+  size: "md",
+  panel: false,
+  role: "none",
+} satisfies NativeEmptyStateConfig;

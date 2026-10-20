@@ -4,13 +4,14 @@
  * The tests state the component's contract: the items are drawn in order with their
  * triggers, an item opens and closes, only one stays open unless the consumer asks
  * otherwise, a consumer who owns the open state is told about every change and decides
- * what happens, a disabled item responds to nothing and says so, a closed panel is not in
- * the tree at all, and the treatment, the density and the rounding resolve through the
- * configuration cascade.
+ * what happens, a disabled item responds to nothing, says so and stays reachable, a closed
+ * panel is not in the tree at all, and the treatment, the density, the rounding and the
+ * animation resolve through the configuration cascade.
  */
 
 import { fireEvent, render } from "@testing-library/react-native";
 import type { ReactElement } from "react";
+import { LayoutAnimation } from "react-native";
 import { AsheeNativeProvider } from "../../../provider/AsheeNativeProvider";
 import { Accordion } from "./Accordion";
 
@@ -44,6 +45,10 @@ async function renderAccordion(ui: ReactElement, config?: object) {
 }
 
 describe("Native Accordion", () => {
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
   it("draws every item's trigger, with its supporting line", async () => {
     const view = await renderAccordion(
       <Accordion testID="faq" items={ITEMS} />,
@@ -133,7 +138,7 @@ describe("Native Accordion", () => {
     expect(view.getByText("The standard plan.")).toBeTruthy();
   });
 
-  it("responds to nothing and reports itself disabled when an item is disabled", async () => {
+  it("keeps a disabled item reachable, reports it disabled and refuses its press", async () => {
     const onValueChange = jest.fn();
     const view = await renderAccordion(
       <Accordion
@@ -143,14 +148,80 @@ describe("Native Accordion", () => {
         onValueChange={onValueChange}
       />,
     );
+    // The trigger is found by an ordinary query, so it is still in the reader's order: the
+    // web keeps a disabled item in the tab order and states `aria-disabled` rather than
+    // dropping the trigger, and the platform does the same through
+    // `accessibilityState.disabled`.
     const trigger = view.getByRole("button", {
       name: "Which plan suits me?",
     });
+
+    expect(trigger.props.disabled).toBeUndefined();
 
     await fireEvent.press(trigger);
 
     expect(onValueChange).not.toHaveBeenCalled();
     expect(trigger.props.accessibilityState).toMatchObject({ disabled: true });
+  });
+
+  it("states a disabled trigger only for an item that is disabled", async () => {
+    const view = await renderAccordion(
+      <Accordion testID="faq" items={ITEMS} />,
+    );
+
+    expect(
+      view.getByRole("button", { name: "Which plan suits me?" }).props
+        .accessibilityState,
+    ).toMatchObject({ disabled: undefined });
+  });
+
+  it("animates the layout change by default", async () => {
+    const configure = jest
+      .spyOn(LayoutAnimation, "configureNext")
+      .mockImplementation(() => undefined);
+    const view = await renderAccordion(
+      <Accordion testID="faq" items={ITEMS} />,
+    );
+
+    await fireEvent.press(
+      view.getByRole("button", { name: "Which plan suits me?" }),
+    );
+
+    expect(configure).toHaveBeenCalledTimes(1);
+  });
+
+  // A literal default answered `false` before the configuration tier was asked, so
+  // `components.accordion.disableAnimation` could never reach the platform's animator.
+  it("does not animate when the configuration switches the animation off", async () => {
+    const configure = jest
+      .spyOn(LayoutAnimation, "configureNext")
+      .mockImplementation(() => undefined);
+    const view = await renderAccordion(
+      <Accordion testID="faq" items={ITEMS} />,
+      { components: { accordion: { disableAnimation: true } } },
+    );
+
+    await fireEvent.press(
+      view.getByRole("button", { name: "Which plan suits me?" }),
+    );
+
+    expect(configure).not.toHaveBeenCalled();
+  });
+
+  it("lets the instance's disableAnimation win over the configured one", async () => {
+    const configure = jest
+      .spyOn(LayoutAnimation, "configureNext")
+      .mockImplementation(() => undefined);
+    const view = await renderAccordion(
+      <Accordion testID="faq" items={ITEMS} disableAnimation={false} />,
+      { components: { accordion: { disableAnimation: true } } },
+    );
+
+    await fireEvent.press(
+      view.getByRole("button", { name: "Which plan suits me?" }),
+    );
+
+    expect(configure).toHaveBeenCalledTimes(1);
   });
 
   it("takes a closed panel out of the tree rather than hiding it", async () => {

@@ -40,7 +40,7 @@ describe("Switch", () => {
     await user.click(control);
 
     expect(onChange).toHaveBeenCalledTimes(1);
-    expect(onChange.mock.calls[0][0]).toBe(true);
+    expect(onChange.mock.calls[0]![0]).toBe(true);
     expectState(control, { checked: true });
   });
 

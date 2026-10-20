@@ -27,11 +27,11 @@ export * from "./shared";
 export * from "./theme";
 
 /**
- * The token names `./shared` restates for the components that read them
- * together.
- * `./tokens` owns these unions and `./shared` repeats them, so the barrel says
- * once which module is the source of truth instead of letting two star exports
+ * The token names `./shared` and `./tokens` both reach, exported explicitly so
+ * the package states one source of truth instead of letting two star exports
  * collide.
+ * `./tokens` owns these unions; `./shared` derives its radius, size and spacing
+ * unions from the token maps rather than restating them.
  */
 export type { Radius, Size, Space, Variant } from "./tokens";
 export * from "./tokens";

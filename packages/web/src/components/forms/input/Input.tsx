@@ -31,19 +31,48 @@ import React, {
   useRef,
 } from "react";
 import { useAsheeConfig } from "../../../libs/context";
+import {
+  type KeyboardOpenOptions,
+  useKeyboardField,
+} from "../../system/keyboard";
 import { FieldShell } from "../field/FieldShell";
 import {
   FALLBACK_FIELD_CONFIG,
   type FieldSizeKey,
   type LabelAlign,
 } from "../field/field-config";
-import { type KeyboardOpenOptions, useKeyboardField } from "../../system/keyboard";
 import type { InputConfig } from "./input-config";
 
 // ─── Component Interface ──────────────────────────────────────────────────────
 
 type BaseInputProps = InputConfig &
   Omit<InputHTMLAttributes<HTMLInputElement>, "size" | "color" | "children">;
+
+/**
+ * The width a field takes in the column it is placed in.
+ *
+ * A field is a control, so it fills its column by default; the consumer turns that
+ * off with `fullWidth={false}`, which lets the field size to its content and sit
+ * inline beside another one. Both strings are complete and static, so Tailwind can
+ * see them.
+ */
+const INPUT_WIDTH_CLASS: Record<"full" | "inline", string> = {
+  full: "w-full",
+  inline: "inline-block w-auto",
+};
+
+/**
+ * The width a field resolves to when no tier states one.
+ *
+ * The family's neutral fallback is `false`, but a text field is a control and fills
+ * the column it is placed in, so that is not the value this member bottoms out at.
+ * The registered component default states the same value; stating it here as well is
+ * what keeps the resolved width from depending on whether the bundler has evaluated
+ * the configuration module yet (`resolve-config` describes the same hazard), because
+ * a server render and a client hydration disagreeing on this class would be a
+ * mismatch.
+ */
+const DEFAULT_FULL_WIDTH = true;
 
 /**
  * Configuration options for the Input component.
@@ -53,7 +82,7 @@ export interface InputProps extends BaseInputProps {
    * Label text for the input.
    * Displayed above the input field.
    */
-  label?: string;
+  label?: string | undefined;
 
   /**
    * Whether the input is in a loading state.
@@ -61,19 +90,19 @@ export interface InputProps extends BaseInputProps {
    *
    * @default false
    */
-  isLoading?: boolean;
+  isLoading?: boolean | undefined;
 
   /**
    * Description text shown below the label.
    * Provides additional context about the input.
    */
-  description?: string;
+  description?: string | undefined;
 
   /**
    * Validation message shown below the input.
    * Color is determined by the status prop.
    */
-  message?: string;
+  message?: string | undefined;
 
   /**
    * Whether the field is required.
@@ -81,7 +110,7 @@ export interface InputProps extends BaseInputProps {
    *
    * @default false
    */
-  required?: boolean;
+  required?: boolean | undefined;
 
   /**
    * Called with the field's next value whenever it changes.
@@ -93,19 +122,30 @@ export interface InputProps extends BaseInputProps {
    * The DOM's own `onChange` still receives the event, so a web consumer keeps the
    * choice between the two; passing both calls both.
    */
-  onChangeText?: (value: string) => void;
+  onChangeText?: ((value: string) => void) | undefined;
+
+  /**
+   * Whether the field stretches to fill its parent's width.
+   *
+   * A text field is a control, so it fills the column it is placed in unless it is
+   * told not to. Passing `false` sizes the field to its content and lets it sit
+   * inline, beside another field or a button.
+   *
+   * @default true
+   */
+  fullWidth?: boolean | undefined;
 
   /**
    * Content rendered at the start of the input.
    * Typically an icon or adornment.
    */
-  startContent?: ReactNode;
+  startContent?: ReactNode | undefined;
 
   /**
    * Content rendered at the end of the input.
    * Typically an icon, button, or adornment.
    */
-  endContent?: ReactNode;
+  endContent?: ReactNode | undefined;
 
   /**
    * Whether the virtual keyboard should be enabled for mobile devices.
@@ -116,7 +156,7 @@ export interface InputProps extends BaseInputProps {
    *
    * @default true
    */
-  enableVirtualKeyboard?: boolean | KeyboardOpenOptions;
+  enableVirtualKeyboard?: boolean | KeyboardOpenOptions | undefined;
 }
 
 /**
@@ -140,13 +180,17 @@ export interface InputProps extends BaseInputProps {
  * @param props.description - Description text.
  * @param props.message - Validation message.
  * @param props.required - Whether the field is required. Defaults to false.
+ * @param props.fullWidth - Whether the field fills its parent's width. Defaults to
+ * true; pass false to let it size to its content and sit inline.
  * @param props.onChangeText - Called with the field's next value on change.
  * @param props.startContent - Content at the start of the input.
  * @param props.endContent - Content at the end of the input.
  * @param props.enableVirtualKeyboard - Enable mobile virtual keyboard. Defaults to true.
  * @param props.size - Size of the input. Defaults to "md".
- * @param props.radius - Corner rounding. Defaults to "md".
- * @param props.variant - Visual style variant. Defaults to "bordered".
+ * @param props.radius - Corner rounding. Resolves from the application's
+ * `defaultRadius`, then `md`.
+ * @param props.variant - Visual style variant. Defaults to the field family's
+ * `bordered`; fields do not read the application's `defaultVariant`.
  * @param props.color - Theme accent color. Defaults to "primary".
  * @param props.status - Validation status.
  * @param props.labelAlign - Alignment of the label. Defaults to "left".
@@ -207,6 +251,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
       description,
       message,
       required,
+      fullWidth,
       isLoading,
       id,
       className,
@@ -293,10 +338,15 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
       FALLBACK_FIELD_CONFIG.size,
     );
 
+    // Tier three is deliberately `undefined`: the field family does not read the
+    // application's `defaultVariant` (see `FALLBACK_FIELD_CONFIG`). A field's
+    // surface is the family's own decision, stated by the registered
+    // `components.input.variant`, and the family's fallback answers when no tier
+    // states one.
     const resolvedVariantKey = resolveCascade<Variant>(
       variant,
       sectionConfig?.variant,
-      config.defaultVariant,
+      undefined,
       FALLBACK_FIELD_CONFIG.variant,
     );
 
@@ -317,6 +367,13 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
     );
 
     const resolvedStatus = status ?? FALLBACK_FIELD_CONFIG.status;
+
+    const resolvedFullWidth = resolveCascade<boolean>(
+      fullWidth,
+      sectionConfig?.fullWidth,
+      undefined,
+      DEFAULT_FULL_WIDTH,
+    );
 
     // A status outranks the configured accent, and that rule is the family's rather
     // than this component's, so the field resolves it the way every other field does.
@@ -347,66 +404,74 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
           );
 
     return (
-      <FieldShell
-        id={fieldId}
-        label={label}
-        labelAlign={resolvedLabelAlign}
-        description={description}
-        descriptionId={descriptionId}
-        message={message}
-        messageId={messageId}
-        status={resolvedStatus}
-        required={required}
-        isLoading={isLoading}>
-        <div className="relative flex items-center w-full">
-          {startContent && (
-            <span className="absolute left-3 z-10 flex items-center pointer-events-none text-foreground/50">
-              {startContent}
-            </span>
-          )}
-          <input
-            ref={internalRef}
-            id={fieldId}
-            disabled={disabled}
-            required={required}
-            autoComplete="off"
-            aria-invalid={isFieldInvalid(resolvedStatus)}
-            aria-describedby={describedBy}
-            aria-busy={isLoading}
-            onFocus={handleFocus}
-            onBlur={handleBlur}
-            onChange={handleChange}
-            className={cn(
-              "w-full text-foreground outline-none transition-colors shrink-0",
-              "focus-visible:ring-2 focus-visible:ring-offset-2",
-              "disabled:pointer-events-none disabled:opacity-50",
-              INPUT_SIZE_CLASS[resolvedSizeKey],
-              variantClass,
-              statusClass,
-              radiusClass,
-              startContent && "pl-11",
-              endContent && "pr-11",
-              className,
+      // The width belongs to the field rather than to the control, so a field that
+      // is not full width takes its label and its message with it.
+      <div
+        className={cn(
+          INPUT_WIDTH_CLASS[resolvedFullWidth ? "full" : "inline"],
+          "min-w-0",
+        )}>
+        <FieldShell
+          id={fieldId}
+          label={label}
+          labelAlign={resolvedLabelAlign}
+          description={description}
+          descriptionId={descriptionId}
+          message={message}
+          messageId={messageId}
+          status={resolvedStatus}
+          required={required}
+          isLoading={isLoading}>
+          <div className="relative flex items-center w-full">
+            {startContent && (
+              <span className="absolute left-3 z-10 flex items-center pointer-events-none text-foreground/50">
+                {startContent}
+              </span>
             )}
-            style={style}
-            {...rest}
-          />
-          {endContent && (
-            <span
+            <input
+              ref={internalRef}
+              id={fieldId}
+              disabled={disabled}
+              required={required}
+              autoComplete="off"
+              aria-invalid={isFieldInvalid(resolvedStatus)}
+              aria-describedby={describedBy}
+              aria-busy={isLoading}
+              onFocus={handleFocus}
+              onBlur={handleBlur}
+              onChange={handleChange}
               className={cn(
-                "absolute right-3 z-10 flex items-center",
-                typeof endContent === "string" ||
-                  (React.isValidElement(endContent) &&
-                    endContent.type === "span")
-                  ? "pointer-events-none"
-                  : "",
-                "text-foreground/50",
-              )}>
-              {endContent}
-            </span>
-          )}
-        </div>
-      </FieldShell>
+                "w-full text-foreground outline-none transition-colors shrink-0",
+                "focus-visible:ring-2 focus-visible:ring-offset-2",
+                "disabled:pointer-events-none disabled:opacity-50",
+                INPUT_SIZE_CLASS[resolvedSizeKey],
+                variantClass,
+                statusClass,
+                radiusClass,
+                startContent && "pl-11",
+                endContent && "pr-11",
+                className,
+              )}
+              style={style}
+              {...rest}
+            />
+            {endContent && (
+              <span
+                className={cn(
+                  "absolute right-3 z-10 flex items-center",
+                  typeof endContent === "string" ||
+                    (React.isValidElement(endContent) &&
+                      endContent.type === "span")
+                    ? "pointer-events-none"
+                    : "",
+                  "text-foreground/50",
+                )}>
+                {endContent}
+              </span>
+            )}
+          </div>
+        </FieldShell>
+      </div>
     );
   },
 );

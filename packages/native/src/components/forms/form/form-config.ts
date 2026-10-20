@@ -40,9 +40,9 @@ registerNativeComponentDefaults("form", defaultNativeFormConfig);
 /**
  * The values the form falls back to when no tier provides one.
  */
-export const FALLBACK_NATIVE_FORM_CONFIG: Required<NativeFormConfig> = {
+export const FALLBACK_NATIVE_FORM_CONFIG = {
   submitVariant: "solid",
   submitColor: "primary",
   submitSize: "md",
   submitRadius: "md",
-};
+} satisfies NativeFormConfig;

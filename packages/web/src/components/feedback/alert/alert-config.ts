@@ -15,7 +15,9 @@ export type { AlertConfig, AlertType } from "@asheeui/core";
  * Default config values registered for the Alert component.
  *
  * `variant` is intentionally absent so it inherits from the global
- * `defaultVariant`.
+ * `defaultVariant`. `radius` is registered, so it is pinned: the component tier
+ * answers before the application's `defaultRadius`, which therefore never reaches
+ * an alert. State `components.alert.radius` or the instance prop instead.
  */
 export const defaultAlertConfig: AlertConfig = {
   type: "info",
@@ -27,10 +29,10 @@ export const defaultAlertConfig: AlertConfig = {
  * These values are used when instance props, component config,
  * and global defaults are all undefined.
  */
-export const FALLBACK_ALERT_CONFIG: Required<AlertConfig> = {
+export const FALLBACK_ALERT_CONFIG = {
   type: "info",
   variant: "faded",
   radius: "md",
-} as const;
+} as const satisfies AlertConfig;
 
 registerComponentDefaults("alert", defaultAlertConfig);

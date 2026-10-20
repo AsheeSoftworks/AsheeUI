@@ -14,6 +14,10 @@ export type { SkeletonConfig } from "@asheeui/core";
 
 /**
  * Default config values registered for the Skeleton component.
+ *
+ * `radius` is registered, so it is pinned: a skeleton placeholder draws the shape
+ * of the content it stands in for, so the application's `defaultRadius` does not
+ * reach it. State `components.skeleton.radius` or the instance prop instead.
  */
 export const defaultSkeletonConfig: SkeletonConfig = {
   radius: "sm",
@@ -25,9 +29,9 @@ export const defaultSkeletonConfig: SkeletonConfig = {
  * These values are used when instance props, component config,
  * and global defaults are all undefined.
  */
-export const FALLBACK_SKELETON_CONFIG: Required<SkeletonConfig> = {
+export const FALLBACK_SKELETON_CONFIG = {
   radius: "sm",
   isAnimated: true,
-} as const;
+} as const satisfies SkeletonConfig;
 
 registerComponentDefaults("skeleton", defaultSkeletonConfig);

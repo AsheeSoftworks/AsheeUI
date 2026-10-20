@@ -21,9 +21,11 @@ import {
 } from "@asheeui/core";
 import {
   forwardRef,
+  type KeyboardEvent,
   type ReactNode,
   useCallback,
   useId,
+  useRef,
   useState,
 } from "react";
 import { ChevronDownIcon } from "../../../icons/ChevronDownIcon";
@@ -61,7 +63,7 @@ export interface AccordionProps extends BaseAccordionProps {
    * Default open item keys for uncontrolled usage.
    * Can be a single key or array of keys when allowMultiple is true.
    */
-  defaultValue?: string | string[];
+  defaultValue?: string | string[] | undefined;
 
   /**
    * Controlled open item keys.
@@ -69,35 +71,35 @@ export interface AccordionProps extends BaseAccordionProps {
    * When provided, the component becomes controlled and updates are
    * reported through `onValueChange`.
    */
-  value?: string | string[];
+  value?: string | string[] | undefined;
 
   /**
    * Callback fired with the current open item keys.
    * Called whenever the open state changes.
    */
-  onValueChange?: (value: string[]) => void;
+  onValueChange?: ((value: string[]) => void) | undefined;
 
   /**
    * Custom node rendered as the expand indicator.
    *
    * Defaults to a rotating chevron-down icon.
    */
-  expandIcon?: ReactNode;
+  expandIcon?: ReactNode | undefined;
 
   /**
    * Extra classes applied to each item container.
    */
-  itemClassName?: string;
+  itemClassName?: string | undefined;
 
   /**
    * Extra classes applied to each header trigger button.
    */
-  headerClassName?: string;
+  headerClassName?: string | undefined;
 
   /**
    * Extra classes applied to each content panel.
    */
-  contentClassName?: string;
+  contentClassName?: string | undefined;
 }
 
 // ─── Component Implementation ─────────────────────────────────────────────────
@@ -181,7 +183,7 @@ export const Accordion = forwardRef<HTMLDivElement, AccordionProps>(
       value: controlledValue,
       onValueChange,
       expandIcon,
-      disableAnimation = false,
+      disableAnimation,
       itemClassName,
       headerClassName,
       contentClassName,
@@ -226,6 +228,17 @@ export const Accordion = forwardRef<HTMLDivElement, AccordionProps>(
       sectionConfig?.radius,
       config.defaultRadius,
       FALLBACK_ACCORDION_CONFIG.radius,
+    );
+
+    // `disableAnimation` is a cascade axis like the others: a consumer can state it
+    // on the instance, in `components.accordion`, or nowhere at all. Destructuring it
+    // with a literal default would answer `false` before the config tier was asked,
+    // so the component-level option could never take effect.
+    const resolvedDisableAnimation = resolveCascade<boolean>(
+      disableAnimation,
+      sectionConfig?.disableAnimation,
+      undefined,
+      FALLBACK_ACCORDION_CONFIG.disableAnimation,
     );
 
     // ─── 2. Class Maps ────────────────────────────────────────────────────────
@@ -296,6 +309,77 @@ export const Accordion = forwardRef<HTMLDivElement, AccordionProps>(
       [activeKeys, isControlled, onValueChange, resolvedAllowMultiple],
     );
 
+    // ─── 3. Keyboard Navigation ───────────────────────────────────────────────
+
+    const triggerRefs = useRef<Map<string, HTMLButtonElement | null>>(
+      new Map(),
+    );
+
+    /**
+     * Move focus between the item triggers, which is what the WAI-ARIA accordion
+     * pattern asks for: Up and Down step through the headers, Home and End jump to
+     * the first and the last, and everything else is the browser's to handle.
+     *
+     * A disabled trigger stays in the tab order — it reports `aria-disabled`
+     * rather than the native attribute — but arrowing onto it would move focus to
+     * something the reader cannot operate, so the walk skips it, as `Tabs` does.
+     * The walk wraps, and it starts from the current position rather than from
+     * "the next enabled one", so a reader sitting on a disabled trigger still
+     * lands somewhere useful.
+     *
+     * @param event - The key event on a trigger.
+     * @param currentIndex - Position of the trigger that received the key.
+     */
+    const handleTriggerKeyDown = (
+      event: KeyboardEvent<HTMLButtonElement>,
+      currentIndex: number,
+    ) => {
+      const enabledIndexes: number[] = [];
+      items.forEach((item, index) => {
+        if (!item.disabled) enabledIndexes.push(index);
+      });
+
+      // `at` answers `undefined` only for an empty list, so this states the
+      // no-enabled-trigger case and narrows both ends in one step.
+      const firstEnabled = enabledIndexes.at(0);
+      const lastEnabled = enabledIndexes.at(-1);
+
+      if (firstEnabled === undefined || lastEnabled === undefined) return;
+
+      let targetIndex: number;
+
+      switch (event.key) {
+        case "ArrowDown":
+          targetIndex =
+            enabledIndexes.find((index) => index > currentIndex) ??
+            firstEnabled;
+          break;
+        case "ArrowUp": {
+          const above = enabledIndexes.filter((index) => index < currentIndex);
+          // The closest enabled trigger above this one, or the walk wraps.
+          targetIndex = above.at(-1) ?? lastEnabled;
+          break;
+        }
+        case "Home":
+          targetIndex = firstEnabled;
+          break;
+        case "End":
+          targetIndex = lastEnabled;
+          break;
+        default:
+          // Every other key belongs to the trigger itself (Enter and Space
+          // activate it) or to the browser (Tab leaves, the rest scroll).
+          return;
+      }
+
+      // The navigation key is ours: the browser must not also scroll the page.
+      event.preventDefault();
+
+      const targetItem = items[targetIndex];
+      const targetKey = targetItem?.id || `item-${targetIndex}`;
+      triggerRefs.current.get(targetKey)?.focus();
+    };
+
     return (
       <div
         ref={ref}
@@ -329,14 +413,25 @@ export const Accordion = forwardRef<HTMLDivElement, AccordionProps>(
               )}>
               {/* Trigger Button */}
               <button
+                ref={(node) => {
+                  if (node) triggerRefs.current.set(itemKey, node);
+                  else triggerRefs.current.delete(itemKey);
+                }}
                 id={headerId}
                 type="button"
                 aria-expanded={isOpen}
                 aria-controls={contentId}
-                disabled={item.disabled}
+                // A disabled item is reported, not removed. The native `disabled`
+                // attribute would take the trigger out of the tab order, so a
+                // reader would never learn that the section exists but cannot be
+                // opened; `aria-disabled` states the same thing and leaves the
+                // control reachable, which is what the rest of the library does.
+                // The press is refused in `handleToggle`.
+                aria-disabled={item.disabled || undefined}
                 onClick={() => handleToggle(itemKey, item.disabled)}
+                onKeyDown={(event) => handleTriggerKeyDown(event, index)}
                 className={cn(
-                  "w-full min-w-full text-left flex items-center justify-between gap-3 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-inset text-foreground transition-colors disabled:opacity-50 disabled:cursor-not-allowed select-none box-border",
+                  "w-full min-w-full text-left flex items-center justify-between gap-3 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-inset text-foreground transition-colors aria-disabled:opacity-50 aria-disabled:cursor-not-allowed select-none box-border",
                   headerSizeClass,
                   headerClassName,
                 )}>
@@ -360,7 +455,7 @@ export const Accordion = forwardRef<HTMLDivElement, AccordionProps>(
                 <div
                   className={cn(
                     "text-foreground/70 shrink-0 ml-2 transition-transform duration-200 ease-in-out",
-                    disableAnimation ? "transition-none" : "",
+                    resolvedDisableAnimation ? "transition-none" : "",
                     isOpen && "rotate-180",
                   )}>
                   {expandIcon || <ChevronDownIcon className="w-4 h-4" />}
@@ -380,7 +475,7 @@ export const Accordion = forwardRef<HTMLDivElement, AccordionProps>(
                 inert={!isOpen}
                 className={cn(
                   "w-full grid transition-[grid-template-rows,opacity] duration-250 ease-[cubic-bezier(0.16,1,0.3,1)]",
-                  disableAnimation ? "transition-none" : "",
+                  resolvedDisableAnimation ? "transition-none" : "",
                   isOpen
                     ? "grid-rows-[1fr] opacity-100"
                     : "grid-rows-[0fr] opacity-0 pointer-events-none",

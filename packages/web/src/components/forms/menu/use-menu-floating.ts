@@ -53,7 +53,7 @@ export interface UseMenuFloatingProps {
    *
    * @default false
    */
-  disabled?: boolean;
+  disabled?: boolean | undefined;
 
   /**
    * Preferred placement of the floating element relative to the reference.
@@ -61,14 +61,14 @@ export interface UseMenuFloatingProps {
    *
    * @default "bottom-start"
    */
-  placement?: Placement;
+  placement?: Placement | undefined;
 
   /**
    * Distance in pixels between the reference and floating elements.
    *
    * @default 4
    */
-  offsetDistance?: number;
+  offsetDistance?: number | undefined;
 
   /**
    * Padding in pixels applied to the shift middleware.
@@ -76,7 +76,7 @@ export interface UseMenuFloatingProps {
    *
    * @default 8
    */
-  padding?: number;
+  padding?: number | undefined;
 
   /**
    * Whether the floating element should match the width of the reference element.
@@ -84,7 +84,7 @@ export interface UseMenuFloatingProps {
    *
    * @default true
    */
-  matchReferenceWidth?: boolean;
+  matchReferenceWidth?: boolean | undefined;
 
   /**
    * ARIA role applied to the floating element via useRole.
@@ -93,7 +93,14 @@ export interface UseMenuFloatingProps {
    *
    * @default "listbox"
    */
-  role?: "listbox" | "menu" | "dialog" | "tooltip" | "grid" | "tree";
+  role?:
+    | "listbox"
+    | "menu"
+    | "dialog"
+    | "tooltip"
+    | "grid"
+    | "tree"
+    | undefined;
 
   /**
    * Layer delta added to the trigger's detected stacking-context z-index to
@@ -103,7 +110,7 @@ export interface UseMenuFloatingProps {
    *
    * @default ASHEE_LAYER.dropdown
    */
-  zIndex?: number;
+  zIndex?: number | undefined;
 }
 
 /**

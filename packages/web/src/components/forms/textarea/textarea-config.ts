@@ -20,10 +20,14 @@ export { FALLBACK_TEXTAREA_CONFIG } from "@asheeui/core";
  * The values the web's Textarea registers as its component defaults.
  * It registers the family's web defaults rather than a second copy of them, and four
  * rows, which is the height a value of a few sentences reads at without scrolling.
+ * `fullWidth` is restated as the filling value for the same reason the Input restates
+ * it: a box fills the column it is placed in unless it is told not to, so the prop can
+ * be turned off without every existing box changing width.
  */
 export const defaultTextAreaConfig: TextAreaConfig = {
   ...defaultFieldConfig,
   rows: 4,
+  fullWidth: true,
 };
 
 registerComponentDefaults("textarea", defaultTextAreaConfig);

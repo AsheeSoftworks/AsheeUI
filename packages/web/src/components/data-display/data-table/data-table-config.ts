@@ -9,7 +9,11 @@
  * and the registration that puts them in the web registry.
  */
 
-import { type DataTableConfig, registerComponentDefaults } from "@asheeui/core";
+import {
+  DATA_TABLE_ROW_COUNT_LABEL,
+  type DataTableConfig,
+  registerComponentDefaults,
+} from "@asheeui/core";
 
 export type { DataTableConfig };
 
@@ -19,9 +23,12 @@ export type { DataTableConfig };
 export const defaultDataTableConfig: DataTableConfig = {
   searchable: true,
   searchLabel: "Search",
+  searchDebounce: 0,
   paginated: true,
   pageSize: 10,
   showRowCount: true,
+  rowCountLabel: DATA_TABLE_ROW_COUNT_LABEL,
+  loadingLabel: "Loading results",
   emptyTitle: "No results",
   emptyDescription: "Try a different search, or clear it to see everything.",
 };
@@ -31,12 +38,15 @@ registerComponentDefaults("datatable", defaultDataTableConfig);
 /**
  * Hard fallback values used when no config tier provides a value.
  */
-export const FALLBACK_DATA_TABLE_CONFIG: Required<DataTableConfig> = {
+export const FALLBACK_DATA_TABLE_CONFIG = {
   searchable: true,
   searchLabel: "Search",
+  searchDebounce: 0,
   paginated: true,
   pageSize: 10,
   showRowCount: true,
+  rowCountLabel: DATA_TABLE_ROW_COUNT_LABEL,
+  loadingLabel: "Loading results",
   emptyTitle: "No results",
   emptyDescription: "Try a different search, or clear it to see everything.",
-};
+} satisfies DataTableConfig;

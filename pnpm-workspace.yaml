@@ -1,6 +1,10 @@
 packages:
   - "packages/*"
   - "apps/*"
+  # `apps/docs` is a separate git repository that consumes the workspace packages while they are
+  # unreleased: `@asheeui/web` and `@asheeui/core` are `workspace:*` links, so the site renders and
+  # typechecks against the source instead of the last published version. Reverting is a dependency
+  # change plus restoring an exclusion here.
 allowBuilds:
   # A file watcher that arrives with the native styling toolchain. Nothing in this
   # workspace runs its build step, because the packages use it only through a

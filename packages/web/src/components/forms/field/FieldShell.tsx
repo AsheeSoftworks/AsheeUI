@@ -46,68 +46,68 @@ export interface FieldShellProps {
    * A container that groups several controls (a radio group, for example)
    * references the visible label with `aria-labelledby` instead of `htmlFor`.
    */
-  labelId?: string;
+  labelId?: string | undefined;
 
   /**
    * ID of the control the label describes.
    * Defaults to `id`. Pass `null` when the label describes a group of controls
    * rather than one control, so no reference is emitted.
    */
-  htmlFor?: string | null;
+  htmlFor?: string | null | undefined;
 
   /**
    * The label text for the field.
    */
-  label?: string;
+  label?: string | undefined;
 
   /**
    * Alignment of the label relative to the field.
    * @default "left"
    */
-  labelAlign?: LabelAlign;
+  labelAlign?: LabelAlign | undefined;
 
   /**
    * Description text shown below the label.
    */
-  description?: string;
+  description?: string | undefined;
 
   /**
    * Optional ID for the description element.
    * Used for accessibility to associate with the field.
    */
-  descriptionId?: string;
+  descriptionId?: string | undefined;
 
   /**
    * Validation message shown below the field.
    */
-  message?: string;
+  message?: string | undefined;
 
   /**
    * Optional ID for the message element.
    * Used for accessibility to associate with the field.
    */
-  messageId?: string;
+  messageId?: string | undefined;
 
   /**
    * Validation status of the field.
    * Controls the color of the message text.
    * @default "default"
    */
-  status?: FieldStatus;
+  status?: FieldStatus | undefined;
 
   /**
    * Whether the field is required.
    * Adds a required indicator (*) to the label.
    * @default false
    */
-  required?: boolean;
+  required?: boolean | undefined;
 
   /**
    * Whether the field is in a loading state.
    * Shows a loading spinner next to the label.
    * @default false
    */
-  isLoading?: boolean;
+  isLoading?: boolean | undefined;
 
   /**
    * The field content to render.

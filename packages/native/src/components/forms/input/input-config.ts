@@ -64,7 +64,7 @@ registerNativeComponentDefaults("input", defaultNativeInputConfig);
 /**
  * The values the field falls back to when no tier provides one.
  */
-export const FALLBACK_NATIVE_INPUT_CONFIG: Required<NativeInputConfig> = {
+export const FALLBACK_NATIVE_INPUT_CONFIG = {
   size: "md",
   radius: "md",
   variant: "bordered",
@@ -73,4 +73,4 @@ export const FALLBACK_NATIVE_INPUT_CONFIG: Required<NativeInputConfig> = {
   multiline: false,
   isDisabled: false,
   required: false,
-};
+} satisfies NativeInputConfig;

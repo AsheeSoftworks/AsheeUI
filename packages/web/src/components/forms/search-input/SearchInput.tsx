@@ -23,10 +23,10 @@ import {
 import { ClearIcon } from "../../../icons/ClearIcon";
 import { SearchIcon } from "../../../icons/SearchIcon";
 import { useAsheeConfig } from "../../../libs/context";
+import { Spinner } from "../../feedback/spinner/spinner";
 import { Button } from "../button";
 import type { FieldStatus } from "../field/field-config";
 import { Input } from "../input";
-import { Spinner } from "../../feedback/spinner/spinner";
 import {
   FALLBACK_SEARCH_INPUT_CONFIG,
   type SearchInputConfig,
@@ -59,67 +59,67 @@ export interface SearchInputProps extends BaseSearchInputProps {
   /**
    * The current query, for a consumer that owns it.
    */
-  value?: string;
+  value?: string | undefined;
 
   /**
    * The initial query, for a consumer that does not.
    */
-  defaultValue?: string;
+  defaultValue?: string | undefined;
 
   /**
    * Called with the native change event, which is how a form library hears
    * about the field.
    */
-  onChange?: ChangeEventHandler<HTMLInputElement>;
+  onChange?: ChangeEventHandler<HTMLInputElement> | undefined;
 
   /**
    * Called with the next query whenever it changes, including when the field is
    * emptied. It is the handler to use when the query drives a result list.
    */
-  onValueChange?: (value: string) => void;
+  onValueChange?: ((value: string) => void) | undefined;
 
   /**
    * Called with the query when the reader submits the field.
    * Supplying it makes the component a form, so Enter submits and the field is
    * announced as the page's search.
    */
-  onSearch?: (value: string) => void;
+  onSearch?: ((value: string) => void) | undefined;
 
   /**
    * Supporting text under the field.
    */
-  description?: string;
+  description?: string | undefined;
 
   /**
    * Validation message under the field.
    */
-  message?: string;
+  message?: string | undefined;
 
   /**
    * Validation status of the field.
    *
    * @default "default"
    */
-  status?: FieldStatus;
+  status?: FieldStatus | undefined;
 
   /**
    * Whether a search is in progress, which the field reports as busy.
    *
    * @default false
    */
-  isLoading?: boolean;
+  isLoading?: boolean | undefined;
 
   /**
    * Keyboard shortcut a consumer has bound elsewhere, shown as a hint.
    * The field only displays it: binding a global shortcut is an application
    * concern, because the field cannot know what else the shortcut should do.
    */
-  shortcut?: string;
+  shortcut?: string | undefined;
 
   /**
    * Extra classes for the search region.
    */
-  className?: string;
+  className?: string | undefined;
 }
 
 /**

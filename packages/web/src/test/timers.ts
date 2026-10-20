@@ -23,7 +23,7 @@ export interface FakeTimerOptions {
    * awaits testing-library utilities while fake timers are installed,
    * otherwise those awaits wait on a clock only the test advances.
    */
-  shouldAdvanceTime?: boolean;
+  shouldAdvanceTime?: boolean | undefined;
 }
 
 /**

@@ -29,12 +29,12 @@ export interface FeatureItem {
    * Stable identifier for the feature.
    * Defaults to its position in the list.
    */
-  id?: string | number;
+  id?: string | number | undefined;
 
   /**
    * Icon shown above the feature title.
    */
-  icon?: ReactNode;
+  icon?: ReactNode | undefined;
 
   /**
    * Name of the feature.
@@ -44,13 +44,13 @@ export interface FeatureItem {
   /**
    * Explanation of the feature.
    */
-  description?: ReactNode;
+  description?: ReactNode | undefined;
 
   /**
    * Destination of the feature.
    * With one, the whole card becomes a control; without one, the card is a surface.
    */
-  href?: string;
+  href?: string | undefined;
 }
 
 /**
@@ -61,16 +61,16 @@ export interface FeatureItem {
  */
 export interface FeatureGridConfig extends SectionBlockOptions {
   /** Columns from the smallest window upwards. */
-  columns?: GridColumns;
+  columns?: GridColumns | undefined;
 
   /** Columns from the `md` breakpoint upwards. */
-  columnsMd?: GridColumns;
+  columnsMd?: GridColumns | undefined;
 
   /** Columns from the `lg` breakpoint upwards. */
-  columnsLg?: GridColumns;
+  columnsLg?: GridColumns | undefined;
 
   /** Space between the feature cards. */
-  gap?: Space;
+  gap?: Space | undefined;
 }
 
 declare module "../../../registry" {

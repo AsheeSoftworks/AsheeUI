@@ -55,15 +55,14 @@ registerNativeComponentDefaults(
 /**
  * The values the Testimonials band falls back to when no tier provides one.
  */
-export const FALLBACK_NATIVE_TESTIMONIALS_CONFIG: Required<NativeTestimonialsConfig> =
-  {
-    columns: 1,
-    columnsMd: 2,
-    columnsLg: 3,
-    gap: "lg",
-    spacing: "lg",
-    background: "none",
-    align: "center",
-    containerSize: "lg",
-    contained: true,
-  };
+export const FALLBACK_NATIVE_TESTIMONIALS_CONFIG = {
+  columns: 1,
+  columnsMd: 2,
+  columnsLg: 3,
+  gap: "lg",
+  spacing: "lg",
+  background: "none",
+  align: "center",
+  containerSize: "lg",
+  contained: true,
+} satisfies NativeTestimonialsConfig;

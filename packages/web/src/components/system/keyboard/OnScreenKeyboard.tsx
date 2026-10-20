@@ -10,13 +10,17 @@
 import type { Color, Radius, Variant } from "@asheeui/core";
 import { ASHEE_GLOBAL_LAYER, cn } from "@asheeui/core";
 import { FloatingPortal } from "@floating-ui/react";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Button } from "../../forms/button/Button";
-import type { KeyboardElement } from "./KeyboardContext";
-import type {
-  KeyboardConfig,
-  KeyboardSizeKey,
-  LayoutName,
+import {
+  KEYBOARD_CONTAINER_ATTRIBUTE,
+  type KeyboardElement,
+} from "./KeyboardContext";
+import {
+  defaultKeyAccessibleLabels,
+  type KeyboardConfig,
+  type KeyboardSizeKey,
+  type LayoutName,
 } from "./keyboard-config";
 import {
   KEYBOARD_KEY_SIZE_CLASS,
@@ -62,10 +66,21 @@ function dispatchInputValueChange(
   el.dispatchEvent(new Event("input", { bubbles: true }));
 
   requestAnimationFrame(() => {
-    el.focus();
+    // Only restore the caret when the field is the focused element. A key can
+    // also be pressed from the keyboard, and focus belongs on that key then:
+    // pulling it back to the field would make a reader tab into the keyboard
+    // again for every character.
+    if (document.activeElement === el) {
+      el.focus();
+    }
     el.setSelectionRange(cursorPos, cursorPos);
   });
 }
+
+/**
+ * Attribute marking the container, shared with the field's blur handler.
+ */
+const KEYBOARD_CONTAINER_MARKER = { [KEYBOARD_CONTAINER_ATTRIBUTE]: "" };
 
 /**
  * Performs a backspace operation at the cursor position.
@@ -153,17 +168,17 @@ export interface OnScreenKeyboardProps {
   /**
    * Extra CSS classes for the keyboard container.
    */
-  className?: string;
+  className?: string | undefined;
 
   /**
    * Extra CSS classes for individual keys.
    */
-  keyClassName?: string;
+  keyClassName?: string | undefined;
 
   /**
    * Whether the keyboard is globally disabled.
    */
-  disabled?: boolean;
+  disabled?: boolean | undefined;
 }
 
 /**
@@ -220,12 +235,14 @@ export function OnScreenKeyboard({
   const [pressedKeys, setPressedKeys] = useState<Set<string>>(new Set());
   const [hoveredToken, setHoveredToken] = useState<string | null>(null);
 
-  // Reset layout when keyboard opens
-  useEffect(() => {
-    if (isOpen) {
-      setLayout(defaultLayoutName);
-    }
-  }, [isOpen, defaultLayoutName, setLayout]);
+  /** The keyboard container, for moving focus between keys with the arrow keys. */
+  const keyboardRef = useRef<HTMLElement>(null);
+
+  /**
+   * The layout `{shift}` was pressed from, so a custom layout returns to itself
+   * rather than to the provider's default.
+   */
+  const shiftOriginRef = useRef<LayoutName | null>(null);
 
   const parsedRows = useMemo(() => {
     const rawRows =
@@ -239,6 +256,70 @@ export function OnScreenKeyboard({
       })),
     }));
   }, [activeLayouts, currentLayout, defaultLayoutName]);
+
+  /**
+   * Move focus between keys with the arrow keys.
+   *
+   * Every key is a real button, so Tab already reaches them and Enter/Space
+   * press them. The arrows are what makes a keyboard-only reader practical on a
+   * grid of forty keys: they walk the same rows the eye sees instead of
+   * demanding a tab for each key.
+   */
+  const moveFocus = useCallback(
+    (event: React.KeyboardEvent<HTMLElement>) => {
+      const steps: Record<string, readonly [number, number]> = {
+        ArrowLeft: [0, -1],
+        ArrowRight: [0, 1],
+        ArrowUp: [-1, 0],
+        ArrowDown: [1, 0],
+      };
+      const step = steps[event.key];
+      if (!step) return;
+
+      const container = keyboardRef.current;
+      if (!container) return;
+
+      const buttons = Array.from(container.querySelectorAll("button"));
+      const activeIndex = buttons.indexOf(
+        document.activeElement as HTMLButtonElement,
+      );
+      if (activeIndex === -1) return;
+
+      // Where each row starts in the flat button list, so a position can be
+      // turned back into a row and a column.
+      const rowStarts: number[] = [];
+      let offset = 0;
+      for (const row of parsedRows) {
+        rowStarts.push(offset);
+        offset += row.keys.length;
+      }
+      if (rowStarts.length === 0) return;
+
+      let rowIndex = 0;
+      for (const [index, start] of rowStarts.entries()) {
+        if (start <= activeIndex) rowIndex = index;
+      }
+
+      const column = activeIndex - (rowStarts[rowIndex] ?? 0);
+      const targetRow = Math.min(
+        Math.max(rowIndex + step[0], 0),
+        rowStarts.length - 1,
+      );
+      const rowLength = parsedRows[targetRow]?.keys.length ?? 0;
+      if (rowLength === 0) return;
+
+      const targetColumn = Math.min(
+        Math.max(column + step[1], 0),
+        rowLength - 1,
+      );
+      // `rowStarts` has one entry per row, and `targetRow` is bounded by its length,
+      // so the offset exists; the default keeps the focus lookup in bounds instead of
+      // turning a missing entry into `NaN`.
+      buttons[(rowStarts[targetRow] ?? 0) + targetColumn]?.focus();
+      event.preventDefault();
+    },
+    [parsedRows],
+  );
 
   // Physical keyboard synchronization
   useEffect(() => {
@@ -309,15 +390,17 @@ export function OnScreenKeyboard({
       if (disabled) return;
 
       if (token === "{shift}") {
-        // Toggle between shift and default using the currentLayout prop
-        const newLayout =
-          currentLayout === "shift"
-            ? defaultLayoutName
-            : currentLayout === defaultLayoutName
-              ? "shift"
-              : currentLayout;
-
-        setLayout(newLayout);
+        // Honoured in every layout: shift is entered from wherever the reader
+        // is, and pressing it again returns there. The origin is remembered so
+        // a custom layout does not silently lose to the provider's default.
+        if (currentLayout === "shift") {
+          const origin = shiftOriginRef.current;
+          shiftOriginRef.current = null;
+          setLayout(origin && origin !== "shift" ? origin : defaultLayoutName);
+        } else {
+          shiftOriginRef.current = currentLayout;
+          setLayout("shift");
+        }
         return;
       }
       if (token === "{symbols}") {
@@ -349,7 +432,9 @@ export function OnScreenKeyboard({
       applyEdit(insertAtCursor(char));
 
       if (currentLayout === "shift" && autoShiftBack) {
-        setLayout(defaultLayoutName);
+        const origin = shiftOriginRef.current;
+        shiftOriginRef.current = null;
+        setLayout(origin && origin !== "shift" ? origin : defaultLayoutName);
       }
     },
     [
@@ -372,9 +457,12 @@ export function OnScreenKeyboard({
 
   const keyboardContent = (
     <section
+      ref={keyboardRef}
+      {...KEYBOARD_CONTAINER_MARKER}
       aria-label="Virtual Keyboard"
       className="fixed inset-x-0 bottom-0 pointer-events-auto"
       style={{ zIndex: ASHEE_GLOBAL_LAYER.docked }}
+      onKeyDown={moveFocus}
       onMouseDown={(e) => e.preventDefault()}>
       <div
         className={cn(
@@ -402,6 +490,7 @@ export function OnScreenKeyboard({
                     color={currentKeyColor}
                     radius={radius}
                     size={size}
+                    aria-label={defaultKeyAccessibleLabels[token]}
                     onClick={() => handleKeyPress(token)}
                     onMouseEnter={() => setHoveredToken(token)}
                     onMouseLeave={() => setHoveredToken(null)}

@@ -50,10 +50,10 @@ registerNativeComponentDefaults("navbar", defaultNativeNavbarConfig);
 /**
  * The values the bar falls back to when no tier provides one.
  */
-export const FALLBACK_NATIVE_NAVBAR_CONFIG: Required<NativeNavbarConfig> = {
+export const FALLBACK_NATIVE_NAVBAR_CONFIG = {
   position: "sticky",
   variant: "solid",
   align: "start",
   contained: true,
   containerSize: "lg",
-};
+} satisfies NativeNavbarConfig;

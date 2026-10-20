@@ -23,21 +23,21 @@ export interface FileUploadConfig {
    *
    * @default "Choose files"
    */
-  buttonLabel?: string;
+  buttonLabel?: string | undefined;
 
   /**
    * Instruction shown in the zone.
    *
    * @default "Drag files here"
    */
-  hint?: string;
+  hint?: string | undefined;
 
   /**
    * Density of the zone.
    *
    * @default "md"
    */
-  size?: Size;
+  size?: Size | undefined;
 }
 
 /**
@@ -47,11 +47,11 @@ export interface FileUploadConfig {
  * there is nothing to drag on a platform without a pointer, so the shared fallback states what
  * the web says and the native renderer says something a reader can act on.
  */
-export const FALLBACK_FILE_UPLOAD_CONFIG: Required<FileUploadConfig> = {
+export const FALLBACK_FILE_UPLOAD_CONFIG = {
   buttonLabel: "Choose files",
   hint: "Drag files here",
   size: "md",
-};
+} satisfies FileUploadConfig;
 
 declare module "../../../registry" {
   interface ComponentTypeConfigRegistry {

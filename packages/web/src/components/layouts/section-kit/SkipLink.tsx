@@ -1,12 +1,13 @@
 /**
  * Skip link helper for AsheeUI.
  *
- * This file provides the internal `SkipLink` component: the first focusable
+ * This file provides the public `SkipLink` component: the first focusable
  * element of a page composition, which lets a keyboard reader pass repeated
  * navigation and land in the content. It is shared by the page compositions so
  * the behaviour (and the classes that hide it until it is focused) are written
- * once. It is an internal helper and is not part of the public component
- * inventory.
+ * once. It is public through the `@asheeui/web/section-kit` subpath rather than
+ * the package entry point, and is documented on the section page
+ * (https://docs.asheeui.com/components/layouts/section) under "The section kit".
  */
 
 import { cn } from "@asheeui/core";
@@ -22,7 +23,7 @@ export const SKIP_LINK_CLASS =
   "sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded-md focus:bg-background focus:px-4 focus:py-2 focus:text-foreground focus:ring-2 focus:ring-primary";
 
 /**
- * Props for the internal SkipLink helper.
+ * Props for the public SkipLink helper.
  */
 export interface SkipLinkProps {
   /**
@@ -40,7 +41,7 @@ export interface SkipLinkProps {
   /**
    * Additional classes for the anchor.
    */
-  className?: string;
+  className?: string | undefined;
 }
 
 /**

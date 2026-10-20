@@ -36,7 +36,7 @@ registerComponentDefaults("featuregrid", defaultFeatureGridConfig);
 /**
  * Hard fallback values used when no config tier provides a value.
  */
-export const FALLBACK_FEATURE_GRID_CONFIG: Required<FeatureGridConfig> = {
+export const FALLBACK_FEATURE_GRID_CONFIG = {
   columns: 1,
   columnsMd: 2,
   columnsLg: 3,
@@ -46,4 +46,4 @@ export const FALLBACK_FEATURE_GRID_CONFIG: Required<FeatureGridConfig> = {
   align: "center",
   containerSize: "lg",
   contained: true,
-};
+} satisfies FeatureGridConfig;

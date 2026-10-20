@@ -20,6 +20,11 @@ export type {
 
 /**
  * Default config values registered for the Tabs component.
+ *
+ * `radius` (and the active option's own radius) is registered, so it is pinned:
+ * the bar rounds its controls as one decision, and the application's
+ * `defaultRadius` does not reach it. State `components.tabs.radius` or the
+ * instance prop instead.
  */
 export const defaultTabsConfig: TabsConfig = {
   size: "md",

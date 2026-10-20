@@ -1,4 +1,5 @@
-import { describe, expect, it } from "vitest";
+import { BADGE_ICON_SIZE_CLASS, CHIP_ICON_SIZE_CLASS } from "@asheeui/core";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import {
   expectHydrationClean,
   makeComponentConfig,
@@ -9,6 +10,10 @@ import {
 import { Badge } from "./Badge";
 
 describe("Badge", () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
   it("renders its content", () => {
     const { getByText } = renderWithProvider(<Badge>Active</Badge>);
 
@@ -31,6 +36,63 @@ describe("Badge", () => {
     expect(badge.querySelector('[aria-hidden="true"]')).toContainElement(
       getByTestId("icon"),
     );
+  });
+
+  it("keeps the visible content as the name when a label is given too", () => {
+    // A label beside visible text used to be announced instead of it, so a badge
+    // reading "Paid" said "Active". The text the reader can see is the name, and a
+    // name that contradicts it is not rendered at all.
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+    const { getByTestId, queryByText } = renderWithProvider(
+      <Badge data-testid="badge" label="Active">
+        Paid
+      </Badge>,
+    );
+    const badge = getByTestId("badge");
+
+    expect(badge).toHaveTextContent("Paid");
+    expect(queryByText("Active")).toBeNull();
+    expect(badge.querySelector(".sr-only")).toBeNull();
+    expect(badge.querySelector('[aria-hidden="true"]')).toBeNull();
+    expect(warn).toHaveBeenCalledWith(expect.stringContaining("`label`"));
+  });
+
+  it("names an icon-only badge without warning about its own label", () => {
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+    const { getByTestId } = renderWithProvider(
+      <Badge
+        data-testid="badge"
+        label="Sync failing"
+        startContent={<svg data-testid="icon" />}
+      />,
+    );
+    const badge = getByTestId("badge");
+
+    expect(badge).toHaveTextContent("Sync failing");
+    expect(badge.querySelector(".sr-only")?.textContent).toBe("Sync failing");
+    expect(badge.querySelector('[aria-hidden="true"]')).not.toBeNull();
+    expect(warn).not.toHaveBeenCalled();
+  });
+
+  it("sizes an icon the way a chip does, so one node renders the same in both", () => {
+    // The slot states the density's box and the SVG inside it. Styling only the
+    // drawing from the root, as the badge used to, made the same inline SVG a
+    // different size in each sibling.
+    for (const density of ["sm", "md", "lg"] as const) {
+      expect(BADGE_ICON_SIZE_CLASS[density]).toBe(
+        CHIP_ICON_SIZE_CLASS[density],
+      );
+    }
+
+    const { getByTestId } = renderWithProvider(
+      <Badge size="lg" startContent={<svg data-testid="icon" />}>
+        Synced
+      </Badge>,
+    );
+    const slot = getByTestId("icon").parentElement as HTMLElement;
+
+    expect(slot.className).toContain("size-4");
+    expect(slot.className).toContain("[&_svg]:size-4");
   });
 
   it("is not interactive, so it takes no focus and exposes no control", () => {

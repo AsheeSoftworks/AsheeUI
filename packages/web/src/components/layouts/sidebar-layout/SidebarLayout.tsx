@@ -30,6 +30,7 @@ import {
   type ReactNode,
 } from "react";
 import { useAsheeConfig } from "../../../libs/context";
+import { SidebarColumnContext } from "./sidebar-column";
 import {
   FALLBACK_SIDEBAR_LAYOUT_CONFIG,
   type SidebarLayoutConfig,
@@ -46,19 +47,24 @@ export interface SidebarLayoutProps extends BaseSidebarLayoutProps {
   sidebar: ReactNode;
 
   /** Content above both columns, typically the framework's `Navbar`. */
-  header?: ReactNode;
+  header?: ReactNode | undefined;
 
   /** Content below both columns. */
-  footer?: ReactNode;
+  footer?: ReactNode | undefined;
 
   /**
-   * Name of the navigation landmark the sidebar is rendered in.
+   * Name of the navigation column, which is a complementary landmark.
    * A shell usually holds one, so the name distinguishes it from the page's
-   * other navigation regions.
+   * other regions.
+   *
+   * A `Sidebar` placed in the column renders no landmark of its own here — the
+   * column already is one — so this name is what a reader hears for the region;
+   * the `Sidebar` contributes the navigation landmark inside it, named by its
+   * own `navLabel`.
    *
    * @default "Sidebar"
    */
-  sidebarLabel?: string;
+  sidebarLabel?: string | undefined;
 
   /**
    * Element to render the shell as.
@@ -66,7 +72,7 @@ export interface SidebarLayoutProps extends BaseSidebarLayoutProps {
    *
    * @default "div"
    */
-  as?: ElementType;
+  as?: ElementType | undefined;
 }
 
 /**
@@ -82,8 +88,8 @@ export interface SidebarLayoutProps extends BaseSidebarLayoutProps {
  * @param props.sidebar - The navigation column.
  * @param props.header - Content above both columns.
  * @param props.footer - Content below both columns.
- * @param props.sidebarLabel - Name of the navigation landmark. Defaults to
- * "Sidebar".
+ * @param props.sidebarLabel - Name of the navigation column, a complementary
+ * landmark. Defaults to "Sidebar".
  * @param props.side - Side the navigation column sits on. Defaults to "start".
  * @param props.sidebarWidth - Width of the navigation column. Defaults to "md".
  * @param props.stickySidebar - Keep the column in view. Defaults to true.
@@ -104,7 +110,7 @@ export interface SidebarLayoutProps extends BaseSidebarLayoutProps {
  * @see Sidebar - The navigation the column usually holds.
  * @see Page - The single-column shell, for a page without navigation.
  */
-export const SidebarLayout = forwardRef<HTMLDivElement, SidebarLayoutProps>(
+export const SidebarLayout = forwardRef<HTMLElement, SidebarLayoutProps>(
   (
     {
       sidebar,
@@ -153,7 +159,9 @@ export const SidebarLayout = forwardRef<HTMLDivElement, SidebarLayoutProps>(
               atEnd ? SIDEBAR_LAYOUT_ASIDE_END_BORDER_CLASS : undefined,
               resolved.stickySidebar && SIDEBAR_LAYOUT_ASIDE_STICKY_CLASS,
             )}>
-            {sidebar}
+            <SidebarColumnContext.Provider value>
+              {sidebar}
+            </SidebarColumnContext.Provider>
           </aside>
           <div className={SIDEBAR_LAYOUT_CONTENT_CLASS}>{children}</div>
         </div>

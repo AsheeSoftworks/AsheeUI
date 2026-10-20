@@ -16,8 +16,10 @@ export { FALLBACK_FORM_CONFIG } from "@asheeui/core";
 /**
  * Default config values registered for the Form component.
  *
- * The visual tokens are intentionally absent so they inherit from the global defaults and the
- * built-in fallback.
+ * The visual tokens are intentionally absent so they inherit from the global
+ * defaults and the built-in fallback. `submitRadius` is the exception: it is
+ * registered, so it is pinned and the application's `defaultRadius` does not
+ * reach the submit control. State `components.form.submitRadius` instead.
  */
 export const defaultFormConfig: FormConfig = {
   submitRadius: "md",

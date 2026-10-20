@@ -27,6 +27,7 @@ import {
   STEPPER_ITEM_BUTTON_CLASS,
   STEPPER_ITEM_CLASS,
   STEPPER_LABEL_CLASS,
+  STEPPER_LABEL_SIZE_TOKEN,
   STEPPER_LIST_CLASS,
   STEPPER_MARKER_CLASS,
   STEPPER_MARKER_SIZE_CLASS,
@@ -52,7 +53,7 @@ export interface StepperStep {
   /**
    * What the step asks for, shown under the label when descriptions are on.
    */
-  description?: ReactNode;
+  description?: ReactNode | undefined;
 }
 
 type BaseStepperProps = StepperConfig &
@@ -77,12 +78,12 @@ export interface StepperProps extends BaseStepperProps {
    * Its presence is what makes the steps the reader has not reached yet
    * interactive; without it the stepper only reports progress.
    */
-  onStepChange?: (index: number) => void;
+  onStepChange?: ((index: number) => void) | undefined;
 
   /**
    * Name of the list, for a page that has more than one.
    */
-  label?: string;
+  label?: string | undefined;
 
   /**
    * Element to render.
@@ -90,7 +91,7 @@ export interface StepperProps extends BaseStepperProps {
    *
    * @default "ol"
    */
-  as?: ElementType;
+  as?: ElementType | undefined;
 }
 
 /**
@@ -199,6 +200,7 @@ export const Stepper = forwardRef<HTMLOListElement, StepperProps>(
                 <Typography
                   as="span"
                   role="label"
+                  size={STEPPER_LABEL_SIZE_TOKEN[resolved.size]}
                   className={STEPPER_LABEL_CLASS[state]}>
                   {step.label}
                 </Typography>

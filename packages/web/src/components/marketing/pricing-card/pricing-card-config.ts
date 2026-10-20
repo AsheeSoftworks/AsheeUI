@@ -18,11 +18,14 @@ export type { PricingCardConfig, PricingCardVariant } from "@asheeui/core";
 
 /**
  * Default config values registered for the PricingCard component.
+ *
+ * `highlighted` is deliberately absent: it is an instance prop, because a
+ * recommendation is about one plan rather than about every plan the theme
+ * renders.
  */
 export const defaultPricingCardConfig: PricingCardConfig = {
   variant: "bordered",
   size: "lg",
-  highlighted: false,
 };
 
 registerComponentDefaults("pricingcard", defaultPricingCardConfig);
@@ -30,8 +33,7 @@ registerComponentDefaults("pricingcard", defaultPricingCardConfig);
 /**
  * Hard fallback values used when no config tier provides a value.
  */
-export const FALLBACK_PRICING_CARD_CONFIG: Required<PricingCardConfig> = {
+export const FALLBACK_PRICING_CARD_CONFIG = {
   variant: "bordered",
   size: "lg",
-  highlighted: false,
-};
+} satisfies PricingCardConfig;

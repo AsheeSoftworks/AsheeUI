@@ -58,42 +58,42 @@ export interface FieldConfig {
    *
    * @default "md"
    */
-  size?: FieldSizeKey;
+  size?: FieldSizeKey | undefined;
 
   /**
    * Corner rounding of the field.
    *
    * @default "md"
    */
-  radius?: Radius;
+  radius?: Radius | undefined;
 
   /**
    * Surface treatment of the field.
    *
    * @default "bordered"
    */
-  variant?: Variant;
+  variant?: Variant | undefined;
 
   /**
    * Accent colour of the field while it holds focus.
    *
    * @default "primary"
    */
-  color?: Color;
+  color?: Color | undefined;
 
   /**
    * Alignment of the label relative to the field.
    *
    * @default "left"
    */
-  labelAlign?: LabelAlign;
+  labelAlign?: LabelAlign | undefined;
 
   /**
    * Whether the field stretches to fill its parent's width.
    *
    * @default false
    */
-  fullWidth?: boolean;
+  fullWidth?: boolean | undefined;
 
   /**
    * Validation status of the field.
@@ -101,7 +101,7 @@ export interface FieldConfig {
    *
    * @default "default"
    */
-  status?: FieldStatus;
+  status?: FieldStatus | undefined;
 }
 
 /**
@@ -113,7 +113,7 @@ export interface FieldConfig {
  * `defaultVariant` is therefore deliberately absent from the tiers the field reads,
  * and this object is the bottom of its cascade.
  */
-export const FALLBACK_FIELD_CONFIG: Required<FieldConfig> = {
+export const FALLBACK_FIELD_CONFIG = {
   size: "md",
   radius: "md",
   variant: "bordered",
@@ -121,7 +121,7 @@ export const FALLBACK_FIELD_CONFIG: Required<FieldConfig> = {
   labelAlign: "left",
   fullWidth: false,
   status: "default",
-};
+} satisfies FieldConfig;
 
 /**
  * Whether a status describes a field the user has to correct.

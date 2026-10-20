@@ -1,6 +1,6 @@
 {
   "name": "@asheeui/web",
-  "version": "2.3.1",
+  "version": "2.4.0",
   "description": "Accessible and customizable React primitives engineered with Tailwind CSS.",
   "author": "Ashee Softworks <asheesoftworks@gmail.com>",
   "homepage": "https://asheeui.com",
@@ -80,7 +80,8 @@
     "build": "vite build",
     "prepublishOnly": "pnpm build",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "check-types": "tsc -p tsconfig.json --noEmit"
   },
   "sideEffects": [
     "*.css",

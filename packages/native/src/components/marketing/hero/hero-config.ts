@@ -45,11 +45,11 @@ registerNativeComponentDefaults("hero", defaultNativeHeroConfig);
 /**
  * The values the hero falls back to when no tier provides one.
  */
-export const FALLBACK_NATIVE_HERO_CONFIG: Required<NativeHeroConfig> = {
+export const FALLBACK_NATIVE_HERO_CONFIG = {
   align: "start",
   spacing: "xl",
   background: "none",
   mediaPosition: "end",
   containerSize: "lg",
   contained: true,
-};
+} satisfies NativeHeroConfig;

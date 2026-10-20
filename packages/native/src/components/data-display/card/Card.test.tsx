@@ -46,7 +46,6 @@ describe("Native Card", () => {
 
     expect(view.getByText("Inbox")).toBeTruthy();
     expect(view.getByText("12 unread")).toBeTruthy();
-    expect(classesOf(view, "card")).toContain("border");
     expect(classesOf(view, "card")).toContain("p-4");
   });
 
@@ -110,6 +109,27 @@ describe("Native Card", () => {
     expect(classesOf(view, "card")).toContain("bg-secondary/40");
     expect(classesOf(view, "card")).toContain("p-6");
     expect(view.getByRole("button", { name: "Inbox" })).toBeTruthy();
+  });
+
+  it("inherits the application's default treatment when no tier names one", async () => {
+    const view = await renderCard(<Card testID="card" title="Inbox" />, {
+      defaultVariant: "ghost",
+    });
+
+    // The registered defaults must not pin a treatment, or the application's default
+    // would never reach the card.
+    expect(classesOf(view, "card")).toContain("bg-transparent");
+    expect(classesOf(view, "card")).not.toContain("border-border");
+  });
+
+  it("lets the card's component section win over the application default", async () => {
+    const view = await renderCard(<Card testID="card" title="Inbox" />, {
+      defaultVariant: "ghost",
+      components: { card: { variant: "bordered" } },
+    });
+
+    expect(classesOf(view, "card")).toContain("border-border");
+    expect(classesOf(view, "card")).not.toContain("bg-transparent");
   });
 
   it("lets an instance prop win over the configured value", async () => {

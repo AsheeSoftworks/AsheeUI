@@ -19,7 +19,10 @@ export { FALLBACK_SWITCH_CONFIG } from "@asheeui/core";
 
 /**
  * Default config values registered for the Switch component.
- * Inherits the default field configuration and rounds the track.
+ * Inherits the default field configuration and rounds the track. That radius is
+ * registered, so it is pinned: a switch is a track and a knob, and the
+ * application's `defaultRadius` does not reach it. State
+ * `components.switch.radius` or the instance prop instead.
  */
 export const defaultSwitchConfig: SwitchConfig = {
   ...defaultInputConfig,

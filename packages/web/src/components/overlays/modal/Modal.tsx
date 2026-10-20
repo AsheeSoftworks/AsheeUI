@@ -28,6 +28,8 @@ import {
   useState,
 } from "react";
 import { useAsheeConfig } from "../../../libs/context";
+import { useLayerEscape } from "../../../libs/layer-stack";
+import { OverlayCloseControl } from "../../../libs/overlay-close-control";
 import { useBodyScrollLock } from "../../../libs/use-body-scroll-lock";
 import { useDialogOverlay } from "../../../libs/use-dialog-overlay";
 import {
@@ -47,7 +49,7 @@ export interface ModalOverlayProps {
   /**
    * Extra classes applied to the backdrop element.
    */
-  className?: string;
+  className?: string | undefined;
 }
 
 /**
@@ -57,7 +59,7 @@ export interface ModalContentProps {
   /**
    * Extra classes applied to the modal content container.
    */
-  className?: string;
+  className?: string | undefined;
 }
 
 /**
@@ -72,9 +74,22 @@ export interface ModalProps extends BaseModalProps {
 
   /**
    * Close event callback.
-   * Called when the modal should close (backdrop click, Escape key).
+   * Called when the modal should close: by its own close control, by a backdrop
+   * press, or by Escape.
+   *
+   * The type keeps this optional for source compatibility, but a modal cannot
+   * dismiss itself without it. A modal that omits `onClose` is rendered without
+   * the body scroll lock and the focus trap — a layer that cannot close must
+   * not hold the page — and logs a warning. Wire it to the state that controls
+   * `isOpen`.
    */
-  onClose?: () => void;
+  onClose?: (() => void) | undefined;
+
+  /**
+   * Accessible name for the close control the modal draws itself.
+   * @default "Close dialog"
+   */
+  closeLabel?: string | undefined;
 
   /**
    * Modal inner content.
@@ -85,25 +100,27 @@ export interface ModalProps extends BaseModalProps {
   /**
    * Modal content width override.
    * Accepts any CSS width value (e.g., "500px", "80%").
-   * Overrides the size prop.
+   * Overrides the size prop. The content box stays capped at the width its
+   * padded viewport layer can hold, so a stated width is still shrunk on a
+   * narrow screen instead of overflowing a locked page.
    */
-  width?: string;
+  width?: string | undefined;
 
   /**
    * Modal content height override.
    * Accepts any CSS height value (e.g., "400px", "auto").
    */
-  height?: string;
+  height?: string | undefined;
 
   /**
    * Backdrop overlay overrides, including its class override.
    */
-  overlay?: ModalOverlayProps;
+  overlay?: ModalOverlayProps | undefined;
 
   /**
    * Content container overrides, including its class override.
    */
-  content?: ModalContentProps;
+  content?: ModalContentProps | undefined;
 }
 
 /**
@@ -112,10 +129,13 @@ export interface ModalProps extends BaseModalProps {
  * Modal renders a dialog that appears over the page content with a backdrop.
  * It supports size, position, radius, animation, and behavior options. The
  * dialog renders in a portal, locks body scroll while open, handles Escape key
- * dismissal, and supports click-outside-to-close functionality.
+ * dismissal, and supports click-outside-to-close functionality. It also draws
+ * its own close control, so an open dialog always offers a visible way out.
  *
  * While the dialog is open, focus moves into it, cannot leave it, and returns
- * to the element that was focused before it opened. The dialog element is the
+ * to the element that was focused before it opened. A modal mounted without an
+ * `onClose` cannot dismiss itself, so it is rendered without the scroll lock and
+ * the focus trap rather than trapping the page. The dialog element is the
  * content box, so a consumer names the dialog with the standard `aria-label` or
  * `aria-labelledby` attribute.
  *
@@ -123,19 +143,24 @@ export interface ModalProps extends BaseModalProps {
  * approach: it renders the modal with an enter animation when opened, and
  * plays an exit animation before removing from the DOM when closed.
  *
+ * Escape is claimed by the topmost layer through the shared layer stack
+ * (`libs/layer-stack`), so a modal opened from another layer closes only
+ * itself.
+ *
  * Visual tokens resolve through the standard AsheeUI cascade: prop,
  * component config, global theme defaults, and the built-in fallback.
  *
  * @param props - Modal configuration options and HTML div props.
  * @param props.isOpen - Whether the modal is open.
  * @param props.onClose - Callback fired when the modal should close.
+ * @param props.closeLabel - Accessible name for the built-in close control. Defaults to "Close dialog".
  * @param props.size - Size of the modal. Defaults to "md".
  * @param props.position - Position of the modal. Defaults to "center".
- * @param props.radius - Corner rounding. Defaults to "lg".
+ * @param props.radius - Corner rounding. Resolves from the application's `defaultRadius` first — the framework default is `xs` — and falls back to `lg` only when no application default is stated.
  * @param props.animated - Whether the modal has animations. Defaults to true.
  * @param props.closeOnBackdropClick - Whether clicking the backdrop closes the modal. Defaults to true.
  * @param props.closeOnEscape - Whether pressing Escape closes the modal. Defaults to true.
- * @param props.width - Width override for the modal.
+ * @param props.width - Width override for the modal. Still capped at the viewport.
  * @param props.height - Height override for the modal.
  * @param props.overlay - Backdrop overlay overrides (className).
  * @param props.content - Content container overrides (className).
@@ -190,6 +215,7 @@ export interface ModalProps extends BaseModalProps {
 export function Modal({
   isOpen,
   onClose,
+  closeLabel = "Close dialog",
   children,
   width,
   height,
@@ -211,6 +237,11 @@ export function Modal({
   // State for exit animation
   const [isClosing, setIsClosing] = useState(false);
   const [shouldRender, setShouldRender] = useState(isOpen);
+
+  // A layer can only leave if it has a close handler. Without one the modal is
+  // still rendered, but it is not allowed to be modal: no scroll lock and no
+  // focus trap may hold a page the reader cannot get out of.
+  const isDismissible = Boolean(onClose);
 
   // ─── 1. Token Resolvers ──────────────────────────────────────────────────
 
@@ -257,7 +288,9 @@ export function Modal({
   );
 
   // Overlay behaviour: the dialog renders in a portal, manages focus while it
-  // is open, and stops the page behind it from scrolling (`COMP-035`).
+  // is open, and stops the page behind it from scrolling (`COMP-035`). A modal
+  // with no close handler cannot be left, so it holds neither the lock nor the
+  // focus scope.
   const { context, setDialogRef } = useDialogOverlay(isOpen);
   const dialogRef = useRef<HTMLDivElement | null>(null);
 
@@ -271,12 +304,16 @@ export function Modal({
     [setDialogRef],
   );
 
-  useBodyScrollLock(isOpen);
+  useBodyScrollLock(isOpen && isDismissible);
 
   // ─── 2. Class Maps ────────────────────────────────────────────────────────
 
+  // A stated width replaces the size's maximum, but not the viewport's: the
+  // stage's cap (`max-w-full` inside the padded layer) is what keeps a wide
+  // dialog from overflowing a page whose scroll is locked. twMerge lets a
+  // consumer's own `max-w-*` class win over this one.
   const widthClass = width
-    ? ""
+    ? "max-w-full"
     : resolveClassKey(
         resolvedSizeKey,
         MODAL_MAX_WIDTH_CLASS,
@@ -317,17 +354,26 @@ export function Modal({
     }
   }, [isOpen, animated]);
 
-  // Keyboard Escape Handler
+  // Escape belongs to the topmost layer; the shared stack answers it only from
+  // the last registered layer, so a modal opened over a drawer closes alone.
+  // A modal whose Escape is switched off still claims the press rather than
+  // handing it to the layer underneath.
+  useLayerEscape(isOpen, () => {
+    if (closeOnEscape && onClose) onClose();
+  });
+
+  // A layer that cannot close must not hold the page. The fallback keeps the
+  // content visible without making the rest of the page unreachable, and says
+  // what is missing so the omission is not silent.
   useEffect(() => {
-    if (!isOpen || !closeOnEscape || !onClose) return;
+    if (!isOpen || isDismissible) return;
 
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
-    };
-
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [isOpen, closeOnEscape, onClose]);
+    console.warn(
+      "[Modal] `onClose` is missing, so the modal has no way out: it is " +
+        "rendered without the body scroll lock or the focus trap. Pass " +
+        "`onClose` and set `isOpen` to false from it.",
+    );
+  }, [isOpen, isDismissible]);
 
   if (!shouldRender) return null;
 
@@ -346,7 +392,7 @@ export function Modal({
     <FloatingPortal>
       <FloatingFocusManager
         context={context}
-        modal
+        modal={isDismissible}
         initialFocus={dialogRef}
         returnFocus
         closeOnFocusOut={false}>
@@ -376,7 +422,7 @@ export function Modal({
           <div
             ref={registerDialog}
             role="dialog"
-            aria-modal="true"
+            aria-modal={isDismissible ? "true" : undefined}
             tabIndex={-1}
             className={cn(
               "relative z-10 w-full bg-background text-foreground overflow-y-auto max-h-[90vh] outline-none",
@@ -393,6 +439,11 @@ export function Modal({
               ...style,
             }}
             {...props}>
+            {/* The built-in close control is first in the tab order, so one Tab
+                from the dialog reaches the way out before the content. */}
+            {onClose ? (
+              <OverlayCloseControl label={closeLabel} onClose={onClose} />
+            ) : null}
             {children}
           </div>
         </div>

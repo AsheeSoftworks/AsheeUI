@@ -139,6 +139,31 @@ describe("Button", () => {
     expect(onClick).not.toHaveBeenCalled();
   });
 
+  it("draws its busy ring at the button's density", () => {
+    const large = renderWithProvider(
+      <Button isLoading size="lg">
+        Save
+      </Button>,
+    );
+    const largeRing = large.getByRole("button").querySelector("svg");
+
+    // The ring is a `Spinner` sized by token, not a class the token was pasted
+    // into: a large control gets a large ring, and no meaningless class is emitted.
+    expect(largeRing?.getAttribute("class")).toContain("w-5");
+    expect(largeRing?.getAttribute("class")).not.toContain("w-4");
+    large.unmount();
+
+    const small = renderWithProvider(
+      <Button isLoading size="sm">
+        Save
+      </Button>,
+    );
+
+    expect(
+      small.getByRole("button").querySelector("svg")?.getAttribute("class"),
+    ).toContain("w-3.5");
+  });
+
   it("renders as a link when an href is provided", () => {
     const { getByRole } = renderWithProvider(
       <Button href="/docs">Documentation</Button>,

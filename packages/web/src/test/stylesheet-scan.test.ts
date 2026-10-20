@@ -33,3 +33,22 @@ describe("the stylesheet's class scan", () => {
     expect(stylesheet).toContain('@source "./**/*.{ts,tsx}"');
   });
 });
+
+describe("the stylesheet's own colours", () => {
+  // A stable gutter on `*` reserves scrollbar space inside every clipping box, which shrank the Avatar's
+  // 40px circle to a 30px content box and clipped its contents into a flat-edged "D". The gutter belongs on
+  // the page, so this asserts it was not put back on the universal selector.
+  it("reserves the scrollbar gutter on the page, not on every element", () => {
+    expect(stylesheet).toMatch(/html\s*{[^}]*scrollbar-gutter/);
+    expect(stylesheet).not.toMatch(/\*\s*{[^}]*scrollbar-gutter/);
+  });
+
+  it("derives the disabled field background from a theme token", () => {
+    // A hard-coded hex ignores light, dark and custom palettes, and the palette
+    // scanner only reads `.ts`/`.tsx`, so CSS has no other guard.
+    expect(stylesheet).not.toMatch(/#[0-9a-f]{3,8}\b/i);
+    expect(stylesheet).toMatch(
+      /input:disabled[\s\S]*background-color:\s*color-mix\(\s*in oklab,\s*var\(--ashee-foreground\)/,
+    );
+  });
+});

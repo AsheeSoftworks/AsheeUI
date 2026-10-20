@@ -54,13 +54,13 @@ export interface ToastItemData {
   id: string;
 
   /** Optional title text, displayed above the message. */
-  title?: ReactNode;
+  title?: ReactNode | undefined;
 
   /** The main message content. */
   message: ReactNode;
 
   /** Type of toast, which controls its icon and colour. @default "info" */
-  type?: ToastType;
+  type?: ToastType | undefined;
 
   /**
    * Duration in milliseconds before auto-dismissal.
@@ -68,31 +68,31 @@ export interface ToastItemData {
    *
    * @default 3500
    */
-  timeout?: number;
+  timeout?: number | undefined;
 
   /** Custom icon element, overriding the default one for the type. */
-  icon?: ReactNode;
+  icon?: ReactNode | undefined;
 
   /** Action element rendered below the message. */
-  action?: ReactNode;
+  action?: ReactNode | undefined;
 
   /** Whether the reader can dismiss the message. @default true */
-  dismissible?: boolean;
+  dismissible?: boolean | undefined;
 
   /** Placement for this message, overriding the provider's. */
-  placement?: ToastPlacement;
+  placement?: ToastPlacement | undefined;
 
   /** Density for this message, overriding the provider's. */
-  size?: Size;
+  size?: Size | undefined;
 
   /** Treatment for this message, overriding the provider's. */
-  variant?: Variant;
+  variant?: Variant | undefined;
 
   /** Corner rounding for this message, overriding the provider's. */
-  radius?: Radius;
+  radius?: Radius | undefined;
 
   /** Whether this message animates, overriding the provider's. */
-  animated?: boolean;
+  animated?: boolean | undefined;
 }
 
 /**
@@ -100,7 +100,7 @@ export interface ToastItemData {
  */
 export interface ToastShowOptions extends Omit<ToastItemData, "id"> {
   /** Optional unique identifier. One is generated when it is not stated. */
-  id?: string;
+  id?: string | undefined;
 }
 
 /**
@@ -111,19 +111,29 @@ export interface ToastShowOptions extends Omit<ToastItemData, "id"> {
  */
 export interface ToastConfig {
   /** Size scale of toast notifications. @default "md" */
-  size?: Size;
+  size?: Size | undefined;
 
   /** Placement of the toast container. @default "top-right" */
-  placement?: ToastPlacement;
+  placement?: ToastPlacement | undefined;
 
-  /** Visual style variant of toasts. @default "bordered" */
-  variant?: Variant;
+  /**
+   * Visual style variant of toasts.
+   *
+   * The web renderer leaves it unregistered, so a toast inherits the application's
+   * `defaultVariant` the way an alert's does — `"faded"` in the shipped
+   * configuration. The platform registers a default of its own, as it does for
+   * `placement`, because a default is a statement about the platform. State
+   * `components.toast.variant` or the instance option to pin one on either.
+   *
+   * @default The application's `defaultVariant`
+   */
+  variant?: Variant | undefined;
 
   /** Corner rounding of toast notifications. @default "md" */
-  radius?: Radius;
+  radius?: Radius | undefined;
 
   /** Whether toasts have enter and exit animations. @default true */
-  animated?: boolean;
+  animated?: boolean | undefined;
 
   /**
    * Default timeout duration in milliseconds, used when a toast does not state its
@@ -131,7 +141,7 @@ export interface ToastConfig {
    *
    * @default 3500
    */
-  defaultTimeout?: number;
+  defaultTimeout?: number | undefined;
 
   /**
    * Maximum number of toasts to display at once.
@@ -139,7 +149,7 @@ export interface ToastConfig {
    *
    * @default 5
    */
-  maxToasts?: number;
+  maxToasts?: number | undefined;
 
   /**
    * Whether to render toasts in a portal.
@@ -150,7 +160,7 @@ export interface ToastConfig {
    *
    * @default true
    */
-  portal?: boolean;
+  portal?: boolean | undefined;
 }
 
 /**

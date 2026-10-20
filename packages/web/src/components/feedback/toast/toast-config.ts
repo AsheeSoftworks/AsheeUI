@@ -26,11 +26,20 @@ export type {
 
 /**
  * Default config values registered for the Toast component.
+ *
+ * `variant` is intentionally absent, as it is on the Alert: a toast inherits the
+ * application's `defaultVariant` (`"faded"` in the shipped configuration) rather
+ * than pinning a treatment of its own, so the two message surfaces agree about
+ * what a global default means. State `components.toast.variant` or the instance
+ * option to pin one.
+ *
+ * `radius` is registered, so it is pinned: the component tier answers before the
+ * application's `defaultRadius`, which therefore never reaches a toast. State
+ * `components.toast.radius` or the instance option instead.
  */
 export const defaultToastConfig: ToastConfig = {
   size: "md",
   placement: "top-right",
-  variant: "bordered",
   radius: "md",
   animated: true,
   defaultTimeout: TOAST_FALLBACK_TIMEOUT_MS,
@@ -46,7 +55,7 @@ export const defaultToastConfig: ToastConfig = {
 export const FALLBACK_TOAST_CONFIG = {
   size: "md",
   placement: "top-right",
-  variant: "solid",
+  variant: "bordered",
   radius: "md",
   animated: true,
   defaultTimeout: TOAST_FALLBACK_TIMEOUT_MS,

@@ -31,11 +31,11 @@ registerComponentDefaults("button", defaultButtonConfig);
  * These values are used when instance props, component config,
  * and global defaults are all undefined.
  */
-export const FALLBACK_BUTTON_CONFIG: Required<ButtonConfig> = {
+export const FALLBACK_BUTTON_CONFIG = {
   size: "md",
   variant: "bordered",
   color: "primary",
   radius: "md",
   animate: true,
   fullWidth: false,
-} as const;
+} as const satisfies ButtonConfig;

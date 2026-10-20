@@ -32,10 +32,10 @@ registerComponentDefaults("errorstate", defaultErrorStateConfig);
 /**
  * Hard fallback values used when no config tier provides a value.
  */
-export const FALLBACK_ERROR_STATE_CONFIG: Required<ErrorStateConfig> = {
+export const FALLBACK_ERROR_STATE_CONFIG = {
   size: "md",
   panel: true,
   role: "alert",
   retryLabel: "Try again",
   detailLabel: "Technical details",
-};
+} satisfies ErrorStateConfig;

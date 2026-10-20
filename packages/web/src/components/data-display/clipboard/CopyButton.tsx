@@ -9,7 +9,11 @@
 
 "use client";
 
-import { CLIPBOARD_STATUS_CLASS, resolveCascade } from "@asheeui/core";
+import {
+  CLIPBOARD_STATUS_CLASS,
+  type Radius,
+  resolveCascade,
+} from "@asheeui/core";
 import { forwardRef, type ReactNode } from "react";
 import { CheckIcon } from "../../../icons/CheckIcon";
 import { CopyIcon } from "../../../icons/CopyIcon";
@@ -36,32 +40,38 @@ export interface CopyButtonProps extends BaseCopyButtonProps {
   value: string;
 
   /** Name of the control. Defaults to `components.clipboard.label`. */
-  label?: ReactNode;
+  label?: ReactNode | undefined;
 
   /** Name of the control once the text is copied. Defaults to
    * `components.clipboard.copiedLabel`. */
-  copiedLabel?: ReactNode;
+  copiedLabel?: ReactNode | undefined;
 
   /** Announcement made through the status region once the text is copied. */
-  copiedAnnouncement?: string;
+  copiedAnnouncement?: string | undefined;
+
+  /**
+   * Announcement made through the status region when the copy fails.
+   * Without it the region says which control failed — `Copy failed` by default.
+   */
+  errorAnnouncement?: string | undefined;
 
   /**
    * How long the copied state lasts, in milliseconds.
    * Defaults to `components.clipboard.timeout`.
    */
-  timeout?: number;
+  timeout?: number | undefined;
 
   /** Called after a successful copy. */
-  onCopy?: (text: string) => void;
+  onCopy?: ((text: string) => void) | undefined;
 
   /** Called after a failed copy. */
-  onError?: (error: unknown) => void;
+  onError?: ((error: unknown) => void) | undefined;
 
   /** Icon shown before the copy. @default CopyIcon */
-  copyIcon?: ReactNode;
+  copyIcon?: ReactNode | undefined;
 
   /** Icon shown after a successful copy. @default CheckIcon */
-  copiedIcon?: ReactNode;
+  copiedIcon?: ReactNode | undefined;
 }
 
 /**
@@ -77,6 +87,7 @@ export interface CopyButtonProps extends BaseCopyButtonProps {
  * @param props.label - Name of the control before a copy.
  * @param props.copiedLabel - Name of the control after a copy.
  * @param props.copiedAnnouncement - Announcement made after a copy.
+ * @param props.errorAnnouncement - Announcement made after a failed copy.
  * @param props.timeout - How long the copied state lasts.
  * @param props.onCopy - Called after a successful copy.
  * @param props.onError - Called after a failed copy.
@@ -102,11 +113,13 @@ export const CopyButton = forwardRef<HTMLButtonElement, CopyButtonProps>(
       label,
       copiedLabel,
       copiedAnnouncement,
+      errorAnnouncement,
       timeout,
       onCopy,
       onError,
       copyIcon,
       copiedIcon,
+      radius,
       ...rest
     },
     ref,
@@ -128,43 +141,66 @@ export const CopyButton = forwardRef<HTMLButtonElement, CopyButtonProps>(
       FALLBACK_CLIPBOARD_CONFIG.copiedLabel,
     );
 
+    // The rounding used to be Button's alone, so `components.clipboard.radius`
+    // was declared, registered and never read. It resolves here like the rest of
+    // the section, and the application's `defaultRadius` — which Button also
+    // reads — stays the tier below it, so an unconfigured control rounds exactly
+    // as it did before.
+    const resolvedRadius = resolveCascade<Radius>(
+      radius,
+      sectionConfig?.radius,
+      config.defaultRadius,
+      FALLBACK_CLIPBOARD_CONFIG.radius,
+    );
+
     return (
       <Clipboard
         value={value}
         timeout={timeout}
         onCopy={onCopy}
         onError={onError}>
-        {({ copied, copy }) => (
-          <>
-            <Button
-              ref={ref}
-              type="button"
-              variant={rest.variant ?? sectionConfig?.variant ?? undefined}
-              color={rest.color ?? sectionConfig?.color ?? undefined}
-              size={rest.size ?? sectionConfig?.size ?? undefined}
-              startContent={
-                copied
-                  ? (copiedIcon ?? <CheckIcon />)
-                  : (copyIcon ?? <CopyIcon />)
-              }
-              onClick={() => {
-                void copy();
-              }}
-              {...rest}>
-              {copied ? resolvedCopiedLabel : resolvedLabel}
-            </Button>
-            <span
-              role="status"
-              aria-live="polite"
-              className={CLIPBOARD_STATUS_CLASS}
-              data-copied={copied ? "true" : undefined}>
-              {copied
-                ? (copiedAnnouncement ??
-                  `${String(resolvedCopiedLabel)}: ${value}`)
-                : ""}
-            </span>
-          </>
-        )}
+        {({ copied, error, copy }) => {
+          // The region reports both outcomes: a failed copy is a change of state
+          // the reader is not otherwise told about, since the label stays put.
+          let announcement = "";
+          if (copied) {
+            announcement =
+              copiedAnnouncement ?? `${String(resolvedCopiedLabel)}: ${value}`;
+          } else if (error) {
+            announcement =
+              errorAnnouncement ?? `${String(resolvedLabel)} failed`;
+          }
+
+          return (
+            <>
+              <Button
+                ref={ref}
+                type="button"
+                variant={rest.variant ?? sectionConfig?.variant ?? undefined}
+                color={rest.color ?? sectionConfig?.color ?? undefined}
+                size={rest.size ?? sectionConfig?.size ?? undefined}
+                radius={resolvedRadius}
+                startContent={
+                  copied
+                    ? (copiedIcon ?? <CheckIcon />)
+                    : (copyIcon ?? <CopyIcon />)
+                }
+                onClick={() => {
+                  void copy();
+                }}
+                {...rest}>
+                {copied ? resolvedCopiedLabel : resolvedLabel}
+              </Button>
+              <span
+                role="status"
+                aria-live="polite"
+                className={CLIPBOARD_STATUS_CLASS}
+                data-copied={copied ? "true" : undefined}>
+                {announcement}
+              </span>
+            </>
+          );
+        }}
       </Clipboard>
     );
   },

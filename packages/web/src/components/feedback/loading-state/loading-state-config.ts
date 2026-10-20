@@ -16,12 +16,16 @@ export type { LoadingStateConfig } from "@asheeui/core";
 
 /**
  * Default config values registered for the LoadingState component.
+ *
+ * The registered claim (`md`) is a step above the room the registered density
+ * (`md`) already takes, so the floor binds: a `sm` claim would sit under the
+ * padding and the indicator and would reserve nothing at all.
  */
 export const defaultLoadingStateConfig: LoadingStateConfig = {
   label: "Loading",
   size: "md",
   panel: false,
-  minHeight: "sm",
+  minHeight: "md",
 };
 
 registerComponentDefaults("loadingstate", defaultLoadingStateConfig);
@@ -29,9 +33,9 @@ registerComponentDefaults("loadingstate", defaultLoadingStateConfig);
 /**
  * Hard fallback values used when no config tier provides a value.
  */
-export const FALLBACK_LOADING_STATE_CONFIG: Required<LoadingStateConfig> = {
+export const FALLBACK_LOADING_STATE_CONFIG = {
   label: "Loading",
   size: "md",
   panel: false,
-  minHeight: "sm",
-};
+  minHeight: "md",
+} satisfies LoadingStateConfig;

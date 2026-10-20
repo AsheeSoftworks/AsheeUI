@@ -39,14 +39,14 @@ export interface CalendarPickerConfig {
    * @default true
    * @see FloatingPortal - https://floating-ui.com/docs/FloatingPortal
    */
-  portal?: boolean;
+  portal?: boolean | undefined;
 
   /**
    * Custom portal target element for the calendar popover.
    * When portal is enabled, the popover is rendered into this element.
    * Defaults to document.body.
    */
-  portalTarget?: HTMLElement | null;
+  portalTarget?: HTMLElement | null | undefined;
 
   /**
    * Whether to lock page scroll while the calendar popover is open.
@@ -56,7 +56,7 @@ export interface CalendarPickerConfig {
    *
    * @default true
    */
-  lockScroll?: boolean;
+  lockScroll?: boolean | undefined;
 }
 
 /**
@@ -70,7 +70,7 @@ export interface CalendarConfig extends SharedCalendarConfig {
    * Picker configuration for the calendar popover.
    * Controls portal behavior and other picker-specific settings.
    */
-  picker?: CalendarPickerConfig;
+  picker?: CalendarPickerConfig | undefined;
 }
 
 /**

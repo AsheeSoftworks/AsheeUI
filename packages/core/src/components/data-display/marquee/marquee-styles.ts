@@ -45,20 +45,74 @@ export const MARQUEE_AXIS_CLASS: Record<MarqueeAxis, string> = {
 /** The track the sets sit in: it is what moves. */
 export const MARQUEE_TRACK_CLASS = "flex";
 
-/** The track's own width, which a horizontal marquee states so it can be translated. */
+/**
+ * The track's own width, which a horizontal marquee states so it can be translated.
+ *
+ * The track carries no `gap` of its own. A loop translates the track by half its length,
+ * and with the gap on the track that half would be one copy plus half a gap rather than
+ * one copy plus the gap that separates the copies — a seam that jumps every cycle. The
+ * inter-copy gap therefore lives inside each copy (see `MARQUEE_SET_SPACING`), so the
+ * track is exactly two copies and a half is exactly one copy plus the gap.
+ */
 export const MARQUEE_TRACK_X_CLASS = "flex-row w-max";
 
 /** The direction a vertical track takes. */
 export const MARQUEE_TRACK_Y_CLASS = "flex-col";
 
-/** The classes that stop the track while a pointer rests on the frame. */
+/**
+ * The classes that stop the track while a pointer rests on the frame or keyboard focus is
+ * inside it.
+ *
+ * `pauseOnHover` is named for the pointer, and WCAG 2.2.2 asks for a mechanism that stops
+ * moving content for every reader: `focus-within` is the same pause for a keyboard user,
+ * who stops the loop by focusing any control the marquee holds.
+ */
 export const MARQUEE_PAUSE_ON_HOVER_CLASS =
-  "group-hover:[animation-play-state:paused]";
+  "group-hover:[animation-play-state:paused] group-focus-within:[animation-play-state:paused]";
 
 /** A set of items: one of the two copies the seamless loop is made of. */
 export const MARQUEE_SET_CLASS = "flex shrink-0";
 
-/** The direction a set takes, per axis. */
+/**
+ * The width or height a copy claims along the axis, at the end that faces the next copy.
+ *
+ * It is the marquee's gap, and it belongs to the copy rather than to the track so that one
+ * copy's length already includes the space before the next one. The gap's value is a
+ * configured CSS length, so the renderer states it as an inline style; what is here is the
+ * direction it is stated in.
+ */
+export const MARQUEE_SET_SPACING: Record<
+  MarqueeAxis,
+  "paddingRight" | "paddingBottom"
+> = {
+  x: "paddingRight",
+  y: "paddingBottom",
+};
+
+/**
+ * The frame a still marquee reads in.
+ *
+ * With the loop stopped the content must not be clipped: it is shown once and the frame
+ * can be scrolled to whatever did not fit. A wrapping horizontal frame is the common case;
+ * the scroll is what makes a height-constrained frame or an item wider than the frame
+ * reachable instead of silently cut off. `h-full` is what bounds the scroll when the frame
+ * is given a height, and resolves to the content's own height when it is not.
+ */
+export const MARQUEE_STILL_FRAME_CLASS: Record<MarqueeAxis, string> = {
+  x: "h-full overflow-auto",
+  y: "h-full overflow-y-auto",
+};
+
+/**
+ * The single copy a still marquee renders, which wraps on the horizontal axis so the items
+ * that would have scrolled past are read in place rather than hidden.
+ */
+export const MARQUEE_STILL_SET_CLASS: Record<MarqueeAxis, string> = {
+  x: "flex-row flex-wrap",
+  y: "flex-col",
+};
+
+/** A set of items' direction, per axis. */
 export const MARQUEE_SET_AXIS_CLASS: Record<MarqueeAxis, string> = {
   x: "flex-row",
   y: "flex-col",
@@ -119,6 +173,32 @@ export const NATIVE_MARQUEE_SET_CLASS = "flex shrink-0";
 /** The direction a native set takes, per axis, so its own items line up along it. */
 export const NATIVE_MARQUEE_SET_AXIS_CLASS: Record<MarqueeAxis, string> = {
   x: "flex-row",
+  y: "flex-col",
+};
+
+/**
+ * The frame a still native marquee reads in.
+ *
+ * With the movement stopped the content must not be clipped: it is rendered once, inside
+ * a frame that scrolls, so everything that does not fit can still be read — the platform's
+ * version of {@link MARQUEE_STILL_FRAME_CLASS}. The platform's `ScrollView` owns the
+ * scrolling itself, so what is left here is the size the frame claims along each axis.
+ */
+export const NATIVE_MARQUEE_STILL_FRAME_CLASS: Record<MarqueeAxis, string> = {
+  x: "w-full",
+  y: "flex-1",
+};
+
+/**
+ * The direction the single copy of a still native marquee takes.
+ *
+ * It wraps on the horizontal axis, because the items that would have scrolled past are
+ * read in place instead of being left outside the frame; the vertical copy stacks for the
+ * same reason the moving one does. The platform's `ScrollView` gives the wrapped rows the
+ * scroll they need, which is why nothing here states an overflow.
+ */
+export const NATIVE_MARQUEE_STILL_SET_CLASS: Record<MarqueeAxis, string> = {
+  x: "flex-row flex-wrap",
   y: "flex-col",
 };
 

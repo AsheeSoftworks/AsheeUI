@@ -6,6 +6,7 @@ import { describe, expect, it } from "vitest";
 import {
   expectHydrationClean,
   makeComponentConfig,
+  makeConfig,
   renderToServerString,
   renderWithProvider,
 } from "../../../test";
@@ -38,6 +39,24 @@ describe("AuthLayout", () => {
     );
 
     expect(plain.querySelector(".border-border")).toBeNull();
+  });
+
+  it("rounds the panel with the application's defaultRadius", () => {
+    const { container: byDefault } = renderWithProvider(
+      <AuthLayout>form</AuthLayout>,
+    );
+
+    // The framework's default radius is `xs`; the panel is a surface like any
+    // other, so it follows it rather than pinning a corner of its own.
+    expect(byDefault.querySelector(".rounded-xs")).not.toBeNull();
+
+    const { container: rounded } = renderWithProvider(
+      <AuthLayout>form</AuthLayout>,
+      { config: makeConfig({ defaultRadius: "lg" }) },
+    );
+
+    expect(rounded.querySelector(".rounded-lg")).not.toBeNull();
+    expect(rounded.querySelector(".rounded-xs")).toBeNull();
   });
 
   it("renders the footer slot under the form", () => {

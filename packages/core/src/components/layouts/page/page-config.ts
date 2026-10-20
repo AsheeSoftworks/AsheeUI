@@ -29,35 +29,35 @@ export interface PageConfig {
    *
    * @default true
    */
-  contained?: boolean;
+  contained?: boolean | undefined;
 
   /**
    * Maximum content width used when a part is contained.
    *
    * @default "lg"
    */
-  containerSize?: ContainerSize;
+  containerSize?: ContainerSize | undefined;
 
   /**
    * Vertical rhythm of the content area.
    *
    * @default "md"
    */
-  spacing?: Space;
+  spacing?: Space | undefined;
 
   /**
    * Whether the header stays at the top of the viewport while the content scrolls.
    *
    * @default true
    */
-  sticky?: boolean;
+  sticky?: boolean | undefined;
 
   /**
    * Whether the header and the footer draw a separator line against the content.
    *
    * @default true
    */
-  divider?: boolean;
+  divider?: boolean | undefined;
 }
 
 declare module "../../../registry" {

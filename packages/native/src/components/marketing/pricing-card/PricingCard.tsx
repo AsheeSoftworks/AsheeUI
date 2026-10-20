@@ -80,6 +80,17 @@ export interface PricingCardProps
   /** The supporting action, typically a sales contact. */
   secondaryAction?: ActionConfig;
 
+  /**
+   * Mark the plan as recommended.
+   *
+   * Deliberately an instance prop rather than a theme option: a recommendation is about one
+   * plan in one table, so a `components.pricingcard.highlighted` would mark every plan as the
+   * recommended one.
+   *
+   * @default false
+   */
+  highlighted?: boolean;
+
   /** Content below the actions. */
   children?: ReactNode;
 
@@ -109,7 +120,9 @@ export interface PricingCardProps
  * @param props.secondaryAction - The supporting action.
  * @param props.variant - Surface treatment. Defaults to "bordered".
  * @param props.size - Card density. Defaults to "lg".
- * @param props.highlighted - Mark the plan as recommended. Defaults to false.
+ * @param props.highlighted - Mark the plan as recommended. Defaults to false, and it is an
+ * instance prop rather than a theme option, because a recommendation is about one plan rather
+ * than every plan.
  * @returns The rendered card.
  *
  * @example
@@ -150,20 +163,24 @@ export function PricingCard({
     NativePricingCardConfig,
     Required<NativePricingCardConfig>
   >(
-    { variant, size, highlighted },
+    { variant, size },
     config.components.pricingcard,
     FALLBACK_NATIVE_PRICING_CARD_CONFIG,
   );
+
+  // The recommendation is read from the props alone: it describes one plan in one table, and
+  // a theme tier that supplied it would recommend every plan.
+  const isHighlighted = highlighted ?? false;
 
   return (
     <Card
       // An elevated plan keeps the raised surface's own colour: the platform's card paints
       // no shadow, so a bordered surface would be the wrong treatment rather than a plain one.
       variant={resolved.variant === "elevated" ? "solid" : "bordered"}
-      color={resolved.highlighted ? "primary" : undefined}
+      color={isHighlighted ? "primary" : undefined}
       size={resolved.size}
       className={classNames(
-        resolved.highlighted && NATIVE_PRICING_HIGHLIGHTED_CLASS,
+        isHighlighted && NATIVE_PRICING_HIGHLIGHTED_CLASS,
         className,
       )}
       style={style}

@@ -31,10 +31,11 @@ describe("MarketingLayout", () => {
     ) as HTMLElement[];
 
     // The skip link is the first child, so it is the first thing Tab reaches.
-    expect(regions[0].tagName).toBe("A");
-    expect(regions[1].textContent).toBe("Navigation");
-    expect(regions[2].tagName).toBe("MAIN");
-    expect(regions[3].textContent).toBe("Footer");
+    expect(regions).toHaveLength(4);
+    expect(regions[0]!.tagName).toBe("A");
+    expect(regions[1]!.textContent).toBe("Navigation");
+    expect(regions[2]!.tagName).toBe("MAIN");
+    expect(regions[3]!.textContent).toBe("Footer");
   });
 
   it("puts the sections inside the main landmark", () => {

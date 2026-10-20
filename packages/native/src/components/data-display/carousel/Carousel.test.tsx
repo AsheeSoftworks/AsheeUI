@@ -5,13 +5,14 @@
  * carousel is on, a dot or a control moves to another slide and reports it, the controls stop
  * at the ends when the carousel does not loop and return to the beginning when it does, a
  * consumer who owns the index decides what happens, the autoplay advances on its interval and
- * pauses while a thumb is on the carousel, the parts a consumer switches off are not drawn,
- * and the frame and the height resolve through the configuration cascade.
+ * pauses while a thumb is on the carousel or the platform asks for less motion, an off-screen
+ * slide is out of the focus and accessibility order, the parts a consumer switches off are not
+ * drawn, and the frame and the height resolve through the configuration cascade.
  */
 
 import { act, fireEvent, render } from "@testing-library/react-native";
 import type { ReactElement } from "react";
-import { Pressable } from "react-native";
+import { AccessibilityInfo, Pressable } from "react-native";
 import { AsheeNativeProvider } from "../../../provider/AsheeNativeProvider";
 import { Carousel } from "./Carousel";
 
@@ -36,14 +37,30 @@ async function renderCarousel(ui: ReactElement, config?: object) {
 }
 
 describe("Native Carousel", () => {
+  beforeEach(() => {
+    jest
+      .spyOn(AccessibilityInfo, "isReduceMotionEnabled")
+      .mockResolvedValue(false);
+  });
+
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
   it("draws every slide, and says which one it is on", async () => {
     const view = await renderCarousel(
       <Carousel testID="carousel" items={ITEMS} />,
     );
 
     expect(view.getByText("First slide")).toBeTruthy();
-    expect(view.getByText("Second slide")).toBeTruthy();
-    expect(view.getByText("Third slide")).toBeTruthy();
+    // The slides the carousel is not on are laid out beside it and out of the
+    // accessibility tree, so a plain query does not see them.
+    expect(
+      view.getByText("Second slide", { includeHiddenElements: true }),
+    ).toBeTruthy();
+    expect(
+      view.getByText("Third slide", { includeHiddenElements: true }),
+    ).toBeTruthy();
     expect(view.getByTestId("carousel").props.accessibilityLabel).toBe(
       "Slide 1 of 3",
     );
@@ -87,12 +104,12 @@ describe("Native Carousel", () => {
       <Carousel testID="carousel" items={ITEMS} />,
     );
 
-    await fireEvent.press(view.getByRole("button", { name: "Next Slide" }));
+    await fireEvent.press(view.getByRole("button", { name: "Next slide" }));
     expect(view.getByTestId("carousel").props.accessibilityLabel).toBe(
       "Slide 2 of 3",
     );
 
-    await fireEvent.press(view.getByRole("button", { name: "Previous Slide" }));
+    await fireEvent.press(view.getByRole("button", { name: "Previous slide" }));
     expect(view.getByTestId("carousel").props.accessibilityLabel).toBe(
       "Slide 1 of 3",
     );
@@ -103,7 +120,7 @@ describe("Native Carousel", () => {
       <Carousel testID="carousel" items={ITEMS} defaultIndex={2} loop />,
     );
 
-    await fireEvent.press(view.getByRole("button", { name: "Next Slide" }));
+    await fireEvent.press(view.getByRole("button", { name: "Next slide" }));
 
     expect(view.getByTestId("carousel").props.accessibilityLabel).toBe(
       "Slide 1 of 3",
@@ -115,7 +132,7 @@ describe("Native Carousel", () => {
       <Carousel testID="carousel" items={ITEMS} loop={false} />,
     );
 
-    const previous = view.getByRole("button", { name: "Previous Slide" });
+    const previous = view.getByRole("button", { name: "Previous slide" });
 
     // The first slide has nothing before it, so the control says so rather than wrapping.
     expect(previous.props.accessibilityState).toMatchObject({
@@ -140,7 +157,7 @@ describe("Native Carousel", () => {
       />,
     );
 
-    await fireEvent.press(view.getByRole("button", { name: "Next Slide" }));
+    await fireEvent.press(view.getByRole("button", { name: "Next slide" }));
 
     expect(onIndexChange).toHaveBeenCalledWith(1);
     // The consumer owns the index, so the carousel stays where it was told to stay.
@@ -175,6 +192,85 @@ describe("Native Carousel", () => {
     jest.useRealTimers();
   });
 
+  it("does not start the autoplay when the platform asks for less motion", async () => {
+    jest.useFakeTimers();
+    (AccessibilityInfo.isReduceMotionEnabled as jest.Mock).mockResolvedValue(
+      true,
+    );
+
+    const onIndexChange = jest.fn();
+    const view = await renderCarousel(
+      <Carousel
+        testID="carousel"
+        items={ITEMS}
+        autoPlay
+        autoPlayInterval={3000}
+        onIndexChange={onIndexChange}
+      />,
+    );
+
+    // The platform answers asynchronously, and the timer must be gone by the time it does.
+    await act(async () => {});
+
+    await act(async () => {
+      jest.advanceTimersByTime(30_000);
+    });
+
+    expect(onIndexChange).not.toHaveBeenCalled();
+    expect(view.getByTestId("carousel").props.accessibilityLabel).toBe(
+      "Slide 1 of 3",
+    );
+
+    jest.useRealTimers();
+  });
+
+  it("keeps every slide but the current one out of the focus and accessibility order", async () => {
+    const view = await renderCarousel(
+      <Carousel testID="carousel" items={ITEMS} />,
+    );
+    const slides = view.getAllByTestId("carousel-slide", {
+      includeHiddenElements: true,
+    });
+
+    expect(slides).toHaveLength(3);
+    expect(slides[0].props.importantForAccessibility).toBe("auto");
+    expect(slides[0].props.accessibilityElementsHidden).toBeUndefined();
+    expect(slides[0].props.focusable).toBeUndefined();
+
+    for (const offScreen of slides.slice(1)) {
+      expect(offScreen.props.importantForAccessibility).toBe(
+        "no-hide-descendants",
+      );
+      expect(offScreen.props.accessibilityElementsHidden).toBe(true);
+      expect(offScreen.props.focusable).toBe(false);
+    }
+
+    await fireEvent.press(view.getByRole("button", { name: "Next slide" }));
+
+    // Reachability follows the visible slide rather than staying on the first one.
+    const moved = view.getAllByTestId("carousel-slide", {
+      includeHiddenElements: true,
+    });
+
+    expect(moved[1].props.importantForAccessibility).toBe("auto");
+    expect(moved[1].props.accessibilityElementsHidden).toBeUndefined();
+    expect(moved[0].props.importantForAccessibility).toBe(
+      "no-hide-descendants",
+    );
+    expect(moved[0].props.accessibilityElementsHidden).toBe(true);
+  });
+
+  it("draws the ghost frame for a ghost variant", async () => {
+    const view = await renderCarousel(
+      <Carousel testID="carousel" items={ITEMS} variant="ghost" />,
+    );
+    const classes = (
+      view.getByTestId("carousel").props as { className?: string }
+    ).className as string;
+
+    expect(classes).toContain("bg-transparent");
+  });
+
   it("draws no controls or dots when the consumer switched them off", async () => {
     const view = await renderCarousel(
       <Carousel
@@ -185,7 +281,7 @@ describe("Native Carousel", () => {
       />,
     );
 
-    expect(view.queryByRole("button", { name: "Next Slide" })).toBeNull();
+    expect(view.queryByRole("button", { name: "Next slide" })).toBeNull();
     expect(view.queryByRole("button", { name: "Go to slide 1" })).toBeNull();
   });
 

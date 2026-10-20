@@ -26,6 +26,9 @@ export type NativeClipboardConfig = ClipboardConfig;
  * to be read. The platform's button density is a touch target rather than a pointer one,
  * but this control is explicitly asked for the framework's smallest step, which is what
  * makes it sit inside a row of data.
+ *
+ * `radius` is intentionally absent, as it is on the web, so the control inherits the
+ * application's `defaultRadius` — the fallback below is only the last tier of the cascade.
  */
 export const defaultNativeClipboardConfig: NativeClipboardConfig = {
   timeout: 2000,
@@ -47,13 +50,12 @@ registerNativeComponentDefaults("clipboard", defaultNativeClipboardConfig);
 /**
  * The values the clipboard pair falls back to when no tier provides one.
  */
-export const FALLBACK_NATIVE_CLIPBOARD_CONFIG: Required<NativeClipboardConfig> =
-  {
-    timeout: 2000,
-    label: "Copy",
-    copiedLabel: "Copied",
-    variant: "bordered",
-    color: "primary",
-    size: "sm",
-    radius: "sm",
-  };
+export const FALLBACK_NATIVE_CLIPBOARD_CONFIG = {
+  timeout: 2000,
+  label: "Copy",
+  copiedLabel: "Copied",
+  variant: "bordered",
+  color: "primary",
+  size: "sm",
+  radius: "sm",
+} satisfies NativeClipboardConfig;

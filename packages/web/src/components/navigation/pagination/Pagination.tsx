@@ -14,13 +14,20 @@ import {
   PAGINATION_CONTROL_CLASS,
   PAGINATION_DISABLED_CLASS,
   PAGINATION_GAP_CLASS,
+  PAGINATION_LINK_CONTROL_CLASS,
   PAGINATION_LIST_CLASS,
   RADIUS_CLASS,
   resolveCascade,
+  resolveClassKey,
   resolveRadiusKey,
   resolveVariantClass,
 } from "@asheeui/core";
-import { forwardRef, type HTMLAttributes, type ReactNode } from "react";
+import {
+  type ElementType,
+  forwardRef,
+  type HTMLAttributes,
+  type ReactNode,
+} from "react";
 import { ChevronLeftIcon } from "../../../icons/ChevronLeftIcon";
 import { ChevronRightIcon } from "../../../icons/ChevronRightIcon";
 import { useAsheeConfig } from "../../../libs/context";
@@ -34,6 +41,22 @@ import {
 
 type BasePaginationProps = PaginationConfig &
   Omit<HTMLAttributes<HTMLElement>, "color" | "onChange">;
+
+/**
+ * Substitution applied to every control the pagination renders as a link.
+ *
+ * The shape is the one `Navbar` and `Footer` take: `component` replaces the
+ * native anchor, such as a framework router link, and `props` carries the props
+ * that component needs. A paginated collection with real addresses can then
+ * keep its router without the pagination having to know about it.
+ */
+export interface PaginationLink {
+  /** Component that replaces the anchor, such as a framework router link. */
+  component?: ElementType | undefined;
+
+  /** Additional props for that component. */
+  props?: Record<string, unknown> | undefined;
+}
 
 /**
  * Configuration options for the Pagination component.
@@ -52,8 +75,13 @@ export interface PaginationProps extends BasePaginationProps {
   /**
    * Called with the page the consumer chose.
    * It is not called when the chosen page is already the current page.
+   *
+   * It is called in both modes. A link navigates to its destination and also
+   * reports the chosen page here, so a consumer can update its own state before
+   * the destination renders; a control the collection cannot act on reports
+   * nothing in either mode.
    */
-  onPageChange?: (page: number) => void;
+  onPageChange?: ((page: number) => void) | undefined;
 
   /**
    * Builds the destination of a page.
@@ -62,22 +90,34 @@ export interface PaginationProps extends BasePaginationProps {
    * which is what a paginated collection with real addresses wants. Without
    * it the controls are buttons that report the chosen page through
    * `onPageChange`.
+   *
+   * A control the collection cannot act on (the previous control on the first
+   * page, or a page outside the collection) renders without a destination and
+   * out of the tab order, so activating it cannot navigate anywhere.
    */
-  hrefForPage?: (page: number) => string;
+  hrefForPage?: ((page: number) => string) | undefined;
+
+  /**
+   * Substitution applied to every control rendered as a link, such as a
+   * framework router's link component.
+   *
+   * It only applies when `hrefForPage` supplies destinations.
+   */
+  link?: PaginationLink | undefined;
 
   /**
    * Name of the navigation landmark.
    *
    * @default "Pagination"
    */
-  label?: string;
+  label?: string | undefined;
 
   /**
    * Whether the controls are unavailable, for example while a page loads.
    *
    * @default false
    */
-  isDisabled?: boolean;
+  isDisabled?: boolean | undefined;
 }
 
 /**
@@ -92,17 +132,21 @@ export interface PaginationProps extends BasePaginationProps {
  * The controls are links when the consumer supplies `hrefForPage`, which is
  * what a collection with real addresses wants, and buttons that report the
  * chosen page through `onPageChange` otherwise. The current page is never
- * reported as a change, because it is already where the reader is.
+ * reported as a change, because it is already where the reader is. A link also
+ * reports the page it navigates to through `onPageChange`, so the two modes
+ * agree on what the consumer is told.
  *
  * Size, variant, colour and radius resolve through the standard AsheeUI
  * cascade: prop, component config, global theme defaults, and the built-in
- * fallback.
+ * fallback. `size` reaches the link controls as well as the button controls, so
+ * a paginated collection keeps its density when it switches to real addresses.
  *
  * @param props - Pagination configuration options and navigation attributes.
  * @param props.page - The current page, counted from one.
  * @param props.pageCount - How many pages the collection has.
- * @param props.onPageChange - Called with the page the consumer chose.
+ * @param props.onPageChange - Called with the page the consumer chose, in both modes.
  * @param props.hrefForPage - Builds a page's destination, which renders links.
+ * @param props.link - Substitution applied to the link controls (component and props).
  * @param props.label - Name of the navigation landmark. Defaults to "Pagination".
  * @param props.siblingCount - Pages shown each side of the current page. Defaults to 1.
  * @param props.showEdges - Whether first and last page controls are shown. Defaults to false.
@@ -124,6 +168,17 @@ export interface PaginationProps extends BasePaginationProps {
  * <Pagination page={3} pageCount={42} hrefForPage={(page) => `/invoices?page=${page}`} />
  * ```
  *
+ * @example
+ * ```tsx
+ * // Real addresses that keep the router.
+ * <Pagination
+ *   page={3}
+ *   pageCount={42}
+ *   hrefForPage={(page) => `/invoices?page=${page}`}
+ *   link={{ component: RouterLink, props: { prefetch: true } }}
+ * />
+ * ```
+ *
  * @see PaginationConfig - The configuration type for component defaults.
  */
 export const Pagination = forwardRef<HTMLElement, PaginationProps>(
@@ -133,6 +188,7 @@ export const Pagination = forwardRef<HTMLElement, PaginationProps>(
       pageCount,
       onPageChange,
       hrefForPage,
+      link,
       label = "Pagination",
       size,
       variant,
@@ -197,6 +253,18 @@ export const Pagination = forwardRef<HTMLElement, PaginationProps>(
     const lastPage = Math.max(pageCount, 1);
 
     /**
+     * The box of a link control at the resolved size.
+     *
+     * A link is not a button, so it does not inherit the button size scale; the
+     * map restates the box for the density the cascade resolved.
+     */
+    const linkControlClass = resolveClassKey(
+      resolvedSizeKey,
+      PAGINATION_LINK_CONTROL_CLASS,
+      FALLBACK_PAGINATION_CONFIG.size,
+    );
+
+    /**
      * Moves to a page.
      * The current page and pages outside the collection are ignored, so a
      * consumer never receives a change it cannot act on.
@@ -214,20 +282,31 @@ export const Pagination = forwardRef<HTMLElement, PaginationProps>(
       content: ReactNode,
       isCurrent = false,
     ) => {
-      const isOutOfRange = target < 1 || target > pageCount;
+      const isUnavailable = isDisabled || target < 1 || target > pageCount;
 
       if (hrefForPage) {
         return (
           <Link
-            href={hrefForPage(target)}
+            // An unavailable control has no destination to go to, so it keeps
+            // `aria-disabled` and the dimmed treatment but loses its `href` and
+            // its place in the tab order: keyboard activation cannot navigate
+            // to a page the collection does not have.
+            href={isUnavailable ? undefined : hrefForPage(target)}
+            component={link?.component}
+            componentProps={link?.props}
             aria-label={controlLabel}
             aria-current={isCurrent ? "page" : undefined}
-            aria-disabled={isDisabled || isOutOfRange ? true : undefined}
+            aria-disabled={isUnavailable ? true : undefined}
+            tabIndex={isUnavailable ? -1 : undefined}
+            // The destination is followed by the browser; reporting the page as
+            // well keeps `onPageChange` meaningful in link mode.
+            onClick={isUnavailable ? undefined : () => selectPage(target)}
             className={cn(
               PAGINATION_CONTROL_CLASS,
+              linkControlClass,
               RADIUS_CLASS[resolvedRadiusKey as Radius],
               resolveVariantClass(resolvedVariantKey, resolvedColorKey),
-              (isDisabled || isOutOfRange) && PAGINATION_DISABLED_CLASS,
+              isUnavailable && PAGINATION_DISABLED_CLASS,
             )}>
             {content}
           </Link>
@@ -243,7 +322,7 @@ export const Pagination = forwardRef<HTMLElement, PaginationProps>(
           radius={resolvedRadiusKey as Radius}
           aria-label={controlLabel}
           aria-current={isCurrent ? "page" : undefined}
-          isDisabled={isDisabled || isOutOfRange}
+          isDisabled={isUnavailable}
           onClick={() => selectPage(target)}>
           {content}
         </Button>

@@ -29,6 +29,7 @@ import { Text } from "../../typography/text/Text";
 import {
   FALLBACK_NATIVE_CARD_CONFIG,
   type NativeCardConfig,
+  resolveNativeCardVariant,
 } from "./card-config";
 import {
   CARD_BASE_CLASS,
@@ -77,7 +78,7 @@ export interface CardProps
  * @param props.description - The card's supporting text.
  * @param props.header - Content before the headline.
  * @param props.footer - Content after the body.
- * @param props.variant - Surface treatment. Defaults to the configured value.
+ * @param props.variant - Surface treatment. Defaults to the application's `defaultVariant`.
  * @param props.color - Accent colour of the border. Defaults to the configured value.
  * @param props.size - Density. Defaults to the configured value.
  * @param props.radius - Corner rounding. Defaults to the configured value.
@@ -110,11 +111,16 @@ export function Card({
   const config = useAsheeNativeConfig();
   const sectionConfig = config.components.card;
 
-  const resolvedVariant = resolveCascade<Variant>(
-    variant,
-    sectionConfig?.variant,
-    config.defaultVariant,
-    FALLBACK_NATIVE_CARD_CONFIG.variant,
+  // The cascade's component and global tiers can name a treatment from either
+  // platform's vocabulary; the resolver lands it on a native surface, so the class
+  // look-up below always answers.
+  const resolvedVariant = resolveNativeCardVariant(
+    resolveCascade<Variant>(
+      variant,
+      sectionConfig?.variant,
+      config.defaultVariant,
+      FALLBACK_NATIVE_CARD_CONFIG.variant,
+    ),
   );
   const resolvedColor = resolveCascade<ColorRole>(
     color,

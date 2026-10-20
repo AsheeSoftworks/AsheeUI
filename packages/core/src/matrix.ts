@@ -43,10 +43,10 @@ export interface ComponentSupport {
   support: PlatformSupport;
 
   /** The native equivalent when the two implementations differ. */
-  native?: string;
+  native?: string | undefined;
 
   /** The reason for the classification, where it is not self-evident. */
-  note?: string;
+  note?: string | undefined;
 }
 
 /**
@@ -105,7 +105,9 @@ export const COMPONENT_SUPPORT: readonly ComponentSupport[] = [
   {
     name: "Centered",
     module: "centered",
-    support: "shared",
+    support: "shared-api",
+    native: "Centered",
+    note: "Native centres on the axis and claims the height, but has no contained width: the platform's own screen width is the measure",
   },
   { name: "Chip", module: "chip", support: "shared" },
   {
@@ -134,8 +136,8 @@ export const COMPONENT_SUPPORT: readonly ComponentSupport[] = [
     name: "DocsLayout",
     module: "docs-layout",
     support: "shared-api",
-    native: "Screen shell",
-    note: "Native shows a titled screen whose sections are stacked, because a three-column reading layout is a large-window web arrangement",
+    native: "DocsLayout",
+    note: "Native shows the same three regions as stacked sections, because a three-column reading layout is a large-window web arrangement",
   },
   {
     name: "Drawer",
@@ -299,8 +301,8 @@ export const COMPONENT_SUPPORT: readonly ComponentSupport[] = [
     name: "Split",
     module: "split",
     support: "shared-api",
-    native: "Stack",
-    note: "Native stacks the panes and lets the platform supply a split view where it has one",
+    native: "Split",
+    note: "Native reads the window width rather than a media query, and `stickyEnd` resolves through the contract without stating a class, because the platform has no scroll-linked positioning",
   },
   { name: "Stack", module: "stack", support: "shared" },
   {

@@ -46,28 +46,28 @@ export interface AuthLayoutConfig {
    *
    * @default true
    */
-  panel?: boolean;
+  panel?: boolean | undefined;
 
   /**
    * Vertical alignment of the form column.
    *
    * @default "center"
    */
-  align?: AuthLayoutAlign;
+  align?: AuthLayoutAlign | undefined;
 
   /**
    * Side the media column sits on.
    *
    * @default "end"
    */
-  mediaPosition?: AuthLayoutMediaPosition;
+  mediaPosition?: AuthLayoutMediaPosition | undefined;
 
   /**
    * Maximum width of the form column.
    *
    * @default "sm"
    */
-  contentSize?: ContainerSize;
+  contentSize?: ContainerSize | undefined;
 }
 
 declare module "../../../registry" {

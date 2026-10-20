@@ -31,7 +31,7 @@ export interface AvatarConfig {
    *
    * @default "md"
    */
-  size?: Size;
+  size?: Size | undefined;
 
   /**
    * Corner rounding.
@@ -39,7 +39,7 @@ export interface AvatarConfig {
    *
    * @default "full"
    */
-  radius?: Radius;
+  radius?: Radius | undefined;
 
   /**
    * Theme accent colour.
@@ -47,7 +47,7 @@ export interface AvatarConfig {
    *
    * @default "primary"
    */
-  color?: Color;
+  color?: Color | undefined;
 }
 
 declare module "../../../registry" {

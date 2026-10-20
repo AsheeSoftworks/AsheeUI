@@ -44,9 +44,9 @@ import type { StyleProp, TextStyle } from "react-native";
 import { Pressable, TextInput, View } from "react-native";
 import { useAsheeNativeConfig } from "../../../provider/AsheeNativeProvider";
 import { classNames } from "../../../utils/class-names";
-import { FieldShell } from "../field/FieldShell";
 import { Spinner } from "../../feedback/spinner/Spinner";
 import { Text } from "../../typography/text/Text";
+import { FieldShell } from "../field/FieldShell";
 import {
   FALLBACK_NATIVE_SEARCH_INPUT_CONFIG,
   type NativeSearchInputConfig,

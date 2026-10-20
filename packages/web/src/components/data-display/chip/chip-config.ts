@@ -22,7 +22,9 @@ export type {
  * Default config values registered for the Chip component.
  *
  * `variant` and `color` are intentionally absent so they inherit from the global
- * `defaultVariant` / `defaultColor`.
+ * `defaultVariant` / `defaultColor`. `radius` is registered, so it is pinned: a
+ * chip is a pill, and the application's `defaultRadius` does not reach it. State
+ * `components.chip.radius` or the instance prop instead.
  */
 export const defaultChipConfig: ChipConfig = {
   size: "md",
@@ -36,9 +38,9 @@ registerComponentDefaults("chip", defaultChipConfig);
  * These values are used when instance props, component config,
  * and global defaults are all undefined.
  */
-export const FALLBACK_CHIP_CONFIG: Required<ChipConfig> = {
+export const FALLBACK_CHIP_CONFIG = {
   size: "md",
   variant: "bordered",
   color: "primary",
   radius: "full",
-} as const;
+} as const satisfies ChipConfig;

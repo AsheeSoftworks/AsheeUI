@@ -33,16 +33,16 @@ export interface TextAreaConfig extends FieldConfig {
    *
    * @default 4
    */
-  rows?: number;
+  rows?: number | undefined;
 }
 
 /**
  * The values a textarea falls back to when no tier provides one.
  */
-export const FALLBACK_TEXTAREA_CONFIG: Required<TextAreaConfig> = {
+export const FALLBACK_TEXTAREA_CONFIG = {
   ...FALLBACK_FIELD_CONFIG,
   rows: 4,
-};
+} satisfies TextAreaConfig;
 
 declare module "../../../registry" {
   interface ComponentTypeConfigRegistry {

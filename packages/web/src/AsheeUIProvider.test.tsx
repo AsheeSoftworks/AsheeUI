@@ -45,7 +45,7 @@ describe("AsheeUIProvider configuration validation", () => {
     renderToServerString(<span>ok</span>, asOptions({ bogus: true }));
 
     expect(warn).toHaveBeenCalledTimes(1);
-    expect(String(warn.mock.calls[0][0])).toContain(
+    expect(String(warn.mock.calls[0]?.[0])).toContain(
       "[asheeui] bogus: unknown key",
     );
   });

@@ -50,13 +50,13 @@ export type NavbarAlign = "start" | "center" | "end";
  */
 export interface NavbarLinkItem {
   /** Stable identifier for the destination. Defaults to its position in the list. */
-  id?: string | number;
+  id?: string | number | undefined;
 
   /** Visible name of the destination, and the accessible name of its control. */
   label: ReactNode;
 
   /** Destination of the link. */
-  href?: string;
+  href?: string | undefined;
 
   /**
    * Whether this destination leads to the page currently shown.
@@ -65,19 +65,19 @@ export interface NavbarLinkItem {
    * reader is; the platform states the same thing as the control's selected state. Both add an
    * emphasis for the eye.
    */
-  isActive?: boolean;
+  isActive?: boolean | undefined;
 
   /** Content before the label, typically an icon. */
-  icon?: ReactNode;
+  icon?: ReactNode | undefined;
 
   /** Component that replaces the framework's own element for this destination. */
-  component?: ElementType;
+  component?: ElementType | undefined;
 
   /** Additional props for that component. */
-  componentProps?: Record<string, unknown>;
+  componentProps?: Record<string, unknown> | undefined;
 
   /** Whether the destination is unavailable. */
-  disabled?: boolean;
+  disabled?: boolean | undefined;
 }
 
 /**
@@ -85,10 +85,10 @@ export interface NavbarLinkItem {
  */
 export interface NavbarLink {
   /** Component that replaces the framework's own element. */
-  component?: ElementType;
+  component?: ElementType | undefined;
 
   /** Additional props for that component. */
-  props?: Record<string, unknown>;
+  props?: Record<string, unknown> | undefined;
 }
 
 /**
@@ -103,35 +103,35 @@ export interface NavbarConfig {
    *
    * @default "sticky"
    */
-  position?: NavbarPosition;
+  position?: NavbarPosition | undefined;
 
   /**
    * Surface treatment of the bar.
    *
    * @default "solid"
    */
-  variant?: NavbarVariant;
+  variant?: NavbarVariant | undefined;
 
   /**
    * Where the destinations sit.
    *
    * @default "start"
    */
-  align?: NavbarAlign;
+  align?: NavbarAlign | undefined;
 
   /**
    * Whether the bar wraps its content in a `Container`.
    *
    * @default true
    */
-  contained?: boolean;
+  contained?: boolean | undefined;
 
   /**
    * Maximum content width of the bar.
    *
    * @default "lg"
    */
-  containerSize?: ContainerSize;
+  containerSize?: ContainerSize | undefined;
 }
 
 declare module "../../../registry" {

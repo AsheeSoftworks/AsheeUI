@@ -47,22 +47,22 @@ export interface AlertProps extends BaseAlertProps {
    *
    * @default "info"
    */
-  type?: AlertType;
+  type?: AlertType | undefined;
 
   /**
    * Short heading for the message.
    */
-  title?: ReactNode;
+  title?: ReactNode | undefined;
 
   /**
    * Message body.
    */
-  children?: ReactNode;
+  children?: ReactNode | undefined;
 
   /**
    * Leading content, shown in place of the intent's default icon.
    */
-  icon?: ReactNode;
+  icon?: ReactNode | undefined;
 
   /**
    * Whether the alert can be dismissed by the consumer.
@@ -70,19 +70,19 @@ export interface AlertProps extends BaseAlertProps {
    *
    * @default false
    */
-  isClosable?: boolean;
+  isClosable?: boolean | undefined;
 
   /**
    * Called when the dismiss control is used.
    */
-  onClose?: () => void;
+  onClose?: (() => void) | undefined;
 
   /**
    * Name of the dismiss control, for assistive technology.
    *
    * @default "Dismiss alert"
    */
-  closeLabel?: string;
+  closeLabel?: string | undefined;
 }
 
 /**

@@ -11,8 +11,7 @@
       "!!**/dist",
       "!!**/.next",
       "!!**/routeTree.gen.ts",
-      "!!**/next-env.d.ts",
-      "!!packages/cli/templates"
+      "!!**/next-env.d.ts"
     ]
   },
   "formatter": {

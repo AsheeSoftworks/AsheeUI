@@ -20,7 +20,7 @@ export interface BreadcrumbConfig {
    *
    * @default "md"
    */
-  size?: Size;
+  size?: Size | undefined;
 
   /**
    * Theme accent colour of the links in the trail.
@@ -28,7 +28,7 @@ export interface BreadcrumbConfig {
    *
    * @default "primary"
    */
-  color?: Color;
+  color?: Color | undefined;
 }
 
 /**
@@ -46,10 +46,10 @@ export const defaultBreadcrumbConfig: BreadcrumbConfig = {
  * These values are used when instance props, component config,
  * and global defaults are all undefined.
  */
-export const FALLBACK_BREADCRUMB_CONFIG: Required<BreadcrumbConfig> = {
+export const FALLBACK_BREADCRUMB_CONFIG = {
   size: "md",
   color: "primary",
-} as const;
+} as const satisfies BreadcrumbConfig;
 
 declare module "@asheeui/core" {
   interface ComponentTypeConfigRegistry {

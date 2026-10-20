@@ -9,7 +9,11 @@
  * cascade, so a configuration written for a browser describes a device as well.
  */
 
-import type { DataTableConfig, TableConfig } from "@asheeui/core";
+import {
+  DATA_TABLE_ROW_COUNT_LABEL,
+  type DataTableConfig,
+  type TableConfig,
+} from "@asheeui/core";
 import { registerNativeComponentDefaults } from "../../../config/registry";
 
 export type {
@@ -50,9 +54,11 @@ export const defaultNativeTableConfig: NativeTableConfig = {
 export const defaultNativeDataTableConfig: NativeDataTableConfig = {
   searchable: true,
   searchLabel: "Search",
+  searchDebounce: 0,
   paginated: true,
   pageSize: 10,
   showRowCount: true,
+  loadingLabel: "Loading results",
   emptyTitle: "No results",
   emptyDescription: "Try a different search, or clear it to see everything.",
 };
@@ -70,7 +76,7 @@ registerNativeComponentDefaults("datatable", defaultNativeDataTableConfig);
 /**
  * The table values RowList falls back to when no tier provides one.
  */
-export const FALLBACK_NATIVE_TABLE_CONFIG: Required<NativeTableConfig> = {
+export const FALLBACK_NATIVE_TABLE_CONFIG = {
   size: "md",
   variant: "grid",
   color: "primary",
@@ -79,18 +85,20 @@ export const FALLBACK_NATIVE_TABLE_CONFIG: Required<NativeTableConfig> = {
   headerClassName: "",
   rowClassName: "",
   cellClassName: "",
-} as const;
+} as const satisfies NativeTableConfig;
 
 /**
  * The data-table values RowList falls back to when no tier provides one.
  */
-export const FALLBACK_NATIVE_DATA_TABLE_CONFIG: Required<NativeDataTableConfig> =
-  {
-    searchable: true,
-    searchLabel: "Search",
-    paginated: true,
-    pageSize: 10,
-    showRowCount: true,
-    emptyTitle: "No results",
-    emptyDescription: "Try a different search, or clear it to see everything.",
-  };
+export const FALLBACK_NATIVE_DATA_TABLE_CONFIG = {
+  searchable: true,
+  searchLabel: "Search",
+  searchDebounce: 0,
+  paginated: true,
+  pageSize: 10,
+  showRowCount: true,
+  rowCountLabel: DATA_TABLE_ROW_COUNT_LABEL,
+  loadingLabel: "Loading results",
+  emptyTitle: "No results",
+  emptyDescription: "Try a different search, or clear it to see everything.",
+} satisfies NativeDataTableConfig;

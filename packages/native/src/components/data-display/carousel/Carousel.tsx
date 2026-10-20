@@ -24,7 +24,6 @@
 import {
   CAROUSEL_PADDING_CLASS,
   type CarouselItem,
-  type CarouselVariant,
   NATIVE_CAROUSEL_BASE_CLASS,
   NATIVE_CAROUSEL_CONTROL_CLASS,
   NATIVE_CAROUSEL_HEIGHT_CLASS,
@@ -41,8 +40,10 @@ import {
   NATIVE_CAROUSEL_VARIANT_CLASS,
   NATIVE_RADIUS_CLASS,
   type Radius,
+  resolveCarouselVariant,
   resolveCascade,
   type Size,
+  type Variant,
 } from "@asheeui/core";
 import {
   type ReactNode,
@@ -60,6 +61,7 @@ import type {
   ViewStyle,
 } from "react-native";
 import { Pressable, ScrollView, View } from "react-native";
+import { useReduceMotion } from "../../../hooks/use-reduce-motion";
 import { useAsheeNativeConfig } from "../../../provider/AsheeNativeProvider";
 import { classNames } from "../../../utils/class-names";
 import { Text } from "../../typography/text/Text";
@@ -181,11 +183,16 @@ export function Carousel({
     undefined,
     FALLBACK_NATIVE_CAROUSEL_CONFIG.size,
   );
-  const resolvedVariant = resolveCascade<CarouselVariant>(
-    variant,
-    sectionConfig?.variant,
-    config.defaultVariant as CarouselVariant | undefined,
-    FALLBACK_NATIVE_CAROUSEL_CONFIG.variant,
+  // The cascade's last tiers are the framework's, so they may name a treatment the carousel
+  // has no frame for. The shared rule lands it on the nearest frame it can draw, which is the
+  // same statement the web carousel makes with the same resolver.
+  const resolvedVariant = resolveCarouselVariant(
+    resolveCascade<Variant>(
+      variant,
+      sectionConfig?.variant,
+      config.defaultVariant,
+      FALLBACK_NATIVE_CAROUSEL_CONFIG.variant,
+    ),
   );
   const resolvedRadius = resolveCascade<Radius>(
     radius,
@@ -237,10 +244,14 @@ export function Carousel({
   );
 
   // A treatment the carousel has none for — the platform's filled default, which is stated
-  // for a control — becomes the treatment the carousel documents.
-  const variantClass =
-    NATIVE_CAROUSEL_VARIANT_CLASS[resolvedVariant] ??
-    NATIVE_CAROUSEL_VARIANT_CLASS.bordered;
+  // for a control — has already been landed on a frame by `resolveCarouselVariant`, so the
+  // map is complete and needs no fallback of its own.
+  const variantClass = NATIVE_CAROUSEL_VARIANT_CLASS[resolvedVariant];
+
+  // Autoplay is motion, so it is the reader's to decline: the platform's motion setting is
+  // read the same way the native marquee reads it, and the timer is never started when it
+  // says no.
+  const reduceMotion = useReduceMotion();
 
   const [width, setWidth] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
@@ -313,7 +324,7 @@ export function Carousel({
   };
 
   useEffect(() => {
-    if (!resolvedAutoPlay || items.length < 2) {
+    if (!resolvedAutoPlay || reduceMotion || items.length < 2) {
       return;
     }
 
@@ -338,6 +349,7 @@ export function Carousel({
     items.length,
     lastIndex,
     paginate,
+    reduceMotion,
     resolvedAutoPlay,
     resolvedAutoPlayInterval,
     resolvedLoop,
@@ -375,22 +387,38 @@ export function Carousel({
         onScrollEndDrag={() => setIsDragging(false)}
         onMomentumScrollEnd={handleMomentumEnd}
         className={NATIVE_CAROUSEL_TRACK_CLASS}>
-        {items.map((slide, slideIndex) => (
-          <View
-            key={slide.id ?? `slide-${slideIndex}`}
-            style={width > 0 ? { width } : undefined}
-            className={classNames(
-              NATIVE_CAROUSEL_SLIDE_CLASS,
-              CAROUSEL_PADDING_CLASS[resolvedSize],
-              itemClassName,
-            )}>
-            {typeof slide.content === "string" ? (
-              <Text role="body-md">{slide.content}</Text>
-            ) : (
-              slide.content
-            )}
-          </View>
-        ))}
+        {items.map((slide, slideIndex) => {
+          const isActive = slideIndex === activeIndex;
+
+          return (
+            <View
+              key={slide.id ?? `slide-${slideIndex}`}
+              testID="carousel-slide"
+              // The platform pages its scroll view, so an off-screen slide is laid out
+              // beside the visible one rather than hidden: without these a screen reader
+              // could reach its content and a keyboard or remote could land focus in a
+              // frame the carousel never follows. This is the platform's statement of the
+              // web's `inert` plus `aria-hidden`, and it changes neither the paging nor
+              // the movement.
+              accessibilityElementsHidden={isActive ? undefined : true}
+              importantForAccessibility={
+                isActive ? "auto" : "no-hide-descendants"
+              }
+              focusable={isActive ? undefined : false}
+              style={width > 0 ? { width } : undefined}
+              className={classNames(
+                NATIVE_CAROUSEL_SLIDE_CLASS,
+                CAROUSEL_PADDING_CLASS[resolvedSize],
+                itemClassName,
+              )}>
+              {typeof slide.content === "string" ? (
+                <Text role="body-md">{slide.content}</Text>
+              ) : (
+                slide.content
+              )}
+            </View>
+          );
+        })}
       </ScrollView>
 
       {resolvedShowControls && hasSeveralSlides && (
@@ -403,7 +431,7 @@ export function Carousel({
           ) : (
             <Pressable
               accessibilityRole="button"
-              accessibilityLabel="Previous Slide"
+              accessibilityLabel="Previous slide"
               accessibilityState={{ disabled: isPrevDisabled }}
               disabled={isPrevDisabled}
               onPress={() => paginate(-1)}
@@ -424,7 +452,7 @@ export function Carousel({
           ) : (
             <Pressable
               accessibilityRole="button"
-              accessibilityLabel="Next Slide"
+              accessibilityLabel="Next slide"
               accessibilityState={{ disabled: isNextDisabled }}
               disabled={isNextDisabled}
               onPress={() => paginate(1)}

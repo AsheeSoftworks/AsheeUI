@@ -45,10 +45,10 @@ registerNativeComponentDefaults("button", defaultNativeButtonConfig);
 /**
  * The values the button falls back to when no tier provides one.
  */
-export const FALLBACK_NATIVE_BUTTON_CONFIG: Required<NativeButtonConfig> = {
+export const FALLBACK_NATIVE_BUTTON_CONFIG = {
   variant: "solid",
   color: "primary",
   size: "lg",
   radius: "md",
   fullWidth: false,
-};
+} satisfies NativeButtonConfig;

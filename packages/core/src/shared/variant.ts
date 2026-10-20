@@ -39,14 +39,14 @@ const TRANSITION = "transition-all duration-200 ease-in-out";
  */
 const SOLID_CLASS: Record<Color, string> = {
   none: cn(TRANSITION, "bg-background text-foreground hover:bg-background/80"),
-  primary: cn(TRANSITION, "bg-primary text-foreground hover:bg-primary/80"),
+  primary: cn(TRANSITION, "bg-primary text-on-solid hover:bg-primary/80"),
   secondary: cn(
     TRANSITION,
     "bg-secondary text-foreground hover:bg-secondary/80",
   ),
-  danger: cn(TRANSITION, "bg-danger text-foreground hover:bg-danger/80"),
-  warning: cn(TRANSITION, "bg-warning text-foreground hover:bg-warning/80"),
-  success: cn(TRANSITION, "bg-success text-foreground hover:bg-success/80"),
+  danger: cn(TRANSITION, "bg-danger text-on-solid hover:bg-danger/80"),
+  warning: cn(TRANSITION, "bg-warning text-on-solid hover:bg-warning/80"),
+  success: cn(TRANSITION, "bg-success text-on-solid hover:bg-success/80"),
 };
 
 /**

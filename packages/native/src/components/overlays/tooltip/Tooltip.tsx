@@ -8,7 +8,8 @@
  * A reader asks by **long press**, because there is no pointer to rest on the trigger; how long
  * they have to rest is the same delay the web uses, stated as the length of the platform's own
  * long press rather than as a hover timer. The hint stays while the press is held, which is what
- * resting on a trigger means.
+ * resting on a trigger means, and then for the closing delay afterwards — the same `close` the
+ * web counts while a pointer leaves, because a hide is only a timer on either platform.
  *
  * The hint is placed against the platform's measurement of its trigger rather than against a
  * coordinate: the trigger and the hint share a view, the platform reports that view's size, and
@@ -17,8 +18,12 @@
  * anchor map states.
  *
  * Because a control may claim the long press for itself, the hint is also stated as the
- * trigger's **accessibility hint**: a reader using assistive technology is told what the
- * explanation is without having to discover the gesture at all.
+ * trigger's **accessibility hint**, so a reader using assistive technology is told what the
+ * explanation is without having to discover the gesture at all. That statement is text, so it is
+ * made only when `content` is a string: node content has no string to put on the trigger and is
+ * read once the hint itself is open, which is a limitation of the platform's hint rather than a
+ * choice about the reader. Content that must be reachable without the gesture is therefore
+ * written as a string.
  */
 
 import {
@@ -42,7 +47,7 @@ import {
   type TooltipPlacement,
   type Variant,
 } from "@asheeui/core";
-import { type ReactNode, useState } from "react";
+import { type ReactNode, useEffect, useRef, useState } from "react";
 import type { StyleProp, ViewStyle } from "react-native";
 import { Pressable, View } from "react-native";
 import { useAsheeNativeConfig } from "../../../provider/AsheeNativeProvider";
@@ -57,7 +62,13 @@ import {
  * Props for the native Tooltip.
  */
 export interface TooltipProps extends NativeTooltipConfig {
-  /** What the hint says. Nothing is shown when it is empty. */
+  /**
+   * What the hint says. Nothing is shown when it is empty.
+   *
+   * A string is also stated as the trigger's accessibility hint, so it can be read without
+   * finding the gesture. Node content is read once the hint is open instead, because the
+   * platform's hint is text and a node has none to state.
+   */
   content: ReactNode;
 
   /** The control the hint belongs to. */
@@ -85,7 +96,8 @@ export interface TooltipProps extends NativeTooltipConfig {
  * @param props.color - Colour role of the hint. Defaults to the configured value.
  * @param props.size - Size of the hint. Defaults to the configured value.
  * @param props.placement - Where the hint sits. Defaults to the configured value.
- * @param props.delay - How long a reader rests on the trigger first. Defaults to the configured value.
+ * @param props.delay - How long a reader rests on the trigger first, and how long the hint stays
+ * after the press ends. Defaults to the configured value.
  * @param props.offset - The distance from the trigger. Defaults to the configured value.
  * @param props.radius - Corner rounding. Defaults to the configured value.
  * @param props.showArrow - Whether the hint points at its trigger.
@@ -142,7 +154,9 @@ export function Tooltip({
     undefined,
     FALLBACK_NATIVE_TOOLTIP_CONFIG.placement,
   );
-  const resolvedDelay = resolveCascade<number | { open?: number }>(
+  const resolvedDelay = resolveCascade<
+    number | { open?: number; close?: number }
+  >(
     delay,
     sectionConfig?.delay,
     undefined,
@@ -175,6 +189,13 @@ export function Tooltip({
       : (resolvedDelay?.open ??
         (FALLBACK_NATIVE_TOOLTIP_CONFIG.delay as number));
 
+  // How long the hint stays after the press ends. A number states both halves of the wait; an
+  // object with no `close` closes at once, which is how the web reads the same object.
+  const closeDelay =
+    typeof resolvedDelay === "number"
+      ? resolvedDelay
+      : (resolvedDelay?.close ?? 0);
+
   const anchor = NATIVE_TOOLTIP_ANCHOR[resolvedPlacement];
   const messageVariant = resolveMessageVariant(resolvedVariant);
   const surfaceClass =
@@ -183,6 +204,48 @@ export function Tooltip({
 
   const [isOpen, setIsOpen] = useState(false);
   const [triggerHeight, setTriggerHeight] = useState(0);
+
+  // The closing delay is a timer, so it has to be called off when the reader comes back before
+  // it elapses: otherwise a stale hide lands on a hint that has just been opened again.
+  const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const cancelClose = () => {
+    if (closeTimer.current !== null) {
+      clearTimeout(closeTimer.current);
+      closeTimer.current = null;
+    }
+  };
+
+  useEffect(
+    () => () => {
+      if (closeTimer.current !== null) {
+        clearTimeout(closeTimer.current);
+        closeTimer.current = null;
+      }
+    },
+    [],
+  );
+
+  const handleLongPress = () => {
+    cancelClose();
+    setIsOpen(true);
+  };
+
+  const handlePressOut = () => {
+    cancelClose();
+
+    // A switched-off hint has nothing to hide gradually, and a zero close states that the hint
+    // goes the moment the press ends — which is what the web reads from the same object.
+    if (isDisabled || closeDelay <= 0) {
+      setIsOpen(false);
+      return;
+    }
+
+    closeTimer.current = setTimeout(() => {
+      closeTimer.current = null;
+      setIsOpen(false);
+    }, closeDelay);
+  };
 
   const isShowing = isOpen && Boolean(content) && !isDisabled;
 
@@ -193,11 +256,13 @@ export function Tooltip({
       onLayout={(event) => setTriggerHeight(event.nativeEvent.layout.height)}>
       <Pressable
         delayLongPress={longPressDelay}
-        onLongPress={isDisabled ? undefined : () => setIsOpen(true)}
-        onPressOut={() => setIsOpen(false)}
+        onLongPress={isDisabled ? undefined : handleLongPress}
+        onPressOut={handlePressOut}
         // A reader using assistive technology is told the hint without having to find the
         // gesture, which matters because a control may claim the press for itself. A hint the
         // consumer switched off is not stated at all, which is what switching it off means.
+        // The platform's hint is text, so only a string can be stated here; node content is
+        // read once the hint is open instead.
         accessibilityHint={
           isDisabled || typeof content !== "string" ? undefined : content
         }>

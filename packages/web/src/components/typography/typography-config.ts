@@ -28,24 +28,24 @@ export interface TypographyConfig {
    * Default semantic role.
    * @default "body-md"
    */
-  role?: TypographyRole;
+  role?: TypographyRole | undefined;
 
   /**
    * Default colour treatment.
    * @default "default"
    */
-  tone?: TypographyTone;
+  tone?: TypographyTone | undefined;
 
   /**
    * Default text alignment. Unset means the alignment is inherited.
    */
-  align?: TypographyAlign;
+  align?: TypographyAlign | undefined;
 
   /**
    * Whether text is truncated to a single line by default.
    * @default false
    */
-  truncate?: boolean;
+  truncate?: boolean | undefined;
 
   /**
    * Per-application role overrides.
@@ -54,12 +54,14 @@ export interface TypographyConfig {
    * keep its semantic meaning while the underlying typography changes. Values
    * still come from the static class maps, so no class is built dynamically.
    */
-  roles?: Partial<Record<TypographyRole, Partial<TypographyRoleTokens>>>;
+  roles?:
+    | Partial<Record<TypographyRole, Partial<TypographyRoleTokens>>>
+    | undefined;
 
   /**
    * Extra classes applied to every instance, before the instance `className`.
    */
-  className?: string;
+  className?: string | undefined;
 }
 
 /**
@@ -79,10 +81,8 @@ registerComponentDefaults("typography", defaultTypographyConfig);
 /**
  * Hard fallback values used when no cascade tier provides a value.
  */
-export const FALLBACK_TYPOGRAPHY_CONFIG: Required<
-  Pick<TypographyConfig, "role" | "tone" | "truncate">
-> = {
+export const FALLBACK_TYPOGRAPHY_CONFIG = {
   role: "body-md",
   tone: "default",
   truncate: false,
-};
+} satisfies Pick<TypographyConfig, "role" | "tone" | "truncate">;

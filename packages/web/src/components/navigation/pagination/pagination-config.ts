@@ -20,7 +20,10 @@ export type { PaginationConfig };
  * Default config values registered for the Pagination component.
  *
  * `variant` and `color` are intentionally absent so they inherit from the
- * global `defaultVariant` and `defaultColor`.
+ * global `defaultVariant` and `defaultColor`. `radius` is registered, so it is
+ * pinned: the component tier answers before the application's `defaultRadius`,
+ * which therefore never reaches the trail's controls. State
+ * `components.pagination.radius` or the instance prop instead.
  */
 export const defaultPaginationConfig: PaginationConfig = {
   size: "md",
@@ -36,11 +39,11 @@ registerComponentDefaults("pagination", defaultPaginationConfig);
  * These values are used when instance props, component config,
  * and global defaults are all undefined.
  */
-export const FALLBACK_PAGINATION_CONFIG: Required<PaginationConfig> = {
+export const FALLBACK_PAGINATION_CONFIG = {
   size: "md",
   variant: "bordered",
   color: "primary",
   radius: "md",
   siblingCount: 1,
   showEdges: false,
-} as const;
+} as const satisfies PaginationConfig;

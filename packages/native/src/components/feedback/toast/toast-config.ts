@@ -62,7 +62,7 @@ registerNativeComponentDefaults("toast", defaultNativeToastConfig);
 /**
  * The values the system falls back to when no tier provides one.
  */
-export const FALLBACK_NATIVE_TOAST_CONFIG: Required<NativeToastConfig> = {
+export const FALLBACK_NATIVE_TOAST_CONFIG = {
   size: "md",
   placement: "bottom-center",
   variant: "bordered",
@@ -70,4 +70,4 @@ export const FALLBACK_NATIVE_TOAST_CONFIG: Required<NativeToastConfig> = {
   animated: true,
   defaultTimeout: TOAST_FALLBACK_TIMEOUT_MS,
   maxToasts: TOAST_FALLBACK_MAX_TOASTS,
-};
+} satisfies NativeToastConfig;

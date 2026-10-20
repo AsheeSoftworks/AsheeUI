@@ -32,49 +32,61 @@ import { Container } from "../container/Container";
 import type { ContainerSize } from "../container/container-config";
 import { FALLBACK_PAGE_CONFIG, type PageConfig } from "./page-config";
 
-type BasePageProps = PageConfig & Omit<HTMLAttributes<HTMLElement>, "color">;
+type BasePageProps = Omit<HTMLAttributes<HTMLElement>, "color">;
+
+/**
+ * The page options one part accepts.
+ *
+ * A part forwards every option it was given, including one that is `undefined`,
+ * so each option is widened rather than left to absence alone.
+ */
+type PagePartConfig<K extends keyof PageConfig> = {
+  [P in K]?: PageConfig[P] | undefined;
+};
 
 /**
  * Resolve the shared page-part options through the standard cascade.
- * The four parts answer the same four questions (nesting, width, rhythm,
- * separators), so they resolve them the same way and a single
- * `components.page` entry restyles the whole shell.
+ * The four parts answer the same five questions (nesting, width, rhythm,
+ * stickiness and separators), so they resolve them the same way and a single
+ * `components.page` entry restyles the whole shell. Each part accepts only the
+ * questions it can answer; the others are resolved here so configuration still
+ * reaches the part that owns them.
  *
  * @param props - The options passed to the part.
  * @returns The resolved options.
  */
-function usePagePart(props: PageConfig) {
+function usePagePart(props: PagePartConfig<keyof PageConfig>) {
   const config = useAsheeConfig();
-  const sectionConfig = config.components?.page;
+  const pageConfig = config.components?.page;
 
   return {
     contained: resolveCascade<boolean>(
       props.contained,
-      sectionConfig?.contained,
+      pageConfig?.contained,
       undefined,
       FALLBACK_PAGE_CONFIG.contained,
     ),
     containerSize: resolveCascade<ContainerSize>(
       props.containerSize,
-      sectionConfig?.containerSize,
+      pageConfig?.containerSize,
       undefined,
       FALLBACK_PAGE_CONFIG.containerSize,
     ),
     spacing: resolveCascade<Space>(
       props.spacing,
-      sectionConfig?.spacing,
+      pageConfig?.spacing,
       undefined,
       FALLBACK_PAGE_CONFIG.spacing,
     ),
     sticky: resolveCascade<boolean>(
       props.sticky,
-      sectionConfig?.sticky,
+      pageConfig?.sticky,
       undefined,
       FALLBACK_PAGE_CONFIG.sticky,
     ),
     divider: resolveCascade<boolean>(
       props.divider,
-      sectionConfig?.divider,
+      pageConfig?.divider,
       undefined,
       FALLBACK_PAGE_CONFIG.divider,
     ),
@@ -92,7 +104,7 @@ export interface PageProps extends BasePageProps {
    *
    * @default "div"
    */
-  as?: ElementType;
+  as?: ElementType | undefined;
 }
 
 /**
@@ -102,7 +114,12 @@ export interface PageProps extends BasePageProps {
  * inside it. It adds no width, no gutter and no rhythm of its own: those belong
  * to `Container`, `PageContent` and `Section`.
  *
- * @param props - Page configuration options and element attributes.
+ * The shell states none of the shared page options, because it has nothing to
+ * apply them to: containment, width, rhythm, stickiness and separators are
+ * options of the parts inside it. `PageHeader`, `PageContent` and `PageFooter`
+ * accept those each; a single `components.page` entry still reaches all of them.
+ *
+ * @param props - Page element attributes.
  * @param props.as - Element to render. Defaults to "div".
  * @returns The rendered page shell.
  *
@@ -134,14 +151,16 @@ Page.displayName = "Page";
 /**
  * Props for the PageHeader component.
  */
-export interface PageHeaderProps extends BasePageProps {
+export interface PageHeaderProps
+  extends BasePageProps,
+    PagePartConfig<"contained" | "containerSize" | "sticky" | "divider"> {
   /**
    * Element to render.
    * Defaults to `header`.
    *
    * @default "header"
    */
-  as?: ElementType;
+  as?: ElementType | undefined;
 
   /**
    * Whether the header sticks to the top of the viewport while the content
@@ -150,7 +169,7 @@ export interface PageHeaderProps extends BasePageProps {
    *
    * @default true
    */
-  sticky?: boolean;
+  sticky?: boolean | undefined;
 }
 
 /**
@@ -217,10 +236,14 @@ export const PageHeader = forwardRef<HTMLElement, PageHeaderProps>(
   },
 );
 
+PageHeader.displayName = "PageHeader";
+
 /**
  * Props for the PageContent component.
  */
-export interface PageContentProps extends BasePageProps {
+export interface PageContentProps
+  extends BasePageProps,
+    PagePartConfig<"contained" | "containerSize" | "spacing"> {
   /**
    * Element to render.
    * Defaults to `main`, which is the landmark assistive technology jumps to
@@ -228,7 +251,7 @@ export interface PageContentProps extends BasePageProps {
    *
    * @default "main"
    */
-  as?: ElementType;
+  as?: ElementType | undefined;
 
   /**
    * Vertical rhythm of the content area.
@@ -237,7 +260,15 @@ export interface PageContentProps extends BasePageProps {
    *
    * @default "md"
    */
-  spacing?: Space;
+  spacing?: Space | undefined;
+
+  /**
+   * Class names for the inner column, which holds the children.
+   * `className` styles the rendered element (the `main` landmark by default);
+   * this one styles the column inside it, which is where the rhythm and the
+   * flex layout live.
+   */
+  innerClassName?: string | undefined;
 }
 
 /**
@@ -251,19 +282,32 @@ export interface PageContentProps extends BasePageProps {
  * @param props.spacing - Vertical padding. Defaults to "md".
  * @param props.contained - Wrap the content in a Container. Defaults to true.
  * @param props.containerSize - Container width when contained. Defaults to "lg".
+ * @param props.className - Classes for the rendered element, the `main` landmark
+ * by default.
+ * @param props.innerClassName - Classes for the inner column that holds the
+ * children.
  * @param props.as - Element to render. Defaults to "main".
  * @returns The rendered content area.
  *
  * @example
  * ```tsx
- * <PageContent spacing="lg">
+ * <PageContent spacing="lg" className="bg-muted">
  *   <Grid columns={1} columnsLg={3} gap="lg">...</Grid>
  * </PageContent>
  * ```
  */
 export const PageContent = forwardRef<HTMLElement, PageContentProps>(
   (
-    { as, contained, containerSize, spacing, className, children, ...rest },
+    {
+      as,
+      contained,
+      containerSize,
+      spacing,
+      className,
+      innerClassName,
+      children,
+      ...rest
+    },
     ref,
   ) => {
     const resolved = usePagePart({ contained, containerSize, spacing });
@@ -275,14 +319,17 @@ export const PageContent = forwardRef<HTMLElement, PageContentProps>(
         className={cn(
           SPACE_PADDING_Y_CLASS[resolved.spacing],
           "flex w-full flex-col",
-          className,
+          innerClassName,
         )}>
         {children}
       </div>
     );
 
     return (
-      <Component ref={ref} className={PAGE_CONTENT_CLASS} {...rest}>
+      <Component
+        ref={ref}
+        className={cn(PAGE_CONTENT_CLASS, className)}
+        {...rest}>
         {resolved.contained ? (
           <Container size={resolved.containerSize}>{inner}</Container>
         ) : (
@@ -298,14 +345,16 @@ PageContent.displayName = "PageContent";
 /**
  * Props for the PageFooter component.
  */
-export interface PageFooterProps extends BasePageProps {
+export interface PageFooterProps
+  extends BasePageProps,
+    PagePartConfig<"contained" | "containerSize" | "divider"> {
   /**
    * Element to render.
    * Defaults to `footer`.
    *
    * @default "footer"
    */
-  as?: ElementType;
+  as?: ElementType | undefined;
 }
 
 /**
@@ -362,5 +411,3 @@ export const PageFooter = forwardRef<HTMLElement, PageFooterProps>(
 );
 
 PageFooter.displayName = "PageFooter";
-
-PageHeader.displayName = "PageHeader";

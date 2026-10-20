@@ -46,16 +46,23 @@ export type LinkUnderline = "always" | "hover" | "never";
  */
 export interface LinkConfig {
   /** Visual style variant. @default "default" */
-  variant?: LinkVariant;
+  variant?: LinkVariant | undefined;
 
-  /** Colour role of the text. @default "primary" */
-  color?: Color;
+  /**
+   * Colour role of the text.
+   *
+   * It is the last tier of the cascade rather than the first: the global `defaultColor`
+   * resolves before it, so a theme that names a colour overrides this fallback.
+   *
+   * @default "primary"
+   */
+  color?: Color | undefined;
 
   /** Density of the text and the icons beside it. @default "md" */
-  size?: Size;
+  size?: Size | undefined;
 
   /** When the underline is shown. @default "hover" */
-  underline?: LinkUnderline;
+  underline?: LinkUnderline | undefined;
 
   /**
    * Whether the link points to another resource.
@@ -64,7 +71,7 @@ export interface LinkConfig {
    *
    * @default false
    */
-  isExternal?: boolean;
+  isExternal?: boolean | undefined;
 }
 
 declare module "../../../registry" {

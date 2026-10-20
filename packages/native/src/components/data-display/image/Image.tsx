@@ -107,8 +107,9 @@ export interface ImageProps
  * @param props.alt - Name assistive technology reads.
  * @param props.fit - How the picture fills its frame. Defaults to `"cover"`.
  * @param props.ratio - The frame's aspect ratio. Defaults to `"auto"`.
- * @param props.radius - Corner rounding. Defaults to `"md"`.
+ * @param props.radius - Corner rounding. Defaults to the application's `defaultRadius`.
  * @param props.showSkeleton - Claims the space until the picture arrives. Defaults to true.
+ *   A picture with no usable source never claims the space, because it can never arrive.
  * @param props.component - Component that replaces the platform's image view.
  * @param props.componentProps - Props for that component.
  * @param props.className - Extra classes applied last, which is where sizing belongs.
@@ -182,6 +183,9 @@ export function Image({
   );
 
   const aspectRatio = NATIVE_IMAGE_ASPECT_RATIO[resolvedRatio];
+  // A picture can only render when there is a usable source: with an empty or missing
+  // `src` nothing mounts at all, so there is no load event to settle the placeholder.
+  // The placeholder must not then animate forever for a picture that can never arrive.
   const hasSource = isValidSrc(currentSrc);
 
   const frameClasses = classNames(
@@ -242,7 +246,7 @@ export function Image({
       className={frameClasses}
       style={[aspectRatio ? { aspectRatio } : undefined, style]}
       {...rest}>
-      {resolvedShowSkeleton && !isLoaded && (
+      {resolvedShowSkeleton && !isLoaded && hasSource && (
         <Skeleton
           className={NATIVE_IMAGE_SKELETON_CLASS}
           radius={resolvedRadius}

@@ -26,28 +26,28 @@ export interface PaginationConfig {
    *
    * @default "md"
    */
-  size?: Size;
+  size?: Size | undefined;
 
   /**
    * Visual style variant of the page controls.
    *
    * @default "bordered"
    */
-  variant?: Variant;
+  variant?: Variant | undefined;
 
   /**
    * Theme accent colour of the page controls.
    *
    * @default "primary"
    */
-  color?: Color;
+  color?: Color | undefined;
 
   /**
    * Corner rounding of the page controls.
    *
    * @default "md"
    */
-  radius?: Radius;
+  radius?: Radius | undefined;
 
   /**
    * How many pages to show on each side of the current page, on the web.
@@ -60,7 +60,7 @@ export interface PaginationConfig {
    *
    * @default 1
    */
-  siblingCount?: number;
+  siblingCount?: number | undefined;
 
   /**
    * Whether the trail offers controls for the first and last page, on the web.
@@ -70,7 +70,7 @@ export interface PaginationConfig {
    *
    * @default false
    */
-  showEdges?: boolean;
+  showEdges?: boolean | undefined;
 }
 
 declare module "../../../registry" {

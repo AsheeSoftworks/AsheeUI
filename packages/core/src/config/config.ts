@@ -19,9 +19,13 @@ export type { DeepPartial } from "../utils";
 
 /**
  * Component-specific configuration overrides.
- * Each key corresponds to a component name (e.g., "Button", "Input"),
- * and the value is a partial configuration object for that component.
- * These are merged with the component's registered defaults and instance props.
+ * Each key is the component's registration name, the lowercase name its config
+ * module passes to `registerComponentDefaults` (e.g., "button", "input"; the
+ * camelCase exceptions are "multiSelect" and "resizableScreen"). A key that does
+ * not match a registration is ignored, so a capitalised export name such as
+ * "Button" configures nothing. The value is a partial configuration object for
+ * that component, merged with the component's registered defaults and instance
+ * props.
  */
 export type ComponentsConfig = {
   [K in keyof ComponentConfigRegistry]?: DeepPartial<
@@ -46,34 +50,35 @@ export type Config = {
    * Can be a specific theme name or "system" to follow system preference.
    * @default "system"
    */
-  defaultTheme?: ThemeName | "system";
+  defaultTheme?: ThemeName | "system" | undefined;
 
   /**
    * The default variant for components that support variants.
    * Controls the visual style like solid, ghost, bordered, etc.
-   * @default "solid"
+   * @default "faded"
    */
-  defaultVariant?: Variant;
+  defaultVariant?: Variant | undefined;
 
   /**
    * The default color for components that support colors.
    * Controls the accent color like primary, secondary, danger, etc.
    * @default "primary"
    */
-  defaultColor?: Color;
+  defaultColor?: Color | undefined;
 
   /**
    * The default border radius for components.
-   * Controls the rounded corners of elements.
-   * @default "md"
+   * Controls the rounded corners of elements that leave their radius to the
+   * application; a component that registers its own radius keeps it.
+   * @default "xs"
    */
-  defaultRadius?: Radius;
+  defaultRadius?: Radius | undefined;
 
   /**
    * Component-specific configuration overrides.
    * Allows setting default props for individual components.
    */
-  components?: ComponentsConfig;
+  components?: ComponentsConfig | undefined;
 };
 
 /**
@@ -87,5 +92,5 @@ export type ExternalConfig = DeepPartial<Omit<Config, "color">> & {
    * Color configuration that can partially override or extend themes.
    * Built-in themes can be partially overridden, and custom themes can be added.
    */
-  color?: ExternalColorConfig;
+  color?: ExternalColorConfig | undefined;
 };

@@ -12,6 +12,7 @@
  */
 
 import type { Radius } from "../../../tokens";
+import type { Concrete } from "../../../utils/types";
 
 /**
  * Characters a code field accepts.
@@ -38,21 +39,21 @@ export interface PinInputConfig {
    *
    * @default 4
    */
-  length?: number;
+  length?: number | undefined;
 
   /**
    * Characters the field accepts.
    *
    * @default "numeric"
    */
-  mode?: PinInputMode;
+  mode?: PinInputMode | undefined;
 
   /**
    * Density of the boxes.
    *
    * @default "md"
    */
-  size?: PinInputSize;
+  size?: PinInputSize | undefined;
 
   /**
    * Whether the typed characters are hidden.
@@ -60,20 +61,20 @@ export interface PinInputConfig {
    *
    * @default false
    */
-  masked?: boolean;
+  masked?: boolean | undefined;
 
   /**
    * Corner rounding of each box.
    * Defaults to the framework radius, so a code field matches the surrounding form.
    */
-  radius?: Radius;
+  radius?: Radius | undefined;
 
   /**
    * Whether the field is unavailable.
    *
    * @default false
    */
-  isDisabled?: boolean;
+  isDisabled?: boolean | undefined;
 
   /**
    * Whether the current value is invalid.
@@ -82,13 +83,13 @@ export interface PinInputConfig {
    *
    * @default false
    */
-  isInvalid?: boolean;
+  isInvalid?: boolean | undefined;
 }
 
 /**
  * The values a code field falls back to when no tier provides one.
  */
-export const FALLBACK_PIN_INPUT_CONFIG: Required<
+export const FALLBACK_PIN_INPUT_CONFIG: Concrete<
   Omit<PinInputConfig, "radius">
 > & { radius: Radius } = {
   length: 4,

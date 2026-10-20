@@ -26,7 +26,10 @@ import {
 import { ErrorIcon } from "../../../icons/ErrorIcon";
 import { useAsheeConfig } from "../../../libs/context";
 import { Button } from "../../forms/button";
-import { EmptyState } from "../empty-state/EmptyState";
+import {
+  EmptyState,
+  type EmptyStateTitleElement,
+} from "../empty-state/EmptyState";
 import {
   type ErrorStateConfig,
   FALLBACK_ERROR_STATE_CONFIG,
@@ -45,39 +48,51 @@ export interface ErrorStateProps extends BaseErrorStateProps {
   title: ReactNode;
 
   /**
+   * The heading element the title renders as.
+   *
+   * A failure that *is* the page renders an `h1`, one inside a page section
+   * renders an `h2` (the default), and one inside a card's `h3` renders an `h4`.
+   * Only heading elements are accepted, so the failure keeps its place in the
+   * document outline.
+   *
+   * @default "h2"
+   */
+  titleAs?: EmptyStateTitleElement | undefined;
+
+  /**
    * What the reader can do about it.
    */
-  description?: ReactNode;
+  description?: ReactNode | undefined;
 
   /**
    * The technical detail, typically the message a request returned.
    * It is rendered inside a disclosure rather than in the open, because it is
    * written for a developer rather than for the reader.
    */
-  detail?: ReactNode;
+  detail?: ReactNode | undefined;
 
   /**
    * Called when the reader asks to try again.
    * Its presence is what renders the retry control.
    */
-  onRetry?: () => void;
+  onRetry?: (() => void) | undefined;
 
   /**
    * The emphasised action, when the way out is a destination rather than a
    * retry.
    */
-  primaryAction?: ActionConfig;
+  primaryAction?: ActionConfig | undefined;
 
   /**
    * The supporting action.
    */
-  secondaryAction?: ActionConfig;
+  secondaryAction?: ActionConfig | undefined;
 
   /**
    * Icon shown above the title.
    * Defaults to the framework's error icon.
    */
-  icon?: ReactNode;
+  icon?: ReactNode | undefined;
 
   /**
    * Element to render.
@@ -85,12 +100,12 @@ export interface ErrorStateProps extends BaseErrorStateProps {
    *
    * @default "div"
    */
-  as?: ElementType;
+  as?: ElementType | undefined;
 
   /**
    * Content below the actions.
    */
-  children?: ReactNode;
+  children?: ReactNode | undefined;
 }
 
 /**
@@ -103,10 +118,16 @@ export interface ErrorStateProps extends BaseErrorStateProps {
  *
  * A retry is a React handler rather than a configured action, because a
  * configured action describes a destination. It is rendered in the same group as
- * any configured actions, so the two arrangements agree.
+ * any configured actions, and **after** them: the configured pair is the
+ * consumer's own statement of where the reader can go and leads the row, while the
+ * retry is the framework's recovery path for the request that failed. When no
+ * configured actions are given the retry is the only control, and therefore the
+ * first. The order is deliberate, and {@link EmptyStateProps.actions} states the
+ * same rule for the slot it fills.
  *
  * @param props - ErrorState configuration options and element attributes.
  * @param props.title - What failed.
+ * @param props.titleAs - Heading element the title renders as. Defaults to "h2".
  * @param props.description - What the reader can do about it.
  * @param props.detail - The technical message, inside a disclosure.
  * @param props.onRetry - Called when the reader asks to try again.
@@ -116,9 +137,9 @@ export interface ErrorStateProps extends BaseErrorStateProps {
  * @param props.panel - Draw the state as a panel. Defaults to true.
  * @param props.role - How the state is announced. Defaults to "alert".
  * @param props.retryLabel - Wording of the retry control. Defaults to "Try
- * again".
+ * again". It takes a node, so the control can carry an icon.
  * @param props.detailLabel - Wording of the disclosure. Defaults to "Technical
- * details".
+ * details". It takes a node, as `retryLabel` does.
  * @param props.as - Element to render. Defaults to "div".
  * @returns The rendered state.
  *
@@ -139,6 +160,7 @@ export const ErrorState = forwardRef<HTMLDivElement, ErrorStateProps>(
   (
     {
       title,
+      titleAs,
       description,
       detail,
       onRetry,
@@ -177,9 +199,13 @@ export const ErrorState = forwardRef<HTMLDivElement, ErrorStateProps>(
         type="error"
         size={resolved.size}
         panel={resolved.panel}
-        role={resolved.role === "none" ? undefined : resolved.role}
+        // `none` is passed through rather than dropped: the empty state resolves an
+        // unstated role through `components.emptystate`, and a failure that was
+        // deliberately silent must stay silent whatever that configuration says.
+        role={resolved.role}
         icon={icon ?? <ErrorIcon />}
         title={title}
+        titleAs={titleAs}
         description={description}
         primaryAction={primaryAction}
         secondaryAction={secondaryAction}

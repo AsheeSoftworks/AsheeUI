@@ -10,7 +10,12 @@
 
 import type { ExternalConfig } from "@asheeui/core";
 import { assertValidConfig, resolveConfig } from "@asheeui/core";
-import { type ReactNode, useMemo, useSyncExternalStore } from "react";
+import {
+  type ReactNode,
+  useContext,
+  useMemo,
+  useSyncExternalStore,
+} from "react";
 import { AsheeConfigContext } from "./libs/context";
 import { useIsomorphicLayoutEffect } from "./libs/use-isomorphic-layout-effect";
 import {
@@ -30,7 +35,7 @@ export interface AsheeUIProviderProps {
    * inline {@link ExternalConfig}) to customize colors, radius, theme
    * defaults and per-component options at runtime.
    */
-  config?: ExternalConfig;
+  config?: ExternalConfig | undefined;
 
   /**
    * The child components to render within the provider context.
@@ -98,7 +103,8 @@ function useRendersServerOutput(): boolean {
  *     defaultTheme: 'dark',
  *     defaultVariant: 'ghost',
  *     components: {
- *       Button: { radius: 'lg' }
+ *       // The key is the component's registration name, in lowercase: `button`, not `Button`.
+ *       button: { radius: 'lg' }
  *     }
  *   }}
  * >
@@ -119,13 +125,17 @@ export function AsheeUIProvider({
     assertValidConfig(config);
     return resolveConfig(config);
   }, [config]);
-  
-  console.log("External Config", config)
-  console.log("Resolved Config", resolvedConfig)
+
+  // A provider rendered inside another one does not own the document: the application's
+  // provider does. Both decisions that depend on ownership — which provider's default theme
+  // the controller keeps, and which provider emits the pre-paint script — read this.
+  const hasAncestorProvider = useContext(AsheeConfigContext) !== null;
+
   useIsomorphicLayoutEffect(() => {
     themeController.configure({
       defaultTheme: resolvedConfig.defaultTheme ?? "system",
       themes: Object.keys(resolvedConfig.color),
+      ownsDocument: !hasAncestorProvider,
     });
 
     // The pre-paint script injects the theme variables while the server HTML is
@@ -133,13 +143,21 @@ export function AsheeUIProvider({
     // instead, still before the first paint. This is a no-op once the script has
     // done it.
     ensureThemeVarsStyle(resolvedConfig);
-  }, [resolvedConfig]);
+  }, [resolvedConfig, hasAncestorProvider]);
 
   // The pre-paint script only pays off where the HTML it sits in is parsed by a
   // browser, which is the server output and the hydration of that output. A
   // client-only render cannot run a script React creates, so the element would
   // be dead markup and React warns about it.
-  const renderPrePaintScript = useRendersServerOutput();
+  //
+  // It is emitted by the provider that owns the document, and only by that one. Every
+  // provider used to emit one carrying *its* theme list and *its* default theme, so a page
+  // that mounts a provider of its own — a docs demo, a preview panel — had its script run
+  // last and paint that provider's default until the controller's effect corrected it: the
+  // same failure the controller's union rule prevents for the stylesheet. A nested
+  // provider's configuration still reaches the controller and the stylesheet from its
+  // layout effect, which is enough for the themes it adds.
+  const renderPrePaintScript = useRendersServerOutput() && !hasAncestorProvider;
 
   return (
     <AsheeConfigContext.Provider value={resolvedConfig}>

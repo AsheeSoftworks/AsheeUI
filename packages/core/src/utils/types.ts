@@ -34,3 +34,13 @@ export type DeepPartial<T> = T extends Builtin
       : T extends object
         ? { [K in keyof T]?: DeepPartial<T[K]> }
         : T;
+
+/**
+ * A configuration with every optional key present and no `undefined` in any value.
+ *
+ * `Required<T>` only removes the optionality marker, so a key declared `size?: Size | undefined` stays a
+ * `Size | undefined` value under it. That matters wherever a fallback table is typed `Required<Config>`: the
+ * table states every key, but TypeScript still treats its values as possibly missing, so reading one cannot feed a
+ * resolver that requires a value. This mapped type is the honest description of what the table actually is.
+ */
+export type Concrete<T> = { [K in keyof T]-?: NonNullable<T[K]> };

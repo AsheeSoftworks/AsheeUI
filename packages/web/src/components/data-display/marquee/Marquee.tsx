@@ -19,13 +19,16 @@ import {
   MARQUEE_PAUSE_ON_HOVER_CLASS,
   MARQUEE_SET_AXIS_CLASS,
   MARQUEE_SET_CLASS,
+  MARQUEE_SET_SPACING,
   MARQUEE_SPEED_PRESETS,
+  MARQUEE_STILL_FRAME_CLASS,
+  MARQUEE_STILL_SET_CLASS,
   MARQUEE_TRACK_CLASS,
   MARQUEE_TRACK_X_CLASS,
   MARQUEE_TRACK_Y_CLASS,
   resolveCascade,
 } from "@asheeui/core";
-import { forwardRef, isValidElement, type ReactNode, useMemo } from "react";
+import { forwardRef, isValidElement, type ReactNode } from "react";
 import { useAsheeConfig } from "../../../libs/context";
 import { usePrefersReducedMotion } from "../../../libs/use-prefers-reduced-motion";
 import {
@@ -52,7 +55,7 @@ export interface MarqueeProps extends BaseMarqueeProps {
   /**
    * Extra classes applied to each item.
    */
-  itemClassName?: string;
+  itemClassName?: string | undefined;
 }
 
 /**
@@ -67,15 +70,27 @@ export interface MarqueeProps extends BaseMarqueeProps {
  * scrolling. It automatically handles the duplication of content to create
  * the infinite scroll effect.
  *
+ * `pauseOnHover` stops the loop for both kinds of reader. A pointer resting on the frame
+ * pauses it, and so does keyboard focus anywhere inside the frame (`focus-within`), which
+ * is the mechanism WCAG 2.2.2 asks for when a reader moves through the content by keyboard.
+ * The duplicate copy is out of the accessibility tree and out of the tab order, so a control
+ * inside the marquee is announced and tabbed to once.
+ *
+ * The loop yields to the reader's reduced-motion preference and to `isAnimated`. The content
+ * is not clipped when it stops: it is rendered once, in a frame that wraps and can be
+ * scrolled, so everything that does not fit can still be read.
+ *
  * @param props - Marquee configuration options and HTML div props.
  * @param props.children - An array of React nodes to display.
  * @param props.axis - The axis of the marquee. Defaults to "x".
  * @param props.direction - The scroll direction. Defaults to "forward".
  * @param props.speed - The animation speed. Defaults to "normal".
  * @param props.gap - The gap between items. Defaults to "1.5rem".
- * @param props.pauseOnHover - Whether to pause on hover. Defaults to false.
+ * @param props.pauseOnHover - Whether a resting pointer or keyboard focus inside the
+ *   marquee stops the loop. Defaults to false.
  * @param props.fadeEdges - Whether to fade edges. Defaults to false.
- * @param props.isAnimated - Whether the content moves. Defaults to true.
+ * @param props.isAnimated - Whether the content moves. Defaults to true. When false, the
+ *   content is shown once in a scrollable frame instead of the looping track.
  * @param props.itemClassName - Extra classes for each item.
  * @param props.className - Extra classes for the container.
  *
@@ -201,44 +216,64 @@ export const Marquee = forwardRef<HTMLDivElement, MarqueeProps>(
     const isVertical = resolvedAxis === "y";
 
     // The loop is continuous motion, so it yields to the reduced-motion preference and to
-    // the `isAnimated` option, and the content is then shown standing still (`REQ-089`).
+    // the `isAnimated` option (`REQ-089`). What it yields to is the movement only: with the
+    // loop stopped the content is shown once, in a frame the reader can scroll, because the
+    // clipping frame exists for the movement and would otherwise hide whatever did not fit.
     const prefersReducedMotion = usePrefersReducedMotion();
+    const moves = resolvedIsAnimated && !prefersReducedMotion;
 
-    const renderedSets = useMemo(
-      () =>
-        [children, children].map((set, setIndex) => {
-          const setPrefix = setIndex === 0 ? "primary" : "secondary";
+    // ─── 3. Copies & Items ───────────────────────────────────────────────────
 
-          return (
-            <div
-              key={`${setPrefix}-set`}
-              className={cn(
-                MARQUEE_SET_CLASS,
-                MARQUEE_SET_AXIS_CLASS[resolvedAxis],
-              )}
-              style={{
-                gap: resolvedGap,
-              }}
-              aria-hidden={setIndex === 1}>
-              {set.map((item, itemIndex) => {
-                const itemKey =
-                  isValidElement(item) && item.key
-                    ? `${setPrefix}-${item.key}`
-                    : `${setPrefix}-item-${itemIndex}`;
+    const renderItems = (setPrefix: string) =>
+      children.map((item, itemIndex) => {
+        const itemKey =
+          isValidElement(item) && item.key
+            ? `${setPrefix}-${item.key}`
+            : `${setPrefix}-item-${itemIndex}`;
 
-                return (
-                  <div
-                    key={itemKey}
-                    className={cn(MARQUEE_ITEM_CLASS, itemClassName)}>
-                    {item}
-                  </div>
-                );
-              })}
-            </div>
-          );
-        }),
-      [children, isVertical, resolvedGap, itemClassName],
-    );
+        return (
+          <div key={itemKey} className={cn(MARQUEE_ITEM_CLASS, itemClassName)}>
+            {item}
+          </div>
+        );
+      });
+
+    /**
+     * Render one copy of the content.
+     *
+     * A copy carries the gap that separates it from the next one, so the track is exactly
+     * two copies long and half of it — what the loop translates by — is exactly one copy
+     * plus that gap. With the gap on the track instead, half the track would be a copy and
+     * a half gap, and every cycle would jump.
+     */
+    const renderSet = (setIndex: number) => {
+      const setPrefix = setIndex === 0 ? "primary" : "secondary";
+      const isCopy = setIndex === 1;
+
+      return (
+        <div
+          key={`${setPrefix}-set`}
+          className={cn(
+            MARQUEE_SET_CLASS,
+            moves
+              ? MARQUEE_SET_AXIS_CLASS[resolvedAxis]
+              : MARQUEE_STILL_SET_CLASS[resolvedAxis],
+          )}
+          style={{
+            gap: resolvedGap,
+            ...(moves
+              ? { [MARQUEE_SET_SPACING[resolvedAxis]]: resolvedGap }
+              : undefined),
+          }}
+          // The copy is the same content read again: it stays on the screen the loop moves
+          // into place, but it is out of the accessibility tree and out of the tab order,
+          // so a link inside a marquee is a tab stop once rather than twice.
+          aria-hidden={isCopy || undefined}
+          inert={isCopy}>
+          {renderItems(setPrefix)}
+        </div>
+      );
+    };
 
     return (
       <div
@@ -260,27 +295,31 @@ export const Marquee = forwardRef<HTMLDivElement, MarqueeProps>(
           }
         `}</style>
 
-        <div
-          className={cn(
-            MARQUEE_TRACK_CLASS,
-            isVertical ? MARQUEE_TRACK_Y_CLASS : MARQUEE_TRACK_X_CLASS,
-            resolvedPauseOnHover && MARQUEE_PAUSE_ON_HOVER_CLASS,
-          )}
-          style={{
-            gap: resolvedGap,
-            ...(prefersReducedMotion || !resolvedIsAnimated
-              ? { animation: "none" }
-              : {
-                  animationName: isVertical ? "marquee-y" : "marquee-x",
-                  animationDuration: `${durationSeconds}s`,
-                  animationTimingFunction: "linear",
-                  animationIterationCount: "infinite",
-                  animationDirection:
-                    resolvedDirection === "reverse" ? "reverse" : "normal",
-                }),
-          }}>
-          {renderedSets}
-        </div>
+        {moves ? (
+          <div
+            className={cn(
+              MARQUEE_TRACK_CLASS,
+              isVertical ? MARQUEE_TRACK_Y_CLASS : MARQUEE_TRACK_X_CLASS,
+              resolvedPauseOnHover && MARQUEE_PAUSE_ON_HOVER_CLASS,
+            )}
+            style={{
+              animationName: isVertical ? "marquee-y" : "marquee-x",
+              animationDuration: `${durationSeconds}s`,
+              animationTimingFunction: "linear",
+              animationIterationCount: "infinite",
+              animationDirection:
+                resolvedDirection === "reverse" ? "reverse" : "normal",
+            }}>
+            {renderSet(0)}
+            {renderSet(1)}
+          </div>
+        ) : (
+          // One copy, no duplicates, in a frame that wraps and can be scrolled: nothing
+          // the reader can read is left outside the frame.
+          <div className={MARQUEE_STILL_FRAME_CLASS[resolvedAxis]}>
+            {renderSet(0)}
+          </div>
+        )}
 
         {resolvedFadeEdges && (
           <>

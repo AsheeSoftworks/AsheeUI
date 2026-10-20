@@ -28,7 +28,7 @@ import { forwardRef, type HTMLAttributes, type ReactNode } from "react";
 import { CheckIcon } from "../../../icons/CheckIcon";
 import { CloseIcon } from "../../../icons/CloseIcon";
 import { useAsheeConfig } from "../../../libs/context";
-import { Card } from "../../data-display/card/Card";
+import { Card, type CardTitleElement } from "../../data-display/card/Card";
 import { ActionGroup } from "../../layouts/section-kit/ActionGroup";
 import { Typography } from "../../typography/Typography";
 import {
@@ -52,25 +52,46 @@ export interface PricingCardProps extends BasePricingCardProps {
   price: ReactNode;
 
   /** Billing period shown beside the amount, for example "/month". */
-  period?: ReactNode;
+  period?: ReactNode | undefined;
 
   /** One sentence about who the plan is for. */
-  description?: ReactNode;
+  description?: ReactNode | undefined;
 
   /** Short label above the plan name, for example "Most popular". */
-  badge?: ReactNode;
+  badge?: ReactNode | undefined;
 
   /** The plan's feature lines. */
-  features?: PricingFeatureItem[];
+  features?: PricingFeatureItem[] | undefined;
 
   /** The emphasised action, typically the plan's signup. */
-  primaryAction?: ActionConfig;
+  primaryAction?: ActionConfig | undefined;
 
   /** The supporting action, typically a sales contact. */
-  secondaryAction?: ActionConfig;
+  secondaryAction?: ActionConfig | undefined;
+
+  /**
+   * Mark the plan as recommended.
+   *
+   * Deliberately an instance prop rather than a theme option: a recommendation
+   * is about one plan in one table, so a `components.pricingcard.highlighted`
+   * would mark every plan as the recommended one.
+   *
+   * @default false
+   */
+  highlighted?: boolean | undefined;
+
+  /**
+   * Heading element the plan name renders as.
+   *
+   * The name goes through `Card`'s title, whose level must follow the outline it
+   * sits in — `h3` under a section `h2`, `h4` under a section `h3`.
+   *
+   * @default "h3"
+   */
+  titleAs?: CardTitleElement | undefined;
 
   /** Content below the actions. */
-  children?: ReactNode;
+  children?: ReactNode | undefined;
 }
 
 /**
@@ -91,9 +112,13 @@ export interface PricingCardProps extends BasePricingCardProps {
  * @param props.features - The plan's feature lines.
  * @param props.primaryAction - The emphasised action.
  * @param props.secondaryAction - The supporting action.
+ * @param props.highlighted - Mark the plan as recommended. Defaults to false,
+ * and it is an instance prop rather than a theme option, because a
+ * recommendation is about one plan rather than every plan.
+ * @param props.titleAs - Heading element the plan name renders as. Defaults to
+ * "h3", which is `Card`'s own default; pass the level that follows the outline.
  * @param props.variant - Surface treatment. Defaults to "bordered".
  * @param props.size - Card density. Defaults to "lg".
- * @param props.highlighted - Mark the plan as recommended. Defaults to false.
  *
  * @returns The rendered card.
  *
@@ -127,6 +152,7 @@ export const PricingCard = forwardRef<HTMLDivElement, PricingCardProps>(
       variant,
       size,
       highlighted,
+      titleAs,
       className,
       children,
       ...rest
@@ -139,10 +165,14 @@ export const PricingCard = forwardRef<HTMLDivElement, PricingCardProps>(
       PricingCardConfig,
       Required<PricingCardConfig>
     >(
-      { variant, size, highlighted },
+      { variant, size },
       config.components?.pricingcard,
       FALLBACK_PRICING_CARD_CONFIG,
     );
+
+    // The recommendation is read from the props alone: it describes one plan in
+    // one table, and a theme tier that supplied it would recommend every plan.
+    const isHighlighted = highlighted ?? false;
 
     return (
       <Card
@@ -150,6 +180,7 @@ export const PricingCard = forwardRef<HTMLDivElement, PricingCardProps>(
         variant={resolved.variant}
         size={resolved.size}
         title={name}
+        titleAs={titleAs}
         description={description}
         header={
           badge ? (
@@ -158,7 +189,7 @@ export const PricingCard = forwardRef<HTMLDivElement, PricingCardProps>(
         }
         className={cn(
           "h-full",
-          resolved.highlighted && PRICING_HIGHLIGHTED_CLASS,
+          isHighlighted && PRICING_HIGHLIGHTED_CLASS,
           className,
         )}
         {...rest}>

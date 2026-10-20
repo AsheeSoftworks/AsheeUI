@@ -30,11 +30,11 @@ registerComponentDefaults("hero", defaultHeroConfig);
 /**
  * Hard fallback values used when no config tier provides a value.
  */
-export const FALLBACK_HERO_CONFIG: Required<HeroConfig> = {
+export const FALLBACK_HERO_CONFIG = {
   align: "start",
   spacing: "xl",
   background: "none",
   mediaPosition: "end",
   containerSize: "lg",
   contained: true,
-};
+} satisfies HeroConfig;

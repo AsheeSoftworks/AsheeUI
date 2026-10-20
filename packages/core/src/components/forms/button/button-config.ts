@@ -29,7 +29,7 @@ export interface ButtonConfig {
    *
    * @default "bordered"
    */
-  variant?: Variant;
+  variant?: Variant | undefined;
 
   /**
    * Theme accent color.
@@ -37,7 +37,7 @@ export interface ButtonConfig {
    *
    * @default "primary"
    */
-  color?: Color;
+  color?: Color | undefined;
 
   /**
    * Padding and font-size scale.
@@ -45,7 +45,7 @@ export interface ButtonConfig {
    *
    * @default "md"
    */
-  size?: Size;
+  size?: Size | undefined;
 
   /**
    * Corner rounding.
@@ -53,7 +53,7 @@ export interface ButtonConfig {
    *
    * @default "md"
    */
-  radius?: Radius;
+  radius?: Radius | undefined;
 
   /**
    * Enables the press-down scale animation.
@@ -62,7 +62,7 @@ export interface ButtonConfig {
    *
    * @default true
    */
-  animate?: boolean;
+  animate?: boolean | undefined;
 
   /**
    * Makes the button stretch to fill its parent width.
@@ -70,7 +70,7 @@ export interface ButtonConfig {
    *
    * @default false
    */
-  fullWidth?: boolean;
+  fullWidth?: boolean | undefined;
 }
 
 declare module "../../../registry" {

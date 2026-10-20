@@ -54,10 +54,24 @@ export type SectionBlockAlign = "start" | "center";
 
 /**
  * Size of a band's heading, which selects a semantic typography role.
- * The visual step and the markup step are decided together, so a band cannot grow a
- * heading that reads as a display line while its outline still calls it a section title.
+ * The size decides the visual step alone: the element the title renders as is stated by
+ * {@link SECTION_BLOCK_HEADING_ELEMENT}, so a band can grow a heading that reads as a display
+ * line while its outline still records a section title rather than the page's own.
  */
 export type SectionBlockHeadingSize = "md" | "lg" | "xl";
+
+/**
+ * The heading elements a band's title may render as.
+ * Restricted to the headings, because the title's whole job is its place in the document
+ * outline: a title rendered as a `div` would look like a heading and be nothing.
+ */
+export type SectionBlockHeadingElement =
+  | "h1"
+  | "h2"
+  | "h3"
+  | "h4"
+  | "h5"
+  | "h6";
 
 /**
  * The typography role each heading size resolves to.
@@ -65,6 +79,10 @@ export type SectionBlockHeadingSize = "md" | "lg" | "xl";
  * The sizes are the band's own vocabulary; the roles are the shared typography scale's, and
  * the map is what connects one to the other. It lives here so a hero and a call to action
  * cannot disagree about what a `lg` heading looks like.
+ *
+ * A role is a visual treatment, and the element a role implies is only that role's own default:
+ * a band states its element separately, because what a heading is called in the outline is a
+ * decision about the page rather than about the design scale.
  */
 export const SECTION_BLOCK_HEADING_ROLE: Record<
   SectionBlockHeadingSize,
@@ -73,6 +91,27 @@ export const SECTION_BLOCK_HEADING_ROLE: Record<
   md: "heading-lg",
   lg: "heading-xl",
   xl: "display",
+};
+
+/**
+ * The element a band's heading renders as when the band names no element.
+ *
+ * A band is a *section* of a page, not the page's own title, so every size renders an `h2`:
+ * a hero, a call to action, a feature grid and a testimonial wall can then sit on one page
+ * without producing a heading per band at level one. Raising the level is the caller's
+ * decision — `titleAs` on the heading — and it is the only way a band becomes the document's
+ * `h1`; lowering it, for a band nested under an existing section, is the same prop.
+ *
+ * This is deliberately a map rather than a single constant: if a size ever needs a different
+ * default the size is the thing that changes, and every renderer reads the change from here.
+ */
+export const SECTION_BLOCK_HEADING_ELEMENT: Record<
+  SectionBlockHeadingSize,
+  SectionBlockHeadingElement
+> = {
+  md: "h2",
+  lg: "h2",
+  xl: "h2",
 };
 
 /**
@@ -90,22 +129,22 @@ export const SECTION_BLOCK_HEADING_ROLE: Record<
  */
 export interface SectionBlockOptions {
   /** Alignment of the band's content. */
-  align?: SectionBlockAlign;
+  align?: SectionBlockAlign | undefined;
 
   /** Vertical padding of the band, from the shared spacing scale. */
-  spacing?: Space;
+  spacing?: Space | undefined;
 
   /** Background treatment of the band. */
-  background?: SectionBackground;
+  background?: SectionBackground | undefined;
 
   /** Maximum content width. */
-  containerSize?: ContainerSize;
+  containerSize?: ContainerSize | undefined;
 
   /**
    * Whether the band wraps its content in a container, so the framework's maximum width
    * and gutter apply. A consumer turns this off to nest the band in its own layout.
    */
-  contained?: boolean;
+  contained?: boolean | undefined;
 }
 
 // ─── The heading block ────────────────────────────────────────────────────────

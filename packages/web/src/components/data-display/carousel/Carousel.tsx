@@ -8,13 +8,14 @@
  */
 "use client";
 
-import type { Size } from "@asheeui/core";
+import type { Size, Variant } from "@asheeui/core";
 import {
   CAROUSEL_HEIGHT_CLASS,
   CAROUSEL_PADDING_CLASS,
   CAROUSEL_VARIANT_CLASS,
   cn,
   RADIUS_CLASS,
+  resolveCarouselVariant,
   resolveCascade,
   resolveClassKey,
   resolveRadiusKey,
@@ -58,25 +59,25 @@ export interface CarouselProps extends BaseCarouselProps {
    * Array of items to display in the carousel.
    * Each item must have content and an optional id.
    */
-  items?: CarouselItem[];
+  items?: CarouselItem[] | undefined;
 
   /**
    * Initial slide index for uncontrolled usage.
    * @default 0
    */
-  defaultIndex?: number;
+  defaultIndex?: number | undefined;
 
   /**
    * Controlled slide index.
    * When provided, the component becomes controlled.
    */
-  index?: number;
+  index?: number | undefined;
 
   /**
    * Callback fired when the slide index changes.
    * Called with the new slide index.
    */
-  onIndexChange?: (index: number) => void;
+  onIndexChange?: ((index: number) => void) | undefined;
 
   /**
    * Custom render function for the previous control button.
@@ -99,17 +100,17 @@ export interface CarouselProps extends BaseCarouselProps {
   /**
    * Extra classes applied to each slide item container.
    */
-  itemClassName?: string;
+  itemClassName?: string | undefined;
 
   /**
    * Extra classes applied to control buttons.
    */
-  controlClassName?: string;
+  controlClassName?: string | undefined;
 
   /**
    * Extra classes applied to indicator buttons.
    */
-  indicatorClassName?: string;
+  indicatorClassName?: string | undefined;
 }
 
 /**
@@ -192,7 +193,7 @@ export const Carousel = forwardRef<HTMLDivElement, CarouselProps>(
       showControls,
       showIndicators,
       pauseOnHover,
-      disableAnimation = false,
+      disableAnimation,
       defaultIndex = 0,
       index: controlledIndex,
       onIndexChange,
@@ -222,11 +223,15 @@ export const Carousel = forwardRef<HTMLDivElement, CarouselProps>(
       FALLBACK_CAROUSEL_CONFIG.size,
     );
 
-    const resolvedVariantKey = resolveCascade<CarouselVariant>(
-      variant,
-      sectionConfig?.variant,
-      config.defaultVariant as CarouselVariant | undefined,
-      FALLBACK_CAROUSEL_CONFIG.variant,
+    // The cascade's last tiers are the framework's, so they may hand back a treatment the
+    // carousel has no frame for; the shared rule lands it on the nearest frame it can draw.
+    const resolvedVariantKey: CarouselVariant = resolveCarouselVariant(
+      resolveCascade<Variant>(
+        variant,
+        sectionConfig?.variant,
+        config.defaultVariant,
+        FALLBACK_CAROUSEL_CONFIG.variant,
+      ),
     );
 
     const resolvedRadiusKey = resolveRadiusKey(
@@ -278,6 +283,15 @@ export const Carousel = forwardRef<HTMLDivElement, CarouselProps>(
       FALLBACK_CAROUSEL_CONFIG.pauseOnHover,
     );
 
+    // Slides move, so whether they animate is a motion decision that has to resolve like
+    // every other option rather than through a literal default (`COMP-047`, `REQ-089`).
+    const resolvedDisableAnimation = resolveCascade<boolean>(
+      disableAnimation,
+      sectionConfig?.disableAnimation,
+      undefined,
+      FALLBACK_CAROUSEL_CONFIG.disableAnimation,
+    );
+
     const heightClass = resolveClassKey(
       resolvedSizeKey,
       CAROUSEL_HEIGHT_CLASS,
@@ -296,9 +310,8 @@ export const Carousel = forwardRef<HTMLDivElement, CarouselProps>(
       FALLBACK_CAROUSEL_CONFIG.radius,
     );
 
-    const variantClass =
-      CAROUSEL_VARIANT_CLASS[resolvedVariantKey] ??
-      CAROUSEL_VARIANT_CLASS.bordered;
+    // `resolveCarouselVariant` keeps this map complete, so no fallback is needed here.
+    const variantClass = CAROUSEL_VARIANT_CLASS[resolvedVariantKey];
 
     const slides: CarouselItem[] = useMemo(() => {
       if (items.length > 0) return items;
@@ -445,24 +458,35 @@ export const Carousel = forwardRef<HTMLDivElement, CarouselProps>(
             className={cn(
               "flex w-full h-full",
               !isDragging &&
-                !disableAnimation &&
+                !resolvedDisableAnimation &&
                 !prefersReducedMotion &&
                 "transition-transform duration-300 ease-out",
             )}
             style={{
               transform: `translate3d(calc(${-activeIndex * 100}% + ${dragOffset}px), 0, 0)`,
             }}>
-            {slides.map((slide, idx) => (
-              <div
-                key={slide.id || idx}
-                className={cn(
-                  "w-full h-full shrink-0 flex items-center justify-center scrollbar-hide overflow-hidden",
-                  paddingClass,
-                  itemClassName,
-                )}>
-                {slide.content}
-              </div>
-            ))}
+            {slides.map((slide, idx) => {
+              const isActive = idx === activeIndex;
+
+              return (
+                // A slide is moved out of the viewport, not out of the document, so an
+                // off-screen slide's controls would stay in the tab order and a keyboard
+                // user could land in a frame the carousel never follows. `inert` takes
+                // the whole subtree out of both the tab order and assistive technology,
+                // and leaves the transform transition untouched for sighted readers.
+                <div
+                  key={slide.id || idx}
+                  aria-hidden={!isActive || undefined}
+                  inert={!isActive}
+                  className={cn(
+                    "w-full h-full shrink-0 flex items-center justify-center scrollbar-hide overflow-hidden",
+                    paddingClass,
+                    itemClassName,
+                  )}>
+                  {slide.content}
+                </div>
+              );
+            })}
           </div>
         </div>
 
@@ -476,7 +500,7 @@ export const Carousel = forwardRef<HTMLDivElement, CarouselProps>(
             ) : (
               <button
                 type="button"
-                aria-label="Previous Slide"
+                aria-label="Previous slide"
                 disabled={isPrevDisabled}
                 onClick={() => paginate(-1)}
                 className={cn(
@@ -495,7 +519,7 @@ export const Carousel = forwardRef<HTMLDivElement, CarouselProps>(
             ) : (
               <button
                 type="button"
-                aria-label="Next Slide"
+                aria-label="Next slide"
                 disabled={isNextDisabled}
                 onClick={() => paginate(1)}
                 className={cn(
@@ -516,6 +540,9 @@ export const Carousel = forwardRef<HTMLDivElement, CarouselProps>(
                   key={slide.id || idx}
                   type="button"
                   aria-label={`Go to slide ${idx + 1}`}
+                  // The current slide is otherwise only a colour, which a screen reader
+                  // cannot report; `aria-current` states which dot is the active one.
+                  aria-current={idx === activeIndex ? "true" : undefined}
                   onClick={() => goTo(idx)}
                   className={cn(
                     "h-2 rounded-full transition-all duration-300 focus:outline-none focus-visible:ring-1 focus-visible:ring-primary",

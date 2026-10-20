@@ -7,7 +7,7 @@
  * resolution system.
  */
 
-import type { Radius, Size } from "@asheeui/core";
+import type { Radius, Size, Variant } from "@asheeui/core";
 import { registerComponentDefaults } from "@asheeui/core";
 import type { ImageFit, ImageRatioKey } from "../image/image-config";
 
@@ -46,7 +46,7 @@ export interface CardImageConfig {
    *
    * @default "top"
    */
-  position?: CardImagePosition;
+  position?: CardImagePosition | undefined;
 
   /**
    * Aspect ratio of the positioned image.
@@ -55,7 +55,7 @@ export interface CardImageConfig {
    *
    * @default "video"
    */
-  ratio?: ImageRatioKey;
+  ratio?: ImageRatioKey | undefined;
 
   /**
    * Object-fit strategy of the positioned image.
@@ -67,7 +67,7 @@ export interface CardImageConfig {
    *
    * @default "cover"
    */
-  fit?: ImageFit;
+  fit?: ImageFit | undefined;
 
   /**
    * Native loading strategy of the positioned image.
@@ -76,7 +76,7 @@ export interface CardImageConfig {
    *
    * @default "lazy"
    */
-  loading?: CardImageLoading;
+  loading?: CardImageLoading | undefined;
 }
 
 /**
@@ -95,9 +95,14 @@ export interface CardConfig {
    * - `flat`: Card with a solid neutral background.
    * - `ghost`: Transparent card background without a border.
    *
+   * The card's own four treatments are always expressible. The framework's
+   * `defaultVariant` names a control's treatment instead, so a value the card
+   * cannot draw resolves to the nearest card surface it can — see
+   * {@link resolveCardVariant}.
+   *
    * @default "bordered"
    */
-  variant?: CardVariant;
+  variant?: CardVariant | undefined;
 
   /**
    * Content padding and spacing scale.
@@ -106,7 +111,7 @@ export interface CardConfig {
    *
    * @default "md"
    */
-  size?: Size;
+  size?: Size | undefined;
 
   /**
    * Corner rounding.
@@ -114,7 +119,7 @@ export interface CardConfig {
    *
    * @default "md"
    */
-  radius?: Radius;
+  radius?: Radius | undefined;
 
   /**
    * Enables the press animation when clickable.
@@ -122,23 +127,92 @@ export interface CardConfig {
    *
    * @default true
    */
-  animate?: boolean;
+  animate?: boolean | undefined;
 
   /**
    * Image configuration for the card.
    * Controls the placement, aspect ratio, fit, and loading behavior
    * of the card's image.
+   *
+   * Optional because a configuration is a partial override: a consumer states
+   * `components.card.size` and nothing else, and the image options then resolve
+   * from the registered defaults. A consumer that writes the object as JSON can
+   * also set `image: null` to state "no image options at all", so a renderer
+   * must read this tier defensively rather than assume the object is present.
    */
-  image: CardImageConfig;
+  image?: CardImageConfig | undefined;
+}
+
+/**
+ * The card surface each treatment a config tier can name renders as.
+ *
+ * A card is a surface rather than a control, so it cannot draw every treatment the
+ * shared vocabulary names. Left untranslated, a treatment it cannot draw misses the
+ * class map and the card silently renders as `bordered` — the same problem Badge and
+ * Chip solve with `resolveBadgeVariant` / `resolveChipVariant`.
+ *
+ * - `solid`: the filled, highest-emphasis treatment. The card's filled, raised
+ *   surface is `elevated`, which fills with the theme's secondary surface
+ *   (`bg-secondary`) exactly as the native card's `solid` does.
+ * - `bordered`, `ghost`: already card treatments, so they keep their meaning.
+ * - `faded`: the framework's resting treatment and the shipped `defaultVariant`.
+ *   A card's resting surface is its documented default, `bordered`, so the
+ *   framework default keeps rendering a bordered card rather than restyling every
+ *   unconfigured card into the translucent `flat` surface at once.
+ * - `underlined`: a card has no baseline to rule, so it lands on the nearest
+ *   surface it can draw, `bordered`.
+ *
+ * The card's own names map to themselves, so a card treatment named on the instance
+ * or under `components.card.variant` reaches the class map unchanged.
+ */
+const CARD_VARIANT_FOR_TREATMENT: Record<Variant | CardVariant, CardVariant> = {
+  solid: "elevated",
+  bordered: "bordered",
+  ghost: "ghost",
+  faded: "bordered",
+  underlined: "bordered",
+  elevated: "elevated",
+  flat: "flat",
+};
+
+/**
+ * Resolve a treatment to the card surface the card can draw.
+ *
+ * The cascade's last tiers are the framework's rather than the card's, so they can
+ * name a treatment a card has no class for. This is where the two vocabularies meet:
+ * the treatment lands on the nearest card surface instead of the class look-up
+ * answering `undefined` and the card quietly rendering as `bordered`. Both the
+ * treatment a tier named and the card's own variant names are accepted, so the
+ * resolver can wrap the cascade's result whichever tier answered.
+ *
+ * @param treatment - The treatment the cascade produced.
+ * @returns The card surface to render.
+ *
+ * @example
+ * ```ts
+ * resolveCardVariant("solid"); // "elevated"
+ * resolveCardVariant("faded"); // "bordered"
+ * resolveCardVariant("ghost"); // "ghost"
+ * ```
+ */
+export function resolveCardVariant(
+  treatment: Variant | CardVariant,
+): CardVariant {
+  // A plain JS/JSON consumer can name any string at runtime, so a treatment the
+  // card does not know falls back to its default surface rather than to nothing.
+  return CARD_VARIANT_FOR_TREATMENT[treatment] ?? FALLBACK_CARD_CONFIG.variant;
 }
 
 /**
  * Default config values registered for the Card component.
  *
  * `variant` and `radius` are intentionally absent so they inherit from
- * the global `defaultVariant` / `defaultRadius`. This allows the card
- * to adapt to the global theme settings while providing sensible defaults
- * for other properties.
+ * the global `defaultVariant` / `defaultRadius`. The inherited treatment names the
+ * shared vocabulary rather than a card surface, so {@link resolveCardVariant} lands
+ * it on one the card can draw: the shipped `faded` resolves to the card's documented
+ * border default, while an application that sets `defaultVariant: "solid"` or
+ * `"ghost"` reaches the matching card surface instead of silently rendering
+ * `bordered`.
  */
 export const defaultCardConfig: CardConfig = {
   size: "md",
