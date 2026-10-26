@@ -54,9 +54,15 @@ export const BUTTON_ICON_SIZE_CLASS: Record<Size, string> = {
 
 /**
  * The layout every web button starts from, before any resolved treatment is added.
+ *
+ * `no-underline` is part of the layout rather than a treatment because a button is not prose: when `href` or
+ * `link` makes it an anchor, a page that underlines its links (a documentation body, a consumer's own
+ * `a { text-decoration: underline }`) would otherwise draw the rule through the label. The ink the label
+ * carries is the variant's — a filled treatment brings its own, on the token that reads against the fill —
+ * so the two decisions stay where they belong.
  */
 export const BUTTON_BASE_CLASS =
-  "inline-flex items-center justify-center font-medium transition-colors select-none shrink-0";
+  "inline-flex items-center justify-center no-underline font-medium transition-colors select-none shrink-0";
 
 /**
  * The web's visible focus ring.

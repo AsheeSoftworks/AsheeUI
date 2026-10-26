@@ -151,7 +151,7 @@ export const COMPONENT_SUPPORT: readonly ComponentSupport[] = [
     module: "dropmenu",
     support: "shared-api",
     native: "Dropmenu",
-    note: "Native uses the platform selection control or an action sheet",
+    note: "Native uses the platform selection control or an action sheet; both renderers also export it as `Dropdown`, the name the documentation uses",
   },
   { name: "EmptyState", module: "empty-state", support: "shared" },
   {
@@ -286,7 +286,7 @@ export const COMPONENT_SUPPORT: readonly ComponentSupport[] = [
     module: "sidebar",
     support: "shared-api",
     native: "Sidebar",
-    note: "Native draws the same list and collapses it to a rail; a collapsed row explains itself through the platform's long press rather than a hover",
+    note: "Native draws the same list and collapses it to a rail; a collapsed row explains itself through the platform's long press rather than a hover, and the control that folds the column is the application's own on both platforms",
   },
   {
     name: "SidebarLayout",

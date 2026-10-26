@@ -75,4 +75,26 @@ describe("resolveVariantClass", () => {
       "rounded-none",
     );
   });
+
+  // A filled treatment carries its label in the ink that reads against the fill, and the quieter treatments
+  // carry their colour in the label itself. Stated here because it is what keeps a button-as-link legible on
+  // a solid fill, and what keeps a ghost or bordered row from being painted white.
+  it("paints the label white on a filled colour, and on nothing else", () => {
+    for (const color of [
+      "primary",
+      "danger",
+      "warning",
+      "success",
+    ] as Color[]) {
+      expect(resolveVariantClass("solid", color)).toContain("text-on-solid");
+    }
+
+    for (const variant of VARIANTS.filter((other) => other !== "solid")) {
+      for (const color of COLORS) {
+        expect(resolveVariantClass(variant, color)).not.toContain(
+          "text-on-solid",
+        );
+      }
+    }
+  });
 });

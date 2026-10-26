@@ -42,19 +42,19 @@ pnpm test
 
 The repository is a pnpm + Turborepo monorepo built from these packages:
 
-| Package | Purpose |
-| --- | --- |
-| `asheeui` | The umbrella entry point a consumer installs (`packages/ui`); it routes an import to the renderer for the platform |
-| `@asheeui/core` | The platform-neutral layer: the tokens, the contracts, the compatibility matrix, the registry, the cascade and the class dictionaries (`packages/core`) |
-| `@asheeui/web` | The DOM renderer: the components, the icons, the Puck integration and the theme binding (`packages/web`) |
-| `@asheeui/native` | The React Native renderer (`packages/native`) |
-| `@asheeui/cli` | Scaffolding and doctor/fix CLI (`packages/cli`) |
+| Package           | Purpose                                                                                                                                                 |
+| ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `asheeui`         | The umbrella entry point a consumer installs (`packages/ui`); it routes an import to the renderer for the platform                                      |
+| `@asheeui/core`   | The platform-neutral layer: the tokens, the contracts, the compatibility matrix, the registry, the cascade and the class dictionaries (`packages/core`) |
+| `@asheeui/web`    | The DOM renderer: the components, the icons, the Puck integration and the theme binding (`packages/web`)                                                |
+| `@asheeui/native` | The React Native renderer (`packages/native`)                                                                                                           |
+| `@asheeui/cli`    | Scaffolding and doctor/fix CLI (`packages/cli`)                                                                                                         |
 
 Every package is released except `@asheeui/native`, which is written and tested and
 deliberately held back: a package is published when a consumer can build a real screen
 with it, and its component set is complete, so what the release waits on is a
 consumer's own screens rather than another increment. The reason is in
-[React Native](https://docs.asheeui.com/platforms/native).
+[React Native](https://www.asheeui.com/platforms/native).
 
 The workspace also contains private packages that are never published: the
 end-to-end gallery (`packages/e2e-gallery`) and the playground applications that
@@ -111,7 +111,7 @@ typecheck and would break the workspace's source-level resolution.
 
 ## Where the documentation lives
 
-The documentation is **not** in this repository. It is the site at <https://docs.asheeui.com>, built from its
+The documentation is **not** in this repository. It is the site at <https://www.asheeui.com>, built from its
 own repository (`apps/docs` when the two are checked out side by side), which owns the content tree, the
 demo registry, the content gate and the publish pipeline.
 
@@ -150,7 +150,7 @@ gallery and the playground applications are all included.
 
 4. Add or update tests for any behavior change. New exported APIs must ship
    with TSDoc/JSDoc annotations and an `@example`, per the
-   [commenting standards](https://docs.asheeui.com/project/commenting).
+   [commenting standards](https://www.asheeui.com/project/commenting).
 5. Generate a changeset when you modify any `packages/*` code.
 
 ## Testing Local Changes
@@ -158,11 +158,11 @@ gallery and the playground applications are all included.
 Three playground applications are committed to this repository, one per
 supported framework:
 
-| Playground | Framework | Test |
-| --- | --- | --- |
-| `apps/vite-playground` | Vite, with a client and a server entry | `pnpm --filter @asheeui/vite-playground test` |
-| `apps/next-playground` | Next.js App Router | `pnpm --filter @asheeui/next-playground test` |
-| `apps/tanstack-playground` | TanStack Start with TanStack Router | `pnpm --filter @asheeui/tanstack-playground test` |
+| Playground                 | Framework                              | Test                                              |
+| -------------------------- | -------------------------------------- | ------------------------------------------------- |
+| `apps/vite-playground`     | Vite, with a client and a server entry | `pnpm --filter @asheeui/vite-playground test`     |
+| `apps/next-playground`     | Next.js App Router                     | `pnpm --filter @asheeui/next-playground test`     |
+| `apps/tanstack-playground` | TanStack Start with TanStack Router    | `pnpm --filter @asheeui/tanstack-playground test` |
 
 All three render the same gallery from `packages/e2e-gallery` and assert the same
 contract: the markup the framework served, the same tree after hydration, and the
@@ -279,8 +279,8 @@ the bump type, and the body describes the change in the same style used in
 
 ```markdown
 ---
-"@asheeui/web": patch
----
+
+## "@asheeui/web": patch
 
 Fixed the SelectMenu dropdown lagging when the page scrolls with the menu open.
 ```
@@ -289,6 +289,7 @@ When a change spans packages, list each one in the front matter:
 
 ```markdown
 ---
+
 "@asheeui/web": minor
 "@asheeui/cli": patch
 ---
@@ -340,7 +341,7 @@ git push origin feat/my-change
 - [ ] Changes follow the existing code style enforced by Biome.
 - [ ] Commits are small, focused, and clearly described.
 - [ ] You agree your contribution is licensed under the project's license (see
-      [Licensing](https://docs.asheeui.com/project/licensing)).
+  [Licensing](https://www.asheeui.com/project/licensing)).
 
 ## Licensing of contributions
 
@@ -383,7 +384,7 @@ Every component file opens with a file-level header comment that describes what
 the file contains. Public components, hooks, functions, and types document
 their props with `@param`, list a runnable `@example`, and cross-link related
 types and components with `@see`. The full standard lives in
-[Commenting](https://docs.asheeui.com/project/commenting).
+[Commenting](https://www.asheeui.com/project/commenting).
 
 The shape used across the library looks like this:
 
@@ -436,9 +437,9 @@ first value that is not `undefined`.
 
 ```tsx
 const resolvedVariantKey = resolveCascade<Variant>(
-  variant,                        // instance prop
-  sectionConfig?.variant,         // components.select.variant
-  config.defaultVariant,          // global default
+  variant, // instance prop
+  sectionConfig?.variant, // components.select.variant
+  config.defaultVariant, // global default
   FALLBACK_SELECT_CONFIG.variant, // hard fallback
 );
 ```
@@ -497,4 +498,4 @@ a person who can defend it. A change whose author cannot say what it does and wh
 not ready, whether a person or a model produced it.
 
 The process this work follows is described in
-[How AsheeUI is built](https://docs.asheeui.com/project/how-asheeui-is-built).
+[How AsheeUI is built](https://www.asheeui.com/project/how-asheeui-is-built).

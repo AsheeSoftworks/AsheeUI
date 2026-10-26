@@ -6,7 +6,7 @@
  * framework's patterns share, so a hero, a feature grid, a testimonial wall and
  * a pricing card present their heading the same way. It is public through the
  * `@asheeui/web/section-kit` subpath rather than the package entry point, and
- * is documented on the section page (https://docs.asheeui.com/components/layouts/section)
+ * is documented on the section page (https://www.asheeui.com/components/layouts/section)
  * under "The section kit".
  */
 

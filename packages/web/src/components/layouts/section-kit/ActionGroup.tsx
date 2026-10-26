@@ -8,7 +8,7 @@
  * variant and colour resolution, loading and disabled behaviour, and accessible
  * name handling. It is public through the `@asheeui/web/section-kit` subpath
  * rather than the package entry point, and is documented on the section page
- * (https://docs.asheeui.com/components/layouts/section) under "The section kit".
+ * (https://www.asheeui.com/components/layouts/section) under "The section kit".
  */
 
 import type { ActionConfig } from "@asheeui/core";

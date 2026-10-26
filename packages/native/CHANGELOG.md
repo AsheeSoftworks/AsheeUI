@@ -1,5 +1,48 @@
 # @asheeui/native
 
+## 2.5.0
+
+### Minor Changes
+
+- Export the select component as `Dropdown`, the name the documentation now uses.
+  
+  - `Dropdown` is the same component as `Dropmenu` — one element, one set of props and one configuration
+    section (`components.dropmenu`, because a key names the module rather than the export) — so neither name is
+    a fork of the other and code written against either keeps working.
+  - `DropdownProps` is exported as the props type, the same shape as `DropmenuProps`.
+  - The web renderer's default placeholder reads `Dropdown...`, and the multi-select's empty trigger reads
+    `Select options`, which is the wording the native renderer already used.
+  - The compatibility matrix records the alias beside the component.
+  - The docs name the component a dropdown throughout, which is what the alias exists to match.
+
+### Patch Changes
+
+- The Sidebar stops drawing its own collapse control, and publishes the state the application's control
+  reads instead.
+  - `useSidebarCollapse` is new on both renderers. It returns `isCollapsed`, `collapsible`,
+    `setCollapsed` and `toggleCollapse` for the nearest `Sidebar`, so a page can fold the column from a
+    button of its own — in the column's `footer` slot, or anywhere else inside it — in its own style and
+    its own words. Outside a column the hook warns once in development and reports a state that cannot
+    move, so the control renders disabled rather than pretending to work.
+  - The built-in button is gone: no more "Collapse sidebar" chevron in the footer, and no
+    `showCollapseButton` option on the shared contract, which could only ask for a control the framework
+    no longer draws. `collapsible` stays, and every request is refused when it is `false`.
+  - A control outside the column keeps working the way it always did: `isCollapsed` with
+    `onCollapseChange` is the controlled form, and `useState` beside the button is enough.
+  - The footer slot is drawn in both states rather than only while expanded, because the control that
+    folds the column away is usually in it: hiding the slot hid the only way back. Its wrapper clips
+    instead of widening the rail.
+  - The column no longer overflows in the x axis: the root is capped at its container's width, the
+    navigation body is an explicit vertical scroller rather than one that the browser also scrolls
+    sideways, and a label in a row shrinks to the room the row has.
+  
+  The docs page for the component, and its collapsed demo, show the application's own control reading
+  `useSidebarCollapse`.
+- Updated dependencies
+- Updated dependencies
+- Updated dependencies
+  - @asheeui/core@2.3.1
+
 ## 2.4.0
 
 ### Minor Changes

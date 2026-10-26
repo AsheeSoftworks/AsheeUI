@@ -76,6 +76,8 @@ import { Button } from "../../forms/button/Button";
 import { Tooltip } from "../../overlays/tooltip/Tooltip";
 import { Text } from "../../typography/text/Text";
 import { Link } from "../link/Link";
+import type { SidebarCollapse } from "./sidebar-collapse";
+import { SidebarCollapseContext } from "./sidebar-collapse";
 import {
   FALLBACK_NATIVE_SIDEBAR_CONFIG,
   type NativeSidebarConfig,
@@ -237,7 +239,6 @@ export interface SidebarProps<T = string> extends BaseSidebarProps {
  * @param props.radius - Corner rounding of the sidebar.
  * @param props.options - Row options (radius, active and inactive variant and colour).
  * @param props.tooltip - Hint configuration for collapsed rows (show, placement, variant, colour).
- * @param props.showCollapseButton - Whether the collapse control is shown. Defaults to true.
  * @param props.collapsible - Whether the sidebar can be collapsed. Defaults to true.
  * @param props.defaultCollapsed - Initial collapsed state. Defaults to false.
  * @param props.animated - Whether the web moves the sidebar when it collapses. Defaults to true.
@@ -258,7 +259,25 @@ export interface SidebarProps<T = string> extends BaseSidebarProps {
  * />
  * ```
  *
+ * @example
+ * ```tsx
+ * // The control that folds the column is the application's, from its own Pressable.
+ * import { Sidebar, useSidebarCollapse } from "@asheeui/native";
+ *
+ * function CollapseButton() {
+ *   const { isCollapsed, collapsible, toggleCollapse } = useSidebarCollapse();
+ *   return (
+ *     <Pressable disabled={!collapsible} onPress={toggleCollapse}>
+ *       <Text>{isCollapsed ? "Expand" : "Collapse"}</Text>
+ *     </Pressable>
+ *   );
+ * }
+ *
+ * <Sidebar items={items} title="My App" footer={<CollapseButton />} />;
+ * ```
+ *
  * @see SidebarConfig - The configuration type for component defaults.
+ * @see useSidebarCollapse - The hook a control uses to fold the column.
  * @see SidebarLayout - The shell the sidebar is usually placed in.
  */
 
@@ -277,7 +296,6 @@ export function Sidebar<T = string>({
   size,
   radius,
   options,
-  showCollapseButton: showCollapseButtonProp,
   collapsible: collapsibleProp,
   defaultCollapsed: defaultCollapsedProp,
   tooltip,
@@ -300,13 +318,6 @@ export function Sidebar<T = string>({
     FALLBACK_NATIVE_SIDEBAR_CONFIG.collapsible,
   );
 
-  const resolvedShowCollapseButton = resolveCascade<boolean>(
-    showCollapseButtonProp,
-    sectionConfig?.showCollapseButton,
-    undefined,
-    FALLBACK_NATIVE_SIDEBAR_CONFIG.showCollapseButton,
-  );
-
   const resolvedDefaultCollapsed = resolveCascade<boolean>(
     defaultCollapsedProp,
     sectionConfig?.defaultCollapsed,
@@ -326,18 +337,44 @@ export function Sidebar<T = string>({
 
   const isCollapsed = isCollapsedProp ?? internalCollapsed;
 
+  const handleSetCollapsed = useCallback(
+    (nextCollapsed: boolean) => {
+      if (!resolvedCollapsible) return;
+
+      // A controlled sidebar reports the request and lets its owner decide; an uncontrolled one
+      // updates itself as well, so the control works without an owner that feeds the state back.
+      if (isCollapsedProp === undefined) {
+        setInternalCollapsed(nextCollapsed);
+      }
+      onCollapseChange?.(nextCollapsed);
+    },
+    [isCollapsedProp, onCollapseChange, resolvedCollapsible],
+  );
+
   const handleCollapseToggle = useCallback(() => {
-    if (!resolvedCollapsible) return;
+    handleSetCollapsed(!isCollapsed);
+  }, [handleSetCollapsed, isCollapsed]);
 
-    const nextState = !isCollapsed;
-
-    // A controlled sidebar reports the request and lets its owner decide; an uncontrolled one
-    // updates itself as well, so the control works without an owner that feeds the state back.
-    if (isCollapsedProp === undefined) {
-      setInternalCollapsed(nextState);
-    }
-    onCollapseChange?.(nextState);
-  }, [isCollapsed, isCollapsedProp, onCollapseChange, resolvedCollapsible]);
+  /**
+   * What the application's own control reads from the column.
+   *
+   * Memoised so a control inside the column re-renders when the state changes and not on every render of
+   * the column itself.
+   */
+  const collapseState = useMemo<SidebarCollapse>(
+    () => ({
+      isCollapsed,
+      collapsible: resolvedCollapsible,
+      setCollapsed: handleSetCollapsed,
+      toggleCollapse: handleCollapseToggle,
+    }),
+    [
+      isCollapsed,
+      resolvedCollapsible,
+      handleSetCollapsed,
+      handleCollapseToggle,
+    ],
+  );
 
   const resolvedSizeKey = resolveCascade<SidebarSizeKey>(
     size,
@@ -672,96 +709,85 @@ export function Sidebar<T = string>({
   };
 
   return (
-    <View
-      className={classNames(
-        NATIVE_SIDEBAR_BASE_CLASS,
-        widthClass,
-        NATIVE_SIDEBAR_VARIANT_CLASS[resolvedVariantKey],
-        resolveClassKey(
-          resolvedRadiusKey,
-          NATIVE_RADIUS_CLASS,
-          FALLBACK_NATIVE_SIDEBAR_CONFIG.radius,
-        ),
-        className,
-      )}
-      style={style}
-      {...rest}>
-      {(onBack || title) && (
-        <View
-          testID="sidebar-header"
-          className={classNames(
-            NATIVE_SIDEBAR_HEADER_BASE_CLASS,
-            NATIVE_SIDEBAR_HEADER_CLASS[resolvedSizeKey],
-            isCollapsed && "justify-center px-0",
-            headerClassName,
-          )}>
-          {onBack && (
-            <Button
-              // The web names the control with `aria-label` and draws a chevron in it; the
-              // platform states the same name and shows the action, because it ships no icons.
-              accessibilityLabel="Go back"
-              className="shrink-0"
-              color="secondary"
-              radius={resolvedItemRadiusKey}
-              size={resolvedSizeKey}
-              variant={resolvedItemVariant}
-              onPress={onBack}>
-              {backIcon ?? "Back"}
-            </Button>
-          )}
+    <SidebarCollapseContext.Provider value={collapseState}>
+      <View
+        className={classNames(
+          NATIVE_SIDEBAR_BASE_CLASS,
+          widthClass,
+          NATIVE_SIDEBAR_VARIANT_CLASS[resolvedVariantKey],
+          resolveClassKey(
+            resolvedRadiusKey,
+            NATIVE_RADIUS_CLASS,
+            FALLBACK_NATIVE_SIDEBAR_CONFIG.radius,
+          ),
+          className,
+        )}
+        style={style}
+        {...rest}>
+        {/* A folded column hides its title, so a header that held nothing else would be an empty band: it is
+            drawn only while it has something to show. */}
+        {(onBack || (!isCollapsed && title)) && (
+          <View
+            testID="sidebar-header"
+            className={classNames(
+              NATIVE_SIDEBAR_HEADER_BASE_CLASS,
+              NATIVE_SIDEBAR_HEADER_CLASS[resolvedSizeKey],
+              isCollapsed && "justify-center px-0",
+              headerClassName,
+            )}>
+            {onBack && (
+              <Button
+                // The web names the control with `aria-label` and draws a chevron in it; the
+                // platform states the same name and shows the action, because it ships no icons.
+                accessibilityLabel="Go back"
+                className="shrink-0"
+                color="secondary"
+                radius={resolvedItemRadiusKey}
+                size={resolvedSizeKey}
+                variant={resolvedItemVariant}
+                onPress={onBack}>
+                {backIcon ?? "Back"}
+              </Button>
+            )}
 
-          {!isCollapsed &&
-            title &&
-            (typeof title === "string" ? (
-              <Text
-                numberOfLines={1}
-                role={NATIVE_SIDEBAR_TITLE_ROLE[resolvedSizeKey]}
-                className="flex-1">
-                {title}
-              </Text>
-            ) : (
-              <View className="flex-1">{title}</View>
-            ))}
-        </View>
-      )}
+            {!isCollapsed &&
+              title &&
+              (typeof title === "string" ? (
+                <Text
+                  numberOfLines={1}
+                  role={NATIVE_SIDEBAR_TITLE_ROLE[resolvedSizeKey]}
+                  className="flex-1">
+                  {title}
+                </Text>
+              ) : (
+                <View className="flex-1">{title}</View>
+              ))}
+          </View>
+        )}
 
-      <ScrollView
-        testID="sidebar-body"
-        className={classNames(NATIVE_SIDEBAR_BODY_CLASS, bodyClassName)}>
-        {filteredSections.map(renderSection)}
-      </ScrollView>
+        <ScrollView
+          testID="sidebar-body"
+          className={classNames(NATIVE_SIDEBAR_BODY_CLASS, bodyClassName)}>
+          {filteredSections.map(renderSection)}
+        </ScrollView>
 
-      {(footer || (resolvedShowCollapseButton && resolvedCollapsible)) && (
-        <View
-          testID="sidebar-footer"
-          className={classNames(
-            NATIVE_SIDEBAR_FOOTER_CLASS,
-            NATIVE_SIDEBAR_FOOTER_PADDING_CLASS[resolvedSizeKey],
-            footerClassName,
-          )}>
-          {!isCollapsed && footer && <View>{footer}</View>}
-
-          {/* The footer holds the collapse control, which is also how a collapsed sidebar is
-              expanded again, so the control keeps its place when the slot is empty. */}
-          {resolvedShowCollapseButton && resolvedCollapsible && (
-            <Button
-              accessibilityLabel={
-                isCollapsed ? "Expand sidebar" : "Collapse sidebar"
-              }
-              className={classNames(
-                "w-full",
-                isCollapsed ? "justify-center px-0" : "justify-start",
-              )}
-              color="secondary"
-              radius={resolvedItemRadiusKey}
-              size={resolvedSizeKey}
-              variant={resolvedItemVariant}
-              onPress={handleCollapseToggle}>
-              {isCollapsed ? "Expand" : "Collapse"}
-            </Button>
-          )}
-        </View>
-      )}
-    </View>
+        {/*
+          The footer slot belongs to the consumer, and it is where their collapse control usually goes, so
+          it is drawn in both states rather than only while expanded: a control that folds the column away
+          and then disappears with it is a control nobody can use.
+        */}
+        {footer && (
+          <View
+            testID="sidebar-footer"
+            className={classNames(
+              NATIVE_SIDEBAR_FOOTER_CLASS,
+              NATIVE_SIDEBAR_FOOTER_PADDING_CLASS[resolvedSizeKey],
+              footerClassName,
+            )}>
+            {footer}
+          </View>
+        )}
+      </View>
+    </SidebarCollapseContext.Provider>
   );
 }

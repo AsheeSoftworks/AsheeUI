@@ -6,7 +6,7 @@
  * static Tailwind class strings. This file holds the types and the mappings;
  * the public `Typography` component consumes them.
  *
- * @see https://docs.asheeui.com/components/typography/typography — the roles, the scale and what each element is
+ * @see https://www.asheeui.com/components/typography/typography — the roles, the scale and what each element is
  * specification) for the rationale, the role table and the compatibility notes.
  */
 
