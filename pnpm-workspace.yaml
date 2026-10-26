@@ -30,8 +30,17 @@ minimumReleaseAgeExclude:
   - expo@57.0.23
   - '@asheeui/core@2.3.1'
   - '@asheeui/web@2.5.0'
-# fast-uri carries four high advisories below 3.1.6. It reaches the tree only as a
-# development dependency (ajv, through the @microsoft/api-extractor peer that
-# auto-install-peers adds for vite-plugin-dts). The floor keeps every copy patched.
+# Transitive copies that arrive below a patched release are pinned to the patched
+# version. `brace-expansion` reaches the tree through minimatch, one copy per major
+# (1, 2 and 5); `fast-uri` arrives as a development dependency (ajv, through the
+# @microsoft/api-extractor peer that auto-install-peers adds for vite-plugin-dts);
+# and `happy-dom` is declared by @puckeditor/core without its published build
+# importing it, so the override patches this workspace while a consumer of
+# @asheeui/puck keeps whatever range that package declares. Every floor below is the
+# version the advisory names as patched.
 overrides:
-  fast-uri: ^3.1.6
+  brace-expansion@1: ^1.1.21
+  brace-expansion@2: ^2.1.7
+  brace-expansion@5: ^5.0.12
+  fast-uri: ^3.1.9
+  happy-dom: ^21.0.4
