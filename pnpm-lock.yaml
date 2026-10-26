@@ -30,11 +30,11 @@ importers:
   apps/docs:
     dependencies:
       '@asheeui/core':
-        specifier: ^2.3.0
-        version: 2.3.0
+        specifier: ^2.3.1
+        version: 2.3.1
       '@asheeui/web':
-        specifier: ^2.4.0
-        version: 2.4.0(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(tailwindcss@4.3.3)
+        specifier: ^2.5.0
+        version: 2.5.0(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(tailwindcss@4.3.3)
       '@fontsource-variable/inter':
         specifier: ^5.3.0
         version: 5.3.0
@@ -456,11 +456,11 @@ packages:
     resolution: {integrity: sha512-A6f1nKy99I6tyoK82U6kBHvQQZmdHmTmPzJYPY/0eaOW0r8/qPmEOwjGHs+hL/vCgOwQTupu4LT1XtXNUuDruA==}
     engines: {node: ^22.22.2 || ^24.15.0 || >=26.0.0}
 
-  '@asheeui/core@2.3.0':
-    resolution: {integrity: sha512-zIvNrEhlktcyLfPAmy2GvPkp9HWq79qatudZb22HpMby1iocfu044CCDzljF0JjgsFLhaqsaupfhJNhxZCNApQ==}
+  '@asheeui/core@2.3.1':
+    resolution: {integrity: sha512-NA1m6KLwuSt2L5BQFmBpgyIcws849adTl15Q7JBZeJ/tB42WEs+jBzzwjI/RGSt15ein3EIJ4sUqwUAw8K/HZg==}
 
-  '@asheeui/web@2.4.0':
-    resolution: {integrity: sha512-Ui08Zb1NNA85CSI5taIVajZK7ormQKo9Zm00XApfmDSHtAIU180oM/vB8ef3UHdKWEpWEbcpPhIBLhEWwipWeg==}
+  '@asheeui/web@2.5.0':
+    resolution: {integrity: sha512-5BbDeuxSNVl6yq8TU0MJ344MrCNdzFag30MhXI6jiVW9tzf9EhznnBZ9GWM2Vh1dDzA5Zjb4PmILl+c7ot27Yg==}
     peerDependencies:
       react: ^18.0.0 || ^19.0.0
       react-dom: ^18.0.0 || ^19.0.0
@@ -6276,14 +6276,14 @@ snapshots:
       is-potential-custom-element-name: 1.0.1
       lru-cache: 11.5.3
 
-  '@asheeui/core@2.3.0':
+  '@asheeui/core@2.3.1':
     dependencies:
       clsx: 2.1.1
       tailwind-merge: 3.7.0
 
-  '@asheeui/web@2.4.0(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(tailwindcss@4.3.3)':
+  '@asheeui/web@2.5.0(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(tailwindcss@4.3.3)':
     dependencies:
-      '@asheeui/core': 2.3.0
+      '@asheeui/core': 2.3.1
       '@floating-ui/react': 0.27.20(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
       clsx: 2.1.1
       react: 19.3.1
