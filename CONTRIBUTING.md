@@ -50,11 +50,10 @@ The repository is a pnpm + Turborepo monorepo built from these packages:
 | `@asheeui/native` | The React Native renderer (`packages/native`)                                                                                                           |
 | `@asheeui/cli`    | Scaffolding and doctor/fix CLI (`packages/cli`)                                                                                                         |
 
-Every package is released except `@asheeui/native`, which is written and tested and
-deliberately held back: a package is published when a consumer can build a real screen
-with it, and its component set is complete, so what the release waits on is a
-consumer's own screens rather than another increment. The reason is in
-[React Native](https://www.asheeui.com/platforms/native).
+Every package in that table is published. `@asheeui/native` ships alongside the web
+renderer on the same contract and installs independently; the
+[React Native](https://www.asheeui.com/platforms/native) page states what each
+component means on the platform.
 
 The workspace also contains private packages that are never published: the
 end-to-end gallery (`packages/e2e-gallery`) and the playground applications that
