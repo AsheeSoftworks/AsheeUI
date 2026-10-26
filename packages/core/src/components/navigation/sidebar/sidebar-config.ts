@@ -209,13 +209,6 @@ export interface SidebarConfig {
   tooltip?: SidebarTooltipConfig | undefined;
 
   /**
-   * Whether the collapse control is shown.
-   *
-   * @default true
-   */
-  showCollapseButton?: boolean | undefined;
-
-  /**
    * Whether the sidebar moves when it is collapsed or expanded.
    *
    * The web states a width transition; the platform has no transition to declare in a class and
@@ -235,6 +228,10 @@ export interface SidebarConfig {
 
   /**
    * Whether the sidebar can be collapsed.
+   *
+   * The control that folds the column is the application's on both platforms: the column states
+   * this, and reports it beside its state, so a button the consumer draws can stay quiet when
+   * folding is impossible. The web publishes that state through `useSidebarCollapse`.
    *
    * @default true
    */

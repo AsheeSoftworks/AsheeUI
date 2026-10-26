@@ -9,6 +9,7 @@ import {
   waitFor,
   within,
 } from "../../../test";
+import { Dropdown } from "./Dropdown";
 import { Dropmenu } from "./Dropmenu";
 
 const OPTIONS = [
@@ -18,6 +19,20 @@ const OPTIONS = [
 ];
 
 describe("Dropmenu", () => {
+  // The documentation names the component `Dropdown`, and the alias is the same component rather than a
+  // second implementation: one element, one set of props, one configuration section.
+  it("is also exported as Dropdown, the documented name", () => {
+    expect(Dropdown).toBe(Dropmenu);
+  });
+
+  it("states the documented name in its default placeholder", () => {
+    const { getByRole } = renderWithProvider(
+      <Dropdown label="Choice" options={OPTIONS} />,
+    );
+
+    expect(getByRole("combobox")).toHaveTextContent("Dropdown...");
+  });
+
   it("starts closed with its placeholder and advertises a popup", () => {
     const { getByRole, queryByText } = renderWithProvider(
       <Dropmenu label="Choice" options={OPTIONS} />,

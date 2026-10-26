@@ -121,7 +121,7 @@ export interface MultiSelectProps
   /**
    * Label shown in the trigger when no items are selected.
    *
-   * @default "Dropmenu Options..."
+   * @default "Select options"
    */
   InputLabel?: string | undefined;
 
@@ -237,7 +237,7 @@ export interface MultiSelectProps
  * @param props.options - Available options to select from.
  * @param props.value - Controlled selected values.
  * @param props.onChange - Callback fired when selection changes.
- * @param props.InputLabel - Label shown in trigger. Defaults to "Dropmenu Options...".
+ * @param props.InputLabel - Label shown in trigger. Defaults to "Select options".
  * @param props.isSearch - Whether search is enabled. Defaults to true.
  * @param props.searchPlaceholder - Search placeholder. Defaults to "Search...".
  * @param props.searchInputName - Name attribute for the search input. Defaults to "multiselect-search".
@@ -324,7 +324,7 @@ export const MultiSelect = forwardRef<HTMLButtonElement, MultiSelectProps>(
       options = [],
       value,
       onChange,
-      InputLabel = "Dropmenu Options...",
+      InputLabel = "Select options",
       isSearch = true,
       searchPlaceholder = "Search...",
       searchInputName = "multiselect-search",

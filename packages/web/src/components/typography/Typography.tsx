@@ -11,7 +11,7 @@
  * may still pass their own Tailwind classes through `className`, because
  * AsheeUI remains Tailwind-native.
  *
- * @see https://docs.asheeui.com/components/typography/typography for the roles, the scale and the element each role renders.
+ * @see https://www.asheeui.com/components/typography/typography for the roles, the scale and the element each role renders.
  */
 
 "use client";

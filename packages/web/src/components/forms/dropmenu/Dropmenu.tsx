@@ -187,7 +187,7 @@ export interface DropmenuProps
  * @param props.searchInputName - Name attribute for the search input. Defaults to "select-search".
  * @param props.initialValue - Initial value for uncontrolled usage.
  * @param props.belowList - Content below the options list.
- * @param props.placeholder - Placeholder text. Defaults to "Dropmenu...".
+ * @param props.placeholder - Placeholder text. Defaults to "Dropdown...".
  * @param props.size - Size of the trigger. Defaults to "md".
  * @param props.radius - Corner rounding. Defaults to "md".
  * @param props.variant - Visual style variant. Defaults to "bordered".
@@ -277,7 +277,7 @@ export const Dropmenu = forwardRef<HTMLButtonElement, DropmenuProps>(
       searchInputName = "select-search",
       initialValue,
       belowList,
-      placeholder = "Dropmenu...",
+      placeholder = "Dropdown...",
       className,
       id,
       name,

@@ -5,6 +5,11 @@
  * badges, tooltips, and custom link components. It includes role-based
  * visibility filtering, collapse state management, and the standard AsheeUI
  * cascade for visual tokens.
+ *
+ * The column states its collapse state and no longer draws the control that
+ * changes it: `sidebar-collapse.tsx` publishes the state through
+ * `useSidebarCollapse`, so an application's own button can fold the column in
+ * whatever style and position it likes.
  */
 "use client";
 
@@ -38,13 +43,13 @@ import {
   useState,
 } from "react";
 import { ArrowLeftIcon } from "../../../icons/ArrowLeftIcon";
-import { ChevronLeftIcon } from "../../../icons/ChevronLeftIcon";
-import { ChevronRightIcon } from "../../../icons/ChevronRightIcon";
 import { useAsheeConfig } from "../../../libs/context";
 import { Button } from "../../forms/button/Button";
 import { useWithinSidebarColumn } from "../../layouts/sidebar-layout/sidebar-column";
 import { Tooltip } from "../../overlays/tooltip/Tooltip";
 import type { TooltipPlacement } from "../../overlays/tooltip/tooltip-config";
+import type { SidebarCollapse } from "./sidebar-collapse";
+import { SidebarCollapseContext } from "./sidebar-collapse";
 import type {
   SidebarConfig,
   SidebarItem,
@@ -268,8 +273,7 @@ type SidebarComponent = {
  * @param props.radius - Corner rounding of the sidebar.
  * @param props.options - Navigation item options (radius, active/inactive variant and color).
  * @param props.tooltip - Tooltip configuration for collapsed items (show, placement, variant, color).
- * @param props.showCollapseButton - Whether the collapse button is shown. Defaults to true.
- * @param props.collapsible - Whether the sidebar can be collapsed. Defaults to true.
+ * @param props.collapsible - Whether the column can fold. Defaults to true.
  * @param props.animated - Whether the sidebar transitions between widths. Defaults to true.
  * @param props.link - Link configuration for navigation items (component and props).
  * @param props.navLabel - Accessible name of the navigation landmark. Defaults
@@ -312,7 +316,25 @@ type SidebarComponent = {
  * />
  * ```
  *
+ * @example
+ * ```tsx
+ * // The control that folds the column is the application's, from its own button.
+ * import { Button, Sidebar, useSidebarCollapse } from "@asheeui/web";
+ *
+ * function CollapseButton() {
+ *   const { isCollapsed, collapsible, toggleCollapse } = useSidebarCollapse();
+ *   return (
+ *     <Button variant="ghost" isDisabled={!collapsible} onClick={toggleCollapse}>
+ *       {isCollapsed ? "Expand" : "Collapse"}
+ *     </Button>
+ *   );
+ * }
+ *
+ * <Sidebar items={items} title="My App" footer={<CollapseButton />} />;
+ * ```
+ *
  * @see SidebarConfig - The configuration type for component defaults.
+ * @see useSidebarCollapse - The hook a control uses to fold the column.
  * @see useAsheeConfig - Hook for accessing the global configuration.
  */
 export const Sidebar = forwardRef(SidebarInner) as SidebarComponent;
@@ -334,7 +356,6 @@ function SidebarInner<T = string>(
     radius,
     options,
     animated: animatedProp,
-    showCollapseButton: showCollapseButtonProp,
     collapsible: collapsibleProp,
     defaultCollapsed: defaultCollapsedProp,
     tooltip,
@@ -361,19 +382,13 @@ function SidebarInner<T = string>(
   const withinSidebarColumn = useWithinSidebarColumn();
   const Column: ElementType = withinSidebarColumn ? "div" : "aside";
 
-  // Resolve collapsible and collapse button visibility
+  // Whether the column can fold at all. The control that folds it belongs to the application, so this is
+  // reported through `useSidebarCollapse` and every request is refused when it is false.
   const resolvedCollapsible = resolveCascade<boolean>(
     collapsibleProp,
     sectionConfig?.collapsible,
     undefined,
     FALLBACK_SIDEBAR_CONFIG.collapsible,
-  );
-
-  const resolvedShowCollapseButton = resolveCascade<boolean>(
-    showCollapseButtonProp,
-    sectionConfig?.showCollapseButton,
-    undefined,
-    FALLBACK_SIDEBAR_CONFIG.showCollapseButton,
   );
 
   const resolvedDefaultCollapsed = resolveCascade<boolean>(
@@ -405,19 +420,49 @@ function SidebarInner<T = string>(
 
   const isCollapsed = isCollapsedProp ?? internalCollapsed;
 
+  /**
+   * State the collapsed value, from the application's own control.
+   *
+   * A controlled sidebar reports the request and lets its owner decide; an uncontrolled one updates itself as
+   * well, so a control works without an owner that feeds the state back (`REQ-087`). A column that cannot
+   * fold refuses the request rather than reporting a change it will not make.
+   */
+  const handleSetCollapsed = useCallback(
+    (nextCollapsed: boolean) => {
+      if (!resolvedCollapsible) return;
+
+      if (isCollapsedProp === undefined) {
+        setInternalCollapsed(nextCollapsed);
+      }
+      onCollapseChange?.(nextCollapsed);
+    },
+    [isCollapsedProp, onCollapseChange, resolvedCollapsible],
+  );
+
   const handleCollapseToggle = useCallback(() => {
-    if (!resolvedCollapsible) return;
+    handleSetCollapsed(!isCollapsed);
+  }, [handleSetCollapsed, isCollapsed]);
 
-    const newState = !isCollapsed;
-
-    // A controlled sidebar reports the request and lets its owner decide; an
-    // uncontrolled one updates itself as well, so the control works without an
-    // owner that feeds the state back (`REQ-087`).
-    if (isCollapsedProp === undefined) {
-      setInternalCollapsed(newState);
-    }
-    onCollapseChange?.(newState);
-  }, [isCollapsed, isCollapsedProp, onCollapseChange, resolvedCollapsible]);
+  /**
+   * What an application's control reads from the column.
+   *
+   * It is memoised so a control inside the column re-renders when the state changes and not on every render
+   * of the column itself.
+   */
+  const collapseState = useMemo<SidebarCollapse>(
+    () => ({
+      isCollapsed,
+      collapsible: resolvedCollapsible,
+      setCollapsed: handleSetCollapsed,
+      toggleCollapse: handleCollapseToggle,
+    }),
+    [
+      isCollapsed,
+      resolvedCollapsible,
+      handleSetCollapsed,
+      handleCollapseToggle,
+    ],
+  );
 
   // Size & Variant Cascading
   const resolvedSizeKey = resolveCascade<SidebarSizeKey>(
@@ -639,7 +684,9 @@ function SidebarInner<T = string>(
           <span className="sr-only">{item.label}</span>
         ) : (
           <>
-            <span className="truncate flex-1 text-left">{item.label}</span>
+            <span className="truncate flex-1 min-w-0 text-left">
+              {item.label}
+            </span>
             {item.badge && <span className="shrink-0">{item.badge}</span>}
           </>
         )}
@@ -694,121 +741,94 @@ function SidebarInner<T = string>(
   };
 
   return (
-    <Column
-      // The root is an `aside` on its own and a `div` inside a `SidebarLayout`
-      // column, and both carry the consumer's `HTMLElement` ref.
-      ref={ref as Ref<HTMLDivElement>}
-      className={cn(
-        "h-full flex flex-col select-none shrink-0",
-        // The width moves only when the contract asks it to; `animated: false`
-        // lays the new width out directly.
-        resolvedAnimated && "transition-all duration-200",
-        widthClass,
-        SIDEBAR_VARIANT_CLASS[resolvedVariantKey],
-        resolveClassKey(
-          resolvedRadiusKey,
-          RADIUS_CLASS,
-          FALLBACK_SIDEBAR_CONFIG.radius,
-        ),
-        className,
-      )}
-      style={style}
-      {...props}>
-      {/* Sidebar Header with Back Button */}
-      {(onBack || title) && (
-        <div
-          className={cn(
-            "flex items-center gap-3 border-b border-border border-dashed shrink-0",
-            SIDEBAR_HEADER_CLASS[resolvedSizeKey],
-            isCollapsed && "justify-center px-0",
-            headerClassName,
-          )}>
-          {onBack && (
-            <Button
-              icon
-              aria-label="Go back"
-              variant={resolvedItemVariant}
-              color="secondary"
-              size={resolvedSizeKey}
-              radius={resolvedItemRadiusKey}
-              onClick={onBack}
-              className="shrink-0">
-              <span
-                className={cn(
-                  "flex items-center justify-center transition-transform duration-200",
-                )}>
-                {backIcon ?? <ArrowLeftIcon className="size-4" />}
-              </span>
-            </Button>
-          )}
-
-          {!isCollapsed && title && (
-            <span className="font-semibold text-foreground truncate tracking-tight transition-opacity duration-200">
-              {title}
-            </span>
-          )}
-        </div>
-      )}
-
-      {/* Navigation Body */}
-      <nav
-        aria-label={navLabel}
+    <SidebarCollapseContext.Provider value={collapseState}>
+      <Column
+        // The root is an `aside` on its own and a `div` inside a `SidebarLayout`
+        // column, and both carry the consumer's `HTMLElement` ref.
+        ref={ref as Ref<HTMLDivElement>}
         className={cn(
-          "flex-1 overflow-y-auto py-3 px-2 flex flex-col gap-3 scrollable-hidden",
-          bodyClassName,
-        )}>
-        {filteredSections.map(renderSection)}
-      </nav>
+          // `max-w-full` is what keeps a column from being wider than the box it was given: a fixed rail is
+          // the intent, and overflowing its shell in the x axis is not.
+          "h-full max-w-full flex flex-col select-none shrink-0",
+          // The width moves only when the contract asks it to; `animated: false`
+          // lays the new width out directly.
+          resolvedAnimated && "transition-all duration-200",
+          widthClass,
+          SIDEBAR_VARIANT_CLASS[resolvedVariantKey],
+          resolveClassKey(
+            resolvedRadiusKey,
+            RADIUS_CLASS,
+            FALLBACK_SIDEBAR_CONFIG.radius,
+          ),
+          className,
+        )}
+        style={style}
+        {...props}>
+        {/* Sidebar Header with Back Button. A folded column hides its title, so a header that held nothing
+            else would be an empty band: it is drawn only while it has something to show. */}
+        {(onBack || (!isCollapsed && title)) && (
+          <div
+            className={cn(
+              "flex items-center gap-3 border-b border-border border-dashed shrink-0",
+              SIDEBAR_HEADER_CLASS[resolvedSizeKey],
+              isCollapsed && "justify-center px-0",
+              headerClassName,
+            )}>
+            {onBack && (
+              <Button
+                icon
+                aria-label="Go back"
+                variant={resolvedItemVariant}
+                color="secondary"
+                size={resolvedSizeKey}
+                radius={resolvedItemRadiusKey}
+                onClick={onBack}
+                className="shrink-0">
+                <span
+                  className={cn(
+                    "flex items-center justify-center transition-transform duration-200",
+                  )}>
+                  {backIcon ?? <ArrowLeftIcon className="size-4" />}
+                </span>
+              </Button>
+            )}
 
-      {/* Footer slot and collapse control. The footer belongs to the consumer
-          and renders whenever it is given, whatever the collapse settings are;
-          only the control is gated. A collapsed sidebar keeps its footer
-          wrapper for the control but hides the slot, as the native renderer
-          does. */}
-      {(footer || (resolvedShowCollapseButton && resolvedCollapsible)) && (
-        <div
-          className={cn(
-            "border-t border-border shrink-0",
-            isCollapsed ? "p-2" : "p-3",
-            footerClassName,
-          )}>
-          {!isCollapsed && footer && (
-            <div
-              className={cn(
-                resolvedShowCollapseButton && resolvedCollapsible && "mb-2",
-              )}>
-              {footer}
-            </div>
-          )}
-
-          {resolvedShowCollapseButton && resolvedCollapsible && (
-            <Button
-              icon
-              aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
-              variant={resolvedItemVariant}
-              color="secondary"
-              size={resolvedSizeKey}
-              radius={resolvedItemRadiusKey}
-              onClick={handleCollapseToggle}
-              className={cn(
-                "w-full",
-                isCollapsed ? "justify-center px-0" : "justify-start",
-              )}>
-              <span className="flex items-center gap-2">
-                {isCollapsed ? (
-                  <ChevronRightIcon className="size-4" />
-                ) : (
-                  <>
-                    <ChevronLeftIcon className="size-4" />
-                    <span className="text-sm">Collapse</span>
-                  </>
-                )}
+            {!isCollapsed && title && (
+              <span className="min-w-0 font-semibold text-foreground truncate tracking-tight transition-opacity duration-200">
+                {title}
               </span>
-            </Button>
-          )}
-        </div>
-      )}
-    </Column>
+            )}
+          </div>
+        )}
+
+        {/* Navigation Body. `overflow-x-hidden` is deliberate: a vertical scroller computes its other axis as
+            `auto`, so a row with something wider than the rail would otherwise give the body a sideways
+            scrollbar of its own. A navigation column scrolls down. */}
+        <nav
+          aria-label={navLabel}
+          className={cn(
+            "flex-1 overflow-y-auto overflow-x-hidden py-3 px-2 flex flex-col gap-3 scrollable-hidden",
+            bodyClassName,
+          )}>
+          {filteredSections.map(renderSection)}
+        </nav>
+
+        {/* The footer slot belongs to the consumer, and it is where their collapse control usually goes, so it
+            is drawn in both states rather than only while expanded: a control that folds the column away and
+            then disappears with it is a control nobody can use. The wrapper clips instead of widening the
+            rail, so a slot written for the expanded column cannot push the column out of its shell. */}
+        {footer && (
+          <div
+            className={cn(
+              "border-t border-border shrink-0 overflow-hidden",
+              isCollapsed ? "p-2" : "p-3",
+              footerClassName,
+            )}>
+            {footer}
+          </div>
+        )}
+      </Column>
+    </SidebarCollapseContext.Provider>
   );
 }
 

@@ -5,7 +5,7 @@
  * says whether it is open, the options appear on the picker surface, picking reports the
  * value and shows its label, an uncontrolled field keeps its own value and a controlled one
  * keeps the consumer's, an unavailable field refuses to open, and the family's label block
- * is drawn.
+ * is drawn. The `Dropdown` alias is the same component, which the first test states.
  */
 
 import {
@@ -16,6 +16,7 @@ import {
 } from "@testing-library/react-native";
 import type { ReactElement } from "react";
 import { AsheeNativeProvider } from "../../../provider/AsheeNativeProvider";
+import { Dropdown } from "./Dropdown";
 import { Dropmenu } from "./Dropmenu";
 
 // The first surface this file opens loads the platform's modal machinery, which costs far
@@ -43,6 +44,12 @@ async function press(view: RenderResult, testID: string) {
 }
 
 describe("Native Dropmenu", () => {
+  // The documentation names the component `Dropdown`, and the alias is the same component rather than a
+  // second implementation: one control, one set of props, one configuration section.
+  it("is also exported as Dropdown, the documented name", () => {
+    expect(Dropdown).toBe(Dropmenu);
+  });
+
   it("says what it says while nothing is picked, and opens the options", async () => {
     const view = await renderSelect(
       <Dropmenu

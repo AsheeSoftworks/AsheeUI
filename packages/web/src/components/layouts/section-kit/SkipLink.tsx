@@ -7,7 +7,7 @@
  * the behaviour (and the classes that hide it until it is focused) are written
  * once. It is public through the `@asheeui/web/section-kit` subpath rather than
  * the package entry point, and is documented on the section page
- * (https://docs.asheeui.com/components/layouts/section) under "The section kit".
+ * (https://www.asheeui.com/components/layouts/section) under "The section kit".
  */
 
 import { cn } from "@asheeui/core";

@@ -172,4 +172,25 @@ describe("Button", () => {
 
     expect(link).toHaveAttribute("href", "/docs");
   });
+
+  // A button is not prose. When `href` makes it an anchor, a page that underlines its links declares the rule
+  // for its own anchors (the documentation body states `.page-prose a`), so the base classes state the opposite
+  // and leave the ink to the variant.
+  it("draws no underline through a link button's label", () => {
+    const { getByRole } = renderWithProvider(
+      <Button href="/docs">Documentation</Button>,
+    );
+
+    expect(hasClass(getByRole("link").className, "no-underline")).toBe(true);
+  });
+
+  it("keeps a solid button's label in the ink that reads against its fill", () => {
+    const { getByRole } = renderWithProvider(
+      <Button variant="solid" color="primary">
+        Pay
+      </Button>,
+    );
+
+    expect(hasClass(getByRole("button").className, "text-on-solid")).toBe(true);
+  });
 });

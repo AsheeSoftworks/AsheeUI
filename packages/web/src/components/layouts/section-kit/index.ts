@@ -6,7 +6,7 @@
  * link the page compositions lead with (`SkipLink`). It is public, and it is
  * public through its own subpath — `@asheeui/web/section-kit` — rather than the
  * package entry point, because it is the composition vocabulary rather than the
- * component inventory; `https://docs.asheeui.com/components/layouts/section` documents it
+ * component inventory; `https://www.asheeui.com/components/layouts/section` documents it
  * under "The section kit". Import from that subpath in application code.
  */
 

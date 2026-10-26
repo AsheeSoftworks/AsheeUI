@@ -40,7 +40,6 @@ export const defaultNativeSidebarConfig: NativeSidebarConfig = {
   animated: true,
   defaultCollapsed: false,
   collapsible: true,
-  showCollapseButton: true,
   options: {
     inactive: { variant: "ghost" },
     active: { variant: "solid", color: "primary" },
@@ -80,5 +79,4 @@ export const FALLBACK_NATIVE_SIDEBAR_CONFIG = {
   animated: true,
   defaultCollapsed: false,
   collapsible: true,
-  showCollapseButton: true,
 } as const;

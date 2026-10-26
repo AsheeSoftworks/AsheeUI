@@ -1,5 +1,50 @@
 # @asheeui/core
 
+## 2.3.1
+
+### Patch Changes
+
+- A button rendered as a link keeps its own text decoration and its own ink.
+  - `href` and `link` make a `Button` an anchor, and a page that styles its links — a documentation body
+    states `.page-prose a`, a product may state `a { text-decoration: underline }` — was drawing the rule
+    straight through the label. `no-underline` is now part of the button's base classes, so the element
+    stops looking like prose the moment it becomes a link.
+  - A filled treatment carries its label in the ink that reads against the fill (`text-on-solid`), and the
+    quieter treatments keep their own colour. That was already the rule the variant map stated; it is now
+    asserted, so a solid button cannot lose its white label to a page's anchor rule without a test saying
+    so.
+- Export the select component as `Dropdown`, the name the documentation now uses.
+  
+  - `Dropdown` is the same component as `Dropmenu` — one element, one set of props and one configuration
+    section (`components.dropmenu`, because a key names the module rather than the export) — so neither name is
+    a fork of the other and code written against either keeps working.
+  - `DropdownProps` is exported as the props type, the same shape as `DropmenuProps`.
+  - The web renderer's default placeholder reads `Dropdown...`, and the multi-select's empty trigger reads
+    `Select options`, which is the wording the native renderer already used.
+  - The compatibility matrix records the alias beside the component.
+  - The docs name the component a dropdown throughout, which is what the alias exists to match.
+- The Sidebar stops drawing its own collapse control, and publishes the state the application's control
+  reads instead.
+  - `useSidebarCollapse` is new on both renderers. It returns `isCollapsed`, `collapsible`,
+    `setCollapsed` and `toggleCollapse` for the nearest `Sidebar`, so a page can fold the column from a
+    button of its own — in the column's `footer` slot, or anywhere else inside it — in its own style and
+    its own words. Outside a column the hook warns once in development and reports a state that cannot
+    move, so the control renders disabled rather than pretending to work.
+  - The built-in button is gone: no more "Collapse sidebar" chevron in the footer, and no
+    `showCollapseButton` option on the shared contract, which could only ask for a control the framework
+    no longer draws. `collapsible` stays, and every request is refused when it is `false`.
+  - A control outside the column keeps working the way it always did: `isCollapsed` with
+    `onCollapseChange` is the controlled form, and `useState` beside the button is enough.
+  - The footer slot is drawn in both states rather than only while expanded, because the control that
+    folds the column away is usually in it: hiding the slot hid the only way back. Its wrapper clips
+    instead of widening the rail.
+  - The column no longer overflows in the x axis: the root is capped at its container's width, the
+    navigation body is an explicit vertical scroller rather than one that the browser also scrolls
+    sideways, and a label in a row shrinks to the room the row has.
+  
+  The docs page for the component, and its collapsed demo, show the application's own control reading
+  `useSidebarCollapse`.
+
 ## 2.3.0
 
 ### Minor Changes

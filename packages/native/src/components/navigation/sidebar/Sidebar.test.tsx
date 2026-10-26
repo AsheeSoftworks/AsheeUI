@@ -9,10 +9,10 @@
  * collapsed row keeps its name even though the icon is all it draws; the destination belongs to the
  * component the consumer names, when it names one;
  * the rows and sections the consumer's role does not name are left out, and so is a section left
- * with nothing; the collapse control folds the sidebar to an icon rail and unfolds it again, and
- * reports the request rather than deciding when its owner holds the state; a sidebar that cannot
- * collapse holds no control and no footer, and one that only hides the control keeps its footer
- * slot; the width, the surface and the corner resolve through the configuration cascade; the header
+ * with nothing; the application's own control folds the sidebar to an icon rail and unfolds it
+ * again, and reports the request rather than deciding when its owner holds the state; a sidebar that
+ * cannot collapse disables that control and keeps its footer slot; the width, the surface and the
+ * corner resolve through the configuration cascade; the header
  * holds the title and the back control, and gives up the title while collapsed; a collapsed row
  * explains itself with the hint the framework's tooltip states; the consumer's class is carried
  * last; and the component says out loud that it is being rendered without the provider, because
@@ -29,6 +29,7 @@ import { Pressable, Text } from "react-native";
 import { AsheeNativeProvider } from "../../../provider/AsheeNativeProvider";
 import { openDestination } from "../../../utils/open-destination";
 import { Sidebar } from "./Sidebar";
+import { useSidebarCollapse } from "./sidebar-collapse";
 import type { SidebarSection } from "./sidebar-config";
 
 jest.mock("../../../utils/open-destination", () => ({
@@ -40,6 +41,37 @@ beforeEach(() => {
   // record of the last one is cleared rather than carried over.
   jest.clearAllMocks();
 });
+
+/**
+ * The application's own control, built from the state the column publishes.
+ *
+ * It stands in for the button a consumer draws — in the footer, or anywhere else inside the column — which
+ * is what replaced the control the framework used to render itself.
+ *
+ * @param props - The state the test wants to see.
+ * @param props.onChange - Called with the collapsed state on every render.
+ * @returns The rendered control.
+ */
+function ConsumerControl({
+  onChange,
+}: {
+  onChange?: (value: boolean) => void;
+}) {
+  const { isCollapsed, collapsible, toggleCollapse } = useSidebarCollapse();
+
+  onChange?.(isCollapsed);
+
+  return (
+    <Pressable
+      accessibilityRole="button"
+      accessibilityLabel={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+      accessibilityState={{ expanded: !isCollapsed, disabled: !collapsible }}
+      disabled={!collapsible}
+      onPress={toggleCollapse}>
+      <Text>{isCollapsed ? "Expand" : "Collapse"}</Text>
+    </Pressable>
+  );
+}
 
 /**
  * A stand-in for an application's own navigation component.
@@ -347,13 +379,23 @@ describe("Native Sidebar", () => {
     expect(view.queryByText("Dashboard")).toBeNull();
   });
 
-  it("folds to an icon rail when the control is pressed, and unfolds again", async () => {
+  it("draws no collapse control of its own", async () => {
+    const view = await renderSidebar(
+      <Sidebar testID="sidebar" items={WORKSPACE} title="Ashee SMS" />,
+    );
+
+    expect(view.queryByLabelText("Collapse sidebar")).toBeNull();
+    expect(view.queryByLabelText("Expand sidebar")).toBeNull();
+  });
+
+  it("folds to an icon rail when the application's control is pressed, and unfolds again", async () => {
     const onCollapseChange = jest.fn();
     const view = await renderSidebar(
       <Sidebar
         testID="sidebar"
         items={WORKSPACE}
         onCollapseChange={onCollapseChange}
+        footer={<ConsumerControl />}
       />,
     );
 
@@ -381,6 +423,7 @@ describe("Native Sidebar", () => {
         items={WORKSPACE}
         isCollapsed
         onCollapseChange={onCollapseChange}
+        footer={<ConsumerControl />}
       />,
     );
 
@@ -392,42 +435,46 @@ describe("Native Sidebar", () => {
     expect(view.queryByText("Dashboard")).toBeNull();
   });
 
-  it("holds no control and no footer when it is told it cannot collapse", async () => {
-    const view = await renderSidebar(
-      <Sidebar testID="sidebar" items={WORKSPACE} collapsible={false} />,
-    );
-
-    expect(view.queryByLabelText("Collapse sidebar")).toBeNull();
-    expect(view.queryByTestId("sidebar-footer")).toBeNull();
-  });
-
-  it("keeps the footer slot when only the collapse control is switched off", async () => {
+  it("disables the application's control, and keeps the footer, when it cannot collapse", async () => {
+    const onCollapseChange = jest.fn();
     const view = await renderSidebar(
       <Sidebar
         testID="sidebar"
         items={WORKSPACE}
-        showCollapseButton={false}
-        footer={<Text>Ashee Softworks</Text>}
+        collapsible={false}
+        onCollapseChange={onCollapseChange}
+        footer={<ConsumerControl />}
       />,
     );
 
+    const control = view.getByLabelText("Collapse sidebar");
+
+    expect(control).toBeDisabled();
     expect(view.getByTestId("sidebar-footer")).toBeTruthy();
-    expect(view.getByText("Ashee Softworks")).toBeTruthy();
-    expect(view.queryByLabelText("Collapse sidebar")).toBeNull();
+
+    await fireEvent.press(control);
+
+    expect(onCollapseChange).not.toHaveBeenCalled();
   });
 
-  it("gives the footer slot up while collapsed, and keeps the control that unfolds it", async () => {
+  // A control in the footer is how a collapsed column is unfolded again, so the slot cannot be given up with
+  // the labels: it is drawn in both states, and the control keeps its place.
+  it("keeps the footer slot, and its control, while the column is collapsed", async () => {
     const view = await renderSidebar(
       <Sidebar
         testID="sidebar"
         items={WORKSPACE}
         isCollapsed
-        footer={<Text>Ashee Softworks</Text>}
+        footer={
+          <Pressable accessibilityLabel="Account">
+            <Text>Ashee Softworks</Text>
+          </Pressable>
+        }
       />,
     );
 
-    expect(view.queryByText("Ashee Softworks")).toBeNull();
-    expect(view.getByLabelText("Expand sidebar")).toBeTruthy();
+    expect(view.getByTestId("sidebar-footer")).toBeTruthy();
+    expect(view.getByText("Ashee Softworks")).toBeTruthy();
   });
 
   it("states its width through the configuration cascade", async () => {
