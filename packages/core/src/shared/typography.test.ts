@@ -15,6 +15,7 @@ import {
 
 const ROLES: TypographyRole[] = [
   "display",
+  "page-title",
   "heading-xl",
   "heading-lg",
   "heading-md",
@@ -118,6 +119,12 @@ describe("typography roles", () => {
   });
 
   it("renders headings as headings and body copy as paragraphs", () => {
+    // A page's own title is the document's top-level heading, at the treatment `heading-lg` states: the role exists
+    // so a shared page frame can say "this is the title" without choosing between the wrong element and the wrong size.
+    expect(TYPOGRAPHY_ROLE_DEFAULT_ELEMENT["page-title"]).toBe("h1");
+    expect(TYPOGRAPHY_ROLE_TOKEN["page-title"]).toEqual(
+      TYPOGRAPHY_ROLE_TOKEN["heading-lg"],
+    );
     expect(TYPOGRAPHY_ROLE_DEFAULT_ELEMENT["heading-lg"]).toBe("h2");
     expect(TYPOGRAPHY_ROLE_DEFAULT_ELEMENT["body-md"]).toBe("p");
     expect(TYPOGRAPHY_ROLE_DEFAULT_ELEMENT.label).toBe("span");

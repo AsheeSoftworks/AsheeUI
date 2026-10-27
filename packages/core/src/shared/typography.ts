@@ -39,6 +39,10 @@ export type TypographyTracking =
  */
 export type TypographyRole =
   | "display"
+  // A page's own title: the same treatment as `heading-lg`, and the element a document outline expects (`h1`).
+  // It exists as a role rather than an element override because a shared component has to state the meaning once,
+  // and the web's `as` prop is not something the platform can accept.
+  | "page-title"
   | "heading-xl"
   | "heading-lg"
   | "heading-md"
@@ -160,6 +164,12 @@ export const TYPOGRAPHY_ROLE_TOKEN: Record<
     leading: "tight",
     tracking: "tight",
   },
+  "page-title": {
+    size: "xl",
+    weight: "semibold",
+    leading: "snug",
+    tracking: "normal",
+  },
   "heading-xl": {
     size: "2xl",
     weight: "semibold",
@@ -228,6 +238,8 @@ export const TYPOGRAPHY_ROLE_TOKEN: Record<
  */
 export const TYPOGRAPHY_ROLE_DEFAULT_ELEMENT: Record<TypographyRole, string> = {
   display: "h1",
+  // The page's title is the document's top-level heading; every other heading role is one level down from it.
+  "page-title": "h1",
   "heading-xl": "h1",
   "heading-lg": "h2",
   "heading-md": "h3",
@@ -250,6 +262,7 @@ export const TYPOGRAPHY_ROLE_DEFAULT_ELEMENT: Record<TypographyRole, string> = {
  */
 export const TYPOGRAPHY_ROLE_CLASS: Record<TypographyRole, string> = {
   display: "text-3xl font-semibold leading-tight tracking-tight",
+  "page-title": "text-xl font-semibold leading-snug tracking-normal",
   "heading-xl": "text-2xl font-semibold leading-tight tracking-tight",
   "heading-lg": "text-xl font-semibold leading-snug tracking-normal",
   "heading-md": "text-lg font-semibold leading-snug tracking-normal",

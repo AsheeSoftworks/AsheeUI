@@ -15,6 +15,7 @@ import type { NativeTextRole, NativeTextTone } from "./text-config";
  */
 export const TEXT_ROLE_CLASS: Record<NativeTextRole, string> = {
   display: "text-4xl font-bold leading-tight",
+  "page-title": "text-2xl font-semibold leading-snug",
   "heading-xl": "text-3xl font-semibold leading-tight",
   "heading-lg": "text-2xl font-semibold leading-snug",
   "heading-md": "text-xl font-semibold leading-snug",
