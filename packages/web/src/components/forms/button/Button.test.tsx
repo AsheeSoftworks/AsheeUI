@@ -29,6 +29,29 @@ describe("Button", () => {
     expect(onClick).toHaveBeenCalledTimes(1);
   });
 
+  it("answers the platform's activation name as well as the DOM's", async () => {
+    // A shared component cannot pass `onClick` on a device or `onPress` in a browser, so the
+    // DOM button accepts both names and both routes reach the same guarded handler.
+    const user = createUser();
+    const onPress = vi.fn();
+    const onClick = vi.fn();
+    const { getByRole } = renderWithProvider(
+      <Button onClick={onClick} onPress={onPress}>
+        Save
+      </Button>,
+    );
+
+    await user.click(getByRole("button", { name: "Save" }));
+
+    expect(onPress).toHaveBeenCalledTimes(1);
+    expect(onClick).toHaveBeenCalledTimes(1);
+    // The platform's name is consumed here rather than forwarded to the DOM element, where
+    // React would report it as an unknown attribute.
+    expect(
+      getByRole("button", { name: "Save" }).hasAttribute("onPress"),
+    ).toBe(false);
+  });
+
   it("activates with the keyboard and shows focus", async () => {
     const user = createUser();
     const onClick = vi.fn();
