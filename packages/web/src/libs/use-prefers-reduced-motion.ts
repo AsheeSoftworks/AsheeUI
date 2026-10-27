@@ -46,3 +46,17 @@ export function usePrefersReducedMotion(): boolean {
 
   return prefersReducedMotion;
 }
+
+/**
+ * Whether the reader asked for reduced motion, under the platform's name for it.
+ *
+ * `@asheeui/native` exports `useReduceMotion`; a shared component imports one name and gets
+ * the renderer's own answer. The web's hook is the same function, spelled the way the
+ * browser's preference is spelled.
+ *
+ * @returns `true` while the reader prefers reduced motion.
+ *
+ * @see usePrefersReducedMotion - The web's name for the same hook.
+ */
+export const useReduceMotion = usePrefersReducedMotion;
+
