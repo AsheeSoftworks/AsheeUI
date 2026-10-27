@@ -76,8 +76,9 @@ component under its platform name). Three things are worth knowing before the fi
 - **The palette comes from the configuration, not from `tailwind.config.js`.** The preset
   states each role as `rgb(var(--ashee-<role>) / <alpha-value>)` and the provider supplies
   the values, so a `theme.extend.colors` entry for a role fixes it at build time and stops it
-  following `defaultTheme`. A shared `AsheeConfig` object is the same one the web renderer
-  reads.
+  following `defaultTheme`. The provider accepts the web renderer's own `ExternalConfig` plus
+  the platform-only `defaultSize`, so one configuration object — typed `ExternalConfig`, or
+  `AsheeConfig` from `asheeui` — describes both renderers.
 - **A development build says so when the pipeline is not connected.** The provider checks
   the runtime, the compiled stylesheet and the preset once on mount and warns with the
   cause it found; `verifyNativeWind()` returns the same diagnosis as data.
