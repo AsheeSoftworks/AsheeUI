@@ -1,10 +1,16 @@
 packages:
   - "packages/*"
   - "apps/*"
-  # `apps/docs` is a separate git repository that consumes the workspace packages while they are
-  # unreleased: `@asheeui/web` and `@asheeui/core` are `workspace:*` links, so the site renders and
-  # typechecks against the source instead of the last published version. Reverting is a dependency
-  # change plus restoring an exclusion here.
+  # `apps/docs` is a separate git repository, and it depends on the *published* packages with
+  # caret ranges rather than on `workspace:*` links: the site is deployed on its own and pins
+  # what a consumer can install today. It is therefore not a member here, because a release
+  # that bumps the versions would otherwise leave its manifest naming a version that cannot be
+  # installed until the same release is published — and the workspace install, CI included,
+  # would fail in between.
+  #
+  # To make the site render against the workspace source again, replace its `@asheeui/*`
+  # carets with `workspace:*` and delete the exclusion.
+  - "!apps/docs"
 allowBuilds:
   # A file watcher that arrives with the native styling toolchain. Nothing in this
   # workspace runs its build step, because the packages use it only through a
