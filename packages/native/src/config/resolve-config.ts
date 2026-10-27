@@ -9,10 +9,12 @@
 
 import {
   type ColorRole,
+  type ExternalColorConfig,
   mergeObject,
   type Radius,
   resolveConfigCascade,
   type Size,
+  type ThemeName,
   type Variant,
 } from "@asheeui/core";
 import {
@@ -39,8 +41,33 @@ export interface NativePlatformConfig {
 
 /**
  * A consumer's configuration, with every field optional.
+ *
+ * The palette and the theme are stated exactly as the web renderer states them, because
+ * the device paints the same eight roles from the same `ColorVariant`: the provider turns
+ * the selected theme into the CSS variables the compiled classes read. A configuration
+ * written once therefore describes both renderers — the axes, the component sections and
+ * the palette — and `AsheeConfig` is the name to import when the file is shared.
  */
 export interface NativeExternalConfig extends NativePlatformConfig {
+  /**
+   * The palettes, per theme name.
+   *
+   * The same object `@asheeui/web` accepts: `light` and `dark` override the framework's
+   * built-in palettes in place, and any other key is a theme of its own (optionally
+   * extending another with `extends`).
+   */
+  color?: ExternalColorConfig;
+
+  /**
+   * The theme to paint.
+   *
+   * `"system"` — and stating nothing — follows the device's colour scheme, so a phone in
+   * dark mode gets the dark palette without the application doing anything. Any other name
+   * must be a theme the `color` object declares; a name no palette answers is an error
+   * rather than a silent fall back to light.
+   */
+  defaultTheme?: ThemeName | "system";
+
   /** Per-component overrides, keyed by component name. */
   components?: {
     [K in keyof NativeComponentConfigRegistry]?: Partial<
@@ -48,6 +75,16 @@ export interface NativeExternalConfig extends NativePlatformConfig {
     >;
   };
 }
+
+/**
+ * The configuration type of the renderer this import resolved to.
+ *
+ * `asheeui` routes an import to a renderer, so a configuration file that names this type
+ * compiles on both: on the web it is `@asheeui/web`'s `ExternalConfig`, on a device this
+ * interface. An option that only one platform honours is refused by the other, which is the
+ * point — the alternative is a key that is accepted and silently does nothing.
+ */
+export type AsheeConfig = NativeExternalConfig;
 
 /**
  * The resolved configuration a component reads.

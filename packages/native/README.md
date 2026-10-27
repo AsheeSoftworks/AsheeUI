@@ -44,13 +44,19 @@ files and one provider:
 
 ```js
 // babel.config.js — the interop runtime, which is what turns a className into a style
-presets: [["babel-preset-expo", { jsxImportSource: "nativewind" }], "nativewind/babel"];
+presets: [
+  ["babel-preset-expo", { jsxImportSource: "nativewind" }],
+  "nativewind/babel",
+];
 
 // metro.config.js — the stylesheet NativeWind compiles (import it from App.tsx too)
-module.exports = withNativeWind(getDefaultConfig(__dirname), { input: "./global.css" });
+module.exports = withNativeWind(getDefaultConfig(__dirname), {
+  input: "./global.css",
+});
 
-// tailwind.config.js — NativeWind's preset, the eight colour roles, and the package's
-// own classes; the framework's globs are absolute, so any install layout works
+// tailwind.config.js — NativeWind's preset, the eight colour roles as the properties the
+// provider paints, and the package's own classes; the globs are absolute, so any install
+// layout works
 const asheeui = require("@asheeui/native/tailwind-preset");
 
 module.exports = {
@@ -59,12 +65,19 @@ module.exports = {
 };
 ```
 
-Then wrap the application root in `AsheeNativeProvider`. Two things are worth knowing
-before the first screen:
+Then wrap the application root in `AsheeUIProvider` — the same name the web renderer uses,
+with the same configuration: the axes, the component sections, the palette (`color`) and
+`defaultTheme`, which follows the device's colour scheme (`AsheeNativeProvider` is the same
+component under its platform name). Three things are worth knowing before the first screen:
 
 - **Do not install `react-native-css-interop` yourself.** NativeWind 4.2.7 ships the copy
   it needs; a pin of your own resolves instead of it, and every component renders unstyled
   with nothing thrown.
+- **The palette comes from the configuration, not from `tailwind.config.js`.** The preset
+  states each role as `rgb(var(--ashee-<role>) / <alpha-value>)` and the provider supplies
+  the values, so a `theme.extend.colors` entry for a role fixes it at build time and stops it
+  following `defaultTheme`. A shared `AsheeConfig` object is the same one the web renderer
+  reads.
 - **A development build says so when the pipeline is not connected.** The provider checks
   the runtime, the compiled stylesheet and the preset once on mount and warns with the
   cause it found; `verifyNativeWind()` returns the same diagnosis as data.

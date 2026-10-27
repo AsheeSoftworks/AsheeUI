@@ -24,6 +24,8 @@
  * branches offer exactly the same ones.
  */
 
+import type { ExternalConfig } from "@asheeui/web";
+
 export {
   cn,
   mergeObject,
@@ -34,3 +36,15 @@ export {
   resolveRadiusKey,
 } from "@asheeui/core";
 export * from "@asheeui/web";
+
+/**
+ * The configuration type of the renderer this import resolved to.
+ *
+ * A configuration file that both platforms read names this type, so one object describes
+ * both: on the web it is `@asheeui/web`'s `ExternalConfig`, and the sibling `./index.native`
+ * exports `@asheeui/native`'s `AsheeConfig` under the same name — the same axes, the same
+ * palette and the same theme, with the options that only the platform has. An option one
+ * platform cannot honour is refused by the other, which is the point: the alternative is a
+ * key that is accepted and silently does nothing.
+ */
+export type AsheeConfig = ExternalConfig;

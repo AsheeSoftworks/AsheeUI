@@ -34,22 +34,25 @@
  * **Why the glob is absolute rather than a relative path.** The installed location of a
  * package is not `node_modules/@asheeui/native`: pnpm, Bun's isolated installs and npm
  * with a differing peer set all place it under a content-addressed directory
- * (`node_modules/.bun/@asheeui+native@2.5.0+<peer-hash>/node_modules/@asheeui/native`),
+ * (`node_modules/.bun/@asheeui+native@2.6.0+<peer-hash>/node_modules/@asheeui/native`),
  * and how many directories up that is depends on how deeply the application itself is
  * nested. A relative glob is therefore a guess, and a wrong guess produces no styling
  * and no error. `__dirname` is not a guess: it is where this file was loaded from,
  * which is the package, wherever the package manager decided to put it.
  *
- * **Why these values are hex.** The framework's own light palette, copied from
- * `defaultColorConfig.light` in `@asheeui/core` (a test keeps the copy honest). Tailwind
- * applies an opacity modifier such as `bg-secondary/40` by converting the colour to a
- * channel triplet; a role defined as `rgb(var(--x))` without an `<alpha-value>`
- * placeholder, or as a bare `var(...)`, silently produces no style instead. Plain hex is
- * the form the framework's own class dictionary can always read.
+ * **The roles are variables, not colours.** Each role compiles to
+ * `rgb(var(--ashee-<role>) / <alpha-value>)`, which is what `@asheeui/web`'s stylesheet
+ * does with its `--color-*` block: the class names the theme, and the theme supplies the
+ * value at render time. On the platform the value comes from `AsheeNativeProvider`, which
+ * resolves the configuration's `color` and `defaultTheme` through `@asheeui/core` and
+ * applies the result with NativeWind's `vars()` — so the palette is the application's,
+ * stated once for both renderers, and `defaultTheme: "system"` follows the device's colour
+ * scheme.
  *
- * An application with its own palette overrides these in its own `theme.extend.colors`;
- * a value stated there wins over this preset, so only `primary` and the application's
- * own surfaces usually need saying.
+ * That is why the preset states no colour values of its own: a hex here would be a second
+ * palette, and it would win over the runtime one. An application that wants a build-time
+ * palette can still state `theme.extend.colors`; the documentation records the cost, which
+ * is that an overridden role no longer reads the theme.
  */
 
 const path = require("node:path");
@@ -70,23 +73,30 @@ const frameworkClasses = [
 ];
 
 /**
- * The eight roles the components reference, at the framework's own light values.
+ * The eight roles the components reference, each as the custom property it reads.
  *
- * The same eight `@asheeui/web` resolves from its `--ashee-*` custom properties, so an
- * application that renders both platforms states one palette and gets one design
- * language. `border` is a role and not a shade of `foreground` because the components
- * state `border-border`, which needs a colour named `border`.
+ * The names are the ones `@asheeui/core` states as `PALETTE_ROLES` and the provider applies
+ * as `--ashee-<role>`; the `<alpha-value>` placeholder is what keeps `bg-secondary/40` and
+ * `bg-primary/10` working, because the alpha comes from the class rather than from the
+ * value.
  */
-const colors = {
-  background: "#ffffff",
-  foreground: "#000000",
-  primary: "#2563eb",
-  secondary: "#f3f4f6",
-  border: "#d5d5d5",
-  danger: "#dc2626",
-  warning: "#d97706",
-  success: "#16a34a",
-};
+const PALETTE_ROLES = [
+  "background",
+  "foreground",
+  "primary",
+  "secondary",
+  "border",
+  "danger",
+  "warning",
+  "success",
+];
+
+const colors = Object.fromEntries(
+  PALETTE_ROLES.map((role) => [
+    role,
+    `rgb(var(--ashee-${role}) / <alpha-value>)`,
+  ]),
+);
 
 module.exports = {
   // NativeWind's preset is what compiles for the platform; it is stated here so a
