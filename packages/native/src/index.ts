@@ -64,4 +64,5 @@ export * from "./hooks/use-breakpoint";
 export * from "./hooks/use-reduce-motion";
 export * from "./layout";
 export * from "./provider/AsheeNativeProvider";
+export * from "./provider/nativewind-doctor";
 export * from "./utils/class-names";

@@ -40,7 +40,9 @@
       "types": "./src/index.ts",
       "import": "./src/index.ts",
       "default": "./src/index.ts"
-    }
+    },
+    "./tailwind-preset": "./tailwind-preset.cjs",
+    "./package.json": "./package.json"
   },
   "publishConfig": {
     "provenance": true,
@@ -56,13 +58,16 @@
         "types": "./dist/index.d.ts",
         "import": "./dist/index.js",
         "default": "./dist/index.js"
-      }
+      },
+      "./tailwind-preset": "./tailwind-preset.cjs",
+      "./package.json": "./package.json"
     }
   },
   "files": [
     "dist",
     "src/index.ts",
     "src/index.native.ts",
+    "tailwind-preset.cjs",
     "LICENSE",
     "NOTICE"
   ],

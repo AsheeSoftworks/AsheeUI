@@ -8,6 +8,10 @@
   "types": "./src/index.ts",
   "exports": {
     ".": {
+      "react-native": {
+        "types": "./src/index.ts",
+        "default": "./src/index.ts"
+      },
       "types": "./src/index.ts",
       "import": "./src/index.ts",
       "default": "./src/index.ts"
@@ -16,7 +20,9 @@
       "types": "./src/components/layouts/section-kit/index.ts",
       "import": "./src/components/layouts/section-kit/index.ts",
       "default": "./src/components/layouts/section-kit/index.ts"
-    }
+    },
+    "./tailwind-preset": "./tailwind-preset.cjs",
+    "./package.json": "./package.json"
   },
   "publishConfig": {
     "provenance": true,
@@ -25,6 +31,10 @@
     "types": "./dist/index.d.ts",
     "exports": {
       ".": {
+        "react-native": {
+          "types": "./dist/index.d.ts",
+          "default": "./dist/index.js"
+        },
         "types": "./dist/index.d.ts",
         "import": "./dist/index.js",
         "default": "./dist/index.js"
@@ -33,16 +43,20 @@
         "types": "./dist/components/layouts/section-kit/index.d.ts",
         "import": "./dist/components/layouts/section-kit/index.js",
         "default": "./dist/components/layouts/section-kit/index.js"
-      }
+      },
+      "./tailwind-preset": "./tailwind-preset.cjs",
+      "./package.json": "./package.json"
     }
   },
   "files": [
     "dist",
+    "tailwind-preset.cjs",
     "LICENSE",
     "NOTICE"
   ],
   "scripts": {
-    "build": "tsc -p tsconfig.build.json",
+    "build": "pnpm clean && tsc -p tsconfig.build.json",
+    "clean": "node -e \"require('node:fs').rmSync('dist', { recursive: true, force: true })\"",
     "prepublishOnly": "pnpm build",
     "test": "vitest run && jest",
     "test:logic": "vitest run",
@@ -70,7 +84,7 @@
     "nativewind": "^4.2.7",
     "react": "^19.3.1",
     "react-native": "0.88.0",
-    "tailwindcss": "^4.3.3",
+    "tailwindcss": "^3.4.19",
     "test-renderer": "^1.3.1",
     "typescript": "^7.0.2",
     "vitest": "^5.0.5"
