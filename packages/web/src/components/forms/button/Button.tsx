@@ -125,6 +125,17 @@ export interface ButtonProps extends BaseButtonProps {
    * Provides the custom link component and props forwarded to it.
    */
   link?: ButtonLinkProps | undefined;
+
+  /**
+   * Called when the control is activated, under the name the platform package uses.
+   *
+   * `onClick` is the DOM's event and `onPress` is React Native's, and they are the same act: the
+   * button's guarded handler already refuses a disabled control and already runs on keyboard
+   * activation, so both names reach the same place. A shared component cannot pass both from its
+   * own code - one of the two props does not exist on the other renderer - so the DOM button
+   * accepts the platform's name as well. When both are given, both run, `onClick` first.
+   */
+  onPress?: (() => void) | undefined;
 }
 
 /**
@@ -220,6 +231,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       children,
       type = "button",
       onClick,
+      onPress,
       startContent,
       endContent,
       href,
@@ -296,6 +308,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         return;
       }
       onClick?.(e);
+      onPress?.();
       (
         linkOnClick as
           | ((event: MouseEvent<HTMLButtonElement>) => void)

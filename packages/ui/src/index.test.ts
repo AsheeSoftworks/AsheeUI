@@ -86,6 +86,14 @@ describe("umbrella entry point", () => {
     expect(missing).toEqual([]);
   });
 
+  it("answers one name for semantic text on both branches", () => {
+    // The renderers spell it differently - `Typography` on the web, `Text` on the platform -
+    // and a shared component cannot. The umbrella states the platform's name for both, and the
+    // native branch receives it from `@asheeui/native`, so it needs no alias of its own.
+    expect(Umbrella.Text).toBe(Web.Typography);
+    expect(code("index.native.ts")).not.toContain("Typography");
+  });
+
   it("offers the platform-neutral helpers both branches document", () => {
     expect(Umbrella.cn).toBe(cn);
     expect(typeof Umbrella.resolveCascade).toBe("function");
