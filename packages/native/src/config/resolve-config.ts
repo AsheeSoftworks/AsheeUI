@@ -66,8 +66,8 @@ type NativeOnlyComponents = Omit<
  * It is **the web renderer's configuration**, plus the one axis only this platform has:
  * `NativeExternalConfig` extends the `ExternalConfig` that `@asheeui/core` states, so the
  * axes, the palette, the theme and the sections the shared configuration carries are one type
- * rather than two that happen to look alike. A configuration typed by `ExternalConfig` — a
- * file the web renderer also reads — is therefore accepted here unchanged.
+ * rather than two that happen to look alike. A configuration typed by `ExternalConfig` â€” a
+ * file the web renderer also reads â€” is therefore accepted here unchanged.
  *
  * The palette is honoured on the device: the provider turns the selected theme into the CSS
  * variables the compiled classes read. `defaultSize` is the platform-only part, because the
@@ -80,7 +80,7 @@ export interface NativeExternalConfig
   /**
    * The default density, which only this platform states globally.
    *
-   * The web renderer has no equivalent — its components name their own density — so a device
+   * The web renderer has no equivalent â€” its components name their own density â€” so a device
    * that states it does not diverge from a web host that states nothing.
    */
   defaultSize?: Size;
@@ -92,8 +92,9 @@ export interface NativeExternalConfig
    * are added: a component the framework has on both platforms is configured by the same
    * object, and a component the web's package declares still has a section on the device.
    */
-  components?: NonNullable<ExternalConfig["components"]> &
-    NativeOnlyComponents;
+  components?:
+    | ((NonNullable<ExternalConfig["components"]> & NativeOnlyComponents) |
+        undefined);
 }
 
 /**
@@ -101,7 +102,7 @@ export interface NativeExternalConfig
  *
  * `asheeui` routes an import to a renderer, so a configuration file that names this type
  * compiles on both: on the web it is `@asheeui/web`'s `ExternalConfig`, on a device this
- * interface, which extends that same `ExternalConfig` — the same axes, the same palette and
+ * interface, which extends that same `ExternalConfig` â€” the same axes, the same palette and
  * the same theme, with the platform-only density.
  */
 export type AsheeConfig = NativeExternalConfig;
@@ -120,9 +121,9 @@ export interface NativeConfig extends Required<NativePlatformConfig> {
  * `defaultVariant` is the web's `faded` (see `defaultConfig` in `@asheeui/core`), not a
  * platform-only value: an axis the global tier answers must answer the same way on both
  * platforms, or a component that honours the cascade renders a different treatment
- * depending on where it runs. The other two baselines are the platform's own — the web has
+ * depending on where it runs. The other two baselines are the platform's own â€” the web has
  * no global `defaultSize`, and the platform's radius baseline is `md` against the web's
- * `xs` — so they are not parity claims.
+ * `xs` â€” so they are not parity claims.
  */
 export const NATIVE_FALLBACK_CONFIG = {
   defaultVariant: "faded",
@@ -157,7 +158,7 @@ export function resolveNativeConfig(
     NATIVE_FALLBACK_CONFIG,
   );
 
-  // Merge each component's section the way the web renderer does — with `mergeObject`,
+  // Merge each component's section the way the web renderer does â€” with `mergeObject`,
   // not a shallow spread. A section is a description of one component, and a consumer is
   // entitled to state a single nested key (`components.sidebar.options.active.variant`)
   // without restating the rest: `sidebar-config.ts` promises that `components.sidebar`
