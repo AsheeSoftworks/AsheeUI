@@ -9,12 +9,11 @@
 
 import {
   type ColorRole,
-  type ExternalColorConfig,
+  type ExternalConfig,
   mergeObject,
   type Radius,
   resolveConfigCascade,
   type Size,
-  type ThemeName,
   type Variant,
 } from "@asheeui/core";
 import {
@@ -40,40 +39,61 @@ export interface NativePlatformConfig {
 }
 
 /**
+ * The component sections this renderer registers, keyed by the name they are stated under.
+ */
+export type NativeComponentsConfig = {
+  [K in keyof NativeComponentConfigRegistry]?: Partial<
+    NativeComponentConfigRegistry[K]
+  >;
+};
+
+/**
+ * The sections only this renderer declares.
+ *
+ * A section the shared configuration already carries is typed by it, so a configuration the
+ * web renderer types is accepted here unchanged. What is left is what only a device knows:
+ * the sections the web renderer declares in its own package rather than in the core, which an
+ * installation of `@asheeui/native` alone never sees.
+ */
+type NativeOnlyComponents = Omit<
+  NativeComponentsConfig,
+  keyof NonNullable<ExternalConfig["components"]>
+>;
+
+/**
  * A consumer's configuration, with every field optional.
  *
- * The palette and the theme are stated exactly as the web renderer states them, because
- * the device paints the same eight roles from the same `ColorVariant`: the provider turns
- * the selected theme into the CSS variables the compiled classes read. A configuration
- * written once therefore describes both renderers — the axes, the component sections and
- * the palette — and `AsheeConfig` is the name to import when the file is shared.
+ * It is **the web renderer's configuration**, plus the one axis only this platform has:
+ * `NativeExternalConfig` extends the `ExternalConfig` that `@asheeui/core` states, so the
+ * axes, the palette, the theme and the sections the shared configuration carries are one type
+ * rather than two that happen to look alike. A configuration typed by `ExternalConfig` — a
+ * file the web renderer also reads — is therefore accepted here unchanged.
+ *
+ * The palette is honoured on the device: the provider turns the selected theme into the CSS
+ * variables the compiled classes read. `defaultSize` is the platform-only part, because the
+ * web has no global density and a thumb needs a different baseline from a pointer; stating it
+ * in a shared file is harmless on the web, which has no such property, so a shared file should
+ * state it only when the file is the device's.
  */
-export interface NativeExternalConfig extends NativePlatformConfig {
+export interface NativeExternalConfig
+  extends Omit<ExternalConfig, "components"> {
   /**
-   * The palettes, per theme name.
+   * The default density, which only this platform states globally.
    *
-   * The same object `@asheeui/web` accepts: `light` and `dark` override the framework's
-   * built-in palettes in place, and any other key is a theme of its own (optionally
-   * extending another with `extends`).
+   * The web renderer has no equivalent — its components name their own density — so a device
+   * that states it does not diverge from a web host that states nothing.
    */
-  color?: ExternalColorConfig;
+  defaultSize?: Size;
 
   /**
-   * The theme to paint.
+   * Per-component overrides, keyed by component name.
    *
-   * `"system"` — and stating nothing — follows the device's colour scheme, so a phone in
-   * dark mode gets the dark palette without the application doing anything. Any other name
-   * must be a theme the `color` object declares; a name no palette answers is an error
-   * rather than a silent fall back to light.
+   * The shared sections are the web renderer's, and the sections only this renderer declares
+   * are added: a component the framework has on both platforms is configured by the same
+   * object, and a component the web's package declares still has a section on the device.
    */
-  defaultTheme?: ThemeName | "system";
-
-  /** Per-component overrides, keyed by component name. */
-  components?: {
-    [K in keyof NativeComponentConfigRegistry]?: Partial<
-      NativeComponentConfigRegistry[K]
-    >;
-  };
+  components?: NonNullable<ExternalConfig["components"]> &
+    NativeOnlyComponents;
 }
 
 /**
@@ -81,8 +101,8 @@ export interface NativeExternalConfig extends NativePlatformConfig {
  *
  * `asheeui` routes an import to a renderer, so a configuration file that names this type
  * compiles on both: on the web it is `@asheeui/web`'s `ExternalConfig`, on a device this
- * interface. An option that only one platform honours is refused by the other, which is the
- * point — the alternative is a key that is accepted and silently does nothing.
+ * interface, which extends that same `ExternalConfig` — the same axes, the same palette and
+ * the same theme, with the platform-only density.
  */
 export type AsheeConfig = NativeExternalConfig;
 
