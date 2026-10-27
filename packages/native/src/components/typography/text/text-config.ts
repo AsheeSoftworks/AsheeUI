@@ -6,26 +6,18 @@
  * one, and the vocabulary is shared.
  */
 
-import type { ColorRole, Size } from "@asheeui/core";
+import type { ColorRole, Size, TypographyRole } from "@asheeui/core";
 import { registerNativeComponentDefaults } from "../../../config/registry";
 
 /**
  * The semantic typography roles the framework states.
- * They match the roles the web typography system uses, so a role is a role on
- * either platform.
+ *
+ * **The shared union, not a copy of it.** It used to be a second list that happened to match the web's, which is a
+ * drift waiting for the day one renderer gains a role: `page-title` was added for a shared page frame and the
+ * platform's list did not know it, so the native `Text` refused the role the umbrella was handing it. Naming
+ * `@asheeui/core`'s union is what makes a role a role on both platforms by construction.
  */
-export type NativeTextRole =
-  | "display"
-  | "heading-xl"
-  | "heading-lg"
-  | "heading-md"
-  | "heading-sm"
-  | "body-lg"
-  | "body-md"
-  | "body-sm"
-  | "label"
-  | "caption"
-  | "overline";
+export type NativeTextRole = TypographyRole;
 
 /**
  * The tone of a piece of text.
