@@ -41,6 +41,25 @@ export type {
 } from "@asheeui/core";
 export type { AsheeUIProviderProps } from "./AsheeUIProvider";
 export { AsheeUIProvider } from "./AsheeUIProvider";
+
+/**
+ * Platform questions a shared component has to ask.
+ *
+ * Both are the same names and the same shapes the platform renderer exports, so a component
+ * written once can ask them and mean the same thing on either platform. `useBreakpoint` is
+ * the one that makes a *branch* possible: a media query styles an element, but choosing
+ * between a table and cards decides which elements exist, and that needs a value.
+ */
+export {
+  useBreakpoint,
+  type WebBreakpoint,
+  type WebBreakpointState,
+} from "./libs/use-breakpoint";
+export {
+  usePrefersReducedMotion,
+  useReduceMotion,
+} from "./libs/use-prefers-reduced-motion";
+
 /**
  * All component exports.
  * Each component is exported from its respective directory.
