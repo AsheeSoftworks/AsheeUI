@@ -21,6 +21,7 @@
     "verify:released": "node scripts/verify-released.mjs",
     "check:changesets": "node scripts/check-changesets.mjs",
     "check:native-parity": "node scripts/check-native-parity.mjs",
+    "check:native-artifact": "node scripts/check-native-artifact.mjs",
     "format": "biome format --write",
     "fix": "biome check --write",
     "changeset": "changeset",

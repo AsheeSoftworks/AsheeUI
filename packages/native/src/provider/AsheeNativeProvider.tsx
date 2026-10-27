@@ -6,14 +6,27 @@
  * It performs no platform work beyond that: no theme script, no document, no storage,
  * because none of those exist on the platform and inventing replacements would be
  * native behaviour the web invented rather than the platform's own.
+ *
+ * One thing it does do, in development only, is say so when the styling pipeline is not
+ * connected. A screen whose classes are all ignored renders with the right copy and no
+ * style at all, which reads as a theme problem rather than a setup problem; the check in
+ * `nativewind-doctor` turns that into one warning naming the cause. It costs nothing in
+ * a production bundle, because the gate is `NODE_ENV`.
  */
 
-import { createContext, type ReactNode, useContext, useMemo } from "react";
+import {
+  createContext,
+  type ReactNode,
+  useContext,
+  useEffect,
+  useMemo,
+} from "react";
 import {
   type NativeConfig,
   type NativeExternalConfig,
   resolveNativeConfig,
 } from "../config/resolve-config";
+import { warnWhenStylingIsDisconnected } from "./nativewind-doctor";
 
 /**
  * The configuration context.
@@ -53,6 +66,12 @@ export function AsheeNativeProvider({
   children,
 }: AsheeNativeProviderProps) {
   const value = useMemo(() => resolveNativeConfig(config), [config]);
+
+  // After the first paint rather than during it: a warning is not a reason to render, and
+  // the screen the reader is looking at is the evidence the message is about.
+  useEffect(() => {
+    warnWhenStylingIsDisconnected();
+  }, []);
 
   return (
     <AsheeNativeConfigContext.Provider value={value}>

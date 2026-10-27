@@ -28,7 +28,8 @@ and the layer both renderers share is `@asheeui/core`.
 
 - React 18.2 or newer, or 19
 - React Native 0.78 or newer, through Expo or a bare project
-- NativeWind 4.2 or newer
+- NativeWind 4.2 or newer, with **Tailwind CSS 3.x** — NativeWind v4 does not compile with
+  Tailwind v4, which is what the web renderer uses
 - Node.js 22.12 or newer for development
 
 ## Installation
@@ -38,12 +39,43 @@ npm install @asheeui/native
 ```
 
 The package expects the application to provide the platform's toolchain, so its
-setup adapts the application's own configuration rather than replacing it: install
-the peer dependencies, enable the NativeWind preset in Babel and Metro, extend the
-Tailwind configuration with the theme roles the components reference (`primary`,
-`secondary`, `danger`, `warning`, `success`, `background`, `foreground`), and wrap
-the application root in `AsheeNativeProvider`. [React Native](../../docs/native.md)
-documents each step.
+setup adapts the application's own configuration rather than replacing it. Three
+files and one provider:
+
+```js
+// babel.config.js — the interop runtime, which is what turns a className into a style
+presets: [["babel-preset-expo", { jsxImportSource: "nativewind" }], "nativewind/babel"];
+
+// metro.config.js — the stylesheet NativeWind compiles (import it from App.tsx too)
+module.exports = withNativeWind(getDefaultConfig(__dirname), { input: "./global.css" });
+
+// tailwind.config.js — NativeWind's preset, the eight colour roles, and the package's
+// own classes; the framework's globs are absolute, so any install layout works
+const asheeui = require("@asheeui/native/tailwind-preset");
+
+module.exports = {
+  presets: [asheeui],
+  content: ["./src/**/*.{ts,tsx}", ...asheeui.content],
+};
+```
+
+Then wrap the application root in `AsheeNativeProvider`. Two things are worth knowing
+before the first screen:
+
+- **Do not install `react-native-css-interop` yourself.** NativeWind 4.2.7 ships the copy
+  it needs; a pin of your own resolves instead of it, and every component renders unstyled
+  with nothing thrown.
+- **A development build says so when the pipeline is not connected.** The provider checks
+  the runtime, the compiled stylesheet and the preset once on mount and warns with the
+  cause it found; `verifyNativeWind()` returns the same diagnosis as data.
+
+[React Native](https://www.asheeui.com/platforms/native) documents each step, what each
+failure looks like, and the order to check them in.
+
+The published entry points are the package root, `@asheeui/native/section-kit` and
+`@asheeui/native/tailwind-preset`; there are no per-component subpaths, so a component is
+imported by name from the root and a bundle is reduced by the bundler rather than by the
+import path.
 
 ## Quick start
 
@@ -64,23 +96,24 @@ export function Screen() {
 
 ## Documentation
 
-The framework documentation lives in the repository:
+The documentation is the website, which renders every page as a per-page `.md` variant and
+as one `llms-full.txt`:
 
-- [React Native](https://github.com/AsheeSoftworks/AsheeUI/blob/main/docs/native.md)
-- [Installation](https://github.com/AsheeSoftworks/AsheeUI/blob/main/docs/installation.md)
-- [Configuration](https://github.com/AsheeSoftworks/AsheeUI/blob/main/docs/configuration.md)
-- [Components](https://github.com/AsheeSoftworks/AsheeUI/blob/main/docs/components.md)
-- [Accessibility](https://github.com/AsheeSoftworks/AsheeUI/blob/main/docs/accessibility.md)
-- [Migration](https://github.com/AsheeSoftworks/AsheeUI/blob/main/docs/migration.md)
+- [React Native](https://www.asheeui.com/platforms/native) — setup, the styling pipeline, and what the platform decides
+- [Installation](https://www.asheeui.com/getting-started/installation)
+- [Configuration](https://www.asheeui.com/concepts/configuration)
+- [Components](https://www.asheeui.com/components)
+- [Accessibility](https://www.asheeui.com/concepts/accessibility)
+- [Migration](https://www.asheeui.com/migration)
 
 ## Links
 
-- Documentation: https://asheeui.com
+- Documentation: https://www.asheeui.com
 - Repository: https://github.com/AsheeSoftworks/AsheeUI
 - Issues: https://github.com/AsheeSoftworks/AsheeUI/issues
 
 ## License
 
-AsheeUI is licensed under the [Apache License 2.0](../../LICENSE). Copyright and
-attribution notices are in the root [NOTICE](../../NOTICE) file; the repository's
-[licensing guide](../../docs/licensing.md) explains what redistribution requires.
+AsheeUI is licensed under the Apache License 2.0; the `LICENSE` file ships with this package,
+and the copyright and attribution notices are in `NOTICE` beside it.
+[Licensing](https://www.asheeui.com/project/licensing) explains what redistribution requires.
