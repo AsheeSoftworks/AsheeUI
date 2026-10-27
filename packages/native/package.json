@@ -72,8 +72,8 @@
     "react-native": ">=0.78.0"
   },
   "devDependencies": {
-    "@babel/core": "^8.0.7",
-    "@babel/runtime": "^8.0.7",
+    "@babel/core": "^8.0.9",
+    "@babel/runtime": "^8.0.8",
     "@react-native/babel-preset": "^0.88.0",
     "@react-native/jest-preset": "^0.88.0",
     "@testing-library/react-native": "^14.1.0",
