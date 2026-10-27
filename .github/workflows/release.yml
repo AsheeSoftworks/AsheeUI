@@ -46,6 +46,24 @@ jobs:
       - name: Run Tests
         run: pnpm test
 
+      # The step this workflow was named for. `changeset publish` publishes every package whose
+      # version is not on the registry yet, and the versions are already written by
+      # `pnpm version-packages` — a pending `.changeset/*.md` is not what it looks for, which is
+      # why a release with no changeset files left still publishes.
+      #
+      # It runs before the reset: it packs the package directories as they are, so `dist` has to
+      # still be there. `id-token: write` above is what lets npm attach provenance, which every
+      # publishable package asks for in its `publishConfig`.
+      - name: Publish
+        run: pnpm changeset publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      # A publish that reports success while publishing nothing is the failure this repository has
+      # had before, so the registry is asked afterwards.
+      - name: Verify the Release
+        run: pnpm verify:released
+
       - name: Reset working directory
         run: |
           git reset --hard
