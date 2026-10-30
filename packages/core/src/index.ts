@@ -19,13 +19,17 @@
  */
 
 export * from "./components";
+export * from "./components/data-display/avatar/avatar-styles";
+export * from "./components/data-display/marquee/marquee-styles";
+export * from "./components/feedback/alert/alert-styles";
+export * from "./components/feedback/toast/toast-styles";
+export * from "./components/forms/stepper/stepper-styles";
 export * from "./config";
 export * from "./contracts";
 export * from "./matrix";
 export * from "./registry";
 export * from "./shared";
 export * from "./theme";
-
 /**
  * The token names `./shared` and `./tokens` both reach, exported explicitly so
  * the package states one source of truth instead of letting two star exports
@@ -36,9 +40,3 @@ export * from "./theme";
 export type { Radius, Size, Space, Variant } from "./tokens";
 export * from "./tokens";
 export * from "./utils";
-export * from "./components/data-display/avatar/avatar-styles";
-export * from "./components/data-display/marquee/marquee-styles";
-export * from "./components/feedback/alert/alert-styles";
-export * from "./components/feedback/toast/toast-styles";
-export * from "./components/forms/calendar/calendar-styles";
-export * from "./components/forms/stepper/stepper-styles";

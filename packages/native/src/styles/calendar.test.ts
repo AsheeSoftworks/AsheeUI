@@ -5,11 +5,7 @@
  * shrink no package can import both renderers, so neither suite compares them any more.
  */
 
-import {
-  CALENDAR_COLOR_CLASSES,
-  type Color,
-  type FieldSizeKey,
-} from "@asheeui/core";
+import type { Color, FieldSizeKey } from "@asheeui/core";
 import {
   NATIVE_CALENDAR_CELL_CLASS,
   NATIVE_CALENDAR_CELL_DISABLED_CLASS,
@@ -92,9 +88,6 @@ const NATIVE_CLASSES = [
 
 describe("the Calendar's class dictionaries", () => {
   it("treats every colour role, so a chosen day is never left without a fill", () => {
-    expect(Object.keys(CALENDAR_COLOR_CLASSES).sort()).toEqual(
-      [...COLORS].sort(),
-    );
     expect(Object.keys(NATIVE_CALENDAR_COLOR_CLASS).sort()).toEqual(
       [...COLORS].sort(),
     );
@@ -133,9 +126,12 @@ describe("the Calendar's class dictionaries", () => {
     expect(NATIVE_CALENDAR_COLOR_CLASS.secondary.on).toBe("text-foreground");
   });
 
-  it("keeps the pointer treatments on the web and off the platform", () => {
+  it("states no pointer treatment on the platform, which has no pointer to rest on a cell", () => {
+    // The web's half of this assertion — that every role states a `hover:` class — is in
+    // `web/src/styles/calendar.test.ts`, with the map it reads. What is left here is the platform
+    // truth: its colour entries are the four keys a native day cell paints, and none of them is a
+    // state the touch screen cannot produce.
     for (const colour of COLORS) {
-      expect(CALENDAR_COLOR_CLASSES[colour].hover).toContain("hover:");
       expect(Object.keys(NATIVE_CALENDAR_COLOR_CLASS[colour]).sort()).toEqual([
         "bg",
         "border",

@@ -7,13 +7,10 @@
  * states its own; the keys both must cover are asserted on each side.
  */
 
-import {
-  CALENDAR_COLOR_CLASSES,
-  type Color,
-  type FieldSizeKey,
-} from "@asheeui/core";
+import type { Color, FieldSizeKey } from "@asheeui/core";
 import { describe, expect, it } from "vitest";
 import {
+  CALENDAR_COLOR_CLASSES,
   DATE_PICKER_CELL_SIZE_CLASS,
   DATE_PICKER_SIZE_CLASS,
 } from "./calendar";
@@ -41,6 +38,15 @@ describe("the Calendar's class dictionaries", () => {
   it("sizes every density, so a day is never left without a cell", () => {
     for (const map of [DATE_PICKER_SIZE_CLASS, DATE_PICKER_CELL_SIZE_CLASS]) {
       expect(Object.keys(map).sort()).toEqual([...SIZES].sort());
+    }
+  });
+
+  it("keeps the pointer treatment on the web, which the platform cannot paint", () => {
+    // This assertion lived in native's suite while core held the map, because that was the only
+    // package that could read both. It is a web truth — a device has no pointer resting on a cell
+    // — so it moved here with the map in C3.
+    for (const colour of COLORS) {
+      expect(CALENDAR_COLOR_CLASSES[colour].hover).toContain("hover:");
     }
   });
 
