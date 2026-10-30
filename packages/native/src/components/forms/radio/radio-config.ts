@@ -21,8 +21,8 @@ import { registerNativeComponentDefaults } from "../../../config/registry";
  * `size`, `radius`, `variant`, `color` and `status` carry the meanings the shared field
  * family gives them.
  *
- * @deprecated Use {@link RadioConfig} from `@asheeui/core` — the name both
- * renderers publish. This spelling is the renderer's narrowing of the same contract.
+ * @deprecated Use {@link RadioConfig} from `@asheeui/core` — the name both renderers
+ * publish.
  */
 export interface NativeRadioConfig
   extends Pick<
@@ -37,6 +37,9 @@ export interface NativeRadioConfig
  * The defaults the Radio registers with the native registry.
  * The rounding is `full` and the variant is `default`, which together are what make a
  * radio read as a circle a consumer picks rather than as a second checkbox.
+ *
+ * @deprecated Use {@link defaultRadioConfig} — the name both renderers publish. The value is
+ * this one: a fallback states the platform's default, and the name is shared.
  */
 export const defaultNativeRadioConfig: NativeRadioConfig = {
   size: "md",
@@ -55,6 +58,9 @@ registerNativeComponentDefaults("radio", defaultNativeRadioConfig);
 
 /**
  * The values a radio falls back to when no tier provides one.
+ *
+ * @deprecated Use {@link FALLBACK_RADIO_CONFIG} — the name both renderers publish. The value is
+ * this one: a fallback states the platform's default, and the name is shared.
  */
 export const FALLBACK_NATIVE_RADIO_CONFIG = {
   size: "md",

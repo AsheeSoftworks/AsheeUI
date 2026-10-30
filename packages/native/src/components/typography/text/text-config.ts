@@ -44,6 +44,9 @@ export interface NativeTextConfig {
 
 /**
  * The defaults the Text registers with the native registry.
+ *
+ * @deprecated Use {@link defaultTextConfig} — the name both renderers publish. The value is
+ * this one: a fallback states the platform's default, and the name is shared.
  */
 export const defaultNativeTextConfig: NativeTextConfig = {
   role: "body-md",
@@ -73,6 +76,9 @@ registerNativeComponentDefaults("text", defaultNativeTextConfig);
 
 /**
  * The values the text falls back to when no tier provides one.
+ *
+ * @deprecated Use {@link FALLBACK_TEXT_CONFIG} — the name both renderers publish. The value is
+ * this one: a fallback states the platform's default, and the name is shared.
  */
 export const FALLBACK_NATIVE_TEXT_CONFIG = {
   role: "body-md",

@@ -16,8 +16,8 @@ import { registerNativeComponentDefaults } from "../../../config/registry";
  * `length`, `mode`, `size`, `masked`, `radius`, `isDisabled` and `isInvalid` carry the
  * meanings the shared code field gives them.
  *
- * @deprecated Use {@link PinInputConfig} from `@asheeui/core` — the name both
- * renderers publish. This spelling is the renderer's narrowing of the same contract.
+ * @deprecated Use {@link PinInputConfig} from `@asheeui/core` — the name both renderers
+ * publish.
  */
 export type NativePinInputConfig = PinInputConfig;
 
@@ -25,6 +25,9 @@ export type NativePinInputConfig = PinInputConfig;
  * The defaults the PinInput registers with the native registry.
  * Four digits is the length of a code sent by SMS, and the boxes are the shared `md` whose
  * proportions the native scale makes thumb-sized.
+ *
+ * @deprecated Use {@link defaultPinInputConfig} — the name both renderers publish. The value is
+ * this one: a fallback states the platform's default, and the name is shared.
  */
 export const defaultNativePinInputConfig: NativePinInputConfig = {
   length: 4,
@@ -45,6 +48,9 @@ registerNativeComponentDefaults("pininput", defaultNativePinInputConfig);
 
 /**
  * The values the field falls back to when no tier provides one.
+ *
+ * @deprecated Use {@link FALLBACK_PIN_INPUT_CONFIG} — the name both renderers publish. The value is
+ * this one: a fallback states the platform's default, and the name is shared.
  */
 export const FALLBACK_NATIVE_PIN_INPUT_CONFIG = {
   length: 4,

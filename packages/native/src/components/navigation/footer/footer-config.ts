@@ -25,8 +25,8 @@ export type {
 /**
  * Configuration options for the native Footer.
  *
- * @deprecated Use {@link FooterConfig} from `@asheeui/core` — the name both
- * renderers publish. This spelling is the renderer's narrowing of the same contract.
+ * @deprecated Use {@link FooterConfig} from `@asheeui/core` — the name both renderers
+ * publish.
  */
 export type NativeFooterConfig = FooterConfig;
 
@@ -37,6 +37,9 @@ export type NativeFooterConfig = FooterConfig;
  * a muted footer, because the web can let a page background show through and the
  * platform states the colour role its surface takes, but which treatment a footer
  * defaults to is not a platform question.
+ *
+ * @deprecated Use {@link defaultFooterConfig} — the name both renderers publish. The value is
+ * this one: a fallback states the platform's default, and the name is shared.
  */
 export const defaultNativeFooterConfig: NativeFooterConfig = {
   variant: "bordered",
@@ -55,6 +58,9 @@ registerNativeComponentDefaults("footer", defaultNativeFooterConfig);
 
 /**
  * The values the footer falls back to when no tier provides one.
+ *
+ * @deprecated Use {@link FALLBACK_FOOTER_CONFIG} — the name both renderers publish. The value is
+ * this one: a fallback states the platform's default, and the name is shared.
  */
 export const FALLBACK_NATIVE_FOOTER_CONFIG = {
   variant: "bordered",

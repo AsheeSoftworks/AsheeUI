@@ -16,8 +16,8 @@ export type { PageConfig } from "@asheeui/core";
 /**
  * Configuration options for the native page parts.
  *
- * @deprecated Use {@link PageConfig} from `@asheeui/core` — the name both
- * renderers publish. This spelling is the renderer's narrowing of the same contract.
+ * @deprecated Use {@link PageConfig} from `@asheeui/core` — the name both renderers
+ * publish.
  */
 export type NativePageConfig = PageConfig;
 
@@ -28,6 +28,9 @@ export type NativePageConfig = PageConfig;
  * so a part stays contained and keeps the framework's default width and rhythm until an
  * application says otherwise, which is what makes a form or a settings screen read like the
  * web's page of the same shape.
+ *
+ * @deprecated Use {@link defaultPageConfig} — the name both renderers publish. The value is
+ * this one: a fallback states the platform's default, and the name is shared.
  */
 export const defaultNativePageConfig: NativePageConfig = {
   contained: true,
@@ -47,6 +50,9 @@ registerNativeComponentDefaults("page", defaultNativePageConfig);
 
 /**
  * The values the page parts fall back to when no tier provides one.
+ *
+ * @deprecated Use {@link FALLBACK_PAGE_CONFIG} — the name both renderers publish. The value is
+ * this one: a fallback states the platform's default, and the name is shared.
  */
 export const FALLBACK_NATIVE_PAGE_CONFIG = {
   contained: true,

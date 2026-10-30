@@ -16,8 +16,8 @@ export type { ErrorStateConfig, ErrorStateRole } from "@asheeui/core";
 /**
  * Configuration options for the native ErrorState.
  *
- * @deprecated Use {@link ErrorStateConfig} from `@asheeui/core` — the name both
- * renderers publish. This spelling is the renderer's narrowing of the same contract.
+ * @deprecated Use {@link ErrorStateConfig} from `@asheeui/core` — the name both renderers
+ * publish.
  */
 export type NativeErrorStateConfig = ErrorStateConfig;
 
@@ -26,6 +26,9 @@ export type NativeErrorStateConfig = ErrorStateConfig;
  *
  * A panel and an announcement are the defaults because this state usually replaces a
  * region after a request failed.
+ *
+ * @deprecated Use {@link defaultErrorStateConfig} — the name both renderers publish. The value is
+ * this one: a fallback states the platform's default, and the name is shared.
  */
 export const defaultNativeErrorStateConfig: NativeErrorStateConfig = {
   size: "md",
@@ -45,6 +48,9 @@ registerNativeComponentDefaults("errorstate", defaultNativeErrorStateConfig);
 
 /**
  * The values the state falls back to when no tier provides one.
+ *
+ * @deprecated Use {@link FALLBACK_ERROR_STATE_CONFIG} — the name both renderers publish. The value is
+ * this one: a fallback states the platform's default, and the name is shared.
  */
 export const FALLBACK_NATIVE_ERROR_STATE_CONFIG = {
   size: "md",

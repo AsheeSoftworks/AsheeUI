@@ -16,8 +16,8 @@ export type { AvatarConfig } from "@asheeui/core";
 /**
  * Configuration options for the native Avatar.
  *
- * @deprecated Use {@link AvatarConfig} from `@asheeui/core` — the name both
- * renderers publish. This spelling is the renderer's narrowing of the same contract.
+ * @deprecated Use {@link AvatarConfig} from `@asheeui/core` — the name both renderers
+ * publish.
  */
 export type NativeAvatarConfig = AvatarConfig;
 
@@ -27,6 +27,9 @@ export type NativeAvatarConfig = AvatarConfig;
  * They are the web's own values: an avatar is a circle at medium diameter on both
  * platforms. `color` is absent on purpose, so it inherits from the platform's default
  * colour instead of pinning itself here.
+ *
+ * @deprecated Use {@link defaultAvatarConfig} — the name both renderers publish. The value is
+ * this one: a fallback states the platform's default, and the name is shared.
  */
 export const defaultNativeAvatarConfig: NativeAvatarConfig = {
   size: "md",
@@ -43,6 +46,9 @@ registerNativeComponentDefaults("avatar", defaultNativeAvatarConfig);
 
 /**
  * The values the avatar falls back to when no tier provides one.
+ *
+ * @deprecated Use {@link FALLBACK_AVATAR_CONFIG} — the name both renderers publish. The value is
+ * this one: a fallback states the platform's default, and the name is shared.
  */
 export const FALLBACK_NATIVE_AVATAR_CONFIG = {
   size: "md",

@@ -28,13 +28,16 @@ export type {
 /**
  * Configuration options for the native Tabs.
  *
- * @deprecated Use {@link TabsConfig} from `@asheeui/core` — the name both
- * renderers publish. This spelling is the renderer's narrowing of the same contract.
+ * @deprecated Use {@link TabsConfig} from `@asheeui/core` — the name both renderers
+ * publish.
  */
 export type NativeTabsConfig = TabsConfig;
 
 /**
  * The defaults the Tabs register with the native registry.
+ *
+ * @deprecated Use {@link defaultTabsConfig} — the name both renderers publish. The value is
+ * this one: a fallback states the platform's default, and the name is shared.
  */
 export const defaultNativeTabsConfig: NativeTabsConfig = {
   size: "md",
@@ -55,6 +58,9 @@ registerNativeComponentDefaults("tabs", defaultNativeTabsConfig);
 
 /**
  * The values the tabs fall back to when no tier provides one.
+ *
+ * @deprecated Use {@link FALLBACK_TABS_CONFIG} — the name both renderers publish. The value is
+ * this one: a fallback states the platform's default, and the name is shared.
  */
 export const FALLBACK_NATIVE_TABS_CONFIG = {
   size: "md",

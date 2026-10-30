@@ -27,8 +27,8 @@ export type {
 /**
  * Configuration options for the native Sidebar.
  *
- * @deprecated Use {@link SidebarConfig} from `@asheeui/core` — the name both
- * renderers publish. This spelling is the renderer's narrowing of the same contract.
+ * @deprecated Use {@link SidebarConfig} from `@asheeui/core` — the name both renderers
+ * publish.
  */
 export type NativeSidebarConfig = SidebarConfig;
 
@@ -37,6 +37,9 @@ export type NativeSidebarConfig = SidebarConfig;
  *
  * They are the web's own values. `animated` is the web's way of animating a width change, and a
  * platform class cannot declare movement, so the option resolves and states nothing here.
+ *
+ * @deprecated Use {@link defaultSidebarConfig} — the name both renderers publish. The value is
+ * this one: a fallback states the platform's default, and the name is shared.
  */
 export const defaultNativeSidebarConfig: NativeSidebarConfig = {
   size: "md",
@@ -63,6 +66,9 @@ registerNativeComponentDefaults("sidebar", defaultNativeSidebarConfig);
 
 /**
  * The values the sidebar falls back to when no tier provides one.
+ *
+ * @deprecated Use {@link FALLBACK_SIDEBAR_CONFIG} — the name both renderers publish. The value is
+ * this one: a fallback states the platform's default, and the name is shared.
  */
 export const FALLBACK_NATIVE_SIDEBAR_CONFIG = {
   size: "md",

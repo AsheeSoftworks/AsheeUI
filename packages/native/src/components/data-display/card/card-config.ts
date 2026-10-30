@@ -93,6 +93,9 @@ export const resolveNativeCardVariant = deprecatedAlias(resolveCardVariant);
  * tier always answer, and the application's default would never reach a native card.
  * {@link FALLBACK_NATIVE_CARD_CONFIG} still states `bordered`, which is what the resolver
  * lands on for a treatment no signature can name.
+ *
+ * @deprecated Use {@link defaultCardConfig} — the name both renderers publish. The value is
+ * this one: a fallback states the platform's default, and the name is shared.
  */
 export const defaultNativeCardConfig: NativeCardConfig = {
   size: "md",
@@ -109,6 +112,9 @@ registerNativeComponentDefaults("card", defaultNativeCardConfig);
 
 /**
  * The values the card falls back to when no tier provides one.
+ *
+ * @deprecated Use {@link FALLBACK_CARD_CONFIG} — the name both renderers publish. The value is
+ * this one: a fallback states the platform's default, and the name is shared.
  */
 export const FALLBACK_NATIVE_CARD_CONFIG = {
   variant: "bordered",

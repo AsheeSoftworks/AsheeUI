@@ -31,8 +31,8 @@ export type {
 /**
  * Configuration options for the native Toast system.
  *
- * @deprecated Use {@link ToastConfig} from `@asheeui/core` — the name both
- * renderers publish. This spelling is the renderer's narrowing of the same contract.
+ * @deprecated Use {@link ToastConfig} from `@asheeui/core` — the name both renderers
+ * publish.
  */
 export type NativeToastConfig = Omit<ToastConfig, "portal">;
 
@@ -43,6 +43,9 @@ export type NativeToastConfig = Omit<ToastConfig, "portal">;
  * puts a transient notice and where a thumb already is, rather than inherited from the
  * web's top-right: a default is a statement about the platform, and this is the
  * platform's answer.
+ *
+ * @deprecated Use {@link defaultToastConfig} — the name both renderers publish. The value is
+ * this one: a fallback states the platform's default, and the name is shared.
  */
 export const defaultNativeToastConfig: NativeToastConfig = {
   size: "md",
@@ -64,6 +67,9 @@ registerNativeComponentDefaults("toast", defaultNativeToastConfig);
 
 /**
  * The values the system falls back to when no tier provides one.
+ *
+ * @deprecated Use {@link FALLBACK_TOAST_CONFIG} — the name both renderers publish. The value is
+ * this one: a fallback states the platform's default, and the name is shared.
  */
 export const FALLBACK_NATIVE_TOAST_CONFIG = {
   size: "md",

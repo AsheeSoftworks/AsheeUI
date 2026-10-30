@@ -22,8 +22,8 @@ export type {
 /**
  * Configuration options for the native Navbar.
  *
- * @deprecated Use {@link NavbarConfig} from `@asheeui/core` — the name both
- * renderers publish. This spelling is the renderer's narrowing of the same contract.
+ * @deprecated Use {@link NavbarConfig} from `@asheeui/core` — the name both renderers
+ * publish.
  */
 export type NativeNavbarConfig = NavbarConfig;
 
@@ -33,6 +33,9 @@ export type NativeNavbarConfig = NavbarConfig;
  * They are the web's own values, with one difference in meaning rather than in value: `sticky` is
  * the web's way of pinning a bar to the top of a viewport, and a native bar is pinned by the screen
  * that places it outside its scrolling region, so the option resolves and states no class here.
+ *
+ * @deprecated Use {@link defaultNavbarConfig} — the name both renderers publish. The value is
+ * this one: a fallback states the platform's default, and the name is shared.
  */
 export const defaultNativeNavbarConfig: NativeNavbarConfig = {
   position: "sticky",
@@ -52,6 +55,9 @@ registerNativeComponentDefaults("navbar", defaultNativeNavbarConfig);
 
 /**
  * The values the bar falls back to when no tier provides one.
+ *
+ * @deprecated Use {@link FALLBACK_NAVBAR_CONFIG} — the name both renderers publish. The value is
+ * this one: a fallback states the platform's default, and the name is shared.
  */
 export const FALLBACK_NATIVE_NAVBAR_CONFIG = {
   position: "sticky",

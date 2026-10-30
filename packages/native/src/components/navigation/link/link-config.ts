@@ -16,13 +16,16 @@ export type { LinkConfig, LinkUnderline, LinkVariant } from "@asheeui/core";
 /**
  * Configuration options for the native Link.
  *
- * @deprecated Use {@link LinkConfig} from `@asheeui/core` — the name both
- * renderers publish. This spelling is the renderer's narrowing of the same contract.
+ * @deprecated Use {@link LinkConfig} from `@asheeui/core` — the name both renderers
+ * publish.
  */
 export type NativeLinkConfig = LinkConfig;
 
 /**
  * The defaults the Link registers with the native registry.
+ *
+ * @deprecated Use {@link defaultLinkConfig} — the name both renderers publish. The value is
+ * this one: a fallback states the platform's default, and the name is shared.
  */
 export const defaultNativeLinkConfig: NativeLinkConfig = {
   size: "md",
@@ -40,6 +43,9 @@ registerNativeComponentDefaults("link", defaultNativeLinkConfig);
 
 /**
  * The values the link falls back to when no tier provides one.
+ *
+ * @deprecated Use {@link FALLBACK_LINK_CONFIG} — the name both renderers publish. The value is
+ * this one: a fallback states the platform's default, and the name is shared.
  */
 export const FALLBACK_NATIVE_LINK_CONFIG = {
   size: "md",

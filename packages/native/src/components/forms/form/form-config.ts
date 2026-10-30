@@ -18,8 +18,8 @@ import { registerNativeComponentDefaults } from "../../../config/registry";
  * `submitVariant`, `submitColor`, `submitSize` and `submitRadius` carry the meanings the
  * shared form gives them.
  *
- * @deprecated Use {@link FormConfig} from `@asheeui/core` — the name both
- * renderers publish. This spelling is the renderer's narrowing of the same contract.
+ * @deprecated Use {@link FormConfig} from `@asheeui/core` — the name both renderers
+ * publish.
  */
 export type NativeFormConfig = FormConfig;
 
@@ -27,6 +27,9 @@ export type NativeFormConfig = FormConfig;
  * The defaults the Form registers with the native registry.
  * The visual tokens are absent deliberately so they inherit the application's own
  * configuration and the form's fallback, rather than pinning a button nobody chose.
+ *
+ * @deprecated Use {@link defaultFormConfig} — the name both renderers publish. The value is
+ * this one: a fallback states the platform's default, and the name is shared.
  */
 export const defaultNativeFormConfig: NativeFormConfig = {
   submitRadius: "md",
@@ -42,6 +45,9 @@ registerNativeComponentDefaults("form", defaultNativeFormConfig);
 
 /**
  * The values the form falls back to when no tier provides one.
+ *
+ * @deprecated Use {@link FALLBACK_FORM_CONFIG} — the name both renderers publish. The value is
+ * this one: a fallback states the platform's default, and the name is shared.
  */
 export const FALLBACK_NATIVE_FORM_CONFIG = {
   submitVariant: "solid",

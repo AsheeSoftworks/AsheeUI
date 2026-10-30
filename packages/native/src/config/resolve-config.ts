@@ -41,8 +41,8 @@ export interface NativePlatformConfig {
 /**
  * The component sections this renderer registers, keyed by the name they are stated under.
  *
- * @deprecated Use {@link ComponentsConfig} from `@asheeui/core` — the name both
- * renderers publish. This spelling is the renderer's narrowing of the same contract.
+ * @deprecated Use {@link ComponentsConfig} from `@asheeui/core` — the name both renderers
+ * publish.
  */
 export type NativeComponentsConfig = {
   [K in keyof NativeComponentConfigRegistry]?: Partial<
@@ -78,8 +78,8 @@ type NativeOnlyComponents = Omit<
  * in a shared file is harmless on the web, which has no such property, so a shared file should
  * state it only when the file is the device's.
  *
- * @deprecated Use {@link ExternalConfig} from `@asheeui/core` — the name both
- * renderers publish. This spelling is the renderer's narrowing of the same contract.
+ * @deprecated Use {@link ExternalConfig} from `@asheeui/core` — the name both renderers
+ * publish.
  */
 export interface NativeExternalConfig
   extends Omit<ExternalConfig, "components"> {
@@ -99,8 +99,8 @@ export interface NativeExternalConfig
    * object, and a component the web's package declares still has a section on the device.
    */
   components?:
-    | ((NonNullable<ExternalConfig["components"]> & NativeOnlyComponents) |
-        undefined);
+    | (NonNullable<ExternalConfig["components"]> & NativeOnlyComponents)
+    | undefined;
 }
 
 /**
@@ -116,8 +116,8 @@ export type AsheeConfig = NativeExternalConfig;
 /**
  * The resolved configuration a component reads.
  *
- * @deprecated Use {@link Config} from `@asheeui/core` — the name both
- * renderers publish. This spelling is the renderer's narrowing of the same contract.
+ * @deprecated Use {@link Config} from `@asheeui/core` — the name both renderers
+ * publish.
  */
 export interface NativeConfig extends Required<NativePlatformConfig> {
   /** Per-component options, deep-merged over the registered defaults. */

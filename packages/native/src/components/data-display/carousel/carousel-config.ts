@@ -26,13 +26,16 @@ export type {
 /**
  * Configuration options for the native Carousel.
  *
- * @deprecated Use {@link CarouselConfig} from `@asheeui/core` — the name both
- * renderers publish. This spelling is the renderer's narrowing of the same contract.
+ * @deprecated Use {@link CarouselConfig} from `@asheeui/core` — the name both renderers
+ * publish.
  */
 export type NativeCarouselConfig = CarouselConfig;
 
 /**
  * The defaults the Carousel registers with the native registry.
+ *
+ * @deprecated Use {@link defaultCarouselConfig} — the name both renderers publish. The value is
+ * this one: a fallback states the platform's default, and the name is shared.
  */
 export const defaultNativeCarouselConfig: NativeCarouselConfig = {
   size: "md",
@@ -55,6 +58,9 @@ registerNativeComponentDefaults("carousel", defaultNativeCarouselConfig);
 
 /**
  * The values the carousel falls back to when no tier provides one.
+ *
+ * @deprecated Use {@link FALLBACK_CAROUSEL_CONFIG} — the name both renderers publish. The value is
+ * this one: a fallback states the platform's default, and the name is shared.
  */
 export const FALLBACK_NATIVE_CAROUSEL_CONFIG = {
   size: "md",

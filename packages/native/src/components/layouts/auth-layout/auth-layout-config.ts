@@ -20,8 +20,8 @@ export type {
 /**
  * Configuration options for the native AuthLayout.
  *
- * @deprecated Use {@link AuthLayoutConfig} from `@asheeui/core` — the name both
- * renderers publish. This spelling is the renderer's narrowing of the same contract.
+ * @deprecated Use {@link AuthLayoutConfig} from `@asheeui/core` — the name both renderers
+ * publish.
  */
 export type NativeAuthLayoutConfig = AuthLayoutConfig;
 
@@ -31,6 +31,9 @@ export type NativeAuthLayoutConfig = AuthLayoutConfig;
  * They are the web's own values: an authentication form is centred, sits on a panel and keeps
  * the framework's narrowest measure. They are registered rather than assumed, so an
  * application's `components.authlayout` entry overrides a real value on the platform too.
+ *
+ * @deprecated Use {@link defaultAuthLayoutConfig} — the name both renderers publish. The value is
+ * this one: a fallback states the platform's default, and the name is shared.
  */
 export const defaultNativeAuthLayoutConfig: NativeAuthLayoutConfig = {
   panel: true,
@@ -49,6 +52,9 @@ registerNativeComponentDefaults("authlayout", defaultNativeAuthLayoutConfig);
 
 /**
  * The values the shell falls back to when no tier provides one.
+ *
+ * @deprecated Use {@link FALLBACK_AUTH_LAYOUT_CONFIG} — the name both renderers publish. The value is
+ * this one: a fallback states the platform's default, and the name is shared.
  */
 export const FALLBACK_NATIVE_AUTH_LAYOUT_CONFIG = {
   panel: true,

@@ -19,8 +19,8 @@ export type {
 /**
  * Configuration options for the native Testimonials band.
  *
- * @deprecated Use {@link TestimonialsConfig} from `@asheeui/core` — the name both
- * renderers publish. This spelling is the renderer's narrowing of the same contract.
+ * @deprecated Use {@link TestimonialsConfig} from `@asheeui/core` — the name both renderers
+ * publish.
  */
 export type NativeTestimonialsConfig = TestimonialsConfig;
 
@@ -31,6 +31,9 @@ export type NativeTestimonialsConfig = TestimonialsConfig;
  * from a laptop's, centred under a centred heading. A band is the same band on a phone — it
  * simply gets fewer columns, which the grid resolves from the window the platform reports
  * rather than from a stylesheet.
+ *
+ * @deprecated Use {@link defaultTestimonialsConfig} — the name both renderers publish. The value is
+ * this one: a fallback states the platform's default, and the name is shared.
  */
 export const defaultNativeTestimonialsConfig: NativeTestimonialsConfig = {
   columns: 1,
@@ -57,6 +60,9 @@ registerNativeComponentDefaults(
 
 /**
  * The values the Testimonials band falls back to when no tier provides one.
+ *
+ * @deprecated Use {@link FALLBACK_TESTIMONIALS_CONFIG} — the name both renderers publish. The value is
+ * this one: a fallback states the platform's default, and the name is shared.
  */
 export const FALLBACK_NATIVE_TESTIMONIALS_CONFIG = {
   columns: 1,

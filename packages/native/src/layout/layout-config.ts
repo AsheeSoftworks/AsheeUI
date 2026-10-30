@@ -23,8 +23,8 @@ import { registerNativeComponentDefaults } from "../config/registry";
  * shared vocabulary is what the two renderers name and this alias is kept so the
  * layout kit reads as one kit.
  *
- * @deprecated Use {@link ContainerSize} from `@asheeui/core` — the name both
- * renderers publish. This spelling is the renderer's narrowing of the same contract.
+ * @deprecated Use {@link ContainerSize} from `@asheeui/core` — the name both renderers
+ * publish.
  */
 export type NativeContainerSize = ContainerSize;
 
@@ -105,13 +105,21 @@ export interface NativeCenteredConfig {
   minHeight?: Space;
 }
 
-/** The defaults the native Container registers. */
+/**
+ * The defaults the native Container registers.
+ *
+ * @deprecated Use {@link defaultContainerConfig} — the name both renderers publish.
+ */
 export const defaultNativeContainerConfig: NativeContainerConfig = {
   size: "lg",
   gutter: true,
 };
 
-/** The defaults the native Stack registers. */
+/**
+ * The defaults the native Stack registers.
+ *
+ * @deprecated Use {@link defaultStackConfig} — the name both renderers publish.
+ */
 export const defaultNativeStackConfig: NativeStackConfig = {
   direction: "column",
   gap: "md",
@@ -120,19 +128,31 @@ export const defaultNativeStackConfig: NativeStackConfig = {
   wrap: false,
 };
 
-/** The defaults the native Grid registers. */
+/**
+ * The defaults the native Grid registers.
+ *
+ * @deprecated Use {@link defaultGridConfig} — the name both renderers publish.
+ */
 export const defaultNativeGridConfig: NativeGridConfig = {
   columns: 1,
   gap: "md",
 };
 
-/** The defaults the native Section registers. */
+/**
+ * The defaults the native Section registers.
+ *
+ * @deprecated Use {@link defaultSectionConfig} — the name both renderers publish.
+ */
 export const defaultNativeSectionConfig: NativeSectionConfig = {
   spacing: "md",
   background: "none",
 };
 
-/** The defaults the native Centered registers. */
+/**
+ * The defaults the native Centered registers.
+ *
+ * @deprecated Use {@link defaultCenteredConfig} — the name both renderers publish.
+ */
 export const defaultNativeCenteredConfig: NativeCenteredConfig = {
   axis: "both",
   minHeight: "none",
@@ -154,13 +174,21 @@ registerNativeComponentDefaults("grid", defaultNativeGridConfig);
 registerNativeComponentDefaults("section", defaultNativeSectionConfig);
 registerNativeComponentDefaults("centered", defaultNativeCenteredConfig);
 
-/** The values the native Container falls back to. */
+/**
+ * The values the native Container falls back to.
+ *
+ * @deprecated Use {@link FALLBACK_CONTAINER_CONFIG} — the name both renderers publish.
+ */
 export const FALLBACK_NATIVE_CONTAINER_CONFIG = {
   size: "lg",
   gutter: true,
 } satisfies NativeContainerConfig;
 
-/** The values the native Stack falls back to. */
+/**
+ * The values the native Stack falls back to.
+ *
+ * @deprecated Use {@link FALLBACK_STACK_CONFIG} — the name both renderers publish.
+ */
 export const FALLBACK_NATIVE_STACK_CONFIG = {
   direction: "column",
   gap: "md",
@@ -177,6 +205,9 @@ export const FALLBACK_NATIVE_STACK_CONFIG = {
  * key left out of this object never reaches the grid at all. Undefined is how the grid
  * states "inherit the count below me", which is the same rule the web grid gets from
  * the order of its class variants.
+ *
+ * @deprecated Use {@link FALLBACK_GRID_CONFIG} — the name both renderers publish. The value is
+ * this one: a fallback states the platform's default, and the name is shared.
  */
 export const FALLBACK_NATIVE_GRID_CONFIG: Concrete<
   Pick<NativeGridConfig, "columns" | "gap">
@@ -188,13 +219,21 @@ export const FALLBACK_NATIVE_GRID_CONFIG: Concrete<
   columnsLg: undefined,
 };
 
-/** The values the native Section falls back to. */
+/**
+ * The values the native Section falls back to.
+ *
+ * @deprecated Use {@link FALLBACK_SECTION_CONFIG} — the name both renderers publish.
+ */
 export const FALLBACK_NATIVE_SECTION_CONFIG = {
   spacing: "md",
   background: "none",
 } satisfies NativeSectionConfig;
 
-/** The values the native Centered falls back to. */
+/**
+ * The values the native Centered falls back to.
+ *
+ * @deprecated Use {@link FALLBACK_CENTERED_CONFIG} — the name both renderers publish.
+ */
 export const FALLBACK_NATIVE_CENTERED_CONFIG = {
   axis: "both",
   minHeight: "none",

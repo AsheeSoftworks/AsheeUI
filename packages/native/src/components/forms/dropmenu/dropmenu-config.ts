@@ -36,6 +36,9 @@ export interface NativeDropmenuConfig
 /**
  * The defaults the Dropmenu registers with the native registry.
  * The density is the shared `md` whose proportions the native scale makes touch-sized.
+ *
+ * @deprecated Use {@link defaultDropmenuConfig} — the name both renderers publish. The value is
+ * this one: a fallback states the platform's default, and the name is shared.
  */
 export const defaultNativeDropmenuConfig: NativeDropmenuConfig = {
   size: "md",
@@ -54,6 +57,9 @@ registerNativeComponentDefaults("dropmenu", defaultNativeDropmenuConfig);
 
 /**
  * The values the select falls back to when no tier provides one.
+ *
+ * @deprecated Use {@link FALLBACK_DROPMENU_CONFIG} — the name both renderers publish. The value is
+ * this one: a fallback states the platform's default, and the name is shared.
  */
 export const FALLBACK_NATIVE_DROPMENU_CONFIG = {
   size: "md",

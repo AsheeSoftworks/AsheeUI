@@ -15,8 +15,8 @@ export type { DocsLayoutConfig } from "@asheeui/core";
 /**
  * Configuration options for the native DocsLayout.
  *
- * @deprecated Use {@link DocsLayoutConfig} from `@asheeui/core` — the name both
- * renderers publish. This spelling is the renderer's narrowing of the same contract.
+ * @deprecated Use {@link DocsLayoutConfig} from `@asheeui/core` — the name both renderers
+ * publish.
  */
 export type NativeDocsLayoutConfig = DocsLayoutConfig;
 
@@ -26,6 +26,9 @@ export type NativeDocsLayoutConfig = DocsLayoutConfig;
  * They are the web's own values, including the two landmark names: the platform states those
  * names as the titles of the sections it stacks, so an application that names its navigation
  * region once names it on both platforms.
+ *
+ * @deprecated Use {@link defaultDocsLayoutConfig} — the name both renderers publish. The value is
+ * this one: a fallback states the platform's default, and the name is shared.
  */
 export const defaultNativeDocsLayoutConfig: NativeDocsLayoutConfig = {
   navigationLabel: "Documentation",
@@ -47,6 +50,9 @@ registerNativeComponentDefaults("docslayout", defaultNativeDocsLayoutConfig);
 
 /**
  * The values the composition falls back to when no tier provides one.
+ *
+ * @deprecated Use {@link FALLBACK_DOCS_LAYOUT_CONFIG} — the name both renderers publish. The value is
+ * this one: a fallback states the platform's default, and the name is shared.
  */
 export const FALLBACK_NATIVE_DOCS_LAYOUT_CONFIG = {
   navigationLabel: "Documentation",

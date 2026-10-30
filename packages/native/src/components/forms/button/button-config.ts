@@ -21,8 +21,8 @@ import { registerNativeComponentDefaults } from "../../../config/registry";
  * shape — a native button is density `lg` because a thumb needs the room, where the
  * web's `md` is sized for a pointer — and those live in `defaultNativeButtonConfig`.
  *
- * @deprecated Use {@link ButtonConfig} from `@asheeui/core` — the name both
- * renderers publish. This spelling is the renderer's narrowing of the same contract.
+ * @deprecated Use {@link ButtonConfig} from `@asheeui/core` — the name both renderers
+ * publish.
  */
 export type NativeButtonConfig = Omit<ButtonConfig, "animate">;
 
@@ -31,6 +31,9 @@ export type NativeButtonConfig = Omit<ButtonConfig, "animate">;
  *
  * `variant`, `color` and `radius` are deliberately absent so they inherit from the
  * platform's configuration rather than pinning a value.
+ *
+ * @deprecated Use {@link defaultButtonConfig} — the name both renderers publish. The value is
+ * this one: a fallback states the platform's default, and the name is shared.
  */
 export const defaultNativeButtonConfig: NativeButtonConfig = {
   size: "lg",
@@ -47,6 +50,9 @@ registerNativeComponentDefaults("button", defaultNativeButtonConfig);
 
 /**
  * The values the button falls back to when no tier provides one.
+ *
+ * @deprecated Use {@link FALLBACK_BUTTON_CONFIG} — the name both renderers publish. The value is
+ * this one: a fallback states the platform's default, and the name is shared.
  */
 export const FALLBACK_NATIVE_BUTTON_CONFIG = {
   variant: "solid",

@@ -24,8 +24,8 @@ import { registerNativeComponentDefaults } from "../../../config/registry";
  * `size`, `radius`, `variant`, `color` and `status` carry the meanings the shared field
  * contract gives them.
  *
- * @deprecated Use {@link InputConfig} from `@asheeui/core` — the name both
- * renderers publish. This spelling is the renderer's narrowing of the same contract.
+ * @deprecated Use {@link InputConfig} from `@asheeui/core` — the name both renderers
+ * publish.
  */
 export interface NativeInputConfig
   extends Pick<
@@ -47,6 +47,9 @@ export interface NativeInputConfig
  * The density is `md`, which is the shared density whose height the native scale
  * makes touch-sized; `variant` and `color` stay unset so they inherit the
  * platform's configuration.
+ *
+ * @deprecated Use {@link defaultInputConfig} — the name both renderers publish. The value is
+ * this one: a fallback states the platform's default, and the name is shared.
  */
 export const defaultNativeInputConfig: NativeInputConfig = {
   size: "md",
@@ -66,6 +69,9 @@ registerNativeComponentDefaults("input", defaultNativeInputConfig);
 
 /**
  * The values the field falls back to when no tier provides one.
+ *
+ * @deprecated Use {@link FALLBACK_INPUT_CONFIG} — the name both renderers publish. The value is
+ * this one: a fallback states the platform's default, and the name is shared.
  */
 export const FALLBACK_NATIVE_INPUT_CONFIG = {
   size: "md",

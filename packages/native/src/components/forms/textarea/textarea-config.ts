@@ -40,6 +40,9 @@ export interface NativeTextareaConfig
  * The defaults the Textarea registers with the native registry.
  * The density is the shared `md` whose proportions the native scale makes touch-sized,
  * and four rows is the height a value of a few sentences reads at without scrolling.
+ *
+ * @deprecated Use {@link defaultTextareaConfig} — the name both renderers publish. The value is
+ * this one: a fallback states the platform's default, and the name is shared.
  */
 export const defaultNativeTextareaConfig: NativeTextareaConfig = {
   size: "md",
@@ -59,6 +62,9 @@ registerNativeComponentDefaults("textarea", defaultNativeTextareaConfig);
 
 /**
  * The values the field falls back to when no tier provides one.
+ *
+ * @deprecated Use {@link FALLBACK_TEXTAREA_CONFIG} — the name both renderers publish. The value is
+ * this one: a fallback states the platform's default, and the name is shared.
  */
 export const FALLBACK_NATIVE_TEXTAREA_CONFIG = {
   size: "md",
