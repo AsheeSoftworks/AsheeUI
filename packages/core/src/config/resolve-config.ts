@@ -1,9 +1,16 @@
 /**
- * Configuration resolution for AsheeUI.
- * This file provides the resolveConfig function that merges user-provided
- * configuration with defaults and component-registered defaults. It handles
- * the complete configuration resolution pipeline, including color resolution
- * which requires special handling for custom theme inheritance.
+ * Configuration resolution for the web renderer.
+ *
+ * This is the resolver the web's `AsheeUIProvider` calls: defaults merged with the consumer's
+ * configuration, the palette resolved for inheritance, and `components` exposed as a lazy getter over
+ * the registry.
+ *
+ * **The platform's resolver is `@asheeui/native`'s `resolveNativeConfig`**, and the two share every
+ * rule this file states: the cascade (`resolveConfigCascade`), the merge (`mergeObject`), the palette
+ * (`resolveColorConfig`, including the family a custom theme with no `extends` inherits) and the
+ * validation (`assertValidConfig`). What differs is the *values*: the device adds `defaultSize`, which
+ * has no meaning to a pointer, and states its own density and radius baselines. That is the whole
+ * difference, and it is stated in native's `NATIVE_FALLBACK_CONFIG` rather than here.
  */
 
 import { getAllComponentDefaults } from "../registry";

@@ -6,7 +6,7 @@
  * applies them while rendering.
  */
 
-import type { ExternalConfig } from "@asheeui/core";
+import { assertValidConfig, type ExternalConfig } from "@asheeui/core";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { AsheeUIProvider } from "./AsheeUIProvider";
 import {
@@ -19,6 +19,16 @@ import { expectHydrationClean, render, renderToServerString } from "./test";
 const asOptions = (value: unknown) => ({
   config: value as ExternalConfig,
 });
+
+/**
+ * The one invalid configuration both renderers are tested against.
+ *
+ * It is a shared object in the sense that matters: the same key, the same wrong value, and the same
+ * expected rejection — because both providers call the same `assertValidConfig`.
+ */
+const INVALID_CONFIG = {
+  defaultVariant: "primry",
+} as unknown as ExternalConfig;
 
 describe("AsheeUIProvider configuration validation", () => {
   it("renders a valid configuration", () => {
@@ -37,6 +47,22 @@ describe("AsheeUIProvider configuration validation", () => {
         asOptions({ defaultVariant: "primry" }),
       ),
     ).toThrowError(/defaultVariant: "primry" is not a valid value/);
+  });
+
+  it("rejects the same object the device rejects, with the one message core states", () => {
+    // B09: the device's resolver calls `assertValidConfig` too, so an invalid shared configuration
+    // fails identically on either platform. The expected message is produced by that function here
+    // rather than restated, so the two sides cannot drift.
+    let expected = "";
+    try {
+      assertValidConfig(INVALID_CONFIG);
+    } catch (error) {
+      expected = (error as Error).message;
+    }
+
+    expect(() =>
+      renderToServerString(<span>ok</span>, asOptions(INVALID_CONFIG)),
+    ).toThrowError(expected);
   });
 
   it("warns about unknown keys in development without failing the render", () => {

@@ -104,6 +104,12 @@ describe("public entry point", () => {
     }
   });
 
+  it("publishes both names for the configuration hook, as one function", () => {
+    // A shared component writes `useAshee()`; the longer name stays because it is what the
+    // documentation and a great many imports use. They are the same reference on both renderers.
+    expect(AsheeUI.useAshee).toBe(AsheeUI.useAsheeConfig);
+  });
+
   it("keeps internal helpers and the configuration-only module out of the public surface", () => {
     expect(AsheeUI).not.toHaveProperty("FieldShell");
     expect(AsheeUI).not.toHaveProperty("Menu");

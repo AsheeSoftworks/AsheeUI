@@ -21,6 +21,7 @@ import {
   AsheeNativeConfigContext,
   AsheeNativeProvider,
   AsheeUIProvider,
+  useAshee,
   useAsheeConfig,
   useAsheeNativeConfig,
 } from "./AsheeUIProvider";
@@ -120,6 +121,11 @@ describe("the provider's one name", () => {
     expect(AsheeNativeProvider).toBe(AsheeUIProvider);
     expect(AsheeNativeConfigContext).toBe(AsheeConfigContext);
     expect(useAsheeNativeConfig).toBe(useAsheeConfig);
+  });
+
+  it("publishes the short hook name the web renderer publishes", () => {
+    // `useAshee` is what a shared component writes; it meant the web alone until B09.
+    expect(useAshee).toBe(useAsheeConfig);
   });
 
   it("warns once per process, naming every name that moved", () => {

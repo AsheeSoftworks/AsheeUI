@@ -36,13 +36,7 @@
  * working and keeps warning.
  */
 
-import {
-  defaultColorConfig,
-  deprecatedAlias,
-  deprecateMany,
-  resolveColorConfig,
-  selectTheme,
-} from "@asheeui/core";
+import { deprecatedAlias, deprecateMany, selectTheme } from "@asheeui/core";
 import { vars } from "nativewind";
 import {
   createContext,
@@ -105,6 +99,9 @@ export interface AsheeUIProviderProps {
  * ```
  */
 export function AsheeUIProvider({ config, children }: AsheeUIProviderProps) {
+  // One resolution, handed to the context below and painted from here: the palette is part of the
+  // resolved configuration (`color`), so this provider does not resolve the theme a second time and
+  // a component that reads `config.color` reads the same palettes the screen was painted with.
   const value = useMemo(() => resolveNativeConfig(config), [config]);
 
   // The platform's own answer, which is what "system" means. A platform that reports nothing
@@ -112,15 +109,14 @@ export function AsheeUIProvider({ config, children }: AsheeUIProviderProps) {
   const scheme = useColorScheme() ?? "light";
 
   const palette = useMemo(() => {
-    const palettes = resolveColorConfig(defaultColorConfig, config?.color);
     const { palette: active } = selectTheme(
-      palettes,
-      config?.defaultTheme,
+      value.color,
+      value.defaultTheme,
       scheme,
     );
 
     return paletteVariables(active);
-  }, [config?.color, config?.defaultTheme, scheme]);
+  }, [value.color, value.defaultTheme, scheme]);
 
   // A new style object per palette, which is what tells the styling runtime to re-read the
   // variables rather than keep the previous theme's values.
@@ -144,6 +140,9 @@ export function AsheeUIProvider({ config, children }: AsheeUIProviderProps) {
 /**
  * Read the resolved native configuration.
  *
+ * The shape is core's `Config` plus this platform's density, so a shared component reads
+ * `config.defaultTheme`, `config.color` and `config.defaultVariant` here and on the web.
+ *
  * @returns The configuration provided by {@link AsheeUIProvider}.
  * @throws When a component is rendered outside the provider, because a missing
  * provider is a setup mistake and defaulting silently would hide it.
@@ -159,6 +158,14 @@ export function useAsheeConfig(): NativeConfig {
 
   return config;
 }
+
+/**
+ * The configuration hook under the shorter name both renderers publish.
+ *
+ * The web renderer has always published this alias; a shared component that writes `useAshee()`
+ * meant the web alone until now.
+ */
+export const useAshee = useAsheeConfig;
 
 // ─── Deprecated: the platform-suffixed spellings, removed in the next major ───
 //
