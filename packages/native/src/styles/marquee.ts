@@ -15,6 +15,16 @@ import type { MarqueeAxis } from "@asheeui/core";
 /** The native marquee frame. It clips what moves, which is what makes the loop seamless. */
 export const NATIVE_MARQUEE_CLASS = "overflow-hidden";
 
+/**
+ * The gap the marquee falls back to when the configured one is a length the platform cannot state.
+ *
+ * The contract states a gap as a CSS length, because one value has to describe both platforms; the
+ * platform reads it as its own number of units, and a length it cannot convert falls back to the
+ * framework's own default. It moved here from `@asheeui/core` in C3: it is the platform's number,
+ * and the web never reads it.
+ */
+export const MARQUEE_FALLBACK_GAP = 24;
+
 /** The width or height the native frame claims, per axis. */
 export const NATIVE_MARQUEE_AXIS_CLASS: Record<MarqueeAxis, string> = {
   x: "w-full",

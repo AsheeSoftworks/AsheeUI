@@ -1,21 +1,20 @@
 /**
- * Every class string the Marquee renders, for the web renderer, kept side by side so a change
- * to the marquee's shape lands on the web at once. Every entry is a complete, static
- * class string, because both Tailwind and NativeWind compile the classes they can read in
- * the source.
+ * The Marquee's one shared decision: how long a speed preset lasts.
  *
- * The component moves, and how it moves is what the two platforms state differently: the
- * web states a keyframe animation in its stylesheet, and the platform drives an animated
- * value from its own driver. What stays here is the dressing both share — the clipping
- * frame, the track, the sets and the items — and the two things only one platform can say.
+ * Everything else the Marquee renders is a class string or a number read by one renderer, and both
+ * have left core. The web's class dictionaries — the clipping frame, the track, the sets, the fades,
+ * the pause — moved to `packages/web/src/styles/marquee.ts` in C2; the platform's moved to
+ * `packages/native/src/styles/marquee.ts` in C1, and `MARQUEE_FALLBACK_GAP` followed it there in
+ * C3, because the platform is its only reader.
  *
- * The platform's half of this file — the `NATIVE_*` dictionaries — moved to
- * `@asheeui/native`; what is left here is the web renderer's own.
+ * `MARQUEE_SPEED_PRESETS` stays because both renderers read it and neither can state it for the
+ * other: a preset is a *duration in seconds*, not a class, so it means the same thing to a CSS
+ * animation and to a native animated value. It is one of the twelve shared constants
+ * `CORE-MIGRATION-REPORT.md` §6.1 lists as a design decision rather than styling, and a marquee
+ * that ran at one speed in a browser and another on a device would be a defect no test could see.
  */
 
 import type { MarqueeSpeedPreset } from "./marquee-config";
-
-// ─── Shared ───────────────────────────────────────────────────────────────────
 
 /**
  * Duration in seconds for each speed preset.
@@ -26,14 +25,3 @@ export const MARQUEE_SPEED_PRESETS: Record<MarqueeSpeedPreset, number> = {
   normal: 30,
   fast: 15,
 };
-
-/**
- * The gap the marquee falls back to when the configured one is a length the platform
- * cannot state. It is the framework's own default, which is what makes a value the
- * platform cannot read land on the value it would have had.
- */
-export const MARQUEE_FALLBACK_GAP = 24;
-
-// ─── Web ──────────────────────────────────────────────────────────────────────
-
-// ─── Native ───────────────────────────────────────────────────────────────────

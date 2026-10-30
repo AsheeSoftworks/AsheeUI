@@ -21,11 +21,7 @@
  * is the platform's statement of the web's `group-focus-within` pause.
  */
 
-import {
-  MARQUEE_FALLBACK_GAP,
-  MARQUEE_SPEED_PRESETS,
-  resolveConfigCascade,
-} from "@asheeui/core";
+import { MARQUEE_SPEED_PRESETS, resolveConfigCascade } from "@asheeui/core";
 import {
   isValidElement,
   type ReactNode,
@@ -47,6 +43,7 @@ import {
 import { useReduceMotion } from "../../../hooks/use-reduce-motion";
 import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
 import {
+  MARQUEE_FALLBACK_GAP,
   NATIVE_MARQUEE_AXIS_CLASS,
   NATIVE_MARQUEE_CLASS,
   NATIVE_MARQUEE_FADE_CLASS,
