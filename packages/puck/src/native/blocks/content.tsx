@@ -8,8 +8,12 @@
  * alignment vocabulary is what reaches the component.
  */
 
-import { SECTION_BLOCK_TEXT_ALIGN } from "@asheeui/core";
-import { Container, Section, Typography } from "@asheeui/native";
+import {
+  Container,
+  SECTION_BLOCK_TEXT_ALIGN,
+  Section,
+  Typography,
+} from "@asheeui/native";
 import { SectionHeading } from "@asheeui/native/section-kit";
 import type {
   AsheeBlock,

@@ -16,7 +16,6 @@
 
 import {
   SECTION_BLOCK_HEADING_ROLE,
-  SECTION_BLOCK_TEXT_ALIGN,
   type SectionBlockAlign,
   type SectionBlockHeadingSize,
 } from "@asheeui/core";
@@ -25,6 +24,7 @@ import { View } from "react-native";
 import {
   NATIVE_SECTION_BLOCK_HEADING_ALIGN_CLASS,
   NATIVE_SECTION_BLOCK_HEADING_CLASS,
+  SECTION_BLOCK_TEXT_ALIGN,
 } from "../../../styles/section-block";
 import { classNames } from "../../../utils/class-names";
 import { Typography } from "../../typography/text/Text";

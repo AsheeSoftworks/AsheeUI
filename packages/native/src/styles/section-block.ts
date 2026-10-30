@@ -41,3 +41,20 @@ export const NATIVE_SECTION_BLOCK_ACTIONS_ALIGN_CLASS: Record<
   start: "justify-start",
   center: "justify-center",
 };
+
+/**
+ * How a band's text is aligned, per alignment, on the platform.
+ *
+ * A native text carries its own alignment, so the band passes this value down to each
+ * `Typography` rather than stating one class on the block as the web does
+ * (`SECTION_BLOCK_HEADING_ALIGN_CLASS`). That is what makes the map the platform's: it moved here
+ * from `@asheeui/core` in C3, values unchanged, and `SectionHeading` and the Puck native blocks
+ * read it from this package now.
+ */
+export const SECTION_BLOCK_TEXT_ALIGN: Record<
+  SectionBlockAlign,
+  "left" | "center"
+> = {
+  start: "left",
+  center: "center",
+};

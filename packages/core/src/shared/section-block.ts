@@ -15,17 +15,20 @@
  * means. They are declared here rather than inside either renderer, and both renderers
  * re-export them, so a configuration on either platform names one type.
  *
- * What the module also states is the arrangement a band's heading and its action row take,
- * as class dictionaries for each renderer, kept side by side so they cannot drift. The web
- * composes its bands from a heading helper and an action group; the platform composes the
- * same two shapes from the same strings. What differs is the technology — the web states
- * responsive alignment with a class variant and the platform states one arrangement,
- * because it resolves the window itself rather than a stylesheet doing it.
+ * What a platform *draws* from that vocabulary is not here. The web's heading and action-row
+ * classes are in `packages/web/src/styles/section-block.ts`, with
+ * `SECTION_BLOCK_HEADING_ELEMENT` beside them because the element a heading renders as is the
+ * document outline's and a device has no outline; the platform's `NATIVE_*` classes are in
+ * `packages/native/src/styles/section-block.ts`, with `SECTION_BLOCK_TEXT_ALIGN` beside them
+ * because that map states which side a `Text` is aligned to and only a `Text` takes it. It moved
+ * to the platform in C3; the web states the same alignment once on the block, as a class.
+ *
+ * `SECTION_BLOCK_HEADING_ROLE` stays, and is the one value here that is neither a type nor a
+ * drawing: which typography role a heading size resolves to is a decision about the shared scale,
+ * so a hero and a call to action cannot disagree about what a `lg` heading looks like — and it is
+ * stated in the roles both renderers read rather than in either one's classes (B15, B16).
  *
  * The module registers nothing and imports no renderer.
- *
- * The platform's half of this file — the `NATIVE_*` dictionaries — moved to
- * `@asheeui/native`; what is left here is the web renderer's own.
  */
 
 import type { Space } from "./spacing";
@@ -128,20 +131,3 @@ export interface SectionBlockOptions {
    */
   contained?: boolean | undefined;
 }
-
-// ─── The heading block ────────────────────────────────────────────────────────
-
-/**
- * How a band's text is aligned, per alignment.
- * The web states this with a `text-center` class on the block; the platform states it on
- * each `Text`, so the band passes the value rather than a class.
- */
-export const SECTION_BLOCK_TEXT_ALIGN: Record<
-  SectionBlockAlign,
-  "left" | "center"
-> = {
-  start: "left",
-  center: "center",
-};
-
-// ─── The action row ───────────────────────────────────────────────────────────
