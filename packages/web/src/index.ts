@@ -39,27 +39,16 @@ export type {
   ThemeName,
   Variant,
 } from "@asheeui/core";
+/**
+ * The shared rules both renderers read.
+ *
+ * `resolveGridColumns` answers "how many columns does this grid show here"; the web's own
+ * `Grid` states its counts as classes and needs no number, but a component that measures
+ * its own container — or one written for both platforms — asks the question in a value.
+ */
+export { resolveGridColumns } from "@asheeui/core";
 export type { AsheeUIProviderProps } from "./AsheeUIProvider";
 export { AsheeUIProvider } from "./AsheeUIProvider";
-
-/**
- * Platform questions a shared component has to ask.
- *
- * Both are the same names and the same shapes the platform renderer exports, so a component
- * written once can ask them and mean the same thing on either platform. `useBreakpoint` is
- * the one that makes a *branch* possible: a media query styles an element, but choosing
- * between a table and cards decides which elements exist, and that needs a value.
- */
-export {
-  useBreakpoint,
-  type WebBreakpoint,
-  type WebBreakpointState,
-} from "./libs/use-breakpoint";
-export {
-  usePrefersReducedMotion,
-  useReduceMotion,
-} from "./libs/use-prefers-reduced-motion";
-
 /**
  * All component exports.
  * Each component is exported from its respective directory.
@@ -146,6 +135,26 @@ export {
   useAshee,
   useAsheeConfig,
 } from "./libs/context";
+/**
+ * Platform questions a shared component has to ask.
+ *
+ * Both are the same names and the same shapes the platform renderer exports, so a component
+ * written once can ask them and mean the same thing on either platform. `useBreakpoint` is
+ * the one that makes a *branch* possible: a media query styles an element, but choosing
+ * between a table and cards decides which elements exist, and that needs a value.
+ */
+export {
+  type BreakpointName,
+  type BreakpointState,
+  resolveBreakpoint,
+  useBreakpoint,
+  type WebBreakpoint,
+  type WebBreakpointState,
+} from "./libs/use-breakpoint";
+export {
+  usePrefersReducedMotion,
+  useReduceMotion,
+} from "./libs/use-prefers-reduced-motion";
 /**
  * Theme utilities and hooks.
  * These provide runtime theme management and reactivity.

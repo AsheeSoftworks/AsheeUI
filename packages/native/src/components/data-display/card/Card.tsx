@@ -29,7 +29,7 @@ import { Typography } from "../../typography/text/Text";
 import {
   FALLBACK_NATIVE_CARD_CONFIG,
   type NativeCardConfig,
-  resolveNativeCardVariant,
+  resolveCardVariant,
 } from "./card-config";
 import {
   CARD_BASE_CLASS,
@@ -112,9 +112,9 @@ export function Card({
   const sectionConfig = config.components.card;
 
   // The cascade's component and global tiers can name a treatment from either
-  // platform's vocabulary; the resolver lands it on a native surface, so the class
-  // look-up below always answers.
-  const resolvedVariant = resolveNativeCardVariant(
+  // platform's vocabulary; the shared resolver lands it on a treatment the class map
+  // below always answers for.
+  const resolvedVariant = resolveCardVariant(
     resolveCascade<Variant>(
       variant,
       sectionConfig?.variant,

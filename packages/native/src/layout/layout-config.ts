@@ -14,7 +14,6 @@ import type {
   Space,
 } from "@asheeui/core";
 import { registerNativeComponentDefaults } from "../config/registry";
-import type { NativeBreakpoint } from "../hooks/use-breakpoint";
 
 /**
  * Maximum width of a container, in the framework's own sizes.
@@ -199,36 +198,11 @@ export const FALLBACK_NATIVE_CENTERED_CONFIG = {
 } satisfies NativeCenteredConfig;
 
 /**
- * Resolve how many columns a grid shows at a breakpoint.
+ * How many columns a grid shows at a breakpoint.
  *
- * A count stated at a smaller breakpoint is inherited by the larger ones, which
- * is the same rule the web grid gets from the order of its class variants: a grid
- * that never changes shape only has to state `columns`. The function is pure so
- * the inheritance can be tested without a device, and so a component that
- * measures its own container can reuse it.
- *
- * @param config - The grid's options.
- * @param breakpoint - The breakpoint the layout is being resolved at.
- * @returns The column count to use.
- *
- * @example
- * ```ts
- * resolveGridColumns({ columns: 1, columnsMd: 2 }, "lg"); // 2
- * ```
+ * The rule is `@asheeui/core`'s: a count stated at a smaller breakpoint is inherited by
+ * the larger ones, and a boundary written twice is two boundaries. It is re-exported here
+ * so the layout kit's imports keep resolving, and so the package publishes the same name
+ * the web renderer does.
  */
-export function resolveGridColumns(
-  config: NativeGridConfig,
-  breakpoint: NativeBreakpoint,
-): number {
-  const base = config.columns ?? 1;
-
-  if (breakpoint === "lg" || breakpoint === "xl") {
-    return config.columnsLg ?? config.columnsMd ?? base;
-  }
-
-  if (breakpoint === "md") {
-    return config.columnsMd ?? base;
-  }
-
-  return base;
-}
+export { resolveGridColumns } from "@asheeui/core";

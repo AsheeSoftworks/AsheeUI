@@ -7,11 +7,13 @@
  * configuration cascade.
  */
 
+import { resolveCardVariant as sharedResolveCardVariant } from "@asheeui/core";
 import { type RenderResult, render } from "@testing-library/react-native";
 import type { ReactElement } from "react";
 import { Text } from "react-native";
 import { AsheeUIProvider } from "../../../provider/AsheeUIProvider";
 import { Card } from "./Card";
+import { resolveNativeCardVariant } from "./card-config";
 
 /**
  * Render a card inside the framework provider.
@@ -150,5 +152,11 @@ describe("Native Card", () => {
     );
 
     expect(classesOf(view, "card").endsWith("w-full")).toBe(true);
+  });
+
+  it("resolves its surface through the rule both renderers read", () => {
+    // The platform's spelling is a reference to the shared rule, not a second table: a
+    // surface name that leaks across from the web resolves the same way on both.
+    expect(resolveNativeCardVariant).toBe(sharedResolveCardVariant);
   });
 });

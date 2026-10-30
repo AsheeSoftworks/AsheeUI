@@ -6,7 +6,10 @@
  * it adds: reading the window the platform reports.
  */
 
-import { BREAKPOINT } from "@asheeui/core";
+import {
+  BREAKPOINT,
+  resolveBreakpoint as sharedResolveBreakpoint,
+} from "@asheeui/core";
 import { render } from "@testing-library/react-native";
 import { Dimensions, Text } from "react-native";
 import { resolveBreakpoint, useBreakpoint } from "./use-breakpoint";
@@ -52,5 +55,11 @@ describe("useBreakpoint", () => {
         width >= BREAKPOINT.md ? "md" : "below-md"
       }`,
     );
+  });
+
+  it("re-exports the shared rule, rather than restating it", () => {
+    // The boundary is core's: a device and a browser that say `lg` mean the same width,
+    // and two copies of a boundary are two boundaries.
+    expect(resolveBreakpoint).toBe(sharedResolveBreakpoint);
   });
 });

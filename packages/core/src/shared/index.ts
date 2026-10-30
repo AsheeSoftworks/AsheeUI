@@ -1,6 +1,7 @@
 export * from "./action";
 export * from "./announcement";
 export * from "./breakpoints";
+export * from "./card";
 export * from "./deprecation";
 export * from "./grid";
 export * from "./message-surface";

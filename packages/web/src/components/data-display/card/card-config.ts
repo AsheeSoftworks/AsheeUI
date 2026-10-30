@@ -7,7 +7,7 @@
  * resolution system.
  */
 
-import type { Radius, Size, Variant } from "@asheeui/core";
+import type { Radius, Size } from "@asheeui/core";
 import { registerComponentDefaults } from "@asheeui/core";
 import type { ImageFit, ImageRatioKey } from "../image/image-config";
 
@@ -144,64 +144,16 @@ export interface CardConfig {
 }
 
 /**
- * The card surface each treatment a config tier can name renders as.
+ * The shared rule that lands a treatment on a surface a card can draw.
  *
- * A card is a surface rather than a control, so it cannot draw every treatment the
- * shared vocabulary names. Left untranslated, a treatment it cannot draw misses the
- * class map and the card silently renders as `bordered` — the same problem Badge and
- * Chip solve with `resolveBadgeVariant` / `resolveChipVariant`.
- *
- * - `solid`: the filled, highest-emphasis treatment. The card's filled, raised
- *   surface is `elevated`, which fills with the theme's secondary surface
- *   (`bg-secondary`) exactly as the native card's `solid` does.
- * - `bordered`, `ghost`: already card treatments, so they keep their meaning.
- * - `faded`: the framework's resting treatment and the shipped `defaultVariant`.
- *   A card's resting surface is its documented default, `bordered`, so the
- *   framework default keeps rendering a bordered card rather than restyling every
- *   unconfigured card into the translucent `flat` surface at once.
- * - `underlined`: a card has no baseline to rule, so it lands on the nearest
- *   surface it can draw, `bordered`.
- *
- * The card's own names map to themselves, so a card treatment named on the instance
- * or under `components.card.variant` reaches the class map unchanged.
+ * It lives in `@asheeui/core` because both renderers need it and because the platform's
+ * card draws the shared vocabulary directly: the rule speaks the shared treatments and
+ * maps the web card's own two surface names (`elevated`, `flat`) onto the filled one, so a
+ * configuration written for the web lands somewhere sensible on a device. This package
+ * re-exports it under the same name, and projects the result onto its own four surfaces in
+ * `card-surface.ts`.
  */
-const CARD_VARIANT_FOR_TREATMENT: Record<Variant | CardVariant, CardVariant> = {
-  solid: "elevated",
-  bordered: "bordered",
-  ghost: "ghost",
-  faded: "bordered",
-  underlined: "bordered",
-  elevated: "elevated",
-  flat: "flat",
-};
-
-/**
- * Resolve a treatment to the card surface the card can draw.
- *
- * The cascade's last tiers are the framework's rather than the card's, so they can
- * name a treatment a card has no class for. This is where the two vocabularies meet:
- * the treatment lands on the nearest card surface instead of the class look-up
- * answering `undefined` and the card quietly rendering as `bordered`. Both the
- * treatment a tier named and the card's own variant names are accepted, so the
- * resolver can wrap the cascade's result whichever tier answered.
- *
- * @param treatment - The treatment the cascade produced.
- * @returns The card surface to render.
- *
- * @example
- * ```ts
- * resolveCardVariant("solid"); // "elevated"
- * resolveCardVariant("faded"); // "bordered"
- * resolveCardVariant("ghost"); // "ghost"
- * ```
- */
-export function resolveCardVariant(
-  treatment: Variant | CardVariant,
-): CardVariant {
-  // A plain JS/JSON consumer can name any string at runtime, so a treatment the
-  // card does not know falls back to its default surface rather than to nothing.
-  return CARD_VARIANT_FOR_TREATMENT[treatment] ?? FALLBACK_CARD_CONFIG.variant;
-}
+export { resolveCardVariant } from "@asheeui/core";
 
 /**
  * Default config values registered for the Card component.

@@ -7,8 +7,18 @@
  * reason the platform's own surfaces are neutral by default.
  */
 
-import type { ColorRole, Radius, Size, Variant } from "@asheeui/core";
+import {
+  type ColorRole,
+  deprecatedAlias,
+  deprecateMany,
+  type Radius,
+  resolveCardVariant,
+  type Size,
+  type Variant,
+} from "@asheeui/core";
 import { registerNativeComponentDefaults } from "../../../config/registry";
+
+export { resolveCardVariant };
 
 /**
  * The treatments a native card can draw.
@@ -45,59 +55,35 @@ export interface NativeCardConfig {
 }
 
 /**
- * A card surface for each treatment the shared vocabulary can name.
+ * A card surface for each treatment the shared vocabulary can name, and for the web
+ * card's own two surface names.
  *
- * The native card draws the shared treatment vocabulary directly — `solid`, `faded`,
- * `bordered`, `ghost` and `underlined` each have a surface of their own — so every value
- * the cascade can produce reaches the class map without being translated. The web card
- * owns a different four-surface vocabulary and needs a mapping function
- * (`resolveCardVariant` in the web package) to land the shared names on one of its
- * surfaces; native does not, and translating here would only move a surface the card can
- * already draw.
- *
- * The map exists for the value no signature can rule out. A plain JS or JSON
- * configuration can name any string at runtime, and one that leaks across from the web —
- * a shared config object naming the web card's `elevated` or `flat` surface — must land
- * on a sensible native surface rather than miss the class map and render an unstyled
- * block. `elevated` and `flat` are both the web's filled surface, which native's `solid`
- * states with the same `bg-secondary` fill.
+ * The rule is `@asheeui/core`'s `resolveCardVariant`: the native card draws the shared
+ * treatment vocabulary directly — `solid`, `faded`, `bordered`, `ghost` and `underlined`
+ * each have a surface of their own — while the web card owns a different four-surface
+ * vocabulary and projects the resolved treatment onto one of its own. The map used to live
+ * here, and moving it means a name that leaks across from the web — a shared configuration
+ * naming `elevated` or `flat` — resolves the same way for both renderers instead of only
+ * for this one.
  */
-const NATIVE_CARD_VARIANT_FOR_TREATMENT: Record<string, NativeCardVariant> = {
-  solid: "solid",
-  faded: "faded",
-  bordered: "bordered",
-  ghost: "ghost",
-  underlined: "underlined",
-  elevated: "solid",
-  flat: "solid",
-};
+
+// ─── Deprecated: the platform-suffixed spelling, removed in the next major ───
+
+deprecateMany("@asheeui/native/card", [
+  {
+    from: "resolveNativeCardVariant",
+    to: "resolveCardVariant",
+    since: "2.8.0",
+  },
+]);
 
 /**
- * Resolve a treatment to the native card surface to render.
- *
- * The cascade's component and global tiers can name a treatment from either platform's
- * vocabulary, so this is where the two meet. A native treatment keeps its own surface;
- * a web-only surface name is translated; a value no type can express — a plain JS or
- * JSON configuration can name any string — falls back to the card's documented default
- * rather than answering `undefined`.
+ * Resolve a treatment to the surface the card renders.
  *
  * @param treatment - The treatment the cascade produced.
  * @returns The surface the card renders.
- *
- * @example
- * ```ts
- * resolveNativeCardVariant("solid"); // "solid"
- * resolveNativeCardVariant("faded"); // "faded"
- * ```
  */
-export function resolveNativeCardVariant(
-  treatment: Variant,
-): NativeCardVariant {
-  return (
-    NATIVE_CARD_VARIANT_FOR_TREATMENT[treatment] ??
-    FALLBACK_NATIVE_CARD_CONFIG.variant
-  );
-}
+export const resolveNativeCardVariant = deprecatedAlias(resolveCardVariant);
 
 /**
  * The defaults the Card registers with the native registry.

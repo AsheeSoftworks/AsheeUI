@@ -22,23 +22,33 @@ import {
   type Breakpoint,
   type BreakpointName,
   type BreakpointState,
+  deprecateMany,
   resolveBreakpoint,
 } from "@asheeui/core";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
+export type { BreakpointName, BreakpointState };
+export { resolveBreakpoint };
+
+// ─── Deprecated: the platform-suffixed spellings, removed in the next major ───
+
+deprecateMany("@asheeui/web/use-breakpoint", [
+  { from: "WebBreakpoint", to: "BreakpointName", since: "2.8.0" },
+  { from: "WebBreakpointState", to: "BreakpointState", since: "2.8.0" },
+]);
+
 /**
  * The breakpoint a width has reached, or `base` below the smallest one.
  *
- * The platform exports the same union as `NativeBreakpoint`; both are the shared
- * {@link BreakpointName}, which is the name a shared component should use.
+ * The shared {@link BreakpointName}, which is the name a shared component writes; this is
+ * the spelling the web renderer published first.
  */
 export type WebBreakpoint = BreakpointName;
 
 /**
  * The responsive state a component reads.
  *
- * Structurally the shared {@link BreakpointState}: a component written against that
- * interface works on either renderer.
+ * The shared {@link BreakpointState}, under the spelling this renderer published first.
  */
 export type WebBreakpointState = BreakpointState;
 

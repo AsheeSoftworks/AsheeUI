@@ -37,7 +37,6 @@ import {
   type CardImagePosition,
   type CardVariant,
   FALLBACK_CARD_CONFIG,
-  resolveCardVariant,
 } from "./card-config";
 import {
   CARD_GAP_CLASS,
@@ -45,6 +44,7 @@ import {
   CARD_PADDING_CLASS,
   CARD_VARIANT_CLASS,
 } from "./card-styles";
+import { cardSurfaceFor } from "./card-surface";
 
 type BaseCardProps = Omit<CardConfig, "image"> &
   Omit<HTMLAttributes<HTMLDivElement>, "title" | "children">;
@@ -339,7 +339,7 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(
       FALLBACK_CARD_CONFIG.size,
     );
 
-    const resolvedVariantKey = resolveCardVariant(
+    const resolvedVariantKey = cardSurfaceFor(
       resolveCascade<Variant | CardVariant>(
         variant,
         cardConfig?.variant,
