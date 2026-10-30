@@ -19,6 +19,7 @@ import {
   type Variant,
 } from "@asheeui/core";
 import type { ReactNode } from "react";
+import { useMemo } from "react";
 import { View } from "react-native";
 import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
 import {
@@ -30,6 +31,7 @@ import {
 import { classNames } from "../../../utils/class-names";
 import { Typography } from "../../typography/text/Text";
 import { Button } from "../button/Button";
+import { type FormControl, FormContext } from "./form-context";
 import {
   FALLBACK_NATIVE_FORM_CONFIG,
   type NativeFormConfig,
@@ -44,6 +46,15 @@ export interface FormProps extends NativeFormConfig {
 
   /** Called when the reader submits the form. */
   onSubmit?: () => void;
+
+  /**
+   * Called when a control of type `reset` asks the form to clear itself.
+   *
+   * The form does not own its fields' values — a consumer does — so resetting is a
+   * callback rather than something the framework can do. A form with no handler still
+   * accepts the button; it simply has nothing to clear.
+   */
+  onReset?: () => void;
 
   /** The name of the group, shown above the fields. */
   legend?: string;
@@ -84,6 +95,7 @@ export interface FormProps extends NativeFormConfig {
 export function Form({
   children,
   onSubmit,
+  onReset,
   legend,
   submitLabel,
   isPending,
@@ -122,8 +134,7 @@ export function Form({
     FALLBACK_NATIVE_FORM_CONFIG.submitRadius,
   );
 
-  const body = legend ? (
-    <View className={NATIVE_FORM_GROUP_CLASS}>
+  const body = legend ? (    <View className={NATIVE_FORM_GROUP_CLASS}>
       <Typography role="label" className={NATIVE_FORM_LEGEND_CLASS}>
         {legend}
       </Typography>
@@ -133,24 +144,36 @@ export function Form({
     children
   );
 
+  // Stable for as long as its handlers are: a button inside the form re-renders when the
+  // form does, and a new context object on every render would re-render every control.
+  const control = useMemo<FormControl>(
+    () => ({
+      submit: () => onSubmit?.(),
+      reset: () => onReset?.(),
+    }),
+    [onSubmit, onReset],
+  );
+
   return (
-    <View className={classNames(NATIVE_FORM_CLASS, className)}>
-      {body}
-      {submitLabel && (
-        <View className={NATIVE_FORM_SUBMIT_ROW_CLASS}>
-          <Button
-            testID={submitTestID}
-            variant={resolvedVariant}
-            color={resolvedColor}
-            size={resolvedSize}
-            radius={resolvedRadius}
-            isLoading={isPending}
-            isDisabled={isPending}
-            onPress={() => onSubmit?.()}>
-            {submitLabel}
-          </Button>
-        </View>
-      )}
-    </View>
+    <FormContext.Provider value={control}>
+      <View className={classNames(NATIVE_FORM_CLASS, className)}>
+        {body}
+        {submitLabel && (
+          <View className={NATIVE_FORM_SUBMIT_ROW_CLASS}>
+            <Button
+              testID={submitTestID}
+              variant={resolvedVariant}
+              color={resolvedColor}
+              size={resolvedSize}
+              radius={resolvedRadius}
+              isLoading={isPending}
+              isDisabled={isPending}
+              onPress={() => onSubmit?.()}>
+              {submitLabel}
+            </Button>
+          </View>
+        )}
+      </View>
+    </FormContext.Provider>
   );
 }

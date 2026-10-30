@@ -28,7 +28,11 @@ describe("the native configuration registry", () => {
       tone: "default",
       truncate: false,
     });
-    expect(defaults.button).toEqual({ size: "lg", fullWidth: false });
+    expect(defaults.button).toEqual({
+      size: "lg",
+      fullWidth: false,
+      animate: true,
+    });
     expect(defaults.container).toEqual({ size: "lg", gutter: true });
     expect(defaults.stack).toEqual({
       direction: "column",

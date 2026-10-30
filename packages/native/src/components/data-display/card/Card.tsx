@@ -9,6 +9,7 @@
  */
 
 import {
+  type CardImageConfig,
   type CardVariant,
   type Color,
   type Radius,
@@ -27,6 +28,7 @@ import { Pressable, View } from "react-native";
 import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
 import { classNames } from "../../../utils/class-names";
 import { Typography } from "../../typography/text/Text";
+import { Image } from "../image/Image";
 import {
   FALLBACK_NATIVE_CARD_CONFIG,
   type NativeCardConfig,
@@ -63,6 +65,45 @@ export interface CardProps
 
   /** The card's body, when it holds more than a headline. */
   children?: ReactNode;
+
+  /**
+   * The card's body, under the name the web card gives it.
+   *
+   * `body` wins over `children` when both are given, so a shared card can pass its
+   * headline as children and its body separately.
+   */
+  body?: ReactNode;
+
+  /**
+   * The picture the card draws, under the web card's options.
+   *
+   * The placement is shared (`CardImageConfig`); a device also needs the source and its
+   * alternative text, which the web states beside the config rather than inside it. The
+   * top-level `src`/`alt` are aliases for the same two values.
+   */
+  image?:
+    | (CardImageConfig & {
+        src?: string;
+        alt?: string;
+      })
+    | undefined;
+
+  /** The picture's source, when it is stated beside `image` rather than inside it. */
+  src?: string;
+
+  /** Alternative text for the picture, beside `src`. */
+  alt?: string;
+
+  /**
+   * Whether the surface is a control.
+   *
+   * The web card's name for `isPressable`; either one makes the card pressable, which is
+   * what `resolvePress` and the accessibility role below read.
+   */
+  isClickable?: boolean;
+
+  /** Whether the card refuses interaction and reports itself as disabled. */
+  isDisabled?: boolean;
 
   /**
    * Called when the card is activated, under the name the web package uses.
@@ -113,6 +154,12 @@ export function Card({
   size,
   radius,
   isPressable,
+  isClickable,
+  isDisabled = false,
+  image,
+  src,
+  alt,
+  body: bodyProp,
   onClick,
   onPress,
   className,
@@ -162,12 +209,28 @@ export function Card({
 
   // A handler is what makes a surface a control. The web card states the same rule, so a
   // card that gained `onClick` there and `onPress` here behaves alike without either
-  // consumer having to remember `isPressable`.
+  // consumer having to remember `isPressable`. The web's `isClickable` is the same option
+  // under the name it publishes, and a disabled card refuses both.
   const isPressableCard =
-    resolvedPressable || Boolean(onClick) || Boolean(onPress);
+    (isClickable ?? resolvedPressable) ||
+    Boolean(onClick) ||
+    Boolean(onPress);
+
+  const imageSource = image?.src ?? src;
+  const imageAlt = image?.alt ?? alt;
+  const imageNode = imageSource ? (
+    <Image
+      src={imageSource}
+      alt={imageAlt}
+      fit={image?.fit}
+      ratio={image?.ratio}
+      radius={resolvedRadius}
+    />
+  ) : null;
 
   const classes = classNames(
     CARD_BASE_CLASS,
+    image?.position === "background" && "relative overflow-hidden",
     CARD_VARIANT_CLASS[resolvedVariant],
     // The accent only shows on a treatment that draws a border.
     resolvedVariant === "bordered" || resolvedVariant === "underlined"
@@ -180,6 +243,11 @@ export function Card({
 
   const body = (
     <>
+      {image?.position === "background" ? (
+        <View className="absolute inset-0">{imageNode}</View>
+      ) : image?.position !== "bottom" ? (
+        imageNode
+      ) : null}
       {header}
       {(title || description) && (
         <View className={CARD_HEADING_CLASS}>
@@ -191,7 +259,8 @@ export function Card({
           )}
         </View>
       )}
-      {children}
+      {bodyProp ?? children}
+      {image?.position === "bottom" ? imageNode : null}
       {footer && <View className={CARD_FOOTER_CLASS}>{footer}</View>}
     </>
   );
@@ -200,14 +269,18 @@ export function Card({
     return (
       <Pressable
         accessibilityRole="button"
+        accessibilityState={{ disabled: isDisabled }}
+        disabled={isDisabled}
         onPress={(pressEvent) =>
-          resolvePress(
-            {
-              onClick,
-              onPress: onPress ? () => onPress(pressEvent) : undefined,
-            },
-            pressEvent,
-          )
+          isDisabled
+            ? undefined
+            : resolvePress(
+                {
+                  onClick,
+                  onPress: onPress ? () => onPress(pressEvent) : undefined,
+                },
+                pressEvent,
+              )
         }
         className={classes}
         style={style}

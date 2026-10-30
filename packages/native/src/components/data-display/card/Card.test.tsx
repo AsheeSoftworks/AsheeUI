@@ -8,7 +8,11 @@
  */
 
 import { resolveCardVariant as sharedResolveCardVariant } from "@asheeui/core";
-import { type RenderResult, render } from "@testing-library/react-native";
+import {
+  fireEvent,
+  type RenderResult,
+  render,
+} from "@testing-library/react-native";
 import type { ReactElement } from "react";
 import { Text } from "react-native";
 import { AsheeUIProvider } from "../../../provider/AsheeUIProvider";
@@ -158,5 +162,53 @@ describe("Native Card", () => {
     // The platform's spelling is a reference to the shared rule, not a second table: a
     // surface name that leaks across from the web resolves the same way on both.
     expect(resolveNativeCardVariant).toBe(sharedResolveCardVariant);
+  });
+
+  it("draws the picture the web card draws, with its alternative text", async () => {
+    const view = await renderCard(
+      <Card
+        testID="card"
+        title="Campaign"
+        image={{ src: "https://example.com/cover.jpg", alt: "Campaign cover" }}
+      />,
+    );
+
+    expect(view.getByLabelText("Campaign cover")).toBeTruthy();
+  });
+
+  it("accepts src and alt beside image, and body beside children", async () => {
+    const view = await renderCard(
+      <Card
+        testID="card"
+        title="Campaign"
+        src="https://example.com/cover.jpg"
+        alt="Campaign cover"
+        body={<Text>Body copy</Text>}>
+        <Text>Not rendered</Text>
+      </Card>,
+    );
+
+    expect(view.getByLabelText("Campaign cover")).toBeTruthy();
+    expect(view.getByText("Body copy")).toBeTruthy();
+    expect(view.queryByText("Not rendered")).toBeNull();
+  });
+
+  it("refuses the press and reports the state when disabled", async () => {
+    const onPress = jest.fn();
+    const view = await renderCard(
+      <Card
+        testID="card"
+        title="Inbox"
+        isClickable
+        isDisabled
+        onPress={onPress}
+      />,
+    );
+    const card = view.getByTestId("card");
+
+    await fireEvent.press(card);
+
+    expect(onPress).not.toHaveBeenCalled();
+    expect(card.props.accessibilityState).toMatchObject({ disabled: true });
   });
 });

@@ -16,7 +16,9 @@
 
 import { fireEvent, render } from "@testing-library/react-native";
 import type { ReactElement } from "react";
+import { Linking, Text } from "react-native";
 import { AsheeUIProvider } from "../../../provider/AsheeUIProvider";
+import { Form } from "../form/Form";
 import { Button } from "./Button";
 
 /**
@@ -187,5 +189,65 @@ describe("Native Button", () => {
     await fireEvent.press(view.getByRole("button", { name: "Save" }));
 
     expect(calls).toEqual(["onClick", "onPress"]);
+  });
+
+  it("renders content on both sides of its label", async () => {
+    const view = await renderWithProvider(
+      <Button
+        startContent={<Text>←</Text>}
+        endContent={<Text>→</Text>}>
+        Save
+      </Button>,
+    );
+
+    expect(view.getByText("←")).toBeTruthy();
+    expect(view.getByText("Save")).toBeTruthy();
+    expect(view.getByText("→")).toBeTruthy();
+  });
+
+  it("takes a square from the size axis when it is icon-only", async () => {
+    const view = await renderWithProvider(
+      <Button icon size="md" aria-label="Refresh">
+        <Text>↻</Text>
+      </Button>,
+    );
+
+    const className = view.getByRole("button", { name: "Refresh" }).props
+      .className as string;
+    expect(className).toContain("w-11");
+    expect(className).toContain("h-11");
+  });
+
+  it("submits the enclosing form when its type says so", async () => {
+    // The platform has no submit event, so the form states what submitting means in a
+    // context and the button asks it. A button outside a form does nothing form-related.
+    const onSubmit = jest.fn();
+    const onReset = jest.fn();
+    const view = await renderWithProvider(
+      <Form onSubmit={onSubmit} onReset={onReset}>
+        <Button type="submit">Send</Button>
+        <Button type="reset">Clear</Button>
+      </Form>,
+    );
+
+    await fireEvent.press(view.getByRole("button", { name: "Send" }));
+    await fireEvent.press(view.getByRole("button", { name: "Clear" }));
+
+    expect(onSubmit).toHaveBeenCalledTimes(1);
+    expect(onReset).toHaveBeenCalledTimes(1);
+  });
+
+  it("follows href through the platform's URL handler when no handler is given", async () => {
+    const openURL = jest
+      .spyOn(Linking, "openURL")
+      .mockResolvedValue(true as never);
+
+    const view = await renderWithProvider(
+      <Button href="https://asheesoftworks.com">Docs</Button>,
+    );
+    await fireEvent.press(view.getByRole("button", { name: "Docs" }));
+
+    expect(openURL).toHaveBeenCalledWith("https://asheesoftworks.com");
+    openURL.mockRestore();
   });
 });

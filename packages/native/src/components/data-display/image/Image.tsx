@@ -18,6 +18,7 @@
  */
 
 import {
+  type ImageConfig,
   type ImageFit,
   type ImageRatioKey,
   type Radius,
@@ -88,6 +89,16 @@ export interface ImageProps
   /** Called once the picture has failed to load, and every fallback has too. */
   onError?: (error: unknown) => void;
 
+  /**
+   * The browser's loading strategy.
+   *
+   * Accepted so a shared picture compiles, and a no-op on the platform: a native picture
+   * is fetched when its view mounts, and a list mounts a row when it scrolls into view,
+   * which is the laziness the option asks for stated by the platform instead. B17 makes
+   * the no-op say so; this batch only accepts it.
+   */
+  loading?: ImageConfig["loading"];
+
   /** Extra classes appended last, which is where a consumer sizes the frame. */
   className?: string;
 
@@ -143,12 +154,16 @@ export function Image({
   componentProps,
   onLoad,
   onError,
+  loading,
   className,
   style,
   ...rest
 }: ImageProps) {
   const config = useAsheeConfig();
   const sectionConfig = config.components.image;
+
+  // The option is accepted and read nowhere: see the prop's documentation.
+  void loading;
 
   const [currentSrc, setCurrentSrc] = useState(src);
   const [isLoaded, setIsLoaded] = useState(false);

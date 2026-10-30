@@ -42,6 +42,21 @@ export interface BadgeProps
   /** The label's text. */
   children?: ReactNode;
 
+  /**
+   * The label, under the name the web badge gives it.
+   *
+   * `children` wins when both are stated, which is the order the web badge reads them in:
+   * a shared component may pass a node as children and a plain string as the label for the
+   * accessibility name.
+   */
+  label?: string;
+
+  /** Content rendered before the label, typically a dot or an icon. */
+  startContent?: ReactNode;
+
+  /** Content rendered after the label. */
+  endContent?: ReactNode;
+
   /** Extra classes appended last, so a consumer's own classes win. */
   className?: string;
 
@@ -69,6 +84,9 @@ export function Badge({
   color,
   size,
   radius,
+  label,
+  startContent,
+  endContent,
   className,
   style,
   children,
@@ -108,6 +126,8 @@ export function Badge({
     FALLBACK_NATIVE_BADGE_CONFIG.radius,
   );
 
+  const content = children ?? label;
+
   return (
     <View
       className={classNames(
@@ -118,17 +138,23 @@ export function Badge({
       )}
       style={style}
       {...rest}>
-      <Text
-        accessible
-        // The label is the badge's one accessible name, so it is read as a
-        // single piece of text rather than as a view containing a text node.
-        accessibilityLabel={typeof children === "string" ? children : undefined}
-        className={classNames(
-          NATIVE_BADGE_FONT_CLASS[resolvedSize],
-          NATIVE_BADGE_TEXT_CLASS[resolvedVariant][resolvedColor],
-        )}>
-        {children}
-      </Text>
+      {startContent}
+      {typeof content === "string" || typeof content === "number" ? (
+        <Text
+          accessible
+          // The label is the badge's one accessible name, so it is read as a
+          // single piece of text rather than as a view containing a text node.
+          accessibilityLabel={String(content)}
+          className={classNames(
+            NATIVE_BADGE_FONT_CLASS[resolvedSize],
+            NATIVE_BADGE_TEXT_CLASS[resolvedVariant][resolvedColor],
+          )}>
+          {content}
+        </Text>
+      ) : (
+        content
+      )}
+      {endContent}
     </View>
   );
 }

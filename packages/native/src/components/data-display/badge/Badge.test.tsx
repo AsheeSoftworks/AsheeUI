@@ -8,6 +8,7 @@
 
 import { type RenderResult, render } from "@testing-library/react-native";
 import type { ReactElement } from "react";
+import { Text } from "react-native";
 import { AsheeUIProvider } from "../../../provider/AsheeUIProvider";
 import { Badge } from "./Badge";
 
@@ -109,5 +110,25 @@ describe("Native Badge", () => {
     );
 
     expect(classesOf(view, "badge").endsWith("self-end")).toBe(true);
+  });
+
+  it("accepts the web's label name as the children's alias", async () => {
+    const view = await renderBadge(<Badge testID="badge" label="Paid" />);
+
+    expect(view.getByText("Paid")).toBeTruthy();
+  });
+
+  it("renders content on both sides of the label", async () => {
+    const view = await renderBadge(
+      <Badge
+        testID="badge"
+        label="Paid"
+        startContent={<Text>•</Text>}
+        endContent={<Text>✓</Text>}
+      />,
+    );
+
+    expect(view.getByText("•")).toBeTruthy();
+    expect(view.getByText("✓")).toBeTruthy();
   });
 });

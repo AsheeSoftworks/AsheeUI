@@ -57,6 +57,7 @@ describe("the shared names for the platform's fallbacks", () => {
     // platform's. A shared file that imports `FALLBACK_BUTTON_CONFIG` compiles against
     // both renderers.
     expect(Object.keys(FALLBACK_BUTTON_CONFIG).sort()).toEqual([
+      "animate",
       "color",
       "fullWidth",
       "radius",

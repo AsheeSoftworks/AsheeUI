@@ -17,20 +17,29 @@ import {
   type Size,
   type Variant,
 } from "@asheeui/core";
-import type { ReactNode } from "react";
+import { type ReactNode, useRef } from "react";
 import type { PressableProps, StyleProp, ViewStyle } from "react-native";
-import { ActivityIndicator, Pressable, Text } from "react-native";
+import {
+  ActivityIndicator,
+  Animated,
+  Pressable,
+  Text,
+} from "react-native";
+import { useReduceMotion } from "../../../hooks/use-reduce-motion";
 import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
 import {
   NATIVE_BUTTON_BASE_CLASS,
   NATIVE_BUTTON_DISABLED_CLASS,
   NATIVE_BUTTON_FULL_WIDTH_CLASS,
+  NATIVE_BUTTON_ICON_SIZE_CLASS,
   NATIVE_BUTTON_SIZE_CLASS,
   NATIVE_BUTTON_TEXT_CLASS,
   NATIVE_BUTTON_VARIANT_CLASS,
 } from "../../../styles/button";
 import { NATIVE_RADIUS_CLASS } from "../../../styles/radius";
 import { classNames } from "../../../utils/class-names";
+import { openDestination } from "../../../utils/open-destination";
+import { useFormContext } from "../form/form-context";
 import {
   FALLBACK_NATIVE_BUTTON_CONFIG,
   type NativeButtonConfig,
@@ -50,6 +59,47 @@ export interface ButtonProps
 
   /** Whether the button shows a pending state and blocks interaction. */
   isLoading?: boolean;
+
+  /**
+   * Content rendered before the label.
+   *
+   * A native `Pressable` draws its children in a row, so the slot is a sibling of the
+   * label rather than a wrapper around it; a string label still goes through `Text`, which
+   * is the platform's own rule for a string inside a view.
+   */
+  startContent?: ReactNode;
+
+  /** Content rendered after the label. */
+  endContent?: ReactNode;
+
+  /**
+   * Render the compact icon-only layout.
+   *
+   * An icon has no text to size the control, so it takes a square from the size axis
+   * instead of the padding a label would need. A consumer should also pass an
+   * `accessibilityLabel`, because an icon alone has no name to announce.
+   */
+  icon?: boolean;
+
+  /**
+   * What activating the control means in a form.
+   *
+   * `"submit"` runs the enclosing `Form`'s handler and `"reset"` its reset handler; the
+   * platform has no form element, so the meaning is carried by the context the form
+   * provides rather than by the browser. `"button"` does nothing form-related.
+   *
+   * @default "button"
+   */
+  type?: "button" | "submit" | "reset";
+
+  /**
+   * A destination to follow when the control is pressed.
+   *
+   * A browser renders the button as an anchor; a device has none, so the destination is
+   * followed through the platform's URL handler. A consumer's own `onPress`/`onClick`
+   * wins, because a control that routes inside the application has somewhere else to go.
+   */
+  href?: string;
 
   /**
    * Called when the control is activated, under the name the web package uses.
@@ -102,16 +152,26 @@ export function Button({
   size,
   radius,
   fullWidth,
+  animate,
   isDisabled,
   isLoading,
+  icon,
+  type = "button",
+  href,
+  startContent,
+  endContent,
   className,
   style,
   onClick,
   onPress,
+  onPressIn,
+  onPressOut,
   ...rest
 }: ButtonProps) {
   const config = useAsheeConfig();
   const sectionConfig = config.components.button;
+  const form = useFormContext();
+  const reduceMotion = useReduceMotion();
 
   // Every option resolves through the same four tiers: the instance prop, the
   // component's configuration (which already carries the registered defaults), the
@@ -147,13 +207,27 @@ export function Button({
     undefined,
     FALLBACK_NATIVE_BUTTON_CONFIG.fullWidth,
   );
+  const resolvedAnimate = resolveCascade<boolean>(
+    animate,
+    sectionConfig?.animate,
+    undefined,
+    FALLBACK_NATIVE_BUTTON_CONFIG.animate,
+  );
+
+  // A press scale is movement, so it yields to the platform's own motion setting. The
+  // platform's press feedback still runs, because that is the control answering a touch
+  // rather than the framework decorating the answer.
+  const isAnimated = resolvedAnimate && !reduceMotion;
+  const scale = useRef(new Animated.Value(1)).current;
 
   // A busy button is also disabled: pressing it twice would send the action twice.
   const isInteractionDisabled = Boolean(isDisabled) || Boolean(isLoading);
 
   const classes = classNames(
     NATIVE_BUTTON_BASE_CLASS,
-    NATIVE_BUTTON_SIZE_CLASS[resolvedSize],
+    icon
+      ? NATIVE_BUTTON_ICON_SIZE_CLASS[resolvedSize]
+      : NATIVE_BUTTON_SIZE_CLASS[resolvedSize],
     NATIVE_RADIUS_CLASS[resolvedRadius],
     NATIVE_BUTTON_VARIANT_CLASS[resolvedVariant][resolvedColor],
     NATIVE_BUTTON_TEXT_CLASS[resolvedVariant][resolvedColor],
@@ -170,10 +244,32 @@ export function Button({
         busy: Boolean(isLoading),
       }}
       disabled={isInteractionDisabled}
+      onPressIn={(event) => {
+        if (isAnimated) {
+          Animated.spring(scale, {
+            toValue: 0.97,
+            useNativeDriver: true,
+            speed: 40,
+            bounciness: 0,
+          }).start();
+        }
+        onPressIn?.(event);
+      }}
+      onPressOut={(event) => {
+        if (isAnimated) {
+          Animated.spring(scale, {
+            toValue: 1,
+            useNativeDriver: true,
+            speed: 40,
+            bounciness: 0,
+          }).start();
+        }
+        onPressOut?.(event);
+      }}
       onPress={
         isInteractionDisabled
           ? undefined
-          : (pressEvent) =>
+          : (pressEvent) => {
               // The platform's callback may read the responder, so it is wrapped rather
               // than dropped; `resolvePress` still owns which name runs first.
               resolvePress(
@@ -182,10 +278,18 @@ export function Button({
                   onPress: onPress ? () => onPress(pressEvent) : undefined,
                 },
                 pressEvent,
-              )
+              );
+
+              // A destination is what the web's anchor would follow; it applies only when
+              // the consumer stated no handler of its own, which is the rule native `Link`
+              // follows. Inside a form, `type` says what the activation means.
+              if (href && !onPress && !onClick) openDestination(href);
+              if (type === "submit") form?.submit();
+              else if (type === "reset") form?.reset();
+            }
       }
       className={classes}
-      style={style}
+      style={[style, isAnimated ? { transform: [{ scale }] } : undefined]}
       {...rest}>
       {isLoading ? (
         // The spinner is decoration inside a control that already announces its busy
@@ -199,7 +303,13 @@ export function Button({
           testID="button-spinner"
         />
       ) : null}
-      {typeof children === "string" ? <Text>{children}</Text> : children}
+      {startContent}
+      {icon || typeof children !== "string" ? (
+        children
+      ) : (
+        <Text>{children}</Text>
+      )}
+      {endContent}
     </Pressable>
   );
 }

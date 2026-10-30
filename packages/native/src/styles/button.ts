@@ -28,6 +28,20 @@ export const NATIVE_BUTTON_SIZE_CLASS: Record<Size, string> = {
 };
 
 /**
+ * The square a button takes when it holds only an icon.
+ *
+ * A labelled button is sized by its padding; an icon-only one has no text to size it, so
+ * it states a square instead. The size still comes from the same axis, because a consumer
+ * that asks for `sm` means the small control either way, and the minimum is the shared
+ * touch target on every step.
+ */
+export const NATIVE_BUTTON_ICON_SIZE_CLASS: Record<Size, string> = {
+  sm: "w-9 h-9 p-0 items-center justify-center",
+  md: "w-11 h-11 p-0 items-center justify-center",
+  lg: "w-12 h-12 p-0 items-center justify-center",
+};
+
+/**
  * The solid treatment, per colour role.
  */
 const NATIVE_SOLID_CLASS: Record<Color, string> = {
