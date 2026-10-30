@@ -272,6 +272,23 @@ describe("Native Drawer", () => {
     expect(sheetClasses(view)).toContain("bg-warning/20");
   });
 
+  it("offers a close control even when both dismissals are switched off", async () => {
+    const onClose = jest.fn();
+    const view = await renderDrawer(
+      <Drawer
+        isOpen
+        onClose={onClose}
+        closeOnBackdropClick={false}
+        closeOnEscape={false}>
+        <Text>Filters</Text>
+      </Drawer>,
+    );
+
+    await fireEvent.press(view.getByLabelText("Close drawer"));
+
+    expect(onClose).toHaveBeenCalledTimes(1);
+  });
+
   it("refuses to render outside the provider, because that is a setup mistake", async () => {
     const silence = jest.spyOn(console, "error").mockImplementation(() => {});
 

@@ -11,7 +11,11 @@
 
 "use client";
 
-import { formatRowCountLabel, resolveConfigCascade } from "@asheeui/core";
+import {
+  ANNOUNCEMENT_ROLE,
+  formatRowCountLabel,
+  resolveConfigCascade,
+} from "@asheeui/core";
 import {
   type ElementType,
   type HTMLAttributes,
@@ -480,7 +484,9 @@ export function DataTable<TData>({
             // stated as `none` rather than left unset, so a configured
             // `components.emptystate.role` cannot turn the first paint into an
             // announcement the table did not have.
-            role={isQueryResult ? "status" : "none"}
+            role={
+              isQueryResult ? ANNOUNCEMENT_ROLE.status : "none"
+            }
             title={resolved.emptyTitle}
             description={resolved.emptyDescription}
           />
@@ -509,7 +515,7 @@ export function DataTable<TData>({
           {resolved.showRowCount && (
             // The count is a status region, so a reader who searches or pages is
             // told how many rows are left rather than having to find out.
-            <div role="status">
+            <div role={ANNOUNCEMENT_ROLE.status}>
               <Typography role="caption" tone="muted">
                 {rowCountText}
               </Typography>

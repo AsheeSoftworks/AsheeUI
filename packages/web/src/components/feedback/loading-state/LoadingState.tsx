@@ -10,7 +10,11 @@
 
 "use client";
 
-import { resolveClassKey, resolveConfigCascade } from "@asheeui/core";
+import {
+  ANNOUNCEMENT_ROLE,
+  resolveClassKey,
+  resolveConfigCascade,
+} from "@asheeui/core";
 import {
   type ElementType,
   forwardRef,
@@ -130,7 +134,7 @@ export const LoadingState = forwardRef<HTMLDivElement, LoadingStateProps>(
     return (
       <Component
         ref={ref}
-        role="status"
+        role={ANNOUNCEMENT_ROLE.status}
         className={cn(
           LOADING_STATE_CLASS,
           resolveClassKey(resolved.size, LOADING_STATE_SIZE_CLASS, "md"),

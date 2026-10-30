@@ -4,6 +4,7 @@ export * from "./breakpoints";
 export * from "./card";
 export * from "./deprecation";
 export * from "./grid";
+export * from "./labels";
 export * from "./message-surface";
 export * from "./press";
 export * from "./radius";

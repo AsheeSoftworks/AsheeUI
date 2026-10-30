@@ -7,7 +7,11 @@
  */
 "use client";
 
-import { resolveCascade, resolveClassKey } from "@asheeui/core";
+import {
+  CLOSE_LABEL,
+  resolveCascade,
+  resolveClassKey,
+} from "@asheeui/core";
 import { FloatingFocusManager, FloatingPortal } from "@floating-ui/react";
 import {
   type CSSProperties,
@@ -217,7 +221,7 @@ export const Drawer = forwardRef<HTMLDivElement, DrawerProps>(
     {
       isOpen,
       onClose,
-      closeLabel = "Close drawer",
+      closeLabel = `${CLOSE_LABEL} drawer`,
       placement: placementProp,
       size,
       animated: animatedProp,

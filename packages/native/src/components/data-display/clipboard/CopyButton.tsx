@@ -17,6 +17,7 @@ import { type Radius, resolveCascade } from "@asheeui/core";
 import type { ReactNode } from "react";
 import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
 import { NATIVE_ANNOUNCEMENT_LIVE_REGION } from "../../../shared/announcement";
+import { announce } from "../../../utils/announce";
 import {
   NATIVE_CLIPBOARD_COPIED_GLYPH,
   NATIVE_CLIPBOARD_COPY_GLYPH,
@@ -151,8 +152,23 @@ export function CopyButton({
     <Clipboard
       value={value}
       timeout={timeout}
-      onCopy={onCopy}
-      onError={onError}>
+      onCopy={(text) => {
+        // The live region below is what a browser announces with; the platform has no
+        // region of that kind, so the same message is announced imperatively. The level is
+        // the one the framework names, and the platform's API decides how to say it.
+        announce(
+          copiedAnnouncement ?? `${String(resolvedCopiedLabel)}: ${text}`,
+          "status",
+        );
+        onCopy?.(text);
+      }}
+      onError={(cause) => {
+        announce(
+          errorAnnouncement ?? `${String(resolvedLabel)} failed`,
+          "alert",
+        );
+        onError?.(cause);
+      }}>
       {({ copied, error, copy }) => {
         const wording = copied ? resolvedCopiedLabel : resolvedLabel;
         const affordance = copied

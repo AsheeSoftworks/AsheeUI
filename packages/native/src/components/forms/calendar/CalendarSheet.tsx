@@ -29,8 +29,7 @@ import {
   isFutureDay,
   MONTHS,
 } from "@asheeui/core";
-import { useEffect, useState } from "react";
-import { Pressable, View } from "react-native";
+import { useEffect, useState } from "react";import { Pressable, View } from "react-native";
 import {
   NATIVE_CALENDAR_CELL_CLASS,
   NATIVE_CALENDAR_CELL_DISABLED_CLASS,
@@ -54,6 +53,7 @@ import {
   NATIVE_CALENDAR_WEEKDAY_CLASS,
   NATIVE_CALENDAR_WEEKDAYS_CLASS,
 } from "../../../styles/calendar";
+import { announce } from "../../../utils/announce";
 import { classNames } from "../../../utils/class-names";
 import { Surface } from "../../system/surface/Surface";
 import { Typography } from "../../typography/text/Text";
@@ -214,17 +214,29 @@ export function CalendarSheet({
   }
 
   function prevMonth(): void {
-    if (viewMonth === 0) {
-      setViewMonth(11);
-      setViewYear((year) => year - 1);
-    } else setViewMonth((month) => month - 1);
+    const nextMonth = viewMonth === 0 ? 11 : viewMonth - 1;
+
+    if (viewMonth === 0) setViewYear((year) => year - 1);
+    setViewMonth(nextMonth);
+
+    // The month is drawn, not announced: a screen reader moving between two identical
+    // grids needs to hear which month it landed on.
+    announce(
+      `${MONTHS[nextMonth]} ${viewMonth === 0 ? viewYear - 1 : viewYear}`,
+      "status",
+    );
   }
 
   function nextMonth(): void {
-    if (viewMonth === 11) {
-      setViewMonth(0);
-      setViewYear((year) => year + 1);
-    } else setViewMonth((month) => month + 1);
+    const nextMonth = viewMonth === 11 ? 0 : viewMonth + 1;
+
+    if (viewMonth === 11) setViewYear((year) => year + 1);
+    setViewMonth(nextMonth);
+
+    announce(
+      `${MONTHS[nextMonth]} ${viewMonth === 11 ? viewYear + 1 : viewYear}`,
+      "status",
+    );
   }
 
   const canGoNext =

@@ -8,6 +8,7 @@
 "use client";
 
 import {
+  ANNOUNCEMENT_ROLE,
   type Color,
   type Radius,
   resolveCascade,
@@ -229,7 +230,7 @@ export function ToastItem({
 
   return (
     <div
-      role="status"
+      role={ANNOUNCEMENT_ROLE.status}
       onMouseEnter={pause}
       onMouseLeave={resume}
       className={cn(

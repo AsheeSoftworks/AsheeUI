@@ -19,7 +19,7 @@ import {
   type Variant,
 } from "@asheeui/core";
 import type { ElementType, ReactNode } from "react";
-import { useMemo } from "react";
+import { useMemo, useRef } from "react";
 import { View } from "react-native";
 import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
 import {
@@ -28,6 +28,8 @@ import {
   NATIVE_FORM_LEGEND_CLASS,
   NATIVE_FORM_SUBMIT_ROW_CLASS,
 } from "../../../styles/form";
+import { setAccessibilityFocus, type ViewRef } from "../../../utils/accessibility";
+import { announce } from "../../../utils/announce";
 import { classNames } from "../../../utils/class-names";
 import { Typography } from "../../typography/text/Text";
 import { Button } from "../button/Button";
@@ -44,8 +46,15 @@ export interface FormProps extends NativeFormConfig {
   /** The fields the form groups. */
   children: ReactNode;
 
-  /** Called when the reader submits the form. */
-  onSubmit?: () => void;
+  /**
+   * Called when the reader submits the form.
+   *
+   * Returning `false` says the submission was refused. The form then announces the refusal
+   * and moves accessibility focus to itself, so the reader is placed at the form rather than
+   * left wherever the press started; any other return value is a success.
+   */
+  // biome-ignore lint/suspicious/noConfusingVoidType: a consumer's own handler returns nothing; `boolean | undefined` alone would refuse every `() => save()`.
+  onSubmit?: () => boolean | void;
 
   /**
    * Called when a control of type `reset` asks the form to clear itself.
@@ -160,11 +169,23 @@ export function Form({
 
   // Stable for as long as its handlers are: a button inside the form re-renders when the
   // form does, and a new context object on every render would re-render every control.
+  const formRef = useRef<ViewRef>(null);
+
+  const submit = () => {
+    const accepted = onSubmit?.();
+
+    if (accepted === false) {
+      setAccessibilityFocus(formRef);
+      announce("The form could not be submitted.", "alert");
+    }
+  };
+
   const control = useMemo<FormControl>(
     () => ({
-      submit: () => onSubmit?.(),
+      submit,
       reset: () => onReset?.(),
     }),
+    // `submit` closes over `onSubmit`; the dependency below is the value it reads.
     [onSubmit, onReset],
   );
 
@@ -181,7 +202,7 @@ export function Form({
             radius={resolvedRadius}
             isLoading={isPending}
             isDisabled={isPending}
-            onPress={() => onSubmit?.()}>
+            onPress={submit}>
             {submitLabel}
           </Button>
         </View>
@@ -199,7 +220,9 @@ export function Form({
           {content}
         </Substitute>
       ) : (
-        <View className={rootClassName}>{content}</View>
+        <View ref={formRef} className={rootClassName}>
+          {content}
+        </View>
       )}
     </FormContext.Provider>
   );

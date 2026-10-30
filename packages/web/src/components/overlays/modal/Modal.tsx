@@ -8,6 +8,7 @@
 "use client";
 
 import {
+  CLOSE_LABEL,
   type Radius,
   resolveCascade,
   resolveClassKey,
@@ -217,7 +218,7 @@ export interface ModalProps extends BaseModalProps {
 export function Modal({
   isOpen,
   onClose,
-  closeLabel = "Close dialog",
+  closeLabel = `${CLOSE_LABEL} dialog`,
   children,
   width,
   height,

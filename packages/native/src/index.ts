@@ -183,5 +183,6 @@ export * from "./provider";
 export * from "./shared/announcement";
 export * from "./styles";
 export * from "./theme";
+export * from "./utils/accessibility";
 export * from "./utils/class-names";
 export * from "./utils/cn";

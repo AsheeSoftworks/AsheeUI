@@ -20,6 +20,7 @@
  */
 
 import {
+  CLOSE_LABEL,
   type ModalPosition,
   type ModalSizeKey,
   type Radius,
@@ -42,6 +43,7 @@ import {
 } from "../../../styles/modal";
 import { NATIVE_RADIUS_CLASS } from "../../../styles/radius";
 import { classNames } from "../../../utils/class-names";
+import { LayerCloseControl } from "../LayerCloseControl";
 import {
   FALLBACK_NATIVE_MODAL_CONFIG,
   type NativeModalConfig,
@@ -86,6 +88,17 @@ export interface ModalProps
 
   /** Called when the modal should close, however it was dismissed. */
   onClose?: () => void;
+
+  /**
+   * Accessible name of the modal's built-in close control.
+   *
+   * The control is always drawn, and it is the layer's guaranteed way out: a
+   * `transparent` modal with `closeOnBackdropClick={false}` and the platform's own way out
+   * switched off is still dismissible by a reader who cannot aim at anything else.
+   *
+   * @default "Close dialog"
+   */
+  closeLabel?: string;
 
   /** What the modal holds. */
   children: ReactNode;
@@ -142,6 +155,7 @@ export interface ModalProps
 export function Modal({
   isOpen,
   onClose,
+  closeLabel = `${CLOSE_LABEL} dialog`,
   children,
   size,
   position,
@@ -229,6 +243,9 @@ export function Modal({
             className,
           )}
           style={[{ width, height }, style]}>
+          {onClose ? (
+            <LayerCloseControl label={closeLabel} onClose={onClose} />
+          ) : null}
           {children}
         </Pressable>
       </Pressable>

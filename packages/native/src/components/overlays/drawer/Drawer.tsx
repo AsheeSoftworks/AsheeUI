@@ -20,6 +20,7 @@
  */
 
 import {
+  CLOSE_LABEL,
   type DrawerPlacement,
   type DrawerSize,
   resolveCascade,
@@ -37,6 +38,7 @@ import {
   NATIVE_DRAWER_SIZE_CLASS,
 } from "../../../styles/drawer";
 import { classNames } from "../../../utils/class-names";
+import { LayerCloseControl } from "../LayerCloseControl";
 import {
   FALLBACK_NATIVE_DRAWER_CONFIG,
   type NativeDrawerConfig,
@@ -81,6 +83,16 @@ export interface DrawerProps
 
   /** Called when the drawer should close, however it was dismissed. */
   onClose?: () => void;
+
+  /**
+   * Accessible name of the drawer's built-in close control.
+   *
+   * A sheet always has this control: the backdrop and the platform's way out are both
+   * switchable, and a drawer whose two switches are off still needs one way to leave.
+   *
+   * @default "Close drawer"
+   */
+  closeLabel?: string;
 
   /** What the drawer holds. */
   children: ReactNode;
@@ -129,6 +141,7 @@ export interface DrawerProps
 export function Drawer({
   isOpen,
   onClose,
+  closeLabel = `${CLOSE_LABEL} drawer`,
   children,
   size,
   placement,
@@ -213,6 +226,9 @@ export function Drawer({
             className,
           )}
           style={style}>
+          {onClose ? (
+            <LayerCloseControl label={closeLabel} onClose={onClose} />
+          ) : null}
           {children}
         </Pressable>
       </Pressable>

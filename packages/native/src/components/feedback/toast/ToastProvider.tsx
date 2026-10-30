@@ -25,6 +25,7 @@ import {
 import { type ReactNode, useCallback, useMemo, useRef, useState } from "react";
 import { View } from "react-native";
 import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
+import { announce } from "../../../utils/announce";
 import {
   NATIVE_TOAST_CONTAINER_CLASS,
   NATIVE_TOAST_PLACEMENT_CLASS,
@@ -150,6 +151,18 @@ export function ToastProvider({
         // when one more would be more than the limit allows.
         return next.slice(Math.max(0, next.length - resolvedMaxToasts));
       });
+
+      // A message node has no text to announce; a string is what the reader hears. An
+      // error interrupts, because it is the one a reader has to act on.
+      if (
+        typeof stated.message === "string" ||
+        typeof stated.message === "number"
+      ) {
+        announce(
+          String(stated.message),
+          stated.type === "error" ? "alert" : "status",
+        );
+      }
 
       return id;
     },

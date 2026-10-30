@@ -166,4 +166,33 @@ describe("Native Modal", () => {
 
     silence.mockRestore();
   });
+
+  it("offers a close control even when both dismissals are switched off", async () => {
+    // A transparent modal on a screen that also refuses the backdrop press and the
+    // platform's way out would otherwise have no way to leave it.
+    const onClose = jest.fn();
+    const view = await renderModal(
+      <Modal
+        isOpen
+        onClose={onClose}
+        closeOnBackdropClick={false}
+        closeOnEscape={false}>
+        <Text>Delete this invoice?</Text>
+      </Modal>,
+    );
+
+    await fireEvent.press(view.getByLabelText("Close dialog"));
+
+    expect(onClose).toHaveBeenCalledTimes(1);
+  });
+
+  it("names its close control through closeLabel", async () => {
+    const view = await renderModal(
+      <Modal isOpen onClose={jest.fn()} closeLabel="Dismiss the invoice">
+        <Text>Delete this invoice?</Text>
+      </Modal>,
+    );
+
+    expect(view.getByLabelText("Dismiss the invoice")).toBeTruthy();
+  });
 });

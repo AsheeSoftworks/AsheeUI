@@ -9,7 +9,11 @@
 
 "use client";
 
-import { type Radius, resolveCascade } from "@asheeui/core";
+import {
+  ANNOUNCEMENT_ROLE,
+  type Radius,
+  resolveCascade,
+} from "@asheeui/core";
 import { forwardRef, type ReactNode } from "react";
 import { CheckIcon } from "../../../icons/CheckIcon";
 import { CopyIcon } from "../../../icons/CopyIcon";
@@ -189,7 +193,7 @@ export const CopyButton = forwardRef<HTMLButtonElement, CopyButtonProps>(
                 {copied ? resolvedCopiedLabel : resolvedLabel}
               </Button>
               <span
-                role="status"
+                role={ANNOUNCEMENT_ROLE.status}
                 aria-live="polite"
                 className={CLIPBOARD_STATUS_CLASS}
                 data-copied={copied ? "true" : undefined}>
