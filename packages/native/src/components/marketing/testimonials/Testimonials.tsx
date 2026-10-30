@@ -33,7 +33,7 @@ import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
 import { Avatar } from "../../data-display/avatar/Avatar";
 import { Card } from "../../data-display/card/Card";
 import { SectionHeading } from "../../layouts/section-kit/SectionHeading";
-import { Text } from "../../typography/text/Text";
+import { Typography } from "../../typography/text/Text";
 import {
   FALLBACK_NATIVE_TESTIMONIALS_CONFIG,
   type NativeTestimonialsConfig,
@@ -162,7 +162,7 @@ export function Testimonials({
             {/* The words come first and the attribution follows, which is how a reader
                 hears a quotation the platform has no figure element to state. */}
             <View className={NATIVE_TESTIMONIAL_QUOTE_CLASS}>
-              <Text role="body-md">{item.quote}</Text>
+              <Typography role="body-md">{item.quote}</Typography>
               <View className={NATIVE_TESTIMONIAL_PERSON_CLASS}>
                 <Avatar
                   name={item.name}
@@ -172,11 +172,11 @@ export function Testimonials({
                   componentProps={item.avatarComponentProps}
                 />
                 <View className={NATIVE_TESTIMONIAL_PERSON_TEXT_CLASS}>
-                  <Text role="label">{item.name}</Text>
+                  <Typography role="label">{item.name}</Typography>
                   {item.role ? (
-                    <Text role="caption" tone="muted">
+                    <Typography role="caption" tone="muted">
                       {item.role}
-                    </Text>
+                    </Typography>
                   ) : null}
                 </View>
               </View>

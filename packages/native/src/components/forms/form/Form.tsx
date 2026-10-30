@@ -26,7 +26,7 @@ import type { ReactNode } from "react";
 import { View } from "react-native";
 import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
 import { classNames } from "../../../utils/class-names";
-import { Text } from "../../typography/text/Text";
+import { Typography } from "../../typography/text/Text";
 import { Button } from "../button/Button";
 import {
   FALLBACK_NATIVE_FORM_CONFIG,
@@ -122,9 +122,9 @@ export function Form({
 
   const body = legend ? (
     <View className={NATIVE_FORM_GROUP_CLASS}>
-      <Text role="label" className={NATIVE_FORM_LEGEND_CLASS}>
+      <Typography role="label" className={NATIVE_FORM_LEGEND_CLASS}>
         {legend}
-      </Text>
+      </Typography>
       {children}
     </View>
   ) : (

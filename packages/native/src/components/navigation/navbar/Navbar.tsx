@@ -49,7 +49,7 @@ import { ScrollView, View } from "react-native";
 import { Container } from "../../../layout/Container";
 import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
 import { classNames } from "../../../utils/class-names";
-import { Text } from "../../typography/text/Text";
+import { Typography } from "../../typography/text/Text";
 import { Link } from "../link";
 import {
   FALLBACK_NATIVE_NAVBAR_CONFIG,
@@ -218,7 +218,7 @@ function Destinations({
  * @example
  * ```tsx
  * <Navbar
- *   brand={<Text role="label">Ashee SMS</Text>}
+ *   brand={<Typography role="label">Ashee SMS</Typography>}
  *   links={[
  *     { label: "Campaigns", href: "/campaigns", isActive: true },
  *     { label: "Contacts", href: "/contacts" },
@@ -292,7 +292,7 @@ export function Navbar({
             ) : typeof brand === "string" ? (
               // The platform renders text through its own element; the web's brand is an element
               // already, so the difference is stated rather than left to the renderer to guess.
-              <Text role="label">{brand}</Text>
+              <Typography role="label">{brand}</Typography>
             ) : (
               brand
             )}

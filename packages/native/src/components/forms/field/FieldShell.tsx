@@ -25,7 +25,7 @@ import {
 import type { ReactNode } from "react";
 import { View } from "react-native";
 import { Spinner } from "../../feedback/spinner/Spinner";
-import { Text } from "../../typography/text/Text";
+import { Typography } from "../../typography/text/Text";
 
 /**
  * Props for the internal native field shell.
@@ -86,33 +86,33 @@ export function FieldShell({
     <View className={NATIVE_FIELD_SHELL_CLASS}>
       {label && (
         <View className={NATIVE_FIELD_LABEL_ROW_CLASS}>
-          <Text role="label">{label}</Text>
+          <Typography role="label">{label}</Typography>
           {required && (
-            <Text
+            <Typography
               role="label"
               className={FIELD_REQUIRED_MARKER_CLASS}
               accessible={false}>
               *
-            </Text>
+            </Typography>
           )}
           {isLoading && <Spinner size="sm" />}
         </View>
       )}
       {description && (
-        <Text role="body-sm" tone="muted">
+        <Typography role="body-sm" tone="muted">
           {description}
-        </Text>
+        </Typography>
       )}
       {children}
       {message && (
-        <Text
+        <Typography
           role="body-sm"
           className={FIELD_STATUS_TEXT_CLASS[status]}
           // A failed field announces its message when it appears; the others
           // are part of the form's own text.
           accessibilityLiveRegion={isFieldInvalid(status) ? "polite" : "none"}>
           {message}
-        </Text>
+        </Typography>
       )}
     </View>
   );

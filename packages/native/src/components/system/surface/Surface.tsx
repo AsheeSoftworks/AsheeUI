@@ -19,7 +19,7 @@
 
 import type { ReactNode } from "react";
 import { Modal, Pressable } from "react-native";
-import { Text } from "../../typography/text/Text";
+import { Typography } from "../../typography/text/Text";
 import {
   NATIVE_SURFACE_BACKDROP_CLASS,
   NATIVE_SURFACE_SHEET_CLASS,
@@ -73,7 +73,7 @@ export function Surface({
         onPress={onClose}
         className={NATIVE_SURFACE_BACKDROP_CLASS}>
         <Pressable className={NATIVE_SURFACE_SHEET_CLASS}>
-          {title && <Text role="label">{title}</Text>}
+          {title && <Typography role="label">{title}</Typography>}
           {children}
           {footer}
         </Pressable>

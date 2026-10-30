@@ -36,7 +36,7 @@ import { useState } from "react";
 import { Pressable, View } from "react-native";
 import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
 import { classNames } from "../../../utils/class-names";
-import { Text } from "../../typography/text/Text";
+import { Typography } from "../../typography/text/Text";
 import { FieldShell } from "../field/FieldShell";
 import { PickerSheet, type PickerSheetOption } from "../picker/PickerSheet";
 import {
@@ -242,7 +242,7 @@ export function MultiSelect({
           className,
         )}>
         {pickedValues.length === 0 ? (
-          <Text role="body-md">{placeholder}</Text>
+          <Typography role="body-md">{placeholder}</Typography>
         ) : (
           <View className={NATIVE_CHIP_ROW_CLASS}>
             {pickedValues.map((picked) => {
@@ -250,9 +250,11 @@ export function MultiSelect({
 
               return (
                 <View key={picked} className={NATIVE_CHIP_CLASS}>
-                  <Text role="body-sm" className={NATIVE_CHIP_LABEL_CLASS}>
+                  <Typography
+                    role="body-sm"
+                    className={NATIVE_CHIP_LABEL_CLASS}>
                     {option?.label ?? picked}
-                  </Text>
+                  </Typography>
                   <Pressable
                     accessibilityRole="button"
                     accessibilityLabel={`Remove ${option?.label ?? picked}`}
@@ -260,18 +262,18 @@ export function MultiSelect({
                       commit(pickedValues.filter((entry) => entry !== picked))
                     }
                     className={NATIVE_CHIP_REMOVE_CLASS}>
-                    <Text role="body-sm" accessible={false}>
+                    <Typography role="body-sm" accessible={false}>
                       ✕
-                    </Text>
+                    </Typography>
                   </Pressable>
                 </View>
               );
             })}
           </View>
         )}
-        <Text role="body-md" accessible={false}>
+        <Typography role="body-md" accessible={false}>
           ⌄
-        </Text>
+        </Typography>
       </Pressable>
       <PickerSheet
         isOpen={isOpen}

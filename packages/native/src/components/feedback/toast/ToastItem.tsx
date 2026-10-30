@@ -41,7 +41,7 @@ import {
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Animated, Easing, Pressable, View } from "react-native";
 import { classNames } from "../../../utils/class-names";
-import { Text } from "../../typography/text/Text";
+import { Typography } from "../../typography/text/Text";
 import type { ToastItemData, ToastPlacement } from "./toast-config";
 
 /**
@@ -195,24 +195,28 @@ export function ToastItem({
           importantForAccessibility="no-hide-descendants"
           className={NATIVE_TOAST_ICON_CLASS}>
           {icon ?? (
-            <Text role="label" className={classNames(fontClass, textClass)}>
+            <Typography
+              role="label"
+              className={classNames(fontClass, textClass)}>
               {NATIVE_TOAST_TYPE_GLYPH[type ?? "info"]}
-            </Text>
+            </Typography>
           )}
         </View>
 
         <View className={NATIVE_TOAST_BODY_CLASS}>
           {title && (
-            <Text
+            <Typography
               role="label"
               className={classNames(TOAST_TITLE_FONT_CLASS[size], textClass)}
               numberOfLines={1}>
               {title}
-            </Text>
+            </Typography>
           )}
-          <Text role="body-md" className={classNames(fontClass, textClass)}>
+          <Typography
+            role="body-md"
+            className={classNames(fontClass, textClass)}>
             {message}
-          </Text>
+          </Typography>
           {action && (
             <View className={NATIVE_TOAST_ACTION_CLASS}>{action}</View>
           )}
@@ -224,9 +228,11 @@ export function ToastItem({
             accessibilityLabel="Dismiss notification"
             onPress={handleDismiss}
             className={NATIVE_TOAST_DISMISS_CLASS}>
-            <Text role="label" className={classNames(fontClass, textClass)}>
+            <Typography
+              role="label"
+              className={classNames(fontClass, textClass)}>
               ✕
-            </Text>
+            </Typography>
           </Pressable>
         )}
       </View>

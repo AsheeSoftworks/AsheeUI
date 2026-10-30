@@ -45,7 +45,7 @@ import { Pressable, TextInput, View } from "react-native";
 import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
 import { classNames } from "../../../utils/class-names";
 import { Spinner } from "../../feedback/spinner/Spinner";
-import { Text } from "../../typography/text/Text";
+import { Typography } from "../../typography/text/Text";
 import { FieldShell } from "../field/FieldShell";
 import {
   FALLBACK_NATIVE_SEARCH_INPUT_CONFIG,
@@ -236,11 +236,11 @@ export function SearchInput({
               onValueChange?.("");
             }}
             className={NATIVE_SEARCH_INPUT_CLEAR_CLASS}>
-            <Text
+            <Typography
               role="body-md"
               className={NATIVE_SEARCH_INPUT_CLEAR_GLYPH_CLASS}>
               ✕
-            </Text>
+            </Typography>
           </Pressable>
         )}
       </View>

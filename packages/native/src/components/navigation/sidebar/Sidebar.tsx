@@ -74,7 +74,7 @@ import { classNames } from "../../../utils/class-names";
 import { openDestination } from "../../../utils/open-destination";
 import { Button } from "../../forms/button/Button";
 import { Tooltip } from "../../overlays/tooltip/Tooltip";
-import { Text } from "../../typography/text/Text";
+import { Typography } from "../../typography/text/Text";
 import { Link } from "../link/Link";
 import type { SidebarCollapse } from "./sidebar-collapse";
 import { SidebarCollapseContext } from "./sidebar-collapse";
@@ -268,7 +268,7 @@ export interface SidebarProps<T = string> extends BaseSidebarProps {
  *   const { isCollapsed, collapsible, toggleCollapse } = useSidebarCollapse();
  *   return (
  *     <Pressable disabled={!collapsible} onPress={toggleCollapse}>
- *       <Text>{isCollapsed ? "Expand" : "Collapse"}</Text>
+ *       <Typography>{isCollapsed ? "Expand" : "Collapse"}</Typography>
  *     </Pressable>
  *   );
  * }
@@ -612,12 +612,12 @@ export function Sidebar<T = string>({
           // what the web's truncating span does. Collapsed, the row is named above instead, so
           // the label is not drawn a second time.
           !isCollapsed && (
-            <Text
+            <Typography
               truncate
               role={NATIVE_SIDEBAR_ITEM_ROLE[resolvedSizeKey]}
               className={labelTextClasses}>
               {item.label}
-            </Text>
+            </Typography>
           )
         ) : (
           // A consumer's own label is its own element, so the platform cannot restate its
@@ -640,7 +640,7 @@ export function Sidebar<T = string>({
             typeof item.badge === "number" ? (
               // A badge written as a count is text, and the platform renders a text node
               // through its own component rather than inside a view.
-              <Text role="label">{item.badge}</Text>
+              <Typography role="label">{item.badge}</Typography>
             ) : (
               item.badge
             )}
@@ -691,12 +691,12 @@ export function Sidebar<T = string>({
         {!isCollapsed &&
           section.label &&
           (typeof section.label === "string" ? (
-            <Text
+            <Typography
               numberOfLines={1}
               role={NATIVE_SIDEBAR_SECTION_LABEL_ROLE}
               className={labelClasses}>
               {section.label}
-            </Text>
+            </Typography>
           ) : (
             // A consumer's own label is its own element, so the platform only gives it the
             // placement and the spacing a label has.
@@ -753,12 +753,12 @@ export function Sidebar<T = string>({
             {!isCollapsed &&
               title &&
               (typeof title === "string" ? (
-                <Text
+                <Typography
                   numberOfLines={1}
                   role={NATIVE_SIDEBAR_TITLE_ROLE[resolvedSizeKey]}
                   className="flex-1">
                   {title}
-                </Text>
+                </Typography>
               ) : (
                 <View className="flex-1">{title}</View>
               ))}

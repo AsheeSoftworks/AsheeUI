@@ -54,7 +54,7 @@ import { useEffect, useState } from "react";
 import { Pressable, View } from "react-native";
 import { classNames } from "../../../utils/class-names";
 import { Surface } from "../../system/surface/Surface";
-import { Text } from "../../typography/text/Text";
+import { Typography } from "../../typography/text/Text";
 import { TimeColumn } from "./TimeColumn";
 
 /**
@@ -253,9 +253,11 @@ export function CalendarSheet({
             onClose();
           }}
           className={NATIVE_CALENDAR_CLEAR_CLASS}>
-          <Text role="label" className={NATIVE_CALENDAR_CLEAR_LABEL_CLASS}>
+          <Typography
+            role="label"
+            className={NATIVE_CALENDAR_CLEAR_LABEL_CLASS}>
             Clear
-          </Text>
+          </Typography>
         </Pressable>
       ) : (
         // The accepting control is held to the right of whatever stands beside it, so an
@@ -269,14 +271,14 @@ export function CalendarSheet({
           accessibilityLabel="Done"
           onPress={onClose}
           className={classNames(NATIVE_CALENDAR_DONE_CLASS, colorStyles.bg)}>
-          <Text
+          <Typography
             role="label"
             className={classNames(
               NATIVE_CALENDAR_DONE_LABEL_CLASS,
               colorStyles.on,
             )}>
             Done
-          </Text>
+          </Typography>
         </Pressable>
       )}
     </View>
@@ -294,16 +296,18 @@ export function CalendarSheet({
                 accessibilityLabel="Previous month"
                 onPress={prevMonth}
                 className={NATIVE_CALENDAR_NAV_CLASS}>
-                <Text
+                <Typography
                   role="body-lg"
                   className={NATIVE_CALENDAR_NAV_LABEL_CLASS}
                   accessible={false}>
                   ‹
-                </Text>
+                </Typography>
               </Pressable>
-              <Text role="body-md" className={NATIVE_CALENDAR_MONTH_CLASS}>
+              <Typography
+                role="body-md"
+                className={NATIVE_CALENDAR_MONTH_CLASS}>
                 {MONTHS[viewMonth]} {viewYear}
-              </Text>
+              </Typography>
               <Pressable
                 testID={testID ? `${testID}-next` : undefined}
                 accessibilityRole="button"
@@ -315,24 +319,24 @@ export function CalendarSheet({
                   NATIVE_CALENDAR_NAV_CLASS,
                   !canGoNext && NATIVE_CALENDAR_UNAVAILABLE_CLASS,
                 )}>
-                <Text
+                <Typography
                   role="body-lg"
                   className={NATIVE_CALENDAR_NAV_LABEL_CLASS}
                   accessible={false}>
                   ›
-                </Text>
+                </Typography>
               </Pressable>
             </View>
 
             <View className={NATIVE_CALENDAR_WEEKDAYS_CLASS}>
               {DAYS_OF_WEEK.map((weekday) => (
-                <Text
+                <Typography
                   key={weekday}
                   role="overline"
                   accessible={false}
                   className={NATIVE_CALENDAR_WEEKDAY_CLASS}>
                   {weekday}
-                </Text>
+                </Typography>
               ))}
             </View>
 
@@ -367,7 +371,7 @@ export function CalendarSheet({
                         isSelected(day) && colorStyles.bg,
                         isToday(day) && !isSelected(day) && colorStyles.border,
                       )}>
-                      <Text
+                      <Typography
                         role="body-sm"
                         className={classNames(
                           NATIVE_CALENDAR_CELL_TEXT_CLASS,
@@ -375,7 +379,7 @@ export function CalendarSheet({
                           isToday(day) && !isSelected(day) && colorStyles.text,
                         )}>
                         {day}
-                      </Text>
+                      </Typography>
                     </Pressable>
                   ),
                 )}

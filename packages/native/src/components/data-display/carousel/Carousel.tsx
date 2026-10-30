@@ -64,7 +64,7 @@ import { Pressable, ScrollView, View } from "react-native";
 import { useReduceMotion } from "../../../hooks/use-reduce-motion";
 import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
 import { classNames } from "../../../utils/class-names";
-import { Text } from "../../typography/text/Text";
+import { Typography } from "../../typography/text/Text";
 import {
   FALLBACK_NATIVE_CAROUSEL_CONFIG,
   type NativeCarouselConfig,
@@ -412,7 +412,7 @@ export function Carousel({
                 itemClassName,
               )}>
               {typeof slide.content === "string" ? (
-                <Text role="body-md">{slide.content}</Text>
+                <Typography role="body-md">{slide.content}</Typography>
               ) : (
                 slide.content
               )}
@@ -440,7 +440,7 @@ export function Carousel({
                 NATIVE_CAROUSEL_PREV_CLASS,
                 controlClassName,
               )}>
-              <Text role="label">{NATIVE_CAROUSEL_PREV_GLYPH}</Text>
+              <Typography role="label">{NATIVE_CAROUSEL_PREV_GLYPH}</Typography>
             </Pressable>
           )}
 
@@ -461,7 +461,7 @@ export function Carousel({
                 NATIVE_CAROUSEL_NEXT_CLASS,
                 controlClassName,
               )}>
-              <Text role="label">{NATIVE_CAROUSEL_NEXT_GLYPH}</Text>
+              <Typography role="label">{NATIVE_CAROUSEL_NEXT_GLYPH}</Typography>
             </Pressable>
           )}
         </>

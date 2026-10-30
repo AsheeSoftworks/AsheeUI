@@ -50,7 +50,7 @@ import {
 } from "react-native";
 import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
 import { classNames } from "../../../utils/class-names";
-import { Text } from "../../typography/text/Text";
+import { Typography } from "../../typography/text/Text";
 import {
   FALLBACK_NATIVE_RADIO_CONFIG,
   type NativeRadioConfig,
@@ -267,19 +267,19 @@ export function Radio({
       {(label || description) && (
         <View className="flex-col min-w-0">
           {label && (
-            <Text
+            <Typography
               role="label"
               className={NATIVE_RADIO_FONT_CLASS[resolvedSize]}>
               {label}
-            </Text>
+            </Typography>
           )}
           {description && (
-            <Text
+            <Typography
               role="body-sm"
               tone="muted"
               className={NATIVE_RADIO_FONT_CLASS[resolvedSize]}>
               {description}
-            </Text>
+            </Typography>
           )}
         </View>
       )}

@@ -4,7 +4,7 @@ import {
   renderToServerString,
   renderWithProvider,
 } from "../../test";
-import { Typography } from "./Typography";
+import { Text, Typography } from "./Typography";
 
 describe("Typography", () => {
   it("renders the default role as a paragraph with the body treatment", () => {
@@ -137,5 +137,11 @@ describe("Typography", () => {
     expect(html).toContain("<h2");
     expect(html).toContain("text-xl");
     expect(html).toContain("Server heading");
+  });
+
+  it("answers to the platform's own name for a line of text, as the same component", () => {
+    // A shared component writes one name for text; the two renderers publish the same pair
+    // so either name reaches the same component on the web and on a device.
+    expect(Text).toBe(Typography);
   });
 });

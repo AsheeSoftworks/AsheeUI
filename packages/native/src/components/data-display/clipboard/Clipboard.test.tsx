@@ -18,7 +18,7 @@ import type { ReactElement } from "react";
 import { AsheeUIProvider } from "../../../provider/AsheeUIProvider";
 import { writeToClipboard } from "../../../utils/write-to-clipboard";
 import { Button } from "../../forms/button/Button";
-import { Text } from "../../typography/text/Text";
+import { Typography } from "../../typography/text/Text";
 import { Clipboard } from "./Clipboard";
 import { CopyButton } from "./CopyButton";
 
@@ -287,8 +287,8 @@ describe("Native CopyButton", () => {
     const view = await renderClipboard(
       <CopyButton
         value="INV-1042"
-        copyIcon={<Text>Copy it</Text>}
-        copiedIcon={<Text>Done</Text>}
+        copyIcon={<Typography>Copy it</Typography>}
+        copiedIcon={<Typography>Done</Typography>}
       />,
     );
 

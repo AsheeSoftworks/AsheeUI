@@ -34,7 +34,7 @@ import { classNames } from "../../../utils/class-names";
 import { openDestination } from "../../../utils/open-destination";
 import { Card } from "../../data-display/card/Card";
 import { SectionHeading } from "../../layouts/section-kit/SectionHeading";
-import { Text } from "../../typography/text/Text";
+import { Typography } from "../../typography/text/Text";
 import {
   FALLBACK_NATIVE_FEATURE_GRID_CONFIG,
   type NativeFeatureGridConfig,
@@ -178,11 +178,11 @@ export function FeatureGrid({
                     {item.icon}
                   </View>
                 )}
-                <Text role="heading-sm">{item.title}</Text>
+                <Typography role="heading-sm">{item.title}</Typography>
                 {item.description && (
-                  <Text role="body-sm" tone="muted">
+                  <Typography role="body-sm" tone="muted">
                     {item.description}
-                  </Text>
+                  </Typography>
                 )}
               </View>
             </Card>

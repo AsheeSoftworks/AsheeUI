@@ -4,12 +4,12 @@
  * Each block is the framework component plus the shared spec: the label, the fields and
  * the defaults come from `src/shared`, and only the drawing is written here. What the
  * platform draws differently is stated in the block: a paragraph's alignment is a
- * property of its `Text` rather than a class on a paragraph element, so the shared
+ * property of its `Typography` rather than a class on a paragraph element, so the shared
  * alignment vocabulary is what reaches the component.
  */
 
 import { SECTION_BLOCK_TEXT_ALIGN } from "@asheeui/core";
-import { Container, Section, Text } from "@asheeui/native";
+import { Container, Section, Typography } from "@asheeui/native";
 import { SectionHeading } from "@asheeui/native/section-kit";
 import type {
   AsheeBlock,
@@ -46,9 +46,11 @@ export const textBlock: AsheeBlock<TextBlockProps> = {
   render: ({ text, align }) => (
     <Section spacing="sm">
       <Container>
-        <Text role="body-lg" align={SECTION_BLOCK_TEXT_ALIGN[align ?? "start"]}>
+        <Typography
+          role="body-lg"
+          align={SECTION_BLOCK_TEXT_ALIGN[align ?? "start"]}>
           {text}
-        </Text>
+        </Typography>
       </Container>
     </Section>
   ),

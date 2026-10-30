@@ -29,7 +29,7 @@ import { View } from "react-native";
 import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
 import { classNames } from "../../../utils/class-names";
 import { Button } from "../../forms/button/Button";
-import { Text } from "../../typography/text/Text";
+import { Typography } from "../../typography/text/Text";
 import {
   FALLBACK_NATIVE_PAGINATION_CONFIG,
   type NativePaginationConfig,
@@ -152,7 +152,7 @@ export function Pagination({
       className={classNames(NATIVE_PAGINATION_BASE_CLASS, className)}
       style={style}
       {...rest}>
-      <Text
+      <Typography
         role="body-sm"
         tone="muted"
         className={NATIVE_PAGINATION_POSITION_CLASS}
@@ -163,7 +163,7 @@ export function Pagination({
         // own; the statement is a live region so that it is.
         accessibilityLiveRegion={NATIVE_ANNOUNCEMENT_LIVE_REGION.status}>
         {position}
-      </Text>
+      </Typography>
 
       {hasMore ? (
         <Button

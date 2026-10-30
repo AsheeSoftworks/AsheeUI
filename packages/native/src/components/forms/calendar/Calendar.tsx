@@ -52,7 +52,7 @@ import { useState } from "react";
 import { Pressable, View } from "react-native";
 import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
 import { classNames } from "../../../utils/class-names";
-import { Text } from "../../typography/text/Text";
+import { Typography } from "../../typography/text/Text";
 import { FieldShell } from "../field/FieldShell";
 import { CalendarSheet } from "./CalendarSheet";
 import {
@@ -257,7 +257,7 @@ export function Calendar({
           resolvedDisabled && NATIVE_INPUT_DISABLED_CLASS,
           className,
         )}>
-        <Text role="body-md">{shown}</Text>
+        <Typography role="body-md">{shown}</Typography>
         <View className={NATIVE_CALENDAR_TRIGGER_ACTIONS_CLASS}>
           {isClearable && chosen && !resolvedDisabled && (
             <Pressable
@@ -266,22 +266,22 @@ export function Calendar({
               accessibilityLabel="Clear selection"
               onPress={() => commit(null)}
               className={NATIVE_CALENDAR_TRIGGER_CLEAR_CLASS}>
-              <Text
+              <Typography
                 role="body-sm"
                 accessible={false}
                 className={NATIVE_CALENDAR_TRIGGER_CLEAR_LABEL_CLASS}>
                 ✕
-              </Text>
+              </Typography>
             </Pressable>
           )}
           {/* The glyph is decoration: the control's role and its label already say what
               the field is, and a reader who cannot see the glyph loses nothing. */}
-          <Text
+          <Typography
             role="body-md"
             accessible={false}
             className={NATIVE_CALENDAR_TRIGGER_GLYPH_CLASS}>
             {resolvedMode === "time" ? TIME_GLYPH : DATE_GLYPH}
-          </Text>
+          </Typography>
         </View>
       </Pressable>
       <CalendarSheet

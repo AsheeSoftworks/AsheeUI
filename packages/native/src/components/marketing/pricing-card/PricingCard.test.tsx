@@ -18,7 +18,7 @@ import {
 import type { ReactElement } from "react";
 import { AsheeUIProvider } from "../../../provider/AsheeUIProvider";
 import { openDestination } from "../../../utils/open-destination";
-import { Text } from "../../typography/text/Text";
+import { Typography } from "../../typography/text/Text";
 import { PricingCard } from "./PricingCard";
 
 jest.mock("../../../utils/open-destination", () => ({
@@ -38,9 +38,9 @@ const FEATURES = [
  */
 function Fees() {
   return (
-    <Text role="caption" tone="muted">
+    <Typography role="caption" tone="muted">
       Prices exclude VAT
-    </Text>
+    </Typography>
   );
 }
 

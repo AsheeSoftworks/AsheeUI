@@ -55,7 +55,7 @@ import { LoadingState } from "../../feedback/loading-state/LoadingState";
 import { SearchInput } from "../../forms/search-input/SearchInput";
 import { SectionHeading } from "../../layouts/section-kit/SectionHeading";
 import { Pagination } from "../../navigation/pagination/Pagination";
-import { Text } from "../../typography/text/Text";
+import { Typography } from "../../typography/text/Text";
 import { Card } from "../card/Card";
 import {
   FALLBACK_NATIVE_DATA_TABLE_CONFIG,
@@ -463,16 +463,16 @@ export function RowList<TData>({
                             NATIVE_ROW_LIST_FIELD_CLASS,
                             resolvedTable.cellClassName,
                           )}>
-                          <Text role="caption" tone="muted">
+                          <Typography role="caption" tone="muted">
                             {column.header}
-                          </Text>
+                          </Typography>
                           <View className={NATIVE_ROW_LIST_VALUE_CLASS}>
                             {/* The platform renders text inside a text element, so a
                                 cell that states a value as text is wrapped and one that
                                 renders an element is placed as it is. */}
                             {typeof value === "string" ||
                             typeof value === "number" ? (
-                              <Text role="body-sm">{value}</Text>
+                              <Typography role="body-sm">{value}</Typography>
                             ) : (
                               value
                             )}
@@ -493,13 +493,13 @@ export function RowList<TData>({
           {resolved.showRowCount ? (
             // The count is a status region, so a reader who searches or pages is told how
             // many rows are left rather than having to find out.
-            <Text
+            <Typography
               role="caption"
               tone="muted"
               className={NATIVE_ROW_LIST_COUNT_CLASS}
               accessibilityLiveRegion={NATIVE_ANNOUNCEMENT_LIVE_REGION.status}>
               {rowCountText}
-            </Text>
+            </Typography>
           ) : null}
 
           {resolved.paginated && pageCount > 1 ? (

@@ -40,7 +40,7 @@ import type { TextInputInstance } from "react-native";
 import { Pressable, TextInput, View } from "react-native";
 import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
 import { classNames } from "../../../utils/class-names";
-import { Text } from "../../typography/text/Text";
+import { Typography } from "../../typography/text/Text";
 import { FieldShell } from "../field/FieldShell";
 import {
   FALLBACK_NATIVE_PIN_INPUT_CONFIG,
@@ -277,7 +277,7 @@ export function PinInput({
                   ? NATIVE_INPUT_EDGE_ACCENT_CLASS[config.defaultColor]
                   : undefined,
               )}>
-              <Text
+              <Typography
                 role="body-lg"
                 className={classNames(
                   NATIVE_PIN_INPUT_FONT_CLASS[resolvedSize],
@@ -286,18 +286,18 @@ export function PinInput({
                     : NATIVE_PIN_INPUT_VALUE_CLASS,
                 )}>
                 {resolvedMasked && code[index] ? "•" : (code[index] ?? "")}
-              </Text>
+              </Typography>
             </View>
             {separatorAfter !== undefined &&
               separatorAfter > 0 &&
               index + 1 === separatorAfter &&
               index + 1 < resolvedLength && (
-                <Text
+                <Typography
                   accessible={false}
                   role="body-md"
                   className={NATIVE_PIN_INPUT_SEPARATOR_CLASS}>
                   -
-                </Text>
+                </Typography>
               )}
           </Fragment>
         ))}

@@ -1,14 +1,19 @@
 /**
- * Text component for the native package.
+ * The semantic text component for the native package.
  *
  * The component satisfies the framework's text contract: the same roles, tones
  * and alignment as the web `Typography`, resolved against the platform's own text
- * styles. It is a `Text`, so it composes with anything that expects one, and it
- * states the role rather than a size, so a screen keeps one typographic scale
- * instead of a set of remembered font sizes.
+ * styles. It renders the platform's `Text`, so it composes with anything that expects
+ * one, and it states the role rather than a size, so a screen keeps one typographic
+ * scale instead of a set of remembered font sizes.
+ *
+ * It answers to both names. `Typography` is the canonical one — the name the web
+ * renderer publishes and the name a shared component writes — and `Text` is kept at the
+ * bottom of this module as an alias of the same reference, because it is the platform's
+ * own word for a line of text and a screen written against it should not have to change.
  */
 
-import { resolveCascade } from "@asheeui/core";
+import { deprecatedAlias, deprecateMany, resolveCascade } from "@asheeui/core";
 import type { ReactNode } from "react";
 import {
   Text as NativeText,
@@ -56,13 +61,13 @@ export interface TextProps
  *
  * @example
  * ```tsx
- * <Text role="heading-lg">Campaigns</Text>
- * <Text role="body-sm" tone="muted">Updated a moment ago</Text>
+ * <Typography role="heading-lg">Campaigns</Typography>
+ * <Typography role="body-sm" tone="muted">Updated a moment ago</Typography>
  * ```
  *
  * @see Badge - A compact status label rather than a line of text.
  */
-export function Text({
+export function Typography({
   role,
   tone,
   align,
@@ -110,3 +115,12 @@ export function Text({
     </NativeText>
   );
 }
+
+// ─── Deprecated: the platform-suffixed spelling, removed in the next major ───
+
+deprecateMany("@asheeui/native/typography", [
+  { from: "Text", to: "Typography", since: "2.8.0" },
+]);
+
+/** The component under the platform's own word for a line of text. */
+export const Text = deprecatedAlias(Typography);

@@ -24,7 +24,7 @@ import {
 import type { ReactNode } from "react";
 import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
 import { Button, type ButtonProps } from "../../forms/button/Button";
-import { Text } from "../../typography/text/Text";
+import { Typography } from "../../typography/text/Text";
 import { Clipboard } from "./Clipboard";
 import { FALLBACK_NATIVE_CLIPBOARD_CONFIG } from "./clipboard-config";
 
@@ -189,18 +189,18 @@ export function CopyButton({
               }}
               {...rest}>
               {typeof affordance === "string" ? (
-                <Text>{affordance}</Text>
+                <Typography>{affordance}</Typography>
               ) : (
                 affordance
               )}
-              <Text>{wording}</Text>
+              <Typography>{wording}</Typography>
             </Button>
-            <Text
+            <Typography
               accessibilityLiveRegion={NATIVE_ANNOUNCEMENT_LIVE_REGION.status}
               className={NATIVE_CLIPBOARD_STATUS_CLASS}
               testID="clipboard-status">
               {announcement}
-            </Text>
+            </Typography>
           </>
         );
       }}

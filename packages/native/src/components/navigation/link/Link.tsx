@@ -40,7 +40,7 @@ import { Pressable, View } from "react-native";
 import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
 import { classNames } from "../../../utils/class-names";
 import { openDestination } from "../../../utils/open-destination";
-import { Text } from "../../typography/text/Text";
+import { Typography } from "../../typography/text/Text";
 import {
   FALLBACK_NATIVE_LINK_CONFIG,
   type NativeLinkConfig,
@@ -220,9 +220,9 @@ export function Link({
       {typeof children === "string" ? (
         // The platform's text does not inherit a container's colour, so the label states
         // the role's colour itself rather than relying on the link's own classes.
-        <Text role="body-md" className={colourClass}>
+        <Typography role="body-md" className={colourClass}>
           {children}
-        </Text>
+        </Typography>
       ) : (
         children
       )}
@@ -233,9 +233,11 @@ export function Link({
         </View>
       ) : (
         resolvedIsExternal && (
-          <Text role="label" className={classNames(iconSizeClass, colourClass)}>
+          <Typography
+            role="label"
+            className={classNames(iconSizeClass, colourClass)}>
             {NATIVE_LINK_EXTERNAL_GLYPH}
-          </Text>
+          </Typography>
         )
       )}
     </>

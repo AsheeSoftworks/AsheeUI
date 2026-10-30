@@ -38,7 +38,7 @@ import { ScrollView, View } from "react-native";
 import { Container } from "../../../layout/Container";
 import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
 import { classNames } from "../../../utils/class-names";
-import { Text } from "../../typography/text/Text";
+import { Typography } from "../../typography/text/Text";
 import {
   FALLBACK_NATIVE_DOCS_LAYOUT_CONFIG,
   type NativeDocsLayoutConfig,
@@ -120,8 +120,8 @@ export interface DocsLayoutProps
  *   header={<Navbar brand="Ashee" />}
  *   navigation={<Sidebar items={sections} activeKey="layout" />}
  *   toc={<Contents items={headings} />}>
- *   <Text role="heading-lg">Layout</Text>
- *   <Text role="body-md">A page is composed from the layout layer.</Text>
+ *   <Typography role="heading-lg">Layout</Typography>
+ *   <Typography role="body-md">A page is composed from the layout layer.</Typography>
  * </DocsLayout>
  * ```
  *
@@ -174,7 +174,9 @@ export function DocsLayout({
           testID="docs-layout-navigation"
           className={NATIVE_DOCS_LAYOUT_REGION_CLASS}>
           <Container size={NATIVE_DOCS_LAYOUT_BODY_SIZE}>
-            <Text role="heading-sm">{resolved.navigationLabel}</Text>
+            <Typography role="heading-sm">
+              {resolved.navigationLabel}
+            </Typography>
 
             <View className={NATIVE_DOCS_LAYOUT_NAVIGATION_CLASS}>
               {navigation}
@@ -198,7 +200,7 @@ export function DocsLayout({
             testID="docs-layout-toc"
             className={NATIVE_DOCS_LAYOUT_REGION_CLASS}>
             <Container size={NATIVE_DOCS_LAYOUT_BODY_SIZE}>
-              <Text role="heading-sm">{resolved.tocLabel}</Text>
+              <Typography role="heading-sm">{resolved.tocLabel}</Typography>
 
               <View className={NATIVE_DOCS_LAYOUT_NAVIGATION_CLASS}>{toc}</View>
             </Container>

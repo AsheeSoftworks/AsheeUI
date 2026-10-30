@@ -49,7 +49,7 @@ import { ScrollView, View } from "react-native";
 import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
 import { classNames } from "../../../utils/class-names";
 import { Button } from "../../forms/button/Button";
-import { Text } from "../../typography/text/Text";
+import { Typography } from "../../typography/text/Text";
 import {
   FALLBACK_NATIVE_TABS_CONFIG,
   type NativeTabsConfig,
@@ -296,7 +296,7 @@ export function Tabs({
                 {typeof label === "string" ? (
                   // The platform cannot draw a string inside a control, so a label that is
                   // one is drawn as the framework's text.
-                  <Text role="label">{label}</Text>
+                  <Typography role="label">{label}</Typography>
                 ) : (
                   label
                 )}
@@ -309,7 +309,7 @@ export function Tabs({
 
       <View className={classNames(NATIVE_TABS_PANEL_CLASS, tabPanelClassName)}>
         {typeof activeTab?.content === "string" ? (
-          <Text role="body-md">{activeTab.content}</Text>
+          <Typography role="body-md">{activeTab.content}</Typography>
         ) : (
           activeTab?.content
         )}

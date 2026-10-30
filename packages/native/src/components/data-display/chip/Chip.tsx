@@ -44,7 +44,7 @@ import type { StyleProp, ViewProps, ViewStyle } from "react-native";
 import { Pressable, View } from "react-native";
 import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
 import { classNames } from "../../../utils/class-names";
-import { Text } from "../../typography/text/Text";
+import { Typography } from "../../typography/text/Text";
 import {
   FALLBACK_NATIVE_CHIP_CONFIG,
   type NativeChipConfig,
@@ -259,13 +259,13 @@ export function Chip({
         </View>
       ) : null}
 
-      <Text
+      <Typography
         className={classNames(
           fontClass,
           NATIVE_CHIP_TEXT_CLASS[resolvedVariant][resolvedColor],
         )}>
         {children}
-      </Text>
+      </Typography>
 
       {endIcon && !onClose ? (
         <View className={classNames(NATIVE_CHIP_SLOT_CLASS, iconSizeClass)}>
@@ -285,7 +285,9 @@ export function Chip({
           hitSlop={6}
           className={classNames(NATIVE_CHIP_CLOSE_CLASS, iconSizeClass)}>
           {closeIcon ?? (
-            <Text className={fontClass}>{NATIVE_CHIP_CLOSE_GLYPH}</Text>
+            <Typography className={fontClass}>
+              {NATIVE_CHIP_CLOSE_GLYPH}
+            </Typography>
           )}
         </Pressable>
       ) : null}

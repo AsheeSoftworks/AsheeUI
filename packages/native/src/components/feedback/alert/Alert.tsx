@@ -48,7 +48,7 @@ import type { StyleProp, ViewProps, ViewStyle } from "react-native";
 import { Pressable, View } from "react-native";
 import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
 import { classNames } from "../../../utils/class-names";
-import { Text } from "../../typography/text/Text";
+import { Typography } from "../../typography/text/Text";
 import {
   FALLBACK_NATIVE_ALERT_CONFIG,
   type NativeAlertConfig,
@@ -185,26 +185,26 @@ export function Alert({
         importantForAccessibility="no-hide-descendants"
         className={NATIVE_ALERT_ICON_CLASS}>
         {icon ?? (
-          <Text
+          <Typography
             role="label"
             className={classNames(NATIVE_ALERT_GLYPH_CLASS, textClass)}>
             {NATIVE_ALERT_TYPE_GLYPH[resolvedType]}
-          </Text>
+          </Typography>
         )}
       </View>
 
       <View className={NATIVE_ALERT_BODY_CLASS}>
         {title && (
-          <Text
+          <Typography
             role="label"
             className={classNames(NATIVE_ALERT_TITLE_CLASS, textClass)}>
             {title}
-          </Text>
+          </Typography>
         )}
         {children && (
-          <Text role="body-sm" className={textClass}>
+          <Typography role="body-sm" className={textClass}>
             {children}
-          </Text>
+          </Typography>
         )}
       </View>
 
@@ -214,11 +214,11 @@ export function Alert({
           accessibilityLabel={closeLabel}
           onPress={onClose}
           className={NATIVE_ALERT_DISMISS_CLASS}>
-          <Text
+          <Typography
             role="label"
             className={classNames(NATIVE_ALERT_DISMISS_GLYPH_CLASS, textClass)}>
             ✕
-          </Text>
+          </Typography>
         </Pressable>
       )}
     </View>

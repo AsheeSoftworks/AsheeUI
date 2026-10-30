@@ -52,7 +52,7 @@ import type { StyleProp, ViewStyle } from "react-native";
 import { Pressable, View } from "react-native";
 import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
 import { classNames } from "../../../utils/class-names";
-import { Text } from "../../typography/text/Text";
+import { Typography } from "../../typography/text/Text";
 import {
   FALLBACK_NATIVE_TOOLTIP_CONFIG,
   type NativeTooltipConfig,
@@ -305,14 +305,14 @@ export function Tooltip({
             )}
 
             {typeof content === "string" ? (
-              <Text
+              <Typography
                 role="label"
                 className={classNames(
                   TOOLTIP_FONT_CLASS[resolvedSize],
                   textClass,
                 )}>
                 {content}
-              </Text>
+              </Typography>
             ) : (
               content
             )}

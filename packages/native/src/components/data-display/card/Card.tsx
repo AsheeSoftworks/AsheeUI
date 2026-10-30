@@ -25,7 +25,7 @@ import type {
 import { Pressable, View } from "react-native";
 import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
 import { classNames } from "../../../utils/class-names";
-import { Text } from "../../typography/text/Text";
+import { Typography } from "../../typography/text/Text";
 import {
   FALLBACK_NATIVE_CARD_CONFIG,
   type NativeCardConfig,
@@ -164,11 +164,11 @@ export function Card({
       {header}
       {(title || description) && (
         <View className={CARD_HEADING_CLASS}>
-          {title && <Text role="heading-sm">{title}</Text>}
+          {title && <Typography role="heading-sm">{title}</Typography>}
           {description && (
-            <Text role="body-sm" tone="muted">
+            <Typography role="body-sm" tone="muted">
               {description}
-            </Text>
+            </Typography>
           )}
         </View>
       )}

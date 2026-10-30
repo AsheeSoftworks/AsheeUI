@@ -21,7 +21,7 @@ import type { ReactNode } from "react";
 import { Pressable, ScrollView, View } from "react-native";
 import { classNames } from "../../../utils/class-names";
 import { Surface } from "../../system/surface/Surface";
-import { Text } from "../../typography/text/Text";
+import { Typography } from "../../typography/text/Text";
 import {
   NATIVE_PICKER_CHECK_CLASS,
   NATIVE_PICKER_EMPTY_CLASS,
@@ -116,9 +116,9 @@ export function PickerSheet({
   return (
     <Surface isOpen={isOpen} onClose={onClose} title={title} footer={footer}>
       {options.length === 0 ? (
-        <Text role="body-sm" className={NATIVE_PICKER_EMPTY_CLASS}>
+        <Typography role="body-sm" className={NATIVE_PICKER_EMPTY_CLASS}>
           {emptyLabel}
-        </Text>
+        </Typography>
       ) : (
         <ScrollView className={NATIVE_PICKER_LIST_CLASS}>
           {options.map((option) => {
@@ -143,23 +143,25 @@ export function PickerSheet({
                   option.isDisabled && NATIVE_PICKER_OPTION_DISABLED_CLASS,
                 )}>
                 <View className="flex-col flex-1 min-w-0">
-                  <Text
+                  <Typography
                     role="body-md"
                     className={NATIVE_PICKER_OPTION_LABEL_CLASS}>
                     {option.label}
-                  </Text>
+                  </Typography>
                   {option.description && (
-                    <Text
+                    <Typography
                       role="body-sm"
                       className={NATIVE_PICKER_OPTION_DESCRIPTION_CLASS}>
                       {option.description}
-                    </Text>
+                    </Typography>
                   )}
                 </View>
                 {isSelected && (
-                  <Text role="body-md" className={NATIVE_PICKER_CHECK_CLASS}>
+                  <Typography
+                    role="body-md"
+                    className={NATIVE_PICKER_CHECK_CLASS}>
                     ✓
-                  </Text>
+                  </Typography>
                 )}
               </Pressable>
             );

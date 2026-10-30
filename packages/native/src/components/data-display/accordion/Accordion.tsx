@@ -50,7 +50,7 @@ import type { StyleProp, ViewProps, ViewStyle } from "react-native";
 import { LayoutAnimation, Pressable, View } from "react-native";
 import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
 import { classNames } from "../../../utils/class-names";
-import { Text } from "../../typography/text/Text";
+import { Typography } from "../../typography/text/Text";
 import {
   FALLBACK_NATIVE_ACCORDION_CONFIG,
   type NativeAccordionConfig,
@@ -294,19 +294,19 @@ export function Accordion({
                   </View>
                 )}
                 <View className={NATIVE_ACCORDION_HEADING_CLASS}>
-                  <Text
+                  <Typography
                     role="label"
                     className={NATIVE_ACCORDION_TITLE_CLASS}
                     numberOfLines={1}>
                     {item.title}
-                  </Text>
+                  </Typography>
                   {item.subtitle && (
-                    <Text
+                    <Typography
                       role="caption"
                       className={NATIVE_ACCORDION_SUBTITLE_CLASS}
                       numberOfLines={1}>
                       {item.subtitle}
-                    </Text>
+                    </Typography>
                   )}
                 </View>
               </View>
@@ -322,7 +322,9 @@ export function Accordion({
                   isOpen && NATIVE_ACCORDION_INDICATOR_OPEN_CLASS,
                 )}>
                 {expandIcon ?? (
-                  <Text role="label">{NATIVE_ACCORDION_INDICATOR_GLYPH}</Text>
+                  <Typography role="label">
+                    {NATIVE_ACCORDION_INDICATOR_GLYPH}
+                  </Typography>
                 )}
               </View>
             </Pressable>
@@ -338,7 +340,7 @@ export function Accordion({
                     one is drawn as the framework's text, which is the same rule the
                     button and the link follow for their labels. */}
                 {typeof item.content === "string" ? (
-                  <Text role="body-md">{item.content}</Text>
+                  <Typography role="body-md">{item.content}</Typography>
                 ) : (
                   item.content
                 )}

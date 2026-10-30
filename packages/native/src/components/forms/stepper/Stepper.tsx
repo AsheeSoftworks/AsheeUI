@@ -37,7 +37,7 @@ import { Fragment } from "react";
 import { Pressable, View } from "react-native";
 import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
 import { classNames } from "../../../utils/class-names";
-import { Text } from "../../typography/text/Text";
+import { Typography } from "../../typography/text/Text";
 import {
   FALLBACK_NATIVE_STEPPER_CONFIG,
   type NativeStepperConfig,
@@ -174,14 +174,14 @@ export function Stepper({
               NATIVE_STEPPER_MARKER_SIZE_CLASS[resolvedSize],
               NATIVE_STEPPER_MARKER_STATE_CLASS[state],
             )}>
-            <Text
+            <Typography
               role="label"
               className={classNames(
                 NATIVE_STEPPER_MARKER_FONT_CLASS[resolvedSize],
                 NATIVE_STEPPER_MARKER_TEXT_CLASS[state],
               )}>
               {state === "complete" ? "✓" : String(index + 1)}
-            </Text>
+            </Typography>
           </View>
         );
 
@@ -189,16 +189,18 @@ export function Stepper({
           <View className={NATIVE_STEPPER_TEXT_CLASS}>
             {/* The label is what names the step, so it takes the role the density names and
                 scales with the marker beside it; `md` resolves to the size it always had. */}
-            <Text
+            <Typography
               role={NATIVE_STEPPER_LABEL_ROLE[resolvedSize]}
               tone={NATIVE_STEPPER_LABEL_TONE[state]}
               className={NATIVE_STEPPER_LABEL_WEIGHT_CLASS}>
               {step.label}
-            </Text>
+            </Typography>
             {resolvedShowDescriptions && step.description && (
-              <Text role="body-sm" className={NATIVE_STEPPER_DESCRIPTION_CLASS}>
+              <Typography
+                role="body-sm"
+                className={NATIVE_STEPPER_DESCRIPTION_CLASS}>
                 {step.description}
-              </Text>
+              </Typography>
             )}
           </View>
         );

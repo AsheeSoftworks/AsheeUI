@@ -10,7 +10,7 @@
 import { type RenderResult, render } from "@testing-library/react-native";
 import type { ReactElement } from "react";
 import { AsheeUIProvider } from "../../../provider/AsheeUIProvider";
-import { Text } from "./Text";
+import { Text, Typography } from "./Text";
 
 /**
  * Render text inside the framework provider.
@@ -38,7 +38,7 @@ function classesOf(view: RenderResult, testID: string): string {
 describe("Native Text", () => {
   it("renders its content with the default role", async () => {
     const view = await renderText(
-      <Text testID="text">Updated a moment ago</Text>,
+      <Typography testID="text">Updated a moment ago</Typography>,
     );
 
     expect(view.getByTestId("text")).toHaveTextContent("Updated a moment ago");
@@ -48,9 +48,9 @@ describe("Native Text", () => {
 
   it("resolves a role to a whole treatment", async () => {
     const view = await renderText(
-      <Text testID="text" role="heading-lg">
+      <Typography testID="text" role="heading-lg">
         Campaigns
-      </Text>,
+      </Typography>,
     );
 
     expect(classesOf(view, "text")).toContain("text-2xl");
@@ -59,9 +59,9 @@ describe("Native Text", () => {
 
   it("resolves a tone to a semantic colour", async () => {
     const view = await renderText(
-      <Text testID="text" role="body-sm" tone="muted">
+      <Typography testID="text" role="body-sm" tone="muted">
         Nothing yet
-      </Text>,
+      </Typography>,
     );
 
     expect(classesOf(view, "text")).toContain("text-foreground/60");
@@ -69,9 +69,9 @@ describe("Native Text", () => {
 
   it("aligns and truncates the way the platform does", async () => {
     const view = await renderText(
-      <Text testID="text" align="center" truncate>
+      <Typography testID="text" align="center" truncate>
         A very long label
-      </Text>,
+      </Typography>,
     );
 
     expect(classesOf(view, "text")).toContain("text-center");
@@ -79,7 +79,7 @@ describe("Native Text", () => {
   });
 
   it("resolves its defaults through configuration", async () => {
-    const view = await renderText(<Text testID="text">Save</Text>, {
+    const view = await renderText(<Typography testID="text">Save</Typography>, {
       components: { text: { role: "label", tone: "primary" } },
     });
 
@@ -90,9 +90,9 @@ describe("Native Text", () => {
 
   it("lets an instance prop win over the configured value", async () => {
     const view = await renderText(
-      <Text testID="text" role="body-sm">
+      <Typography testID="text" role="body-sm">
         Save
-      </Text>,
+      </Typography>,
       { components: { text: { role: "heading-xl" } } },
     );
 
@@ -102,11 +102,17 @@ describe("Native Text", () => {
 
   it("carries the consumer's class last, so it wins", async () => {
     const view = await renderText(
-      <Text testID="text" className="mb-2">
+      <Typography testID="text" className="mb-2">
         Save
-      </Text>,
+      </Typography>,
     );
 
     expect(classesOf(view, "text").endsWith("mb-2")).toBe(true);
+  });
+
+  it("answers to the platform's own name for a line of text, as the same component", () => {
+    // An alias is a reference rather than a second implementation, so a screen written
+    // against `Text` renders the component the shared names resolve to on both platforms.
+    expect(Text).toBe(Typography);
   });
 });

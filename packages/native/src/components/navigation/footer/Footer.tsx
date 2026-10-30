@@ -39,7 +39,7 @@ import { Container } from "../../../layout/Container";
 import { SECTION_SPACING_CLASS } from "../../../layout/layout-styles";
 import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
 import { classNames } from "../../../utils/class-names";
-import { Text } from "../../typography/text/Text";
+import { Typography } from "../../typography/text/Text";
 import { Link } from "../link";
 import {
   FALLBACK_NATIVE_FOOTER_CONFIG,
@@ -187,11 +187,11 @@ export function Footer({
         <View className={NATIVE_FOOTER_TOP_CLASS}>
           {hasBrandColumn && (
             <View className={NATIVE_FOOTER_BRAND_COLUMN_CLASS}>
-              {brand && <Text role="heading-sm">{brand}</Text>}
+              {brand && <Typography role="heading-sm">{brand}</Typography>}
               {description && (
-                <Text role="body-sm" tone="muted">
+                <Typography role="body-sm" tone="muted">
                   {description}
-                </Text>
+                </Typography>
               )}
               {newsletter}
             </View>
@@ -205,9 +205,9 @@ export function Footer({
                   className={NATIVE_FOOTER_GROUP_CLASS}>
                   {/* A group's title names the column it heads, so it is announced
                       as a heading a reader can move between. */}
-                  <Text role="label" accessibilityRole="header">
+                  <Typography role="label" accessibilityRole="header">
                     {group.title}
-                  </Text>
+                  </Typography>
                   <FooterLinkList
                     links={group.links}
                     className={NATIVE_FOOTER_LIST_CLASS}
@@ -222,9 +222,9 @@ export function Footer({
       {hasBottomRow && (
         <View className={NATIVE_FOOTER_BOTTOM_CLASS}>
           {copyright && (
-            <Text role="caption" tone="muted">
+            <Typography role="caption" tone="muted">
               {copyright}
-            </Text>
+            </Typography>
           )}
 
           <View className={NATIVE_FOOTER_BOTTOM_LINKS_CLASS}>

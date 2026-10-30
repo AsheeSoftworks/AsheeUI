@@ -35,28 +35,16 @@ export {
   resolveConfigCascade,
   resolveRadiusKey,
 } from "@asheeui/core";
-export * from "@asheeui/web";
-
 /**
- * The renderer's semantic text, under the name both branches answer to.
+ * The props of the renderer's semantic text.
  *
- * The two renderers call the same component by different names: the DOM package exports
- * `Typography` and the platform package exports `Text`, because each name is the one its own
- * ecosystem uses. That is a real difference between the packages and an artificial one for an
- * application, whose shared components are the whole point of the umbrella: a component that
- * had to write `Typography` on the web and `Text` on a device could not be shared at all,
- * which is what the shared kit met first.
- *
- * So the umbrella states the one name a shared component can rely on. This branch points it at
- * `Typography`; the sibling `./index.native` already receives `Text` from `@asheeui/native`,
- * so the same import compiles and renders on both platforms. Nothing is renamed inside the
- * renderers - `Typography` and `Text` both stay exported, with the same props (role, tone,
- * align, truncate) - which is what makes this an alias rather than an adapter.
+ * Both branches publish the component under both names — `Typography` is canonical and
+ * `Text` is the same reference — so the umbrella states no alias for the component. The
+ * props type is still stated here, because the web's is `TypographyProps` and a consumer
+ * that writes `TextProps` should find the same name on both branches.
  */
-export { Typography as Text } from "@asheeui/web";
-
-/** The props of {@link Text}, which are `Typography`'s on the web. */
 export type { TypographyProps as TextProps } from "@asheeui/web";
+export * from "@asheeui/web";
 
 /**
  * The configuration type of the renderer this import resolved to.

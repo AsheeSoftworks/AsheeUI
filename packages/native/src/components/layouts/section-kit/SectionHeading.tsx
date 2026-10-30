@@ -25,7 +25,7 @@ import {
 import type { ReactNode } from "react";
 import { View } from "react-native";
 import { classNames } from "../../../utils/class-names";
-import { Text } from "../../typography/text/Text";
+import { Typography } from "../../typography/text/Text";
 
 /**
  * Heading sizes a section heading can use.
@@ -111,19 +111,19 @@ export function SectionHeading({
         className,
       )}>
       {eyebrow && (
-        <Text role="overline" tone="primary" align={textAlign}>
+        <Typography role="overline" tone="primary" align={textAlign}>
           {eyebrow}
-        </Text>
+        </Typography>
       )}
       {title && (
-        <Text role={SECTION_BLOCK_HEADING_ROLE[size]} align={textAlign}>
+        <Typography role={SECTION_BLOCK_HEADING_ROLE[size]} align={textAlign}>
           {title}
-        </Text>
+        </Typography>
       )}
       {description && (
-        <Text role="body-lg" tone="muted" align={textAlign}>
+        <Typography role="body-lg" tone="muted" align={textAlign}>
           {description}
-        </Text>
+        </Typography>
       )}
     </View>
   );

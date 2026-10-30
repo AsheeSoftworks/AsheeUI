@@ -34,7 +34,7 @@ import {
 import { Pressable, View } from "react-native";
 import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
 import { classNames } from "../../../utils/class-names";
-import { Text } from "../../typography/text/Text";
+import { Typography } from "../../typography/text/Text";
 import { FieldShell } from "../field/FieldShell";
 import {
   FALLBACK_NATIVE_FILE_UPLOAD_CONFIG,
@@ -197,29 +197,29 @@ export function FileUpload({
           resolvedDisabled && NATIVE_FILE_UPLOAD_ZONE_DISABLED_CLASS,
           className,
         )}>
-        <Text role="label" className={NATIVE_FILE_UPLOAD_BUTTON_CLASS}>
+        <Typography role="label" className={NATIVE_FILE_UPLOAD_BUTTON_CLASS}>
           {resolvedButtonLabel}
-        </Text>
-        <Text role="body-sm" className={NATIVE_FILE_UPLOAD_HINT_CLASS}>
+        </Typography>
+        <Typography role="body-sm" className={NATIVE_FILE_UPLOAD_HINT_CLASS}>
           {resolvedHint}
-        </Text>
+        </Typography>
       </Pressable>
       {files.length > 0 && (
         <View className={NATIVE_FILE_UPLOAD_LIST_CLASS}>
           {files.map((file) => (
             <View key={file.name} className={NATIVE_FILE_UPLOAD_FILE_CLASS}>
               <View className="flex-col flex-1 min-w-0">
-                <Text
+                <Typography
                   role="body-sm"
                   className={NATIVE_FILE_UPLOAD_FILE_NAME_CLASS}>
                   {file.name}
-                </Text>
+                </Typography>
                 {file.size !== undefined && (
-                  <Text
+                  <Typography
                     role="body-sm"
                     className={NATIVE_FILE_UPLOAD_FILE_SIZE_CLASS}>
                     {formatFileSize(file.size)}
-                  </Text>
+                  </Typography>
                 )}
               </View>
               {onRemove && (
@@ -229,9 +229,9 @@ export function FileUpload({
                   disabled={resolvedDisabled}
                   onPress={() => onRemove(file.name)}
                   className={NATIVE_FILE_UPLOAD_REMOVE_CLASS}>
-                  <Text role="body-sm" accessible={false}>
+                  <Typography role="body-sm" accessible={false}>
                     ✕
-                  </Text>
+                  </Typography>
                 </Pressable>
               )}
             </View>

@@ -31,7 +31,7 @@ import { Pressable, View } from "react-native";
 import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
 import { classNames } from "../../../utils/class-names";
 import { Button } from "../../forms/button/Button";
-import { Text } from "../../typography/text/Text";
+import { Typography } from "../../typography/text/Text";
 import { EmptyState } from "../empty-state/EmptyState";
 import {
   FALLBACK_NATIVE_ERROR_STATE_CONFIG,
@@ -201,18 +201,18 @@ export function ErrorState({
             accessibilityState={{ expanded: isDetailOpen }}
             onPress={() => setIsDetailOpen((isOpen) => !isOpen)}
             className={NATIVE_ERROR_STATE_DETAIL_SUMMARY_CLASS}>
-            <Text role="label">{resolved.detailLabel}</Text>
+            <Typography role="label">{resolved.detailLabel}</Typography>
           </Pressable>
 
           {isDetailOpen && (
             <View className={NATIVE_ERROR_STATE_DETAIL_BODY_CLASS}>
-              <Text
+              <Typography
                 role="caption"
                 className={classNames(
                   NATIVE_ERROR_STATE_DETAIL_BODY_TEXT_CLASS,
                 )}>
                 {detail}
-              </Text>
+              </Typography>
             </View>
           )}
         </View>

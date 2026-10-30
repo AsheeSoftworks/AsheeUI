@@ -38,7 +38,7 @@ import { useEffect, useState } from "react";
 import { Pressable, TextInput, View } from "react-native";
 import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
 import { classNames } from "../../../utils/class-names";
-import { Text } from "../../typography/text/Text";
+import { Typography } from "../../typography/text/Text";
 import { FieldShell } from "../field/FieldShell";
 import type { PickerSheetOption } from "../picker/PickerSheet";
 import {
@@ -259,9 +259,11 @@ export function Autocomplete({
       {isListOpen && (
         <View className={NATIVE_SUGGESTION_LIST_CLASS}>
           {matches.length === 0 ? (
-            <Text role="body-sm" className={NATIVE_SUGGESTION_EMPTY_CLASS}>
+            <Typography
+              role="body-sm"
+              className={NATIVE_SUGGESTION_EMPTY_CLASS}>
               {noResultsLabel}
-            </Text>
+            </Typography>
           ) : (
             matches.map((option) => (
               <Pressable
@@ -283,11 +285,11 @@ export function Autocomplete({
                   setIsFocused(false);
                 }}
                 className={NATIVE_SUGGESTION_CLASS}>
-                <Text role="body-md">{option.label}</Text>
+                <Typography role="body-md">{option.label}</Typography>
                 {option.description && (
-                  <Text role="body-sm" tone="muted">
+                  <Typography role="body-sm" tone="muted">
                     {option.description}
-                  </Text>
+                  </Typography>
                 )}
               </Pressable>
             ))

@@ -29,7 +29,7 @@ import type { StyleProp, ViewProps, ViewStyle } from "react-native";
 import { View } from "react-native";
 import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
 import { classNames } from "../../../utils/class-names";
-import { Text } from "../../typography/text/Text";
+import { Typography } from "../../typography/text/Text";
 import { Spinner } from "../spinner/Spinner";
 import {
   FALLBACK_NATIVE_LOADING_STATE_CONFIG,
@@ -127,13 +127,13 @@ export function LoadingState({
       style={style}
       {...rest}>
       {indicator ?? <Spinner size={resolved.size} />}
-      <Text role="body-sm" tone="muted" align="center">
+      <Typography role="body-sm" tone="muted" align="center">
         {resolved.label}
-      </Text>
+      </Typography>
       {description && (
-        <Text role="caption" tone="muted" align="center">
+        <Typography role="caption" tone="muted" align="center">
           {description}
-        </Text>
+        </Typography>
       )}
       {children}
     </View>

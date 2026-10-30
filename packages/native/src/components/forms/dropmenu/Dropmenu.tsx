@@ -36,7 +36,7 @@ import { useState } from "react";
 import { Pressable } from "react-native";
 import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
 import { classNames } from "../../../utils/class-names";
-import { Text } from "../../typography/text/Text";
+import { Typography } from "../../typography/text/Text";
 import { FieldShell } from "../field/FieldShell";
 import { PickerSheet, type PickerSheetOption } from "../picker/PickerSheet";
 import { NATIVE_PICKER_TRIGGER_CLASS } from "../picker/picker-styles";
@@ -230,10 +230,12 @@ export function Dropmenu({
           resolvedDisabled && NATIVE_INPUT_DISABLED_CLASS,
           className,
         )}>
-        <Text role="body-md">{pickedOption?.label ?? placeholder}</Text>
-        <Text role="body-md" accessible={false}>
+        <Typography role="body-md">
+          {pickedOption?.label ?? placeholder}
+        </Typography>
+        <Typography role="body-md" accessible={false}>
           ⌄
-        </Text>
+        </Typography>
       </Pressable>
       <PickerSheet
         isOpen={isOpen}

@@ -39,7 +39,7 @@ import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
 import { classNames } from "../../../utils/class-names";
 import { openDestination } from "../../../utils/open-destination";
 import { Button } from "../../forms/button/Button";
-import { Text } from "../../typography/text/Text";
+import { Typography } from "../../typography/text/Text";
 import {
   FALLBACK_NATIVE_EMPTY_STATE_CONFIG,
   type NativeEmptyStateConfig,
@@ -208,13 +208,13 @@ export function EmptyState({
       )}
 
       <View className={NATIVE_EMPTY_STATE_HEADING_CLASS}>
-        <Text role="heading-sm" align="center">
+        <Typography role="heading-sm" align="center">
           {title}
-        </Text>
+        </Typography>
         {description && (
-          <Text role="body-sm" tone="muted" align="center">
+          <Typography role="body-sm" tone="muted" align="center">
             {description}
-          </Text>
+          </Typography>
         )}
       </View>
 
