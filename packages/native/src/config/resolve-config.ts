@@ -40,6 +40,9 @@ export interface NativePlatformConfig {
 
 /**
  * The component sections this renderer registers, keyed by the name they are stated under.
+ *
+ * @deprecated Use {@link ComponentsConfig} from `@asheeui/core` — the name both
+ * renderers publish. This spelling is the renderer's narrowing of the same contract.
  */
 export type NativeComponentsConfig = {
   [K in keyof NativeComponentConfigRegistry]?: Partial<
@@ -74,6 +77,9 @@ type NativeOnlyComponents = Omit<
  * web has no global density and a thumb needs a different baseline from a pointer; stating it
  * in a shared file is harmless on the web, which has no such property, so a shared file should
  * state it only when the file is the device's.
+ *
+ * @deprecated Use {@link ExternalConfig} from `@asheeui/core` — the name both
+ * renderers publish. This spelling is the renderer's narrowing of the same contract.
  */
 export interface NativeExternalConfig
   extends Omit<ExternalConfig, "components"> {
@@ -109,6 +115,9 @@ export type AsheeConfig = NativeExternalConfig;
 
 /**
  * The resolved configuration a component reads.
+ *
+ * @deprecated Use {@link Config} from `@asheeui/core` — the name both
+ * renderers publish. This spelling is the renderer's narrowing of the same contract.
  */
 export interface NativeConfig extends Required<NativePlatformConfig> {
   /** Per-component options, deep-merged over the registered defaults. */

@@ -21,6 +21,9 @@ import { registerNativeComponentDefaults } from "../../../config/registry";
  *
  * `size`, `radius`, `variant`, `color` and `status` carry the meanings the shared field
  * family gives them, and `mode` carries the meaning the shared calendar gives it.
+ *
+ * @deprecated Use {@link CalendarConfig} from `@asheeui/core` — the name both
+ * renderers publish. This spelling is the renderer's narrowing of the same contract.
  */
 export interface NativeCalendarConfig
   extends Pick<

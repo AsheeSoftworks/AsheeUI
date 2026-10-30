@@ -17,6 +17,9 @@ import { registerNativeComponentDefaults } from "../../../config/registry";
  *
  * `submitVariant`, `submitColor`, `submitSize` and `submitRadius` carry the meanings the
  * shared form gives them.
+ *
+ * @deprecated Use {@link FormConfig} from `@asheeui/core` — the name both
+ * renderers publish. This spelling is the renderer's narrowing of the same contract.
  */
 export type NativeFormConfig = FormConfig;
 

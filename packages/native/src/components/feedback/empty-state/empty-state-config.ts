@@ -15,6 +15,9 @@ export type { EmptyStateConfig } from "@asheeui/core";
 
 /**
  * Configuration options for the native EmptyState.
+ *
+ * @deprecated Use {@link EmptyStateConfig} from `@asheeui/core` — the name both
+ * renderers publish. This spelling is the renderer's narrowing of the same contract.
  */
 export type NativeEmptyStateConfig = EmptyStateConfig;
 

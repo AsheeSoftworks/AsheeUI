@@ -19,6 +19,9 @@ export type {
 
 /**
  * Configuration options for the native AuthLayout.
+ *
+ * @deprecated Use {@link AuthLayoutConfig} from `@asheeui/core` — the name both
+ * renderers publish. This spelling is the renderer's narrowing of the same contract.
  */
 export type NativeAuthLayoutConfig = AuthLayoutConfig;
 

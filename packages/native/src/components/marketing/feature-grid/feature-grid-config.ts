@@ -15,6 +15,9 @@ export type { FeatureGridConfig, FeatureItem } from "@asheeui/core";
 
 /**
  * Configuration options for the native FeatureGrid.
+ *
+ * @deprecated Use {@link FeatureGridConfig} from `@asheeui/core` — the name both
+ * renderers publish. This spelling is the renderer's narrowing of the same contract.
  */
 export type NativeFeatureGridConfig = FeatureGridConfig;
 

@@ -19,6 +19,9 @@ import { registerNativeComponentDefaults } from "../../../config/registry";
  *
  * `radius` and `isAnimated` carry the meanings the shared skeleton contract gives
  * them.
+ *
+ * @deprecated Use {@link SkeletonConfig} from `@asheeui/core` — the name both
+ * renderers publish. This spelling is the renderer's narrowing of the same contract.
  */
 export type NativeSkeletonConfig = Pick<
   SkeletonConfig,

@@ -15,6 +15,9 @@ export type { AvatarConfig } from "@asheeui/core";
 
 /**
  * Configuration options for the native Avatar.
+ *
+ * @deprecated Use {@link AvatarConfig} from `@asheeui/core` — the name both
+ * renderers publish. This spelling is the renderer's narrowing of the same contract.
  */
 export type NativeAvatarConfig = AvatarConfig;
 

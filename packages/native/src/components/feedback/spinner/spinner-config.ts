@@ -19,6 +19,9 @@ import { registerNativeComponentDefaults } from "../../../config/registry";
  *
  * `size`, `color` and `speed` carry the meanings the shared spinner contract gives
  * them, and `className` is the extra classes a consumer applies to every instance.
+ *
+ * @deprecated Use {@link SpinnerConfig} from `@asheeui/core` — the name both
+ * renderers publish. This spelling is the renderer's narrowing of the same contract.
  */
 export type NativeSpinnerConfig = Pick<
   SpinnerConfig,

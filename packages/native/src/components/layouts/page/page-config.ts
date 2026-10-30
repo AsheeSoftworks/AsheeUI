@@ -15,6 +15,9 @@ export type { PageConfig } from "@asheeui/core";
 
 /**
  * Configuration options for the native page parts.
+ *
+ * @deprecated Use {@link PageConfig} from `@asheeui/core` — the name both
+ * renderers publish. This spelling is the renderer's narrowing of the same contract.
  */
 export type NativePageConfig = PageConfig;
 

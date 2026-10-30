@@ -15,6 +15,9 @@ export type { CtaConfig, CtaPanel } from "@asheeui/core";
 
 /**
  * Configuration options for the native CTA.
+ *
+ * @deprecated Use {@link CtaConfig} from `@asheeui/core` — the name both
+ * renderers publish. This spelling is the renderer's narrowing of the same contract.
  */
 export type NativeCtaConfig = CtaConfig;
 

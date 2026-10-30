@@ -23,6 +23,9 @@ import { registerNativeComponentDefaults } from "../../../config/registry";
  *
  * `size`, `radius`, `variant`, `color` and `status` carry the meanings the shared field
  * contract gives them.
+ *
+ * @deprecated Use {@link InputConfig} from `@asheeui/core` — the name both
+ * renderers publish. This spelling is the renderer's narrowing of the same contract.
  */
 export interface NativeInputConfig
   extends Pick<

@@ -25,11 +25,17 @@ export type {
 
 /**
  * Configuration options for the native rendering of the table contract.
+ *
+ * @deprecated Use {@link TableConfig} from `@asheeui/core` — the name both
+ * renderers publish. This spelling is the renderer's narrowing of the same contract.
  */
 export type NativeTableConfig = TableConfig;
 
 /**
  * Configuration options for the native rendering of the data-table contract.
+ *
+ * @deprecated Use {@link DataTableConfig} from `@asheeui/core` — the name both
+ * renderers publish. This spelling is the renderer's narrowing of the same contract.
  */
 export type NativeDataTableConfig = DataTableConfig;
 

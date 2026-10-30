@@ -20,6 +20,9 @@ export type {
 
 /**
  * Configuration options for the native Split.
+ *
+ * @deprecated Use {@link SplitConfig} from `@asheeui/core` — the name both
+ * renderers publish. This spelling is the renderer's narrowing of the same contract.
  */
 export type NativeSplitConfig = SplitConfig;
 

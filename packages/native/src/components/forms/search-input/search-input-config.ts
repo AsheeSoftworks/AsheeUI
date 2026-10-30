@@ -15,6 +15,9 @@ import { registerNativeComponentDefaults } from "../../../config/registry";
  *
  * `size`, `color`, `clearable`, `label` and `hideLabel` carry the meanings the shared
  * search field gives them.
+ *
+ * @deprecated Use {@link SearchInputConfig} from `@asheeui/core` — the name both
+ * renderers publish. This spelling is the renderer's narrowing of the same contract.
  */
 export interface NativeSearchInputConfig
   extends Pick<

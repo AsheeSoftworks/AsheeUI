@@ -21,6 +21,9 @@ import { registerNativeComponentDefaults } from "../../../config/registry";
  *
  * `size`, `radius`, `variant` and `color` carry the meanings the shared field family
  * gives them.
+ *
+ * @deprecated Use {@link SwitchConfig} from `@asheeui/core` — the name both
+ * renderers publish. This spelling is the renderer's narrowing of the same contract.
  */
 export interface NativeSwitchConfig
   extends Pick<FieldConfig, "size" | "radius" | "variant" | "color"> {

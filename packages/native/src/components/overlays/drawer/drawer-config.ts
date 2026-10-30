@@ -27,6 +27,9 @@ export type {
  * `closeOnBackdropClick` and `closeOnEscape` are the canonical dismissal names, shared with
  * the Modal; `closeOnOverlayClick` and `closeOnEsc` remain accepted as their deprecated
  * aliases, so either spelling configures the drawer.
+ *
+ * @deprecated Use {@link DrawerConfig} from `@asheeui/core` — the name both
+ * renderers publish. This spelling is the renderer's narrowing of the same contract.
  */
 export type NativeDrawerConfig = DrawerConfigOptions;
 

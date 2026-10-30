@@ -17,6 +17,9 @@ import { registerNativeComponentDefaults } from "../../../config/registry";
  * animation belongs to the platform's own `Pressable`, a badge has no option that is
  * one platform's alone, so the native type is the shared one rather than a narrowing
  * of it.
+ *
+ * @deprecated Use {@link BadgeConfig} from `@asheeui/core` — the name both
+ * renderers publish. This spelling is the renderer's narrowing of the same contract.
  */
 export type NativeBadgeConfig = BadgeConfig;
 

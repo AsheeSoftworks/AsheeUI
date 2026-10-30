@@ -15,6 +15,9 @@ import { registerNativeComponentDefaults } from "../../../config/registry";
  *
  * `length`, `mode`, `size`, `masked`, `radius`, `isDisabled` and `isInvalid` carry the
  * meanings the shared code field gives them.
+ *
+ * @deprecated Use {@link PinInputConfig} from `@asheeui/core` — the name both
+ * renderers publish. This spelling is the renderer's narrowing of the same contract.
  */
 export type NativePinInputConfig = PinInputConfig;
 

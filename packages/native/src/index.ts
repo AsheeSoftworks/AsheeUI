@@ -7,6 +7,95 @@
  * components it already knows, behaving the way the platform behaves.
  */
 
+/**
+ * The shared vocabulary, under the names `@asheeui/core` declares.
+ *
+ * These are the types a consumer writes: the design language's tokens, the palette's
+ * roles, the typography roles, and the configuration shape a shared `asheeui.config.ts`
+ * exports. A shared component imports them from the renderer it already depends on rather
+ * than reaching into core, and `@asheeui/web` exports the same list — the point of the
+ * naming phase is that a type has one name on both platforms, not a spelling per renderer.
+ */
+export type {
+  ActionConfig,
+  AsheeColorRegistry,
+  Color,
+  ColorConfig,
+  ColorVariant,
+  DefaultColorConfig,
+  ExternalConfig,
+  Radius,
+  Size,
+  Space,
+  ThemeName,
+  TypographyAlign,
+  TypographyRole,
+  TypographyTone,
+  Variant,
+} from "@asheeui/core";
+
+/**
+ * The configuration sections a consumer writes, under the names `@asheeui/core` declares.
+ *
+ * `components.button` is configured by `ButtonConfig` on both platforms, so the name a
+ * consumer's `asheeui.config.ts` imports does not depend on the renderer it is compiled
+ * against. The platform's own spellings (`NativeButtonConfig` and the rest) stay exported
+ * for a minor, each pointing here — they are the renderer's narrowing of the shared shape,
+ * not a second contract.
+ */
+export type {
+  AccordionConfig,
+  AlertConfig,
+  AuthLayoutConfig,
+  AvatarConfig,
+  BadgeConfig,
+  ButtonConfig,
+  CalendarConfig,
+  CarouselConfig,
+  ChipConfig,
+  ClipboardConfig,
+  ComponentsConfig,
+  Config,
+  ContainerSize,
+  CtaConfig,
+  DataTableConfig,
+  DocsLayoutConfig,
+  DrawerConfig,
+  EmptyStateConfig,
+  ErrorStateConfig,
+  FeatureGridConfig,
+  FileUploadConfig,
+  FooterConfig,
+  FormConfig,
+  HeroConfig,
+  ImageConfig,
+  InputConfig,
+  LinkConfig,
+  LoadingStateConfig,
+  MarketingLayoutConfig,
+  MarqueeConfig,
+  ModalConfig,
+  NavbarConfig,
+  PageConfig,
+  PaginationConfig,
+  PinInputConfig,
+  PricingCardConfig,
+  RadioConfig,
+  SearchInputConfig,
+  SidebarConfig,
+  SidebarLayoutConfig,
+  SkeletonConfig,
+  SpinnerConfig,
+  SplitConfig,
+  StepperConfig,
+  SwitchConfig,
+  TableConfig,
+  TabsConfig,
+  TestimonialsConfig,
+  ToastConfig,
+  TooltipConfig,
+} from "@asheeui/core";
+
 export * from "./components/data-display/accordion";
 export * from "./components/data-display/avatar";
 export * from "./components/data-display/badge";

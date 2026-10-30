@@ -15,6 +15,9 @@ export type { HeroAlign, HeroConfig, HeroMediaPosition } from "@asheeui/core";
 
 /**
  * Configuration options for the native Hero.
+ *
+ * @deprecated Use {@link HeroConfig} from `@asheeui/core` — the name both
+ * renderers publish. This spelling is the renderer's narrowing of the same contract.
  */
 export type NativeHeroConfig = HeroConfig;
 

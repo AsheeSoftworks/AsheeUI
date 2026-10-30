@@ -20,6 +20,9 @@ import { registerNativeComponentDefaults } from "../../../config/registry";
  * The differences between the two renderers are in the *defaults* rather than in the
  * shape — a native button is density `lg` because a thumb needs the room, where the
  * web's `md` is sized for a pointer — and those live in `defaultNativeButtonConfig`.
+ *
+ * @deprecated Use {@link ButtonConfig} from `@asheeui/core` — the name both
+ * renderers publish. This spelling is the renderer's narrowing of the same contract.
  */
 export type NativeButtonConfig = Omit<ButtonConfig, "animate">;
 
