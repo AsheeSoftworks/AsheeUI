@@ -186,3 +186,4 @@ export * from "./theme";
 export * from "./utils/accessibility";
 export * from "./utils/class-names";
 export * from "./utils/cn";
+export * from "./utils/resolve-animate";

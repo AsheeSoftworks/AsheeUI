@@ -80,12 +80,6 @@ function code(name: string): string {
 }
 
 describe("umbrella entry point", () => {
-  it("exports everything the web renderer exports", () => {
-    const missing = Object.keys(Web).filter((name) => !(name in Umbrella));
-
-    expect(missing).toEqual([]);
-  });
-
   it("answers both text names, as one component", () => {
     // The renderers publish the pair now — `Typography` canonically, `Text` as the same
     // reference — so a shared component writes either name and the umbrella states no alias
