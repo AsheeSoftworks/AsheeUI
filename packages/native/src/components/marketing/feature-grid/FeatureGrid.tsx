@@ -30,6 +30,10 @@ import {
   NATIVE_FEATURE_ICON_TONE_CLASS,
 } from "../../../styles/feature-grid";
 import { cn } from "../../../utils/cn";
+import {
+  type UnsupportedElementProps,
+  useUnsupportedElementProps,
+} from "../../../utils/unsupported-element-props";
 import { openDestination } from "../../../utils/open-destination";
 import { Card } from "../../data-display/card/Card";
 import { SectionHeading } from "../../layouts/section-kit/SectionHeading";
@@ -62,7 +66,8 @@ export interface FeatureGridLink {
  */
 export interface FeatureGridProps
   extends NativeFeatureGridConfig,
-    Omit<ViewProps, "children" | "style"> {
+    Omit<ViewProps, "children" | "style">,
+    UnsupportedElementProps {
   /** The features to show. */
   items: FeatureItem[];
 
@@ -133,11 +138,15 @@ export function FeatureGrid({
   align,
   containerSize,
   contained,
+  as,
+  titleAs,
   className,
   style,
   children,
   ...rest
 }: FeatureGridProps) {
+  useUnsupportedElementProps("FeatureGrid", { as, titleAs });
+
   const config = useAsheeConfig();
 
   const resolved = resolveConfigCascade<

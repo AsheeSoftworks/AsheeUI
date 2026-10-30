@@ -32,6 +32,10 @@ import {
 } from "../../../styles/marketing-layout";
 import { cn } from "../../../utils/cn";
 import {
+  type UnsupportedElementProps,
+  useUnsupportedElementProps,
+} from "../../../utils/unsupported-element-props";
+import {
   FALLBACK_NATIVE_MARKETING_LAYOUT_CONFIG,
   type NativeMarketingLayoutConfig,
 } from "./marketing-layout-config";
@@ -41,7 +45,8 @@ import {
  */
 export interface MarketingLayoutProps
   extends NativeMarketingLayoutConfig,
-    Omit<ScrollViewProps, "children" | "style" | "contentContainerStyle"> {
+    Omit<ScrollViewProps, "children" | "style" | "contentContainerStyle">,
+    UnsupportedElementProps {
   /**
    * The page's navigation, above the main region.
    * The framework's own navigation is the platform's header, which announces itself as one.
@@ -119,10 +124,14 @@ export function MarketingLayout({
   skipLink,
   skipLinkLabel,
   background,
+  as,
+  titleAs,
   className,
   style,
   ...rest
 }: MarketingLayoutProps) {
+  useUnsupportedElementProps("MarketingLayout", { as, titleAs });
+
   const config = useAsheeConfig();
 
   const resolved = resolveConfigCascade<

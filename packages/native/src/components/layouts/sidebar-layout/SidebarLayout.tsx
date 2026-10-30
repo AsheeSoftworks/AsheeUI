@@ -37,6 +37,10 @@ import {
   NATIVE_SIDEBAR_LAYOUT_WIDTH_CLASS,
 } from "../../../styles/sidebar-layout";
 import { cn } from "../../../utils/cn";
+import {
+  type UnsupportedElementProps,
+  useUnsupportedElementProps,
+} from "../../../utils/unsupported-element-props";
 import { useUnsupportedProps } from "../../../utils/unsupported-prop";
 import {
   FALLBACK_NATIVE_SIDEBAR_LAYOUT_CONFIG,
@@ -48,7 +52,8 @@ import {
  */
 export interface SidebarLayoutProps
   extends NativeSidebarLayoutConfig,
-    Omit<ViewProps, "children" | "style"> {
+    Omit<ViewProps, "children" | "style">,
+    UnsupportedElementProps {
   /** The navigation column, typically the framework's native `Sidebar`. */
   sidebar: ReactNode;
 
@@ -122,11 +127,15 @@ export function SidebarLayout({
   side,
   sidebarWidth,
   stickySidebar,
+  as,
+  titleAs,
   className,
   style,
   children,
   ...rest
 }: SidebarLayoutProps) {
+  useUnsupportedElementProps("SidebarLayout", { as, titleAs });
+
   const config = useAsheeConfig();
   const { isAtLeast } = useBreakpoint();
 

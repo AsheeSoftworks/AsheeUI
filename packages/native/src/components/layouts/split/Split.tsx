@@ -32,6 +32,10 @@ import {
   NATIVE_SPLIT_STICKY_CLASS,
 } from "../../../styles/split";
 import { cn } from "../../../utils/cn";
+import {
+  type UnsupportedElementProps,
+  useUnsupportedElementProps,
+} from "../../../utils/unsupported-element-props";
 import { useUnsupportedProps } from "../../../utils/unsupported-prop";
 import {
   FALLBACK_NATIVE_SPLIT_CONFIG,
@@ -43,7 +47,8 @@ import {
  */
 export interface SplitProps
   extends NativeSplitConfig,
-    Omit<ViewProps, "children" | "style"> {
+    Omit<ViewProps, "children" | "style">,
+    UnsupportedElementProps {
   /**
    * The first pane.
    * Left out when the layout has one pane only, which is what a screen that grows a
@@ -113,10 +118,14 @@ export function Split({
   align,
   divider,
   stickyEnd,
+  as,
+  titleAs,
   className,
   style,
   ...rest
 }: SplitProps) {
+  useUnsupportedElementProps("Split", { as, titleAs });
+
   const config = useAsheeConfig();
   const { isAtLeast } = useBreakpoint();
 

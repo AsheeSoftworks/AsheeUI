@@ -38,6 +38,10 @@ import {
   NATIVE_DOCS_LAYOUT_REGION_CLASS,
 } from "../../../styles/docs-layout";
 import { cn } from "../../../utils/cn";
+import {
+  type UnsupportedElementProps,
+  useUnsupportedElementProps,
+} from "../../../utils/unsupported-element-props";
 import { useUnsupportedProps } from "../../../utils/unsupported-prop";
 import { Typography } from "../../typography/text/Text";
 import {
@@ -50,7 +54,8 @@ import {
  */
 export interface DocsLayoutProps
   extends NativeDocsLayoutConfig,
-    Omit<ScrollViewProps, "children" | "style"> {
+    Omit<ScrollViewProps, "children" | "style">,
+    UnsupportedElementProps {
   /**
    * The documentation navigation, typically a `Sidebar` of sections and pages.
    */
@@ -141,11 +146,15 @@ export function DocsLayout({
   stickyToc,
   skipLink,
   skipLinkLabel,
+  as,
+  titleAs,
   className,
   style,
   ...rest
 }: DocsLayoutProps) {
   const config = useAsheeConfig();
+
+  useUnsupportedElementProps("DocsLayout", { as, titleAs });
 
   useUnsupportedProps("DocsLayout", {
     stickyToc: {
