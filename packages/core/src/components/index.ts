@@ -12,6 +12,7 @@ export * from "./data-display/accordion";
 export * from "./data-display/avatar";
 export * from "./data-display/avatar/avatar-styles";
 export * from "./data-display/badge";
+export * from "./data-display/card";
 export * from "./data-display/carousel";
 export * from "./data-display/chip";
 export * from "./data-display/clipboard";

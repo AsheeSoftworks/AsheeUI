@@ -1,24 +1,35 @@
 /**
  * Card component configuration for the native package.
  *
- * The options are the ones the framework's card contract names. The treatment is
- * resolved as a surface plus an accent rather than as a filled variant matrix,
- * because a card's colour is an accent on a surface rather than a fill: the same
- * reason the platform's own surfaces are neutral by default.
+ * The *shape* of `components.card` is `@asheeui/core`'s: the treatment, the accent, the density, the
+ * corner and the press options are stated once, for both platforms, in
+ * `packages/core/src/components/data-display/card/card-config.ts`. This module keeps what is the
+ * platform's — the values it registers and the hard fallbacks it states — because those are values
+ * rather than vocabulary.
+ *
+ * The treatment is resolved as a surface plus an accent rather than as a filled variant matrix,
+ * because a card's colour is an accent on a surface rather than a fill: the same reason the
+ * platform's own surfaces are neutral by default.
  */
 
 import {
-  type ColorRole,
+  type CardConfig,
   deprecatedAlias,
   deprecateMany,
-  type Radius,
   resolveCardVariant,
-  type Size,
   type Variant,
 } from "@asheeui/core";
 import { registerNativeComponentDefaults } from "../../../config/registry";
 
 export { resolveCardVariant };
+
+export type {
+  CardConfig,
+  CardImageConfig,
+  CardImageLoading,
+  CardImagePosition,
+  CardVariant,
+} from "@asheeui/core";
 
 /**
  * The treatments a native card can draw.
@@ -31,28 +42,15 @@ export type NativeCardVariant = Variant;
 
 /**
  * Configuration options for the native Card.
+ *
+ * A native card is a surface, so it states the options it draws and leaves the two the web's card
+ * owns — `animate`, whose feedback the platform's own `Pressable` supplies, and `image`, which the
+ * platform lays out through its own component. Both are accepted by the shared `CardConfig`; this is
+ * the documented subset a device implements.
+ *
+ * @deprecated Use {@link CardConfig} from `@asheeui/core` — the name both renderers publish.
  */
-export interface NativeCardConfig {
-  /**
-   * Visual treatment of the surface.
-   * Defaults to the application's `defaultVariant`; the hard fallback is `"bordered"`.
-   * The native card draws the shared vocabulary directly, and a surface name from
-   * either platform resolves to a native one — see {@link resolveNativeCardVariant}.
-   */
-  variant?: Variant;
-
-  /** Accent colour of the surface's border. Defaults to "primary". */
-  color?: ColorRole;
-
-  /** Density, which decides padding and text size. Defaults to "md". */
-  size?: Size;
-
-  /** Corner rounding. Defaults to the platform's `defaultRadius`. */
-  radius?: Radius;
-
-  /** Whether the whole card responds to a press. Defaults to false. */
-  isPressable?: boolean;
-}
+export type NativeCardConfig = Omit<CardConfig, "animate" | "image">;
 
 /**
  * A card surface for each treatment the shared vocabulary can name, and for the web

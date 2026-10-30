@@ -17,7 +17,18 @@
  */
 
 import { resolveCardVariant, type Variant } from "@asheeui/core";
-import { type CardVariant, FALLBACK_CARD_CONFIG } from "./card-config";
+import { FALLBACK_CARD_CONFIG } from "./card-config";
+
+/**
+ * The four surfaces the web card paints.
+ *
+ * The framework's `CardVariant` — now `@asheeui/core`'s — is the seven names a consumer may write:
+ * the five shared treatments plus this renderer's `elevated` and `flat`. A *surface* is what the card
+ * actually draws, and only the four below have a class map behind them. Keeping the two types apart
+ * is what lets `components.card.variant` accept `solid` on both platforms while the web still paints
+ * `elevated` for it.
+ */
+export type CardSurface = "elevated" | "bordered" | "flat" | "ghost";
 
 /**
  * The card's own surface names, taken as themselves.
@@ -27,7 +38,7 @@ import { type CardVariant, FALLBACK_CARD_CONFIG } from "./card-config";
  * vocabulary — core maps both onto the filled treatment, which would turn `flat` into
  * `elevated`.
  */
-const CARD_SURFACE_FOR_NAME: Record<string, CardVariant> = {
+const CARD_SURFACE_FOR_NAME: Record<string, CardSurface> = {
   elevated: "elevated",
   flat: "flat",
   bordered: "bordered",
@@ -44,7 +55,7 @@ const CARD_SURFACE_FOR_NAME: Record<string, CardVariant> = {
  * restyling every unconfigured card at once. `underlined` has no baseline to rule, so it
  * lands on the nearest surface the card can draw.
  */
-const CARD_SURFACE_FOR_TREATMENT: Record<Variant, CardVariant> = {
+const CARD_SURFACE_FOR_TREATMENT: Record<Variant, CardSurface> = {
   solid: "elevated",
   faded: "bordered",
   bordered: "bordered",
@@ -69,7 +80,7 @@ const CARD_SURFACE_FOR_TREATMENT: Record<Variant, CardVariant> = {
  * cardSurfaceFor("flat"); // "flat", the card's own surface, unchanged
  * ```
  */
-export function cardSurfaceFor(treatment: string): CardVariant {
+export function cardSurfaceFor(treatment: string): CardSurface {
   return (
     CARD_SURFACE_FOR_NAME[treatment] ??
     CARD_SURFACE_FOR_TREATMENT[resolveCardVariant(treatment)] ??

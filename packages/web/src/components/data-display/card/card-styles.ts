@@ -5,7 +5,7 @@
  */
 
 import type { Size } from "@asheeui/core";
-import type { CardVariant } from "./card-config";
+import type { CardSurface } from "./card-surface";
 
 /**
  * CSS classes for card padding based on size.
@@ -41,7 +41,7 @@ export const CARD_HEADER_GAP_CLASS: Record<Size, string> = {
  * CSS classes for card variants.
  * Each variant has a distinct background, border, and shadow treatment.
  */
-export const CARD_VARIANT_CLASS: Record<CardVariant, string> = {
+export const CARD_VARIANT_CLASS: Record<CardSurface, string> = {
   elevated: "bg-secondary text-foreground shadow-md border border-border/40",
   bordered: "bg-background text-foreground border border-border shadow-xs",
   flat: "bg-secondary/50 text-foreground border-none",

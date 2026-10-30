@@ -9,11 +9,11 @@
  */
 
 import {
+  type CardVariant,
   type ColorRole,
   type Radius,
   resolveCascade,
   type Size,
-  type Variant,
 } from "@asheeui/core";
 import type { ReactNode } from "react";
 import type {
@@ -112,10 +112,11 @@ export function Card({
   const sectionConfig = config.components.card;
 
   // The cascade's component and global tiers can name a treatment from either
-  // platform's vocabulary; the shared resolver lands it on a treatment the class map
-  // below always answers for.
+  // platform's vocabulary — the shared configuration states seven names, this card draws
+  // five — so the cascade resolves the configured vocabulary and the shared resolver lands
+  // it on a treatment the class map below always answers for.
   const resolvedVariant = resolveCardVariant(
-    resolveCascade<Variant>(
+    resolveCascade<CardVariant>(
       variant,
       sectionConfig?.variant,
       config.defaultVariant,
