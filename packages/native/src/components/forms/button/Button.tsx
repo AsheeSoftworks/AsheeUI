@@ -11,13 +11,14 @@
 
 import {
   type Color,
+  type LinkSubstitution,
   type Radius,
   resolveCascade,
   resolvePress,
   type Size,
   type Variant,
 } from "@asheeui/core";
-import { type ReactNode, useRef } from "react";
+import { type ElementType, type ReactNode, useRef } from "react";
 import type { PressableProps, StyleProp, ViewStyle } from "react-native";
 import {
   ActivityIndicator,
@@ -44,6 +45,24 @@ import {
   FALLBACK_NATIVE_BUTTON_CONFIG,
   type NativeButtonConfig,
 } from "./button-config";
+
+/**
+ * The substitution a button accepts, under the web renderer's key names.
+ *
+ * The web's `ButtonProps.link` states `component` and `props`; a router link needs a `to`
+ * as well, so a native button accepts the same three rather than a shape of its own.
+ */
+export interface ButtonLinkProps
+  extends Omit<LinkSubstitution<Record<string, unknown>>, "componentProps"> {
+  /** Component that replaces the button, such as a router's link. */
+  component?: ElementType;
+
+  /** Props for that component, spread last so they win. */
+  props?: Record<string, unknown>;
+
+  /** A route destination a router understands. */
+  to?: string;
+}
 
 /**
  * Props for the native Button.
@@ -102,6 +121,25 @@ export interface ButtonProps
   href?: string;
 
   /**
+   * A component that replaces the button, under the web renderer's shape.
+   *
+   * The substitute receives `href`/`to`, `onPress`, the classes, the style and the
+   * accessibility state; its own props are spread last, so a router's own props win.
+   */
+  link?: ButtonLinkProps;
+
+  /**
+   * A component that replaces the button, stated beside `link`.
+   *
+   * The web renderer accepts substitution both ways, so a shared call site keeps working
+   * when it uses either spelling.
+   */
+  component?: ElementType;
+
+  /** Props for {@link component}, spread last so they win. */
+  componentProps?: Record<string, unknown>;
+
+  /**
    * Called when the control is activated, under the name the web package uses.
    *
    * The platform's `Pressable` already accepts this name and hands the press event to it;
@@ -158,6 +196,9 @@ export function Button({
   icon,
   type = "button",
   href,
+  link,
+  component,
+  componentProps,
   startContent,
   endContent,
   className,
@@ -236,6 +277,79 @@ export function Button({
     className,
   );
 
+  const handlePress = (pressEvent: Parameters<NonNullable<PressableProps["onPress"]>>[0]) => {
+    // The platform's callback may read the responder, so it is wrapped rather than
+    // dropped; `resolvePress` still owns which name runs first.
+    resolvePress(
+      {
+        onClick,
+        onPress: onPress ? () => onPress(pressEvent) : undefined,
+      },
+      pressEvent,
+    );
+
+    // A destination is what the web's anchor would follow; it applies only when the
+    // consumer stated no handler of its own, which is the rule native `Link` follows.
+    // Inside a form, `type` says what the activation means.
+    if (href && !onPress && !onClick) openDestination(href);
+    if (type === "submit") form?.submit();
+    else if (type === "reset") form?.reset();
+  };
+
+  const content = (
+    <>
+      {isLoading ? (
+        // The spinner is decoration inside a control that already announces its busy
+        // state. It is hidden from assistive technology on purpose, so a screen reader
+        // hears "Save, busy" rather than "Loading, Save" and the button keeps one
+        // stable name.
+        <ActivityIndicator
+          accessibilityElementsHidden
+          importantForAccessibility="no-hide-descendants"
+          size="small"
+          testID="button-spinner"
+        />
+      ) : null}
+      {startContent}
+      {icon || typeof children !== "string" ? (
+        children
+      ) : (
+        <Text>{children}</Text>
+      )}
+      {endContent}
+    </>
+  );
+
+  // A consumer that routes internally names the component that renders the control. It
+  // receives the destination a router understands (`to`) or the URL the web's anchor would
+  // have followed (`href`), and its own props are spread last so they win.
+  const Substitute = link?.component ?? component;
+  if (Substitute) {
+    const destination =
+      link?.to !== undefined
+        ? { to: link.to }
+        : href !== undefined
+          ? { href }
+          : {};
+
+    return (
+      <Substitute
+        {...destination}
+        onPress={isInteractionDisabled ? undefined : handlePress}
+        accessibilityRole="button"
+        accessibilityState={{
+          disabled: isInteractionDisabled,
+          busy: Boolean(isLoading),
+        }}
+        disabled={isInteractionDisabled}
+        className={classes}
+        style={style}
+        {...(link?.props ?? componentProps)}>
+        {content}
+      </Substitute>
+    );
+  }
+
   return (
     <Pressable
       accessibilityRole="button"
@@ -266,50 +380,11 @@ export function Button({
         }
         onPressOut?.(event);
       }}
-      onPress={
-        isInteractionDisabled
-          ? undefined
-          : (pressEvent) => {
-              // The platform's callback may read the responder, so it is wrapped rather
-              // than dropped; `resolvePress` still owns which name runs first.
-              resolvePress(
-                {
-                  onClick,
-                  onPress: onPress ? () => onPress(pressEvent) : undefined,
-                },
-                pressEvent,
-              );
-
-              // A destination is what the web's anchor would follow; it applies only when
-              // the consumer stated no handler of its own, which is the rule native `Link`
-              // follows. Inside a form, `type` says what the activation means.
-              if (href && !onPress && !onClick) openDestination(href);
-              if (type === "submit") form?.submit();
-              else if (type === "reset") form?.reset();
-            }
-      }
+      onPress={isInteractionDisabled ? undefined : handlePress}
       className={classes}
       style={[style, isAnimated ? { transform: [{ scale }] } : undefined]}
       {...rest}>
-      {isLoading ? (
-        // The spinner is decoration inside a control that already announces its busy
-        // state. It is hidden from assistive technology on purpose, so a screen reader
-        // hears "Save, busy" rather than "Loading, Save" and the button keeps one
-        // stable name.
-        <ActivityIndicator
-          accessibilityElementsHidden
-          importantForAccessibility="no-hide-descendants"
-          size="small"
-          testID="button-spinner"
-        />
-      ) : null}
-      {startContent}
-      {icon || typeof children !== "string" ? (
-        children
-      ) : (
-        <Text>{children}</Text>
-      )}
-      {endContent}
+      {content}
     </Pressable>
   );
 }

@@ -22,7 +22,7 @@ import {
   type FooterLinkItem,
   resolveConfigCascade,
 } from "@asheeui/core";
-import type { ReactNode } from "react";
+import type { ElementType, ReactNode } from "react";
 import type { StyleProp, ViewProps, ViewStyle } from "react-native";
 import { View } from "react-native";
 import { Container } from "../../../layout/Container";
@@ -47,6 +47,17 @@ import {
   FALLBACK_NATIVE_FOOTER_CONFIG,
   type NativeFooterConfig,
 } from "./footer-config";
+
+/**
+ * The substitution a footer accepts, under the web renderer's key names.
+ */
+export interface FooterLink {
+  /** Component that replaces the anchor, such as a framework router link. */
+  component?: ElementType;
+
+  /** Additional props for that component, spread last so they win. */
+  props?: Record<string, unknown>;
+}
 
 /**
  * Props for the native Footer.
@@ -81,6 +92,15 @@ export interface FooterProps
   /** Content below everything else. */
   children?: ReactNode;
 
+  /**
+   * Substitution applied to every link the footer renders.
+   *
+   * A footer's links are data (`{ label, href }`), so the component that renders them is
+   * stated once for the whole footer rather than per item; each link still receives its
+   * own `href`.
+   */
+  link?: FooterLink;
+
   /** Extra classes appended last, so a consumer's own classes win. */
   className?: string;
 
@@ -96,9 +116,11 @@ export interface FooterProps
  */
 function FooterLinkList({
   links,
+  link,
   className,
 }: {
   links: FooterLinkItem[];
+  link?: FooterLink;
   className: string;
 }) {
   return (
@@ -107,6 +129,8 @@ function FooterLinkList({
         <Link
           key={item.id ?? index}
           href={item.href}
+          component={link?.component}
+          componentProps={link?.props}
           startIcon={item.icon}
           isExternal={item.isExternal}
           className={NATIVE_FOOTER_LINK_CLASS}>
@@ -160,6 +184,7 @@ export function Footer({
   legal,
   copyright,
   newsletter,
+  link,
   variant,
   spacing,
   contained,
@@ -212,6 +237,7 @@ export function Footer({
                   </Typography>
                   <FooterLinkList
                     links={group.links}
+                    link={link}
                     className={NATIVE_FOOTER_LIST_CLASS}
                   />
                 </View>
@@ -233,12 +259,14 @@ export function Footer({
             {legal && legal.length > 0 && (
               <FooterLinkList
                 links={legal}
+                link={link}
                 className={NATIVE_FOOTER_BOTTOM_LINKS_CLASS}
               />
             )}
             {social && social.length > 0 && (
               <FooterLinkList
                 links={social}
+                link={link}
                 className={NATIVE_FOOTER_SOCIAL_ROW_CLASS}
               />
             )}

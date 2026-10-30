@@ -64,6 +64,15 @@ export interface LinkProps
   href?: string;
 
   /**
+   * A route destination for a router passed through `component`.
+   *
+   * A router names a destination `to`; a framework link follows `href` through the
+   * platform's URL handler. Stating `to` is what lets the same call site work before and
+   * after a router exists, which is the rule the web link already states.
+   */
+  to?: string;
+
+  /**
    * Whether the link points to another resource.
    * When true the link shows the external affordance, so a reader knows the platform
    * will leave the application.
@@ -157,6 +166,7 @@ export interface LinkProps
  */
 export function Link({
   href,
+  to,
   isExternal,
   disabled = false,
   startIcon,
@@ -265,8 +275,9 @@ export function Link({
 
   /** Follow the destination through the platform's URL handler. */
   const followDestination = () => {
-    if (href) {
-      openDestination(href);
+    const destination = href ?? to;
+    if (destination) {
+      openDestination(destination);
     }
   };
 
@@ -297,7 +308,10 @@ export function Link({
 
     return (
       <Component
-        href={href}
+        // A router states its destination as `to`; the platform's anchor has none, so the
+        // URL is what it receives. Telling the two apart is what lets one call site work
+        // with and without a router.
+        {...(component && to ? { to } : { href: href ?? to })}
         onPress={press}
         accessibilityRole="link"
         accessibilityState={{ disabled }}

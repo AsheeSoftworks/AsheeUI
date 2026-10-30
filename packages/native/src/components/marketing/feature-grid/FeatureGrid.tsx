@@ -16,7 +16,7 @@
  */
 
 import { type FeatureItem, resolveConfigCascade } from "@asheeui/core";
-import type { ReactNode } from "react";
+import type { ElementType, ReactNode } from "react";
 import type { StyleProp, ViewProps, ViewStyle } from "react-native";
 import { View } from "react-native";
 import { Container } from "../../../layout/Container";
@@ -38,6 +38,24 @@ import {
   FALLBACK_NATIVE_FEATURE_GRID_CONFIG,
   type NativeFeatureGridConfig,
 } from "./feature-grid-config";
+
+/**
+ * The substitution a feature grid accepts, under the web renderer's key names.
+ *
+ * The type is published on both renderers so a shared screen can name it; the native grid
+ * renders a feature's destination through `Card`, so the substitute reaches the card's
+ * press when the consumer passes it there.
+ */
+export interface FeatureGridLink {
+  /** Component that replaces the anchor, such as a framework router link. */
+  component?: ElementType;
+
+  /** Additional props for that component, spread last so they win. */
+  props?: Record<string, unknown>;
+
+  /** A route destination a router understands. */
+  to?: string;
+}
 
 /**
  * Props for the native FeatureGrid.

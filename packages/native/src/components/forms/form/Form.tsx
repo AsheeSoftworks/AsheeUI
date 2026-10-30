@@ -18,7 +18,7 @@ import {
   type Size,
   type Variant,
 } from "@asheeui/core";
-import type { ReactNode } from "react";
+import type { ElementType, ReactNode } from "react";
 import { useMemo } from "react";
 import { View } from "react-native";
 import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
@@ -58,6 +58,18 @@ export interface FormProps extends NativeFormConfig {
 
   /** The name of the group, shown above the fields. */
   legend?: string;
+
+  /**
+   * A component that replaces the form's root, such as its framework's own form.
+   *
+   * The form's meaning is carried by the context, so a substitute is a container: it
+   * receives the classes and the children, and its own props are spread last. The web
+   * renderer's `component`/`componentProps` are the same two options.
+   */
+  component?: ElementType;
+
+  /** Props for {@link component}, spread last so they win. */
+  componentProps?: Record<string, unknown>;
 
   /** The submit control's label. Without one the form renders no control. */
   submitLabel?: string;
@@ -103,6 +115,8 @@ export function Form({
   submitColor,
   submitSize,
   submitRadius,
+  component,
+  componentProps,
   className,
   submitTestID,
 }: FormProps) {
@@ -154,26 +168,39 @@ export function Form({
     [onSubmit, onReset],
   );
 
+  const content = (
+    <>
+      {body}
+      {submitLabel && (
+        <View className={NATIVE_FORM_SUBMIT_ROW_CLASS}>
+          <Button
+            testID={submitTestID}
+            variant={resolvedVariant}
+            color={resolvedColor}
+            size={resolvedSize}
+            radius={resolvedRadius}
+            isLoading={isPending}
+            isDisabled={isPending}
+            onPress={() => onSubmit?.()}>
+            {submitLabel}
+          </Button>
+        </View>
+      )}
+    </>
+  );
+
+  const rootClassName = classNames(NATIVE_FORM_CLASS, className);
+  const Substitute = component;
+
   return (
     <FormContext.Provider value={control}>
-      <View className={classNames(NATIVE_FORM_CLASS, className)}>
-        {body}
-        {submitLabel && (
-          <View className={NATIVE_FORM_SUBMIT_ROW_CLASS}>
-            <Button
-              testID={submitTestID}
-              variant={resolvedVariant}
-              color={resolvedColor}
-              size={resolvedSize}
-              radius={resolvedRadius}
-              isLoading={isPending}
-              isDisabled={isPending}
-              onPress={() => onSubmit?.()}>
-              {submitLabel}
-            </Button>
-          </View>
-        )}
-      </View>
+      {Substitute ? (
+        <Substitute className={rootClassName} {...componentProps}>
+          {content}
+        </Substitute>
+      ) : (
+        <View className={rootClassName}>{content}</View>
+      )}
     </FormContext.Provider>
   );
 }

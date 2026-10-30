@@ -17,7 +17,7 @@ import {
   resolvePress,
   type Size,
 } from "@asheeui/core";
-import type { ReactNode } from "react";
+import type { ElementType, ReactNode } from "react";
 import type {
   PressableProps,
   StyleProp,
@@ -115,11 +115,35 @@ export interface CardProps
    */
   onClick?: PressableProps["onClick"];
 
+  /**
+   * A component that replaces the card's root, under the web renderer's shape.
+   *
+   * The substitute receives `href` or `to` (the card's destination), `onPress`, the
+   * card's classes, style and accessibility role, and its own props last so they win. A
+   * card with a link is a control whether or not `isPressable` says so, which is the web
+   * card's rule too.
+   */
+  link?: CardLinkProps;
+
   /** Extra classes appended last, so a consumer's own classes win. */
   className?: string;
 
   /** Platform styles, for what NativeWind cannot express. */
   style?: StyleProp<ViewStyle>;
+}
+
+/**
+ * The substitution a card accepts, under the web renderer's key names.
+ */
+export interface CardLinkProps {
+  /** Component that replaces the card's root, such as a router's link. */
+  component?: ElementType;
+
+  /** Props for that component, spread last so they win. */
+  props?: Record<string, unknown>;
+
+  /** A route destination a router understands. */
+  to?: string;
 }
 
 /**
@@ -162,6 +186,7 @@ export function Card({
   body: bodyProp,
   onClick,
   onPress,
+  link,
   className,
   style,
   children,
@@ -212,6 +237,7 @@ export function Card({
   // consumer having to remember `isPressable`. The web's `isClickable` is the same option
   // under the name it publishes, and a disabled card refuses both.
   const isPressableCard =
+    Boolean(link?.component) ||
     (isClickable ?? resolvedPressable) ||
     Boolean(onClick) ||
     Boolean(onPress);
@@ -264,6 +290,36 @@ export function Card({
       {footer && <View className={CARD_FOOTER_CLASS}>{footer}</View>}
     </>
   );
+
+  if (link?.component) {
+    const Substitute = link.component;
+    const destination =
+      link.to !== undefined ? { to: link.to } : {};
+
+    return (
+      <Substitute
+        {...destination}
+        onPress={
+          isDisabled
+            ? undefined
+            : (pressEvent: Parameters<NonNullable<PressableProps["onPress"]>>[0]) =>
+                resolvePress(
+                  {
+                    onClick,
+                    onPress: onPress ? () => onPress(pressEvent) : undefined,
+                  },
+                  pressEvent,
+                )
+        }
+        accessibilityRole="link"
+        accessibilityState={{ disabled: isDisabled }}
+        className={classes}
+        style={style}
+        {...link.props}>
+        {body}
+      </Substitute>
+    );
+  }
 
   if (isPressableCard) {
     return (

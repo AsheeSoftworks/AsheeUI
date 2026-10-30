@@ -19,6 +19,7 @@
  */
 
 import { resolveConfigCascade } from "@asheeui/core";
+import type { ElementType } from "react";
 import type { StyleProp, ViewProps, ViewStyle } from "react-native";
 import { View } from "react-native";
 import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
@@ -34,6 +35,20 @@ import {
   FALLBACK_NATIVE_PAGINATION_CONFIG,
   type NativePaginationConfig,
 } from "./pagination-config";
+
+/**
+ * The substitution a pagination footer accepts, under the web renderer's key names.
+ */
+export interface PaginationLink {
+  /** Component that replaces the anchor, such as a framework router link. */
+  component?: ElementType;
+
+  /** Additional props for that component, spread last so they win. */
+  props?: Record<string, unknown>;
+
+  /** A route destination a router understands, in place of the computed URL. */
+  to?: string;
+}
 
 /**
  * Props for the native Pagination.
@@ -72,6 +87,23 @@ export interface PaginationProps
    * @default false
    */
   isDisabled?: boolean;
+
+  /**
+   * A component that replaces the control that loads the next page.
+   *
+   * A device footer has one control rather than a trail, so the substitute is applied to
+   * that control; the destination comes from `hrefForPage`, which has nothing to address
+   * without a link.
+   */
+  link?: PaginationLink;
+
+  /**
+   * The destination of a page, for the substrate the consumer's router renders.
+   *
+   * A device has no address bar, so the function is meaningful only with `link`; without
+   * one the control reports the page through `onPageChange` and follows nothing.
+   */
+  hrefForPage?: (page: number) => string;
 
   /** Extra classes appended last, so a consumer's own classes win. */
   className?: string;
@@ -124,6 +156,8 @@ export function Pagination({
   siblingCount,
   showEdges,
   isDisabled = false,
+  link,
+  hrefForPage,
   className,
   style,
   ...rest
@@ -146,6 +180,10 @@ export function Pagination({
   const currentPage = Math.min(Math.max(page, 1), pageCount);
   const hasMore = currentPage < pageCount;
   const position = `Page ${currentPage} of ${pageCount}`;
+  const nextPage = currentPage + 1;
+  const Substitute = link?.component;
+  const nextDestination =
+    link?.to !== undefined ? link.to : hrefForPage?.(nextPage);
 
   return (
     <View
@@ -166,17 +204,30 @@ export function Pagination({
       </Typography>
 
       {hasMore ? (
-        <Button
-          variant={resolved.variant}
-          color={resolved.color}
-          size={resolved.size}
-          radius={resolved.radius}
-          isDisabled={isDisabled}
-          onPress={
-            isDisabled ? undefined : () => onPageChange?.(currentPage + 1)
-          }>
-          Load more
-        </Button>
+        Substitute ? (
+          <Substitute
+            {...(nextDestination !== undefined
+              ? { href: nextDestination, to: nextDestination }
+              : {})}
+            onPress={
+              isDisabled ? undefined : () => onPageChange?.(nextPage)
+            }
+            accessibilityRole="link"
+            accessibilityState={{ disabled: isDisabled }}
+            {...link?.props}>
+            <Typography role="label">Load more</Typography>
+          </Substitute>
+        ) : (
+          <Button
+            variant={resolved.variant}
+            color={resolved.color}
+            size={resolved.size}
+            radius={resolved.radius}
+            isDisabled={isDisabled}
+            onPress={isDisabled ? undefined : () => onPageChange?.(nextPage)}>
+            Load more
+          </Button>
+        )
       ) : null}
     </View>
   );
