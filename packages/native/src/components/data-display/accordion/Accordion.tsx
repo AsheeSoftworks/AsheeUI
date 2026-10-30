@@ -28,6 +28,14 @@ import {
   type AccordionItem,
   type AccordionSizeKey,
   type AccordionVariant,
+  type Radius,
+  resolveCascade,
+} from "@asheeui/core";
+import { type ReactNode, useState } from "react";
+import type { StyleProp, ViewProps, ViewStyle } from "react-native";
+import { LayoutAnimation, Pressable, View } from "react-native";
+import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
+import {
   NATIVE_ACCORDION_CONTENT_CLASS,
   NATIVE_ACCORDION_DIVIDER_CLASS,
   NATIVE_ACCORDION_HEADER_CLASS,
@@ -41,14 +49,8 @@ import {
   NATIVE_ACCORDION_TITLE_CLASS,
   NATIVE_ACCORDION_VARIANT_CONTAINER_CLASS,
   NATIVE_ACCORDION_VARIANT_ITEM_CLASS,
-  NATIVE_RADIUS_CLASS,
-  type Radius,
-  resolveCascade,
-} from "@asheeui/core";
-import { type ReactNode, useState } from "react";
-import type { StyleProp, ViewProps, ViewStyle } from "react-native";
-import { LayoutAnimation, Pressable, View } from "react-native";
-import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
+} from "../../../styles/accordion";
+import { NATIVE_RADIUS_CLASS } from "../../../styles/radius";
 import { classNames } from "../../../utils/class-names";
 import { Typography } from "../../typography/text/Text";
 import {

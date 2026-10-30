@@ -14,8 +14,6 @@
  */
 
 import {
-  NATIVE_TOAST_CONTAINER_CLASS,
-  NATIVE_TOAST_PLACEMENT_CLASS,
   type Radius,
   resolveCascade,
   type Size,
@@ -27,6 +25,10 @@ import {
 import { type ReactNode, useCallback, useMemo, useRef, useState } from "react";
 import { View } from "react-native";
 import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
+import {
+  NATIVE_TOAST_CONTAINER_CLASS,
+  NATIVE_TOAST_PLACEMENT_CLASS,
+} from "../../../styles/toast";
 import { classNames } from "../../../utils/class-names";
 import { ToastContext } from "./ToastContext";
 import { ToastItem } from "./ToastItem";

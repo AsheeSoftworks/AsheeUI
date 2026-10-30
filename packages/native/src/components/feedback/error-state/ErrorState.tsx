@@ -17,18 +17,17 @@
  * actions, so the two arrangements agree.
  */
 
-import {
-  type ActionConfig,
-  NATIVE_ERROR_STATE_DETAIL_BODY_CLASS,
-  NATIVE_ERROR_STATE_DETAIL_BODY_TEXT_CLASS,
-  NATIVE_ERROR_STATE_DETAIL_CLASS,
-  NATIVE_ERROR_STATE_DETAIL_SUMMARY_CLASS,
-  resolveConfigCascade,
-} from "@asheeui/core";
+import { type ActionConfig, resolveConfigCascade } from "@asheeui/core";
 import { type ReactNode, useState } from "react";
 import type { StyleProp, ViewProps, ViewStyle } from "react-native";
 import { Pressable, View } from "react-native";
 import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
+import {
+  NATIVE_ERROR_STATE_DETAIL_BODY_CLASS,
+  NATIVE_ERROR_STATE_DETAIL_BODY_TEXT_CLASS,
+  NATIVE_ERROR_STATE_DETAIL_CLASS,
+  NATIVE_ERROR_STATE_DETAIL_SUMMARY_CLASS,
+} from "../../../styles/error-state";
 import { classNames } from "../../../utils/class-names";
 import { Button } from "../../forms/button/Button";
 import { Typography } from "../../typography/text/Text";

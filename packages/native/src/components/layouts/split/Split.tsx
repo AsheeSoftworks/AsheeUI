@@ -14,6 +14,12 @@
  * and class names on the web.
  */
 
+import { resolveConfigCascade, SPACE_GAP_CLASS } from "@asheeui/core";
+import type { ReactNode } from "react";
+import type { StyleProp, ViewProps, ViewStyle } from "react-native";
+import { View } from "react-native";
+import { useBreakpoint } from "../../../hooks/use-breakpoint";
+import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
 import {
   NATIVE_SPLIT_ALIGN_CLASS,
   NATIVE_SPLIT_BASE_CLASS,
@@ -23,14 +29,7 @@ import {
   NATIVE_SPLIT_PANE_STACKED_CLASS,
   NATIVE_SPLIT_PANE_WIDTH_CLASS,
   NATIVE_SPLIT_STICKY_CLASS,
-  resolveConfigCascade,
-  SPACE_GAP_CLASS,
-} from "@asheeui/core";
-import type { ReactNode } from "react";
-import type { StyleProp, ViewProps, ViewStyle } from "react-native";
-import { View } from "react-native";
-import { useBreakpoint } from "../../../hooks/use-breakpoint";
-import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
+} from "../../../styles/split";
 import { classNames } from "../../../utils/class-names";
 import {
   FALLBACK_NATIVE_SPLIT_CONFIG,

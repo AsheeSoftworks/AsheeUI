@@ -8,10 +8,10 @@
  * configuration cascade.
  */
 
-import { NATIVE_STEPPER_LIST_CLASS } from "@asheeui/core";
 import { act, fireEvent, render } from "@testing-library/react-native";
 import type { ReactElement } from "react";
 import { AsheeUIProvider } from "../../../provider/AsheeUIProvider";
+import { NATIVE_STEPPER_LIST_CLASS } from "../../../styles/stepper";
 import { Stepper } from "./Stepper";
 
 const STEPS = [

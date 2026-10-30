@@ -15,6 +15,9 @@
  * shell is not included: both shells space themselves by a constant today, and a map
  * that describes a variant of the component nobody has built reads as a feature
  * rather than as dead weight.
+ *
+ * The platform's half of this file — the `NATIVE_*` dictionaries — moved to
+ * `@asheeui/native`; what is left here is the web renderer's own.
  */
 
 import type { FieldStatus, LabelAlign } from "./field-config";
@@ -98,17 +101,3 @@ export const FIELD_STATUS_BORDER_CLASS: Record<FieldStatus, string> = {
 };
 
 // ─── Native ───────────────────────────────────────────────────────────────────
-
-/**
- * The stack a native shell's parts sit in.
- * The same gap as the web shell's, in the platform's own layout vocabulary.
- */
-export const NATIVE_FIELD_SHELL_CLASS = "flex-col gap-1.5";
-
-/**
- * The row a native field's label sits in.
- * Native draws the label's marker as its own text node rather than inside the label
- * string, which is why the row exists at all: the marker has to be able to be read
- * out of the accessibility tree without leaving the visual label.
- */
-export const NATIVE_FIELD_LABEL_ROW_CLASS = "flex-row items-center gap-1";

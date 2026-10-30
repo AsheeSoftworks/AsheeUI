@@ -19,15 +19,6 @@
 import {
   type Color,
   getInitials,
-  NATIVE_AVATAR_BASE_CLASS,
-  NATIVE_AVATAR_FALLBACK_CLASS,
-  NATIVE_AVATAR_FALLBACK_TEXT_CLASS,
-  NATIVE_AVATAR_FONT_CLASS,
-  NATIVE_AVATAR_INITIALS_CLASS,
-  NATIVE_AVATAR_SIZE_CLASS,
-  NATIVE_AVATAR_TEXT_BLOCK_CLASS,
-  NATIVE_IMAGE_PICTURE_FILL_CLASS,
-  NATIVE_RADIUS_CLASS,
   type Radius,
   resolveCascade,
   resolveClassKey,
@@ -42,6 +33,17 @@ import {
   type ViewStyle,
 } from "react-native";
 import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
+import {
+  NATIVE_AVATAR_BASE_CLASS,
+  NATIVE_AVATAR_FALLBACK_CLASS,
+  NATIVE_AVATAR_FALLBACK_TEXT_CLASS,
+  NATIVE_AVATAR_FONT_CLASS,
+  NATIVE_AVATAR_INITIALS_CLASS,
+  NATIVE_AVATAR_SIZE_CLASS,
+  NATIVE_AVATAR_TEXT_BLOCK_CLASS,
+} from "../../../styles/avatar";
+import { NATIVE_IMAGE_PICTURE_FILL_CLASS } from "../../../styles/image";
+import { NATIVE_RADIUS_CLASS } from "../../../styles/radius";
 import { classNames } from "../../../utils/class-names";
 import { Image } from "../image/Image";
 import {

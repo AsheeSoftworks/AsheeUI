@@ -1,11 +1,14 @@
 /**
- * The Skeleton's class dictionaries, for both renderers.
+ * The Skeleton's class dictionaries, for the web renderer.
  *
- * A placeholder is a surface, and the surface is the same token on both platforms,
+ * A placeholder is a surface, and the surface is the same token on the web,
  * so the two renderers name it the same way and a consumer who retunes the theme
  * retunes both. What differs is the motion: the web shimmers through a class the
  * browser runs before hydration, and native breathes through the platform's own
  * animator, because NativeWind cannot run a keyframe animation on the platform.
+ *
+ * The platform's half of this file — the `NATIVE_*` dictionaries — moved to
+ * `@asheeui/native`; what is left here is the web renderer's own.
  */
 
 /**
@@ -27,13 +30,3 @@ export const SKELETON_BASE_CLASS =
  * query decides that before hydration rather than after a render.
  */
 export const SKELETON_ANIMATION_CLASS = "motion-safe:animate-pulse";
-
-/**
- * Base classes for the native placeholder surface.
- *
- * The colour is the same token the web uses, so a placeholder is the same weight
- * of grey on both platforms. There is no animation class: the pulse is an
- * `Animated` value the component drives, which is the platform's own mechanism and
- * the only one that runs there.
- */
-export const NATIVE_SKELETON_BASE_CLASS = "bg-secondary/60 overflow-hidden";

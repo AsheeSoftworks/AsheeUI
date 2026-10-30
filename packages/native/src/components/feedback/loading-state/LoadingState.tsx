@@ -16,18 +16,17 @@
  * followed by the same sentence.
  */
 
-import {
-  NATIVE_ANNOUNCEMENT_LIVE_REGION,
-  NATIVE_LOADING_STATE_CLASS,
-  NATIVE_LOADING_STATE_PANEL_CLASS,
-  NATIVE_LOADING_STATE_SIZE_CLASS,
-  resolveConfigCascade,
-  SPACE_MIN_HEIGHT_CLASS,
-} from "@asheeui/core";
+import { resolveConfigCascade, SPACE_MIN_HEIGHT_CLASS } from "@asheeui/core";
 import type { ReactNode } from "react";
 import type { StyleProp, ViewProps, ViewStyle } from "react-native";
 import { View } from "react-native";
 import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
+import { NATIVE_ANNOUNCEMENT_LIVE_REGION } from "../../../shared/announcement";
+import {
+  NATIVE_LOADING_STATE_CLASS,
+  NATIVE_LOADING_STATE_PANEL_CLASS,
+  NATIVE_LOADING_STATE_SIZE_CLASS,
+} from "../../../styles/loading-state";
 import { classNames } from "../../../utils/class-names";
 import { Typography } from "../../typography/text/Text";
 import { Spinner } from "../spinner/Spinner";

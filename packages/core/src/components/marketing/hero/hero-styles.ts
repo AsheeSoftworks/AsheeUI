@@ -1,5 +1,5 @@
 /**
- * The Hero's class dictionaries, for both renderers.
+ * The Hero's class dictionaries, for the web renderer.
  *
  * The arrangement is the whole component, so it is what is stated here: the web places the
  * text column and the media beside each other on a wide window with a two-column grid and
@@ -14,6 +14,9 @@
  *
  * Every entry is a complete, static class string. An unprefixed `HERO_*` constant is the web
  * renderer's; `NATIVE_HERO_*` is the native renderer's.
+ *
+ * The platform's half of this file — the `NATIVE_*` dictionaries — moved to
+ * `@asheeui/native`; what is left here is the web renderer's own.
  */
 
 /** The grid that places the text column and the media beside each other, on the web. */
@@ -32,24 +35,3 @@ export const HERO_MEDIA_CLASS = "min-w-0";
 export const HERO_CENTERED_CLASS = "items-center text-center";
 
 // ─── Native ───────────────────────────────────────────────────────────────────
-
-/** The band itself, on the platform. */
-export const NATIVE_HERO_BASE_CLASS = "w-full";
-
-/**
- * The arrangement of a hero that has media, on the platform.
- *
- * The platform states one arrangement and the component picks it from the window it measures
- * rather than from a class variant: a phone stacks the media under the text, and a window
- * with room for two columns puts them beside each other. A hero without media uses neither.
- */
-export const NATIVE_HERO_ROW_CLASS = "flex-row items-center gap-8";
-
-/** The stacked arrangement of a hero that has media, on the platform. */
-export const NATIVE_HERO_COLUMN_CLASS = "flex-col gap-6";
-
-/** The text column, on the platform. */
-export const NATIVE_HERO_TEXT_COLUMN_CLASS = "flex-1 w-full gap-4";
-
-/** The media column, on the platform. */
-export const NATIVE_HERO_MEDIA_CLASS = "flex-1 w-full";

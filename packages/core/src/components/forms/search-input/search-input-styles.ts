@@ -1,13 +1,16 @@
 /**
- * The SearchInput's class dictionaries, for both renderers.
+ * The SearchInput's class dictionaries, for the web renderer.
  *
  * The web entries are Tailwind classes and the native entries are NativeWind ones, side
  * by side: the region a search field occupies and the control that empties it are the same
- * decisions on both platforms, and stating the two beside each other is what keeps them
+ * decisions on the web, and stating the two beside each other is what keeps them
  * from drifting.
  *
  * What the web has and native does not is the keyboard hint: a shortcut a consumer has
  * bound elsewhere is shown beside a web field, where native has no keyboard to bind.
+ *
+ * The platform's half of this file — the `NATIVE_*` dictionaries — moved to
+ * `@asheeui/native`; what is left here is the web renderer's own.
  */
 
 import type { Size } from "../../../tokens";
@@ -39,23 +42,3 @@ export const SEARCH_INPUT_HINT_SIZE_CLASS: Record<Size, string> = {
 export const SEARCH_INPUT_HIDDEN_LABEL_CLASS = "sr-only";
 
 // ─── Native ───────────────────────────────────────────────────────────────────
-
-/** The search region: the row the field and its controls sit in. */
-export const NATIVE_SEARCH_INPUT_ROW_CLASS =
-  "flex-row items-center gap-2 w-full min-w-0";
-
-/** The field itself, which takes whatever room the controls beside it leave. */
-export const NATIVE_SEARCH_INPUT_FIELD_CLASS = "flex-1 min-w-0";
-
-/**
- * The control that empties the field.
- *
- * It is a pressable box rather than a glyph alone, because a control a thumb cannot hit is
- * a defect rather than a style choice; the platform's minimum touch target is what the
- * padding states.
- */
-export const NATIVE_SEARCH_INPUT_CLEAR_CLASS =
-  "shrink-0 items-center justify-center px-2 py-1";
-
-/** The glyph the control draws, which is stated in the field's own colour role. */
-export const NATIVE_SEARCH_INPUT_CLEAR_GLYPH_CLASS = "text-foreground/60";

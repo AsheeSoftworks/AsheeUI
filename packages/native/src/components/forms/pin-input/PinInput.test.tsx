@@ -8,10 +8,7 @@
  * through the configuration cascade.
  */
 
-import {
-  NATIVE_PIN_INPUT_BOX_INVALID_CLASS,
-  sanitizePinValue,
-} from "@asheeui/core";
+import { sanitizePinValue } from "@asheeui/core";
 import {
   act,
   fireEvent,
@@ -20,6 +17,7 @@ import {
 } from "@testing-library/react-native";
 import type { ReactElement } from "react";
 import { AsheeUIProvider } from "../../../provider/AsheeUIProvider";
+import { NATIVE_PIN_INPUT_BOX_INVALID_CLASS } from "../../../styles/pin-input";
 import { PinInput } from "./PinInput";
 
 /** Render the field inside the framework provider. */

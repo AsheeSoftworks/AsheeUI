@@ -9,10 +9,6 @@
  */
 
 import {
-  NATIVE_RADIO_CARD_CLASS,
-  NATIVE_RADIO_OUTER_SIZE_CLASS,
-} from "@asheeui/core";
-import {
   act,
   fireEvent,
   type RenderResult,
@@ -20,6 +16,10 @@ import {
 } from "@testing-library/react-native";
 import type { ReactElement } from "react";
 import { AsheeUIProvider } from "../../../provider/AsheeUIProvider";
+import {
+  NATIVE_RADIO_CARD_CLASS,
+  NATIVE_RADIO_OUTER_SIZE_CLASS,
+} from "../../../styles/radio";
 import { Radio } from "./Radio";
 import { RadioGroup } from "./RadioGroup";
 

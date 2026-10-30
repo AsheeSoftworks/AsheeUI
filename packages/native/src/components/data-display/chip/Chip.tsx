@@ -17,6 +17,18 @@
 
 import {
   type Color,
+  type Radius,
+  resolveCascade,
+  resolveChipVariant,
+  resolveClassKey,
+  type Size,
+  type Variant,
+} from "@asheeui/core";
+import type { ReactNode } from "react";
+import type { StyleProp, ViewProps, ViewStyle } from "react-native";
+import { Pressable, View } from "react-native";
+import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
+import {
   NATIVE_CHIP_AVATAR_CLASS,
   NATIVE_CHIP_BASE_CLASS,
   NATIVE_CHIP_CLOSE_CLASS,
@@ -31,18 +43,8 @@ import {
   NATIVE_CHIP_SLOT_CLASS,
   NATIVE_CHIP_TEXT_CLASS,
   NATIVE_CHIP_VARIANT_CLASS,
-  NATIVE_RADIUS_CLASS,
-  type Radius,
-  resolveCascade,
-  resolveChipVariant,
-  resolveClassKey,
-  type Size,
-  type Variant,
-} from "@asheeui/core";
-import type { ReactNode } from "react";
-import type { StyleProp, ViewProps, ViewStyle } from "react-native";
-import { Pressable, View } from "react-native";
-import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
+} from "../../../styles/chip";
+import { NATIVE_RADIUS_CLASS } from "../../../styles/radius";
 import { classNames } from "../../../utils/class-names";
 import { Typography } from "../../typography/text/Text";
 import {

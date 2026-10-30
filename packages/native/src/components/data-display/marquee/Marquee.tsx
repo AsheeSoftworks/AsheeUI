@@ -24,17 +24,6 @@
 import {
   MARQUEE_FALLBACK_GAP,
   MARQUEE_SPEED_PRESETS,
-  NATIVE_MARQUEE_AXIS_CLASS,
-  NATIVE_MARQUEE_CLASS,
-  NATIVE_MARQUEE_FADE_CLASS,
-  NATIVE_MARQUEE_ITEM_CLASS,
-  NATIVE_MARQUEE_PAUSE_ON_HOVER_CLASS,
-  NATIVE_MARQUEE_SET_AXIS_CLASS,
-  NATIVE_MARQUEE_SET_CLASS,
-  NATIVE_MARQUEE_STILL_FRAME_CLASS,
-  NATIVE_MARQUEE_STILL_SET_CLASS,
-  NATIVE_MARQUEE_TRACK_AXIS_CLASS,
-  NATIVE_MARQUEE_TRACK_CLASS,
   resolveConfigCascade,
 } from "@asheeui/core";
 import {
@@ -57,6 +46,19 @@ import {
 } from "react-native";
 import { useReduceMotion } from "../../../hooks/use-reduce-motion";
 import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
+import {
+  NATIVE_MARQUEE_AXIS_CLASS,
+  NATIVE_MARQUEE_CLASS,
+  NATIVE_MARQUEE_FADE_CLASS,
+  NATIVE_MARQUEE_ITEM_CLASS,
+  NATIVE_MARQUEE_PAUSE_ON_HOVER_CLASS,
+  NATIVE_MARQUEE_SET_AXIS_CLASS,
+  NATIVE_MARQUEE_SET_CLASS,
+  NATIVE_MARQUEE_STILL_FRAME_CLASS,
+  NATIVE_MARQUEE_STILL_SET_CLASS,
+  NATIVE_MARQUEE_TRACK_AXIS_CLASS,
+  NATIVE_MARQUEE_TRACK_CLASS,
+} from "../../../styles/marquee";
 import { classNames } from "../../../utils/class-names";
 import { resolveLength } from "../../../utils/resolve-length";
 import {

@@ -16,7 +16,18 @@
 
 import {
   type FieldStatus,
-  NATIVE_INPUT_EDGE_ACCENT_CLASS,
+  type PinInputMode,
+  type PinInputSize,
+  type Radius,
+  resolveCascade,
+  sanitizePinValue,
+} from "@asheeui/core";
+import { Fragment, useRef, useState } from "react";
+import type { TextInputInstance } from "react-native";
+import { Pressable, TextInput, View } from "react-native";
+import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
+import { NATIVE_INPUT_EDGE_ACCENT_CLASS } from "../../../styles/input";
+import {
   NATIVE_PIN_INPUT_BOX_CLASS,
   NATIVE_PIN_INPUT_BOX_DEFAULT_CLASS,
   NATIVE_PIN_INPUT_BOX_DISABLED_CLASS,
@@ -28,17 +39,8 @@ import {
   NATIVE_PIN_INPUT_SIZE_CLASS,
   NATIVE_PIN_INPUT_VALUE_CLASS,
   NATIVE_PIN_INPUT_VALUE_DISABLED_CLASS,
-  NATIVE_RADIUS_CLASS,
-  type PinInputMode,
-  type PinInputSize,
-  type Radius,
-  resolveCascade,
-  sanitizePinValue,
-} from "@asheeui/core";
-import { Fragment, useRef, useState } from "react";
-import type { TextInputInstance } from "react-native";
-import { Pressable, TextInput, View } from "react-native";
-import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
+} from "../../../styles/pin-input";
+import { NATIVE_RADIUS_CLASS } from "../../../styles/radius";
 import { classNames } from "../../../utils/class-names";
 import { Typography } from "../../typography/text/Text";
 import { FieldShell } from "../field/FieldShell";

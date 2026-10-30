@@ -27,12 +27,6 @@
 
 import {
   type Color,
-  NATIVE_RADIUS_CLASS,
-  NATIVE_TABS_LIST_CLASS,
-  NATIVE_TABS_PANEL_CLASS,
-  NATIVE_TABS_TRIGGER_CLASS,
-  NATIVE_TABS_VARIANT_CONTENT_CLASS,
-  NATIVE_TABS_VARIANT_LIST_CLASS,
   type Radius,
   resolveCascade,
   type Size,
@@ -47,6 +41,14 @@ import { useState } from "react";
 import type { StyleProp, ViewProps, ViewStyle } from "react-native";
 import { ScrollView, View } from "react-native";
 import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
+import { NATIVE_RADIUS_CLASS } from "../../../styles/radius";
+import {
+  NATIVE_TABS_LIST_CLASS,
+  NATIVE_TABS_PANEL_CLASS,
+  NATIVE_TABS_TRIGGER_CLASS,
+  NATIVE_TABS_VARIANT_CONTENT_CLASS,
+  NATIVE_TABS_VARIANT_LIST_CLASS,
+} from "../../../styles/tabs";
 import { classNames } from "../../../utils/class-names";
 import { Button } from "../../forms/button/Button";
 import { Typography } from "../../typography/text/Text";

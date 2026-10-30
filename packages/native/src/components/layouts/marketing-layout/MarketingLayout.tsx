@@ -19,17 +19,17 @@
  * that.
  */
 
+import { resolveConfigCascade } from "@asheeui/core";
+import type { ReactNode } from "react";
+import type { ScrollViewProps, StyleProp, ViewStyle } from "react-native";
+import { ScrollView, View } from "react-native";
+import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
 import {
   NATIVE_MARKETING_LAYOUT_BACKGROUND_CLASS,
   NATIVE_MARKETING_LAYOUT_CLASS,
   NATIVE_MARKETING_LAYOUT_CONTENT_CLASS,
   NATIVE_MARKETING_LAYOUT_MAIN_CLASS,
-  resolveConfigCascade,
-} from "@asheeui/core";
-import type { ReactNode } from "react";
-import type { ScrollViewProps, StyleProp, ViewStyle } from "react-native";
-import { ScrollView, View } from "react-native";
-import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
+} from "../../../styles/marketing-layout";
 import { classNames } from "../../../utils/class-names";
 import {
   FALLBACK_NATIVE_MARKETING_LAYOUT_CONFIG,

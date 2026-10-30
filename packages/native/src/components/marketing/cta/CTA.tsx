@@ -18,19 +18,18 @@
  * one.
  */
 
-import {
-  type ActionConfig,
-  NATIVE_CTA_CENTERED_CLASS,
-  NATIVE_CTA_INNER_CLASS,
-  NATIVE_CTA_PANEL_CLASS,
-  resolveConfigCascade,
-} from "@asheeui/core";
+import { type ActionConfig, resolveConfigCascade } from "@asheeui/core";
 import type { ReactNode } from "react";
 import type { StyleProp, ViewProps, ViewStyle } from "react-native";
 import { View } from "react-native";
 import { Container } from "../../../layout/Container";
 import { Section } from "../../../layout/Section";
 import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
+import {
+  NATIVE_CTA_CENTERED_CLASS,
+  NATIVE_CTA_INNER_CLASS,
+  NATIVE_CTA_PANEL_CLASS,
+} from "../../../styles/cta";
 import { classNames } from "../../../utils/class-names";
 import { ActionGroup } from "../../layouts/section-kit/ActionGroup";
 import { SectionHeading } from "../../layouts/section-kit/SectionHeading";

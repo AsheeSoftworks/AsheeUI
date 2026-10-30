@@ -10,11 +10,6 @@
 
 import {
   type ColorRole,
-  NATIVE_BADGE_BASE_CLASS,
-  NATIVE_BADGE_FONT_CLASS,
-  NATIVE_BADGE_TEXT_CLASS,
-  NATIVE_BADGE_VARIANT_CLASS,
-  NATIVE_RADIUS_CLASS,
   type Radius,
   resolveBadgeVariant,
   resolveCascade,
@@ -25,6 +20,13 @@ import type { ReactNode } from "react";
 import type { StyleProp, ViewProps, ViewStyle } from "react-native";
 import { Text, View } from "react-native";
 import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
+import {
+  NATIVE_BADGE_BASE_CLASS,
+  NATIVE_BADGE_FONT_CLASS,
+  NATIVE_BADGE_TEXT_CLASS,
+  NATIVE_BADGE_VARIANT_CLASS,
+} from "../../../styles/badge";
+import { NATIVE_RADIUS_CLASS } from "../../../styles/radius";
 import { classNames } from "../../../utils/class-names";
 import {
   FALLBACK_NATIVE_BADGE_CONFIG,

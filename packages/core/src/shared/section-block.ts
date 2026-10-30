@@ -23,6 +23,9 @@
  * because it resolves the window itself rather than a stylesheet doing it.
  *
  * The module registers nothing and imports no renderer.
+ *
+ * The platform's half of this file — the `NATIVE_*` dictionaries — moved to
+ * `@asheeui/native`; what is left here is the web renderer's own.
  */
 
 import type { Space } from "./spacing";
@@ -174,18 +177,6 @@ export const SECTION_BLOCK_DESCRIPTION_CLASS = "max-w-2xl";
 /** The measure a centred supporting sentence keeps, on the web. */
 export const SECTION_BLOCK_DESCRIPTION_CENTERED_CLASS = "mx-auto";
 
-/** The heading block, on the platform. */
-export const NATIVE_SECTION_BLOCK_HEADING_CLASS = "w-full flex-col gap-1";
-
-/** Alignment of the heading block, on the platform. */
-export const NATIVE_SECTION_BLOCK_HEADING_ALIGN_CLASS: Record<
-  SectionBlockAlign,
-  string
-> = {
-  start: "items-start",
-  center: "items-center",
-};
-
 /**
  * How a band's text is aligned, per alignment.
  * The web states this with a `text-center` class on the block; the platform states it on
@@ -216,22 +207,4 @@ export const SECTION_BLOCK_ACTIONS_ALIGN_CLASS: Record<
 > = {
   start: "",
   center: "sm:justify-center",
-};
-
-/**
- * The row that holds a band's configured actions, on the platform.
- * The platform has one width, so the row is a wrapping row rather than a column that becomes
- * a row at a breakpoint: two actions wrap onto a second line when their labels need the
- * room, which is what a thumb reads best.
- */
-export const NATIVE_SECTION_BLOCK_ACTIONS_CLASS =
-  "flex-row flex-wrap items-center gap-2";
-
-/** Alignment of the action row, on the platform. */
-export const NATIVE_SECTION_BLOCK_ACTIONS_ALIGN_CLASS: Record<
-  SectionBlockAlign,
-  string
-> = {
-  start: "justify-start",
-  center: "justify-center",
 };

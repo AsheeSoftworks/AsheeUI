@@ -20,15 +20,6 @@ import {
   type Color,
   type FieldStatus,
   isFieldInvalid,
-  NATIVE_INPUT_BASE_CLASS,
-  NATIVE_INPUT_DISABLED_CLASS,
-  NATIVE_INPUT_EDGE_ACCENT_CLASS,
-  NATIVE_INPUT_EDGE_INVALID_CLASS,
-  NATIVE_INPUT_EDGE_NEUTRAL_CLASS,
-  NATIVE_INPUT_EDGE_WIDTH_CLASS,
-  NATIVE_INPUT_SIZE_CLASS,
-  NATIVE_INPUT_VARIANT_CLASS,
-  NATIVE_RADIUS_CLASS,
   type Radius,
   resolveCascade,
   type Size,
@@ -37,6 +28,17 @@ import {
 import { useEffect, useState } from "react";
 import { Pressable, TextInput, View } from "react-native";
 import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
+import {
+  NATIVE_INPUT_BASE_CLASS,
+  NATIVE_INPUT_DISABLED_CLASS,
+  NATIVE_INPUT_EDGE_ACCENT_CLASS,
+  NATIVE_INPUT_EDGE_INVALID_CLASS,
+  NATIVE_INPUT_EDGE_NEUTRAL_CLASS,
+  NATIVE_INPUT_EDGE_WIDTH_CLASS,
+  NATIVE_INPUT_SIZE_CLASS,
+  NATIVE_INPUT_VARIANT_CLASS,
+} from "../../../styles/input";
+import { NATIVE_RADIUS_CLASS } from "../../../styles/radius";
 import { classNames } from "../../../utils/class-names";
 import { Typography } from "../../typography/text/Text";
 import { FieldShell } from "../field/FieldShell";

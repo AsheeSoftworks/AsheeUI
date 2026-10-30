@@ -1,12 +1,15 @@
 /**
- * Every class string the DataTable renders, for both renderers, kept side by side so a
- * change to the composition lands on both platforms at once. Every entry is a complete,
+ * Every class string the DataTable renders, for the web renderer, kept side by side so a
+ * change to the composition lands on the web at once. Every entry is a complete,
  * static class string, because both Tailwind and NativeWind compile the classes they can
  * read in the source.
  *
  * The web's toolbar states its arrangements per breakpoint, because a browser window can be
  * wide; the platform has one width, so its toolbar is the column the phone needs, and the
  * same is true of its footer.
+ *
+ * The platform's half of this file — the `NATIVE_*` dictionaries — moved to
+ * `@asheeui/native`; what is left here is the web renderer's own.
  */
 
 // ─── Web ──────────────────────────────────────────────────────────────────────
@@ -40,24 +43,3 @@ export const DATA_TABLE_FOOTER_CLASS =
 export const DATA_TABLE_SEARCH_CLASS = "w-full sm:max-w-sm";
 
 // ─── Native ───────────────────────────────────────────────────────────────────
-
-/** The native composition: heading, toolbar, rows and footer, in one column. */
-export const NATIVE_ROW_LIST_WRAPPER_CLASS = "w-full flex flex-col gap-4";
-
-/** The heading above the toolbar. */
-export const NATIVE_ROW_LIST_HEADING_CLASS = "w-full flex flex-col gap-1";
-
-/** The native toolbar, which is the column a phone needs. */
-export const NATIVE_ROW_LIST_TOOLBAR_CLASS = "w-full flex flex-col gap-3";
-
-/** The group that holds the search control and the consumer's own controls. */
-export const NATIVE_ROW_LIST_TOOLBAR_GROUP_CLASS = "w-full flex flex-col gap-2";
-
-/** The region that holds the rows or the empty state. */
-export const NATIVE_ROW_LIST_REGION_CLASS = "w-full flex flex-col gap-4";
-
-/** The footer that holds the count and the way to more rows. */
-export const NATIVE_ROW_LIST_FOOTER_CLASS = "w-full flex flex-col gap-3";
-
-/** The count of what is showing, which is a statement rather than a control. */
-export const NATIVE_ROW_LIST_COUNT_CLASS = "text-center";

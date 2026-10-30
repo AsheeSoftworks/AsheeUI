@@ -1,5 +1,5 @@
 /**
- * The Tabs' class dictionaries, for both renderers.
+ * The Tabs' class dictionaries, for the web renderer.
  *
  * A trigger's scale is shared: its height, its horizontal padding and its type size are
  * the framework's scale, so both renderers compile the same utilities. The bar itself is
@@ -13,10 +13,12 @@
  *
  * Every entry is a complete, static class string. An unprefixed `TABS_*` constant is the
  * web renderer's; `NATIVE_TABS_*` is the native renderer's.
+ *
+ * The platform's half of this file — the `NATIVE_*` dictionaries — moved to
+ * `@asheeui/native`; what is left here is the web renderer's own.
  */
 
 import type { Size } from "../../../shared/radius";
-import type { TabsVariant } from "./tabs-config";
 
 /** The height of a trigger at each density, on the web. */
 export const TABS_HEIGHT_CLASS: Record<Size, string> = {
@@ -40,37 +42,3 @@ export const TABS_FONT_CLASS: Record<Size, string> = {
 };
 
 // ─── Native ───────────────────────────────────────────────────────────────────
-
-/** The bar itself, on the platform, which is one row inside a scroll view. */
-export const NATIVE_TABS_LIST_CLASS = "flex-row w-full items-center";
-
-/**
- * The bar's treatment, per variant, on the platform.
- *
- * The web states these on the bar because the bar is a flex row that can scroll itself;
- * the platform states the gaps on the scroll view's content row, which is the element that
- * actually holds the triggers.
- */
-export const NATIVE_TABS_VARIANT_LIST_CLASS: Record<TabsVariant, string> = {
-  underline: "border-b border-border",
-  bordered: "border border-border bg-background p-1",
-  ghost: "",
-};
-
-/** The gap between triggers, per variant, on the platform's content row. */
-export const NATIVE_TABS_VARIANT_CONTENT_CLASS: Record<TabsVariant, string> = {
-  underline: "gap-2",
-  bordered: "gap-1",
-  ghost: "gap-1",
-};
-
-/**
- * Every native trigger, whatever its density.
- *
- * A trigger is a target a thumb reaches for, so it is never shorter than the shared touch
- * target; the density decides how much room it takes beyond that.
- */
-export const NATIVE_TABS_TRIGGER_CLASS = "min-h-[44px]";
-
-/** The region a selected tab reveals. */
-export const NATIVE_TABS_PANEL_CLASS = "w-full";

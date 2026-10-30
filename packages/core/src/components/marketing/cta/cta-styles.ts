@@ -1,5 +1,5 @@
 /**
- * The CTA's class dictionaries, for both renderers.
+ * The CTA's class dictionaries, for the web renderer.
  *
  * The panel is a surface, so it rounds the same and carries the same accent on both
  * platforms. What differs is the room it claims: the web steps its padding up at a
@@ -9,6 +9,9 @@
  *
  * Every entry is a complete, static class string. An unprefixed `CTA_*` constant is the web
  * renderer's; `NATIVE_CTA_*` is the native renderer's.
+ *
+ * The platform's half of this file — the `NATIVE_*` dictionaries — moved to
+ * `@asheeui/native`; what is left here is the web renderer's own.
  */
 
 import type { CtaPanel } from "./cta-config";
@@ -27,23 +30,3 @@ export const CTA_INNER_CLASS = "flex flex-col gap-6";
 export const CTA_CENTERED_CLASS = "items-center text-center";
 
 // ─── Native ───────────────────────────────────────────────────────────────────
-
-/**
- * Panel treatment classes, on the platform.
- *
- * The platform states the density the web states at its smallest step, because it has one
- * window: a panel that padded itself for a desktop would crowd the band it sits in on a
- * phone. The panel fills the column it is given, so a bordered panel's edge lines up with
- * the container's gutter rather than shrinking to its content.
- */
-export const NATIVE_CTA_PANEL_CLASS: Record<CtaPanel, string> = {
-  bordered: "w-full rounded-md border border-border bg-background p-6",
-  muted: "w-full rounded-md bg-secondary/40 p-6",
-  plain: "w-full",
-};
-
-/** Inner arrangement of the panel, on the platform. */
-export const NATIVE_CTA_INNER_CLASS = "w-full flex-col gap-4";
-
-/** Centred variant of the inner arrangement, on the platform. */
-export const NATIVE_CTA_CENTERED_CLASS = "items-center";

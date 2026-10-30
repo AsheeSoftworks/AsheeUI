@@ -18,16 +18,6 @@
  */
 
 import {
-  NATIVE_ANNOUNCEMENT_LIVE_REGION,
-  NATIVE_MESSAGE_SURFACE_CLASS,
-  NATIVE_MESSAGE_TEXT_CLASS,
-  NATIVE_RADIUS_CLASS,
-  NATIVE_TOAST_ACTION_CLASS,
-  NATIVE_TOAST_BASE_CLASS,
-  NATIVE_TOAST_BODY_CLASS,
-  NATIVE_TOAST_DISMISS_CLASS,
-  NATIVE_TOAST_ICON_CLASS,
-  NATIVE_TOAST_TYPE_GLYPH,
   type Radius,
   resolveMessageVariant,
   type Size,
@@ -40,6 +30,20 @@ import {
 } from "@asheeui/core";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Animated, Easing, Pressable, View } from "react-native";
+import { NATIVE_ANNOUNCEMENT_LIVE_REGION } from "../../../shared/announcement";
+import {
+  NATIVE_MESSAGE_SURFACE_CLASS,
+  NATIVE_MESSAGE_TEXT_CLASS,
+} from "../../../styles/message-surface";
+import { NATIVE_RADIUS_CLASS } from "../../../styles/radius";
+import {
+  NATIVE_TOAST_ACTION_CLASS,
+  NATIVE_TOAST_BASE_CLASS,
+  NATIVE_TOAST_BODY_CLASS,
+  NATIVE_TOAST_DISMISS_CLASS,
+  NATIVE_TOAST_ICON_CLASS,
+  NATIVE_TOAST_TYPE_GLYPH,
+} from "../../../styles/toast";
 import { classNames } from "../../../utils/class-names";
 import { Typography } from "../../typography/text/Text";
 import type { ToastItemData, ToastPlacement } from "./toast-config";

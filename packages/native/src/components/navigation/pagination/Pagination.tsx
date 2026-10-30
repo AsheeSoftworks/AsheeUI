@@ -18,15 +18,15 @@
  * platforms; they simply have nothing to describe here, which is stated rather than hidden.
  */
 
-import {
-  NATIVE_ANNOUNCEMENT_LIVE_REGION,
-  NATIVE_PAGINATION_BASE_CLASS,
-  NATIVE_PAGINATION_POSITION_CLASS,
-  resolveConfigCascade,
-} from "@asheeui/core";
+import { resolveConfigCascade } from "@asheeui/core";
 import type { StyleProp, ViewProps, ViewStyle } from "react-native";
 import { View } from "react-native";
 import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
+import { NATIVE_ANNOUNCEMENT_LIVE_REGION } from "../../../shared/announcement";
+import {
+  NATIVE_PAGINATION_BASE_CLASS,
+  NATIVE_PAGINATION_POSITION_CLASS,
+} from "../../../styles/pagination";
 import { classNames } from "../../../utils/class-names";
 import { Button } from "../../forms/button/Button";
 import { Typography } from "../../typography/text/Text";

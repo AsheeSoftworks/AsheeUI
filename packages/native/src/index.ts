@@ -173,5 +173,14 @@ export * from "./hooks/use-breakpoint";
 export * from "./hooks/use-reduce-motion";
 export * from "./layout";
 export * from "./provider";
+/**
+ * The platform's own class dictionaries and its announcement vocabulary.
+ *
+ * They were `@asheeui/core`'s until C1. A class string states a decision about pixels, and the
+ * two platforms' pixels differ, so the strings a device compiles live here and the shared
+ * contract keeps the tokens, the rules and the types. The names did not change.
+ */
+export * from "./shared/announcement";
+export * from "./styles";
 export * from "./utils/class-names";
 export * from "./utils/cn";

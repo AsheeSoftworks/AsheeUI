@@ -13,10 +13,6 @@
 
 import {
   type Color,
-  NATIVE_FORM_CLASS,
-  NATIVE_FORM_GROUP_CLASS,
-  NATIVE_FORM_LEGEND_CLASS,
-  NATIVE_FORM_SUBMIT_ROW_CLASS,
   type Radius,
   resolveCascade,
   type Size,
@@ -25,6 +21,12 @@ import {
 import type { ReactNode } from "react";
 import { View } from "react-native";
 import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
+import {
+  NATIVE_FORM_CLASS,
+  NATIVE_FORM_GROUP_CLASS,
+  NATIVE_FORM_LEGEND_CLASS,
+  NATIVE_FORM_SUBMIT_ROW_CLASS,
+} from "../../../styles/form";
 import { classNames } from "../../../utils/class-names";
 import { Typography } from "../../typography/text/Text";
 import { Button } from "../button/Button";

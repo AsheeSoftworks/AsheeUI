@@ -15,14 +15,7 @@
  * platform has no anchor a router could replace.
  */
 
-import {
-  type FeatureItem,
-  NATIVE_FEATURE_CARD_BODY_CLASS,
-  NATIVE_FEATURE_HEADING_CLASS,
-  NATIVE_FEATURE_ICON_CLASS,
-  NATIVE_FEATURE_ICON_TONE_CLASS,
-  resolveConfigCascade,
-} from "@asheeui/core";
+import { type FeatureItem, resolveConfigCascade } from "@asheeui/core";
 import type { ReactNode } from "react";
 import type { StyleProp, ViewProps, ViewStyle } from "react-native";
 import { View } from "react-native";
@@ -30,6 +23,12 @@ import { Container } from "../../../layout/Container";
 import { Grid } from "../../../layout/Grid";
 import { Section } from "../../../layout/Section";
 import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
+import {
+  NATIVE_FEATURE_CARD_BODY_CLASS,
+  NATIVE_FEATURE_HEADING_CLASS,
+  NATIVE_FEATURE_ICON_CLASS,
+  NATIVE_FEATURE_ICON_TONE_CLASS,
+} from "../../../styles/feature-grid";
 import { classNames } from "../../../utils/class-names";
 import { openDestination } from "../../../utils/open-destination";
 import { Card } from "../../data-display/card/Card";

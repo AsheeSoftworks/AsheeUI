@@ -11,14 +11,12 @@
  * can: the web's `sr-only` keeps the text in the document while taking it out of the
  * layout, and the platform has no such utility, so the text is a pixel-sized, fully
  * transparent view — out of the way, and still announced.
+ *
+ * The platform's half of this file — the `NATIVE_*` dictionaries — moved to
+ * `@asheeui/native`; what is left here is the web renderer's own.
  */
 
 /**
  * Text that is announced but not shown, on the web.
  */
 export const VISUALLY_HIDDEN_CLASS = "sr-only";
-
-/**
- * Text that is announced but not shown, on the platform.
- */
-export const NATIVE_VISUALLY_HIDDEN_CLASS = "absolute w-px h-px opacity-0";

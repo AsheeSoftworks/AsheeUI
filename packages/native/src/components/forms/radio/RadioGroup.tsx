@@ -16,7 +16,6 @@ import {
   type Color,
   type FieldSizeKey,
   type FieldStatus,
-  NATIVE_RADIO_GROUP_CLASS,
   type RadioVariant,
   resolveCascade,
 } from "@asheeui/core";
@@ -24,6 +23,7 @@ import type { ReactNode } from "react";
 import { useCallback, useState } from "react";
 import { View, type ViewProps } from "react-native";
 import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
+import { NATIVE_RADIO_GROUP_CLASS } from "../../../styles/radio";
 import { classNames } from "../../../utils/class-names";
 import { FieldShell } from "../field/FieldShell";
 import {

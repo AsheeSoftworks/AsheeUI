@@ -19,17 +19,13 @@
  * so a consumer who needs the wait announced gets it.
  */
 
-import {
-  NATIVE_RADIUS_CLASS,
-  NATIVE_SKELETON_BASE_CLASS,
-  type Radius,
-  resolveCascade,
-  resolveClassKey,
-} from "@asheeui/core";
+import { type Radius, resolveCascade, resolveClassKey } from "@asheeui/core";
 import { useEffect, useRef } from "react";
 import type { StyleProp, ViewStyle } from "react-native";
 import { Animated, View, type ViewProps } from "react-native";
 import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
+import { NATIVE_RADIUS_CLASS } from "../../../styles/radius";
+import { NATIVE_SKELETON_BASE_CLASS } from "../../../styles/skeleton";
 import { classNames } from "../../../utils/class-names";
 import {
   FALLBACK_NATIVE_SKELETON_CONFIG,

@@ -19,11 +19,13 @@ import {
   FIELD_STATUS_TEXT_CLASS,
   type FieldStatus,
   isFieldInvalid,
-  NATIVE_FIELD_LABEL_ROW_CLASS,
-  NATIVE_FIELD_SHELL_CLASS,
 } from "@asheeui/core";
 import type { ReactNode } from "react";
 import { View } from "react-native";
+import {
+  NATIVE_FIELD_LABEL_ROW_CLASS,
+  NATIVE_FIELD_SHELL_CLASS,
+} from "../../../styles/field";
 import { Spinner } from "../../feedback/spinner/Spinner";
 import { Typography } from "../../typography/text/Text";
 

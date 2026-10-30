@@ -18,6 +18,15 @@
  */
 
 import {
+  resolveCascade,
+  type Size,
+  type StepperOrientation,
+  type StepperStepState,
+} from "@asheeui/core";
+import { Fragment } from "react";
+import { Pressable, View } from "react-native";
+import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
+import {
   NATIVE_STEPPER_CONNECTOR_CLASS,
   NATIVE_STEPPER_DESCRIPTION_CLASS,
   NATIVE_STEPPER_ITEM_CLASS,
@@ -28,14 +37,7 @@ import {
   NATIVE_STEPPER_MARKER_STATE_CLASS,
   NATIVE_STEPPER_MARKER_TEXT_CLASS,
   NATIVE_STEPPER_TEXT_CLASS,
-  resolveCascade,
-  type Size,
-  type StepperOrientation,
-  type StepperStepState,
-} from "@asheeui/core";
-import { Fragment } from "react";
-import { Pressable, View } from "react-native";
-import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
+} from "../../../styles/stepper";
 import { classNames } from "../../../utils/class-names";
 import { Typography } from "../../typography/text/Text";
 import {

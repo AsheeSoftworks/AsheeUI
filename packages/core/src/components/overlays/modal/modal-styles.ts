@@ -1,5 +1,5 @@
 /**
- * The Modal's class dictionaries, for both renderers.
+ * The Modal's class dictionaries, for the web renderer.
  *
  * Both renderers answer the same two questions — how wide the surface is and where it sits —
  * and both answer them differently, because the measurement differs. The web states a maximum
@@ -13,6 +13,9 @@
  *
  * Every entry is a complete, static class string. An unprefixed `MODAL_*` constant is the web
  * renderer's; `NATIVE_MODAL_*` is the native renderer's.
+ *
+ * The platform's half of this file — the `NATIVE_*` dictionaries — moved to
+ * `@asheeui/native`; what is left here is the web renderer's own.
  */
 
 import type { ModalPosition, ModalSizeKey } from "./modal-config";
@@ -34,31 +37,3 @@ export const MODAL_POSITION_CLASS: Record<ModalPosition, string> = {
 };
 
 // ─── Native ───────────────────────────────────────────────────────────────────
-
-/**
- * How wide the modal is, on the platform.
- *
- * The web measures against the viewport; the platform measures against the screen it is
- * already drawn on, so `full` is that screen rather than a viewport with a gutter taken off.
- */
-export const NATIVE_MODAL_WIDTH_CLASS: Record<ModalSizeKey, string> = {
-  sm: "max-w-sm",
-  md: "max-w-lg",
-  lg: "max-w-2xl",
-  xl: "max-w-4xl",
-  full: "max-w-full",
-};
-
-/** Where the modal sits, on the platform. */
-export const NATIVE_MODAL_POSITION_CLASS: Record<ModalPosition, string> = {
-  center: "justify-center",
-  top: "justify-start pt-12",
-  bottom: "justify-end pb-12",
-};
-
-/** The layer behind the modal, which dims the screen and can dismiss it. */
-export const NATIVE_MODAL_BACKDROP_CLASS =
-  "flex-1 items-center bg-foreground/30 p-4";
-
-/** The modal surface itself. */
-export const NATIVE_MODAL_PANEL_CLASS = "w-full bg-background p-4 gap-3";

@@ -22,17 +22,6 @@
 import {
   type Color,
   type FieldStatus,
-  NATIVE_RADIO_CARD_CLASS,
-  NATIVE_RADIO_COLOR_CLASS,
-  NATIVE_RADIO_DISABLED_CLASS,
-  NATIVE_RADIO_FONT_CLASS,
-  NATIVE_RADIO_GAP_CLASS,
-  NATIVE_RADIO_INNER_SIZE_CLASS,
-  NATIVE_RADIO_OUTER_BASE_CLASS,
-  NATIVE_RADIO_OUTER_SIZE_CLASS,
-  NATIVE_RADIO_ROW_CLASS,
-  NATIVE_RADIO_STATUS_BORDER_CLASS,
-  NATIVE_RADIUS_CLASS,
   type RadioVariant,
   type Radius,
   resolveCascade,
@@ -49,6 +38,19 @@ import {
   View,
 } from "react-native";
 import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
+import {
+  NATIVE_RADIO_CARD_CLASS,
+  NATIVE_RADIO_COLOR_CLASS,
+  NATIVE_RADIO_DISABLED_CLASS,
+  NATIVE_RADIO_FONT_CLASS,
+  NATIVE_RADIO_GAP_CLASS,
+  NATIVE_RADIO_INNER_SIZE_CLASS,
+  NATIVE_RADIO_OUTER_BASE_CLASS,
+  NATIVE_RADIO_OUTER_SIZE_CLASS,
+  NATIVE_RADIO_ROW_CLASS,
+  NATIVE_RADIO_STATUS_BORDER_CLASS,
+} from "../../../styles/radio";
+import { NATIVE_RADIUS_CLASS } from "../../../styles/radius";
 import { classNames } from "../../../utils/class-names";
 import { Typography } from "../../typography/text/Text";
 import {

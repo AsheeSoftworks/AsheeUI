@@ -22,6 +22,12 @@
  * have, so both options resolve through the shared contract and change nothing here.
  */
 
+import { resolveConfigCascade } from "@asheeui/core";
+import type { ReactNode } from "react";
+import type { ScrollViewProps, StyleProp, ViewStyle } from "react-native";
+import { ScrollView, View } from "react-native";
+import { Container } from "../../../layout/Container";
+import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
 import {
   NATIVE_DOCS_LAYOUT_ARTICLE_CLASS,
   NATIVE_DOCS_LAYOUT_BODY_CLASS,
@@ -30,13 +36,7 @@ import {
   NATIVE_DOCS_LAYOUT_CONTENT_CLASS,
   NATIVE_DOCS_LAYOUT_NAVIGATION_CLASS,
   NATIVE_DOCS_LAYOUT_REGION_CLASS,
-  resolveConfigCascade,
-} from "@asheeui/core";
-import type { ReactNode } from "react";
-import type { ScrollViewProps, StyleProp, ViewStyle } from "react-native";
-import { ScrollView, View } from "react-native";
-import { Container } from "../../../layout/Container";
-import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
+} from "../../../styles/docs-layout";
 import { classNames } from "../../../utils/class-names";
 import { Typography } from "../../typography/text/Text";
 import {

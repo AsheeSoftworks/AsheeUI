@@ -18,6 +18,12 @@
 import {
   type FieldStatus,
   isFieldInvalid,
+  resolveCascade,
+  type Size,
+} from "@asheeui/core";
+import { Pressable, View } from "react-native";
+import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
+import {
   NATIVE_FILE_UPLOAD_BUTTON_CLASS,
   NATIVE_FILE_UPLOAD_FILE_CLASS,
   NATIVE_FILE_UPLOAD_FILE_NAME_CLASS,
@@ -28,11 +34,7 @@ import {
   NATIVE_FILE_UPLOAD_SIZE_CLASS,
   NATIVE_FILE_UPLOAD_ZONE_CLASS,
   NATIVE_FILE_UPLOAD_ZONE_DISABLED_CLASS,
-  resolveCascade,
-  type Size,
-} from "@asheeui/core";
-import { Pressable, View } from "react-native";
-import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
+} from "../../../styles/file-upload";
 import { classNames } from "../../../utils/class-names";
 import { Typography } from "../../typography/text/Text";
 import { FieldShell } from "../field/FieldShell";

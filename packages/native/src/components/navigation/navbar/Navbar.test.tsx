@@ -12,15 +12,13 @@
  * is the platform's other half of a navigation.
  */
 
-import {
-  NATIVE_NAVBAR_BRAND_CLASS,
-  NAVBAR_BRAND_TEXT_CLASS,
-} from "@asheeui/core";
+import { NAVBAR_BRAND_TEXT_CLASS } from "@asheeui/core";
 import { type RenderResult, render } from "@testing-library/react-native";
 import type { ReactElement } from "react";
 import { Text } from "react-native";
 import type { TestInstance } from "test-renderer";
 import { AsheeUIProvider } from "../../../provider/AsheeUIProvider";
+import { NATIVE_NAVBAR_BRAND_CLASS } from "../../../styles/navbar";
 import { Navbar, TabBar } from "./Navbar";
 import type { NavbarLinkItem } from "./navbar-config";
 

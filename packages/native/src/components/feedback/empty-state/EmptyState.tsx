@@ -20,7 +20,15 @@ import {
   type ActionConfig,
   type ColorRole,
   type EmptyStateRole,
-  NATIVE_ANNOUNCEMENT_LIVE_REGION,
+  resolveConfigCascade,
+  resolveNativeAnnouncementRole,
+} from "@asheeui/core";
+import type { ReactNode } from "react";
+import type { StyleProp, ViewProps, ViewStyle } from "react-native";
+import { View } from "react-native";
+import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
+import { NATIVE_ANNOUNCEMENT_LIVE_REGION } from "../../../shared/announcement";
+import {
   NATIVE_EMPTY_STATE_ACTIONS_CLASS,
   NATIVE_EMPTY_STATE_CLASS,
   NATIVE_EMPTY_STATE_HEADING_CLASS,
@@ -29,13 +37,7 @@ import {
   NATIVE_EMPTY_STATE_ICON_TEXT_CLASS,
   NATIVE_EMPTY_STATE_PANEL_CLASS,
   NATIVE_EMPTY_STATE_SIZE_CLASS,
-  resolveConfigCascade,
-  resolveNativeAnnouncementRole,
-} from "@asheeui/core";
-import type { ReactNode } from "react";
-import type { StyleProp, ViewProps, ViewStyle } from "react-native";
-import { View } from "react-native";
-import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
+} from "../../../styles/empty-state";
 import { classNames } from "../../../utils/class-names";
 import { openDestination } from "../../../utils/open-destination";
 import { Button } from "../../forms/button/Button";

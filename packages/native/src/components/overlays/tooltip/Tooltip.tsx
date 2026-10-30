@@ -28,15 +28,6 @@
 
 import {
   type ColorRole,
-  NATIVE_MESSAGE_SURFACE_CLASS,
-  NATIVE_MESSAGE_TEXT_CLASS,
-  NATIVE_RADIUS_CLASS,
-  NATIVE_TOOLTIP_ALIGN_CLASS,
-  NATIVE_TOOLTIP_ANCHOR,
-  NATIVE_TOOLTIP_ARROW_CLASS,
-  NATIVE_TOOLTIP_BUBBLE_CLASS,
-  NATIVE_TOOLTIP_CONTAINER_CLASS,
-  NATIVE_TOOLTIP_WRAPPER_CLASS,
   type Radius,
   resolveCascade,
   resolveMessageVariant,
@@ -51,6 +42,19 @@ import { type ReactNode, useEffect, useRef, useState } from "react";
 import type { StyleProp, ViewStyle } from "react-native";
 import { Pressable, View } from "react-native";
 import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
+import {
+  NATIVE_MESSAGE_SURFACE_CLASS,
+  NATIVE_MESSAGE_TEXT_CLASS,
+} from "../../../styles/message-surface";
+import { NATIVE_RADIUS_CLASS } from "../../../styles/radius";
+import {
+  NATIVE_TOOLTIP_ALIGN_CLASS,
+  NATIVE_TOOLTIP_ANCHOR,
+  NATIVE_TOOLTIP_ARROW_CLASS,
+  NATIVE_TOOLTIP_BUBBLE_CLASS,
+  NATIVE_TOOLTIP_CONTAINER_CLASS,
+  NATIVE_TOOLTIP_WRAPPER_CLASS,
+} from "../../../styles/tooltip";
 import { classNames } from "../../../utils/class-names";
 import { Typography } from "../../typography/text/Text";
 import {

@@ -1,5 +1,5 @@
 /**
- * The ErrorState's class dictionaries, for both renderers.
+ * The ErrorState's class dictionaries, for the web renderer.
  *
  * A failed region needs one thing the other states do not: somewhere to put the
  * technical detail, which is written for a developer and therefore belongs behind a
@@ -11,6 +11,9 @@
  * The detail's body keeps the technical text as it was written — a monospaced,
  * scrolled box — which is a decision about reading a stack trace rather than about a
  * platform, so both maps say it.
+ *
+ * The platform's half of this file — the `NATIVE_*` dictionaries — moved to
+ * `@asheeui/native`; what is left here is the web renderer's own.
  */
 
 /** The web disclosure that holds the technical detail. */
@@ -32,21 +35,3 @@ export const ERROR_STATE_DETAIL_BODY_CLASS =
   "mt-2 overflow-x-auto rounded-md border border-border bg-background p-3 font-mono text-xs";
 
 // ─── Native ───────────────────────────────────────────────────────────────────
-
-/** The native disclosure, which holds its own open and closed state. */
-export const NATIVE_ERROR_STATE_DETAIL_CLASS = "w-full items-center gap-2";
-
-/** The control a reader presses to open the detail on the platform. */
-export const NATIVE_ERROR_STATE_DETAIL_SUMMARY_CLASS = "items-center px-2 py-1";
-
-/**
- * The native detail body.
- * It is a surface of its own, because a reader scrolling a stack trace on a phone
- * needs to see where the technical text starts and ends.
- */
-export const NATIVE_ERROR_STATE_DETAIL_BODY_CLASS =
-  "w-full rounded-md border border-border bg-background p-3";
-
-/** The technical text itself, which stays monospaced on the platform too. */
-export const NATIVE_ERROR_STATE_DETAIL_BODY_TEXT_CLASS =
-  "font-mono text-xs text-foreground/70";

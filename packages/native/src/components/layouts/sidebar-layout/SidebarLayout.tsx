@@ -17,6 +17,12 @@
  * itself, because a platform screen has no landmark vocabulary but does let a view be named.
  */
 
+import { resolveConfigCascade } from "@asheeui/core";
+import type { ReactNode } from "react";
+import type { StyleProp, ViewProps, ViewStyle } from "react-native";
+import { View } from "react-native";
+import { useBreakpoint } from "../../../hooks/use-breakpoint";
+import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
 import {
   NATIVE_SIDEBAR_LAYOUT_ASIDE_CLASS,
   NATIVE_SIDEBAR_LAYOUT_ASIDE_END_BORDER_CLASS,
@@ -29,13 +35,7 @@ import {
   NATIVE_SIDEBAR_LAYOUT_ROW_CLASS,
   NATIVE_SIDEBAR_LAYOUT_ROW_SPLIT_CLASS,
   NATIVE_SIDEBAR_LAYOUT_WIDTH_CLASS,
-  resolveConfigCascade,
-} from "@asheeui/core";
-import type { ReactNode } from "react";
-import type { StyleProp, ViewProps, ViewStyle } from "react-native";
-import { View } from "react-native";
-import { useBreakpoint } from "../../../hooks/use-breakpoint";
-import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
+} from "../../../styles/sidebar-layout";
 import { classNames } from "../../../utils/class-names";
 import {
   FALLBACK_NATIVE_SIDEBAR_LAYOUT_CONFIG,

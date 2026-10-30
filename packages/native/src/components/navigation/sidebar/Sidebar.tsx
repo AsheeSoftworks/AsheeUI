@@ -27,7 +27,26 @@
 import {
   type Color,
   type ColorRole,
-  NATIVE_RADIUS_CLASS,
+  type Radius,
+  resolveCascade,
+  resolveClassKey,
+  resolveRadiusKey,
+  type TooltipPlacement,
+  type Variant,
+} from "@asheeui/core";
+import {
+  Fragment,
+  type ReactNode,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
+import type { StyleProp, ViewProps, ViewStyle } from "react-native";
+import { ScrollView, View } from "react-native";
+import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
+import { NATIVE_RADIUS_CLASS } from "../../../styles/radius";
+import {
   NATIVE_SIDEBAR_BASE_CLASS,
   NATIVE_SIDEBAR_BODY_CLASS,
   NATIVE_SIDEBAR_COLLAPSED_WIDTH_CLASS,
@@ -51,25 +70,8 @@ import {
   NATIVE_SIDEBAR_SECTION_LABEL_ROLE,
   NATIVE_SIDEBAR_TITLE_ROLE,
   NATIVE_SIDEBAR_VARIANT_CLASS,
-  NATIVE_VISUALLY_HIDDEN_CLASS,
-  type Radius,
-  resolveCascade,
-  resolveClassKey,
-  resolveRadiusKey,
-  type TooltipPlacement,
-  type Variant,
-} from "@asheeui/core";
-import {
-  Fragment,
-  type ReactNode,
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
-import type { StyleProp, ViewProps, ViewStyle } from "react-native";
-import { ScrollView, View } from "react-native";
-import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
+} from "../../../styles/sidebar";
+import { NATIVE_VISUALLY_HIDDEN_CLASS } from "../../../styles/visually-hidden";
 import { classNames } from "../../../utils/class-names";
 import { openDestination } from "../../../utils/open-destination";
 import { Button } from "../../forms/button/Button";

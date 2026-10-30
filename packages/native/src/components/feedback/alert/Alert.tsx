@@ -25,18 +25,6 @@ import {
   ALERT_TYPE_COLOR,
   ALERT_TYPE_ROLE,
   type AlertType,
-  NATIVE_ALERT_BASE_CLASS,
-  NATIVE_ALERT_BODY_CLASS,
-  NATIVE_ALERT_DISMISS_CLASS,
-  NATIVE_ALERT_DISMISS_GLYPH_CLASS,
-  NATIVE_ALERT_GLYPH_CLASS,
-  NATIVE_ALERT_ICON_CLASS,
-  NATIVE_ALERT_TITLE_CLASS,
-  NATIVE_ALERT_TYPE_GLYPH,
-  NATIVE_ANNOUNCEMENT_LIVE_REGION,
-  NATIVE_MESSAGE_SURFACE_CLASS,
-  NATIVE_MESSAGE_TEXT_CLASS,
-  NATIVE_RADIUS_CLASS,
   type Radius,
   resolveCascade,
   resolveMessageVariant,
@@ -47,6 +35,22 @@ import type { ReactNode } from "react";
 import type { StyleProp, ViewProps, ViewStyle } from "react-native";
 import { Pressable, View } from "react-native";
 import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
+import { NATIVE_ANNOUNCEMENT_LIVE_REGION } from "../../../shared/announcement";
+import {
+  NATIVE_ALERT_BASE_CLASS,
+  NATIVE_ALERT_BODY_CLASS,
+  NATIVE_ALERT_DISMISS_CLASS,
+  NATIVE_ALERT_DISMISS_GLYPH_CLASS,
+  NATIVE_ALERT_GLYPH_CLASS,
+  NATIVE_ALERT_ICON_CLASS,
+  NATIVE_ALERT_TITLE_CLASS,
+  NATIVE_ALERT_TYPE_GLYPH,
+} from "../../../styles/alert";
+import {
+  NATIVE_MESSAGE_SURFACE_CLASS,
+  NATIVE_MESSAGE_TEXT_CLASS,
+} from "../../../styles/message-surface";
+import { NATIVE_RADIUS_CLASS } from "../../../styles/radius";
 import { classNames } from "../../../utils/class-names";
 import { Typography } from "../../typography/text/Text";
 import {

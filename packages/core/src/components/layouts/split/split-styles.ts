@@ -1,5 +1,5 @@
 /**
- * Every class string the Split renders, for both renderers.
+ * Every class string the Split renders, for the web renderer.
  *
  * The web states the breakpoint as a variant prefix, because a media query is what a
  * browser has; the platform states it as a value the component reads from the window
@@ -7,6 +7,9 @@
  * Both read the same maps, so a change to the division of the width lands on both
  * platforms at once. Every entry is a complete, static class string, because both
  * Tailwind and NativeWind compile the classes they can read in the source.
+ *
+ * The platform's half of this file — the `NATIVE_*` dictionaries — moved to
+ * `@asheeui/native`; what is left here is the web renderer's own.
  */
 
 import type { SplitAlign, SplitRatio, SplitStackAt } from "./split-config";
@@ -89,61 +92,3 @@ export const SPLIT_DIVIDER_CLASS: Record<SplitStackAt, string> = {
 export const SPLIT_STICKY_CLASS = "sticky top-0 self-start";
 
 // ─── Native ───────────────────────────────────────────────────────────────────
-
-/** Shared classes for every native split. */
-export const NATIVE_SPLIT_BASE_CLASS = "flex w-full";
-
-/** The direction the panes take at each state, which the component resolves itself. */
-export const NATIVE_SPLIT_DIRECTION_CLASS = {
-  stacked: "flex-col",
-  sideBySide: "flex-row",
-} as const;
-
-/** Cross-axis alignment classes for the panes. */
-export const NATIVE_SPLIT_ALIGN_CLASS: Record<SplitAlign, string> = {
-  start: "items-start",
-  center: "items-center",
-  stretch: "items-stretch",
-};
-
-/** The pane's classes while the panes are stacked, where each fills the width. */
-export const NATIVE_SPLIT_PANE_STACKED_CLASS = "w-full";
-
-/**
- * The share of the width each pane takes once the panes sit side by side.
- *
- * The division is the same as the web's — a half, or a third and two thirds — stated as
- * an explicit percentage rather than as a `flex-basis`, which is the same choice the
- * grid makes: the flex item keeps its default shrink, so the two panes and the gap
- * between them still add up to the width.
- */
-export const NATIVE_SPLIT_PANE_WIDTH_CLASS: Record<
-  SplitRatio,
-  { start: string; end: string }
-> = {
-  equal: { start: "w-[50%]", end: "w-[50%]" },
-  start: { start: "w-[66%]", end: "w-[33%]" },
-  end: { start: "w-[33%]", end: "w-[66%]" },
-};
-
-/**
- * The rule between the panes.
- *
- * The web draws it with a `divide` utility that follows the flex direction; the
- * platform has no such utility, so the rule is stated on the second pane and which edge
- * it sits on is decided by the direction the component resolved.
- */
-export const NATIVE_SPLIT_DIVIDER_STACKED_CLASS = "border-t border-border";
-
-/** The rule between two side-by-side panes. */
-export const NATIVE_SPLIT_DIVIDER_ROW_CLASS = "border-l border-border";
-
-/**
- * The sticky treatment of the second pane.
- *
- * The platform has no scroll-linked positioning, so there is nothing for this class to
- * say; it is empty rather than absent so that `stickyEnd` remains a shared option that
- * a screen ignores rather than one it has to strip. A screen that must keep a pane in
- * view puts it in its own scrolling region.
- */
-export const NATIVE_SPLIT_STICKY_CLASS = "";

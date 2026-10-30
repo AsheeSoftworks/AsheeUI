@@ -14,15 +14,13 @@
  * on the web.
  */
 
-import {
-  type ActionConfig,
-  type ColorRole,
-  NATIVE_SECTION_BLOCK_ACTIONS_ALIGN_CLASS,
-  NATIVE_SECTION_BLOCK_ACTIONS_CLASS,
-  type SectionBlockAlign,
-} from "@asheeui/core";
+import type { ActionConfig, ColorRole, SectionBlockAlign } from "@asheeui/core";
 import type { ReactNode } from "react";
 import { View } from "react-native";
+import {
+  NATIVE_SECTION_BLOCK_ACTIONS_ALIGN_CLASS,
+  NATIVE_SECTION_BLOCK_ACTIONS_CLASS,
+} from "../../../styles/section-block";
 import { classNames } from "../../../utils/class-names";
 import { openDestination } from "../../../utils/open-destination";
 import { Button } from "../../forms/button/Button";

@@ -22,11 +22,6 @@
 import {
   type ModalPosition,
   type ModalSizeKey,
-  NATIVE_MODAL_BACKDROP_CLASS,
-  NATIVE_MODAL_PANEL_CLASS,
-  NATIVE_MODAL_POSITION_CLASS,
-  NATIVE_MODAL_WIDTH_CLASS,
-  NATIVE_RADIUS_CLASS,
   type Radius,
   resolveCascade,
 } from "@asheeui/core";
@@ -39,6 +34,13 @@ import type {
 } from "react-native";
 import { Modal as PlatformModal, Pressable } from "react-native";
 import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
+import {
+  NATIVE_MODAL_BACKDROP_CLASS,
+  NATIVE_MODAL_PANEL_CLASS,
+  NATIVE_MODAL_POSITION_CLASS,
+  NATIVE_MODAL_WIDTH_CLASS,
+} from "../../../styles/modal";
+import { NATIVE_RADIUS_CLASS } from "../../../styles/radius";
 import { classNames } from "../../../utils/class-names";
 import {
   FALLBACK_NATIVE_MODAL_CONFIG,

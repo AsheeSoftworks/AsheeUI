@@ -22,15 +22,7 @@
  * configured for the platform.
  */
 
-import {
-  type ActionConfig,
-  NATIVE_HERO_BASE_CLASS,
-  NATIVE_HERO_COLUMN_CLASS,
-  NATIVE_HERO_MEDIA_CLASS,
-  NATIVE_HERO_ROW_CLASS,
-  NATIVE_HERO_TEXT_COLUMN_CLASS,
-  resolveConfigCascade,
-} from "@asheeui/core";
+import { type ActionConfig, resolveConfigCascade } from "@asheeui/core";
 import type { ReactNode } from "react";
 import type { StyleProp, ViewProps, ViewStyle } from "react-native";
 import { View } from "react-native";
@@ -38,6 +30,13 @@ import { useBreakpoint } from "../../../hooks/use-breakpoint";
 import { Container } from "../../../layout/Container";
 import { Section } from "../../../layout/Section";
 import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
+import {
+  NATIVE_HERO_BASE_CLASS,
+  NATIVE_HERO_COLUMN_CLASS,
+  NATIVE_HERO_MEDIA_CLASS,
+  NATIVE_HERO_ROW_CLASS,
+  NATIVE_HERO_TEXT_COLUMN_CLASS,
+} from "../../../styles/hero";
 import { classNames } from "../../../utils/class-names";
 import { ActionGroup } from "../../layouts/section-kit/ActionGroup";
 import { SectionHeading } from "../../layouts/section-kit/SectionHeading";

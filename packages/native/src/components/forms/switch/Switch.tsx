@@ -18,15 +18,6 @@
 
 import {
   type ColorRole,
-  NATIVE_RADIUS_CLASS,
-  NATIVE_SWITCH_CHECKED_CLASS,
-  NATIVE_SWITCH_DISABLED_CLASS,
-  NATIVE_SWITCH_THUMB_CLASS,
-  NATIVE_SWITCH_THUMB_SIZE_CLASS,
-  NATIVE_SWITCH_THUMB_TRAVEL,
-  NATIVE_SWITCH_TRACK_CLASS,
-  NATIVE_SWITCH_TRACK_SIZE_CLASS,
-  NATIVE_SWITCH_UNCHECKED_CLASS,
   type Radius,
   resolveCascade,
   resolveClassKey,
@@ -43,6 +34,17 @@ import {
   View,
 } from "react-native";
 import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
+import { NATIVE_RADIUS_CLASS } from "../../../styles/radius";
+import {
+  NATIVE_SWITCH_CHECKED_CLASS,
+  NATIVE_SWITCH_DISABLED_CLASS,
+  NATIVE_SWITCH_THUMB_CLASS,
+  NATIVE_SWITCH_THUMB_SIZE_CLASS,
+  NATIVE_SWITCH_THUMB_TRAVEL,
+  NATIVE_SWITCH_TRACK_CLASS,
+  NATIVE_SWITCH_TRACK_SIZE_CLASS,
+  NATIVE_SWITCH_UNCHECKED_CLASS,
+} from "../../../styles/switch";
 import { classNames } from "../../../utils/class-names";
 import { FieldShell } from "../field/FieldShell";
 import {

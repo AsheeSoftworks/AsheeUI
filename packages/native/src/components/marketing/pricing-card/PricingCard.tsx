@@ -21,6 +21,14 @@
 
 import {
   type ActionConfig,
+  type PricingFeatureItem,
+  resolveConfigCascade,
+} from "@asheeui/core";
+import type { ReactNode } from "react";
+import type { StyleProp, ViewProps, ViewStyle } from "react-native";
+import { View } from "react-native";
+import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
+import {
   NATIVE_PRICING_BADGE_CLASS,
   NATIVE_PRICING_BADGE_TEXT_CLASS,
   NATIVE_PRICING_BODY_CLASS,
@@ -33,14 +41,8 @@ import {
   NATIVE_PRICING_HIGHLIGHTED_CLASS,
   NATIVE_PRICING_INCLUDED_GLYPH,
   NATIVE_PRICING_PRICE_CLASS,
-  NATIVE_VISUALLY_HIDDEN_CLASS,
-  type PricingFeatureItem,
-  resolveConfigCascade,
-} from "@asheeui/core";
-import type { ReactNode } from "react";
-import type { StyleProp, ViewProps, ViewStyle } from "react-native";
-import { View } from "react-native";
-import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
+} from "../../../styles/pricing-card";
+import { NATIVE_VISUALLY_HIDDEN_CLASS } from "../../../styles/visually-hidden";
 import { classNames } from "../../../utils/class-names";
 import { Card } from "../../data-display/card/Card";
 import { ActionGroup } from "../../layouts/section-kit/ActionGroup";

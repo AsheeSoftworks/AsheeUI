@@ -9,10 +9,6 @@
  */
 
 import {
-  NATIVE_TEXTAREA_ROW_HEIGHT,
-  NATIVE_TEXTAREA_SIZE_CLASS,
-} from "@asheeui/core";
-import {
   act,
   fireEvent,
   type RenderResult,
@@ -20,6 +16,10 @@ import {
 } from "@testing-library/react-native";
 import type { ReactElement } from "react";
 import { AsheeUIProvider } from "../../../provider/AsheeUIProvider";
+import {
+  NATIVE_TEXTAREA_ROW_HEIGHT,
+  NATIVE_TEXTAREA_SIZE_CLASS,
+} from "../../../styles/textarea";
 import { Textarea } from "./Textarea";
 
 /**

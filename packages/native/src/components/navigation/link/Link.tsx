@@ -23,6 +23,14 @@ import {
   LINK_SIZE_CLASS,
   type LinkUnderline,
   type LinkVariant,
+  resolveCascade,
+  type Size,
+} from "@asheeui/core";
+import type { ElementType, ReactNode } from "react";
+import type { PressableProps, StyleProp, ViewStyle } from "react-native";
+import { Pressable, View } from "react-native";
+import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
+import {
   NATIVE_LINK_BASE_CLASS,
   NATIVE_LINK_COLOR_CLASS,
   NATIVE_LINK_DISABLED_CLASS,
@@ -31,13 +39,7 @@ import {
   NATIVE_LINK_ICON_SIZE_CLASS,
   NATIVE_LINK_UNDERLINE_CLASS,
   NATIVE_LINK_VARIANT_CLASS,
-  resolveCascade,
-  type Size,
-} from "@asheeui/core";
-import type { ElementType, ReactNode } from "react";
-import type { PressableProps, StyleProp, ViewStyle } from "react-native";
-import { Pressable, View } from "react-native";
-import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
+} from "../../../styles/link";
 import { classNames } from "../../../utils/class-names";
 import { openDestination } from "../../../utils/open-destination";
 import { Typography } from "../../typography/text/Text";

@@ -21,6 +21,12 @@
  * web's own flow gives them at its narrow widths.
  */
 
+import { resolveConfigCascade } from "@asheeui/core";
+import type { ReactNode } from "react";
+import type { StyleProp, ViewProps, ViewStyle } from "react-native";
+import { View } from "react-native";
+import { useBreakpoint } from "../../../hooks/use-breakpoint";
+import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
 import {
   NATIVE_AUTH_CONTENT_SIZE_CLASS,
   NATIVE_AUTH_FOOTER_CLASS,
@@ -32,13 +38,7 @@ import {
   NATIVE_AUTH_MEDIA_COLUMN_CLASS,
   NATIVE_AUTH_PANEL_CLASS,
   NATIVE_AUTH_PANEL_PADDING_CLASS,
-  resolveConfigCascade,
-} from "@asheeui/core";
-import type { ReactNode } from "react";
-import type { StyleProp, ViewProps, ViewStyle } from "react-native";
-import { View } from "react-native";
-import { useBreakpoint } from "../../../hooks/use-breakpoint";
-import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
+} from "../../../styles/auth-layout";
 import { classNames } from "../../../utils/class-names";
 import { SectionHeading } from "../section-kit/SectionHeading";
 import {

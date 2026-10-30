@@ -21,10 +21,6 @@
 
 import {
   type ColorRole,
-  NATIVE_SPINNER_BASE_CLASS,
-  NATIVE_SPINNER_HEAD_CLASS,
-  NATIVE_SPINNER_SIZE_CLASS,
-  NATIVE_SPINNER_TRACK_CLASS,
   resolveCascade,
   resolveSpinnerDurationMs,
   type Size,
@@ -33,6 +29,12 @@ import { useEffect, useRef } from "react";
 import type { StyleProp, ViewStyle } from "react-native";
 import { Animated, Easing, View, type ViewProps } from "react-native";
 import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
+import {
+  NATIVE_SPINNER_BASE_CLASS,
+  NATIVE_SPINNER_HEAD_CLASS,
+  NATIVE_SPINNER_SIZE_CLASS,
+  NATIVE_SPINNER_TRACK_CLASS,
+} from "../../../styles/spinner";
 import { classNames } from "../../../utils/class-names";
 import {
   FALLBACK_NATIVE_SPINNER_CONFIG,

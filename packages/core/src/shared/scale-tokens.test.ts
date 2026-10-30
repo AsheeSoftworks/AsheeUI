@@ -6,12 +6,13 @@
  * are derived from the token maps and the maps are `Record`-typed by those
  * unions, so adding a step to one side without the other is a compile error.
  * These checks pin the same invariant at runtime, where a mismatch would
- * otherwise resolve to a missing class instead of a type error.
+ * otherwise resolve to a missing class instead of a type error. The platform's radius map moved
+ * to `@asheeui/native` in C1 and its own test states the same invariant there.
  */
 
 import { describe, expect, it } from "vitest";
 import { RADIUS_STEP, SIZE, SPACING_STEP } from "../tokens";
-import { NATIVE_RADIUS_CLASS, RADIUS_CLASS } from "./radius";
+import { RADIUS_CLASS } from "./radius";
 import {
   SPACE_BLOCK_CLASS,
   SPACE_GAP_CLASS,
@@ -30,7 +31,6 @@ const SPACING_MAPS = {
 
 const RADIUS_MAPS = {
   web: RADIUS_CLASS,
-  native: NATIVE_RADIUS_CLASS,
 };
 
 describe("the shared scales", () => {

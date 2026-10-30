@@ -22,6 +22,18 @@
  */
 
 import {
+  NAVBAR_BRAND_TEXT_CLASS,
+  type NavbarAlign,
+  type NavbarLink,
+  type NavbarLinkItem,
+  resolveConfigCascade,
+} from "@asheeui/core";
+import type { ReactNode } from "react";
+import type { StyleProp, ViewProps, ViewStyle } from "react-native";
+import { ScrollView, View } from "react-native";
+import { Container } from "../../../layout/Container";
+import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
+import {
   NATIVE_NAVBAR_ACTIONS_CLASS,
   NATIVE_NAVBAR_ALIGN_CLASS,
   NATIVE_NAVBAR_BASE_CLASS,
@@ -37,17 +49,7 @@ import {
   NATIVE_TAB_BAR_CLASS,
   NATIVE_TAB_BAR_ITEM_ACTIVE_CLASS,
   NATIVE_TAB_BAR_ITEM_CLASS,
-  NAVBAR_BRAND_TEXT_CLASS,
-  type NavbarAlign,
-  type NavbarLink,
-  type NavbarLinkItem,
-  resolveConfigCascade,
-} from "@asheeui/core";
-import type { ReactNode } from "react";
-import type { StyleProp, ViewProps, ViewStyle } from "react-native";
-import { ScrollView, View } from "react-native";
-import { Container } from "../../../layout/Container";
-import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
+} from "../../../styles/navbar";
 import { classNames } from "../../../utils/class-names";
 import { Typography } from "../../typography/text/Text";
 import { Link } from "../link";

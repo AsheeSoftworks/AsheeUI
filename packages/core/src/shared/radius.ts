@@ -7,6 +7,9 @@
  * The scales themselves are declared once, in `../tokens`: the unions below are
  * derived from the `SIZE` and `RADIUS_STEP` token maps, and every `Record` keyed
  * by them fails to compile until it states a newly added token.
+ *
+ * The platform's half of this file — the `NATIVE_*` dictionaries — moved to
+ * `@asheeui/native`; what is left here is the web renderer's own.
  */
 
 import type { Radius, Size } from "../tokens";
@@ -30,32 +33,6 @@ export const RADIUS_CLASS: Record<Radius, string> = {
   none: "rounded-none",
   xs: "rounded-xs",
   sm: "rounded-sm",
-  md: "rounded-md",
-  lg: "rounded-lg",
-  xl: "rounded-xl",
-  full: "rounded-full",
-};
-
-/**
- * The native renderer's radius vocabulary.
- *
- * The two platforms compile the same `rounded-*` names, but the scale's first two
- * steps do not line up: the web map follows Tailwind v4, where `rounded-xs` is the
- * smallest corner and `rounded-sm` the next, and the native map keeps the earlier
- * spelling the native renderer has always shipped, where `rounded-sm` is the
- * smallest and `rounded` the next. Native therefore cannot be handed `RADIUS_CLASS`
- * without its corners moving.
- *
- * The map lives here rather than in the component that reads it because it is the
- * platform's vocabulary rather than the component's: every native surface that
- * rounds reads this one map, so a change to the native scale is one edit. Aligning
- * the two vocabularies is a change to how a native surface rounds rather than a
- * detail of this module, so it is a design-language decision and not a refactor.
- */
-export const NATIVE_RADIUS_CLASS: Record<Radius, string> = {
-  none: "rounded-none",
-  xs: "rounded-sm",
-  sm: "rounded",
   md: "rounded-md",
   lg: "rounded-lg",
   xl: "rounded-xl",

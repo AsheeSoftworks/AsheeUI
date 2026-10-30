@@ -1,5 +1,5 @@
 /**
- * The Drawer's class dictionaries, for both renderers.
+ * The Drawer's class dictionaries, for the web renderer.
  *
  * The two renderers disagree about what a drawer is made of, and the disagreement is the
  * platform's. The web panel is a column at the side of the page whose size is a width, and its
@@ -14,6 +14,9 @@
  *
  * Every entry is a complete, static class string. An unprefixed `DRAWER_*` constant is the web
  * renderer's; `NATIVE_DRAWER_*` is the native renderer's.
+ *
+ * The platform's half of this file — the `NATIVE_*` dictionaries — moved to
+ * `@asheeui/native`; what is left here is the web renderer's own.
  */
 
 import type { DrawerPlacement, DrawerSize } from "./drawer-config";
@@ -79,50 +82,3 @@ export const DRAWER_ANIMATION_STATE: Record<
 };
 
 // ─── Native ───────────────────────────────────────────────────────────────────
-
-/**
- * The edge a native drawer's sheet comes from, per placement.
- *
- * A web drawer is a panel at the side of the page. A panel at the side of a phone has nowhere
- * to be, so the platform's placement resolves a side to the sheet it uses for this instead,
- * and keeps a top or bottom placement as the edge the sheet comes from.
- */
-export const NATIVE_DRAWER_SHEET_EDGE: Record<
-  DrawerPlacement,
-  "top" | "bottom"
-> = {
-  right: "bottom",
-  left: "bottom",
-  bottom: "bottom",
-  top: "top",
-};
-
-/** Where the sheet sits, per edge. */
-export const NATIVE_DRAWER_EDGE_CLASS: Record<"top" | "bottom", string> = {
-  top: "justify-start",
-  bottom: "justify-end",
-};
-
-/** The edge the sheet is outlined on, per edge. */
-export const NATIVE_DRAWER_BORDER_CLASS: Record<"top" | "bottom", string> = {
-  top: "border-b border-border",
-  bottom: "border-t border-border",
-};
-
-/**
- * How much of the screen the sheet takes.
- * Every size is a height on the platform, because the sheet is measured from the edge it comes
- * from rather than from a side of the page.
- */
-export const NATIVE_DRAWER_SIZE_CLASS: Record<DrawerSize, string> = {
-  sm: "h-1/3",
-  md: "h-1/2",
-  lg: "h-2/3",
-  full: "h-full",
-};
-
-/** The layer behind the sheet, which dims the screen and can dismiss it. */
-export const NATIVE_DRAWER_BACKDROP_CLASS = "flex-1 bg-foreground/30";
-
-/** The sheet itself. */
-export const NATIVE_DRAWER_SHEET_CLASS = "w-full bg-background p-4 gap-3";

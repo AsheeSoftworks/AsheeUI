@@ -15,14 +15,7 @@
  * promise stated the way the platform can keep it.
  */
 
-import {
-  NATIVE_TESTIMONIAL_HEADING_CLASS,
-  NATIVE_TESTIMONIAL_PERSON_CLASS,
-  NATIVE_TESTIMONIAL_PERSON_TEXT_CLASS,
-  NATIVE_TESTIMONIAL_QUOTE_CLASS,
-  resolveConfigCascade,
-  type TestimonialItem,
-} from "@asheeui/core";
+import { resolveConfigCascade, type TestimonialItem } from "@asheeui/core";
 import type { ReactNode } from "react";
 import type { StyleProp, ViewProps, ViewStyle } from "react-native";
 import { View } from "react-native";
@@ -30,6 +23,12 @@ import { Container } from "../../../layout/Container";
 import { Grid } from "../../../layout/Grid";
 import { Section } from "../../../layout/Section";
 import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
+import {
+  NATIVE_TESTIMONIAL_HEADING_CLASS,
+  NATIVE_TESTIMONIAL_PERSON_CLASS,
+  NATIVE_TESTIMONIAL_PERSON_TEXT_CLASS,
+  NATIVE_TESTIMONIAL_QUOTE_CLASS,
+} from "../../../styles/testimonials";
 import { Avatar } from "../../data-display/avatar/Avatar";
 import { Card } from "../../data-display/card/Card";
 import { SectionHeading } from "../../layouts/section-kit/SectionHeading";

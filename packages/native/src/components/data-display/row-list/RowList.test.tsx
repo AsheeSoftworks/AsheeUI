@@ -12,7 +12,6 @@
  * through the configuration cascade.
  */
 
-import { NATIVE_ANNOUNCEMENT_LIVE_REGION } from "@asheeui/core";
 import {
   act,
   fireEvent,
@@ -22,6 +21,7 @@ import {
 import type { ReactElement } from "react";
 import type { TestInstance } from "test-renderer";
 import { AsheeUIProvider } from "../../../provider/AsheeUIProvider";
+import { NATIVE_ANNOUNCEMENT_LIVE_REGION } from "../../../shared/announcement";
 import { RowList } from "./RowList";
 
 /** One invoice, which is what a row of the test list is. */

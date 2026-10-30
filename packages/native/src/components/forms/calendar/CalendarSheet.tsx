@@ -28,6 +28,10 @@ import {
   type FieldSizeKey,
   isFutureDay,
   MONTHS,
+} from "@asheeui/core";
+import { useEffect, useState } from "react";
+import { Pressable, View } from "react-native";
+import {
   NATIVE_CALENDAR_CELL_CLASS,
   NATIVE_CALENDAR_CELL_DISABLED_CLASS,
   NATIVE_CALENDAR_CELL_SIZE_CLASS,
@@ -49,9 +53,7 @@ import {
   NATIVE_CALENDAR_UNAVAILABLE_CLASS,
   NATIVE_CALENDAR_WEEKDAY_CLASS,
   NATIVE_CALENDAR_WEEKDAYS_CLASS,
-} from "@asheeui/core";
-import { useEffect, useState } from "react";
-import { Pressable, View } from "react-native";
+} from "../../../styles/calendar";
 import { classNames } from "../../../utils/class-names";
 import { Surface } from "../../system/surface/Surface";
 import { Typography } from "../../typography/text/Text";

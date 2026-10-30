@@ -1,8 +1,11 @@
 /**
- * Every class string the Pagination renders, for both renderers, kept side by side so a
- * change to the pattern's shape lands on both platforms at once. Every entry is a complete,
+ * Every class string the Pagination renders, for the web renderer, kept side by side so a
+ * change to the pattern's shape lands on the web at once. Every entry is a complete,
  * static class string, because both Tailwind and NativeWind compile the classes they can
  * read in the source.
+ *
+ * The platform's half of this file — the `NATIVE_*` dictionaries — moved to
+ * `@asheeui/native`; what is left here is the web renderer's own.
  */
 
 import type { Size } from "../../../shared/radius";
@@ -51,18 +54,3 @@ export const PAGINATION_DISABLED_CLASS =
   "opacity-50 pointer-events-none cursor-not-allowed";
 
 // ─── Native ───────────────────────────────────────────────────────────────────
-
-/**
- * The native collection footer.
- *
- * The web draws a numbered trail — the first and last page, the reader's neighbours and
- * gaps between them — because a browser has addresses to name. The platform's lists grow
- * instead: a reader reaches the end of what is loaded and the footer loads the next page,
- * which is why the footer states where the reader is and offers one control rather than
- * drawing a trail. It is a column, so the statement and the control stack.
- */
-export const NATIVE_PAGINATION_BASE_CLASS =
-  "w-full flex flex-col items-center gap-2";
-
-/** The statement of where the reader is in the collection. */
-export const NATIVE_PAGINATION_POSITION_CLASS = "text-center";

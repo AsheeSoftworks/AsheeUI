@@ -10,6 +10,8 @@
  * changes — so the time a reader sets is the time either platform keeps.
  */
 
+import { pad2 } from "@asheeui/core";
+import { Pressable, View } from "react-native";
 import {
   NATIVE_CALENDAR_STEP_CLASS,
   NATIVE_CALENDAR_STEP_LABEL_CLASS,
@@ -17,9 +19,7 @@ import {
   NATIVE_CALENDAR_TIME_LABEL_CLASS,
   NATIVE_CALENDAR_TIME_VALUE_CLASS,
   NATIVE_CALENDAR_TIME_VALUE_TEXT_CLASS,
-  pad2,
-} from "@asheeui/core";
-import { Pressable, View } from "react-native";
+} from "../../../styles/calendar";
 import { Typography } from "../../typography/text/Text";
 
 /**

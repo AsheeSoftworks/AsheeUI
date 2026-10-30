@@ -8,12 +8,7 @@
  * and its required marker, and every option resolves through the configuration cascade.
  */
 
-import {
-  FIELD_REQUIRED_MARKER_CLASS,
-  NATIVE_SWITCH_THUMB_CLASS,
-  NATIVE_SWITCH_THUMB_SIZE_CLASS,
-  NATIVE_SWITCH_THUMB_TRAVEL,
-} from "@asheeui/core";
+import { FIELD_REQUIRED_MARKER_CLASS } from "@asheeui/core";
 import {
   act,
   fireEvent,
@@ -22,6 +17,11 @@ import {
 } from "@testing-library/react-native";
 import type { ReactElement } from "react";
 import { AsheeUIProvider } from "../../../provider/AsheeUIProvider";
+import {
+  NATIVE_SWITCH_THUMB_CLASS,
+  NATIVE_SWITCH_THUMB_SIZE_CLASS,
+  NATIVE_SWITCH_THUMB_TRAVEL,
+} from "../../../styles/switch";
 import { Switch } from "./Switch";
 
 /**

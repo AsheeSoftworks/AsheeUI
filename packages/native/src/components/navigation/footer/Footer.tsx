@@ -20,6 +20,15 @@
 import {
   type FooterGroup,
   type FooterLinkItem,
+  resolveConfigCascade,
+} from "@asheeui/core";
+import type { ReactNode } from "react";
+import type { StyleProp, ViewProps, ViewStyle } from "react-native";
+import { View } from "react-native";
+import { Container } from "../../../layout/Container";
+import { SECTION_SPACING_CLASS } from "../../../layout/layout-styles";
+import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
+import {
   NATIVE_FOOTER_BOTTOM_CLASS,
   NATIVE_FOOTER_BOTTOM_LINKS_CLASS,
   NATIVE_FOOTER_BRAND_COLUMN_CLASS,
@@ -30,14 +39,7 @@ import {
   NATIVE_FOOTER_SOCIAL_ROW_CLASS,
   NATIVE_FOOTER_TOP_CLASS,
   NATIVE_FOOTER_VARIANT_CLASS,
-  resolveConfigCascade,
-} from "@asheeui/core";
-import type { ReactNode } from "react";
-import type { StyleProp, ViewProps, ViewStyle } from "react-native";
-import { View } from "react-native";
-import { Container } from "../../../layout/Container";
-import { SECTION_SPACING_CLASS } from "../../../layout/layout-styles";
-import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
+} from "../../../styles/footer";
 import { classNames } from "../../../utils/class-names";
 import { Typography } from "../../typography/text/Text";
 import { Link } from "../link";

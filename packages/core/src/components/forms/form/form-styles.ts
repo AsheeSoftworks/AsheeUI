@@ -1,5 +1,5 @@
 /**
- * The Form's class dictionaries, for both renderers.
+ * The Form's class dictionaries, for the web renderer.
  *
  * The list is deliberately short: a form groups and submits, and laying a page out is the
  * consumer's job. Nothing here styles a field, because fields are the framework's field
@@ -8,6 +8,9 @@
  * The web's legend is a real element the browser draws a frame around, which is why the web
  * removes that frame rather than styling it: the grouping is semantic. Native has no frame to
  * remove, so what native states is the text the grouping is named with.
+ *
+ * The platform's half of this file — the `NATIVE_*` dictionaries — moved to
+ * `@asheeui/native`; what is left here is the web renderer's own.
  */
 
 // ─── Web ──────────────────────────────────────────────────────────────────────
@@ -29,16 +32,3 @@ export const FORM_LEGEND_CLASS = "p-0 mb-2 text-sm font-medium text-foreground";
 export const FORM_SUBMIT_ROW_CLASS = "flex items-center gap-2 mt-4";
 
 // ─── Native ───────────────────────────────────────────────────────────────────
-
-/** The form's own layout, which is a column of fields. */
-export const NATIVE_FORM_CLASS = "w-full flex-col gap-4";
-
-/** The group that wraps the fields when the consumer names them. */
-export const NATIVE_FORM_GROUP_CLASS = "w-full flex-col gap-4";
-
-/** The text the grouping is named with. */
-export const NATIVE_FORM_LEGEND_CLASS = "text-sm font-medium text-foreground";
-
-/** The row that holds the submit control. */
-export const NATIVE_FORM_SUBMIT_ROW_CLASS =
-  "flex-row items-center gap-2 pt-2 self-start";

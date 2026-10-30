@@ -1,5 +1,5 @@
 /**
- * The Alert's class dictionaries, for both renderers.
+ * The Alert's class dictionaries, for the web renderer.
  *
  * What is shared is the *meaning* of an intent, not the pixels: which colour role
  * it takes, and how urgently it is announced. Those maps are read by both
@@ -18,6 +18,9 @@
  * NativeWind on native both compile the classes they can read in the source, so a
  * class assembled at runtime produces no styling at all; the maps are what keep
  * that from happening.
+ *
+ * The platform's half of this file — the `NATIVE_*` dictionaries — moved to
+ * `@asheeui/native`; what is left here is the web renderer's own.
  */
 
 import type { Color } from "../../../shared/variant";
@@ -59,21 +62,6 @@ export const ALERT_TYPE_ICON_CLASS: Record<AlertType, string> = {
   error: "text-danger",
 };
 
-/**
- * The glyph the native alert shows for each intent.
- *
- * The web draws an icon; the native package ships no icon set, so its decoration is
- * a character, which is the same answer the framework's native stepper, picker and
- * calendar already give. A consumer who wants a drawing passes `icon`, and the
- * glyph is what stands in its place when they do not.
- */
-export const NATIVE_ALERT_TYPE_GLYPH: Record<AlertType, string> = {
-  info: "i",
-  success: "✓",
-  warning: "!",
-  error: "✕",
-};
-
 /** The alert surface and its content layout, on the web. */
 export const ALERT_BASE_CLASS =
   "relative flex items-start gap-3 w-full p-3 text-sm transition-colors";
@@ -90,28 +78,3 @@ export const ALERT_DISMISS_CLASS =
   "shrink-0 inline-flex items-center justify-center size-6 rounded-sm text-current/70 hover:text-current transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-current";
 
 // ─── Native ───────────────────────────────────────────────────────────────────
-
-/** Shared classes for every native alert. */
-export const NATIVE_ALERT_BASE_CLASS =
-  "flex-row items-start gap-3 w-full border p-3";
-
-/** The native icon slot, which holds a glyph. */
-export const NATIVE_ALERT_ICON_CLASS =
-  "shrink-0 mt-0.5 items-center justify-center";
-
-/** The glyph itself, which takes the intent's colour. */
-export const NATIVE_ALERT_GLYPH_CLASS = "text-base font-semibold";
-
-/** The block that keeps the title above its message. */
-export const NATIVE_ALERT_BODY_CLASS =
-  "flex-1 min-w-0 flex-col gap-0.5 opacity-90";
-
-/** The title, which carries the emphasis of the message. */
-export const NATIVE_ALERT_TITLE_CLASS = "font-medium";
-
-/** The dismiss control, on the platform. */
-export const NATIVE_ALERT_DISMISS_CLASS =
-  "shrink-0 items-center justify-center rounded-md p-1";
-
-/** The glyph inside the native dismiss control. */
-export const NATIVE_ALERT_DISMISS_GLYPH_CLASS = "text-sm";

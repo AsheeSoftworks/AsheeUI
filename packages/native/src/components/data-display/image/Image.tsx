@@ -20,13 +20,6 @@
 import {
   type ImageFit,
   type ImageRatioKey,
-  NATIVE_IMAGE_ASPECT_RATIO,
-  NATIVE_IMAGE_FRAME_CLASS,
-  NATIVE_IMAGE_PICTURE_CLASS,
-  NATIVE_IMAGE_PICTURE_FILL_CLASS,
-  NATIVE_IMAGE_RESIZE_MODE,
-  NATIVE_IMAGE_SKELETON_CLASS,
-  NATIVE_RADIUS_CLASS,
   type Radius,
   resolveCascade,
   resolveClassKey,
@@ -41,6 +34,15 @@ import {
   type ViewStyle,
 } from "react-native";
 import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
+import {
+  NATIVE_IMAGE_ASPECT_RATIO,
+  NATIVE_IMAGE_FRAME_CLASS,
+  NATIVE_IMAGE_PICTURE_CLASS,
+  NATIVE_IMAGE_PICTURE_FILL_CLASS,
+  NATIVE_IMAGE_RESIZE_MODE,
+  NATIVE_IMAGE_SKELETON_CLASS,
+} from "../../../styles/image";
+import { NATIVE_RADIUS_CLASS } from "../../../styles/radius";
 import { classNames } from "../../../utils/class-names";
 import { Skeleton } from "../../feedback/skeleton/Skeleton";
 import {

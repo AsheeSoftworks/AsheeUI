@@ -22,18 +22,20 @@
 import {
   type DrawerPlacement,
   type DrawerSize,
-  NATIVE_DRAWER_BACKDROP_CLASS,
-  NATIVE_DRAWER_BORDER_CLASS,
-  NATIVE_DRAWER_EDGE_CLASS,
-  NATIVE_DRAWER_SHEET_CLASS,
-  NATIVE_DRAWER_SHEET_EDGE,
-  NATIVE_DRAWER_SIZE_CLASS,
   resolveCascade,
 } from "@asheeui/core";
 import type { ReactNode } from "react";
 import type { StyleProp, ViewProps, ViewStyle } from "react-native";
 import { Modal, Pressable } from "react-native";
 import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
+import {
+  NATIVE_DRAWER_BACKDROP_CLASS,
+  NATIVE_DRAWER_BORDER_CLASS,
+  NATIVE_DRAWER_EDGE_CLASS,
+  NATIVE_DRAWER_SHEET_CLASS,
+  NATIVE_DRAWER_SHEET_EDGE,
+  NATIVE_DRAWER_SIZE_CLASS,
+} from "../../../styles/drawer";
 import { classNames } from "../../../utils/class-names";
 import {
   FALLBACK_NATIVE_DRAWER_CONFIG,
