@@ -8,7 +8,12 @@
  * changed: every constant is the one core published, character for character.
  */
 
-import type { Size, StepperOrientation, StepperStepState } from "@asheeui/core";
+import type {
+  Size,
+  StepperOrientation,
+  StepperStepState,
+  TypographySize,
+} from "@asheeui/core";
 
 /** The list, which is a column on a narrow screen and a row on a wide one. */
 export const STEPPER_LIST_CLASS: Record<StepperOrientation, string> = {
@@ -65,3 +70,23 @@ export const STEPPER_CONNECTOR_CLASS: Record<StepperOrientation, string> = {
 
 /** Visually hidden text that states a step's position for assistive technology. */
 export const STEPPER_STATE_TEXT_CLASS = "sr-only";
+
+/**
+ * The typography size the step label takes for each density, on the web.
+ *
+ * The label is what names the step, so it scales with the marker beside it: a `lg` stepper whose
+ * labels stayed at one size would be a larger badge with the same small text. The value is a
+ * typography *token* rather than a class, so the label resolves through the shared typography scale
+ * instead of stating a font size of its own.
+ *
+ * It is the web's, and moved here from `@asheeui/core` in C3. The platform answers the same question
+ * with a *different* answer — `NATIVE_STEPPER_LABEL_ROLE` in
+ * `packages/native/src/components/forms/stepper/stepper-styles.ts` names a role one step larger at
+ * every density, because a native marker is a touch target rather than a badge — so there is no one
+ * map both renderers could read, and a map only the web reads does not belong in core.
+ */
+export const STEPPER_LABEL_SIZE_TOKEN: Record<Size, TypographySize> = {
+  sm: "xs",
+  md: "sm",
+  lg: "md",
+};

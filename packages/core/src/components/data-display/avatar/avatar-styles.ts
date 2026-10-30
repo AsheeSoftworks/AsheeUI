@@ -1,36 +1,26 @@
 /**
- * Every class string the Avatar renders, for the web renderer.
+ * The Avatar's one shared decision: what its fallback wears.
  *
- * The two platforms state the same diameters, the same initials scale and the same
- * accent surface, and they state them side by side here so a change to the scale is one
- * edit rather than two that drift.
+ * An avatar shows an entity, so its fallback is a filled accent surface rather than an outline or a
+ * tint. That is a *variant* — one of the five words in the shared `Variant` union — rather than a
+ * class string, and a word both renderers name belongs in the package both of them read; the
+ * alternative is the platform's avatar importing the web's to learn it, which H14 forbids. The
+ * platform states the same decision in its own strings, as `NATIVE_AVATAR_FALLBACK_CLASS` per colour
+ * role.
  *
- * The diameter is where the platforms spell the same idea differently. The web states it
- * as one `size-*` utility, which is the Tailwind v4 shorthand for a width and a height;
- * the platform states the pair as `h-* w-*`, because that is the form its compiler reads.
- * The values are the same three diameters on both sides: 32, 40 and 48 points.
- *
- * The fallback surface is one decision on the web: an avatar shows an entity, so
- * its fallback is a filled accent surface rather than an outline or a tint, and the text
- * on it is the framework's foreground in every colour — the same treatment the shared
- * variant map draws on the web for a `solid` accent.
- *
- * Every entry is a complete, static class string, because both Tailwind and NativeWind
- * compile the classes they can read in the source.
- *
- * The platform's half of this file — the `NATIVE_*` dictionaries — moved to
- * `@asheeui/native`; what is left here is the web renderer's own.
+ * Everything else the Avatar renders is each renderer's, and has left core. The diameters, the
+ * initials scale and the fallback surface are in `packages/web/src/styles/avatar.ts` and
+ * `packages/native/src/styles/avatar.ts`. The diameter is where the platforms spell one idea
+ * differently — the web's `size-*` shorthand against the platform's `h-* w-*` pair — which is
+ * exactly why a class string cannot be shared.
  */
 
 import type { Variant } from "../../../shared/variant";
 
-// ─── Web ──────────────────────────────────────────────────────────────────────
-
 /**
  * The variant the initials fall back to.
  * An avatar shows an entity, so its fallback is a filled accent surface rather
- * than an outline or a tint.
+ * than an outline or a tint. It stays in core because it names a value of the
+ * shared `Variant` union rather than a class string.
  */
 export const AVATAR_FALLBACK_VARIANT: Variant = "solid";
-
-// ─── Native ───────────────────────────────────────────────────────────────────
