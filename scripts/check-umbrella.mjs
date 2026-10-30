@@ -8,9 +8,9 @@
  * in `@asheeui/core`, and `UMBRELLA-REPORT.md` §6 states six assertions that say whether
  * the surface has reached its target. This is the command that runs them.
  *
- * Since B21 the guard is **blocking**: assertions 1–5 must pass, and assertion 6 is
- * `pending` with owner B22 because the three subpaths it awaits ship then. A pending
- * assertion does not fail the run, but any subpath problem other than those three does.
+ * Since B21 the guard is **blocking**: assertions 1–5 protect the portable surface, and
+ * B22 shipped the subpaths assertion 6 checks, so all six pass or fail the run. There is
+ * no deferral left.
  *
  * The logic lives in `scripts/lib/umbrella-check.mjs` so this command and
  * `packages/ui/src/index.test.ts` run the same evaluation; keeping two copies is how a

@@ -250,16 +250,16 @@ importers:
       '@asheeui/core':
         specifier: workspace:^
         version: link:../core
+      tailwindcss:
+        specifier: '>=3.4.0'
+        version: 4.3.3
+    devDependencies:
       '@asheeui/native':
         specifier: workspace:^
         version: link:../native
       '@asheeui/web':
         specifier: workspace:^
         version: link:../web
-      tailwindcss:
-        specifier: '>=4.0.0'
-        version: 4.3.3
-    devDependencies:
       '@types/node':
         specifier: ^26.6.5
         version: 26.6.5

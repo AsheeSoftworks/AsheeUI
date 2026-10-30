@@ -1,0 +1,14 @@
+/**
+ * The umbrella's stylesheet.
+ *
+ * One line, because there is one stylesheet to import: the web renderer's. The umbrella exists
+ * so an application installs it and one renderer, and the stylesheet should follow the same
+ * rule — a web app writes `@import "asheeui/styles"` and does not have to know which package
+ * the CSS lives in.
+ *
+ * The file is the whole of the CSS the umbrella ships. It is imported by Tailwind (or any
+ * bundler that resolves package exports) through the manifest's `./styles` and `./styles.css`
+ * subpaths; `sideEffects` names `*.css` so a bundler does not tree-shake it away.
+ */
+
+@import "@asheeui/web/styles";

@@ -17,8 +17,8 @@
  *    `web-only`/`native-only`/`not-applicable` component is;
  * 5. **no platform-only name leaks** — neither a matrix classification nor a name only
  *    one renderer publishes reaches the umbrella;
- * 6. **the subpaths resolve** — `pending`, owned by B22, which ships `./styles`,
- *    `./styles.css` and `./section-kit`.
+ * 6. **the subpaths resolve** — `./styles`, `./styles.css`, `./tailwind-preset` and
+ *    `./section-kit` exist in both maps, and the files they name are shipped.
  *
  * ## The declared `source` (a documented extension of §3.2)
  *
@@ -29,12 +29,13 @@
  * component are the renderers'. Routing `cn` from core would give the umbrella a second
  * implementation of it, which is the drift the list exists to prevent.
  *
- * ## Why a pending assertion can pass while it has problems
+ * ## What assertion 6 checks, and what it leaves to the distribution check
  *
- * Assertion 6 is deferred to B22 by `IMPLEMENTATION-PLAN.md`. A pending assertion does not
- * fail the run, but it is not a blanket exemption: only the three known-missing subpaths
- * may be absent. A fourth subpath that does not resolve — or a present one whose file is
- * missing from `files` — still fails, so the deferral cannot hide new drift.
+ * The source map names files a checkout has, so a missing one fails here. The published
+ * map names build output, which a source checkout has not produced yet — and CI runs this
+ * guard before `pnpm build` — so for that map the requirement is that `files` ships the
+ * path. `verify:distribution` resolves those paths against the build; the two together
+ * cover both halves without making the guard depend on an artifact.
  */
 
 import { existsSync, readFileSync } from "node:fs";
@@ -50,19 +51,6 @@ const REQUIRED_SUBPATHS = [
   "./tailwind-preset",
   "./section-kit",
 ];
-
-/**
- * The subpaths B22 owns.
- *
- * `./styles` and `./styles.css` are the web stylesheet the umbrella does not ship yet, and
- * `./section-kit` is the routed portable part of the section family. They are the only
- * missing subpaths assertion 6 may defer; everything else must resolve now.
- */
-const KNOWN_MISSING_SUBPATHS = new Set([
-  "./styles",
-  "./styles.css",
-  "./section-kit",
-]);
 
 /**
  * The names the generated entries add outside `PORTABLE_API`.
@@ -594,26 +582,24 @@ export function evaluateUmbrella({ root = process.cwd() } = {}) {
     }),
   );
 
-  // 6. The subpaths the reports promise. B22 owns the three that are missing today, so the
-  //     assertion is `pending` while only those are absent; any other problem is a failure.
+  // 6. The subpaths the reports promise. A missing subpath is a failure now: B22 shipped
+  //     `./styles`, `./styles.css` and `./section-kit`. The source map's files must exist in
+  //     the checkout; the published map's build output must be shipped by `files`, and
+  //     `verify:distribution` resolves it against the build.
   const sourceExports = exportKeys(manifest.exports);
   const publishedExports = exportKeys(manifest.publishConfig?.exports ?? {});
   const files = manifest.files ?? [];
 
   const subpathProblems = [];
-  let deferred = 0;
   for (const subpath of REQUIRED_SUBPATHS) {
-    const known = KNOWN_MISSING_SUBPATHS.has(subpath);
     const missingFrom = [
       ...(sourceExports.includes(subpath) ? [] : ["exports"]),
       ...(publishedExports.includes(subpath) ? [] : ["publishConfig.exports"]),
     ];
     if (missingFrom.length > 0) {
-      if (known) deferred += 1;
-      subpathProblems.push({
-        known,
-        problem: `${subpath} missing from ${missingFrom.join(" and ")}`,
-      });
+      subpathProblems.push(
+        `${subpath} missing from ${missingFrom.join(" and ")}`,
+      );
       continue;
     }
 
@@ -622,48 +608,25 @@ export function evaluateUmbrella({ root = process.cwd() } = {}) {
       ["publishConfig.exports", manifest.publishConfig?.exports ?? {}],
     ]) {
       for (const target of targetsOf(map[subpath])) {
-        const path = resolve(UI_DIRECTORY, target);
-        if (!existsSync(path)) {
-          // A subpath that is present but broken is never the deferred work: B22 adds
-          // the three missing subpaths, it does not repair an existing one.
-          subpathProblems.push({
-            known: false,
-            problem: `${subpath} -> ${target} does not exist (${where})`,
-          });
-        } else if (!isPublished(files, target)) {
-          subpathProblems.push({
-            known: false,
-            problem: `${subpath} -> ${target} is not in files (${where})`,
-          });
+        if (where === "exports" && !existsSync(resolve(UI_DIRECTORY, target))) {
+          subpathProblems.push(`${subpath} -> ${target} does not exist (${where})`);
+        }
+        if (!isPublished(files, target)) {
+          subpathProblems.push(
+            `${subpath} -> ${target} is not in files (${where})`,
+          );
         }
       }
     }
   }
 
-  const fatalSubpathProblems = subpathProblems.filter(
-    (problem) => !problem.known,
-  );
-  const subpathStatus =
-    fatalSubpathProblems.length > 0
-      ? STATUS.fail
-      : deferred > 0
-        ? STATUS.pending
-        : STATUS.pass;
-
   findings.push(
     finding({
       id: 6,
       title: "the promised subpaths resolve and are shipped",
-      status: subpathStatus,
-      owner: "B22",
-      detail:
-        subpathStatus === STATUS.pending
-          ? `${deferred} of ${REQUIRED_SUBPATHS.length} subpaths await B22 (${[...KNOWN_MISSING_SUBPATHS].join(", ")})`
-          : `${REQUIRED_SUBPATHS.length} subpaths, ${sourceExports.length} in the source map, ${publishedExports.length} published`,
-      offending: subpathProblems.map(
-        (problem) =>
-          `${problem.problem}${problem.known ? " (B22)" : ""}`,
-      ),
+      status: subpathProblems.length === 0 ? STATUS.pass : STATUS.fail,
+      detail: `${REQUIRED_SUBPATHS.length} subpaths, ${sourceExports.length} in the source map, ${publishedExports.length} published`,
+      offending: subpathProblems,
     }),
   );
 

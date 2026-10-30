@@ -48,13 +48,20 @@ interface EntryFields {
 /** One condition of the exports map, which may nest conditions of its own. */
 type ExportConditions = Record<string, string | Record<string, string>>;
 
+/** The exports map: a subpath whose value is a bare path or a set of conditions. */
+type ExportsMap = Record<string, string | ExportConditions>;
+
 /** The manifest's routing, as a resolver reads it. */
 interface Manifest extends EntryFields {
   files: string[];
-  exports: { ".": ExportConditions };
+  sideEffects: string[];
+  dependencies: Record<string, string>;
+  peerDependencies: Record<string, string>;
+  peerDependenciesMeta: Record<string, { optional?: boolean }>;
+  exports: ExportsMap;
   // A publish rewrites only the fields a package manager knows, so the published set is
   // partial rather than a second copy of the manifest.
-  publishConfig: Partial<EntryFields> & { exports: { ".": ExportConditions } };
+  publishConfig: Partial<EntryFields> & { exports: ExportsMap };
 }
 
 /**
@@ -106,11 +113,32 @@ function code(name: string): string {
     .replaceAll(/(?:^|\s)\/\/.*$/gm, "");
 }
 
+/**
+ * The names one of the section-kit entries re-exports.
+ *
+ * The native entry cannot be imported here (it pulls React Native), so both are read. A
+ * brace list is the shape both files use; anything else is a shape this test does not
+ * accept, which is why the match is asserted rather than defaulted.
+ *
+ * @param name - The entry's file name, relative to `src`.
+ * @returns The exported names, sorted.
+ */
+function exportedNames(name: string): string[] {
+  const match = code(name).match(/^export\s+(?:type\s+)?\{([^}]*)\}/m);
+  if (!match) throw new Error(`${name} has no export list`);
+
+  return match[1]
+    .split(",")
+    .map((entry) => entry.trim())
+    .filter(Boolean)
+    .sort();
+}
+
 describe("umbrella surface", () => {
-  it("passes the five blocking assertions", () => {
+  it("passes the six blocking assertions", () => {
     // 1 set equality, 2 declared source publishes the name, 3 no stale pending, 4 matrix
-    // agreement, 5 no platform-only leak. Assertion 6 is B22's and is checked below.
-    for (const id of [1, 2, 3, 4, 5]) {
+    // agreement, 5 no platform-only leak, 6 the promised subpaths resolve.
+    for (const id of [1, 2, 3, 4, 5, 6]) {
       expect(assertion(id).status, `assertion ${id}`).toBe("pass");
     }
   });
@@ -128,17 +156,11 @@ describe("umbrella surface", () => {
     expect(Object.keys(Umbrella).sort()).toEqual(valueNames);
   });
 
-  it("defers only the three subpaths B22 owns", () => {
+  it("resolves the four promised subpaths", () => {
     const subpaths = assertion(6);
 
-    expect(subpaths.status).toBe("pending");
-    expect(subpaths.owner).toBe("B22");
-    // A pending assertion is not a blanket exemption: if any problem other than the known
-    // missing subpaths appeared, assertion 6 would fail rather than be pending.
-    expect(subpaths.offending.length).toBe(3);
-    for (const problem of subpaths.offending) {
-      expect(problem).toContain("(B22)");
-    }
+    expect(subpaths.status).toBe("pass");
+    expect(subpaths.offending).toEqual([]);
   });
 
   it("answers both text names, as one component", () => {
@@ -181,8 +203,8 @@ describe("umbrella entry point", () => {
     // renderer. The nested `types` is what makes a React Native editor complete the
     // native branch's props rather than the web's.
     const { exports, publishConfig } = manifest();
-    const source = exports["."];
-    const published = publishConfig.exports["."];
+    const source = exports["."] as ExportConditions;
+    const published = publishConfig.exports["."] as ExportConditions;
 
     expect(Object.keys(source).indexOf("react-native")).toBeLessThan(
       Object.keys(source).indexOf("import"),
@@ -238,6 +260,87 @@ describe("umbrella entry point", () => {
     for (const entry of ["index.ts", "index.native.ts"]) {
       expect(source(entry)).toContain("GENERATED FILE — do not edit");
       expect(source(entry)).toContain("PORTABLE_API");
+    }
+  });
+});
+
+describe("install story", () => {
+  it("depends on core only, and offers the renderers as optional peers", () => {
+    // The whole point of B22: installing `asheeui` installs no renderer. A renderer is a
+    // peer the application chooses; core is the only thing the umbrella cannot work without.
+    const { dependencies, peerDependencies, peerDependenciesMeta } = manifest();
+
+    expect(Object.keys(dependencies)).toEqual(["@asheeui/core"]);
+    expect(peerDependencies["@asheeui/web"]).toBe("workspace:^");
+    expect(peerDependencies["@asheeui/native"]).toBe("workspace:^");
+
+    for (const peer of [
+      "@asheeui/web",
+      "@asheeui/native",
+      "nativewind",
+      "react-dom",
+      "react-native",
+      "tailwindcss",
+    ]) {
+      expect(peerDependenciesMeta[peer]?.optional, peer).toBe(true);
+    }
+    // React is not optional: nothing in the package renders without it.
+    expect(peerDependenciesMeta.react?.optional).toBeUndefined();
+  });
+
+  it("accepts both Tailwind majors", () => {
+    // Tailwind 4 is the web renderer's requirement; a native-only consumer uses 3. The
+    // umbrella spans both, so it must not pin the renderer's own major.
+    expect(manifest().peerDependencies.tailwindcss).toBe(">=3.4.0");
+  });
+
+  it("ships one stylesheet, which is the renderer's", () => {
+    // The file's documentation names the import a consumer writes, so the comments are
+    // removed before the import list is read; what is left is the CSS a bundler compiles.
+    const css = readFileSync(resolve(packageRoot, "styles.css"), "utf8").replaceAll(
+      /\/\*[\s\S]*?\*\//g,
+      "",
+    );
+    const imports = [...css.matchAll(/@import\s+"([^"]+)"/g)].map(
+      (match) => match[1],
+    );
+
+    expect(imports).toEqual(["@asheeui/web/styles"]);
+    expect(manifest().sideEffects).toEqual(["*.css"]);
+  });
+
+  it("routes section-kit to both branches, and carries only the portable parts", () => {
+    const { exports } = manifest();
+    const source = exports["./section-kit"] as ExportConditions;
+    const published = manifest().publishConfig.exports[
+      "./section-kit"
+    ] as ExportConditions;
+
+    expect(Object.keys(source)[0]).toBe("react-native");
+    expect(Object.keys(published)[0]).toBe("react-native");
+    // `SkipLink` is web-only and must not be on a surface that resolves on a device.
+    expect(exportedNames("section-kit.ts")).toEqual([
+      "ActionGroup",
+      "SectionHeading",
+    ]);
+    expect(exportedNames("section-kit.native.ts")).toEqual([
+      "ActionGroup",
+      "SectionHeading",
+    ]);
+  });
+
+  it("ships the files the new subpaths name", () => {
+    // Assertion 6 checks the maps against `files`; this names the B22 additions explicitly
+    // so a future edit that drops one from `files` reads as a change to the install story.
+    const { files } = manifest();
+
+    for (const file of [
+      "styles.css",
+      "src/section-kit.ts",
+      "src/section-kit.native.ts",
+      "tailwind-preset.cjs",
+    ]) {
+      expect(files).toContain(file);
     }
   });
 });

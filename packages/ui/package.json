@@ -1,7 +1,7 @@
 {
   "name": "asheeui",
   "version": "2.5.0",
-  "description": "The AsheeUI umbrella package: the components of @asheeui/web and @asheeui/native behind one import, routed by the bundler instead of by a runtime check.",
+  "description": "The AsheeUI umbrella package: the portable surface of @asheeui/web and @asheeui/native behind one import, routed by the bundler instead of by a runtime check.",
   "author": "Ashee Softworks <asheesoftworks@gmail.com>",
   "homepage": "https://asheeui.com",
   "repository": {
@@ -31,6 +31,9 @@
   "module": "./src/index.ts",
   "types": "./src/index.ts",
   "react-native": "./src/index.native.ts",
+  "sideEffects": [
+    "*.css"
+  ],
   "exports": {
     ".": {
       "react-native": {
@@ -40,6 +43,20 @@
       "types": "./src/index.ts",
       "import": "./src/index.ts",
       "default": "./src/index.ts"
+    },
+    "./styles": {
+      "style": "./styles.css",
+      "default": "./styles.css"
+    },
+    "./styles.css": "./styles.css",
+    "./section-kit": {
+      "react-native": {
+        "types": "./src/section-kit.native.ts",
+        "default": "./src/section-kit.native.ts"
+      },
+      "types": "./src/section-kit.ts",
+      "import": "./src/section-kit.ts",
+      "default": "./src/section-kit.ts"
     },
     "./tailwind-preset": "./tailwind-preset.cjs",
     "./package.json": "./package.json"
@@ -59,6 +76,20 @@
         "import": "./dist/index.js",
         "default": "./dist/index.js"
       },
+      "./styles": {
+        "style": "./styles.css",
+        "default": "./styles.css"
+      },
+      "./styles.css": "./styles.css",
+      "./section-kit": {
+        "react-native": {
+          "types": "./dist/section-kit.native.d.ts",
+          "default": "./dist/section-kit.native.js"
+        },
+        "types": "./dist/section-kit.d.ts",
+        "import": "./dist/section-kit.js",
+        "default": "./dist/section-kit.js"
+      },
       "./tailwind-preset": "./tailwind-preset.cjs",
       "./package.json": "./package.json"
     }
@@ -67,6 +98,9 @@
     "dist",
     "src/index.ts",
     "src/index.native.ts",
+    "src/section-kit.ts",
+    "src/section-kit.native.ts",
+    "styles.css",
     "tailwind-preset.cjs",
     "LICENSE",
     "NOTICE"
@@ -79,18 +113,24 @@
     "test:watch": "vitest"
   },
   "dependencies": {
-    "@asheeui/core": "workspace:^",
-    "@asheeui/native": "workspace:^",
-    "@asheeui/web": "workspace:^"
+    "@asheeui/core": "workspace:^"
   },
   "peerDependencies": {
+    "@asheeui/native": "workspace:^",
+    "@asheeui/web": "workspace:^",
     "nativewind": ">=4.2.0",
     "react": "^18.0.0 || ^19.0.0",
     "react-dom": "^18.0.0 || ^19.0.0",
     "react-native": ">=0.78.0",
-    "tailwindcss": ">=4.0.0"
+    "tailwindcss": ">=3.4.0"
   },
   "peerDependenciesMeta": {
+    "@asheeui/native": {
+      "optional": true
+    },
+    "@asheeui/web": {
+      "optional": true
+    },
     "nativewind": {
       "optional": true
     },
@@ -105,6 +145,8 @@
     }
   },
   "devDependencies": {
+    "@asheeui/native": "workspace:^",
+    "@asheeui/web": "workspace:^",
     "@types/node": "^26.6.5",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
