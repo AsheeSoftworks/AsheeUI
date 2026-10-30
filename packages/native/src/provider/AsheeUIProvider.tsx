@@ -40,7 +40,6 @@ import {
   defaultColorConfig,
   deprecatedAlias,
   deprecateMany,
-  paletteVariables,
   resolveColorConfig,
   selectTheme,
 } from "@asheeui/core";
@@ -58,6 +57,7 @@ import {
   type NativeExternalConfig,
   resolveNativeConfig,
 } from "../config/resolve-config";
+import { paletteVariables } from "../theme/palette";
 import { warnWhenStylingIsDisconnected } from "./nativewind-doctor";
 
 /**

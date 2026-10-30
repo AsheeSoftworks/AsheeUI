@@ -28,14 +28,16 @@ import {
   type Radius,
   resolveCascade,
   resolveMessageVariant,
-  resolveNativeAnnouncementRole,
   type Variant,
 } from "@asheeui/core";
 import type { ReactNode } from "react";
 import type { StyleProp, ViewProps, ViewStyle } from "react-native";
 import { Pressable, View } from "react-native";
 import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
-import { NATIVE_ANNOUNCEMENT_LIVE_REGION } from "../../../shared/announcement";
+import {
+  NATIVE_ANNOUNCEMENT_LIVE_REGION,
+  resolveNativeAnnouncementRole,
+} from "../../../shared/announcement";
 import {
   NATIVE_ALERT_BASE_CLASS,
   NATIVE_ALERT_BODY_CLASS,

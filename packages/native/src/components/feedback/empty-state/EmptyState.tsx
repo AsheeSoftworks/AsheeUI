@@ -21,13 +21,15 @@ import {
   type ColorRole,
   type EmptyStateRole,
   resolveConfigCascade,
-  resolveNativeAnnouncementRole,
 } from "@asheeui/core";
 import type { ReactNode } from "react";
 import type { StyleProp, ViewProps, ViewStyle } from "react-native";
 import { View } from "react-native";
 import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
-import { NATIVE_ANNOUNCEMENT_LIVE_REGION } from "../../../shared/announcement";
+import {
+  NATIVE_ANNOUNCEMENT_LIVE_REGION,
+  resolveNativeAnnouncementRole,
+} from "../../../shared/announcement";
 import {
   NATIVE_EMPTY_STATE_ACTIONS_CLASS,
   NATIVE_EMPTY_STATE_CLASS,

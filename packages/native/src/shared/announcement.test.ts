@@ -7,8 +7,11 @@
  * and these assertions follow it there.
  */
 
-import { NATIVE_ANNOUNCEMENT_LIVE_REGION } from "./announcement";
-import { type AnnouncementRole, resolveNativeAnnouncementRole } from "@asheeui/core";
+import type { AnnouncementRole } from "@asheeui/core";
+import {
+  NATIVE_ANNOUNCEMENT_LIVE_REGION,
+  resolveNativeAnnouncementRole,
+} from "./announcement";
 
 /** The two levels of announcement the framework names. */
 const ROLES: AnnouncementRole[] = ["alert", "status"];

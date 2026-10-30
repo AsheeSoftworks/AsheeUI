@@ -7,23 +7,26 @@
  * and these assertions follow it there.
  */
 
-import { NATIVE_ANNOUNCEMENT_LIVE_REGION } from "../shared/announcement";
+import {
+  ALERT_TYPE_COLOR,
+  ALERT_TYPE_ICON_CLASS,
+  ALERT_TYPE_ROLE,
+  type AlertType,
+  type Color,
+  type ColorRole,
+  type Variant,
+} from "@asheeui/core";
+import {
+  NATIVE_ANNOUNCEMENT_LIVE_REGION,
+  resolveNativeAnnouncementRole,
+} from "../shared/announcement";
 import {
   NATIVE_ALERT_DISMISS_CLASS,
   NATIVE_ALERT_GLYPH_CLASS,
   NATIVE_ALERT_TYPE_GLYPH,
 } from "./alert";
 import { NATIVE_MESSAGE_SURFACE_CLASS } from "./message-surface";
-import {
-  resolveNativeAnnouncementRole,
-  type Color,
-  type Variant,
-  type ColorRole,
-  type AlertType,
-  ALERT_TYPE_COLOR,
-  ALERT_TYPE_ICON_CLASS,
-  ALERT_TYPE_ROLE,
-} from "@asheeui/core";
+
 /** The intents an alert can take. */
 const INTENTS: AlertType[] = ["info", "success", "warning", "error"];
 
