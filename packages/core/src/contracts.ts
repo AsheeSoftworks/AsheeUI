@@ -10,9 +10,19 @@
  * The contracts are types rather than components because the framework's promise
  * is a contract, not shared source. A component's implementation is free to be
  * exactly what its platform needs.
+ *
+ * What is left states a design axis (`ThemedContract`) and a field (`InputContract`). C4 deleted the
+ * five that stated one component's props — `TextContract`, `ButtonContract`, `CardContract`,
+ * `StackContract`, `BadgeContract` — because no file, test or tool read them: they described
+ * components that already declare their props in their own config types, and a second statement of
+ * the same props is a statement that can disagree with the shipped component.
+ *
+ * @deprecated B19 replaces this module with `PORTABLE_API`, and the prose above moves into that
+ * module's documentation. It is kept here, rather than deleted with the five, only because B19 has
+ * not landed yet: do not add a contract to it.
  */
 
-import type { ColorRole, Radius, Size, Space, Variant } from "./tokens";
+import type { ColorRole, Radius, Size, Variant } from "./tokens";
 
 /**
  * The visual axes every themed component may offer.
@@ -30,105 +40,6 @@ export interface ThemedContract {
 
   /** Corner rounding. */
   radius?: Radius | undefined;
-}
-
-/**
- * The contract of a text component.
- */
-export interface TextContract {
-  /** The text to render. */
-  children?: string | undefined;
-
-  /** Semantic typography role, which resolves size, weight, leading and tracking. */
-  role?:
-    | "display"
-    | "heading-xl"
-    | "heading-lg"
-    | "heading-md"
-    | "heading-sm"
-    | "body-lg"
-    | "body-md"
-    | "body-sm"
-    | "label"
-    | "caption"
-    | "overline";
-
-  /** Semantic colour role for the text. */
-  tone?: ColorRole | "muted" | "default" | undefined;
-
-  /** Horizontal alignment. */
-  align?: "left" | "center" | "right" | undefined;
-
-  /** Whether to truncate instead of wrapping. */
-  truncate?: boolean | undefined;
-}
-
-/**
- * The contract of a button.
- */
-export interface ButtonContract extends ThemedContract {
-  /** The button's visible label, and its accessible name. */
-  children?: string | undefined;
-
-  /** Whether the button stretches to its container's width. */
-  fullWidth?: boolean | undefined;
-
-  /** Whether the button is disabled. */
-  isDisabled?: boolean | undefined;
-
-  /** Whether the button shows a pending state and blocks interaction. */
-  isLoading?: boolean | undefined;
-
-  /** Called when the button is activated. */
-  onPress?: (() => void) | undefined;
-}
-
-/**
- * The contract of a card.
- */
-export interface CardContract extends ThemedContract {
-  /** The card's title. */
-  title?: string | undefined;
-
-  /** The card's supporting text. */
-  description?: string | undefined;
-
-  /** Content rendered before the title, typically an accent element. */
-  header?: React.ReactNode | undefined;
-
-  /** Content rendered after the body, typically actions. */
-  footer?: React.ReactNode | undefined;
-
-  /** Whether the whole card is interactive. */
-  isPressable?: boolean | undefined;
-}
-
-/**
- * The contract of a layout container that stacks its children on one axis.
- */
-export interface StackContract {
-  /** The axis the children are laid out along. */
-  direction?: "row" | "column" | undefined;
-
-  /** Space between children, from the shared spacing scale. */
-  gap?: Space | undefined;
-
-  /** Cross-axis alignment of the children. */
-  align?: "start" | "center" | "end" | "stretch" | undefined;
-
-  /** Main-axis distribution of the children, where the platform supports it. */
-  justify?: "start" | "center" | "end" | "between" | undefined;
-
-  /** Whether children wrap onto another line. */
-  wrap?: boolean | undefined;
-}
-
-/**
- * The contract of a compact status label.
- */
-export interface BadgeContract extends ThemedContract {
-  /** The label's text. */
-  children?: string | undefined;
 }
 
 /**

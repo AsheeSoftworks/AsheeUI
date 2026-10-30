@@ -57,13 +57,6 @@ export const NATIVE_STEPPER_MARKER_TEXT_CLASS: Record<
   upcoming: "text-foreground/70",
 };
 
-/** The label of each step, and the tone that follows its state. */
-export const NATIVE_STEPPER_LABEL_CLASS: Record<StepperStepState, string> = {
-  complete: "text-base font-medium text-foreground",
-  current: "text-base font-medium text-foreground",
-  upcoming: "text-base font-medium text-foreground/60",
-};
-
 /** The marker's text size for each density. */
 export const NATIVE_STEPPER_MARKER_FONT_CLASS: Record<Size, string> = {
   sm: "text-xs",

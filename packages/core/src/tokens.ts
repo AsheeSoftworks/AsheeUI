@@ -67,11 +67,6 @@ export const FONT_SIZE_STEP = {
 } as const;
 
 /**
- * The shared typography size token names.
- */
-export type FontSize = keyof typeof FONT_SIZE_STEP;
-
-/**
  * Font weights the scale uses, as Tailwind weight token names.
  */
 export const FONT_WEIGHT_STEP = {
@@ -80,11 +75,6 @@ export const FONT_WEIGHT_STEP = {
   semibold: "semibold",
   bold: "bold",
 } as const;
-
-/**
- * The shared font weight token names.
- */
-export type FontWeight = keyof typeof FONT_WEIGHT_STEP;
 
 /**
  * The semantic colour roles every component resolves through.
@@ -159,11 +149,6 @@ export const ELEVATION_LEVEL = {
   md: 2,
   lg: 3,
 } as const;
-
-/**
- * The shared elevation level names.
- */
-export type Elevation = keyof typeof ELEVATION_LEVEL;
 
 /**
  * The responsive breakpoints, in the unit each platform measures in.
