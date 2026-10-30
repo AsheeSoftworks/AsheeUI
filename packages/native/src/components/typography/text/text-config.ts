@@ -4,10 +4,18 @@
  * The options are the ones the framework's text contract names, so a role means
  * the same thing here as it does on the web: the platform decides how it renders
  * one, and the vocabulary is shared.
+ *
+ * The shared *section* — `components.typography`, with the role table overrides — is
+ * `@asheeui/core`'s, declared in `packages/core/src/components/typography/typography-config.ts`,
+ * and this package re-exports its type. `components.text` stays this renderer's own key: it is the
+ * section a native consumer already writes, and renaming it would be a key change rather than a
+ * shape one.
  */
 
 import type { ColorRole, Size, TypographyRole } from "@asheeui/core";
 import { registerNativeComponentDefaults } from "../../../config/registry";
+
+export type { TypographyConfig } from "@asheeui/core";
 
 /**
  * The semantic typography roles the framework states.

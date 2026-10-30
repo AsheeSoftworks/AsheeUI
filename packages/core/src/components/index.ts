@@ -21,6 +21,7 @@ export * from "./data-display/image";
 export * from "./data-display/marquee";
 export * from "./data-display/marquee/marquee-styles";
 export * from "./data-display/table";
+export * from "./typography";
 export * from "./feedback/alert";
 export * from "./feedback/alert/alert-styles";
 export * from "./feedback/empty-state";
