@@ -18,8 +18,10 @@
  * the field instead of the exports map has to be able to compile it.
  */
 
+// `cn` is not here: the native renderer exports its own merge (a family match that never
+// rewrites a value, because a device and a browser use different scales), and re-exporting
+// core's would publish the name twice on this branch.
 export {
-  cn,
   mergeObject,
   resolveAnimate,
   resolveCascade,

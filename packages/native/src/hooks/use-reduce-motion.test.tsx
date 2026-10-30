@@ -9,7 +9,7 @@
 
 import { act, renderHook, waitFor } from "@testing-library/react-native";
 import { AccessibilityInfo, type EmitterSubscription } from "react-native";
-import { useReduceMotion } from "./use-reduce-motion";
+import { usePrefersReducedMotion, useReduceMotion } from "./use-reduce-motion";
 
 /** The last handler the hook registered, which the tests call as the platform would. */
 let listener: ((enabled: boolean) => void) | undefined;
@@ -80,5 +80,11 @@ describe("useReduceMotion", () => {
     await unmount();
 
     expect(subscription.remove).toHaveBeenCalled();
+  });
+
+  it("answers to the web renderer's name for the same hook", () => {
+    // A shared component reads one name and gets the renderer's own answer, so the pair
+    // has to be one function rather than two implementations that could disagree.
+    expect(usePrefersReducedMotion).toBe(useReduceMotion);
   });
 });

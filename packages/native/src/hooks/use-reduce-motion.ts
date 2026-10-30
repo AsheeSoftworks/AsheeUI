@@ -61,3 +61,15 @@ export function useReduceMotion(): boolean {
 
   return reduceMotion;
 }
+
+/**
+ * The platform's motion preference, under the web renderer's name for it.
+ *
+ * `@asheeui/web` publishes this name, and a shared component that reads the preference
+ * should not have to know which renderer it is running on. The platform's own name stays
+ * the documented one here, and this is the same function rather than a second
+ * implementation, so the two answers cannot disagree.
+ *
+ * @returns Whether the platform asks for less motion.
+ */
+export const usePrefersReducedMotion = useReduceMotion;

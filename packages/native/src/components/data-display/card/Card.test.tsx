@@ -126,7 +126,11 @@ describe("Native Card", () => {
       components: { card: { variant: "bordered" } },
     });
 
-    expect(classesOf(view, "card")).toContain("border-border");
+    // The section's surface wins, so the application's `ghost` background is gone. The
+    // border's *colour* is the accent's either way — the two maps are deliberately separate
+    // — so the class that says `border-border` is the one the merge drops, and the surface
+    // is what this asserts.
+    expect(classesOf(view, "card")).toContain("bg-background");
     expect(classesOf(view, "card")).not.toContain("bg-transparent");
   });
 
