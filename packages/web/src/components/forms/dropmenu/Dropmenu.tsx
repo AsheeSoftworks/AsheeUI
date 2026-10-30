@@ -77,6 +77,9 @@ export interface DropmenuProps
    */
   onChange?: ((e: React.ChangeEvent<HTMLSelectElement>) => void) | undefined;
 
+  /** Called with the picked value, under the platform's most specific name. */
+  onChangeText?: ((value: string) => void) | undefined;
+
   /**
    * Value change handler.
    * Receives the new selected value directly.
@@ -260,6 +263,7 @@ export const Dropmenu = forwardRef<HTMLButtonElement, DropmenuProps>(
       options = [],
       value,
       onChange,
+      onChangeText,
       onValueChange,
       size,
       radius,
@@ -377,17 +381,20 @@ export const Dropmenu = forwardRef<HTMLButtonElement, DropmenuProps>(
      */
     const handleOptionSelect = useCallback(
       (option: MenuOption) => {
-        onValueChange?.(option.value);
+        // The order is the shared resolver's: the DOM's event first, then the two
+        // value-only names, so a handler copied from a device sees the same sequence.
         if (onChange) {
           const event = {
             target: { value: option.value, name: name ?? "" },
           } as React.ChangeEvent<HTMLSelectElement>;
           onChange(event);
         }
+        onChangeText?.(String(option.value));
+        onValueChange?.(option.value);
         setIsOpen(false);
         setSearchQuery("");
       },
-      [name, onChange, onValueChange],
+      [name, onChange, onChangeText, onValueChange],
     );
 
     /**

@@ -18,6 +18,7 @@ import {
   type ChangeEvent,
   forwardRef,
   type InputHTMLAttributes,
+  type MouseEventHandler,
   useCallback,
   useId,
   useState,
@@ -94,6 +95,14 @@ export interface SwitchProps extends BaseSwitchProps {
   onChange?:
     | ((checked: boolean, event: ChangeEvent<HTMLInputElement>) => void)
     | undefined;
+
+  /**
+   * Called when the switch is pressed, under the name the platform package uses.
+   *
+   * The switch's own press is what toggles it, so this is the press rather than the change:
+   * the browser runs it before `onChange`, and it says nothing about the next state.
+   */
+  onClick?: MouseEventHandler<HTMLInputElement> | undefined;
 }
 
 // ─── Component Implementation ─────────────────────────────────────────────────
@@ -163,6 +172,7 @@ export const Switch = forwardRef<HTMLInputElement, SwitchProps>(
       checked: controlledChecked,
       defaultChecked = false,
       onChange,
+      onClick,
       ...rest
     },
     ref,
@@ -286,6 +296,7 @@ export const Switch = forwardRef<HTMLInputElement, SwitchProps>(
               aria-busy={isLoading}
               aria-describedby={descriptionId}
               onChange={handleChange}
+              onClick={onClick}
               className="sr-only peer"
               {...rest}
             />

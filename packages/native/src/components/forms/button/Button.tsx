@@ -13,6 +13,7 @@ import {
   type ColorRole,
   type Radius,
   resolveCascade,
+  resolvePress,
   type Size,
   type Variant,
 } from "@asheeui/core";
@@ -49,6 +50,15 @@ export interface ButtonProps
 
   /** Whether the button shows a pending state and blocks interaction. */
   isLoading?: boolean;
+
+  /**
+   * Called when the control is activated, under the name the web package uses.
+   *
+   * The platform's `Pressable` already accepts this name and hands the press event to it;
+   * the button reads it explicitly so that it runs through the shared resolver, which owns
+   * the order when both names are given. It is `onClick` first, as the web button documents.
+   */
+  onClick?: PressableProps["onClick"];
 
   /** Extra classes appended last, so a consumer's own classes win. */
   className?: string;
@@ -96,6 +106,7 @@ export function Button({
   isLoading,
   className,
   style,
+  onClick,
   onPress,
   ...rest
 }: ButtonProps) {
@@ -159,7 +170,20 @@ export function Button({
         busy: Boolean(isLoading),
       }}
       disabled={isInteractionDisabled}
-      onPress={isInteractionDisabled ? undefined : onPress}
+      onPress={
+        isInteractionDisabled
+          ? undefined
+          : (pressEvent) =>
+              // The platform's callback may read the responder, so it is wrapped rather
+              // than dropped; `resolvePress` still owns which name runs first.
+              resolvePress(
+                {
+                  onClick,
+                  onPress: onPress ? () => onPress(pressEvent) : undefined,
+                },
+                pressEvent,
+              )
+      }
       className={classes}
       style={style}
       {...rest}>

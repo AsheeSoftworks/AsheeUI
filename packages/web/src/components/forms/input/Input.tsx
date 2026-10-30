@@ -125,6 +125,14 @@ export interface InputProps extends BaseInputProps {
   onChangeText?: ((value: string) => void) | undefined;
 
   /**
+   * Called with the field's next value, under the name the picker family already used.
+   *
+   * `onChange`, `onChangeText` and `onValueChange` are the same change; all three run when
+   * all three are given, in that order, so a handler copied from a device keeps working.
+   */
+  onValueChange?: ((value: string) => void) | undefined;
+
+  /**
    * Whether the field stretches to fill its parent's width.
    *
    * A text field is a control, so it fills the column it is placed in unless it is
@@ -263,6 +271,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
       onBlur,
       onChange,
       onChangeText,
+      onValueChange,
       enableVirtualKeyboard = true,
       ...rest
     },
@@ -325,8 +334,9 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
       (e: React.ChangeEvent<HTMLInputElement>) => {
         onChange?.(e);
         onChangeText?.(e.target.value);
+        onValueChange?.(e.target.value);
       },
-      [onChange, onChangeText],
+      [onChange, onChangeText, onValueChange],
     );
 
     // ─── Token Resolvers ──────────────────────────────────────────────────

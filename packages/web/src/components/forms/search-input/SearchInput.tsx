@@ -79,6 +79,9 @@ export interface SearchInputProps extends BaseSearchInputProps {
    */
   onValueChange?: ((value: string) => void) | undefined;
 
+  /** Called with the next query, under the platform's most specific name. */
+  onChangeText?: ((value: string) => void) | undefined;
+
   /**
    * Called with the query when the reader submits the field.
    * Supplying it makes the component a form, so Enter submits and the field is
@@ -174,6 +177,7 @@ export const SearchInput = forwardRef<HTMLInputElement, SearchInputProps>(
       value,
       defaultValue,
       onChange,
+      onChangeText,
       onValueChange,
       onSearch,
       description,
@@ -226,6 +230,7 @@ export const SearchInput = forwardRef<HTMLInputElement, SearchInputProps>(
 
     const handleChange: ChangeEventHandler<HTMLInputElement> = (event) => {
       onChange?.(event);
+      onChangeText?.(event.target.value);
 
       if (value === undefined) {
         setTypedValue(event.target.value);
@@ -248,6 +253,7 @@ export const SearchInput = forwardRef<HTMLInputElement, SearchInputProps>(
         setTypedValue("");
       }
 
+      onChangeText?.("");
       onValueChange?.("");
     };
 

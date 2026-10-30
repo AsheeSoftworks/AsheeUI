@@ -20,6 +20,7 @@ import {
   type PinInputSize,
   type Radius,
   resolveCascade,
+  resolveChange,
   sanitizePinValue,
 } from "@asheeui/core";
 import { Fragment, useRef, useState } from "react";
@@ -69,6 +70,17 @@ export interface PinInputProps extends NativePinInputConfig {
 
   /** Called with the whole code whenever it changes. */
   onValueChange?: (value: string) => void;
+
+  /**
+   * Called with the whole code, under the name the browser gives the event.
+   *
+   * The event is a shim with `target.value`; `preventDefault` and `stopPropagation` are not
+   * part of it, because the platform has no default action here to stop.
+   */
+  onChange?: (event: { target: { value: string } }) => void;
+
+  /** Called with the whole code, under the platform's most specific name. */
+  onChangeText?: (value: string) => void;
 
   /**
    * Called once when the code reaches its full length.
@@ -144,6 +156,8 @@ export interface PinInputProps extends NativePinInputConfig {
 export function PinInput({
   value,
   defaultValue,
+  onChange,
+  onChangeText,
   onValueChange,
   onComplete,
   label,
@@ -221,7 +235,7 @@ export function PinInput({
     const capped = sanitizePinValue(next, resolvedMode, resolvedLength);
 
     if (!isControlled) setTypedValue(capped);
-    onValueChange?.(capped);
+    resolveChange({ onChange, onChangeText, onValueChange }, capped);
 
     if (capped.length === resolvedLength) onComplete?.(capped);
   };

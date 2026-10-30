@@ -13,6 +13,7 @@ import {
   type ColorRole,
   type Radius,
   resolveCascade,
+  resolvePress,
   type Size,
 } from "@asheeui/core";
 import type { ReactNode } from "react";
@@ -47,7 +48,7 @@ import {
 export interface CardProps
   extends NativeCardConfig,
     Omit<ViewProps, "children" | "style">,
-    Pick<PressableProps, "onPress" | "accessibilityLabel"> {
+    Pick<PressableProps, "onPress" | "accessibilityLabel" | "onClick"> {
   /** The card's title. */
   title?: string;
 
@@ -62,6 +63,16 @@ export interface CardProps
 
   /** The card's body, when it holds more than a headline. */
   children?: ReactNode;
+
+  /**
+   * Called when the card is activated, under the name the web package uses.
+   *
+   * A card with `onClick` (or `onPress`) is a control whether or not `isPressable` says so,
+   * which is the same rule the web card applies: a handler is what makes a surface
+   * pressable. Both names run when both are given, `onClick` first. The type is the
+   * platform's own press event, because `Pressable` is what reports it.
+   */
+  onClick?: PressableProps["onClick"];
 
   /** Extra classes appended last, so a consumer's own classes win. */
   className?: string;
@@ -102,6 +113,7 @@ export function Card({
   size,
   radius,
   isPressable,
+  onClick,
   onPress,
   className,
   style,
@@ -148,6 +160,12 @@ export function Card({
     FALLBACK_NATIVE_CARD_CONFIG.isPressable,
   );
 
+  // A handler is what makes a surface a control. The web card states the same rule, so a
+  // card that gained `onClick` there and `onPress` here behaves alike without either
+  // consumer having to remember `isPressable`.
+  const isPressableCard =
+    resolvedPressable || Boolean(onClick) || Boolean(onPress);
+
   const classes = classNames(
     CARD_BASE_CLASS,
     CARD_VARIANT_CLASS[resolvedVariant],
@@ -178,11 +196,19 @@ export function Card({
     </>
   );
 
-  if (resolvedPressable) {
+  if (isPressableCard) {
     return (
       <Pressable
         accessibilityRole="button"
-        onPress={onPress}
+        onPress={(pressEvent) =>
+          resolvePress(
+            {
+              onClick,
+              onPress: onPress ? () => onPress(pressEvent) : undefined,
+            },
+            pressEvent,
+          )
+        }
         className={classes}
         style={style}
         {...rest}>

@@ -26,6 +26,7 @@ import {
   type Radius,
   resolveCascade,
   resolveClassKey,
+  resolvePress,
   type Size,
 } from "@asheeui/core";
 import { useEffect, useRef, useState } from "react";
@@ -95,6 +96,15 @@ export interface RadioProps
   /** Called with the state and the value when the radio is picked. */
   onChange?: (checked: boolean, value: string) => void;
 
+  /**
+   * Called when the option is pressed, under the name the web package uses.
+   *
+   * The radio's own press is what picks it, so this is the press rather than the change: it
+   * runs before `onChange` and says nothing about the selection. `onPress` was already
+   * excluded from the props because the platform's choice owns that act.
+   */
+  onClick?: PressableProps["onClick"];
+
   /** Extra classes appended last, so a consumer's own classes win. */
   className?: string;
 
@@ -135,6 +145,7 @@ export function Radio({
   checked,
   defaultChecked = false,
   onChange,
+  onClick,
   isDisabled,
   size,
   radius,
@@ -228,8 +239,11 @@ export function Radio({
       accessibilityHint={description}
       accessibilityState={{ checked: isChecked, disabled: resolvedDisabled }}
       disabled={resolvedDisabled}
-      onPress={() => {
+      onPress={(pressEvent) => {
         if (resolvedDisabled) return;
+        // The press is the act and the change is its result, so the press is reported
+        // first; a consumer that passed both names sees the order the web radio has.
+        resolvePress({ onClick }, pressEvent);
         if (group) {
           group.onChange?.(value);
         } else if (checked === undefined) {

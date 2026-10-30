@@ -102,6 +102,15 @@ export interface LinkProps extends BaseLinkProps {
    * These take precedence over the props the framework passes itself.
    */
   componentProps?: Record<string, unknown> | undefined;
+
+  /**
+   * Called when the link is activated, under the name the platform package uses.
+   *
+   * `onClick` is the DOM's event and `onPress` is React Native's, and they are the same act:
+   * the guarded handler already refuses a disabled link, so both names reach the same place.
+   * When both are given, both run, `onClick` first.
+   */
+  onPress?: (() => void) | undefined;
 }
 
 /**
@@ -204,6 +213,7 @@ export const Link = forwardRef<HTMLAnchorElement, LinkProps>(
       target,
       rel,
       onClick,
+      onPress,
       component,
       componentProps: componentPropsProp,
       ...props
@@ -300,6 +310,7 @@ export const Link = forwardRef<HTMLAnchorElement, LinkProps>(
         return;
       }
       onClick?.(e);
+      onPress?.();
     };
 
     // ─── 3. Build link props ────────────────────────────────────────────────

@@ -21,6 +21,7 @@ import {
   type Radius,
   resolveCascade,
   resolveClassKey,
+  resolvePress,
   type Size,
   type Variant,
 } from "@asheeui/core";
@@ -82,6 +83,15 @@ export interface SwitchProps
   onChange?: (checked: boolean) => void;
 
   /**
+   * Called when the switch is pressed, under the name the web package uses.
+   *
+   * The switch's own press is what toggles it, so this is the press rather than the change:
+   * it runs before `onChange` and says nothing about the next state. `onPress` was already
+   * excluded from the props because the platform's switch owns that act.
+   */
+  onClick?: PressableProps["onClick"];
+
+  /**
    * Whether the switch is waiting for something.
    *
    * A pending switch shows the framework's spinner beside its label and refuses to
@@ -135,6 +145,7 @@ export function Switch({
   checked,
   defaultChecked = false,
   onChange,
+  onClick,
   isDisabled,
   isLoading,
   required,
@@ -231,8 +242,11 @@ export function Switch({
           busy: Boolean(isLoading),
         }}
         disabled={isUnavailable}
-        onPress={() => {
+        onPress={(pressEvent) => {
           if (isUnavailable) return;
+          // The press is the act and the change is its result, so the press is reported
+          // first; a consumer that passed both names sees the order the web switch has.
+          resolvePress({ onClick }, pressEvent);
           if (!isControlled) setUncontrolledChecked(!isChecked);
           onChange?.(!isChecked);
         }}

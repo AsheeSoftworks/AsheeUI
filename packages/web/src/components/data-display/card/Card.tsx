@@ -122,9 +122,19 @@ export interface CardLinkProps extends CardLinkConfig {
  */
 export interface CardProps extends BaseCardProps {
   /**
+   * Called when the card is activated, under the name the platform package uses.
+   *
+   * `onClick` is the DOM's event and `onPress` is React Native's, and they are the same act:
+   * the card's guarded handler already refuses a disabled control and already runs on
+   * keyboard activation, so both names reach the same place. When both are given, both run,
+   * `onClick` first.
+   */
+  onPress?: (() => void) | undefined;
+
+  /**
    * Whether the card is clickable.
    * When true, the card becomes interactive with hover and focus states.
-   * This is automatically enabled when link or onClick is provided.
+   * This is automatically enabled when link, onClick or onPress is provided.
    *
    * @default false
    */
@@ -319,6 +329,7 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(
       className,
       children,
       onClick,
+      onPress,
       id,
       style,
       onKeyDown,
@@ -392,7 +403,8 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(
     const LinkComponent: ElementType =
       link?.component ?? (isLink ? "a" : "div");
 
-    const resolvedClickable = isClickable ?? Boolean(isLink || onClick);
+    const resolvedClickable =
+      isClickable ?? Boolean(isLink || onClick || onPress);
 
     // A link renders an element the browser itself puts in the tab order, so an
     // explicit `isClickable={false}` — which opts out of the *card's* own pointer
@@ -472,6 +484,7 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(
         return;
       }
       onClick?.(e);
+      onPress?.();
       (
         linkOnClick as ((event: MouseEvent<HTMLDivElement>) => void) | undefined
       )?.(e);

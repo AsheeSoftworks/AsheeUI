@@ -20,6 +20,7 @@ import {
   isFieldInvalid,
   type Radius,
   resolveCascade,
+  resolveChange,
   type Size,
   type Variant,
 } from "@asheeui/core";
@@ -62,6 +63,17 @@ export interface DropmenuProps extends NativeDropmenuConfig {
 
   /** Called with the value the reader picked. */
   onValueChange?: (value: string) => void;
+
+  /**
+   * Called with the value the reader picked, under the name the browser gives the event.
+   *
+   * The event is a shim with `target.value`; `preventDefault` and `stopPropagation` are not
+   * part of it, because the platform has no default action here to stop.
+   */
+  onChange?: (event: { target: { value: string } }) => void;
+
+  /** Called with the value the reader picked, under the platform's most specific name. */
+  onChangeText?: (value: string) => void;
 
   /** What the trigger says while nothing is picked. */
   placeholder?: string;
@@ -122,6 +134,8 @@ export function Dropmenu({
   options,
   value,
   initialValue,
+  onChange,
+  onChangeText,
   onValueChange,
   placeholder = "Select an option",
   label,
@@ -247,7 +261,7 @@ export function Dropmenu({
         testID={optionTestID}
         onSelect={(next) => {
           if (!isControlled) setUncontrolledValue(next);
-          onValueChange?.(next);
+          resolveChange({ onChange, onChangeText, onValueChange }, next);
           setIsOpen(false);
         }}
         onClose={() => setIsOpen(false)}

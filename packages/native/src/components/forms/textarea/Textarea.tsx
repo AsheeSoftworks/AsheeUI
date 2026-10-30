@@ -19,6 +19,7 @@ import {
   isFieldInvalid,
   type Radius,
   resolveCascade,
+  resolveChange,
   type Size,
   type Variant,
 } from "@asheeui/core";
@@ -52,7 +53,10 @@ import {
  */
 export interface TextareaProps
   extends NativeTextareaConfig,
-    Omit<TextInputProps, "children" | "style" | "multiline" | "rows"> {
+    Omit<
+      TextInputProps,
+      "children" | "style" | "multiline" | "rows" | "onChange" | "onChangeText"
+    > {
   /** The field's label, which also names the control. */
   label?: string;
 
@@ -64,6 +68,20 @@ export interface TextareaProps
 
   /** Whether the field is waiting for something, which shows a pending marker. */
   isLoading?: boolean;
+
+  /**
+   * Called with the field's next value, under the name the browser gives the event.
+   *
+   * The event is a shim with `target.value`; `preventDefault` and `stopPropagation` are
+   * not part of it, because the platform has no default action here to stop.
+   */
+  onChange?: (event: { target: { value: string } }) => void;
+
+  /** Called with the field's next value, under the platform's most specific name. */
+  onChangeText?: (value: string) => void;
+
+  /** Called with the field's next value, under the name the picker family already used. */
+  onValueChange?: (value: string) => void;
 
   /** Extra classes appended last, so a consumer's own classes win. */
   className?: string;
@@ -114,6 +132,9 @@ export function Textarea({
   style,
   onFocus,
   onBlur,
+  onChange,
+  onChangeText,
+  onValueChange,
   ...rest
 }: TextareaProps) {
   const config = useAsheeConfig();
@@ -196,6 +217,9 @@ export function Textarea({
         multiline
         numberOfLines={resolvedRows}
         textAlignVertical="top"
+        onChangeText={(value) =>
+          resolveChange({ onChange, onChangeText, onValueChange }, value)
+        }
         onFocus={(event) => {
           setIsFocused(true);
           onFocus?.(event);

@@ -19,6 +19,7 @@ import {
   isFieldInvalid,
   type Radius,
   resolveCascade,
+  resolveChange,
   type Size,
   type Variant,
 } from "@asheeui/core";
@@ -50,7 +51,10 @@ import {
  */
 export interface InputProps
   extends NativeInputConfig,
-    Omit<TextInputProps, "children" | "multiline" | "style"> {
+    Omit<
+      TextInputProps,
+      "children" | "multiline" | "style" | "onChange" | "onChangeText"
+    > {
   /** The field's label, which also names the control. */
   label?: string;
 
@@ -59,6 +63,20 @@ export interface InputProps
 
   /** Validation message shown under the field. */
   message?: string;
+
+  /**
+   * Called with the field's next value, under the name the browser gives the event.
+   *
+   * The event is a shim with `target.value`; `preventDefault` and `stopPropagation` are not
+   * part of it, because the platform has no default action here to stop.
+   */
+  onChange?: (event: { target: { value: string } }) => void;
+
+  /** Called with the field's next value, under the platform's most specific name. */
+  onChangeText?: (value: string) => void;
+
+  /** Called with the field's next value, under the name the picker family already used. */
+  onValueChange?: (value: string) => void;
 
   /** Extra classes appended last, so a consumer's own classes win. */
   className?: string;
@@ -109,6 +127,9 @@ export function Input({
   style,
   onFocus,
   onBlur,
+  onChange,
+  onChangeText,
+  onValueChange,
   ...rest
 }: InputProps) {
   const config = useAsheeConfig();
@@ -188,6 +209,9 @@ export function Input({
         aria-invalid={isInvalid}
         editable={!resolvedDisabled}
         multiline={resolvedMultiline}
+        onChangeText={(value) =>
+          resolveChange({ onChange, onChangeText, onValueChange }, value)
+        }
         onFocus={(event) => {
           setIsFocused(true);
           onFocus?.(event);

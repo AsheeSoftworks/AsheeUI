@@ -23,10 +23,16 @@ import {
   type LinkUnderline,
   type LinkVariant,
   resolveCascade,
+  resolvePress,
   type Size,
 } from "@asheeui/core";
 import type { ElementType, ReactNode } from "react";
-import type { PressableProps, StyleProp, ViewStyle } from "react-native";
+import type {
+  GestureResponderEvent,
+  PressableProps,
+  StyleProp,
+  ViewStyle,
+} from "react-native";
 import { Pressable, View } from "react-native";
 import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
 import {
@@ -102,6 +108,17 @@ export interface LinkProps
   /** Extra classes appended last, so a consumer's own classes win. */
   className?: string;
 
+  /**
+   * Called when the link is activated, under the name the web package uses.
+   *
+   * The platform's `Pressable` already accepts this name and hands the press event to it;
+   * the link reads it explicitly so that it runs through the shared resolver. When both
+   * names are given, both run, `onClick` first. A link that states neither follows its
+   * destination; one that states either is handled by its consumer, which is what routing
+   * inside an application means.
+   */
+  onClick?: PressableProps["onClick"];
+
   /** Platform styles, for what NativeWind cannot express. */
   style?: StyleProp<ViewStyle>;
 }
@@ -150,6 +167,7 @@ export function Link({
   underline,
   component,
   componentProps,
+  onClick,
   onPress,
   className,
   style,
@@ -254,8 +272,23 @@ export function Link({
 
   // The consumer's own handler wins: a link that routes inside the application has
   // somewhere else to go than the platform's URL handler, and it says so by handling the
-  // press itself. A disabled link has no handler at all.
-  const press = disabled ? undefined : (onPress ?? followDestination);
+  // press itself. A disabled link has no handler at all. Both spellings run when both are
+  // given, and a link that states neither follows its destination.
+  const press = disabled
+    ? undefined
+    : (pressEvent: GestureResponderEvent) => {
+        resolvePress(
+          {
+            onClick,
+            onPress: onPress ? () => onPress(pressEvent) : undefined,
+          },
+          pressEvent,
+        );
+
+        if (!onPress) {
+          followDestination();
+        }
+      };
 
   // A consumer that routes internally names the component that renders the link, which
   // is the same substitution API the web link offers.

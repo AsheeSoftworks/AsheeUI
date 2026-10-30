@@ -65,6 +65,30 @@ describe("Native Input", () => {
     expect(onChangeText).toHaveBeenCalledWith("you@example.com");
   });
 
+  it("reports a change through every name it was given, onChange first", async () => {
+    // A handler copied from the web reads `event.target.value`; a handler written for the
+    // platform reads the value. Both survive, and a consumer that passed all three sees the
+    // order the shared resolver promises.
+    const calls: string[] = [];
+    const view = await renderInput(
+      <Input
+        testID="input"
+        label="Email"
+        onChange={(event) => calls.push(`onChange:${event.target.value}`)}
+        onChangeText={(value) => calls.push(`onChangeText:${value}`)}
+        onValueChange={(value) => calls.push(`onValueChange:${value}`)}
+      />,
+    );
+
+    fireEvent.changeText(view.getByTestId("input"), "you@example.com");
+
+    expect(calls).toEqual([
+      "onChange:you@example.com",
+      "onChangeText:you@example.com",
+      "onValueChange:you@example.com",
+    ]);
+  });
+
   it("shows its message and reports an invalid field", async () => {
     const view = await renderInput(
       <Input

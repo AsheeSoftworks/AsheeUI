@@ -116,6 +116,15 @@ export interface ChipProps extends BaseChipProps {
   closeLabel?: string | undefined;
 
   /**
+   * Called when the chip is activated, under the name the platform package uses.
+   *
+   * `onClick` is the DOM's event and `onPress` is React Native's, and they are the same act.
+   * Either name makes the chip a control with keyboard activation; both run when both are
+   * given, `onClick` first.
+   */
+  onPress?: (() => void) | undefined;
+
+  /**
    * Chip content.
    * The label text to display inside the chip.
    */
@@ -206,6 +215,7 @@ export const Chip = forwardRef<HTMLDivElement, ChipProps>(
       className,
       style,
       onClick,
+      onPress,
       ...props
     },
     ref,
@@ -294,7 +304,7 @@ export const Chip = forwardRef<HTMLDivElement, ChipProps>(
     // A chip is a control only when it can be pressed. Without a handler the
     // token has no press of its own to offer, and the remove control is its
     // only target.
-    const isPressable = Boolean(onClick);
+    const isPressable = Boolean(onClick || onPress);
 
     const handleClose = (e: MouseEvent<HTMLButtonElement>) => {
       e.stopPropagation();
@@ -306,6 +316,7 @@ export const Chip = forwardRef<HTMLDivElement, ChipProps>(
     const handleClick = (e: MouseEvent<HTMLDivElement>) => {
       if (isDisabled) return;
       onClick?.(e);
+      onPress?.();
     };
 
     // Keyboard activation of the chip itself. A keystroke that lands on anything
@@ -324,6 +335,7 @@ export const Chip = forwardRef<HTMLDivElement, ChipProps>(
         // happened rather than a fabricated mouse event with coordinates the
         // chip never had.
         onClick?.(e as unknown as MouseEvent<HTMLDivElement>);
+        onPress?.();
       }
     };
 

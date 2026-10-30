@@ -22,6 +22,7 @@ import {
   isFieldInvalid,
   type Radius,
   resolveCascade,
+  resolveChange,
   type Size,
   type Variant,
 } from "@asheeui/core";
@@ -65,6 +66,17 @@ export interface AutocompleteProps extends NativeAutocompleteConfig {
 
   /** Called with the picked value and the option it came from. */
   onValueChange?: (value: string, option?: PickerSheetOption) => void;
+
+  /**
+   * Called with the field's next value, under the name the browser gives the event.
+   *
+   * The event is a shim with `target.value`; `preventDefault` and `stopPropagation` are not
+   * part of it, because the platform has no default action here to stop.
+   */
+  onChange?: (event: { target: { value: string } }) => void;
+
+  /** Called with the field's next value, under the platform's most specific name. */
+  onChangeText?: (value: string) => void;
 
   /** Called with the text as the reader types, which is what a remote lookup follows. */
   onInputChange?: (inputValue: string) => void;
@@ -130,6 +142,8 @@ export interface AutocompleteProps extends NativeAutocompleteConfig {
 export function Autocomplete({
   options,
   value,
+  onChange,
+  onChangeText,
   onValueChange,
   onInputChange,
   allowCustomValue = false,
@@ -244,7 +258,17 @@ export function Autocomplete({
         onChangeText={(next) => {
           setText(next);
           onInputChange?.(next);
-          if (allowCustomValue) onValueChange?.(next);
+          // The typed text is the value only while free text is allowed; otherwise the
+          // field's value is the picked option, and reporting the text as a value would
+          // tell the consumer about a value it never accepted.
+          resolveChange(
+            {
+              onChange,
+              onChangeText,
+              onValueChange: allowCustomValue ? onValueChange : undefined,
+            },
+            next,
+          );
         }}
         onFocus={() => setIsFocused(true)}
         onBlur={() => setIsFocused(false)}
@@ -283,7 +307,18 @@ export function Autocomplete({
                 disabled={option.isDisabled}
                 onPress={() => {
                   setText(option.label);
-                  onValueChange?.(option.value, option);
+                  // The pick is the change; the option travels with `onValueChange` so a
+                  // consumer that needs its metadata keeps it, and the two value-only names
+                  // still receive the value the pick stands for.
+                  resolveChange(
+                    {
+                      onChange,
+                      onChangeText,
+                      onValueChange: (picked) =>
+                        onValueChange?.(picked, option),
+                    },
+                    option.value,
+                  );
                   setIsFocused(false);
                 }}
                 className={NATIVE_SUGGESTION_CLASS}>

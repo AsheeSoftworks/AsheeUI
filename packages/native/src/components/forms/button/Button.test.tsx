@@ -159,4 +159,33 @@ describe("Native Button", () => {
 
     silence.mockRestore();
   });
+
+  it("accepts the web's onClick name and runs it on a press", async () => {
+    const onClick = jest.fn();
+    const view = await renderWithProvider(
+      <Button onClick={onClick}>Save</Button>,
+    );
+
+    await fireEvent.press(view.getByRole("button", { name: "Save" }));
+
+    expect(onClick).toHaveBeenCalledTimes(1);
+  });
+
+  it("runs both names when both are given, onClick first", async () => {
+    // The order is what a consumer that passes both sees, and the web button documents
+    // `onClick` first. A handler that only ever ran one of the two would still pass a test
+    // that asserted "the press happened".
+    const calls: string[] = [];
+    const view = await renderWithProvider(
+      <Button
+        onClick={() => calls.push("onClick")}
+        onPress={() => calls.push("onPress")}>
+        Save
+      </Button>,
+    );
+
+    await fireEvent.press(view.getByRole("button", { name: "Save" }));
+
+    expect(calls).toEqual(["onClick", "onPress"]);
+  });
 });

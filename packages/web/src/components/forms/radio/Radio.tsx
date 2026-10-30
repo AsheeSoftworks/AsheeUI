@@ -16,6 +16,7 @@ import {
   type ChangeEvent,
   forwardRef,
   type InputHTMLAttributes,
+  type MouseEventHandler,
   type ReactNode,
   useCallback,
   useId,
@@ -92,6 +93,14 @@ export interface RadioProps extends BaseRadioProps {
     value: string,
     event: ChangeEvent<HTMLInputElement>,
   ) => void;
+
+  /**
+   * Called when the option is pressed, under the name the platform package uses.
+   *
+   * The radio's own press is what picks it, so this is the press rather than the change:
+   * the browser runs it before `onChange`, and it says nothing about the selection.
+   */
+  onClick?: MouseEventHandler<HTMLInputElement> | undefined;
 }
 
 // ─── Component Implementation ─────────────────────────────────────────────────
@@ -163,6 +172,7 @@ export const Radio = forwardRef<HTMLInputElement, RadioProps>(
       checked: controlledChecked,
       defaultChecked = false,
       onChange,
+      onClick,
       ...rest
     },
     ref,
@@ -309,6 +319,7 @@ export const Radio = forwardRef<HTMLInputElement, RadioProps>(
           checked={isChecked}
           disabled={isDisabled}
           onChange={handleChange}
+          onClick={onClick}
           className="sr-only peer"
           {...rest}
         />

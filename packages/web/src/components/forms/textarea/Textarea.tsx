@@ -112,6 +112,20 @@ export interface TextareaProps extends BaseTextareaProps {
   required?: boolean | undefined;
 
   /**
+   * Called when the field's value changes, under the DOM's name.
+   *
+   * `onChange`, `onChangeText` and `onValueChange` are the same change; all three run when
+   * all three are given, in that order, so a handler copied from a device keeps working.
+   */
+  onChange?: React.ChangeEventHandler<HTMLTextAreaElement> | undefined;
+
+  /** Called with the field's next value, under the platform's most specific name. */
+  onChangeText?: ((value: string) => void) | undefined;
+
+  /** Called with the field's next value, under the name the picker family already used. */
+  onValueChange?: ((value: string) => void) | undefined;
+
+  /**
    * Whether the field stretches to fill its parent's width.
    *
    * A box is a control, so it fills the column it is placed in unless it is told not
@@ -242,6 +256,9 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
       style,
       onFocus,
       onBlur,
+      onChange,
+      onChangeText,
+      onValueChange,
       enableVirtualKeyboard = true,
       ...rest
     },
@@ -292,6 +309,21 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
         onBlur?.(e);
       },
       [handleKeyboardBlur, onBlur],
+    );
+
+    /**
+     * Report a change through every name the consumer gave.
+     *
+     * The DOM's event carries the value and the platform's names carry it directly, so
+     * neither kind of handler is dropped: the order is the one the shared resolver states.
+     */
+    const handleChange = useCallback(
+      (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+        onChange?.(e);
+        onChangeText?.(e.target.value);
+        onValueChange?.(e.target.value);
+      },
+      [onChange, onChangeText, onValueChange],
     );
 
     // ─── 1. Token Resolvers (4-Tier Cascade) ──────────────────────────────────
@@ -399,6 +431,7 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
             aria-describedby={describedBy}
             onFocus={handleFocus}
             onBlur={handleBlur}
+            onChange={handleChange}
             className={cn(
               "resize-y w-full text-foreground outline-none transition-colors shrink-0",
               "focus-visible:ring-2 focus-visible:ring-offset-2",

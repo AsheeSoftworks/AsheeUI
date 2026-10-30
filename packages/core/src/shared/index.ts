@@ -5,6 +5,7 @@ export * from "./card";
 export * from "./deprecation";
 export * from "./grid";
 export * from "./message-surface";
+export * from "./press";
 export * from "./radius";
 export * from "./section-block";
 export * from "./spacing";

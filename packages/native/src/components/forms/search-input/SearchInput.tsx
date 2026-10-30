@@ -24,6 +24,7 @@ import {
   isFieldInvalid,
   type Radius,
   resolveCascade,
+  resolveChange,
   type Size,
 } from "@asheeui/core";
 import { useState } from "react";
@@ -68,6 +69,17 @@ export interface SearchInputProps extends NativeSearchInputConfig {
 
   /** Called with the next query whenever it changes, including when the field is emptied. */
   onValueChange?: (value: string) => void;
+
+  /**
+   * Called with the next query, under the name the browser gives the event.
+   *
+   * The event is a shim with `target.value`; `preventDefault` and `stopPropagation` are not
+   * part of it, because the platform has no default action here to stop.
+   */
+  onChange?: (event: { target: { value: string } }) => void;
+
+  /** Called with the next query, under the platform's most specific name. */
+  onChangeText?: (value: string) => void;
 
   /** Called with the query when the reader submits the field. */
   onSearch?: (value: string) => void;
@@ -121,6 +133,8 @@ export interface SearchInputProps extends NativeSearchInputConfig {
 export function SearchInput({
   value,
   defaultValue,
+  onChange,
+  onChangeText,
   onValueChange,
   onSearch,
   description,
@@ -213,7 +227,7 @@ export function SearchInput({
           value={query}
           onChangeText={(next) => {
             if (!isControlled) setTypedValue(next);
-            onValueChange?.(next);
+            resolveChange({ onChange, onChangeText, onValueChange }, next);
           }}
           onSubmitEditing={() => onSearch?.(query)}
           onFocus={() => setIsFocused(true)}
@@ -237,7 +251,7 @@ export function SearchInput({
             disabled={resolvedDisabled}
             onPress={() => {
               if (!isControlled) setTypedValue("");
-              onValueChange?.("");
+              resolveChange({ onChange, onChangeText, onValueChange }, "");
             }}
             className={NATIVE_SEARCH_INPUT_CLEAR_CLASS}>
             <Typography

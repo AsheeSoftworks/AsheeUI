@@ -21,11 +21,17 @@ import {
   resolveCascade,
   resolveChipVariant,
   resolveClassKey,
+  resolvePress,
   type Size,
   type Variant,
 } from "@asheeui/core";
 import type { ReactNode } from "react";
-import type { StyleProp, ViewProps, ViewStyle } from "react-native";
+import type {
+  GestureResponderEvent,
+  StyleProp,
+  ViewProps,
+  ViewStyle,
+} from "react-native";
 import { Pressable, View } from "react-native";
 import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
 import {
@@ -100,6 +106,15 @@ export interface ChipProps
    */
   onPress?: () => void;
 
+  /**
+   * The web's name for the same act.
+   *
+   * Either name makes the chip a control, which is what the web chip states: a chip with
+   * `onClick` is pressable, and one without is a token. Both run when both are given,
+   * `onClick` first.
+   */
+  onClick?: (event: GestureResponderEvent) => void;
+
   /** The chip's label. */
   children?: ReactNode;
 
@@ -145,6 +160,7 @@ export function Chip({
   onClose,
   closeIcon,
   closeLabel = "Remove chip",
+  onClick,
   onPress,
   children,
   className,
@@ -218,14 +234,18 @@ export function Chip({
     FALLBACK_NATIVE_CHIP_CONFIG.radius,
   );
 
-  const isInteractive = Boolean(onPress);
+  const isInteractive = Boolean(onPress || onClick);
 
   return (
     <Pressable
       accessibilityRole={isInteractive ? "button" : undefined}
       accessibilityState={{ disabled: isDisabled }}
       disabled={isDisabled || !isInteractive}
-      onPress={isDisabled ? undefined : onPress}
+      onPress={
+        isDisabled
+          ? undefined
+          : (pressEvent) => resolvePress({ onClick, onPress }, pressEvent)
+      }
       className={classNames(
         NATIVE_CHIP_BASE_CLASS,
         NATIVE_CHIP_VARIANT_CLASS[resolvedVariant][resolvedColor],
