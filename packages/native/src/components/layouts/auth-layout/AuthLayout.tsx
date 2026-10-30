@@ -40,6 +40,10 @@ import {
   NATIVE_AUTH_PANEL_PADDING_CLASS,
 } from "../../../styles/auth-layout";
 import { classNames } from "../../../utils/class-names";
+import {
+  type UnsupportedElementProps,
+  useUnsupportedElementProps,
+} from "../../../utils/unsupported-element-props";
 import { SectionHeading } from "../section-kit/SectionHeading";
 import {
   FALLBACK_NATIVE_AUTH_LAYOUT_CONFIG,
@@ -51,7 +55,8 @@ import {
  */
 export interface AuthLayoutProps
   extends NativeAuthLayoutConfig,
-    Omit<ViewProps, "children" | "style"> {
+    Omit<ViewProps, "children" | "style">,
+    UnsupportedElementProps {
   /** Brand content above the heading, typically a logo and product name. */
   brand?: ReactNode;
 
@@ -132,11 +137,15 @@ export function AuthLayout({
   align,
   mediaPosition,
   contentSize,
+  as,
+  titleAs,
   className,
   style,
   children,
   ...rest
 }: AuthLayoutProps) {
+  useUnsupportedElementProps("AuthLayout", { as, titleAs });
+
   const config = useAsheeConfig();
   const { isAtLeast } = useBreakpoint();
 

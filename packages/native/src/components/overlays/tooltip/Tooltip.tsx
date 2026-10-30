@@ -58,6 +58,7 @@ import {
   NATIVE_TOOLTIP_WRAPPER_CLASS,
 } from "../../../styles/tooltip";
 import { classNames } from "../../../utils/class-names";
+import { useUnsupportedProps } from "../../../utils/unsupported-prop";
 import { Typography } from "../../typography/text/Text";
 import {
   FALLBACK_NATIVE_TOOLTIP_CONFIG,
@@ -86,6 +87,14 @@ export interface TooltipProps extends NativeTooltipConfig {
    * @default false
    */
   isDisabled?: boolean;
+
+  /**
+   * The web's stacking order.
+   *
+   * The platform has no z-axis; a later sibling is drawn above an earlier one. Accepted so
+   * a shared tooltip compiles; warns once and changes nothing.
+   */
+  zIndex?: number;
 
   /** Platform styles for the wrapper, for what NativeWind cannot express. */
   style?: StyleProp<ViewStyle>;
@@ -130,11 +139,19 @@ export function Tooltip({
   offset,
   radius,
   showArrow,
+  zIndex,
   className,
   style,
 }: TooltipProps) {
   const config = useAsheeConfig();
   const sectionConfig = config.components.tooltip;
+
+  useUnsupportedProps("Tooltip", {
+    zIndex: {
+      value: zIndex,
+      substitute: "render the hint later in the tree; there is no z-axis",
+    },
+  });
 
   const resolvedVariant = resolveCascade<Variant>(
     variant,

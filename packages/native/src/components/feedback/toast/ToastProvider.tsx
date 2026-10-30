@@ -26,6 +26,7 @@ import { type ReactNode, useCallback, useMemo, useRef, useState } from "react";
 import { View } from "react-native";
 import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
 import { announce } from "../../../utils/announce";
+import { useUnsupportedProps } from "../../../utils/unsupported-prop";
 import {
   NATIVE_TOAST_CONTAINER_CLASS,
   NATIVE_TOAST_PLACEMENT_CLASS,
@@ -44,6 +45,17 @@ import {
 export interface ToastProviderProps extends NativeToastConfig {
   /** The application's tree, which the provider wraps. */
   children: ReactNode;
+
+  /**
+   * Whether the web renders its messages into the document.
+   *
+   * The platform's layer is already above the screen, so there is no document to hoist to.
+   * Accepted so a shared root compiles; warns once and changes nothing.
+   */
+  portal?: unknown;
+
+  /** The element the web portals into, for the same reason as {@link portal}. */
+  portalTarget?: unknown;
 }
 
 /**
@@ -80,9 +92,24 @@ export function ToastProvider({
   animated,
   defaultTimeout,
   maxToasts,
+  portal,
+  portalTarget,
 }: ToastProviderProps) {
   const config = useAsheeConfig();
   const sectionConfig = config.components.toast;
+
+  useUnsupportedProps("ToastProvider", {
+    portal: {
+      value: portal,
+      substitute:
+        "the native layer already paints above the screen; place the provider at the root",
+    },
+    portalTarget: {
+      value: portalTarget,
+      substitute:
+        "the native layer is positioned against the provider; wrap the screen it should cover",
+    },
+  });
 
   const resolvedSize = resolveCascade<Size>(
     size,

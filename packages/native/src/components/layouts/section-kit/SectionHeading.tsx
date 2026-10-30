@@ -27,6 +27,7 @@ import {
   SECTION_BLOCK_TEXT_ALIGN,
 } from "../../../styles/section-block";
 import { classNames } from "../../../utils/class-names";
+import { useUnsupportedProps } from "../../../utils/unsupported-prop";
 import { Typography } from "../../typography/text/Text";
 
 /**
@@ -80,6 +81,17 @@ export interface SectionHeadingProps {
    * Additional classes for the wrapper.
    */
   className?: string;
+
+  /**
+   * The id the web gives the heading so another element can reference it.
+   *
+   * A device has no ids to reference; the heading's meaning is carried by the role.
+   * Accepted so a shared section compiles; warns once and changes nothing.
+   */
+  titleId?: string;
+
+  /** The id of the element a skip control targets, for the same reason as {@link titleId}. */
+  targetId?: string;
 }
 
 /**
@@ -97,8 +109,22 @@ export function SectionHeading({
   description,
   align = "start",
   size = "md",
+  titleId,
+  targetId,
   className,
 }: SectionHeadingProps) {
+  useUnsupportedProps("SectionHeading", {
+    titleId: {
+      value: titleId,
+      substitute: "ids address DOM elements; nothing references them on a device",
+    },
+    targetId: {
+      value: targetId,
+      substitute:
+        "a skip control has no element to target; place the reader with setAccessibilityFocus",
+    },
+  });
+
   if (!eyebrow && !title && !description) {
     return null;
   }

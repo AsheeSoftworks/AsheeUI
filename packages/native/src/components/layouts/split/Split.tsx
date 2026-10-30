@@ -32,6 +32,7 @@ import {
   NATIVE_SPLIT_STICKY_CLASS,
 } from "../../../styles/split";
 import { classNames } from "../../../utils/class-names";
+import { useUnsupportedProps } from "../../../utils/unsupported-prop";
 import {
   FALLBACK_NATIVE_SPLIT_CONFIG,
   type NativeSplitConfig,
@@ -118,6 +119,13 @@ export function Split({
 }: SplitProps) {
   const config = useAsheeConfig();
   const { isAtLeast } = useBreakpoint();
+
+  useUnsupportedProps("Split", {
+    stickyEnd: {
+      value: stickyEnd,
+      substitute: "place the second pane outside the scrolling container",
+    },
+  });
 
   const resolved = resolveConfigCascade<
     NativeSplitConfig,

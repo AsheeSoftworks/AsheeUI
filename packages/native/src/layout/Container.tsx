@@ -15,6 +15,10 @@ import { View } from "react-native";
 import { useAsheeConfig } from "../provider/AsheeUIProvider";
 import { classNames } from "../utils/class-names";
 import {
+  type UnsupportedElementProps,
+  useUnsupportedElementProps,
+} from "../utils/unsupported-element-props";
+import {
   FALLBACK_NATIVE_CONTAINER_CONFIG,
   type NativeContainerConfig,
 } from "./layout-config";
@@ -29,7 +33,8 @@ import {
  */
 export interface ContainerProps
   extends NativeContainerConfig,
-    Omit<ViewProps, "children" | "style"> {
+    Omit<ViewProps, "children" | "style">,
+    UnsupportedElementProps {
   /** The content the container holds. */
   children?: ReactNode;
 
@@ -60,11 +65,15 @@ export interface ContainerProps
 export function Container({
   size,
   gutter,
+  as,
+  titleAs,
   className,
   style,
   children,
   ...rest
 }: ContainerProps) {
+  useUnsupportedElementProps("Container", { as, titleAs });
+
   const config = useAsheeConfig();
 
   const resolved = resolveConfigCascade<

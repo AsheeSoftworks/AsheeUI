@@ -58,6 +58,7 @@ import {
   type NativeExternalConfig,
   resolveNativeConfig,
 } from "../config/resolve-config";
+import { auditUnsupportedConfig } from "../config/unsupported-config";
 import {
   setThemeStorage,
   themeController,
@@ -133,7 +134,12 @@ export function AsheeUIProvider({
   // One resolution, handed to the context below and painted from here: the palette is part of the
   // resolved configuration (`color`), so this provider does not resolve the theme a second time and
   // a component that reads `config.color` reads the same palettes the screen was painted with.
-  const value = useMemo(() => resolveNativeConfig(config), [config]);
+  const value = useMemo(() => {
+    // The ledger's config half: an option only the web can honour is accepted and said out
+    // loud here, once per option for the process.
+    auditUnsupportedConfig((config ?? {}) as NativeExternalConfig);
+    return resolveNativeConfig(config);
+  }, [config]);
 
   // The platform's own answer, which is what "system" means. A platform that reports nothing
   // is a light platform until it says otherwise.

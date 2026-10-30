@@ -45,6 +45,7 @@ import {
 } from "../../../styles/image";
 import { NATIVE_RADIUS_CLASS } from "../../../styles/radius";
 import { classNames } from "../../../utils/class-names";
+import { useUnsupportedProps } from "../../../utils/unsupported-prop";
 import { Skeleton } from "../../feedback/skeleton/Skeleton";
 import {
   FALLBACK_NATIVE_IMAGE_CONFIG,
@@ -163,7 +164,13 @@ export function Image({
   const sectionConfig = config.components.image;
 
   // The option is accepted and read nowhere: see the prop's documentation.
-  void loading;
+  useUnsupportedProps("Image", {
+    loading: {
+      value: loading,
+      substitute:
+        "a native picture is fetched when its view mounts; a list mounts a row as it scrolls into view",
+    },
+  });
 
   const [currentSrc, setCurrentSrc] = useState(src);
   const [isLoaded, setIsLoaded] = useState(false);

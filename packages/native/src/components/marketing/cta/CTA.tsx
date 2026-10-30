@@ -31,6 +31,10 @@ import {
   NATIVE_CTA_PANEL_CLASS,
 } from "../../../styles/cta";
 import { classNames } from "../../../utils/class-names";
+import {
+  type UnsupportedElementProps,
+  useUnsupportedElementProps,
+} from "../../../utils/unsupported-element-props";
 import { ActionGroup } from "../../layouts/section-kit/ActionGroup";
 import { SectionHeading } from "../../layouts/section-kit/SectionHeading";
 import { FALLBACK_NATIVE_CTA_CONFIG, type NativeCtaConfig } from "./cta-config";
@@ -40,7 +44,8 @@ import { FALLBACK_NATIVE_CTA_CONFIG, type NativeCtaConfig } from "./cta-config";
  */
 export interface CtaProps
   extends NativeCtaConfig,
-    Omit<ViewProps, "children" | "style"> {
+    Omit<ViewProps, "children" | "style">,
+    UnsupportedElementProps {
   /** Short label above the title. */
   eyebrow?: ReactNode;
 
@@ -116,11 +121,15 @@ export function CTA({
   containerSize,
   contained,
   actions,
+  as,
+  titleAs,
   className,
   style,
   children,
   ...rest
 }: CtaProps) {
+  useUnsupportedElementProps("CTA", { as, titleAs });
+
   const config = useAsheeConfig();
 
   const resolved = resolveConfigCascade<

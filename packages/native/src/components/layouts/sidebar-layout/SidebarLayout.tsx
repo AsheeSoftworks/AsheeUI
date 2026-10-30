@@ -37,6 +37,7 @@ import {
   NATIVE_SIDEBAR_LAYOUT_WIDTH_CLASS,
 } from "../../../styles/sidebar-layout";
 import { classNames } from "../../../utils/class-names";
+import { useUnsupportedProps } from "../../../utils/unsupported-prop";
 import {
   FALLBACK_NATIVE_SIDEBAR_LAYOUT_CONFIG,
   type NativeSidebarLayoutConfig,
@@ -128,6 +129,13 @@ export function SidebarLayout({
 }: SidebarLayoutProps) {
   const config = useAsheeConfig();
   const { isAtLeast } = useBreakpoint();
+
+  useUnsupportedProps("SidebarLayout", {
+    stickySidebar: {
+      value: stickySidebar,
+      substitute: "place the sidebar outside the scrolling container",
+    },
+  });
 
   const resolved = resolveConfigCascade<
     NativeSidebarLayoutConfig,

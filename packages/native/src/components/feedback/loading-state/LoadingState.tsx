@@ -29,6 +29,10 @@ import {
 } from "../../../styles/loading-state";
 import { SPACE_MIN_HEIGHT_CLASS } from "../../../styles/portable";
 import { classNames } from "../../../utils/class-names";
+import {
+  type UnsupportedElementProps,
+  useUnsupportedElementProps,
+} from "../../../utils/unsupported-element-props";
 import { Typography } from "../../typography/text/Text";
 import { Spinner } from "../spinner/Spinner";
 import {
@@ -41,7 +45,8 @@ import {
  */
 export interface LoadingStateProps
   extends NativeLoadingStateConfig,
-    Omit<ViewProps, "children" | "style"> {
+    Omit<ViewProps, "children" | "style">,
+    UnsupportedElementProps {
   /** Supporting sentence under the label, for example what is being fetched. */
   description?: ReactNode;
 
@@ -94,11 +99,15 @@ export function LoadingState({
   size,
   panel,
   minHeight,
+  as,
+  titleAs,
   className,
   style,
   children,
   ...rest
 }: LoadingStateProps) {
+  useUnsupportedElementProps("LoadingState", { as, titleAs });
+
   const config = useAsheeConfig();
 
   const resolved = resolveConfigCascade<

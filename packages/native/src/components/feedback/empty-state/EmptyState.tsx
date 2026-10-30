@@ -41,6 +41,10 @@ import {
   NATIVE_EMPTY_STATE_SIZE_CLASS,
 } from "../../../styles/empty-state";
 import { classNames } from "../../../utils/class-names";
+import {
+  type UnsupportedElementProps,
+  useUnsupportedElementProps,
+} from "../../../utils/unsupported-element-props";
 import { openDestination } from "../../../utils/open-destination";
 import { Button } from "../../forms/button/Button";
 import { Typography } from "../../typography/text/Text";
@@ -58,7 +62,8 @@ export interface EmptyStateProps
     // platform's own vocabulary. The framework's `role` says how a state is announced,
     // and the component states that itself, so the platform's is left out rather than
     // colliding with it.
-    Omit<ViewProps, "children" | "style" | "role"> {
+    Omit<ViewProps, "children" | "style" | "role">,
+    UnsupportedElementProps {
   /** Icon shown above the title, inside a badge coloured by the state's tone. */
   icon?: ReactNode;
 
@@ -160,11 +165,15 @@ export function EmptyState({
   panel,
   role,
   actions,
+  as,
+  titleAs,
   className,
   style,
   children,
   ...rest
 }: EmptyStateProps) {
+  useUnsupportedElementProps("EmptyState", { as, titleAs });
+
   const config = useAsheeConfig();
 
   const resolved = resolveConfigCascade<

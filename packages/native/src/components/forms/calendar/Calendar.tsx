@@ -56,6 +56,7 @@ import {
 } from "../../../styles/input";
 import { NATIVE_RADIUS_CLASS } from "../../../styles/radius";
 import { classNames } from "../../../utils/class-names";
+import { useUnsupportedProps } from "../../../utils/unsupported-prop";
 import { Typography } from "../../typography/text/Text";
 import { FieldShell } from "../field/FieldShell";
 import { CalendarSheet } from "./CalendarSheet";
@@ -115,6 +116,20 @@ export interface CalendarProps extends NativeCalendarConfig {
 
   /** Identifier prefix for the surface's controls, so a test can reach one. */
   sheetTestID?: string;
+
+  /**
+   * The web's floating-panel configuration.
+   *
+   * The platform's month is a surface presented above the screen; there is no panel to
+   * float beside the field. Accepted so a shared field compiles; warns once.
+   */
+  picker?: unknown;
+
+  /** The web's portal option, for the same reason as {@link picker}. */
+  portal?: unknown;
+
+  /** The web's scroll lock, for the same reason: there is no page to lock. */
+  lockScroll?: unknown;
 }
 
 /**
@@ -147,12 +162,31 @@ export function Calendar({
   message,
   isLoading,
   sheetTitle,
+  picker,
+  portal,
+  lockScroll,
   className,
   testID,
   sheetTestID,
 }: CalendarProps) {
   const config = useAsheeConfig();
   const sectionConfig = config.components.calendar;
+
+  useUnsupportedProps("Calendar", {
+    picker: {
+      value: picker,
+      substitute:
+        "the month opens as a surface; there is no panel to float beside the field",
+    },
+    portal: {
+      value: portal,
+      substitute: "the month is already presented above the screen",
+    },
+    lockScroll: {
+      value: lockScroll,
+      substitute: "there is no page to lock; the month's surface takes the input itself",
+    },
+  });
   const [isOpen, setIsOpen] = useState(false);
   const [uncontrolledValue, setUncontrolledValue] = useState<Date | null>(
     defaultValue,

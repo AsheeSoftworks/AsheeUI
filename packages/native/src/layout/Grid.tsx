@@ -15,6 +15,10 @@ import { useBreakpoint } from "../hooks/use-breakpoint";
 import { useAsheeConfig } from "../provider/AsheeUIProvider";
 import { classNames } from "../utils/class-names";
 import {
+  type UnsupportedElementProps,
+  useUnsupportedElementProps,
+} from "../utils/unsupported-element-props";
+import {
   FALLBACK_NATIVE_GRID_CONFIG,
   type NativeGridConfig,
   resolveGridColumns,
@@ -30,7 +34,8 @@ import {
  */
 export interface GridProps
   extends NativeGridConfig,
-    Omit<ViewProps, "children" | "style"> {
+    Omit<ViewProps, "children" | "style">,
+    UnsupportedElementProps {
   /** The cells, in order. */
   children?: ReactNode;
 
@@ -72,11 +77,15 @@ export function Grid({
   columnsMd,
   columnsLg,
   gap,
+  as,
+  titleAs,
   className,
   style,
   children,
   ...rest
 }: GridProps) {
+  useUnsupportedElementProps("Grid", { as, titleAs });
+
   const config = useAsheeConfig();
   const { breakpoint } = useBreakpoint();
 

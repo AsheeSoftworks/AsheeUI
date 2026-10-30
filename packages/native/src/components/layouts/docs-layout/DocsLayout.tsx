@@ -38,6 +38,7 @@ import {
   NATIVE_DOCS_LAYOUT_REGION_CLASS,
 } from "../../../styles/docs-layout";
 import { classNames } from "../../../utils/class-names";
+import { useUnsupportedProps } from "../../../utils/unsupported-prop";
 import { Typography } from "../../typography/text/Text";
 import {
   FALLBACK_NATIVE_DOCS_LAYOUT_CONFIG,
@@ -145,6 +146,13 @@ export function DocsLayout({
   ...rest
 }: DocsLayoutProps) {
   const config = useAsheeConfig();
+
+  useUnsupportedProps("DocsLayout", {
+    stickyToc: {
+      value: stickyToc,
+      substitute: "place the contents outside the scrolling container",
+    },
+  });
 
   const resolved = resolveConfigCascade<
     NativeDocsLayoutConfig,

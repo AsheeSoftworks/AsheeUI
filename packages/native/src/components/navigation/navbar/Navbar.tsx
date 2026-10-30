@@ -51,6 +51,7 @@ import {
 } from "../../../styles/navbar";
 import { NAVBAR_BRAND_TEXT_CLASS } from "../../../styles/portable";
 import { classNames } from "../../../utils/class-names";
+import { useUnsupportedProps } from "../../../utils/unsupported-prop";
 import { Typography } from "../../typography/text/Text";
 import { Link } from "../link";
 import {
@@ -264,11 +265,25 @@ export function Navbar({
     FALLBACK_NATIVE_NAVBAR_CONFIG,
   );
 
-  // Named so the two disclosure options are visibly read rather than forgotten: they describe the
-  // web's control, and the platform has no such control, so they end here.
-  void mobileLabel;
-  void mobileOpen;
-  void onMobileOpenChange;
+  // The web's disclosure options describe a control the platform does not have: the bar
+  // scrolls and keeps every destination in reach. They are accepted so a shared bar
+  // compiles, and said out loud once rather than silently ending here.
+  useUnsupportedProps("Navbar", {
+    mobileLabel: {
+      value: mobileLabel,
+      substitute: "there is no disclosure control to name",
+    },
+    mobileOpen: {
+      value: mobileOpen,
+      substitute:
+        "the bar scrolls rather than disclosing; every destination stays in the row",
+    },
+    onMobileOpenChange: {
+      value: onMobileOpenChange,
+      substitute:
+        "there is no disclosure to report; the destinations are always reachable",
+    },
+  });
 
   const hasLinks = Boolean(links && links.length > 0);
 

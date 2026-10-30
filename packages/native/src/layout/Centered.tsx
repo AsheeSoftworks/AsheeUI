@@ -13,6 +13,10 @@ import { View } from "react-native";
 import { useAsheeConfig } from "../provider/AsheeUIProvider";
 import { classNames } from "../utils/class-names";
 import {
+  type UnsupportedElementProps,
+  useUnsupportedElementProps,
+} from "../utils/unsupported-element-props";
+import {
   FALLBACK_NATIVE_CENTERED_CONFIG,
   type NativeCenteredConfig,
 } from "./layout-config";
@@ -27,7 +31,8 @@ import {
  */
 export interface CenteredProps
   extends NativeCenteredConfig,
-    Omit<ViewProps, "children" | "style"> {
+    Omit<ViewProps, "children" | "style">,
+    UnsupportedElementProps {
   /** The content to place in the middle. */
   children?: ReactNode;
 
@@ -58,11 +63,15 @@ export interface CenteredProps
 export function Centered({
   axis,
   minHeight,
+  as,
+  titleAs,
   className,
   style,
   children,
   ...rest
 }: CenteredProps) {
+  useUnsupportedElementProps("Centered", { as, titleAs });
+
   const config = useAsheeConfig();
 
   const resolved = resolveConfigCascade<

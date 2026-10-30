@@ -41,6 +41,10 @@ import {
   NATIVE_FOOTER_VARIANT_CLASS,
 } from "../../../styles/footer";
 import { classNames } from "../../../utils/class-names";
+import {
+  type UnsupportedElementProps,
+  useUnsupportedElementProps,
+} from "../../../utils/unsupported-element-props";
 import { Typography } from "../../typography/text/Text";
 import { Link } from "../link";
 import {
@@ -64,7 +68,8 @@ export interface FooterLink {
  */
 export interface FooterProps
   extends NativeFooterConfig,
-    Omit<ViewProps, "children" | "style"> {
+    Omit<ViewProps, "children" | "style">,
+    UnsupportedElementProps {
   /** Brand content, typically a logo and a product name. */
   brand?: ReactNode;
 
@@ -189,11 +194,15 @@ export function Footer({
   spacing,
   contained,
   containerSize,
+  as,
+  titleAs,
   className,
   style,
   children,
   ...rest
 }: FooterProps) {
+  useUnsupportedElementProps("Footer", { as, titleAs });
+
   const config = useAsheeConfig();
 
   const resolved = resolveConfigCascade<

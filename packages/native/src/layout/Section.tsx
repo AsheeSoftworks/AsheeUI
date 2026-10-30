@@ -14,6 +14,10 @@ import { View } from "react-native";
 import { useAsheeConfig } from "../provider/AsheeUIProvider";
 import { classNames } from "../utils/class-names";
 import {
+  type UnsupportedElementProps,
+  useUnsupportedElementProps,
+} from "../utils/unsupported-element-props";
+import {
   FALLBACK_NATIVE_SECTION_CONFIG,
   type NativeSectionConfig,
 } from "./layout-config";
@@ -28,7 +32,8 @@ import {
  */
 export interface SectionProps
   extends NativeSectionConfig,
-    Omit<ViewProps, "children" | "style"> {
+    Omit<ViewProps, "children" | "style">,
+    UnsupportedElementProps {
   /** The section's content. */
   children?: ReactNode;
 
@@ -61,11 +66,15 @@ export interface SectionProps
 export function Section({
   spacing,
   background,
+  as,
+  titleAs,
   className,
   style,
   children,
   ...rest
 }: SectionProps) {
+  useUnsupportedElementProps("Section", { as, titleAs });
+
   const config = useAsheeConfig();
 
   const resolved = resolveConfigCascade<

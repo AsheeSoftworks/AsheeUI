@@ -50,6 +50,7 @@ import {
   NATIVE_SEARCH_INPUT_ROW_CLASS,
 } from "../../../styles/search-input";
 import { classNames } from "../../../utils/class-names";
+import { useUnsupportedProps } from "../../../utils/unsupported-prop";
 import { Spinner } from "../../feedback/spinner/Spinner";
 import { Typography } from "../../typography/text/Text";
 import { FieldShell } from "../field/FieldShell";
@@ -112,6 +113,14 @@ export interface SearchInputProps extends NativeSearchInputConfig {
   /** Content rendered after the field and before the dismiss control. */
   endContent?: ReactNode;
 
+  /**
+   * The keyboard shortcut the web shows beside the field.
+   *
+   * A device has no keyboard, so the hint has nothing to describe. Accepted so a shared
+   * search field compiles; warns once and changes nothing.
+   */
+  shortcut?: string;
+
   /** Platform styles for the field itself, for what NativeWind cannot express. */
   style?: StyleProp<TextStyle>;
 
@@ -162,6 +171,7 @@ export function SearchInput({
   fullWidth = true,
   startContent,
   endContent,
+  shortcut,
   size,
   color,
   clearable,
@@ -173,6 +183,14 @@ export function SearchInput({
 }: SearchInputProps) {
   const config = useAsheeConfig();
   const sectionConfig = config.components.searchinput;
+
+  useUnsupportedProps("SearchInput", {
+    shortcut: {
+      value: shortcut,
+      substitute:
+        "bind the shortcut in the application; a device has no keyboard to press it on",
+    },
+  });
   const [typedValue, setTypedValue] = useState(defaultValue ?? "");
   const [isFocused, setIsFocused] = useState(false);
 

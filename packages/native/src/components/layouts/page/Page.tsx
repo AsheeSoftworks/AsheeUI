@@ -33,6 +33,11 @@ import {
 } from "../../../styles/page";
 import { SPACE_PADDING_Y_CLASS } from "../../../styles/portable";
 import { classNames } from "../../../utils/class-names";
+import { warnUnsupportedProp } from "../../../utils/unsupported-prop";
+import {
+  type UnsupportedElementProps,
+  useUnsupportedElementProps,
+} from "../../../utils/unsupported-element-props";
 import {
   FALLBACK_NATIVE_PAGE_CONFIG,
   type NativePageConfig,
@@ -51,6 +56,17 @@ import {
 function usePagePart(props: NativePageConfig): Required<NativePageConfig> {
   const config = useAsheeConfig();
 
+  // A page part's `sticky` is the web's scroll-linked positioning; the platform renders
+  // the part where it is placed. The prop is read by the cascade like every other option,
+  // and this is where the no-op says so.
+  if (props.sticky !== undefined) {
+    warnUnsupportedProp(
+      "Page",
+      "sticky",
+      "place the region outside the scrolling container; a device has no scroll-linked positioning",
+    );
+  }
+
   return resolveConfigCascade<NativePageConfig, Required<NativePageConfig>>(
     props,
     config.components.page,
@@ -66,7 +82,9 @@ function usePagePart(props: NativePageConfig): Required<NativePageConfig> {
  * asked of the shell would have nothing to answer with. `components.page` still configures
  * the shell's parts.
  */
-export interface PageProps extends Omit<ViewProps, "children" | "style"> {
+export interface PageProps
+  extends Omit<ViewProps, "children" | "style">,
+    UnsupportedElementProps {
   /** The bars and the content area the shell holds. */
   children?: ReactNode;
 
@@ -103,7 +121,16 @@ export interface PageProps extends Omit<ViewProps, "children" | "style"> {
  *
  * @see Split - Adds a second column to a screen.
  */
-export function Page({ className, style, children, ...rest }: PageProps) {
+export function Page({
+  className,
+  style,
+  children,
+  as,
+  titleAs,
+  ...rest
+}: PageProps) {
+  useUnsupportedElementProps("Page", { as, titleAs });
+
   return (
     <View
       className={classNames(NATIVE_PAGE_CLASS, className)}

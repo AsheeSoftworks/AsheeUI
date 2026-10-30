@@ -24,6 +24,10 @@ import { Grid } from "../../../layout/Grid";
 import { Section } from "../../../layout/Section";
 import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
 import {
+  type UnsupportedElementProps,
+  useUnsupportedElementProps,
+} from "../../../utils/unsupported-element-props";
+import {
   NATIVE_TESTIMONIAL_HEADING_CLASS,
   NATIVE_TESTIMONIAL_PERSON_CLASS,
   NATIVE_TESTIMONIAL_PERSON_TEXT_CLASS,
@@ -43,7 +47,8 @@ import {
  */
 export interface TestimonialsProps
   extends NativeTestimonialsConfig,
-    Omit<ViewProps, "children" | "style"> {
+    Omit<ViewProps, "children" | "style">,
+    UnsupportedElementProps {
   /** The quotes to show. */
   items: TestimonialItem[];
 
@@ -112,11 +117,15 @@ export function Testimonials({
   align,
   containerSize,
   contained,
+  as,
+  titleAs,
   className,
   style,
   children,
   ...rest
 }: TestimonialsProps) {
+  useUnsupportedElementProps("Testimonials", { as, titleAs });
+
   const config = useAsheeConfig();
 
   const resolved = resolveConfigCascade<

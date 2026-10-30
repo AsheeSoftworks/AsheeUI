@@ -29,6 +29,10 @@ import {
   NATIVE_ERROR_STATE_DETAIL_SUMMARY_CLASS,
 } from "../../../styles/error-state";
 import { classNames } from "../../../utils/class-names";
+import {
+  type UnsupportedElementProps,
+  useUnsupportedElementProps,
+} from "../../../utils/unsupported-element-props";
 import { Button } from "../../forms/button/Button";
 import { Typography } from "../../typography/text/Text";
 import { EmptyState } from "../empty-state/EmptyState";
@@ -46,7 +50,8 @@ export interface ErrorStateProps
     // platform's own vocabulary. The framework's `role` says how a failure is announced,
     // and the component states that itself, so the platform's is left out rather than
     // colliding with it.
-    Omit<ViewProps, "children" | "style" | "role"> {
+    Omit<ViewProps, "children" | "style" | "role">,
+    UnsupportedElementProps {
   /** What failed, in the reader's terms. */
   title: ReactNode;
 
@@ -137,11 +142,15 @@ export function ErrorState({
   role,
   retryLabel,
   detailLabel,
+  as,
+  titleAs,
   className,
   style,
   children,
   ...rest
 }: ErrorStateProps) {
+  useUnsupportedElementProps("ErrorState", { as, titleAs });
+
   const config = useAsheeConfig();
 
   const resolved = resolveConfigCascade<

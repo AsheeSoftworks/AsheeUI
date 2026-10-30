@@ -214,15 +214,22 @@ describe("Native Image", () => {
     expect(picture.props.className).toBe("w-full");
   });
 
-  it("accepts the browser's loading option as a documented no-op", async () => {
+  it("accepts the browser's loading option, and says it is a no-op", async () => {
     // A native picture is fetched when its view mounts, so the browser's strategy has
     // nothing to switch. B13 accepts it so a shared picture compiles; B17 makes the no-op
-    // say so.
+    // say so, once, naming what the platform does instead.
+    const warn = jest.spyOn(console, "warn").mockImplementation(() => {});
+
     const view = await renderImage(
       <Image testID="frame" src="/photo.jpg" alt="A photo" loading="lazy" />,
     );
 
     expect(view.getByLabelText("A photo")).toBeTruthy();
+    expect(warn).toHaveBeenCalledTimes(1);
+    expect(String(warn.mock.calls[0]?.[0])).toContain("Image.loading");
+    expect(String(warn.mock.calls[0]?.[0])).toContain("fetched when its view mounts");
+
+    warn.mockRestore();
   });
 
   it("refuses to render outside the provider, because that is a setup mistake", async () => {

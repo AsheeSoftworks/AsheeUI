@@ -92,7 +92,7 @@ export const COMPONENT_SUPPORT: readonly ComponentSupport[] = [
     module: "calendar",
     support: "shared-api",
     native: "Calendar",
-    note: "Native picks from one surface at a time and steps the time, because the platform has no floating layer beside a control",
+    note: "Native picks from one surface at a time and steps the time, because the platform has no floating layer beside a control; `picker`, `portal` and `lockScroll` are accepted and warn",
   },
   { name: "Card", module: "card", support: "shared" },
   {
@@ -151,7 +151,7 @@ export const COMPONENT_SUPPORT: readonly ComponentSupport[] = [
     module: "dropmenu",
     support: "shared-api",
     native: "Dropmenu",
-    note: "Native uses the platform selection control or an action sheet; both renderers also export it as `Dropdown`, the name the documentation uses",
+    note: "Native uses the platform selection control or an action sheet; both renderers also export it as `Dropdown`, the name the documentation uses; `name` and `searchInputName` are accepted and warn",
   },
   { name: "EmptyState", module: "empty-state", support: "shared" },
   {
@@ -190,7 +190,7 @@ export const COMPONENT_SUPPORT: readonly ComponentSupport[] = [
     note: "Native expresses columns as a wrapped row of fixed-basis children",
   },
   { name: "Hero", module: "hero", support: "shared-api", native: "Hero" },
-  { name: "Image", module: "image", support: "shared" },
+  { name: "Image", module: "image", support: "shared", note: "`loading` is accepted and warns; a native picture is fetched when its view mounts" },
   { name: "Input", module: "input", support: "shared" },
   {
     name: "Keyboard",
@@ -243,14 +243,14 @@ export const COMPONENT_SUPPORT: readonly ComponentSupport[] = [
     module: "navbar",
     support: "shared-api",
     native: "Header and TabBar",
-    note: "Native navigation is a header with a tab bar, not a bar of links",
+    note: "Native navigation is a header with a tab bar, not a bar of links; `mobileOpen`, `onMobileOpenChange` and `mobileLabel` are accepted and warn",
   },
   {
     name: "Page",
     module: "page",
     support: "shared-api",
     native: "Screen",
-    note: "Native composes a screen with safe areas and a scroll view",
+    note: "Native composes a screen with safe areas and a scroll view; `sticky` is accepted and warns",
   },
   {
     name: "Pagination",
@@ -285,7 +285,7 @@ export const COMPONENT_SUPPORT: readonly ComponentSupport[] = [
     name: "SearchInput",
     module: "search-input",
     support: "shared",
-    note: "Composes the shared input contract with a search landmark and a clear control",
+    note: "Composes the shared input contract with a search landmark and a clear control; `shortcut` is accepted and warns",
   },
   { name: "Section", module: "section", support: "shared" },
   {
@@ -309,7 +309,7 @@ export const COMPONENT_SUPPORT: readonly ComponentSupport[] = [
     module: "split",
     support: "shared-api",
     native: "Split",
-    note: "Native reads the window width rather than a media query, and `stickyEnd` resolves through the contract without stating a class, because the platform has no scroll-linked positioning",
+    note: "Native reads the window width rather than a media query, and `stickyEnd` resolves through the contract without stating a class, because the platform has no scroll-linked positioning; `stickyEnd` is accepted and warns",
   },
   { name: "Stack", module: "stack", support: "shared" },
   {
@@ -345,20 +345,20 @@ export const COMPONENT_SUPPORT: readonly ComponentSupport[] = [
     support: "shared-api",
     native: "Testimonials",
   },
-  { name: "Textarea", module: "textarea", support: "shared" },
+  { name: "Textarea", module: "textarea", support: "shared", note: "`enableVirtualKeyboard` is accepted and warns; the system keyboard is the one that appears" },
   {
     name: "Toast",
     module: "toast",
     support: "shared-api",
     native: "ToastProvider",
-    note: "Native stacks the messages in a layer above the screen and anchors them to the bottom by default, because the platform's own snackbar cannot carry the title, the action or the dismissal the contract names",
+    note: "Native stacks the messages in a layer above the screen and anchors them to the bottom by default, because the platform's own snackbar cannot carry the title, the action or the dismissal the contract names; `portal` and `portalTarget` are accepted and warn",
   },
   {
     name: "Tooltip",
     module: "tooltip",
     support: "shared-api",
     native: "Tooltip",
-    note: "Native triggers on long press, because there is no hover",
+    note: "Native triggers on long press, because there is no hover; `zIndex` is accepted and warns",
   },
   {
     name: "Typography",

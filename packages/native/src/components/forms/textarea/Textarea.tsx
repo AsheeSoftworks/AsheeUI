@@ -43,6 +43,7 @@ import {
   NATIVE_TEXTAREA_SIZE_CLASS,
 } from "../../../styles/textarea";
 import { classNames } from "../../../utils/class-names";
+import { useUnsupportedProps } from "../../../utils/unsupported-prop";
 import { FieldShell } from "../field/FieldShell";
 import {
   FALLBACK_NATIVE_TEXTAREA_CONFIG,
@@ -75,6 +76,14 @@ export interface TextareaProps
 
   /** Content rendered at the end of the field. */
   endContent?: ReactNode;
+
+  /**
+   * Whether the web raises its own virtual keyboard for this field.
+   *
+   * The platform's system keyboard is always the one that appears, so there is nothing to
+   * switch. Accepted so a shared field compiles; warns once and changes nothing.
+   */
+  enableVirtualKeyboard?: boolean;
 
   /**
    * Called with the field's next value, under the name the browser gives the event.
@@ -139,6 +148,7 @@ export function Textarea({
   fullWidth,
   startContent,
   endContent,
+  enableVirtualKeyboard,
   className,
   style,
   onFocus,
@@ -150,6 +160,13 @@ export function Textarea({
 }: TextareaProps) {
   const config = useAsheeConfig();
   const sectionConfig = config.components.textarea;
+
+  useUnsupportedProps("Textarea", {
+    enableVirtualKeyboard: {
+      value: enableVirtualKeyboard,
+      substitute: "the system keyboard is always the one that appears on a device",
+    },
+  });
   const [isFocused, setIsFocused] = useState(false);
 
   const resolvedStatus = resolveCascade<FieldStatus>(

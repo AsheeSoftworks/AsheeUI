@@ -39,6 +39,7 @@ import {
 } from "../../../styles/input";
 import { NATIVE_RADIUS_CLASS } from "../../../styles/radius";
 import { classNames } from "../../../utils/class-names";
+import { useUnsupportedProps } from "../../../utils/unsupported-prop";
 import { Typography } from "../../typography/text/Text";
 import { FieldShell } from "../field/FieldShell";
 import { PickerSheet, type PickerSheetOption } from "../picker/PickerSheet";
@@ -63,6 +64,18 @@ export interface DropmenuProps extends NativeDropmenuConfig {
 
   /** Called with the value the reader picked. */
   onValueChange?: (value: string) => void;
+
+  /**
+   * The field's form name.
+   *
+   * A form name is a DOM concept: the platform reads a field's value from the consumer's
+   * state, not from a named control. Accepted so a shared form compiles; warns once and
+   * changes nothing.
+   */
+  name?: string;
+
+  /** The name of the picker's search field, for the same reason as {@link name}. */
+  searchInputName?: string;
 
   /**
    * Called with the value the reader picked, under the name the browser gives the event.
@@ -137,6 +150,8 @@ export function Dropmenu({
   onChange,
   onChangeText,
   onValueChange,
+  name,
+  searchInputName,
   placeholder = "Select an option",
   label,
   description,
@@ -156,6 +171,17 @@ export function Dropmenu({
 }: DropmenuProps) {
   const config = useAsheeConfig();
   const sectionConfig = config.components.dropmenu;
+
+  useUnsupportedProps("Dropmenu", {
+    name: {
+      value: name,
+      substitute: "read the field's value from state; a form name is a DOM concept",
+    },
+    searchInputName: {
+      value: searchInputName,
+      substitute: "the picker's search field is internal and has no form name",
+    },
+  });
   const [isOpen, setIsOpen] = useState(false);
   const [uncontrolledValue, setUncontrolledValue] = useState(initialValue);
 

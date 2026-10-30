@@ -38,6 +38,10 @@ import {
   NATIVE_HERO_TEXT_COLUMN_CLASS,
 } from "../../../styles/hero";
 import { classNames } from "../../../utils/class-names";
+import {
+  type UnsupportedElementProps,
+  useUnsupportedElementProps,
+} from "../../../utils/unsupported-element-props";
 import { ActionGroup } from "../../layouts/section-kit/ActionGroup";
 import { SectionHeading } from "../../layouts/section-kit/SectionHeading";
 import {
@@ -50,7 +54,8 @@ import {
  */
 export interface HeroProps
   extends NativeHeroConfig,
-    Omit<ViewProps, "children" | "style"> {
+    Omit<ViewProps, "children" | "style">,
+    UnsupportedElementProps {
   /** Short label above the title, for example the product category. */
   eyebrow?: ReactNode;
 
@@ -133,11 +138,15 @@ export function Hero({
   containerSize,
   contained,
   actions,
+  as,
+  titleAs,
   className,
   style,
   children,
   ...rest
 }: HeroProps) {
+  useUnsupportedElementProps("Hero", { as, titleAs });
+
   const config = useAsheeConfig();
   const { isAtLeast } = useBreakpoint();
 

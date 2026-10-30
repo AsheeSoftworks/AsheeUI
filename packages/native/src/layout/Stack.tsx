@@ -19,6 +19,10 @@ import { View } from "react-native";
 import { useAsheeConfig } from "../provider/AsheeUIProvider";
 import { classNames } from "../utils/class-names";
 import {
+  type UnsupportedElementProps,
+  useUnsupportedElementProps,
+} from "../utils/unsupported-element-props";
+import {
   FALLBACK_NATIVE_STACK_CONFIG,
   type NativeStackConfig,
 } from "./layout-config";
@@ -36,7 +40,8 @@ import {
  */
 export interface StackProps
   extends NativeStackConfig,
-    Omit<ViewProps, "children" | "style"> {
+    Omit<ViewProps, "children" | "style">,
+    UnsupportedElementProps {
   /** The stack's children. */
   children?: ReactNode;
 
@@ -79,11 +84,15 @@ export function Stack({
   align,
   justify,
   wrap,
+  as,
+  titleAs,
   className,
   style,
   children,
   ...rest
 }: StackProps) {
+  useUnsupportedElementProps("Stack", { as, titleAs });
+
   const config = useAsheeConfig();
 
   const resolved = resolveConfigCascade<
