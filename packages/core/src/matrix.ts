@@ -129,8 +129,8 @@ export const COMPONENT_SUPPORT: readonly ComponentSupport[] = [
     name: "DataTable",
     module: "data-table",
     support: "shared-api",
-    native: "RowList",
-    note: "Native lists its rows instead of presenting a table, for the same reason Table does",
+    native: "DataTable",
+    note: "Native's DataTable is the same rows with the search, the count and the paging around them, drawn through RowList, for the same reason Table is",
   },
   {
     name: "DocsLayout",
@@ -275,6 +275,12 @@ export const COMPONENT_SUPPORT: readonly ComponentSupport[] = [
     note: "A draggable split is a desktop idiom; native split views come from the platform",
   },
   {
+    name: "RowList",
+    module: "row-list",
+    support: "native-only",
+    note: "The platform's own renderer of the table and data-table contracts, which native's Table and DataTable draw through; the web has no counterpart to port",
+  },
+  {
     name: "SearchInput",
     module: "search-input",
     support: "shared",
@@ -313,11 +319,17 @@ export const COMPONENT_SUPPORT: readonly ComponentSupport[] = [
   },
   { name: "Switch", module: "switch", support: "shared" },
   {
+    name: "TabBar",
+    module: "tab-bar",
+    support: "native-only",
+    note: "The platform's bar of destinations at the edge a thumb reaches, shipped from the navbar module; the web keeps its destinations in the bar at the top of the page",
+  },
+  {
     name: "Table",
     module: "table",
     support: "shared-api",
-    native: "RowList",
-    note: "Native renders rows rather than a table, because a table is not a native reading pattern",
+    native: "Table",
+    note: "Native's Table draws the same rows through RowList, because a table is not a native reading pattern: a row is a set of labelled lines",
   },
   {
     name: "Tabs",
@@ -351,7 +363,7 @@ export const COMPONENT_SUPPORT: readonly ComponentSupport[] = [
     name: "Typography",
     module: "typography",
     support: "shared-api",
-    native: "Text",
+    native: "Typography",
     note: "Native resolves the same roles to platform text styles",
   },
 ];

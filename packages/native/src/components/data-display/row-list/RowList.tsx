@@ -24,6 +24,11 @@
  * counterpart, because a phone has no double-click, so the list takes a single row press.
  * And the web's `headerClassName` applies to a row the platform does not draw; it resolves
  * through the shared contract and changes nothing here.
+ *
+ * The component is the platform's own and is **native-only**: it has no web counterpart, and
+ * the names a shared screen writes are `Table` and `DataTable`, which draw through it. It stays
+ * exported because a native screen may want the rows without either contract's name, and
+ * because it is the renderer those two are built on.
  */
 
 import {
@@ -69,7 +74,16 @@ import {
  */
 export interface RowListProps<TData>
   extends NativeDataTableConfig,
-    Pick<NativeTableConfig, "size" | "variant" | "color" | "radius">,
+    Pick<
+      NativeTableConfig,
+      | "size"
+      | "variant"
+      | "color"
+      | "radius"
+      | "headerClassName"
+      | "rowClassName"
+      | "cellClassName"
+    >,
     Omit<ViewProps, "children" | "style"> {
   /** The rows the list shows, in the order the consumer gives them. */
   data: TData[];
@@ -174,6 +188,10 @@ export interface RowListProps<TData>
  * @param props.size - Density of each row. Defaults to "md".
  * @param props.color - Accent of a chosen row. Defaults to "primary".
  * @param props.radius - Corner rounding of each row. Defaults to "md".
+ * @param props.headerClassName - Resolves through the shared contract and changes nothing,
+ * because the platform draws no header row.
+ * @param props.rowClassName - Extra classes applied to each row the list draws.
+ * @param props.cellClassName - Extra classes applied to each labelled line it draws.
  * @returns The rendered list.
  *
  * @example
@@ -214,6 +232,9 @@ export function RowList<TData>({
   variant,
   color,
   radius,
+  headerClassName,
+  rowClassName,
+  cellClassName,
   searchable,
   searchLabel,
   paginated,
@@ -233,7 +254,15 @@ export function RowList<TData>({
     NativeTableConfig,
     Required<NativeTableConfig>
   >(
-    { size, variant, color, radius },
+    {
+      size,
+      variant,
+      color,
+      radius,
+      headerClassName,
+      rowClassName,
+      cellClassName,
+    },
     config.components.table,
     FALLBACK_NATIVE_TABLE_CONFIG,
   );

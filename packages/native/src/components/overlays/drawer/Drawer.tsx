@@ -14,6 +14,9 @@
  * The movement is the platform's modal presentation, which slides a sheet in from the edge it
  * was told to slide in from; the framework does not animate a panel's position itself, because
  * the platform already has the gesture and the timing for it.
+ *
+ * The two part overrides are named the way the web names them — `DrawerOverlayProps` and
+ * `DrawerContentProps` — so a shared description of a drawer's parts is written once.
  */
 
 import {
@@ -38,12 +41,32 @@ import {
 } from "./drawer-config";
 
 /**
- * Overrides for the dimmed layer or the sheet.
+ * Props for the drawer's backdrop overlay, under the name both renderers publish.
+ *
+ * The web states these as element props; the platform states them as classes, because a platform
+ * view is not an element and has no attributes to override. Only the name is shared, so a
+ * description of a drawer's parts is written once and compiled against either renderer.
  */
-export interface DrawerPartOverride {
-  /** Extra classes applied to the part. */
+export interface DrawerOverlayProps {
+  /** Extra classes applied to the dimmed layer. */
   className?: string;
 }
+
+/**
+ * Props for the drawer's sheet, under the name both renderers publish.
+ */
+export interface DrawerContentProps {
+  /** Extra classes applied to the sheet the drawer holds its content in. */
+  className?: string;
+}
+
+/**
+ * The name the drawer's part overrides used to be published under.
+ *
+ * @deprecated Use {@link DrawerOverlayProps}, or {@link DrawerContentProps} — the two parts take
+ * the same shape, and those are the names both renderers publish.
+ */
+export type DrawerPartOverride = DrawerOverlayProps;
 
 /**
  * Props for the native Drawer.
@@ -61,10 +84,10 @@ export interface DrawerProps
   children: ReactNode;
 
   /** Overrides the dimmed layer. */
-  overlay?: DrawerPartOverride;
+  overlay?: DrawerOverlayProps;
 
   /** Overrides the sheet. */
-  content?: DrawerPartOverride;
+  content?: DrawerContentProps;
 
   /** Extra classes appended last, so a consumer's own classes win. */
   className?: string;

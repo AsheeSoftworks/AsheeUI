@@ -9,6 +9,8 @@
  * support nobody has decided.
  */
 
+import { readFileSync } from "node:fs";
+import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 import {
   COMPONENT_SUPPORT,
@@ -27,6 +29,32 @@ import {
   SPACING_STEP,
   VARIANT,
 } from "./tokens";
+
+/**
+ * Where the matrix's array literal begins in its source file.
+ *
+ * It is `scripts/check-native-parity.mjs`'s own pattern, and it is repeated here on purpose: the
+ * guard reads the matrix as *data* rather than importing it, so that it never verifies a stale
+ * build, and a component is only promised anything if that reader can see it.
+ */
+const MATRIX_ARRAY = /COMPONENT_SUPPORT[^=]*=\s*\[([\s\S]*?)\n\];/;
+
+/**
+ * Read the classified module of every entry the parity guard would see.
+ *
+ * @returns The modules, in source order.
+ */
+function modulesInMatrixSource(): string[] {
+  const source = readFileSync(
+    fileURLToPath(new URL("./matrix.ts", import.meta.url)),
+    "utf8",
+  );
+  const array = source.match(MATRIX_ARRAY)?.[1] ?? "";
+
+  return [...array.matchAll(/\{([^{}]*)\}/g)]
+    .map((match) => /module:\s*"([^"]*)"/.exec(match[1])?.[1])
+    .filter((module): module is string => module !== undefined);
+}
 
 describe("the design language", () => {
   it("orders the spacing scale from the smallest step to the largest", () => {
@@ -86,10 +114,15 @@ describe("the compatibility matrix", () => {
   });
 
   it("covers the component inventory", () => {
-    // The matrix describes the 61 components the web package publishes. A new
-    // component must be classified here in the same change, so platform support is
-    // never left undecided.
-    expect(COMPONENT_SUPPORT).toHaveLength(61);
+    // The number is not stated here any more: it is read from the same source the parity guard
+    // reads, so the two readers cannot disagree about how many components the framework
+    // classifies, and an entry the guard's reader cannot see fails this test instead of quietly
+    // shrinking what the guard promises. B24 replaces this with the coverage check
+    // `NATIVE-PARITY-REPORT.md` F13 describes, which asks the web package's entry points instead.
+    const classified = modulesInMatrixSource();
+
+    expect(COMPONENT_SUPPORT).toHaveLength(classified.length);
+    expect(classified).toEqual(COMPONENT_SUPPORT.map((entry) => entry.module));
   });
 
   it("uses a classification the vocabulary explains", () => {

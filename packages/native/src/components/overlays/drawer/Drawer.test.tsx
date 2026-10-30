@@ -16,6 +16,11 @@ import {
 import type { ReactElement } from "react";
 import { Text } from "react-native";
 import { AsheeUIProvider } from "../../../provider/AsheeUIProvider";
+import type {
+  DrawerContentProps,
+  DrawerOverlayProps,
+  DrawerPartOverride,
+} from "./Drawer";
 import { Drawer } from "./Drawer";
 
 /**
@@ -244,6 +249,27 @@ describe("Native Drawer", () => {
     expect(sheetClasses(view)).toContain("h-1/3");
     expect(sheetClasses(view)).not.toContain("h-full");
     expect(sheetClasses(view).endsWith("mt-2")).toBe(true);
+  });
+
+  it("names its part overrides the way the web renderer names them", async () => {
+    // The two part types are the shared spelling, so a shared description of a drawer's parts is
+    // written once. `DrawerPartOverride` is the old name for the same shape, which is what an
+    // alias means for a type: a value of one is a value of the other, in both directions.
+    const overlay: DrawerOverlayProps = { className: "bg-danger/40" };
+    const legacy: DrawerPartOverride = overlay;
+    const canonical: DrawerOverlayProps = legacy;
+    const content: DrawerContentProps = { className: "bg-warning/20" };
+
+    const view = await renderDrawer(
+      <Drawer isOpen overlay={canonical} content={content}>
+        <Text>Filters</Text>
+      </Drawer>,
+    );
+
+    expect(view.getByLabelText("Close").props.className).toContain(
+      "bg-danger/40",
+    );
+    expect(sheetClasses(view)).toContain("bg-warning/20");
   });
 
   it("refuses to render outside the provider, because that is a setup mistake", async () => {

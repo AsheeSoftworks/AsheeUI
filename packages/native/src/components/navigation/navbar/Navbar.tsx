@@ -380,6 +380,9 @@ export interface TabBarProps extends Omit<ViewProps, "children" | "style"> {
  * is that half, drawing the same destinations with the same states through the same renderer, so a
  * screen offers both without describing its navigation twice.
  *
+ * It is **native-only** — there is no web counterpart to port — and the compatibility matrix says
+ * so, so a shared screen cannot depend on a bar the web bundle does not have.
+ *
  * @param props - The destinations and the platform's view props.
  * @param props.items - The destinations, in order.
  * @param props.link - Substitution for every destination.

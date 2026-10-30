@@ -14,7 +14,9 @@
  * is behind it should not be read (`accessibilityViewIsModal`).
  *
  * The two overrides the web offers are offered here too, in the platform's form: classes for
- * the dimmed layer and for the surface a consumer's `overlay` and `content` name.
+ * the dimmed layer and for the surface a consumer's `overlay` and `content` name. They are named
+ * the way the web names them — `ModalOverlayProps` and `ModalContentProps` — so a shared
+ * description of a modal's parts is written once.
  */
 
 import {
@@ -44,15 +46,32 @@ import {
 } from "./modal-config";
 
 /**
- * Overrides for the dimmed layer or the surface.
+ * Props for the modal's backdrop overlay, under the name both renderers publish.
  *
- * The web states these as element props; the platform states them as classes, because a
- * platform view is not an element and has no attributes to override.
+ * The web states these as element props; the platform states them as classes, because a platform
+ * view is not an element and has no attributes to override. Only the name is shared, so a
+ * description of a modal's parts is written once and compiled against either renderer.
  */
-export interface ModalPartOverride {
-  /** Extra classes applied to the part. */
+export interface ModalOverlayProps {
+  /** Extra classes applied to the dimmed layer. */
   className?: string;
 }
+
+/**
+ * Props for the modal's content surface, under the name both renderers publish.
+ */
+export interface ModalContentProps {
+  /** Extra classes applied to the surface the modal holds its content in. */
+  className?: string;
+}
+
+/**
+ * The name the modal's part overrides used to be published under.
+ *
+ * @deprecated Use {@link ModalOverlayProps}, or {@link ModalContentProps} — the two parts take
+ * the same shape, and those are the names both renderers publish.
+ */
+export type ModalPartOverride = ModalOverlayProps;
 
 /**
  * Props for the native Modal.
@@ -76,10 +95,10 @@ export interface ModalProps
   height?: DimensionValue;
 
   /** Overrides the dimmed layer. */
-  overlay?: ModalPartOverride;
+  overlay?: ModalOverlayProps;
 
   /** Overrides the surface. */
-  content?: ModalPartOverride;
+  content?: ModalContentProps;
 
   /** Extra classes appended last, so a consumer's own classes win. */
   className?: string;

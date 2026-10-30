@@ -12,6 +12,11 @@ import { fireEvent, render } from "@testing-library/react-native";
 import type { ReactElement } from "react";
 import { Text } from "react-native";
 import { AsheeUIProvider } from "../../../provider/AsheeUIProvider";
+import type {
+  ModalContentProps,
+  ModalOverlayProps,
+  ModalPartOverride,
+} from "./Modal";
 import { Modal } from "./Modal";
 
 /**
@@ -121,6 +126,31 @@ describe("Native Modal", () => {
     expect(surface?.className).toContain("max-w-sm");
     expect(surface?.className).not.toContain("max-w-4xl");
     expect(surface?.className?.endsWith("mt-2")).toBe(true);
+  });
+
+  it("names its part overrides the way the web renderer names them", async () => {
+    // The two part types are the shared spelling, so a shared description of a modal's parts is
+    // written once. `ModalPartOverride` is the old name for the same shape, which is what an
+    // alias means for a type: a value of one is a value of the other, in both directions.
+    const overlay: ModalOverlayProps = { className: "bg-danger/40" };
+    const legacy: ModalPartOverride = overlay;
+    const canonical: ModalOverlayProps = legacy;
+    const content: ModalContentProps = { className: "p-8" };
+
+    const view = await renderModal(
+      <Modal isOpen overlay={canonical} content={content}>
+        <Text>Delete this invoice?</Text>
+      </Modal>,
+    );
+
+    expect(view.getByLabelText("Close").props.className).toContain(
+      "bg-danger/40",
+    );
+    const surface = view.getByText("Delete this invoice?").parent?.props as
+      | { className?: string }
+      | undefined;
+
+    expect(surface?.className).toContain("p-8");
   });
 
   it("refuses to render outside the provider, because that is a setup mistake", async () => {
