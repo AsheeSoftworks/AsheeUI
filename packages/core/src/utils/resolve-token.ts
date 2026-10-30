@@ -4,6 +4,13 @@
  * precedence hierarchy: instance prop > component config > theme default > hard fallback.
  * These utilities are used throughout the component library to resolve
  * values like variant, color, size, and radius.
+ *
+ * All four resolvers stay in core, for one reason: none of them knows a class string. Three resolve
+ * *values* ({@link resolveCascade}, {@link resolveConfigCascade}, {@link resolveRadiusKey}) and the
+ * fourth resolves a key *against a map the caller supplies* ({@link resolveClassKey}), so a
+ * renderer's own table is an argument rather than a dependency. That is what makes the precedence
+ * rule one rule instead of one per renderer — and it is why `resolveAnimate`, which did know the
+ * web's animation classes, moved to `@asheeui/web` in C2.
  */
 
 import type { Concrete, DeepPartial } from "./types";
