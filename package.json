@@ -20,6 +20,7 @@
     "verify:distribution": "node scripts/verify-distribution.mjs",
     "verify:released": "node scripts/verify-released.mjs",
     "check:changesets": "node scripts/check-changesets.mjs",
+    "check:core-charter": "node scripts/check-core-charter.mjs",
     "check:native-parity": "node scripts/check-native-parity.mjs",
     "check:native-artifact": "node scripts/check-native-artifact.mjs",
     "check:types": "turbo run check-types",

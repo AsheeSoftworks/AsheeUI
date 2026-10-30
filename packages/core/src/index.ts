@@ -1,6 +1,12 @@
 /**
  * The AsheeUI core layer.
  *
+ * **A thing belongs in core only if it is true on both platforms and cannot be expressed per-renderer
+ * without the two drifting.** Types, tokens, the cascade, the palette model and the compatibility
+ * matrix qualify; a class string, `cn`, `portal`, `labelAlign` and `zIndex` do not.
+ * `scripts/check-core-charter.mjs` is that rule as a check — no class string, no dependency, no
+ * renderer import, and no export without a reader — and it runs in CI on every pull request.
+ *
  * This package holds everything the platforms agree on: the design language as
  * platform-neutral values, the component contracts an implementation satisfies,
  * the component registry that collects the defaults each implementation

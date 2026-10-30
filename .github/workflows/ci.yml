@@ -55,6 +55,11 @@ jobs:
       - name: Native Parity
         run: pnpm check:native-parity
 
+      # The shrink's ratchet: core is the contract, not the engine. No class string, no
+      # dependency, no renderer import, and no export neither a renderer nor a test reads.
+      - name: Core Charter
+        run: pnpm check:core-charter
+
       - name: Run Tests
         run: pnpm test
 
