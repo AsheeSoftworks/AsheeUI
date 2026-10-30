@@ -50,7 +50,7 @@ import {
 import { type ReactNode, useEffect, useRef, useState } from "react";
 import type { StyleProp, ViewStyle } from "react-native";
 import { Pressable, View } from "react-native";
-import { useAsheeNativeConfig } from "../../../provider/AsheeNativeProvider";
+import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
 import { classNames } from "../../../utils/class-names";
 import { Text } from "../../typography/text/Text";
 import {
@@ -127,7 +127,7 @@ export function Tooltip({
   className,
   style,
 }: TooltipProps) {
-  const config = useAsheeNativeConfig();
+  const config = useAsheeConfig();
   const sectionConfig = config.components.tooltip;
 
   const resolvedVariant = resolveCascade<Variant>(

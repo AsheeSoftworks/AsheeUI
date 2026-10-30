@@ -10,7 +10,7 @@
 import { type RenderResult, render } from "@testing-library/react-native";
 import type { ReactElement } from "react";
 import { Text } from "react-native";
-import { AsheeNativeProvider } from "../../../provider/AsheeNativeProvider";
+import { AsheeUIProvider } from "../../../provider/AsheeUIProvider";
 import { Card } from "./Card";
 
 /**
@@ -21,9 +21,7 @@ import { Card } from "./Card";
  * @returns The rendered tree and its queries.
  */
 async function renderCard(ui: ReactElement, config?: object) {
-  return render(
-    <AsheeNativeProvider config={config}>{ui}</AsheeNativeProvider>,
-  );
+  return render(<AsheeUIProvider config={config}>{ui}</AsheeUIProvider>);
 }
 
 /**

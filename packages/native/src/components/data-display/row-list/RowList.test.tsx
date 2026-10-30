@@ -21,7 +21,7 @@ import {
 } from "@testing-library/react-native";
 import type { ReactElement } from "react";
 import type { TestInstance } from "test-renderer";
-import { AsheeNativeProvider } from "../../../provider/AsheeNativeProvider";
+import { AsheeUIProvider } from "../../../provider/AsheeUIProvider";
 import { RowList } from "./RowList";
 
 /** One invoice, which is what a row of the test list is. */
@@ -51,9 +51,7 @@ const COLUMNS = [
  * @returns The rendered tree and its queries.
  */
 async function renderList(ui: ReactElement, config?: object) {
-  return render(
-    <AsheeNativeProvider config={config}>{ui}</AsheeNativeProvider>,
-  );
+  return render(<AsheeUIProvider config={config}>{ui}</AsheeUIProvider>);
 }
 
 /**
@@ -428,7 +426,7 @@ describe("Native RowList", () => {
 
     await expect(
       render(<RowList data={INVOICES} columns={COLUMNS} />),
-    ).rejects.toThrow(/AsheeNativeProvider/);
+    ).rejects.toThrow(/AsheeUIProvider/);
 
     silence.mockRestore();
   });

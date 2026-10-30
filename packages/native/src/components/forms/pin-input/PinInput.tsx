@@ -38,7 +38,7 @@ import {
 import { Fragment, useRef, useState } from "react";
 import type { TextInputInstance } from "react-native";
 import { Pressable, TextInput, View } from "react-native";
-import { useAsheeNativeConfig } from "../../../provider/AsheeNativeProvider";
+import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
 import { classNames } from "../../../utils/class-names";
 import { Text } from "../../typography/text/Text";
 import { FieldShell } from "../field/FieldShell";
@@ -162,7 +162,7 @@ export function PinInput({
   className,
   testID,
 }: PinInputProps) {
-  const config = useAsheeNativeConfig();
+  const config = useAsheeConfig();
   const sectionConfig = config.components.pininput;
   const [typedValue, setTypedValue] = useState(defaultValue ?? "");
   const [isFocused, setIsFocused] = useState(false);

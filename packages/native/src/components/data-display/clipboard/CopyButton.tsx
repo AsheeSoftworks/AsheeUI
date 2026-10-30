@@ -22,7 +22,7 @@ import {
   resolveCascade,
 } from "@asheeui/core";
 import type { ReactNode } from "react";
-import { useAsheeNativeConfig } from "../../../provider/AsheeNativeProvider";
+import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
 import { Button, type ButtonProps } from "../../forms/button/Button";
 import { Text } from "../../typography/text/Text";
 import { Clipboard } from "./Clipboard";
@@ -120,7 +120,7 @@ export function CopyButton({
   copiedIcon,
   ...rest
 }: CopyButtonProps) {
-  const config = useAsheeNativeConfig();
+  const config = useAsheeConfig();
   const sectionConfig = config.components.clipboard;
 
   const resolvedLabel = resolveCascade<ReactNode>(

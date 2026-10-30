@@ -11,7 +11,7 @@
 import { type RenderResult, render } from "@testing-library/react-native";
 import type { ReactElement } from "react";
 import { Text } from "react-native";
-import { AsheeNativeProvider } from "../../../provider/AsheeNativeProvider";
+import { AsheeUIProvider } from "../../../provider/AsheeUIProvider";
 import { Page, PageContent, PageFooter, PageHeader } from "./Page";
 
 /**
@@ -22,9 +22,7 @@ import { Page, PageContent, PageFooter, PageHeader } from "./Page";
  * @returns The rendered tree and its queries.
  */
 async function renderPage(ui: ReactElement, config?: object) {
-  return render(
-    <AsheeNativeProvider config={config}>{ui}</AsheeNativeProvider>,
-  );
+  return render(<AsheeUIProvider config={config}>{ui}</AsheeUIProvider>);
 }
 
 /**

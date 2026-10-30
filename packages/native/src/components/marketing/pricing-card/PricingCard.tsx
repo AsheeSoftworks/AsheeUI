@@ -40,7 +40,7 @@ import {
 import type { ReactNode } from "react";
 import type { StyleProp, ViewProps, ViewStyle } from "react-native";
 import { View } from "react-native";
-import { useAsheeNativeConfig } from "../../../provider/AsheeNativeProvider";
+import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
 import { classNames } from "../../../utils/class-names";
 import { Card } from "../../data-display/card/Card";
 import { ActionGroup } from "../../layouts/section-kit/ActionGroup";
@@ -157,7 +157,7 @@ export function PricingCard({
   children,
   ...rest
 }: PricingCardProps) {
-  const config = useAsheeNativeConfig();
+  const config = useAsheeConfig();
 
   const resolved = resolveConfigCascade<
     NativePricingCardConfig,

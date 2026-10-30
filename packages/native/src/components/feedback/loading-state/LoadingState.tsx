@@ -27,7 +27,7 @@ import {
 import type { ReactNode } from "react";
 import type { StyleProp, ViewProps, ViewStyle } from "react-native";
 import { View } from "react-native";
-import { useAsheeNativeConfig } from "../../../provider/AsheeNativeProvider";
+import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
 import { classNames } from "../../../utils/class-names";
 import { Text } from "../../typography/text/Text";
 import { Spinner } from "../spinner/Spinner";
@@ -99,7 +99,7 @@ export function LoadingState({
   children,
   ...rest
 }: LoadingStateProps) {
-  const config = useAsheeNativeConfig();
+  const config = useAsheeConfig();
 
   const resolved = resolveConfigCascade<
     NativeLoadingStateConfig,

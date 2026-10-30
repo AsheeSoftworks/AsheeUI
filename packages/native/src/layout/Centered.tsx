@@ -10,7 +10,7 @@ import { resolveConfigCascade } from "@asheeui/core";
 import type { ReactNode } from "react";
 import type { StyleProp, ViewProps, ViewStyle } from "react-native";
 import { View } from "react-native";
-import { useAsheeNativeConfig } from "../provider/AsheeNativeProvider";
+import { useAsheeConfig } from "../provider/AsheeUIProvider";
 import { classNames } from "../utils/class-names";
 import {
   FALLBACK_NATIVE_CENTERED_CONFIG,
@@ -63,7 +63,7 @@ export function Centered({
   children,
   ...rest
 }: CenteredProps) {
-  const config = useAsheeNativeConfig();
+  const config = useAsheeConfig();
 
   const resolved = resolveConfigCascade<
     NativeCenteredConfig,

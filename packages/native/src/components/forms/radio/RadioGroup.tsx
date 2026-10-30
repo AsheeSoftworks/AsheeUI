@@ -23,7 +23,7 @@ import {
 import type { ReactNode } from "react";
 import { useCallback, useState } from "react";
 import { View, type ViewProps } from "react-native";
-import { useAsheeNativeConfig } from "../../../provider/AsheeNativeProvider";
+import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
 import { classNames } from "../../../utils/class-names";
 import { FieldShell } from "../field/FieldShell";
 import {
@@ -128,7 +128,7 @@ export function RadioGroup({
   className,
   ...rest
 }: RadioGroupProps) {
-  const config = useAsheeNativeConfig();
+  const config = useAsheeConfig();
   const sectionConfig = config.components.radio as
     | NativeRadioConfig
     | undefined;

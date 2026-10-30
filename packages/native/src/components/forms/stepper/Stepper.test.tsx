@@ -11,7 +11,7 @@
 import { NATIVE_STEPPER_LIST_CLASS } from "@asheeui/core";
 import { act, fireEvent, render } from "@testing-library/react-native";
 import type { ReactElement } from "react";
-import { AsheeNativeProvider } from "../../../provider/AsheeNativeProvider";
+import { AsheeUIProvider } from "../../../provider/AsheeUIProvider";
 import { Stepper } from "./Stepper";
 
 const STEPS = [
@@ -22,9 +22,7 @@ const STEPS = [
 
 /** Render the sequence inside the framework provider. */
 async function renderStepper(ui: ReactElement, config?: object) {
-  return render(
-    <AsheeNativeProvider config={config}>{ui}</AsheeNativeProvider>,
-  );
+  return render(<AsheeUIProvider config={config}>{ui}</AsheeUIProvider>);
 }
 
 describe("Native Stepper", () => {

@@ -16,7 +16,7 @@ import {
 import type { ReactElement } from "react";
 import { Dimensions, Text } from "react-native";
 import type { TestInstance } from "test-renderer";
-import { AsheeNativeProvider } from "../../../provider/AsheeNativeProvider";
+import { AsheeUIProvider } from "../../../provider/AsheeUIProvider";
 import { openDestination } from "../../../utils/open-destination";
 import { FeatureGrid } from "./FeatureGrid";
 
@@ -32,9 +32,7 @@ jest.mock("../../../utils/open-destination", () => ({
  * @returns The rendered tree and its queries.
  */
 async function renderGrid(ui: ReactElement, config?: object) {
-  return render(
-    <AsheeNativeProvider config={config}>{ui}</AsheeNativeProvider>,
-  );
+  return render(<AsheeUIProvider config={config}>{ui}</AsheeUIProvider>);
 }
 
 /**
@@ -218,7 +216,7 @@ describe("Native FeatureGrid", () => {
 
     await expect(
       render(<FeatureGrid items={[{ title: "Templates" }]} />),
-    ).rejects.toThrow(/AsheeNativeProvider/);
+    ).rejects.toThrow(/AsheeUIProvider/);
 
     silence.mockRestore();
   });

@@ -26,7 +26,7 @@ import {
 import type { ReactNode } from "react";
 import type { PressableProps, StyleProp, ViewStyle } from "react-native";
 import { ActivityIndicator, Pressable, Text } from "react-native";
-import { useAsheeNativeConfig } from "../../../provider/AsheeNativeProvider";
+import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
 import { classNames } from "../../../utils/class-names";
 import {
   FALLBACK_NATIVE_BUTTON_CONFIG,
@@ -97,7 +97,7 @@ export function Button({
   onPress,
   ...rest
 }: ButtonProps) {
-  const config = useAsheeNativeConfig();
+  const config = useAsheeConfig();
   const sectionConfig = config.components.button;
 
   // Every option resolves through the same four tiers: the instance prop, the

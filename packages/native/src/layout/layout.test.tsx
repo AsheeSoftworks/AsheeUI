@@ -13,7 +13,7 @@
 import { type RenderResult, render } from "@testing-library/react-native";
 import type { ReactElement } from "react";
 import { Dimensions, Text } from "react-native";
-import { AsheeNativeProvider } from "../provider/AsheeNativeProvider";
+import { AsheeUIProvider } from "../provider/AsheeUIProvider";
 import { Centered, Container, Grid, HStack, Section, Stack, VStack } from "./";
 import { resolveGridColumns } from "./layout-config";
 
@@ -24,7 +24,7 @@ import { resolveGridColumns } from "./layout-config";
  * @returns The rendered tree and its queries.
  */
 async function renderLayout(ui: ReactElement) {
-  return render(<AsheeNativeProvider>{ui}</AsheeNativeProvider>);
+  return render(<AsheeUIProvider>{ui}</AsheeUIProvider>);
 }
 
 /**
@@ -65,12 +65,11 @@ describe("Container", () => {
 
   it("takes its width from configuration", async () => {
     const view = await render(
-      <AsheeNativeProvider
-        config={{ components: { container: { size: "xl" } } }}>
+      <AsheeUIProvider config={{ components: { container: { size: "xl" } } }}>
         <Container testID="configured">
           <Text>Content</Text>
         </Container>
-      </AsheeNativeProvider>,
+      </AsheeUIProvider>,
     );
 
     expect(classesOf(view, "configured")).toContain("max-w-7xl");
@@ -131,12 +130,12 @@ describe("Stack", () => {
 
   it("resolves its defaults through configuration", async () => {
     const view = await render(
-      <AsheeNativeProvider
+      <AsheeUIProvider
         config={{ components: { stack: { direction: "row", gap: "sm" } } }}>
         <Stack testID="configured">
           <Text>a</Text>
         </Stack>
-      </AsheeNativeProvider>,
+      </AsheeUIProvider>,
     );
 
     expect(classesOf(view, "configured")).toContain("flex-row");
@@ -207,14 +206,14 @@ describe("Section", () => {
 
   it("takes its rhythm and its background from configuration", async () => {
     const view = await render(
-      <AsheeNativeProvider
+      <AsheeUIProvider
         config={{
           components: { section: { spacing: "sm", background: "muted" } },
         }}>
         <Section testID="configured">
           <Text>Content</Text>
         </Section>
-      </AsheeNativeProvider>,
+      </AsheeUIProvider>,
     );
 
     expect(classesOf(view, "configured")).toContain("py-6");

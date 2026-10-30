@@ -20,7 +20,7 @@ import { type RenderResult, render } from "@testing-library/react-native";
 import type { ReactElement } from "react";
 import { Text } from "react-native";
 import type { TestInstance } from "test-renderer";
-import { AsheeNativeProvider } from "../../../provider/AsheeNativeProvider";
+import { AsheeUIProvider } from "../../../provider/AsheeUIProvider";
 import { Navbar, TabBar } from "./Navbar";
 import type { NavbarLinkItem } from "./navbar-config";
 
@@ -38,9 +38,7 @@ const LINKS: NavbarLinkItem[] = [
  * @returns The rendered tree and its queries.
  */
 async function renderBar(ui: ReactElement, config?: object) {
-  return render(
-    <AsheeNativeProvider config={config}>{ui}</AsheeNativeProvider>,
-  );
+  return render(<AsheeUIProvider config={config}>{ui}</AsheeUIProvider>);
 }
 
 /**
@@ -303,7 +301,7 @@ describe("Native Navbar setup", () => {
     const silence = jest.spyOn(console, "error").mockImplementation(() => {});
 
     await expect(render(<Navbar links={LINKS} />)).rejects.toThrow(
-      /AsheeNativeProvider/,
+      /AsheeUIProvider/,
     );
 
     silence.mockRestore();

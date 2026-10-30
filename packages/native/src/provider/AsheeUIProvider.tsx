@@ -26,10 +26,20 @@
  * as a theme problem rather than a setup problem; the check in `nativewind-doctor` turns that
  * into one warning naming the cause. It costs nothing in a production bundle, because the
  * gate is `NODE_ENV`.
+ *
+ * **One name, on both renderers.** The provider, its props, its context and its hook are the
+ * names `@asheeui/web` publishes — `AsheeUIProvider`, `AsheeUIProviderProps`,
+ * `AsheeConfigContext`, `useAsheeConfig` — because a shared component writes one root and
+ * reads one configuration, and a name that changes between platforms is what stops it being
+ * shared. The platform-suffixed spellings this module used to declare are kept at the bottom
+ * as deprecated aliases of the same references, so a consumer's existing import keeps
+ * working and keeps warning.
  */
 
 import {
   defaultColorConfig,
+  deprecatedAlias,
+  deprecateMany,
   paletteVariables,
   resolveColorConfig,
   selectTheme,
@@ -55,14 +65,12 @@ import { warnWhenStylingIsDisconnected } from "./nativewind-doctor";
  * `null` means the application did not wrap its tree, which the hook reports as a
  * mistake rather than silently defaulting.
  */
-export const AsheeNativeConfigContext = createContext<NativeConfig | null>(
-  null,
-);
+export const AsheeConfigContext = createContext<NativeConfig | null>(null);
 
 /**
  * Props for the native provider.
  */
-export interface AsheeNativeProviderProps {
+export interface AsheeUIProviderProps {
   /**
    * The application's configuration, if it has one.
    *
@@ -96,10 +104,7 @@ export interface AsheeNativeProviderProps {
  * </AsheeUIProvider>;
  * ```
  */
-export function AsheeNativeProvider({
-  config,
-  children,
-}: AsheeNativeProviderProps) {
+export function AsheeUIProvider({ config, children }: AsheeUIProviderProps) {
   const value = useMemo(() => resolveNativeConfig(config), [config]);
 
   // The platform's own answer, which is what "system" means. A platform that reports nothing
@@ -128,49 +133,62 @@ export function AsheeNativeProvider({
   }, []);
 
   return (
-    <AsheeNativeConfigContext.Provider value={value}>
+    <AsheeConfigContext.Provider value={value}>
       <View className="flex-1" style={painted}>
         {children}
       </View>
-    </AsheeNativeConfigContext.Provider>
+    </AsheeConfigContext.Provider>
   );
 }
 
 /**
- * The provider under the name the umbrella's web branch uses.
- *
- * An application that installs `asheeui` writes one root and one configuration for both
- * platforms, so the provider has to answer to one name on both. This is that name; the
- * native-specific spelling stays exported beside it, and they are the same component.
- */
-export const AsheeUIProvider = AsheeNativeProvider;
-
-/** The props of {@link AsheeUIProvider}, under the umbrella's name for them. */
-export type AsheeUIProviderProps = AsheeNativeProviderProps;
-
-/**
  * Read the resolved native configuration.
  *
- * @returns The configuration provided by {@link AsheeNativeProvider}.
+ * @returns The configuration provided by {@link AsheeUIProvider}.
  * @throws When a component is rendered outside the provider, because a missing
  * provider is a setup mistake and defaulting silently would hide it.
  */
-export function useAsheeNativeConfig(): NativeConfig {
-  const config = useContext(AsheeNativeConfigContext);
+export function useAsheeConfig(): NativeConfig {
+  const config = useContext(AsheeConfigContext);
 
   if (!config) {
     throw new Error(
-      "useAsheeNativeConfig must be used within an AsheeNativeProvider - wrap your app root with <AsheeNativeProvider>.",
+      "useAsheeConfig must be used within an AsheeUIProvider - wrap your app root with <AsheeUIProvider>.",
     );
   }
 
   return config;
 }
 
-/**
- * The configuration hook under the name the umbrella's web branch uses.
- *
- * `@asheeui/web` publishes `useAsheeConfig`; a shared component that reads the configuration
- * imports this name and gets the renderer's own answer.
- */
-export const useAsheeConfig = useAsheeNativeConfig;
+// ─── Deprecated: the platform-suffixed spellings, removed in the next major ───
+//
+// The four names are announced together, once per process and only outside a production
+// bundle: a consumer reading the message sees one decision ("this module moved four names")
+// rather than four decisions to weigh separately.
+
+deprecateMany("@asheeui/native/provider", [
+  { from: "AsheeNativeProvider", to: "AsheeUIProvider", since: "2.8.0" },
+  {
+    from: "AsheeNativeProviderProps",
+    to: "AsheeUIProviderProps",
+    since: "2.8.0",
+  },
+  {
+    from: "AsheeNativeConfigContext",
+    to: "AsheeConfigContext",
+    since: "2.8.0",
+  },
+  { from: "useAsheeNativeConfig", to: "useAsheeConfig", since: "2.8.0" },
+]);
+
+/** The provider under its platform-suffixed spelling. */
+export const AsheeNativeProvider = deprecatedAlias(AsheeUIProvider);
+
+/** The provider's props under their platform-suffixed spelling. */
+export type AsheeNativeProviderProps = AsheeUIProviderProps;
+
+/** The configuration context under its platform-suffixed spelling. */
+export const AsheeNativeConfigContext = deprecatedAlias(AsheeConfigContext);
+
+/** The configuration hook under its platform-suffixed spelling. */
+export const useAsheeNativeConfig = deprecatedAlias(useAsheeConfig);

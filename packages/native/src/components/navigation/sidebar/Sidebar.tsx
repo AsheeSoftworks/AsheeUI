@@ -69,7 +69,7 @@ import {
 } from "react";
 import type { StyleProp, ViewProps, ViewStyle } from "react-native";
 import { ScrollView, View } from "react-native";
-import { useAsheeNativeConfig } from "../../../provider/AsheeNativeProvider";
+import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
 import { classNames } from "../../../utils/class-names";
 import { openDestination } from "../../../utils/open-destination";
 import { Button } from "../../forms/button/Button";
@@ -308,7 +308,7 @@ export function Sidebar<T = string>({
   style,
   ...rest
 }: SidebarProps<T>) {
-  const config = useAsheeNativeConfig();
+  const config = useAsheeConfig();
   const sectionConfig = config.components?.sidebar;
 
   const resolvedCollapsible = resolveCascade<boolean>(

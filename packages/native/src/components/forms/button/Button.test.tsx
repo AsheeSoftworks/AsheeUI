@@ -16,7 +16,7 @@
 
 import { fireEvent, render } from "@testing-library/react-native";
 import type { ReactElement } from "react";
-import { AsheeNativeProvider } from "../../../provider/AsheeNativeProvider";
+import { AsheeUIProvider } from "../../../provider/AsheeUIProvider";
 import { Button } from "./Button";
 
 /**
@@ -27,9 +27,7 @@ import { Button } from "./Button";
  * @returns The rendered tree and its queries.
  */
 async function renderWithProvider(ui: ReactElement, config?: object) {
-  return render(
-    <AsheeNativeProvider config={config}>{ui}</AsheeNativeProvider>,
-  );
+  return render(<AsheeUIProvider config={config}>{ui}</AsheeUIProvider>);
 }
 
 describe("Native Button", () => {
@@ -156,7 +154,7 @@ describe("Native Button", () => {
     const silence = jest.spyOn(console, "error").mockImplementation(() => {});
 
     await expect(render(<Button>Save</Button>)).rejects.toThrow(
-      /AsheeNativeProvider/,
+      /AsheeUIProvider/,
     );
 
     silence.mockRestore();

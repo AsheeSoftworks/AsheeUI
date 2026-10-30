@@ -41,7 +41,7 @@ import {
   type ViewProps,
   type ViewStyle,
 } from "react-native";
-import { useAsheeNativeConfig } from "../../../provider/AsheeNativeProvider";
+import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
 import { classNames } from "../../../utils/class-names";
 import { Image } from "../image/Image";
 import {
@@ -148,7 +148,7 @@ export function Avatar({
   style,
   ...rest
 }: AvatarProps) {
-  const config = useAsheeNativeConfig();
+  const config = useAsheeConfig();
   const sectionConfig = config.components.avatar;
   // The source whose load failed, rather than a bare "has failed" flag: a list recycles
   // an avatar slot, so a fresh `src` is a fresh picture and must get its own chance.

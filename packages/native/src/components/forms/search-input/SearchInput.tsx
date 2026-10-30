@@ -42,7 +42,7 @@ import {
 import { useState } from "react";
 import type { StyleProp, TextStyle } from "react-native";
 import { Pressable, TextInput, View } from "react-native";
-import { useAsheeNativeConfig } from "../../../provider/AsheeNativeProvider";
+import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
 import { classNames } from "../../../utils/class-names";
 import { Spinner } from "../../feedback/spinner/Spinner";
 import { Text } from "../../typography/text/Text";
@@ -132,7 +132,7 @@ export function SearchInput({
   style,
   className,
 }: SearchInputProps) {
-  const config = useAsheeNativeConfig();
+  const config = useAsheeConfig();
   const sectionConfig = config.components.searchinput;
   const [typedValue, setTypedValue] = useState(defaultValue ?? "");
   const [isFocused, setIsFocused] = useState(false);

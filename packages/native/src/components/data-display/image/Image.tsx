@@ -40,7 +40,7 @@ import {
   type ViewProps,
   type ViewStyle,
 } from "react-native";
-import { useAsheeNativeConfig } from "../../../provider/AsheeNativeProvider";
+import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
 import { classNames } from "../../../utils/class-names";
 import { Skeleton } from "../../feedback/skeleton/Skeleton";
 import {
@@ -145,7 +145,7 @@ export function Image({
   style,
   ...rest
 }: ImageProps) {
-  const config = useAsheeNativeConfig();
+  const config = useAsheeConfig();
   const sectionConfig = config.components.image;
 
   const [currentSrc, setCurrentSrc] = useState(src);

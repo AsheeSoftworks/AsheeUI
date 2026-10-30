@@ -26,7 +26,7 @@ import {
 } from "@asheeui/core";
 import { type ReactNode, useCallback, useMemo, useRef, useState } from "react";
 import { View } from "react-native";
-import { useAsheeNativeConfig } from "../../../provider/AsheeNativeProvider";
+import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
 import { classNames } from "../../../utils/class-names";
 import { ToastContext } from "./ToastContext";
 import { ToastItem } from "./ToastItem";
@@ -59,11 +59,11 @@ export interface ToastProviderProps extends NativeToastConfig {
  *
  * @example
  * ```tsx
- * <AsheeNativeProvider>
+ * <AsheeUIProvider>
  *   <ToastProvider>
  *     <App />
  *   </ToastProvider>
- * </AsheeNativeProvider>
+ * </AsheeUIProvider>
  * ```
  *
  * @see useToast - How a screen shows a message.
@@ -78,7 +78,7 @@ export function ToastProvider({
   defaultTimeout,
   maxToasts,
 }: ToastProviderProps) {
-  const config = useAsheeNativeConfig();
+  const config = useAsheeConfig();
   const sectionConfig = config.components.toast;
 
   const resolvedSize = resolveCascade<Size>(

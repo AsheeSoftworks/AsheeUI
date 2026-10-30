@@ -29,7 +29,7 @@ import {
 import type { ReactNode } from "react";
 import type { ScrollViewProps, StyleProp, ViewStyle } from "react-native";
 import { ScrollView, View } from "react-native";
-import { useAsheeNativeConfig } from "../../../provider/AsheeNativeProvider";
+import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
 import { classNames } from "../../../utils/class-names";
 import {
   FALLBACK_NATIVE_MARKETING_LAYOUT_CONFIG,
@@ -123,7 +123,7 @@ export function MarketingLayout({
   style,
   ...rest
 }: MarketingLayoutProps) {
-  const config = useAsheeNativeConfig();
+  const config = useAsheeConfig();
 
   const resolved = resolveConfigCascade<
     NativeMarketingLayoutConfig,

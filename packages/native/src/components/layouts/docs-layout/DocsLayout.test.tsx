@@ -14,7 +14,7 @@ import { type RenderResult, render } from "@testing-library/react-native";
 import type { ReactElement } from "react";
 import { Text, View } from "react-native";
 import type { TestInstance } from "test-renderer";
-import { AsheeNativeProvider } from "../../../provider/AsheeNativeProvider";
+import { AsheeUIProvider } from "../../../provider/AsheeUIProvider";
 import { DocsLayout } from "./DocsLayout";
 
 /**
@@ -25,9 +25,7 @@ import { DocsLayout } from "./DocsLayout";
  * @returns The rendered tree and its queries.
  */
 async function renderPage(ui: ReactElement, config?: object) {
-  return render(
-    <AsheeNativeProvider config={config}>{ui}</AsheeNativeProvider>,
-  );
+  return render(<AsheeUIProvider config={config}>{ui}</AsheeUIProvider>);
 }
 
 /**
@@ -229,7 +227,7 @@ describe("Native DocsLayout", () => {
           <Text>Layout</Text>
         </DocsLayout>,
       ),
-    ).rejects.toThrow(/AsheeNativeProvider/);
+    ).rejects.toThrow(/AsheeUIProvider/);
 
     silence.mockRestore();
   });

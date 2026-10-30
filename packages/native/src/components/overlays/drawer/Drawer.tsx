@@ -30,7 +30,7 @@ import {
 import type { ReactNode } from "react";
 import type { StyleProp, ViewProps, ViewStyle } from "react-native";
 import { Modal, Pressable } from "react-native";
-import { useAsheeNativeConfig } from "../../../provider/AsheeNativeProvider";
+import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
 import { classNames } from "../../../utils/class-names";
 import {
   FALLBACK_NATIVE_DRAWER_CONFIG,
@@ -118,7 +118,7 @@ export function Drawer({
   style,
   ...rest
 }: DrawerProps) {
-  const config = useAsheeNativeConfig();
+  const config = useAsheeConfig();
   const sectionConfig = config.components.drawer;
 
   const resolvedSize = resolveCascade<DrawerSize>(

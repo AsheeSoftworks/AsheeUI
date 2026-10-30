@@ -36,7 +36,7 @@ import type {
   ViewStyle,
 } from "react-native";
 import { Modal as PlatformModal, Pressable } from "react-native";
-import { useAsheeNativeConfig } from "../../../provider/AsheeNativeProvider";
+import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
 import { classNames } from "../../../utils/class-names";
 import {
   FALLBACK_NATIVE_MODAL_CONFIG,
@@ -136,7 +136,7 @@ export function Modal({
   style,
   ...rest
 }: ModalProps) {
-  const config = useAsheeNativeConfig();
+  const config = useAsheeConfig();
   const sectionConfig = config.components.modal;
 
   const resolvedSize = resolveCascade<ModalSizeKey>(

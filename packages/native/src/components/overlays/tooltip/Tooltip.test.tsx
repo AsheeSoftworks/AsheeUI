@@ -19,7 +19,7 @@ import {
 import type { ReactElement } from "react";
 import { Text } from "react-native";
 import type { TestInstance } from "test-renderer";
-import { AsheeNativeProvider } from "../../../provider/AsheeNativeProvider";
+import { AsheeUIProvider } from "../../../provider/AsheeUIProvider";
 import { Tooltip } from "./Tooltip";
 
 /**
@@ -30,9 +30,7 @@ import { Tooltip } from "./Tooltip";
  * @returns The rendered tree and its queries.
  */
 async function renderTooltip(ui: ReactElement, config?: object) {
-  return render(
-    <AsheeNativeProvider config={config}>{ui}</AsheeNativeProvider>,
-  );
+  return render(<AsheeUIProvider config={config}>{ui}</AsheeUIProvider>);
 }
 
 /** A trigger that is text, so the tests can press it by name. */
@@ -324,7 +322,7 @@ describe("Native Tooltip", () => {
 
     await expect(
       render(<Tooltip content="Kept for seven years">{TRIGGER}</Tooltip>),
-    ).rejects.toThrow(/AsheeNativeProvider/);
+    ).rejects.toThrow(/AsheeUIProvider/);
 
     silence.mockRestore();
   });

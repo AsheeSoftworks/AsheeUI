@@ -35,7 +35,7 @@ import {
 } from "@asheeui/core";
 import { Fragment } from "react";
 import { Pressable, View } from "react-native";
-import { useAsheeNativeConfig } from "../../../provider/AsheeNativeProvider";
+import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
 import { classNames } from "../../../utils/class-names";
 import { Text } from "../../typography/text/Text";
 import {
@@ -136,7 +136,7 @@ export function Stepper({
   className,
   testID,
 }: StepperProps) {
-  const config = useAsheeNativeConfig();
+  const config = useAsheeConfig();
   const sectionConfig = config.components.stepper;
 
   const resolvedOrientation = resolveCascade<StepperOrientation>(

@@ -28,7 +28,7 @@ import {
 import { type ReactNode, useState } from "react";
 import type { StyleProp, ViewProps, ViewStyle } from "react-native";
 import { Pressable, View } from "react-native";
-import { useAsheeNativeConfig } from "../../../provider/AsheeNativeProvider";
+import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
 import { classNames } from "../../../utils/class-names";
 import { Button } from "../../forms/button/Button";
 import { Text } from "../../typography/text/Text";
@@ -143,7 +143,7 @@ export function ErrorState({
   children,
   ...rest
 }: ErrorStateProps) {
-  const config = useAsheeNativeConfig();
+  const config = useAsheeConfig();
 
   const resolved = resolveConfigCascade<
     NativeErrorStateConfig,

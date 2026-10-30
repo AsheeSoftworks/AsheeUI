@@ -62,7 +62,7 @@ import type {
 } from "react-native";
 import { Pressable, ScrollView, View } from "react-native";
 import { useReduceMotion } from "../../../hooks/use-reduce-motion";
-import { useAsheeNativeConfig } from "../../../provider/AsheeNativeProvider";
+import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
 import { classNames } from "../../../utils/class-names";
 import { Text } from "../../typography/text/Text";
 import {
@@ -174,7 +174,7 @@ export function Carousel({
   style,
   ...rest
 }: CarouselProps) {
-  const config = useAsheeNativeConfig();
+  const config = useAsheeConfig();
   const sectionConfig = config.components.carousel;
 
   const resolvedSize = resolveCascade<Size>(

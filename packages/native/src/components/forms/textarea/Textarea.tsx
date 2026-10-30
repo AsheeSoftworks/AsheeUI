@@ -35,7 +35,7 @@ import {
 import { useState } from "react";
 import type { StyleProp, TextInputProps, TextStyle } from "react-native";
 import { TextInput } from "react-native";
-import { useAsheeNativeConfig } from "../../../provider/AsheeNativeProvider";
+import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
 import { classNames } from "../../../utils/class-names";
 import { FieldShell } from "../field/FieldShell";
 import {
@@ -112,7 +112,7 @@ export function Textarea({
   onBlur,
   ...rest
 }: TextareaProps) {
-  const config = useAsheeNativeConfig();
+  const config = useAsheeConfig();
   const sectionConfig = config.components.textarea;
   const [isFocused, setIsFocused] = useState(false);
 

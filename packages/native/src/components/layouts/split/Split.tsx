@@ -30,7 +30,7 @@ import type { ReactNode } from "react";
 import type { StyleProp, ViewProps, ViewStyle } from "react-native";
 import { View } from "react-native";
 import { useBreakpoint } from "../../../hooks/use-breakpoint";
-import { useAsheeNativeConfig } from "../../../provider/AsheeNativeProvider";
+import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
 import { classNames } from "../../../utils/class-names";
 import {
   FALLBACK_NATIVE_SPLIT_CONFIG,
@@ -116,7 +116,7 @@ export function Split({
   style,
   ...rest
 }: SplitProps) {
-  const config = useAsheeNativeConfig();
+  const config = useAsheeConfig();
   const { isAtLeast } = useBreakpoint();
 
   const resolved = resolveConfigCascade<

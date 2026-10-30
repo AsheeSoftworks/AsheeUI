@@ -16,7 +16,7 @@ import {
 import type { ReactElement } from "react";
 import { Text } from "react-native";
 import type { TestInstance } from "test-renderer";
-import { AsheeNativeProvider } from "../../../provider/AsheeNativeProvider";
+import { AsheeUIProvider } from "../../../provider/AsheeUIProvider";
 import { openDestination } from "../../../utils/open-destination";
 import { CTA } from "./CTA";
 
@@ -32,9 +32,7 @@ jest.mock("../../../utils/open-destination", () => ({
  * @returns The rendered tree and its queries.
  */
 async function renderCta(ui: ReactElement, config?: object) {
-  return render(
-    <AsheeNativeProvider config={config}>{ui}</AsheeNativeProvider>,
-  );
+  return render(<AsheeUIProvider config={config}>{ui}</AsheeUIProvider>);
 }
 
 /**
@@ -219,7 +217,7 @@ describe("Native CTA", () => {
 
     await expect(
       render(<CTA title="Send your first campaign today" />),
-    ).rejects.toThrow(/AsheeNativeProvider/);
+    ).rejects.toThrow(/AsheeUIProvider/);
 
     silence.mockRestore();
   });

@@ -16,7 +16,7 @@ import {
   render,
 } from "@testing-library/react-native";
 import type { ReactElement } from "react";
-import { AsheeNativeProvider } from "../../../provider/AsheeNativeProvider";
+import { AsheeUIProvider } from "../../../provider/AsheeUIProvider";
 import { openDestination } from "../../../utils/open-destination";
 import { Text } from "../../typography/text/Text";
 import { PricingCard } from "./PricingCard";
@@ -52,9 +52,7 @@ function Fees() {
  * @returns The rendered tree and its queries.
  */
 async function renderCard(ui: ReactElement, config?: object) {
-  return render(
-    <AsheeNativeProvider config={config}>{ui}</AsheeNativeProvider>,
-  );
+  return render(<AsheeUIProvider config={config}>{ui}</AsheeUIProvider>);
 }
 
 /**

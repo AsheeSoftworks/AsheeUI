@@ -29,7 +29,7 @@ import {
 } from "@testing-library/react-native";
 import type { ReactElement } from "react";
 import { AccessibilityInfo, Animated, Text } from "react-native";
-import { AsheeNativeProvider } from "../../../provider/AsheeNativeProvider";
+import { AsheeUIProvider } from "../../../provider/AsheeUIProvider";
 import { Marquee } from "./Marquee";
 import {
   defaultNativeMarqueeConfig,
@@ -79,9 +79,7 @@ afterEach(() => {
  * @returns The rendered tree and its queries.
  */
 async function renderMarquee(ui: ReactElement, config?: object) {
-  return render(
-    <AsheeNativeProvider config={config}>{ui}</AsheeNativeProvider>,
-  );
+  return render(<AsheeUIProvider config={config}>{ui}</AsheeUIProvider>);
 }
 
 /**

@@ -37,7 +37,7 @@ import {
 import type { ElementType, ReactNode } from "react";
 import type { PressableProps, StyleProp, ViewStyle } from "react-native";
 import { Pressable, View } from "react-native";
-import { useAsheeNativeConfig } from "../../../provider/AsheeNativeProvider";
+import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
 import { classNames } from "../../../utils/class-names";
 import { openDestination } from "../../../utils/open-destination";
 import { Text } from "../../typography/text/Text";
@@ -154,7 +154,7 @@ export function Link({
   children,
   ...rest
 }: LinkProps) {
-  const config = useAsheeNativeConfig();
+  const config = useAsheeConfig();
   const sectionConfig = config.components.link;
 
   const resolvedVariant = resolveCascade<LinkVariant>(

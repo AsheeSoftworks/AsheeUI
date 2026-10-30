@@ -14,7 +14,7 @@ import {
 } from "@testing-library/react-native";
 import type { ReactElement } from "react";
 import { Text } from "react-native";
-import { AsheeNativeProvider } from "../../../provider/AsheeNativeProvider";
+import { AsheeUIProvider } from "../../../provider/AsheeUIProvider";
 import { openDestination } from "../../../utils/open-destination";
 import { EmptyState } from "./EmptyState";
 
@@ -30,9 +30,7 @@ jest.mock("../../../utils/open-destination", () => ({
  * @returns The rendered tree and its queries.
  */
 async function renderState(ui: ReactElement, config?: object) {
-  return render(
-    <AsheeNativeProvider config={config}>{ui}</AsheeNativeProvider>,
-  );
+  return render(<AsheeUIProvider config={config}>{ui}</AsheeUIProvider>);
 }
 
 /**
@@ -184,7 +182,7 @@ describe("Native EmptyState", () => {
 
     await expect(
       render(<EmptyState title="Nothing here yet" />),
-    ).rejects.toThrow(/AsheeNativeProvider/);
+    ).rejects.toThrow(/AsheeUIProvider/);
 
     silence.mockRestore();
   });

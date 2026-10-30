@@ -9,7 +9,7 @@
 
 import { type RenderResult, render } from "@testing-library/react-native";
 import type { ReactElement } from "react";
-import { AsheeNativeProvider } from "../../../provider/AsheeNativeProvider";
+import { AsheeUIProvider } from "../../../provider/AsheeUIProvider";
 import { Text } from "./Text";
 
 /**
@@ -20,9 +20,7 @@ import { Text } from "./Text";
  * @returns The rendered tree and its queries.
  */
 async function renderText(ui: ReactElement, config?: object) {
-  return render(
-    <AsheeNativeProvider config={config}>{ui}</AsheeNativeProvider>,
-  );
+  return render(<AsheeUIProvider config={config}>{ui}</AsheeUIProvider>);
 }
 
 /**

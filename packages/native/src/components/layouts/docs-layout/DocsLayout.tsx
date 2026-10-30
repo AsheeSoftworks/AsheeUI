@@ -36,7 +36,7 @@ import type { ReactNode } from "react";
 import type { ScrollViewProps, StyleProp, ViewStyle } from "react-native";
 import { ScrollView, View } from "react-native";
 import { Container } from "../../../layout/Container";
-import { useAsheeNativeConfig } from "../../../provider/AsheeNativeProvider";
+import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
 import { classNames } from "../../../utils/class-names";
 import { Text } from "../../typography/text/Text";
 import {
@@ -144,7 +144,7 @@ export function DocsLayout({
   style,
   ...rest
 }: DocsLayoutProps) {
-  const config = useAsheeNativeConfig();
+  const config = useAsheeConfig();
 
   const resolved = resolveConfigCascade<
     NativeDocsLayoutConfig,

@@ -31,7 +31,7 @@ import type { ReactNode } from "react";
 import type { StyleProp, ViewProps, ViewStyle } from "react-native";
 import { View } from "react-native";
 import { Container } from "../../../layout/Container";
-import { useAsheeNativeConfig } from "../../../provider/AsheeNativeProvider";
+import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
 import { classNames } from "../../../utils/class-names";
 import {
   FALLBACK_NATIVE_PAGE_CONFIG,
@@ -49,7 +49,7 @@ import {
  * @returns The resolved options.
  */
 function usePagePart(props: NativePageConfig): Required<NativePageConfig> {
-  const config = useAsheeNativeConfig();
+  const config = useAsheeConfig();
 
   return resolveConfigCascade<NativePageConfig, Required<NativePageConfig>>(
     props,

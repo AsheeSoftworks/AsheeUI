@@ -37,7 +37,7 @@ import type { StyleProp, ViewProps, ViewStyle } from "react-native";
 import { View } from "react-native";
 import { Container } from "../../../layout/Container";
 import { SECTION_SPACING_CLASS } from "../../../layout/layout-styles";
-import { useAsheeNativeConfig } from "../../../provider/AsheeNativeProvider";
+import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
 import { classNames } from "../../../utils/class-names";
 import { Text } from "../../typography/text/Text";
 import { Link } from "../link";
@@ -167,7 +167,7 @@ export function Footer({
   children,
   ...rest
 }: FooterProps) {
-  const config = useAsheeNativeConfig();
+  const config = useAsheeConfig();
 
   const resolved = resolveConfigCascade<
     NativeFooterConfig,

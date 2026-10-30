@@ -29,7 +29,7 @@ import {
 import { useEffect, useRef } from "react";
 import type { StyleProp, ViewStyle } from "react-native";
 import { Animated, View, type ViewProps } from "react-native";
-import { useAsheeNativeConfig } from "../../../provider/AsheeNativeProvider";
+import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
 import { classNames } from "../../../utils/class-names";
 import {
   FALLBACK_NATIVE_SKELETON_CONFIG,
@@ -118,7 +118,7 @@ export function Skeleton({
   style,
   ...rest
 }: SkeletonProps) {
-  const config = useAsheeNativeConfig();
+  const config = useAsheeConfig();
   const sectionConfig = config.components.skeleton;
 
   const resolvedRadius = resolveCascade<Radius>(

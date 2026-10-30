@@ -12,7 +12,7 @@ import { fireEvent, render } from "@testing-library/react-native";
 import type { ReactElement } from "react";
 import { Text } from "react-native";
 import type { TestInstance } from "test-renderer";
-import { AsheeNativeProvider } from "../../../provider/AsheeNativeProvider";
+import { AsheeUIProvider } from "../../../provider/AsheeUIProvider";
 import { Image } from "./Image";
 
 /**
@@ -23,9 +23,7 @@ import { Image } from "./Image";
  * @returns The rendered tree and its queries.
  */
 async function renderImage(ui: ReactElement, config?: object) {
-  return render(
-    <AsheeNativeProvider config={config}>{ui}</AsheeNativeProvider>,
-  );
+  return render(<AsheeUIProvider config={config}>{ui}</AsheeUIProvider>);
 }
 
 /**
@@ -221,7 +219,7 @@ describe("Native Image", () => {
 
     await expect(
       render(<Image src="/photo.jpg" alt="A photo" />),
-    ).rejects.toThrow(/AsheeNativeProvider/);
+    ).rejects.toThrow(/AsheeUIProvider/);
 
     silence.mockRestore();
   });

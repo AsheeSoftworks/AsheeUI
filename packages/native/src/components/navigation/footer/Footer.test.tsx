@@ -15,7 +15,7 @@ import {
 } from "@testing-library/react-native";
 import type { ReactElement } from "react";
 import type { TestInstance } from "test-renderer";
-import { AsheeNativeProvider } from "../../../provider/AsheeNativeProvider";
+import { AsheeUIProvider } from "../../../provider/AsheeUIProvider";
 import { openDestination } from "../../../utils/open-destination";
 import { Footer } from "./Footer";
 
@@ -46,9 +46,7 @@ const GROUPS = [
  * @returns The rendered tree and its queries.
  */
 async function renderFooter(ui: ReactElement, config?: object) {
-  return render(
-    <AsheeNativeProvider config={config}>{ui}</AsheeNativeProvider>,
-  );
+  return render(<AsheeUIProvider config={config}>{ui}</AsheeUIProvider>);
 }
 
 /**
@@ -188,7 +186,7 @@ describe("Native Footer", () => {
 
     await expect(
       render(<Footer copyright="Ashee Softworks" />),
-    ).rejects.toThrow(/AsheeNativeProvider/);
+    ).rejects.toThrow(/AsheeUIProvider/);
 
     silence.mockRestore();
   });

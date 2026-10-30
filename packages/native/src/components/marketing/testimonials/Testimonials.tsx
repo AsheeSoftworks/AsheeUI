@@ -29,7 +29,7 @@ import { View } from "react-native";
 import { Container } from "../../../layout/Container";
 import { Grid } from "../../../layout/Grid";
 import { Section } from "../../../layout/Section";
-import { useAsheeNativeConfig } from "../../../provider/AsheeNativeProvider";
+import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
 import { Avatar } from "../../data-display/avatar/Avatar";
 import { Card } from "../../data-display/card/Card";
 import { SectionHeading } from "../../layouts/section-kit/SectionHeading";
@@ -118,7 +118,7 @@ export function Testimonials({
   children,
   ...rest
 }: TestimonialsProps) {
-  const config = useAsheeNativeConfig();
+  const config = useAsheeConfig();
 
   const resolved = resolveConfigCascade<
     NativeTestimonialsConfig,

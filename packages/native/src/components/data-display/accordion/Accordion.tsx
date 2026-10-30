@@ -48,7 +48,7 @@ import {
 import { type ReactNode, useState } from "react";
 import type { StyleProp, ViewProps, ViewStyle } from "react-native";
 import { LayoutAnimation, Pressable, View } from "react-native";
-import { useAsheeNativeConfig } from "../../../provider/AsheeNativeProvider";
+import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
 import { classNames } from "../../../utils/class-names";
 import { Text } from "../../typography/text/Text";
 import {
@@ -158,7 +158,7 @@ export function Accordion({
   style,
   ...rest
 }: AccordionProps) {
-  const config = useAsheeNativeConfig();
+  const config = useAsheeConfig();
   const sectionConfig = config.components.accordion;
 
   const resolvedSize = resolveCascade<AccordionSizeKey>(

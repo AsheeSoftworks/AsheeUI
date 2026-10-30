@@ -24,7 +24,7 @@ import {
 } from "@asheeui/core";
 import type { ReactNode } from "react";
 import { View } from "react-native";
-import { useAsheeNativeConfig } from "../../../provider/AsheeNativeProvider";
+import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
 import { classNames } from "../../../utils/class-names";
 import { Text } from "../../typography/text/Text";
 import { Button } from "../button/Button";
@@ -92,7 +92,7 @@ export function Form({
   className,
   submitTestID,
 }: FormProps) {
-  const config = useAsheeNativeConfig();
+  const config = useAsheeConfig();
   const sectionConfig = config.components.form;
 
   const resolvedVariant = resolveCascade<Variant>(

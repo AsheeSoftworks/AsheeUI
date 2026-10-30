@@ -56,7 +56,7 @@ import {
   type ViewStyle,
 } from "react-native";
 import { useReduceMotion } from "../../../hooks/use-reduce-motion";
-import { useAsheeNativeConfig } from "../../../provider/AsheeNativeProvider";
+import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
 import { classNames } from "../../../utils/class-names";
 import { resolveLength } from "../../../utils/resolve-length";
 import {
@@ -142,7 +142,7 @@ export function Marquee({
   onBlur,
   ...rest
 }: MarqueeProps) {
-  const config = useAsheeNativeConfig();
+  const config = useAsheeConfig();
 
   const resolved = resolveConfigCascade<
     NativeMarqueeConfig,

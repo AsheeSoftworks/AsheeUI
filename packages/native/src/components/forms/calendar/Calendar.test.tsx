@@ -18,7 +18,7 @@ import {
   render,
 } from "@testing-library/react-native";
 import type { ReactElement } from "react";
-import { AsheeNativeProvider } from "../../../provider/AsheeNativeProvider";
+import { AsheeUIProvider } from "../../../provider/AsheeUIProvider";
 import { Calendar } from "./Calendar";
 
 // The first surface this file opens loads the platform's modal machinery, which costs far
@@ -31,9 +31,7 @@ const JAN = new Date(2026, 0, 15, 9, 30, 5);
 
 /** Render the field inside the framework provider. */
 async function renderCalendar(ui: ReactElement, config?: object) {
-  return render(
-    <AsheeNativeProvider config={config}>{ui}</AsheeNativeProvider>,
-  );
+  return render(<AsheeUIProvider config={config}>{ui}</AsheeUIProvider>);
 }
 
 /** Press an element and wait for the state it sets to be flushed. */

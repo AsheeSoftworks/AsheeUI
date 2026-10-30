@@ -48,7 +48,7 @@ import {
 import { type ReactNode, useEffect, useMemo, useRef, useState } from "react";
 import type { StyleProp, ViewProps, ViewStyle } from "react-native";
 import { View } from "react-native";
-import { useAsheeNativeConfig } from "../../../provider/AsheeNativeProvider";
+import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
 import { classNames } from "../../../utils/class-names";
 import { EmptyState } from "../../feedback/empty-state/EmptyState";
 import { LoadingState } from "../../feedback/loading-state/LoadingState";
@@ -227,7 +227,7 @@ export function RowList<TData>({
   style,
   ...rest
 }: RowListProps<TData>) {
-  const config = useAsheeNativeConfig();
+  const config = useAsheeConfig();
 
   const resolvedTable = resolveConfigCascade<
     NativeTableConfig,

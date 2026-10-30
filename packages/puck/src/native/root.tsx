@@ -11,7 +11,7 @@
  * framework's background role.
  */
 
-import { AsheeNativeConfigContext, AsheeNativeProvider } from "@asheeui/native";
+import { AsheeConfigContext, AsheeUIProvider } from "@asheeui/native";
 import { useContext } from "react";
 import { View } from "react-native";
 import type { AsheePuckRootProps } from "../shared";
@@ -23,13 +23,9 @@ import type { AsheePuckRootProps } from "../shared";
  * @returns The page, inside the framework's provider when the application has none.
  */
 export function PuckRoot({ children }: AsheePuckRootProps) {
-  const existingConfig = useContext(AsheeNativeConfigContext);
+  const existingConfig = useContext(AsheeConfigContext);
 
   const page = <View className="bg-background flex-1 w-full">{children}</View>;
 
-  return existingConfig ? (
-    page
-  ) : (
-    <AsheeNativeProvider>{page}</AsheeNativeProvider>
-  );
+  return existingConfig ? page : <AsheeUIProvider>{page}</AsheeUIProvider>;
 }

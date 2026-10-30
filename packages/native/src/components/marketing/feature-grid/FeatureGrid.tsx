@@ -29,7 +29,7 @@ import { View } from "react-native";
 import { Container } from "../../../layout/Container";
 import { Grid } from "../../../layout/Grid";
 import { Section } from "../../../layout/Section";
-import { useAsheeNativeConfig } from "../../../provider/AsheeNativeProvider";
+import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
 import { classNames } from "../../../utils/class-names";
 import { openDestination } from "../../../utils/open-destination";
 import { Card } from "../../data-display/card/Card";
@@ -121,7 +121,7 @@ export function FeatureGrid({
   children,
   ...rest
 }: FeatureGridProps) {
-  const config = useAsheeNativeConfig();
+  const config = useAsheeConfig();
 
   const resolved = resolveConfigCascade<
     NativeFeatureGridConfig,

@@ -14,7 +14,7 @@ import {
   Text as NativeText,
   type TextProps as PlatformTextProps,
 } from "react-native";
-import { useAsheeNativeConfig } from "../../../provider/AsheeNativeProvider";
+import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
 import { classNames } from "../../../utils/class-names";
 import {
   FALLBACK_NATIVE_TEXT_CONFIG,
@@ -71,7 +71,7 @@ export function Text({
   children,
   ...rest
 }: TextProps) {
-  const config = useAsheeNativeConfig();
+  const config = useAsheeConfig();
   const sectionConfig = config.components.text;
 
   const resolvedRole = resolveCascade<NativeTextRole>(

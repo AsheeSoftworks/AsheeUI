@@ -12,7 +12,7 @@
 import { fireEvent, render } from "@testing-library/react-native";
 import type { ReactElement } from "react";
 import { LayoutAnimation } from "react-native";
-import { AsheeNativeProvider } from "../../../provider/AsheeNativeProvider";
+import { AsheeUIProvider } from "../../../provider/AsheeUIProvider";
 import { Accordion } from "./Accordion";
 
 /** The sections the tests open and close. */
@@ -39,9 +39,7 @@ const ITEMS = [
  * @returns The rendered tree and its queries.
  */
 async function renderAccordion(ui: ReactElement, config?: object) {
-  return render(
-    <AsheeNativeProvider config={config}>{ui}</AsheeNativeProvider>,
-  );
+  return render(<AsheeUIProvider config={config}>{ui}</AsheeUIProvider>);
 }
 
 describe("Native Accordion", () => {
@@ -273,7 +271,7 @@ describe("Native Accordion", () => {
     const silence = jest.spyOn(console, "error").mockImplementation(() => {});
 
     await expect(render(<Accordion items={ITEMS} />)).rejects.toThrow(
-      /AsheeNativeProvider/,
+      /AsheeUIProvider/,
     );
 
     silence.mockRestore();

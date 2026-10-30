@@ -37,7 +37,7 @@ import { View } from "react-native";
 import { useBreakpoint } from "../../../hooks/use-breakpoint";
 import { Container } from "../../../layout/Container";
 import { Section } from "../../../layout/Section";
-import { useAsheeNativeConfig } from "../../../provider/AsheeNativeProvider";
+import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
 import { classNames } from "../../../utils/class-names";
 import { ActionGroup } from "../../layouts/section-kit/ActionGroup";
 import { SectionHeading } from "../../layouts/section-kit/SectionHeading";
@@ -139,7 +139,7 @@ export function Hero({
   children,
   ...rest
 }: HeroProps) {
-  const config = useAsheeNativeConfig();
+  const config = useAsheeConfig();
   const { isAtLeast } = useBreakpoint();
 
   const resolved = resolveConfigCascade<

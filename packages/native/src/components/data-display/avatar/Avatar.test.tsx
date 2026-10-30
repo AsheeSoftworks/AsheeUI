@@ -12,7 +12,7 @@ import { fireEvent, render } from "@testing-library/react-native";
 import type { ReactElement } from "react";
 import { Text } from "react-native";
 import type { TestInstance } from "test-renderer";
-import { AsheeNativeProvider } from "../../../provider/AsheeNativeProvider";
+import { AsheeUIProvider } from "../../../provider/AsheeUIProvider";
 import { Avatar } from "./Avatar";
 
 /**
@@ -23,9 +23,7 @@ import { Avatar } from "./Avatar";
  * @returns The rendered tree and its queries.
  */
 async function renderAvatar(ui: ReactElement, config?: object) {
-  return render(
-    <AsheeNativeProvider config={config}>{ui}</AsheeNativeProvider>,
-  );
+  return render(<AsheeUIProvider config={config}>{ui}</AsheeUIProvider>);
 }
 
 /**
@@ -131,9 +129,9 @@ describe("Native Avatar", () => {
     // A list recycles an avatar slot, so the source it holds next is a fresh picture and
     // must get its own chance.
     await view.rerender(
-      <AsheeNativeProvider>
+      <AsheeUIProvider>
         <Avatar testID="avatar" name="Ada Lovelace" src="/ada.png" />
-      </AsheeNativeProvider>,
+      </AsheeUIProvider>,
     );
 
     const [retried] = descendantsWithProp(view.getByTestId("avatar"), "source");
@@ -151,9 +149,9 @@ describe("Native Avatar", () => {
     await fireEvent(picture, "error", new Error("The picture failed"));
 
     await view.rerender(
-      <AsheeNativeProvider>
+      <AsheeUIProvider>
         <Avatar testID="avatar" name="Ada Lovelace" src="/missing.png" />
-      </AsheeNativeProvider>,
+      </AsheeUIProvider>,
     );
 
     const avatar = view.getByTestId("avatar");
@@ -185,7 +183,7 @@ describe("Native Avatar", () => {
     const silence = jest.spyOn(console, "error").mockImplementation(() => {});
 
     await expect(render(<Avatar name="Ada Lovelace" />)).rejects.toThrow(
-      /AsheeNativeProvider/,
+      /AsheeUIProvider/,
     );
 
     silence.mockRestore();

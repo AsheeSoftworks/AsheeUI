@@ -24,7 +24,7 @@ import {
 import type { ReactNode } from "react";
 import type { StyleProp, ViewProps, ViewStyle } from "react-native";
 import { Text, View } from "react-native";
-import { useAsheeNativeConfig } from "../../../provider/AsheeNativeProvider";
+import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
 import { classNames } from "../../../utils/class-names";
 import {
   FALLBACK_NATIVE_BADGE_CONFIG,
@@ -72,7 +72,7 @@ export function Badge({
   children,
   ...rest
 }: BadgeProps) {
-  const config = useAsheeNativeConfig();
+  const config = useAsheeConfig();
   const sectionConfig = config.components.badge;
 
   // The cascade's last two tiers belong to the platform rather than to the badge, so what

@@ -35,7 +35,7 @@ import {
 import { useState } from "react";
 import type { StyleProp, TextInputProps, TextStyle } from "react-native";
 import { TextInput } from "react-native";
-import { useAsheeNativeConfig } from "../../../provider/AsheeNativeProvider";
+import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
 import { classNames } from "../../../utils/class-names";
 import { FieldShell } from "../field/FieldShell";
 import {
@@ -109,7 +109,7 @@ export function Input({
   onBlur,
   ...rest
 }: InputProps) {
-  const config = useAsheeNativeConfig();
+  const config = useAsheeConfig();
   const sectionConfig = config.components.input;
   const [isFocused, setIsFocused] = useState(false);
 
