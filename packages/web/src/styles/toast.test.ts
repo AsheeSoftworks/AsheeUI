@@ -8,9 +8,7 @@
  */
 
 import {
-  PLACEMENT_CLASSES,
   type Size,
-  TOAST_ANIMATION_STATE,
   TOAST_TYPE_COLOR,
   type ToastPlacement,
   type ToastType,
@@ -22,6 +20,7 @@ import {
   TOAST_TITLE_FONT_CLASS,
   TOAST_WIDTH_CLASS,
 } from "./portable";
+import { PLACEMENT_CLASSES, TOAST_ANIMATION_STATE } from "./toast";
 
 /** The types of message the system names. */
 const TYPES: ToastType[] = ["success", "error", "info", "warning", "default"];

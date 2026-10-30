@@ -7,14 +7,11 @@
 "use client";
 
 import type { Size, Variant } from "@asheeui/core";
-import {
-  PLACEMENT_CLASSES,
-  resolveCascade,
-  resolveRadiusKey,
-} from "@asheeui/core";
+import { resolveCascade, resolveRadiusKey } from "@asheeui/core";
 import { FloatingPortal } from "@floating-ui/react";
 import { type ReactNode, useCallback, useMemo, useState } from "react";
 import { useAsheeConfig } from "../../../libs/context";
+import { PLACEMENT_CLASSES } from "../../../styles/toast";
 import { cn } from "../../../utils/cn";
 import { ASHEE_GLOBAL_LAYER } from "../../../utils/stacking";
 import { ToastContext } from "./ToastContext";

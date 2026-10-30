@@ -13,7 +13,6 @@ import {
   resolveCascade,
   resolveClassKey,
   type Size,
-  TOAST_ANIMATION_STATE,
   TOAST_TYPE_COLOR,
   type Variant,
 } from "@asheeui/core";
@@ -32,6 +31,7 @@ import {
   TOAST_WIDTH_CLASS,
 } from "../../../styles/portable";
 import { RADIUS_CLASS } from "../../../styles/radius";
+import { TOAST_ANIMATION_STATE } from "../../../styles/toast";
 import { cn } from "../../../utils/cn";
 import {
   FALLBACK_TOAST_CONFIG,

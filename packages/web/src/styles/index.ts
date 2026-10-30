@@ -50,5 +50,6 @@ export * from "./table";
 export * from "./tabs";
 export * from "./testimonials";
 export * from "./textarea";
+export * from "./toast";
 export * from "./typography";
 export * from "./visually-hidden";

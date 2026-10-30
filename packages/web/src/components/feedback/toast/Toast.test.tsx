@@ -1,5 +1,5 @@
-import { TOAST_ANIMATION_STATE } from "@asheeui/core";
 import { describe, expect, it, vi } from "vitest";
+import { TOAST_ANIMATION_STATE } from "../../../styles/toast";
 import {
   createUser,
   fireEvent,

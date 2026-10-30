@@ -2,13 +2,14 @@
  * The platform's class dictionaries, tested where they live.
  *
  * The web half of this file moved to `@asheeui/web` in C2, with the strings it states: after the
- * shrink no package can import both renderers, so neither suite compares them any more.
+ * shrink no package can import both renderers, so neither suite compares them any more. The two
+ * assertions that still read the web's dictionaries — where it anchors a message, and which
+ * keyframe animation it enters by — moved to `web/src/styles/toast.test.ts` in C3, when those maps
+ * left core.
  */
 
 import {
-  PLACEMENT_CLASSES,
   type Size,
-  TOAST_ANIMATION_STATE,
   TOAST_TYPE_COLOR,
   type ToastPlacement,
   type ToastType,
@@ -83,16 +84,6 @@ describe("the scale a message is drawn at", () => {
 });
 
 describe("where a message appears", () => {
-  it("anchors every placement on the web, with an animation of its own", () => {
-    expect(Object.keys(PLACEMENT_CLASSES).sort()).toEqual(
-      [...PLACEMENTS].sort(),
-    );
-    for (const placement of PLACEMENTS) {
-      expect(typeof TOAST_ANIMATION_STATE[placement].enter).toBe("string");
-      expect(typeof TOAST_ANIMATION_STATE[placement].exit).toBe("string");
-    }
-  });
-
   it("anchors every placement on the platform, at the edge its name states", () => {
     expect(Object.keys(NATIVE_TOAST_PLACEMENT_CLASS).sort()).toEqual(
       [...PLACEMENTS].sort(),
