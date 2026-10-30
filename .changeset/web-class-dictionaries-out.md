@@ -22,6 +22,15 @@ language: `TYPOGRAPHY_SIZE_VALUES`, `TYPOGRAPHY_WEIGHT_VALUES`, `TYPOGRAPHY_LEAD
 `shared/typography.ts` with their unions derived from them, so a value is valid because the framework
 names it, not because a stylesheet compiled it. The radius check reads `RADIUS_STEP`.
 
+**The agreements that spanned both renderers are still asserted.** Twenty-seven core style tests
+stated both maps side by side; after the move no package could import both, so each assertion went to
+the suite that owns the string it states — and the invariants that were *about* the pair (the same
+variant keys, the same colour tokens, the same padding on a shared step, the web's danger edge and
+the platform's being one token) moved to `packages/core/src/shared/style-parity.test.ts`, which reads
+both `styles/` directories as text. That is the pattern §6.2 of `CORE-MIGRATION-REPORT.md` prescribes
+for the strings both renderers compile; a class map is literals, so a text comparison is enough, and
+neither package has to depend on the other.
+
 **A consumer imports the same names from the renderer.** `BUTTON_SIZE_CLASS` and the rest were public
 from `@asheeui/core`; they are public from `@asheeui/web` now, and this package's entry exports
 `./styles`, so the migration is one changed import. `B24`'s guide lists every moved family.
