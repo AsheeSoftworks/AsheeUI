@@ -31,7 +31,7 @@ import {
   NATIVE_SPLIT_PANE_WIDTH_CLASS,
   NATIVE_SPLIT_STICKY_CLASS,
 } from "../../../styles/split";
-import { classNames } from "../../../utils/class-names";
+import { cn } from "../../../utils/cn";
 import { useUnsupportedProps } from "../../../utils/unsupported-prop";
 import {
   FALLBACK_NATIVE_SPLIT_CONFIG,
@@ -152,7 +152,7 @@ export function Split({
 
   return (
     <View
-      className={classNames(
+      className={cn(
         NATIVE_SPLIT_BASE_CLASS,
         sideBySide
           ? NATIVE_SPLIT_DIRECTION_CLASS.sideBySide
@@ -164,12 +164,12 @@ export function Split({
       style={style}
       {...rest}>
       {start !== undefined && (
-        <View className={classNames(paneClass("start"))}>{start}</View>
+        <View className={cn(paneClass("start"))}>{start}</View>
       )}
 
       {end !== undefined && (
         <View
-          className={classNames(
+          className={cn(
             paneClass("end"),
             dividerClass,
             resolved.stickyEnd && NATIVE_SPLIT_STICKY_CLASS,

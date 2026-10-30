@@ -65,7 +65,7 @@ import {
 } from "../../../styles/carousel";
 import { CAROUSEL_PADDING_CLASS } from "../../../styles/portable";
 import { NATIVE_RADIUS_CLASS } from "../../../styles/radius";
-import { classNames } from "../../../utils/class-names";
+import { cn } from "../../../utils/cn";
 import { Typography } from "../../typography/text/Text";
 import {
   FALLBACK_NATIVE_CAROUSEL_CONFIG,
@@ -369,7 +369,7 @@ export function Carousel({
           ? `Slide ${activeIndex + 1} of ${items.length}`
           : undefined
       }
-      className={classNames(
+      className={cn(
         NATIVE_CAROUSEL_BASE_CLASS,
         NATIVE_CAROUSEL_HEIGHT_CLASS[resolvedSize],
         variantClass,
@@ -408,7 +408,7 @@ export function Carousel({
               }
               focusable={isActive ? undefined : false}
               style={width > 0 ? { width } : undefined}
-              className={classNames(
+              className={cn(
                 NATIVE_CAROUSEL_SLIDE_CLASS,
                 CAROUSEL_PADDING_CLASS[resolvedSize],
                 itemClassName,
@@ -437,7 +437,7 @@ export function Carousel({
               accessibilityState={{ disabled: isPrevDisabled }}
               disabled={isPrevDisabled}
               onPress={() => paginate(-1)}
-              className={classNames(
+              className={cn(
                 NATIVE_CAROUSEL_CONTROL_CLASS,
                 NATIVE_CAROUSEL_PREV_CLASS,
                 controlClassName,
@@ -458,7 +458,7 @@ export function Carousel({
               accessibilityState={{ disabled: isNextDisabled }}
               disabled={isNextDisabled}
               onPress={() => paginate(1)}
-              className={classNames(
+              className={cn(
                 NATIVE_CAROUSEL_CONTROL_CLASS,
                 NATIVE_CAROUSEL_NEXT_CLASS,
                 controlClassName,
@@ -481,12 +481,12 @@ export function Carousel({
                 accessibilityLabel={`Go to slide ${slideIndex + 1}`}
                 accessibilityState={{ selected: isActive }}
                 onPress={() => goTo(slideIndex)}
-                className={classNames(
+                className={cn(
                   NATIVE_CAROUSEL_INDICATOR_CLASS,
                   indicatorClassName,
                 )}>
                 <View
-                  className={classNames(
+                  className={cn(
                     NATIVE_CAROUSEL_INDICATOR_DOT_CLASS,
                     NATIVE_CAROUSEL_INDICATOR_MARK_CLASS[
                       isActive ? "active" : "resting"

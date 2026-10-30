@@ -104,6 +104,25 @@ describe("Native Button", () => {
     expect(className).toContain("px-3");
   });
 
+  it("lets a consumer's own class win over the component's", async () => {
+    // `cn` merges on property families: a background stated by the consumer replaces the
+    // background the variant stated, rather than being emitted beside it and losing to
+    // source order in a stylesheet the device does not have.
+    const view = await renderWithProvider(
+      <Button color="primary" className="bg-danger">
+        Save
+      </Button>,
+    );
+    const className = view.getByRole("button", { name: "Save" }).props
+      .className;
+    const tokens = String(className).split(/\s+/);
+
+    expect(tokens).toContain("bg-danger");
+    // The variant's own background is gone; its `active:` state is a different declaration
+    // and survives, which is the family rule stated in `utils/cn.ts`.
+    expect(tokens).not.toContain("bg-primary");
+  });
+
   it("lets an instance prop override the configuration", async () => {
     const view = await renderWithProvider(
       <Button variant="bordered">Save</Button>,

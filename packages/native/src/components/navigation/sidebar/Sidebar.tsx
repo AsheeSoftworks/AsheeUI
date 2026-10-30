@@ -71,7 +71,7 @@ import {
   NATIVE_SIDEBAR_VARIANT_CLASS,
 } from "../../../styles/sidebar";
 import { NATIVE_VISUALLY_HIDDEN_CLASS } from "../../../styles/visually-hidden";
-import { classNames } from "../../../utils/class-names";
+import { cn } from "../../../utils/cn";
 import { openDestination } from "../../../utils/open-destination";
 import { Button } from "../../forms/button/Button";
 import { Tooltip } from "../../overlays/tooltip/Tooltip";
@@ -542,7 +542,7 @@ export function Sidebar<T = string>({
     const isActive = item.id === activeKey;
     const isDisabled = isSectionDisabled || item.disabled === true;
 
-    const rowClasses = classNames(
+    const rowClasses = cn(
       NATIVE_SIDEBAR_ITEM_BASE_CLASS,
       NATIVE_SIDEBAR_ITEM_CLASS[resolvedSizeKey],
       isCollapsed ? "justify-center px-0" : "justify-start",
@@ -557,7 +557,7 @@ export function Sidebar<T = string>({
       options?.itemClassName,
     );
 
-    const labelTextClasses = classNames(
+    const labelTextClasses = cn(
       NATIVE_SIDEBAR_ITEM_LABEL_CLASS,
       isActive ? activeTextClass : inactiveTextClass,
     );
@@ -599,7 +599,7 @@ export function Sidebar<T = string>({
         }>
         {item.icon && (
           <View
-            className={classNames(
+            className={cn(
               NATIVE_SIDEBAR_ITEM_ICON_CLASS,
               "flex items-center justify-center",
               isCollapsed && "w-full",
@@ -627,7 +627,7 @@ export function Sidebar<T = string>({
           // through the platform's visually hidden treatment, which is what the web's
           // `sr-only` span does with the same element.
           <View
-            className={classNames(
+            className={cn(
               NATIVE_SIDEBAR_ITEM_LABEL_CLASS,
               isCollapsed && NATIVE_VISUALLY_HIDDEN_CLASS,
             )}>
@@ -678,7 +678,7 @@ export function Sidebar<T = string>({
     // it is rather than disappearing.
     const isSectionDisabled = section.disabled === true;
 
-    const labelClasses = classNames(
+    const labelClasses = cn(
       NATIVE_SIDEBAR_SECTION_LABEL_CLASS[resolvedSizeKey],
       sectionLabelClassName,
       isSectionDisabled && "opacity-50",
@@ -712,7 +712,7 @@ export function Sidebar<T = string>({
   return (
     <SidebarCollapseContext.Provider value={collapseState}>
       <View
-        className={classNames(
+        className={cn(
           NATIVE_SIDEBAR_BASE_CLASS,
           widthClass,
           NATIVE_SIDEBAR_VARIANT_CLASS[resolvedVariantKey],
@@ -730,7 +730,7 @@ export function Sidebar<T = string>({
         {(onBack || (!isCollapsed && title)) && (
           <View
             testID="sidebar-header"
-            className={classNames(
+            className={cn(
               NATIVE_SIDEBAR_HEADER_BASE_CLASS,
               NATIVE_SIDEBAR_HEADER_CLASS[resolvedSizeKey],
               isCollapsed && "justify-center px-0",
@@ -768,7 +768,7 @@ export function Sidebar<T = string>({
 
         <ScrollView
           testID="sidebar-body"
-          className={classNames(NATIVE_SIDEBAR_BODY_CLASS, bodyClassName)}>
+          className={cn(NATIVE_SIDEBAR_BODY_CLASS, bodyClassName)}>
           {filteredSections.map(renderSection)}
         </ScrollView>
 
@@ -780,7 +780,7 @@ export function Sidebar<T = string>({
         {footer && (
           <View
             testID="sidebar-footer"
-            className={classNames(
+            className={cn(
               NATIVE_SIDEBAR_FOOTER_CLASS,
               NATIVE_SIDEBAR_FOOTER_PADDING_CLASS[resolvedSizeKey],
               footerClassName,

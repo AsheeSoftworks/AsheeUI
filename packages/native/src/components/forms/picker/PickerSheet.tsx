@@ -19,7 +19,7 @@
 
 import type { ReactNode } from "react";
 import { Pressable, ScrollView, View } from "react-native";
-import { classNames } from "../../../utils/class-names";
+import { cn } from "../../../utils/cn";
 import { Surface } from "../../system/surface/Surface";
 import { Typography } from "../../typography/text/Text";
 import {
@@ -137,7 +137,7 @@ export function PickerSheet({
                 }}
                 disabled={option.isDisabled}
                 onPress={() => onSelect(option.value)}
-                className={classNames(
+                className={cn(
                   NATIVE_PICKER_OPTION_CLASS,
                   isSelected && NATIVE_PICKER_OPTION_SELECTED_CLASS,
                   option.isDisabled && NATIVE_PICKER_OPTION_DISABLED_CLASS,

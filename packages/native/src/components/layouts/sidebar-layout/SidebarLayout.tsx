@@ -36,7 +36,7 @@ import {
   NATIVE_SIDEBAR_LAYOUT_ROW_SPLIT_CLASS,
   NATIVE_SIDEBAR_LAYOUT_WIDTH_CLASS,
 } from "../../../styles/sidebar-layout";
-import { classNames } from "../../../utils/class-names";
+import { cn } from "../../../utils/cn";
 import { useUnsupportedProps } from "../../../utils/unsupported-prop";
 import {
   FALLBACK_NATIVE_SIDEBAR_LAYOUT_CONFIG,
@@ -153,21 +153,21 @@ export function SidebarLayout({
 
   return (
     <View
-      className={classNames(NATIVE_SIDEBAR_LAYOUT_CLASS, className)}
+      className={cn(NATIVE_SIDEBAR_LAYOUT_CLASS, className)}
       style={style}
       {...rest}>
       {header}
 
       <View
         testID="sidebar-layout-row"
-        className={classNames(
+        className={cn(
           NATIVE_SIDEBAR_LAYOUT_ROW_CLASS,
           sideBySide && NATIVE_SIDEBAR_LAYOUT_ROW_SPLIT_CLASS,
         )}>
         <View
           accessibilityLabel={sidebarLabel}
           testID="sidebar-layout-sidebar"
-          className={classNames(
+          className={cn(
             NATIVE_SIDEBAR_LAYOUT_ASIDE_CLASS,
             atEnd && NATIVE_SIDEBAR_LAYOUT_ASIDE_END_CLASS,
             sideBySide

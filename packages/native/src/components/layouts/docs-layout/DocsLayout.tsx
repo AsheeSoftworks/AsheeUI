@@ -37,7 +37,7 @@ import {
   NATIVE_DOCS_LAYOUT_NAVIGATION_CLASS,
   NATIVE_DOCS_LAYOUT_REGION_CLASS,
 } from "../../../styles/docs-layout";
-import { classNames } from "../../../utils/class-names";
+import { cn } from "../../../utils/cn";
 import { useUnsupportedProps } from "../../../utils/unsupported-prop";
 import { Typography } from "../../typography/text/Text";
 import {
@@ -172,7 +172,7 @@ export function DocsLayout({
 
   return (
     <ScrollView
-      className={classNames(NATIVE_DOCS_LAYOUT_CLASS, className)}
+      className={cn(NATIVE_DOCS_LAYOUT_CLASS, className)}
       style={style}
       {...rest}>
       <View className={NATIVE_DOCS_LAYOUT_CONTENT_CLASS}>

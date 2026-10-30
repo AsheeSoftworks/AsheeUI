@@ -44,7 +44,7 @@ import {
 } from "../../../styles/avatar";
 import { NATIVE_IMAGE_PICTURE_FILL_CLASS } from "../../../styles/image";
 import { NATIVE_RADIUS_CLASS } from "../../../styles/radius";
-import { classNames } from "../../../utils/class-names";
+import { cn } from "../../../utils/cn";
 import { Image } from "../image/Image";
 import {
   FALLBACK_NATIVE_AVATAR_CONFIG,
@@ -210,7 +210,7 @@ export function Avatar({
       importantForAccessibility={
         accessibleName ? "auto" : "no-hide-descendants"
       }
-      className={classNames(
+      className={cn(
         NATIVE_AVATAR_BASE_CLASS,
         sizeClass,
         radiusClass,
@@ -238,13 +238,13 @@ export function Avatar({
         />
       ) : (
         <View
-          className={classNames(
+          className={cn(
             NATIVE_AVATAR_TEXT_BLOCK_CLASS,
             NATIVE_AVATAR_FALLBACK_CLASS[resolvedColor],
           )}>
           <Text
             // The frame carries the layout and the text carries its own treatment.
-            className={classNames(
+            className={cn(
               NATIVE_AVATAR_INITIALS_CLASS,
               fontClass,
               NATIVE_AVATAR_FALLBACK_TEXT_CLASS,

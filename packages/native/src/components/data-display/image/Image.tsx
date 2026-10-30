@@ -44,7 +44,7 @@ import {
   NATIVE_IMAGE_SKELETON_CLASS,
 } from "../../../styles/image";
 import { NATIVE_RADIUS_CLASS } from "../../../styles/radius";
-import { classNames } from "../../../utils/class-names";
+import { cn } from "../../../utils/cn";
 import { useUnsupportedProps } from "../../../utils/unsupported-prop";
 import { Skeleton } from "../../feedback/skeleton/Skeleton";
 import {
@@ -212,7 +212,7 @@ export function Image({
   // The placeholder must not then animate forever for a picture that can never arrive.
   const hasSource = isValidSrc(currentSrc);
 
-  const frameClasses = classNames(
+  const frameClasses = cn(
     NATIVE_IMAGE_FRAME_CLASS,
     resolveClassKey(
       resolvedRadius,

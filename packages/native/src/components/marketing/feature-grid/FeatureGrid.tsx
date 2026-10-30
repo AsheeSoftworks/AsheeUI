@@ -29,7 +29,7 @@ import {
   NATIVE_FEATURE_ICON_CLASS,
   NATIVE_FEATURE_ICON_TONE_CLASS,
 } from "../../../styles/feature-grid";
-import { classNames } from "../../../utils/class-names";
+import { cn } from "../../../utils/cn";
 import { openDestination } from "../../../utils/open-destination";
 import { Card } from "../../data-display/card/Card";
 import { SectionHeading } from "../../layouts/section-kit/SectionHeading";
@@ -188,7 +188,7 @@ export function FeatureGrid({
               <View className={NATIVE_FEATURE_CARD_BODY_CLASS}>
                 {item.icon && (
                   <View
-                    className={classNames(
+                    className={cn(
                       NATIVE_FEATURE_ICON_CLASS,
                       NATIVE_FEATURE_ICON_TONE_CLASS,
                     )}>

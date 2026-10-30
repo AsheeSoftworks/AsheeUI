@@ -26,7 +26,7 @@ import type {
 } from "react-native";
 import { Pressable, View } from "react-native";
 import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
-import { classNames } from "../../../utils/class-names";
+import { cn } from "../../../utils/cn";
 import { Typography } from "../../typography/text/Text";
 import { Image } from "../image/Image";
 import {
@@ -254,7 +254,7 @@ export function Card({
     />
   ) : null;
 
-  const classes = classNames(
+  const classes = cn(
     CARD_BASE_CLASS,
     image?.position === "background" && "relative overflow-hidden",
     CARD_VARIANT_CLASS[resolvedVariant],

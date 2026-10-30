@@ -57,7 +57,7 @@ import {
   NATIVE_TOOLTIP_CONTAINER_CLASS,
   NATIVE_TOOLTIP_WRAPPER_CLASS,
 } from "../../../styles/tooltip";
-import { classNames } from "../../../utils/class-names";
+import { cn } from "../../../utils/cn";
 import { useUnsupportedProps } from "../../../utils/unsupported-prop";
 import { Typography } from "../../typography/text/Text";
 import {
@@ -297,7 +297,7 @@ export function Tooltip({
           // The hint is not interactive: it explains what is under it, and a press belongs to
           // that control rather than to the hint.
           pointerEvents="none"
-          className={classNames(
+          className={cn(
             NATIVE_TOOLTIP_CONTAINER_CLASS,
             NATIVE_TOOLTIP_ALIGN_CLASS[anchor.align],
           )}
@@ -311,7 +311,7 @@ export function Tooltip({
             accessibilityLabel={
               typeof content === "string" ? content : undefined
             }
-            className={classNames(
+            className={cn(
               NATIVE_TOOLTIP_BUBBLE_CLASS,
               TOOLTIP_PADDING_X_CLASS[resolvedSize],
               TOOLTIP_PADDING_Y_CLASS[resolvedSize],
@@ -323,14 +323,14 @@ export function Tooltip({
               <View
                 accessibilityElementsHidden
                 importantForAccessibility="no-hide-descendants"
-                className={classNames(NATIVE_TOOLTIP_ARROW_CLASS, surfaceClass)}
+                className={cn(NATIVE_TOOLTIP_ARROW_CLASS, surfaceClass)}
               />
             )}
 
             {typeof content === "string" ? (
               <Typography
                 role="label"
-                className={classNames(
+                className={cn(
                   TOOLTIP_FONT_CLASS[resolvedSize],
                   textClass,
                 )}>
@@ -344,7 +344,7 @@ export function Tooltip({
               <View
                 accessibilityElementsHidden
                 importantForAccessibility="no-hide-descendants"
-                className={classNames(NATIVE_TOOLTIP_ARROW_CLASS, surfaceClass)}
+                className={cn(NATIVE_TOOLTIP_ARROW_CLASS, surfaceClass)}
               />
             )}
           </View>

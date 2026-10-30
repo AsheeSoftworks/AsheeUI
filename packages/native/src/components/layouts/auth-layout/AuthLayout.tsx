@@ -39,7 +39,7 @@ import {
   NATIVE_AUTH_PANEL_CLASS,
   NATIVE_AUTH_PANEL_PADDING_CLASS,
 } from "../../../styles/auth-layout";
-import { classNames } from "../../../utils/class-names";
+import { cn } from "../../../utils/cn";
 import {
   type UnsupportedElementProps,
   useUnsupportedElementProps,
@@ -172,12 +172,12 @@ export function AuthLayout({
   const formColumn = (
     <View
       testID="auth-layout-form"
-      className={classNames(
+      className={cn(
         NATIVE_AUTH_FORM_COLUMN_CLASS,
         resolved.align === "center" && NATIVE_AUTH_FORM_COLUMN_CENTERED_CLASS,
       )}>
       <View
-        className={classNames(
+        className={cn(
           NATIVE_AUTH_FORM_WRAPPER_CLASS,
           NATIVE_AUTH_CONTENT_SIZE_CLASS[resolved.contentSize],
           resolved.panel && NATIVE_AUTH_PANEL_CLASS,
@@ -201,7 +201,7 @@ export function AuthLayout({
 
   return (
     <View
-      className={classNames(
+      className={cn(
         NATIVE_AUTH_LAYOUT_CLASS,
         sideBySide && NATIVE_AUTH_LAYOUT_SPLIT_CLASS,
         className,

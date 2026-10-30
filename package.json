@@ -16,6 +16,7 @@
   "scripts": {
     "build": "turbo run build",
     "lint": "biome lint",
+    "lint:class-vocabulary": "node scripts/lint-class-vocabulary.mjs",
     "check": "biome check",
     "verify:distribution": "node scripts/verify-distribution.mjs",
     "verify:released": "node scripts/verify-released.mjs",

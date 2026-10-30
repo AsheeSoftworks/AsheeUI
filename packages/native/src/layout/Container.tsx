@@ -13,7 +13,7 @@ import type { ReactNode } from "react";
 import type { StyleProp, ViewProps, ViewStyle } from "react-native";
 import { View } from "react-native";
 import { useAsheeConfig } from "../provider/AsheeUIProvider";
-import { classNames } from "../utils/class-names";
+import { cn } from "../utils/cn";
 import {
   type UnsupportedElementProps,
   useUnsupportedElementProps,
@@ -87,7 +87,7 @@ export function Container({
 
   return (
     <View
-      className={classNames(
+      className={cn(
         CONTAINER_BASE_CLASS,
         "self-center",
         CONTAINER_MAX_WIDTH_CLASS[resolved.size],

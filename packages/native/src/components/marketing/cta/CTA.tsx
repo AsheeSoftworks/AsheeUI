@@ -30,7 +30,7 @@ import {
   NATIVE_CTA_INNER_CLASS,
   NATIVE_CTA_PANEL_CLASS,
 } from "../../../styles/cta";
-import { classNames } from "../../../utils/class-names";
+import { cn } from "../../../utils/cn";
 import {
   type UnsupportedElementProps,
   useUnsupportedElementProps,
@@ -144,7 +144,7 @@ export function CTA({
   const body = (
     <View className={NATIVE_CTA_PANEL_CLASS[resolved.panel]}>
       <View
-        className={classNames(
+        className={cn(
           NATIVE_CTA_INNER_CLASS,
           resolved.align === "center" && NATIVE_CTA_CENTERED_CLASS,
         )}>

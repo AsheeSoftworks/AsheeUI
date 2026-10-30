@@ -28,7 +28,7 @@ import {
   NATIVE_PAGINATION_BASE_CLASS,
   NATIVE_PAGINATION_POSITION_CLASS,
 } from "../../../styles/pagination";
-import { classNames } from "../../../utils/class-names";
+import { cn } from "../../../utils/cn";
 import { Button } from "../../forms/button/Button";
 import { Typography } from "../../typography/text/Text";
 import {
@@ -187,7 +187,7 @@ export function Pagination({
 
   return (
     <View
-      className={classNames(NATIVE_PAGINATION_BASE_CLASS, className)}
+      className={cn(NATIVE_PAGINATION_BASE_CLASS, className)}
       style={style}
       {...rest}>
       <Typography

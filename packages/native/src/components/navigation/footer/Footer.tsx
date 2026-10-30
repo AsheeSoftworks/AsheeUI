@@ -40,7 +40,7 @@ import {
   NATIVE_FOOTER_TOP_CLASS,
   NATIVE_FOOTER_VARIANT_CLASS,
 } from "../../../styles/footer";
-import { classNames } from "../../../utils/class-names";
+import { cn } from "../../../utils/cn";
 import {
   type UnsupportedElementProps,
   useUnsupportedElementProps,
@@ -289,7 +289,7 @@ export function Footer({
 
   return (
     <View
-      className={classNames(
+      className={cn(
         NATIVE_FOOTER_VARIANT_CLASS[resolved.variant],
         // The footer paints its own surface and its own rhythm rather than wrapping
         // itself in a `Section`, because a footer's surface is its own vocabulary

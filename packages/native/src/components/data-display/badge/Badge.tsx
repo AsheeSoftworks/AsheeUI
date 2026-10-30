@@ -27,7 +27,7 @@ import {
   NATIVE_BADGE_VARIANT_CLASS,
 } from "../../../styles/badge";
 import { NATIVE_RADIUS_CLASS } from "../../../styles/radius";
-import { classNames } from "../../../utils/class-names";
+import { cn } from "../../../utils/cn";
 import {
   FALLBACK_NATIVE_BADGE_CONFIG,
   type NativeBadgeConfig,
@@ -130,7 +130,7 @@ export function Badge({
 
   return (
     <View
-      className={classNames(
+      className={cn(
         NATIVE_BADGE_BASE_CLASS,
         NATIVE_BADGE_VARIANT_CLASS[resolvedVariant][resolvedColor],
         NATIVE_RADIUS_CLASS[resolvedRadius],
@@ -145,7 +145,7 @@ export function Badge({
           // The label is the badge's one accessible name, so it is read as a
           // single piece of text rather than as a view containing a text node.
           accessibilityLabel={String(content)}
-          className={classNames(
+          className={cn(
             NATIVE_BADGE_FONT_CLASS[resolvedSize],
             NATIVE_BADGE_TEXT_CLASS[resolvedVariant][resolvedColor],
           )}>

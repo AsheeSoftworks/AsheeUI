@@ -56,7 +56,7 @@ import {
   NATIVE_MARQUEE_TRACK_AXIS_CLASS,
   NATIVE_MARQUEE_TRACK_CLASS,
 } from "../../../styles/marquee";
-import { classNames } from "../../../utils/class-names";
+import { cn } from "../../../utils/cn";
 import { resolveLength } from "../../../utils/resolve-length";
 import {
   FALLBACK_NATIVE_MARQUEE_CONFIG,
@@ -260,7 +260,7 @@ export function Marquee({
           importantForAccessibility={isCopy ? "no-hide-descendants" : "auto"}
           accessible={isCopy ? false : undefined}
           focusable={isCopy ? false : undefined}
-          className={classNames(
+          className={cn(
             NATIVE_MARQUEE_SET_CLASS,
             (moves
               ? NATIVE_MARQUEE_SET_AXIS_CLASS
@@ -277,7 +277,7 @@ export function Marquee({
             return (
               <View
                 key={itemKey}
-                className={classNames(
+                className={cn(
                   NATIVE_MARQUEE_ITEM_CLASS,
                   itemClassName,
                 )}>
@@ -293,7 +293,7 @@ export function Marquee({
 
   return (
     <View
-      className={classNames(
+      className={cn(
         NATIVE_MARQUEE_CLASS,
         NATIVE_MARQUEE_AXIS_CLASS[resolved.axis],
         resolved.pauseOnHover && NATIVE_MARQUEE_PAUSE_ON_HOVER_CLASS,
@@ -313,7 +313,7 @@ export function Marquee({
       {moves ? (
         <Animated.View
           testID="marquee-track"
-          className={classNames(
+          className={cn(
             NATIVE_MARQUEE_TRACK_CLASS,
             NATIVE_MARQUEE_TRACK_AXIS_CLASS[resolved.axis],
           )}

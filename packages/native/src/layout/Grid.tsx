@@ -13,7 +13,7 @@ import type { StyleProp, ViewProps, ViewStyle } from "react-native";
 import { View } from "react-native";
 import { useBreakpoint } from "../hooks/use-breakpoint";
 import { useAsheeConfig } from "../provider/AsheeUIProvider";
-import { classNames } from "../utils/class-names";
+import { cn } from "../utils/cn";
 import {
   type UnsupportedElementProps,
   useUnsupportedElementProps,
@@ -103,7 +103,7 @@ export function Grid({
 
   return (
     <View
-      className={classNames(
+      className={cn(
         GRID_BASE_CLASS,
         GRID_GAP_CLASS[resolved.gap],
         className,
@@ -123,7 +123,7 @@ export function Grid({
         return cloneElement(
           cell as React.ReactElement<{ className?: string }>,
           {
-            className: classNames(cellClass, cellProps.className),
+            className: cn(cellClass, cellProps.className),
           },
         );
       })}

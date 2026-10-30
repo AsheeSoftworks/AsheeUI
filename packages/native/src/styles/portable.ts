@@ -172,17 +172,20 @@ export const SPACE_GAP_CLASS: Record<Space, string> = {
 
 /**
  * Vertical padding classes for a page section.
- * Larger tokens add a wider step at the `md` breakpoint, so the same token
- * reads as a section on a phone and as a band on a wide screen.
+ *
+ * The web copy takes a wider step at `md` upward. A device has no breakpoints, so this copy
+ * states the base step alone: the responsive part of the web's string is not portable
+ * vocabulary, and B18's class-vocabulary lint is what found it in the copied dictionary.
+ * The other twenty portable constants stay character-for-character equal.
  */
 export const SPACE_PADDING_Y_CLASS: Record<Space, string> = {
   none: "py-0",
   xs: "py-2",
   sm: "py-6",
-  md: "py-8 md:py-12",
-  lg: "py-12 md:py-16",
-  xl: "py-16 md:py-24",
-  "2xl": "py-20 md:py-32",
+  md: "py-8",
+  lg: "py-12",
+  xl: "py-16",
+  "2xl": "py-20",
 };
 
 /**

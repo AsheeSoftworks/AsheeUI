@@ -42,7 +42,7 @@ import {
   NATIVE_MODAL_WIDTH_CLASS,
 } from "../../../styles/modal";
 import { NATIVE_RADIUS_CLASS } from "../../../styles/radius";
-import { classNames } from "../../../utils/class-names";
+import { cn } from "../../../utils/cn";
 import { LayerCloseControl } from "../LayerCloseControl";
 import {
   FALLBACK_NATIVE_MODAL_CONFIG,
@@ -227,14 +227,14 @@ export function Modal({
         // not to. The press is not announced as a control of the modal's own: the layer is
         // what a reader touches to get back to the screen behind it.
         onPress={resolvedCloseOnBackdrop ? onClose : undefined}
-        className={classNames(NATIVE_MODAL_BACKDROP_CLASS, overlay?.className)}>
+        className={cn(NATIVE_MODAL_BACKDROP_CLASS, overlay?.className)}>
         <Pressable
           // The surface takes its own presses, so a press inside the modal does not reach the
           // layer behind it and dismiss it. Without this, pressing anything the modal holds
           // would close it, which is the opposite of what a modal is for.
           onPress={(event) => event.stopPropagation()}
           accessibilityViewIsModal
-          className={classNames(
+          className={cn(
             NATIVE_MODAL_WIDTH_CLASS[resolvedSize],
             NATIVE_MODAL_PANEL_CLASS,
             NATIVE_MODAL_POSITION_CLASS[resolvedPosition],

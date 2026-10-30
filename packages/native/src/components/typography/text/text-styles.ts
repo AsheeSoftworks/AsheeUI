@@ -23,7 +23,7 @@ import {
   type TypographyTracking,
   type TypographyWeight,
 } from "@asheeui/core";
-import { classNames } from "../../../utils/class-names";
+import { cn } from "../../../utils/cn";
 
 /** Size token to the platform's font-size utility. */
 export const NATIVE_TYPOGRAPHY_SIZE_CLASS: Record<TypographySize, string> = {
@@ -109,7 +109,7 @@ export const NATIVE_TYPOGRAPHY_ALIGN_CLASS: Record<TypographyAlign, string> = {
 export function composeNativeTypographyClass(
   tokens: TypographyRoleTokens,
 ): string {
-  return classNames(
+  return cn(
     NATIVE_TYPOGRAPHY_SIZE_CLASS[tokens.size],
     NATIVE_TYPOGRAPHY_WEIGHT_CLASS[tokens.weight],
     NATIVE_TYPOGRAPHY_TRACKING_CLASS[tokens.tracking],

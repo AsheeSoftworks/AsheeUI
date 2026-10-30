@@ -28,7 +28,7 @@ import {
   NATIVE_ERROR_STATE_DETAIL_CLASS,
   NATIVE_ERROR_STATE_DETAIL_SUMMARY_CLASS,
 } from "../../../styles/error-state";
-import { classNames } from "../../../utils/class-names";
+import { cn } from "../../../utils/cn";
 import {
   type UnsupportedElementProps,
   useUnsupportedElementProps,
@@ -216,7 +216,7 @@ export function ErrorState({
             <View className={NATIVE_ERROR_STATE_DETAIL_BODY_CLASS}>
               <Typography
                 role="caption"
-                className={classNames(
+                className={cn(
                   NATIVE_ERROR_STATE_DETAIL_BODY_TEXT_CLASS,
                 )}>
                 {detail}

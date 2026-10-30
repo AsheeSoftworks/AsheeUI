@@ -30,7 +30,7 @@ import {
 } from "../../../styles/form";
 import { setAccessibilityFocus, type ViewRef } from "../../../utils/accessibility";
 import { announce } from "../../../utils/announce";
-import { classNames } from "../../../utils/class-names";
+import { cn } from "../../../utils/cn";
 import { Typography } from "../../typography/text/Text";
 import { Button } from "../button/Button";
 import { type FormControl, FormContext } from "./form-context";
@@ -210,7 +210,7 @@ export function Form({
     </>
   );
 
-  const rootClassName = classNames(NATIVE_FORM_CLASS, className);
+  const rootClassName = cn(NATIVE_FORM_CLASS, className);
   const Substitute = component;
 
   return (

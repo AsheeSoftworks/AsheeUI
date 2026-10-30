@@ -52,7 +52,7 @@ import {
   NATIVE_RADIO_STATUS_BORDER_CLASS,
 } from "../../../styles/radio";
 import { NATIVE_RADIUS_CLASS } from "../../../styles/radius";
-import { classNames } from "../../../utils/class-names";
+import { cn } from "../../../utils/cn";
 import { Typography } from "../../typography/text/Text";
 import {
   FALLBACK_NATIVE_RADIO_CONFIG,
@@ -251,28 +251,28 @@ export function Radio({
         }
         onChange?.(true, value);
       }}
-      className={classNames(
+      className={cn(
         NATIVE_RADIO_ROW_CLASS,
         NATIVE_RADIO_GAP_CLASS[resolvedSize],
         isCard && NATIVE_RADIO_CARD_CLASS,
         isCard && cardRadiusClass,
         isCard &&
           (isChecked
-            ? classNames(colorClasses.border, colorClasses.cardBg)
+            ? cn(colorClasses.border, colorClasses.cardBg)
             : statusBorder),
         resolvedDisabled && NATIVE_RADIO_DISABLED_CLASS,
         className,
       )}
       style={style}>
       <View
-        className={classNames(
+        className={cn(
           NATIVE_RADIO_OUTER_BASE_CLASS,
           NATIVE_RADIO_OUTER_SIZE_CLASS[resolvedSize],
           radiusClass,
           isChecked ? colorClasses.border : statusBorder,
         )}>
         <Animated.View
-          className={classNames(
+          className={cn(
             NATIVE_RADIO_INNER_SIZE_CLASS[resolvedSize],
             radiusClass,
             colorClasses.bg,

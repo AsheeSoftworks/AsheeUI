@@ -55,7 +55,7 @@ import {
   NATIVE_INPUT_VARIANT_CLASS,
 } from "../../../styles/input";
 import { NATIVE_RADIUS_CLASS } from "../../../styles/radius";
-import { classNames } from "../../../utils/class-names";
+import { cn } from "../../../utils/cn";
 import { useUnsupportedProps } from "../../../utils/unsupported-prop";
 import { Typography } from "../../typography/text/Text";
 import { FieldShell } from "../field/FieldShell";
@@ -252,7 +252,7 @@ export function Calendar({
   };
 
   const isInvalid = isFieldInvalid(resolvedStatus);
-  const edgeClass = classNames(
+  const edgeClass = cn(
     NATIVE_INPUT_EDGE_WIDTH_CLASS[resolvedVariant],
     isInvalid
       ? NATIVE_INPUT_EDGE_INVALID_CLASS
@@ -285,7 +285,7 @@ export function Calendar({
         }}
         disabled={resolvedDisabled}
         onPress={() => setIsOpen(true)}
-        className={classNames(
+        className={cn(
           NATIVE_INPUT_BASE_CLASS,
           NATIVE_INPUT_SIZE_CLASS[resolvedSize],
           NATIVE_RADIUS_CLASS[resolvedRadius],

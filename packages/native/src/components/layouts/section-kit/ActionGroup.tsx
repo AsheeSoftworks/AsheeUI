@@ -21,7 +21,7 @@ import {
   NATIVE_SECTION_BLOCK_ACTIONS_ALIGN_CLASS,
   NATIVE_SECTION_BLOCK_ACTIONS_CLASS,
 } from "../../../styles/section-block";
-import { classNames } from "../../../utils/class-names";
+import { cn } from "../../../utils/cn";
 import { openDestination } from "../../../utils/open-destination";
 import { Button } from "../../forms/button/Button";
 
@@ -104,7 +104,7 @@ export function ActionGroup({
 
   return (
     <View
-      className={classNames(
+      className={cn(
         NATIVE_SECTION_BLOCK_ACTIONS_CLASS,
         NATIVE_SECTION_BLOCK_ACTIONS_ALIGN_CLASS[align],
         className,

@@ -53,7 +53,7 @@ import {
   ACCORDION_HEADER_SIZE_CLASS,
 } from "../../../styles/portable";
 import { NATIVE_RADIUS_CLASS } from "../../../styles/radius";
-import { classNames } from "../../../utils/class-names";
+import { cn } from "../../../utils/cn";
 import { Typography } from "../../typography/text/Text";
 import {
   FALLBACK_NATIVE_ACCORDION_CONFIG,
@@ -244,7 +244,7 @@ export function Accordion({
 
   return (
     <View
-      className={classNames(containerVariantClass, className)}
+      className={cn(containerVariantClass, className)}
       style={style}
       {...rest}>
       {items.map((item, index) => {
@@ -257,7 +257,7 @@ export function Accordion({
         return (
           <View
             key={key}
-            className={classNames(
+            className={cn(
               itemVariantClass,
               itemRadiusClass,
               isDivided && NATIVE_ACCORDION_DIVIDER_CLASS,
@@ -286,7 +286,7 @@ export function Accordion({
               // above says the same thing and leaves the trigger reachable; the press is
               // refused in `toggle`.
               onPress={() => toggle(key, item.disabled)}
-              className={classNames(
+              className={cn(
                 NATIVE_ACCORDION_HEADER_CLASS,
                 ACCORDION_HEADER_SIZE_CLASS[resolvedSize],
                 headerClassName,
@@ -321,7 +321,7 @@ export function Accordion({
                 // announcement.
                 accessibilityElementsHidden
                 importantForAccessibility="no-hide-descendants"
-                className={classNames(
+                className={cn(
                   NATIVE_ACCORDION_INDICATOR_CLASS,
                   isOpen && NATIVE_ACCORDION_INDICATOR_OPEN_CLASS,
                 )}>
@@ -335,7 +335,7 @@ export function Accordion({
 
             {isOpen && (
               <View
-                className={classNames(
+                className={cn(
                   NATIVE_ACCORDION_CONTENT_CLASS,
                   ACCORDION_CONTENT_SIZE_CLASS[resolvedSize],
                   contentClassName,

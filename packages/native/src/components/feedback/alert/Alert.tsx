@@ -53,7 +53,7 @@ import {
   NATIVE_MESSAGE_TEXT_CLASS,
 } from "../../../styles/message-surface";
 import { NATIVE_RADIUS_CLASS } from "../../../styles/radius";
-import { classNames } from "../../../utils/class-names";
+import { cn } from "../../../utils/cn";
 import { Typography } from "../../typography/text/Text";
 import {
   FALLBACK_NATIVE_ALERT_CONFIG,
@@ -176,7 +176,7 @@ export function Alert({
       // accessibility props are spread last, so they still win.
       accessibilityRole={resolveNativeAnnouncementRole(role)}
       accessibilityLiveRegion={NATIVE_ANNOUNCEMENT_LIVE_REGION[role]}
-      className={classNames(
+      className={cn(
         NATIVE_ALERT_BASE_CLASS,
         NATIVE_MESSAGE_SURFACE_CLASS[resolvedVariant][colour],
         NATIVE_RADIUS_CLASS[resolvedRadius],
@@ -193,7 +193,7 @@ export function Alert({
         {icon ?? (
           <Typography
             role="label"
-            className={classNames(NATIVE_ALERT_GLYPH_CLASS, textClass)}>
+            className={cn(NATIVE_ALERT_GLYPH_CLASS, textClass)}>
             {NATIVE_ALERT_TYPE_GLYPH[resolvedType]}
           </Typography>
         )}
@@ -203,7 +203,7 @@ export function Alert({
         {title && (
           <Typography
             role="label"
-            className={classNames(NATIVE_ALERT_TITLE_CLASS, textClass)}>
+            className={cn(NATIVE_ALERT_TITLE_CLASS, textClass)}>
             {title}
           </Typography>
         )}
@@ -222,7 +222,7 @@ export function Alert({
           className={NATIVE_ALERT_DISMISS_CLASS}>
           <Typography
             role="label"
-            className={classNames(NATIVE_ALERT_DISMISS_GLYPH_CLASS, textClass)}>
+            className={cn(NATIVE_ALERT_DISMISS_GLYPH_CLASS, textClass)}>
             ✕
           </Typography>
         </Pressable>

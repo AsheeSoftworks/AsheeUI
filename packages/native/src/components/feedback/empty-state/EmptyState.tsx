@@ -40,7 +40,7 @@ import {
   NATIVE_EMPTY_STATE_PANEL_CLASS,
   NATIVE_EMPTY_STATE_SIZE_CLASS,
 } from "../../../styles/empty-state";
-import { classNames } from "../../../utils/class-names";
+import { cn } from "../../../utils/cn";
 import {
   type UnsupportedElementProps,
   useUnsupportedElementProps,
@@ -201,7 +201,7 @@ export function EmptyState({
           ? NATIVE_ANNOUNCEMENT_LIVE_REGION[announcementRole]
           : undefined
       }
-      className={classNames(
+      className={cn(
         NATIVE_EMPTY_STATE_CLASS,
         NATIVE_EMPTY_STATE_SIZE_CLASS[resolved.size],
         resolved.panel && NATIVE_EMPTY_STATE_PANEL_CLASS,
@@ -211,7 +211,7 @@ export function EmptyState({
       {...rest}>
       {icon && (
         <View
-          className={classNames(
+          className={cn(
             NATIVE_EMPTY_STATE_ICON_CLASS[resolved.type],
             NATIVE_EMPTY_STATE_ICON_SIZE_CLASS[resolved.size],
             NATIVE_EMPTY_STATE_ICON_TEXT_CLASS[resolved.type],

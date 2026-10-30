@@ -43,7 +43,7 @@ import {
   NATIVE_PRICING_PRICE_CLASS,
 } from "../../../styles/pricing-card";
 import { NATIVE_VISUALLY_HIDDEN_CLASS } from "../../../styles/visually-hidden";
-import { classNames } from "../../../utils/class-names";
+import { cn } from "../../../utils/cn";
 import { Card } from "../../data-display/card/Card";
 import { ActionGroup } from "../../layouts/section-kit/ActionGroup";
 import { Typography } from "../../typography/text/Text";
@@ -181,7 +181,7 @@ export function PricingCard({
       variant={resolved.variant === "elevated" ? "solid" : "bordered"}
       color={isHighlighted ? "primary" : undefined}
       size={resolved.size}
-      className={classNames(
+      className={cn(
         isHighlighted && NATIVE_PRICING_HIGHLIGHTED_CLASS,
         className,
       )}
@@ -228,7 +228,7 @@ export function PricingCard({
                   key={feature.id ?? index}
                   className={NATIVE_PRICING_FEATURE_CLASS}>
                   <Typography
-                    className={classNames(
+                    className={cn(
                       NATIVE_PRICING_FEATURE_MARKER_CLASS,
                       excluded
                         ? NATIVE_PRICING_FEATURE_EXCLUDED_CLASS

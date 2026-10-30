@@ -26,7 +26,7 @@ import {
   NATIVE_SECTION_BLOCK_HEADING_CLASS,
   SECTION_BLOCK_TEXT_ALIGN,
 } from "../../../styles/section-block";
-import { classNames } from "../../../utils/class-names";
+import { cn } from "../../../utils/cn";
 import { useUnsupportedProps } from "../../../utils/unsupported-prop";
 import { Typography } from "../../typography/text/Text";
 
@@ -133,7 +133,7 @@ export function SectionHeading({
 
   return (
     <View
-      className={classNames(
+      className={cn(
         NATIVE_SECTION_BLOCK_HEADING_CLASS,
         NATIVE_SECTION_BLOCK_HEADING_ALIGN_CLASS[align],
         className,

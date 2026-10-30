@@ -48,7 +48,7 @@ import {
   NATIVE_INPUT_VARIANT_CLASS,
 } from "../../../styles/input";
 import { NATIVE_RADIUS_CLASS } from "../../../styles/radius";
-import { classNames } from "../../../utils/class-names";
+import { cn } from "../../../utils/cn";
 import { FieldShell } from "../field/FieldShell";
 import {
   FALLBACK_NATIVE_INPUT_CONFIG,
@@ -337,7 +337,7 @@ export function Input({
   // the configured colour, and native now resolves the same colour role the web field does
   // before mapping it to the platform's own edge class.
   const statusColor = resolveFieldStatusColor(resolvedStatus, resolvedColor);
-  const edgeClass = classNames(
+  const edgeClass = cn(
     NATIVE_INPUT_EDGE_WIDTH_CLASS[resolvedVariant],
     resolvedStatus !== "default"
       ? NATIVE_INPUT_EDGE_ACCENT_CLASS[statusColor]
@@ -350,7 +350,7 @@ export function Input({
     // The width belongs to the field rather than to the control, so a field that is not
     // full width takes its label and its message with it.
     <View
-      className={classNames(
+      className={cn(
         "min-w-0",
         resolvedFullWidth ? "w-full" : "self-start",
       )}>
@@ -395,7 +395,7 @@ export function Input({
               setIsFocused(false);
               onBlur?.(event);
             }}
-            className={classNames(
+            className={cn(
               NATIVE_INPUT_BASE_CLASS,
               NATIVE_INPUT_SIZE_CLASS[resolvedSize],
               NATIVE_RADIUS_CLASS[resolvedRadius],

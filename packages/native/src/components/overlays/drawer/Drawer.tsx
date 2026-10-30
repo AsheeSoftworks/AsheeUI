@@ -37,7 +37,7 @@ import {
   NATIVE_DRAWER_SHEET_EDGE,
   NATIVE_DRAWER_SIZE_CLASS,
 } from "../../../styles/drawer";
-import { classNames } from "../../../utils/class-names";
+import { cn } from "../../../utils/cn";
 import { LayerCloseControl } from "../LayerCloseControl";
 import {
   FALLBACK_NATIVE_DRAWER_CONFIG,
@@ -208,7 +208,7 @@ export function Drawer({
         accessibilityLabel="Close"
         accessibilityRole="button"
         onPress={resolvedCloseOnOverlay ? onClose : undefined}
-        className={classNames(
+        className={cn(
           NATIVE_DRAWER_BACKDROP_CLASS,
           NATIVE_DRAWER_EDGE_CLASS[edge],
           overlay?.className,
@@ -218,7 +218,7 @@ export function Drawer({
           // layer behind it and dismiss it.
           onPress={(event) => event.stopPropagation()}
           accessibilityViewIsModal
-          className={classNames(
+          className={cn(
             NATIVE_DRAWER_SHEET_CLASS,
             NATIVE_DRAWER_SIZE_CLASS[resolvedSize],
             NATIVE_DRAWER_BORDER_CLASS[edge],

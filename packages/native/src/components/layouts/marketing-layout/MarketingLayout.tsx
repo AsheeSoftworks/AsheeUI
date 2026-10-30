@@ -30,7 +30,7 @@ import {
   NATIVE_MARKETING_LAYOUT_CONTENT_CLASS,
   NATIVE_MARKETING_LAYOUT_MAIN_CLASS,
 } from "../../../styles/marketing-layout";
-import { classNames } from "../../../utils/class-names";
+import { cn } from "../../../utils/cn";
 import {
   FALLBACK_NATIVE_MARKETING_LAYOUT_CONFIG,
   type NativeMarketingLayoutConfig,
@@ -136,7 +136,7 @@ export function MarketingLayout({
 
   return (
     <ScrollView
-      className={classNames(
+      className={cn(
         NATIVE_MARKETING_LAYOUT_CLASS,
         NATIVE_MARKETING_LAYOUT_BACKGROUND_CLASS[resolved.background],
         className,

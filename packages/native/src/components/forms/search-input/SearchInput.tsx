@@ -49,7 +49,7 @@ import {
   NATIVE_SEARCH_INPUT_FIELD_CLASS,
   NATIVE_SEARCH_INPUT_ROW_CLASS,
 } from "../../../styles/search-input";
-import { classNames } from "../../../utils/class-names";
+import { cn } from "../../../utils/cn";
 import { useUnsupportedProps } from "../../../utils/unsupported-prop";
 import { Spinner } from "../../feedback/spinner/Spinner";
 import { Typography } from "../../typography/text/Text";
@@ -239,7 +239,7 @@ export function SearchInput({
   // A search field has no rounding of its own, so it takes the application's default
   // radius rather than pinning one.
   const resolvedRadius: Radius = config.defaultRadius;
-  const edgeClass = classNames(
+  const edgeClass = cn(
     NATIVE_INPUT_EDGE_WIDTH_CLASS.bordered,
     isInvalid
       ? NATIVE_INPUT_EDGE_INVALID_CLASS
@@ -250,7 +250,7 @@ export function SearchInput({
 
   return (
     <View
-      className={classNames(
+      className={cn(
         "min-w-0",
         fullWidth ? "w-full" : "self-start",
       )}>
@@ -262,7 +262,7 @@ export function SearchInput({
         status={resolvedStatus}
         required={required}
         isLoading={isLoading}>
-        <View className={classNames(NATIVE_SEARCH_INPUT_ROW_CLASS, className)}>
+        <View className={cn(NATIVE_SEARCH_INPUT_ROW_CLASS, className)}>
           {startContent ? (
             <View
               pointerEvents="none"
@@ -285,7 +285,7 @@ export function SearchInput({
             onSubmitEditing={() => onSearch?.(query)}
             onFocus={() => setIsFocused(true)}
             onBlur={() => setIsFocused(false)}
-            className={classNames(
+            className={cn(
               NATIVE_INPUT_BASE_CLASS,
               NATIVE_INPUT_SIZE_CLASS[resolvedSize],
               NATIVE_RADIUS_CLASS[resolvedRadius],

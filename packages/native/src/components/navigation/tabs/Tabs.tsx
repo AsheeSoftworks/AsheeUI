@@ -51,7 +51,7 @@ import {
   NATIVE_TABS_VARIANT_CONTENT_CLASS,
   NATIVE_TABS_VARIANT_LIST_CLASS,
 } from "../../../styles/tabs";
-import { classNames } from "../../../utils/class-names";
+import { cn } from "../../../utils/cn";
 import { Button } from "../../forms/button/Button";
 import { Typography } from "../../typography/text/Text";
 import {
@@ -239,20 +239,20 @@ export function Tabs({
 
   return (
     <View
-      className={classNames("w-full flex-col gap-4", className)}
+      className={cn("w-full flex-col gap-4", className)}
       style={style}
       {...rest}>
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
-        className={classNames(
+        className={cn(
           NATIVE_TABS_VARIANT_LIST_CLASS[resolvedVariant],
           resolvedVariant !== "underline" &&
             NATIVE_RADIUS_CLASS[resolvedRadius],
           tabListClassName,
         )}>
         <View
-          className={classNames(
+          className={cn(
             NATIVE_TABS_LIST_CLASS,
             NATIVE_TABS_VARIANT_CONTENT_CLASS[resolvedVariant],
           )}>
@@ -289,7 +289,7 @@ export function Tabs({
                     : resolvedInactiveColor
                 }
                 onPress={() => select(tab.id)}
-                className={classNames(
+                className={cn(
                   NATIVE_TABS_TRIGGER_CLASS,
                   TABS_PADDING_X_CLASS[resolvedSize],
                   TABS_FONT_CLASS[resolvedSize],
@@ -311,7 +311,7 @@ export function Tabs({
         </View>
       </ScrollView>
 
-      <View className={classNames(NATIVE_TABS_PANEL_CLASS, tabPanelClassName)}>
+      <View className={cn(NATIVE_TABS_PANEL_CLASS, tabPanelClassName)}>
         {typeof activeTab?.content === "string" ? (
           <Typography role="body-md">{activeTab.content}</Typography>
         ) : (

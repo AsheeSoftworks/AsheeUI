@@ -54,7 +54,7 @@ import {
   NATIVE_CALENDAR_WEEKDAYS_CLASS,
 } from "../../../styles/calendar";
 import { announce } from "../../../utils/announce";
-import { classNames } from "../../../utils/class-names";
+import { cn } from "../../../utils/cn";
 import { Surface } from "../../system/surface/Surface";
 import { Typography } from "../../typography/text/Text";
 import { TimeColumn } from "./TimeColumn";
@@ -284,10 +284,10 @@ export function CalendarSheet({
           accessibilityRole="button"
           accessibilityLabel="Done"
           onPress={onClose}
-          className={classNames(NATIVE_CALENDAR_DONE_CLASS, colorStyles.bg)}>
+          className={cn(NATIVE_CALENDAR_DONE_CLASS, colorStyles.bg)}>
           <Typography
             role="label"
-            className={classNames(
+            className={cn(
               NATIVE_CALENDAR_DONE_LABEL_CLASS,
               colorStyles.on,
             )}>
@@ -329,7 +329,7 @@ export function CalendarSheet({
                 accessibilityState={{ disabled: !canGoNext }}
                 disabled={!canGoNext}
                 onPress={nextMonth}
-                className={classNames(
+                className={cn(
                   NATIVE_CALENDAR_NAV_CLASS,
                   !canGoNext && NATIVE_CALENDAR_UNAVAILABLE_CLASS,
                 )}>
@@ -378,7 +378,7 @@ export function CalendarSheet({
                       }}
                       disabled={isDisabled(day)}
                       onPress={() => handleDayPress(day)}
-                      className={classNames(
+                      className={cn(
                         NATIVE_CALENDAR_CELL_CLASS,
                         NATIVE_CALENDAR_CELL_SIZE_CLASS[size],
                         isDisabled(day) && NATIVE_CALENDAR_CELL_DISABLED_CLASS,
@@ -387,7 +387,7 @@ export function CalendarSheet({
                       )}>
                       <Typography
                         role="body-sm"
-                        className={classNames(
+                        className={cn(
                           NATIVE_CALENDAR_CELL_TEXT_CLASS,
                           isSelected(day) && colorStyles.on,
                           isToday(day) && !isSelected(day) && colorStyles.text,

@@ -333,7 +333,10 @@ describe("the strings both renderers compile", () => {
       "TOOLTIP_PADDING_Y_CLASS",
       "TOOLTIP_FONT_CLASS",
       "SPACE_GAP_CLASS",
-      "SPACE_PADDING_Y_CLASS",
+      // `SPACE_PADDING_Y_CLASS` is deliberately absent: the web copy takes a wider step from
+      // `md` upward, and B18's class-vocabulary lint found the responsive classes in the
+      // platform's copy, where they compile to nothing. The platform copy states the base
+      // step alone; the other constants are still compared character for character.
       "SPACE_MIN_HEIGHT_CLASS",
     ];
 

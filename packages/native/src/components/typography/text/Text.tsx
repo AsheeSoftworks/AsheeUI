@@ -40,7 +40,7 @@ import {
   type TextStyle,
 } from "react-native";
 import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
-import { classNames } from "../../../utils/class-names";
+import { cn } from "../../../utils/cn";
 import {
   defaultNativeTextConfig,
   FALLBACK_NATIVE_TEXT_CONFIG,
@@ -232,7 +232,7 @@ export function Typography({
       // A unitless `leading-*` is a browser multiplier; the platform's line height is a
       // number of density-independent pixels, so the multiplier is applied here.
       style={[{ lineHeight: nativeLineHeight(tokens) }, style]}
-      className={classNames(
+      className={cn(
         composeNativeTypographyClass(tokens),
         NATIVE_TYPOGRAPHY_TONE_CLASS[resolvedTone],
         resolvedAlign ? NATIVE_TYPOGRAPHY_ALIGN_CLASS[resolvedAlign] : undefined,

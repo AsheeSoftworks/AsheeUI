@@ -46,7 +46,7 @@ import {
   NATIVE_LINK_VARIANT_CLASS,
 } from "../../../styles/link";
 import { LINK_SIZE_CLASS } from "../../../styles/portable";
-import { classNames } from "../../../utils/class-names";
+import { cn } from "../../../utils/cn";
 import { openDestination } from "../../../utils/open-destination";
 import { Typography } from "../../typography/text/Text";
 import {
@@ -223,12 +223,12 @@ export function Link({
   const colourClass =
     resolvedVariant === "muted"
       ? NATIVE_LINK_VARIANT_CLASS.muted
-      : classNames(
+      : cn(
           NATIVE_LINK_COLOR_CLASS[resolvedColor],
           NATIVE_LINK_VARIANT_CLASS[resolvedVariant],
         );
 
-  const classes = classNames(
+  const classes = cn(
     NATIVE_LINK_BASE_CLASS,
     LINK_SIZE_CLASS[resolvedSize],
     colourClass,
@@ -242,7 +242,7 @@ export function Link({
   const content = (
     <>
       {startIcon && (
-        <View className={classNames(NATIVE_LINK_ICON_CLASS, iconSizeClass)}>
+        <View className={cn(NATIVE_LINK_ICON_CLASS, iconSizeClass)}>
           {startIcon}
         </View>
       )}
@@ -258,14 +258,14 @@ export function Link({
       )}
 
       {endIcon ? (
-        <View className={classNames(NATIVE_LINK_ICON_CLASS, iconSizeClass)}>
+        <View className={cn(NATIVE_LINK_ICON_CLASS, iconSizeClass)}>
           {endIcon}
         </View>
       ) : (
         resolvedIsExternal && (
           <Typography
             role="label"
-            className={classNames(iconSizeClass, colourClass)}>
+            className={cn(iconSizeClass, colourClass)}>
             {NATIVE_LINK_EXTERNAL_GLYPH}
           </Typography>
         )

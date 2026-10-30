@@ -42,7 +42,7 @@ import {
   NATIVE_TEXTAREA_ROW_HEIGHT,
   NATIVE_TEXTAREA_SIZE_CLASS,
 } from "../../../styles/textarea";
-import { classNames } from "../../../utils/class-names";
+import { cn } from "../../../utils/cn";
 import { useUnsupportedProps } from "../../../utils/unsupported-prop";
 import { FieldShell } from "../field/FieldShell";
 import {
@@ -232,7 +232,7 @@ export function Textarea({
 
   const isInvalid = isFieldInvalid(resolvedStatus);
   const statusColor = resolveFieldStatusColor(resolvedStatus, resolvedColor);
-  const edgeClass = classNames(
+  const edgeClass = cn(
     NATIVE_INPUT_EDGE_WIDTH_CLASS[resolvedVariant],
     resolvedStatus !== "default"
       ? NATIVE_INPUT_EDGE_ACCENT_CLASS[statusColor]
@@ -243,7 +243,7 @@ export function Textarea({
 
   return (
     <View
-      className={classNames(
+      className={cn(
         "min-w-0",
         resolvedFullWidth ? "w-full" : "self-start",
       )}>
@@ -283,7 +283,7 @@ export function Textarea({
               setIsFocused(false);
               onBlur?.(event);
             }}
-            className={classNames(
+            className={cn(
               NATIVE_TEXTAREA_BASE_CLASS,
               NATIVE_TEXTAREA_SIZE_CLASS[resolvedSize],
               NATIVE_RADIUS_CLASS[resolvedRadius],

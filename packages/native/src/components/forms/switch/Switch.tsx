@@ -46,7 +46,7 @@ import {
   NATIVE_SWITCH_TRACK_SIZE_CLASS,
   NATIVE_SWITCH_UNCHECKED_CLASS,
 } from "../../../styles/switch";
-import { classNames } from "../../../utils/class-names";
+import { cn } from "../../../utils/cn";
 import { FieldShell } from "../field/FieldShell";
 import {
   FALLBACK_NATIVE_SWITCH_CONFIG,
@@ -250,13 +250,13 @@ export function Switch({
           if (!isControlled) setUncontrolledChecked(!isChecked);
           onChange?.(!isChecked);
         }}
-        className={classNames(
+        className={cn(
           "self-start",
           isUnavailable && NATIVE_SWITCH_DISABLED_CLASS,
           className,
         )}>
         <View
-          className={classNames(
+          className={cn(
             NATIVE_SWITCH_TRACK_CLASS,
             NATIVE_SWITCH_TRACK_SIZE_CLASS[resolvedSize],
             radiusClass,
@@ -267,7 +267,7 @@ export function Switch({
           )}
           style={style}>
           <Animated.View
-            className={classNames(
+            className={cn(
               NATIVE_SWITCH_THUMB_CLASS,
               NATIVE_SWITCH_THUMB_SIZE_CLASS[resolvedSize],
               radiusClass,

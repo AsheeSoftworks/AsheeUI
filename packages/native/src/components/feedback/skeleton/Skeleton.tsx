@@ -26,7 +26,7 @@ import { Animated, View, type ViewProps } from "react-native";
 import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
 import { NATIVE_RADIUS_CLASS } from "../../../styles/radius";
 import { NATIVE_SKELETON_BASE_CLASS } from "../../../styles/skeleton";
-import { classNames } from "../../../utils/class-names";
+import { cn } from "../../../utils/cn";
 import {
   FALLBACK_NATIVE_SKELETON_CONFIG,
   type NativeSkeletonConfig,
@@ -157,7 +157,7 @@ export function Skeleton({
     };
   }, [resolvedAnimated, opacity]);
 
-  const classes = classNames(
+  const classes = cn(
     NATIVE_SKELETON_BASE_CLASS,
     resolveClassKey(
       resolvedRadius,

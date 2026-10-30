@@ -58,7 +58,7 @@ import {
   NATIVE_ROW_LIST_SURFACE,
   NATIVE_ROW_LIST_VALUE_CLASS,
 } from "../../../styles/table";
-import { classNames } from "../../../utils/class-names";
+import { cn } from "../../../utils/cn";
 import { EmptyState } from "../../feedback/empty-state/EmptyState";
 import { LoadingState } from "../../feedback/loading-state/LoadingState";
 import { SearchInput } from "../../forms/search-input/SearchInput";
@@ -421,7 +421,7 @@ export function RowList<TData>({
 
   return (
     <View
-      className={classNames(NATIVE_ROW_LIST_WRAPPER_CLASS, className)}
+      className={cn(NATIVE_ROW_LIST_WRAPPER_CLASS, className)}
       style={style}
       {...rest}>
       {hasHeading ? (
@@ -456,7 +456,7 @@ export function RowList<TData>({
         ) : (
           <View
             testID="row-list"
-            className={classNames(
+            className={cn(
               NATIVE_ROW_LIST_CLASS,
               resolvedTable.className,
             )}>
@@ -472,7 +472,7 @@ export function RowList<TData>({
                   variant={NATIVE_ROW_LIST_SURFACE[resolvedTable.variant]}
                   radius={resolvedTable.radius}
                   size={resolvedTable.size}
-                  className={classNames(
+                  className={cn(
                     "w-full",
                     resolvedTable.rowClassName,
                     // The chosen row states the accent fully, and it is applied last so it
@@ -492,7 +492,7 @@ export function RowList<TData>({
                       return (
                         <View
                           key={column.id ?? columnIndex}
-                          className={classNames(
+                          className={cn(
                             NATIVE_ROW_LIST_FIELD_CLASS,
                             resolvedTable.cellClassName,
                           )}>

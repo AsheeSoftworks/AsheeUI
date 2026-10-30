@@ -42,7 +42,7 @@ import {
   NATIVE_PIN_INPUT_VALUE_DISABLED_CLASS,
 } from "../../../styles/pin-input";
 import { NATIVE_RADIUS_CLASS } from "../../../styles/radius";
-import { classNames } from "../../../utils/class-names";
+import { cn } from "../../../utils/cn";
 import { Typography } from "../../typography/text/Text";
 import { FieldShell } from "../field/FieldShell";
 import {
@@ -259,7 +259,7 @@ export function PinInput({
         accessibilityHint={description}
         disabled={resolvedDisabled}
         onPress={() => fieldRef.current?.focus()}
-        className={classNames(NATIVE_PIN_INPUT_GROUP_CLASS, className)}>
+        className={cn(NATIVE_PIN_INPUT_GROUP_CLASS, className)}>
         <TextInput
           ref={fieldRef}
           testID={testID}
@@ -282,7 +282,7 @@ export function PinInput({
           <Fragment key={`pin-${index}`}>
             <View
               accessible={false}
-              className={classNames(
+              className={cn(
                 NATIVE_PIN_INPUT_BOX_CLASS,
                 NATIVE_PIN_INPUT_SIZE_CLASS[resolvedSize],
                 NATIVE_RADIUS_CLASS[resolvedRadius],
@@ -295,7 +295,7 @@ export function PinInput({
               )}>
               <Typography
                 role="body-lg"
-                className={classNames(
+                className={cn(
                   NATIVE_PIN_INPUT_FONT_CLASS[resolvedSize],
                   resolvedDisabled
                     ? NATIVE_PIN_INPUT_VALUE_DISABLED_CLASS

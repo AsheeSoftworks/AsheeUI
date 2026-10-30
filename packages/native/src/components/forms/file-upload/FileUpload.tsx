@@ -35,7 +35,7 @@ import {
   NATIVE_FILE_UPLOAD_ZONE_CLASS,
   NATIVE_FILE_UPLOAD_ZONE_DISABLED_CLASS,
 } from "../../../styles/file-upload";
-import { classNames } from "../../../utils/class-names";
+import { cn } from "../../../utils/cn";
 import { Typography } from "../../typography/text/Text";
 import { FieldShell } from "../field/FieldShell";
 import {
@@ -193,7 +193,7 @@ export function FileUpload({
         aria-invalid={isFieldInvalid(resolvedStatus)}
         disabled={resolvedDisabled}
         onPress={() => onChoose?.()}
-        className={classNames(
+        className={cn(
           NATIVE_FILE_UPLOAD_ZONE_CLASS,
           NATIVE_FILE_UPLOAD_SIZE_CLASS[resolvedSize],
           resolvedDisabled && NATIVE_FILE_UPLOAD_ZONE_DISABLED_CLASS,

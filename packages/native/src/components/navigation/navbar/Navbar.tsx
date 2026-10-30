@@ -50,7 +50,7 @@ import {
   NATIVE_TAB_BAR_ITEM_CLASS,
 } from "../../../styles/navbar";
 import { NAVBAR_BRAND_TEXT_CLASS } from "../../../styles/portable";
-import { classNames } from "../../../utils/class-names";
+import { cn } from "../../../utils/cn";
 import { useUnsupportedProps } from "../../../utils/unsupported-prop";
 import { Typography } from "../../typography/text/Text";
 import { Link } from "../link";
@@ -156,7 +156,7 @@ function Destinations({
     <View
       accessibilityRole="tablist"
       accessibilityLabel={label}
-      className={classNames(
+      className={cn(
         NATIVE_NAVBAR_LINKS_ROW_CLASS,
         align && NATIVE_NAVBAR_ALIGN_CLASS[align],
         className,
@@ -178,7 +178,7 @@ function Destinations({
           size="sm"
           component={item.component ?? link?.component}
           componentProps={{ ...link?.props, ...item.componentProps }}
-          className={classNames(
+          className={cn(
             itemClassName,
             item.isActive && activeClassName,
           )}>
@@ -347,7 +347,7 @@ export function Navbar({
 
   return (
     <View
-      className={classNames(
+      className={cn(
         NATIVE_NAVBAR_BASE_CLASS,
         NATIVE_NAVBAR_VARIANT_CLASS[resolved.variant],
         resolved.position === "sticky" && NATIVE_NAVBAR_POSITION_CLASS,
@@ -429,7 +429,7 @@ export function TabBar({
 }: TabBarProps) {
   return (
     <View
-      className={classNames(NATIVE_TAB_BAR_CLASS, className)}
+      className={cn(NATIVE_TAB_BAR_CLASS, className)}
       style={style}
       {...rest}>
       <Destinations

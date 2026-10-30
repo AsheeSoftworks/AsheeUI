@@ -37,7 +37,7 @@ import {
   NATIVE_HERO_ROW_CLASS,
   NATIVE_HERO_TEXT_COLUMN_CLASS,
 } from "../../../styles/hero";
-import { classNames } from "../../../utils/class-names";
+import { cn } from "../../../utils/cn";
 import {
   type UnsupportedElementProps,
   useUnsupportedElementProps,
@@ -183,7 +183,7 @@ export function Hero({
 
   const body = media ? (
     <View
-      className={classNames(
+      className={cn(
         NATIVE_HERO_BASE_CLASS,
         // The platform decides the arrangement from the window it measures: the
         // framework's `md` window is the first one with room for two columns.

@@ -30,7 +30,7 @@ import {
   NATIVE_SPINNER_SIZE_CLASS,
   NATIVE_SPINNER_TRACK_CLASS,
 } from "../../../styles/spinner";
-import { classNames } from "../../../utils/class-names";
+import { cn } from "../../../utils/cn";
 import { resolveSpinnerDurationMs } from "./resolve-duration";
 import {
   FALLBACK_NATIVE_SPINNER_CONFIG,
@@ -115,7 +115,7 @@ export function Spinner({
     FALLBACK_NATIVE_SPINNER_CONFIG.speed,
   );
 
-  const ringClass = classNames(
+  const ringClass = cn(
     NATIVE_SPINNER_BASE_CLASS,
     NATIVE_SPINNER_SIZE_CLASS[resolvedSize],
     NATIVE_SPINNER_TRACK_CLASS[resolvedColor],
@@ -166,7 +166,7 @@ export function Spinner({
         accessibilityState={label ? { busy: true } : undefined}
         accessibilityElementsHidden={label ? undefined : true}
         importantForAccessibility={label ? "auto" : "no-hide-descendants"}
-        className={classNames(ringClass, className)}
+        className={cn(ringClass, className)}
         style={style}
         {...rest}
       />

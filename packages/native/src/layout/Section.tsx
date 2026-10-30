@@ -12,7 +12,7 @@ import type { ReactNode } from "react";
 import type { StyleProp, ViewProps, ViewStyle } from "react-native";
 import { View } from "react-native";
 import { useAsheeConfig } from "../provider/AsheeUIProvider";
-import { classNames } from "../utils/class-names";
+import { cn } from "../utils/cn";
 import {
   type UnsupportedElementProps,
   useUnsupportedElementProps,
@@ -88,7 +88,7 @@ export function Section({
 
   return (
     <View
-      className={classNames(
+      className={cn(
         SECTION_BASE_CLASS,
         SECTION_SPACING_CLASS[resolved.spacing],
         SECTION_BACKGROUND_CLASS[resolved.background],

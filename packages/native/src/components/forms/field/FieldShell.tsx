@@ -21,7 +21,7 @@ import {
 } from "@asheeui/core";
 import type { ReactNode } from "react";
 import { View } from "react-native";
-import { classNames } from "../../../utils/class-names";
+import { cn } from "../../../utils/cn";
 import {
   NATIVE_FIELD_LABEL_ROW_CLASS,
   NATIVE_FIELD_SHELL_CLASS,
@@ -116,7 +116,7 @@ export function FieldShell({
     <View className={NATIVE_FIELD_SHELL_CLASS}>
       {label && (
         <View
-          className={classNames(
+          className={cn(
             NATIVE_FIELD_LABEL_ROW_CLASS,
             LABEL_ALIGN_CLASS[labelAlign],
           )}>

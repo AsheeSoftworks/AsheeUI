@@ -38,7 +38,7 @@ import {
   NATIVE_BUTTON_VARIANT_CLASS,
 } from "../../../styles/button";
 import { NATIVE_RADIUS_CLASS } from "../../../styles/radius";
-import { classNames } from "../../../utils/class-names";
+import { cn } from "../../../utils/cn";
 import { openDestination } from "../../../utils/open-destination";
 import { useFormContext } from "../form/form-context";
 import {
@@ -264,7 +264,7 @@ export function Button({
   // A busy button is also disabled: pressing it twice would send the action twice.
   const isInteractionDisabled = Boolean(isDisabled) || Boolean(isLoading);
 
-  const classes = classNames(
+  const classes = cn(
     NATIVE_BUTTON_BASE_CLASS,
     icon
       ? NATIVE_BUTTON_ICON_SIZE_CLASS[resolvedSize]

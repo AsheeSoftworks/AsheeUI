@@ -31,7 +31,7 @@ import {
   NATIVE_TOAST_CONTAINER_CLASS,
   NATIVE_TOAST_PLACEMENT_CLASS,
 } from "../../../styles/toast";
-import { classNames } from "../../../utils/class-names";
+import { cn } from "../../../utils/cn";
 import { ToastContext } from "./ToastContext";
 import { ToastItem } from "./ToastItem";
 import {
@@ -282,7 +282,7 @@ export function ToastProvider({
           <View
             key={groupPlacement}
             accessibilityLabel="Notifications"
-            className={classNames(
+            className={cn(
               NATIVE_TOAST_CONTAINER_CLASS,
               NATIVE_TOAST_PLACEMENT_CLASS[groupPlacement],
             )}

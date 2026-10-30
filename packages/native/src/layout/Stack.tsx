@@ -17,7 +17,7 @@ import type { ReactNode } from "react";
 import type { StyleProp, ViewProps, ViewStyle } from "react-native";
 import { View } from "react-native";
 import { useAsheeConfig } from "../provider/AsheeUIProvider";
-import { classNames } from "../utils/class-names";
+import { cn } from "../utils/cn";
 import {
   type UnsupportedElementProps,
   useUnsupportedElementProps,
@@ -106,7 +106,7 @@ export function Stack({
 
   return (
     <View
-      className={classNames(
+      className={cn(
         STACK_BASE_CLASS,
         STACK_DIRECTION_CLASS[resolved.direction],
         STACK_ALIGN_CLASS[resolved.align],

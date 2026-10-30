@@ -32,7 +32,7 @@ import {
   NATIVE_PAGE_HEADER_STICKY_CLASS,
 } from "../../../styles/page";
 import { SPACE_PADDING_Y_CLASS } from "../../../styles/portable";
-import { classNames } from "../../../utils/class-names";
+import { cn } from "../../../utils/cn";
 import { warnUnsupportedProp } from "../../../utils/unsupported-prop";
 import {
   type UnsupportedElementProps,
@@ -133,7 +133,7 @@ export function Page({
 
   return (
     <View
-      className={classNames(NATIVE_PAGE_CLASS, className)}
+      className={cn(NATIVE_PAGE_CLASS, className)}
       style={style}
       {...rest}>
       {children}
@@ -203,7 +203,7 @@ export function PageHeader({
   return (
     <View
       accessibilityRole="header"
-      className={classNames(
+      className={cn(
         NATIVE_PAGE_HEADER_CLASS,
         resolved.sticky && NATIVE_PAGE_HEADER_STICKY_CLASS,
         resolved.divider && NATIVE_PAGE_DIVIDER_CLASS,
@@ -275,7 +275,7 @@ export function PageContent({
 
   const inner = (
     <View
-      className={classNames(
+      className={cn(
         SPACE_PADDING_Y_CLASS[resolved.spacing],
         "flex w-full flex-col",
         className,
@@ -350,7 +350,7 @@ export function PageFooter({
 
   return (
     <View
-      className={classNames(
+      className={cn(
         NATIVE_PAGE_FOOTER_CLASS,
         resolved.divider && NATIVE_PAGE_FOOTER_DIVIDER_CLASS,
         className,

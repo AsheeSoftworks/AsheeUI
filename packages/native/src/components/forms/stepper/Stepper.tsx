@@ -38,7 +38,7 @@ import {
   NATIVE_STEPPER_MARKER_TEXT_CLASS,
   NATIVE_STEPPER_TEXT_CLASS,
 } from "../../../styles/stepper";
-import { classNames } from "../../../utils/class-names";
+import { cn } from "../../../utils/cn";
 import { Typography } from "../../typography/text/Text";
 import {
   FALLBACK_NATIVE_STEPPER_CONFIG,
@@ -163,7 +163,7 @@ export function Stepper({
   return (
     <View
       accessibilityLabel={label}
-      className={classNames(
+      className={cn(
         NATIVE_STEPPER_LIST_CLASS[resolvedOrientation],
         className,
       )}>
@@ -171,14 +171,14 @@ export function Stepper({
         const state = stepState(index, currentStep);
         const marker = (
           <View
-            className={classNames(
+            className={cn(
               NATIVE_STEPPER_MARKER_CLASS,
               NATIVE_STEPPER_MARKER_SIZE_CLASS[resolvedSize],
               NATIVE_STEPPER_MARKER_STATE_CLASS[state],
             )}>
             <Typography
               role="label"
-              className={classNames(
+              className={cn(
                 NATIVE_STEPPER_MARKER_FONT_CLASS[resolvedSize],
                 NATIVE_STEPPER_MARKER_TEXT_CLASS[state],
               )}>

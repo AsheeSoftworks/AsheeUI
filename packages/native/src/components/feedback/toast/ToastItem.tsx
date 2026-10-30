@@ -46,7 +46,7 @@ import {
   NATIVE_TOAST_ICON_CLASS,
   NATIVE_TOAST_TYPE_GLYPH,
 } from "../../../styles/toast";
-import { classNames } from "../../../utils/class-names";
+import { cn } from "../../../utils/cn";
 import { Typography } from "../../typography/text/Text";
 import type { ToastItemData, ToastPlacement } from "./toast-config";
 
@@ -187,7 +187,7 @@ export function ToastItem({
         // it is news, and news waits for a pause in what a reader is already hearing.
         accessible
         accessibilityLiveRegion={NATIVE_ANNOUNCEMENT_LIVE_REGION.status}
-        className={classNames(
+        className={cn(
           NATIVE_TOAST_BASE_CLASS,
           TOAST_WIDTH_CLASS[size],
           TOAST_PADDING_CLASS[size],
@@ -203,7 +203,7 @@ export function ToastItem({
           {icon ?? (
             <Typography
               role="label"
-              className={classNames(fontClass, textClass)}>
+              className={cn(fontClass, textClass)}>
               {NATIVE_TOAST_TYPE_GLYPH[type ?? "info"]}
             </Typography>
           )}
@@ -213,14 +213,14 @@ export function ToastItem({
           {title && (
             <Typography
               role="label"
-              className={classNames(TOAST_TITLE_FONT_CLASS[size], textClass)}
+              className={cn(TOAST_TITLE_FONT_CLASS[size], textClass)}
               numberOfLines={1}>
               {title}
             </Typography>
           )}
           <Typography
             role="body-md"
-            className={classNames(fontClass, textClass)}>
+            className={cn(fontClass, textClass)}>
             {message}
           </Typography>
           {action && (
@@ -236,7 +236,7 @@ export function ToastItem({
             className={NATIVE_TOAST_DISMISS_CLASS}>
             <Typography
               role="label"
-              className={classNames(fontClass, textClass)}>
+              className={cn(fontClass, textClass)}>
               ✕
             </Typography>
           </Pressable>

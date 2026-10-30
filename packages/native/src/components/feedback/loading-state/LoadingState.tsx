@@ -28,7 +28,7 @@ import {
   NATIVE_LOADING_STATE_SIZE_CLASS,
 } from "../../../styles/loading-state";
 import { SPACE_MIN_HEIGHT_CLASS } from "../../../styles/portable";
-import { classNames } from "../../../utils/class-names";
+import { cn } from "../../../utils/cn";
 import {
   type UnsupportedElementProps,
   useUnsupportedElementProps,
@@ -126,7 +126,7 @@ export function LoadingState({
       // not that something has gone wrong.
       accessible
       accessibilityLiveRegion={NATIVE_ANNOUNCEMENT_LIVE_REGION.status}
-      className={classNames(
+      className={cn(
         NATIVE_LOADING_STATE_CLASS,
         NATIVE_LOADING_STATE_SIZE_CLASS[resolved.size],
         SPACE_MIN_HEIGHT_CLASS[resolved.minHeight],
