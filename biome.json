@@ -30,16 +30,6 @@
           }
         }
       }
-    },
-    {
-      "includes": ["apps/expo-playground/global.css"],
-      "linter": {
-        "rules": {
-          "suspicious": {
-            "noUnknownAtRules": "off"
-          }
-        }
-      }
     }
   ],
   "javascript": {
