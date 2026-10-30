@@ -4,11 +4,17 @@
  * This package holds everything the platforms agree on: the design language as
  * platform-neutral values, the component contracts an implementation satisfies,
  * the component registry that collects the defaults each implementation
- * registers, the cascade every component resolves through, the compatibility
- * matrix that states what each component means on each platform, and the
- * configuration pipeline that turns a consumer's `asheeui.config.*` export into
- * the values a component reads, and the class dictionaries each renderer maps a
- * resolved value into.
+ * registers, the cascade every component resolves through, and the configuration
+ * pipeline that turns a consumer's `asheeui.config.*` export into the values a
+ * component reads.
+ *
+ * It holds no class string. A class string states a decision about pixels that only one renderer
+ * compiles, so each renderer owns its own dictionaries (C1–C3); what is left is the vocabulary, the
+ * rules and the values both platforms name.
+ *
+ * The compatibility matrix is not part of this entry. It is data only tooling reads — no component
+ * imports it — so it is published from `@asheeui/core/dev` (C4): an application imports the contract,
+ * and a tool imports the inventory.
  *
  * It depends on no platform — no DOM, no React runtime, no React Native — because
  * a layer that depends on a platform is not shared: React bindings stay with the
@@ -26,7 +32,6 @@ export * from "./components/feedback/toast/toast-styles";
 export * from "./components/forms/stepper/stepper-styles";
 export * from "./config";
 export * from "./contracts";
-export * from "./matrix";
 export * from "./registry";
 export * from "./shared";
 export * from "./theme";

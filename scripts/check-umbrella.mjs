@@ -36,6 +36,11 @@ import { fileURLToPath } from "node:url";
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const UI_DIRECTORY = join(ROOT, "packages/ui");
 const UMBRELLA_MANIFEST = join(UI_DIRECTORY, "package.json");
+/**
+ * The matrix is published as `@asheeui/core/dev` (C4), not from core's root entry, and this guard
+ * reads its source for the same reason the parity guard does: the classification is data, and the
+ * assertion is about the umbrella rather than about core's build.
+ */
 const MATRIX_FILE = join(ROOT, "packages/core/src/matrix.ts");
 const PORTABLE_FILE = join(ROOT, "packages/core/src/portable.ts");
 

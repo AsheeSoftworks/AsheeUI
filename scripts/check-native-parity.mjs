@@ -29,6 +29,11 @@ import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
+/**
+ * The matrix's source, which is what a package publishes as `@asheeui/core/dev`. C4 took it off
+ * core's root entry, so this path is the declaration of record even though no package imports it at
+ * runtime; reading the source keeps this guard independent of a build.
+ */
 const MATRIX_FILE = join(ROOT, "packages/core/src/matrix.ts");
 const NATIVE_ENTRY = join(ROOT, "packages/native/src/index.ts");
 const QUEUE_FILE = join(ROOT, "scripts/native-parity.json");
