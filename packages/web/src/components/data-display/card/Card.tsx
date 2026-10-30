@@ -322,6 +322,12 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(
       id,
       style,
       onKeyDown,
+      // The two options the shared card section states and this renderer does not draw: the platform
+      // paints `color` as its border's accent, and `isPressable` is a `Pressable` prop. They are
+      // pulled out here so a consumer that writes them — a configuration shared with a device — does
+      // not hand an unknown attribute to the DOM.
+      color: _color,
+      isPressable: _isPressable,
       ...rest
     },
     ref,
