@@ -1,13 +1,27 @@
 /**
- * Typography token definitions for AsheeUI.
+ * The typography vocabulary both renderers name, and the treatment each role stands for.
  *
- * Typography uses the same two-layer model as radius and colour: a semantic
- * layer (roles) resolves to a size/style layer, which resolves to complete,
- * static Tailwind class strings. This file holds the types and the mappings;
- * the public `Typography` component consumes them.
+ * Typography uses the same two-layer model as radius and colour: a semantic layer (roles)
+ * resolves to a size/style layer, which each renderer turns into the classes it compiles. What
+ * lives here is the first layer and the mapping between the two, because both renderers have to
+ * agree on what a role *means*:
  *
- * @see https://www.asheeui.com/components/typography/typography — the roles, the scale and what each element is
- * specification) for the rationale, the role table and the compatibility notes.
+ * - the six `TYPOGRAPHY_*_VALUES` arrays and the unions derived from them (`TypographySize`,
+ *   `TypographyTone` and the rest). A type never moves: every `*Config` in core accepts this
+ *   vocabulary, and the platform re-exports those configs, so a union in a renderer would split
+ *   the configuration a shared file is written in (H17).
+ * - `TypographyRoleTokens` and `TYPOGRAPHY_ROLE_TOKEN` — what each role resolves to. The platform
+ *   is its only future reader and the web its only reader today, which is not a contradiction:
+ *   B15 replaces the platform's private role table with this one instead of moving it here, and a
+ *   table two renderers must agree on cannot be stated in one of them.
+ * - `TypographyRole` — the role names, which are the vocabulary a prop states.
+ *
+ * The *classes* are the renderer's that compiles them. `TYPOGRAPHY_SIZE_CLASS` and the rest, with
+ * `TYPOGRAPHY_ROLE_CLASS`, are in `packages/web/src/styles/typography.ts` (C2), and
+ * `TYPOGRAPHY_ROLE_DEFAULT_ELEMENT` — the DOM element a role renders as — moved there in C3: an
+ * element name is only the browser's, since a device draws a `Text` for every role.
+ *
+ * @see https://www.asheeui.com/components/typography/typography — the roles, the scale, and what each one renders as
  */
 
 /** The available typography size tokens. */
@@ -121,8 +135,11 @@ export interface TypographyRoleTokens {
 
 /**
  * The size/style tokens each semantic role resolves to.
- * This table is the documentation source for {@link TYPOGRAPHY_ROLE_CLASS};
- * a test asserts the two can never drift.
+ *
+ * This table is the source the web's `TYPOGRAPHY_ROLE_CLASS` restates as complete static class
+ * strings, and the table the web composes from when a consumer retunes a role: the two describe
+ * one treatment, and the second cannot state a token the first does not. B15 makes the platform
+ * read it too, so the two renderers stop keeping a role table each.
  */
 export const TYPOGRAPHY_ROLE_TOKEN: Record<
   TypographyRole,
@@ -200,24 +217,4 @@ export const TYPOGRAPHY_ROLE_TOKEN: Record<
     leading: "normal",
     tracking: "wider",
   },
-};
-
-/**
- * The semantic element each role renders by default.
- * Consumers can override the element without changing the treatment.
- */
-export const TYPOGRAPHY_ROLE_DEFAULT_ELEMENT: Record<TypographyRole, string> = {
-  display: "h1",
-  // The page's title is the document's top-level heading; every other heading role is one level down from it.
-  "page-title": "h1",
-  "heading-xl": "h1",
-  "heading-lg": "h2",
-  "heading-md": "h3",
-  "heading-sm": "h4",
-  "body-lg": "p",
-  "body-md": "p",
-  "body-sm": "p",
-  label: "span",
-  caption: "span",
-  overline: "span",
 };

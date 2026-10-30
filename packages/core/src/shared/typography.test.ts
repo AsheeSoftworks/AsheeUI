@@ -2,7 +2,6 @@ import { describe, expect, it } from "vitest";
 import {
   TYPOGRAPHY_ALIGN_VALUES,
   TYPOGRAPHY_LEADING_VALUES,
-  TYPOGRAPHY_ROLE_DEFAULT_ELEMENT,
   TYPOGRAPHY_ROLE_TOKEN,
   TYPOGRAPHY_SIZE_VALUES,
   TYPOGRAPHY_TONE_VALUES,
@@ -50,17 +49,12 @@ describe("typography token maps", () => {
     }
   });
 
-  it("renders headings as headings and body copy as paragraphs", () => {
-    // A page's own title is the document's top-level heading, at the treatment `heading-lg` states: the role exists
-    // so a shared page frame can say "this is the title" without choosing between the wrong element and the wrong size.
-    expect(TYPOGRAPHY_ROLE_DEFAULT_ELEMENT["page-title"]).toBe("h1");
+  it("gives a page's own title the treatment heading-lg states", () => {
+    // The role exists so a shared page frame can say "this is the title" without choosing between the wrong element
+    // and the wrong size. The element it renders as is the web's table, asserted in `@asheeui/web` beside the classes.
     expect(TYPOGRAPHY_ROLE_TOKEN["page-title"]).toEqual(
       TYPOGRAPHY_ROLE_TOKEN["heading-lg"],
     );
-    expect(TYPOGRAPHY_ROLE_DEFAULT_ELEMENT["heading-lg"]).toBe("h2");
-    expect(TYPOGRAPHY_ROLE_DEFAULT_ELEMENT["body-md"]).toBe("p");
-    expect(TYPOGRAPHY_ROLE_DEFAULT_ELEMENT.label).toBe("span");
-    expect(TYPOGRAPHY_ROLE_DEFAULT_ELEMENT.display).toBe("h1");
   });
 
   it("keeps display and heading roles at heading weights", () => {

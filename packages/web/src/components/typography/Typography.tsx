@@ -19,7 +19,6 @@
 import {
   deprecatedAlias,
   resolveCascade,
-  TYPOGRAPHY_ROLE_DEFAULT_ELEMENT,
   type TypographyAlign,
   type TypographyLeading,
   type TypographyRole,
@@ -38,6 +37,7 @@ import {
 import { useAsheeConfig } from "../../libs/context";
 import {
   TYPOGRAPHY_ALIGN_CLASS,
+  TYPOGRAPHY_ROLE_DEFAULT_ELEMENT,
   TYPOGRAPHY_TONE_CLASS,
 } from "../../styles/typography";
 import { cn } from "../../utils/cn";

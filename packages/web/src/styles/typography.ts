@@ -1,11 +1,17 @@
 /**
- * The web renderer's class dictionaries for typography.
+ * The web renderer's typography dictionaries: the classes a role compiles to, and the element it
+ * renders as.
  *
- * They were declared in `@asheeui/core`, beside the platform's own strings, in
- * `packages/core/src/shared/typography.ts`. A class string states a decision about pixels, and the two
- * platforms' pixels differ: Tailwind compiles what it can read from this package, and core — the
- * shared contract — must not hold a string only one renderer compiles. No name and no value
+ * The classes were declared in `@asheeui/core`, beside the platform's own strings, in
+ * `packages/core/src/shared/typography.ts`. A class string states a decision about pixels, and the
+ * two platforms' pixels differ: Tailwind compiles what it can read from this package, and core —
+ * the shared contract — must not hold a string only one renderer compiles. No name and no value
  * changed: every constant is the one core published, character for character.
+ *
+ * `TYPOGRAPHY_ROLE_DEFAULT_ELEMENT` joined them in C3 for a related reason: an element name is the
+ * browser's, and the platform draws a `Text` for every role. The *role table* it pairs with
+ * (`TYPOGRAPHY_ROLE_TOKEN`) stayed in core, because B15 makes the platform resolve the same
+ * treatment there rather than restating it.
  */
 
 import type {
@@ -102,4 +108,30 @@ export const TYPOGRAPHY_ROLE_CLASS: Record<TypographyRole, string> = {
   label: "text-sm font-medium leading-normal tracking-normal",
   caption: "text-xs font-normal leading-normal tracking-normal",
   overline: "text-xs font-semibold leading-normal tracking-wider",
+};
+
+/**
+ * The semantic element each role renders by default, on the web.
+ *
+ * An element is what a document outline is made of, and only a browser has one: `Typography` on
+ * the platform draws a `Text` whatever the role says, and the meaning reaches assistive technology
+ * through the platform's own accessibility role. It was core's until C3, where it sat beside a role
+ * table both renderers will read — this is the half of the pair that is not shared.
+ *
+ * Consumers can override the element per instance without changing the treatment.
+ */
+export const TYPOGRAPHY_ROLE_DEFAULT_ELEMENT: Record<TypographyRole, string> = {
+  display: "h1",
+  // The page's title is the document's top-level heading; every other heading role is one level down from it.
+  "page-title": "h1",
+  "heading-xl": "h1",
+  "heading-lg": "h2",
+  "heading-md": "h3",
+  "heading-sm": "h4",
+  "body-lg": "p",
+  "body-md": "p",
+  "body-sm": "p",
+  label: "span",
+  caption: "span",
+  overline: "span",
 };
