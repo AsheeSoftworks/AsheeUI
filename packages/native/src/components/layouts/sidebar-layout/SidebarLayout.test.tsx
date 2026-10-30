@@ -11,11 +11,8 @@
  * says out loud that it is being rendered without the provider, because that is a setup mistake.
  */
 
-import {
-  type ReactElement,
-  type RenderResult,
-  render,
-} from "@testing-library/react-native";
+import { type RenderResult, render } from "@testing-library/react-native";
+import type { ReactElement } from "react";
 import { Dimensions, Text, View } from "react-native";
 import { AsheeNativeProvider } from "../../../provider/AsheeNativeProvider";
 import { SidebarLayout } from "./SidebarLayout";

@@ -10,12 +10,12 @@
 
 import {
   fireEvent,
-  type ReactTestInstance,
   type RenderResult,
   render,
 } from "@testing-library/react-native";
 import type { ReactElement } from "react";
 import { Dimensions, Text } from "react-native";
+import type { TestInstance } from "test-renderer";
 import { AsheeNativeProvider } from "../../../provider/AsheeNativeProvider";
 import { openDestination } from "../../../utils/open-destination";
 import { Hero } from "./Hero";
@@ -59,9 +59,9 @@ function classesOf(view: RenderResult, testID: string): string {
  * @returns The ancestor, or undefined when there is none.
  */
 function ancestorWithClass(
-  node: ReactTestInstance,
+  node: TestInstance,
   marker: string,
-): ReactTestInstance | undefined {
+): TestInstance | undefined {
   let current = node.parent;
 
   while (current) {
@@ -83,7 +83,7 @@ function ancestorWithClass(
  * @param node - The node, when one was found.
  * @returns Its class string, or an empty one.
  */
-function classesOfNode(node: ReactTestInstance | null | undefined): string {
+function classesOfNode(node: TestInstance | null | undefined): string {
   return ((node?.props ?? {}) as { className?: string }).className ?? "";
 }
 

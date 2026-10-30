@@ -16,11 +16,11 @@ import { NATIVE_ANNOUNCEMENT_LIVE_REGION } from "@asheeui/core";
 import {
   act,
   fireEvent,
-  type ReactTestInstance,
   type RenderResult,
   render,
 } from "@testing-library/react-native";
 import type { ReactElement } from "react";
+import type { TestInstance } from "test-renderer";
 import { AsheeNativeProvider } from "../../../provider/AsheeNativeProvider";
 import { RowList } from "./RowList";
 
@@ -86,7 +86,7 @@ function classesOfRow(view: RenderResult, index: number): string[] {
  * @returns The live region, or undefined when the wording is not announced.
  */
 function liveRegionOf(view: RenderResult, text: string): string | undefined {
-  let node: ReactTestInstance | null = view.getByText(text).parent;
+  let node: TestInstance | null = view.getByText(text).parent;
 
   while (node) {
     const { accessibilityLiveRegion } = node.props as {

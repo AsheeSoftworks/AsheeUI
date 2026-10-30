@@ -8,13 +8,10 @@
  * skip link out of the platform's way rather than inventing one.
  */
 
-import {
-  type ReactTestInstance,
-  type RenderResult,
-  render,
-} from "@testing-library/react-native";
+import { type RenderResult, render } from "@testing-library/react-native";
 import type { ReactElement } from "react";
 import { Text, View } from "react-native";
+import type { TestInstance } from "test-renderer";
 import { AsheeNativeProvider } from "../../../provider/AsheeNativeProvider";
 import { MarketingLayout } from "./MarketingLayout";
 
@@ -52,9 +49,9 @@ function classesOf(view: RenderResult, testID: string): string {
  * @returns The ancestor, or undefined when there is none.
  */
 function ancestorWithClass(
-  node: ReactTestInstance,
+  node: TestInstance,
   marker: string,
-): ReactTestInstance | undefined {
+): TestInstance | undefined {
   let current = node.parent;
 
   while (current) {
@@ -112,7 +109,7 @@ describe("Native MarketingLayout", () => {
     expect(main?.props.nativeID).toBe("main-content");
     expect(column).toBeDefined();
     expect(
-      ((column as ReactTestInstance).props.children as ReactElement[]).map(
+      ((column as TestInstance).props.children as ReactElement[]).map(
         (child) => (child.props as { testID?: string }).testID,
       ),
     ).toEqual(["navigation", undefined, "footer"]);

@@ -73,7 +73,7 @@
   ],
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
-    "check-types": "tsc -p tsconfig.build.json --noEmit",
+    "check-types": "tsc -p tsconfig.json --noEmit",
     "prepublishOnly": "pnpm build",
     "test": "vitest run && jest",
     "test:web": "vitest run",

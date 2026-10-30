@@ -9,7 +9,11 @@
  * the platform's roles and states, as the platform's renderer requires.
  */
 
-import { fireEvent, render } from "@testing-library/react-native";
+import {
+  fireEvent,
+  type RenderResult,
+  render,
+} from "@testing-library/react-native";
 import type { ReactElement } from "react";
 import { View } from "react-native";
 import { AsheeNativeProvider } from "../../../provider/AsheeNativeProvider";
@@ -35,7 +39,7 @@ async function renderAlert(ui: ReactElement, config?: object) {
  * @param testID - The alert's test identifier.
  * @returns Its class string.
  */
-function classesOf(view: ReturnType<typeof render>, testID: string): string {
+function classesOf(view: RenderResult, testID: string): string {
   return (view.getByTestId(testID).props as { className?: string })
     .className as string;
 }

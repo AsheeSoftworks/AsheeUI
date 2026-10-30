@@ -5,7 +5,7 @@
 "asheeui": patch
 ---
 
-Typecheck is a workspace gate: every published package now answers to `check-types`, `turbo run
+Typecheck is a workspace gate: every published package answers to `check-types`, `turbo run
 check-types` builds a package's dependencies before checking it, and CI runs the task after lint.
 
 The repository had two scripts (`@asheeui/core` and `@asheeui/web`), so four packages — native, the
@@ -15,11 +15,25 @@ package. That is why the umbrella and puck map `@asheeui/*` to a dependency's `d
 `check-types` reads the *published* type, which is the contract a consumer sees, so the task depends
 on `^build` rather than on the dependency being built by hand.
 
-`@asheeui/native` and `@asheeui/puck` check `tsconfig.build.json` rather than `tsconfig.json`, matching
-`@asheeui/core`. Their `tsconfig.json` includes tests, and both packages' tests reach into another
-package's *source* (the web package's test harness; core's DOM helpers through a source path), which
-neither package's `rootDir` nor its platform `lib` can hold. Checking what the package ships is the
-honest gate today; the test files themselves are the next batch's work.
+Turning the gate on for native and puck surfaced test files that had never been checked. Both
+packages now check `tsconfig.json` — tests included — everywhere, the way `@asheeui/web` and the CLI
+already did:
+
+- **Native** resolved `@asheeui/core` to its *source*, so a native program compiled core's
+  DOM-reading modules with no DOM library and reported a `rootDir` violation per file. It reads
+  core's built declarations now, as every other package does, which is what `tsconfig.build.json`
+  already did.
+- **Native's tests** were written against `@testing-library/react-native`'s earlier API. The v14
+  renderer returns a promise, and the instance type it used to export as `ReactTestInstance` is
+  `TestInstance`, from `test-renderer`. Twenty test files now say what the API says — `RenderResult`
+  for a rendered tree, `TestInstance` for a node, `ReactElement` from React — instead of
+  `ReturnType<typeof render>` and a type the package no longer exports. A press is delivered through
+  one named helper rather than an unqualified `.parent`, so a tree with no host fails the test with
+  a sentence instead of silently pressing nothing.
+- **Puck's** rendered-page test imported the web package's test harness from that package's *source*
+  subpath, which no compiler outside the package can resolve without compiling the whole renderer.
+  The wrapper it needed is the provider and nothing else, over the public seam, so the test states it
+  locally and checks its own program.
 
 The stale `apps/expo-playground` override leaves `biome.json` with it: the directory was removed with
 the playground, and an override that matches nothing is a rule nobody can see is not running.

@@ -10,9 +10,15 @@
  * configuration cascade.
  */
 
-import { act, fireEvent, render } from "@testing-library/react-native";
+import {
+  act,
+  fireEvent,
+  type RenderResult,
+  render,
+} from "@testing-library/react-native";
 import type { ReactElement } from "react";
 import { Text } from "react-native";
+import type { TestInstance } from "test-renderer";
 import { AsheeNativeProvider } from "../../../provider/AsheeNativeProvider";
 import { Tooltip } from "./Tooltip";
 
@@ -38,7 +44,7 @@ const TRIGGER = <Text>Archived</Text>;
  * @param view - The rendered tree.
  * @returns The distance the hint was placed at, on the edge it was placed on.
  */
-function hintStyle(view: ReturnType<typeof render>): {
+function hintStyle(view: RenderResult): {
   bottom?: number;
   top?: number;
 } {
@@ -62,7 +68,7 @@ function hintStyle(view: ReturnType<typeof render>): {
  * @param view - The rendered tree.
  * @returns Its class string.
  */
-function bubbleClasses(view: ReturnType<typeof render>): string {
+function bubbleClasses(view: RenderResult): string {
   const bubble = view.getByText("Kept for seven years").parent;
 
   if (!bubble) {
@@ -70,6 +76,27 @@ function bubbleClasses(view: ReturnType<typeof render>): string {
   }
 
   return (bubble.props as { className?: string }).className as string;
+}
+
+/**
+ * The node a label was drawn in.
+ *
+ * A press is delivered to the node that carries the handler, and the text is its child,
+ * so every gesture in this file starts one level up. `getByText` has already failed the
+ * test if nothing matched; a match without a parent would mean the text *is* the root,
+ * which is a tree this component never renders — the helper says so rather than letting
+ * the press go nowhere.
+ *
+ * @param view - The rendered tree.
+ * @param label - The text whose host is pressed.
+ * @returns The host instance.
+ */
+function hostOf(view: RenderResult, label: string): TestInstance {
+  const host = view.getByText(label).parent;
+
+  if (!host) throw new Error(`"${label}" was drawn without a host`);
+
+  return host;
 }
 
 describe("Native Tooltip", () => {
@@ -94,7 +121,7 @@ describe("Native Tooltip", () => {
       view.getByText("Archived").parent?.props.accessibilityHint,
     ).toBeUndefined();
 
-    await fireEvent(view.getByText("Archived").parent, "longPress");
+    await fireEvent(hostOf(view, "Archived"), "longPress");
 
     expect(view.getByText("Kept for seven years")).toBeTruthy();
   });
@@ -106,7 +133,7 @@ describe("Native Tooltip", () => {
 
     expect(view.queryByText("Kept for seven years")).toBeNull();
 
-    await fireEvent(view.getByText("Archived").parent, "longPress");
+    await fireEvent(hostOf(view, "Archived"), "longPress");
 
     expect(view.getByText("Kept for seven years")).toBeTruthy();
   });
@@ -122,8 +149,8 @@ describe("Native Tooltip", () => {
 
     // The opening half is the platform's long press, so it waits the stated time; the test
     // cannot read that timer back from the tree, and the closing half is what it observes.
-    await fireEvent(view.getByText("Archived").parent, "longPress");
-    await fireEvent(view.getByText("Archived").parent, "pressOut");
+    await fireEvent(hostOf(view, "Archived"), "longPress");
+    await fireEvent(hostOf(view, "Archived"), "pressOut");
 
     await act(async () => {
       jest.advanceTimersByTime(149);
@@ -149,12 +176,12 @@ describe("Native Tooltip", () => {
       </Tooltip>,
     );
 
-    await fireEvent(view.getByText("Archived").parent, "longPress");
-    await fireEvent(view.getByText("Archived").parent, "pressOut");
+    await fireEvent(hostOf(view, "Archived"), "longPress");
+    await fireEvent(hostOf(view, "Archived"), "pressOut");
 
     // The reader comes back inside the closing window, so the pending hide is called off and
     // the hint stays up rather than vanishing from underneath them.
-    await fireEvent(view.getByText("Archived").parent, "longPress");
+    await fireEvent(hostOf(view, "Archived"), "longPress");
 
     await act(async () => {
       jest.advanceTimersByTime(100);
@@ -174,8 +201,8 @@ describe("Native Tooltip", () => {
       </Tooltip>,
     );
 
-    await fireEvent(view.getByText("Archived").parent, "longPress");
-    await fireEvent(view.getByText("Archived").parent, "pressOut");
+    await fireEvent(hostOf(view, "Archived"), "longPress");
+    await fireEvent(hostOf(view, "Archived"), "pressOut");
 
     await act(async () => {
       jest.advanceTimersByTime(249);
@@ -199,7 +226,7 @@ describe("Native Tooltip", () => {
       </Tooltip>,
     );
 
-    await fireEvent(view.getByText("Archived").parent, "longPress");
+    await fireEvent(hostOf(view, "Archived"), "longPress");
 
     // The trigger has not been laid out in a test, so the distance is the offset alone.
     expect(hintStyle(view).bottom).toBe(8);
@@ -213,7 +240,7 @@ describe("Native Tooltip", () => {
       </Tooltip>,
     );
 
-    await fireEvent(view.getByText("Archived").parent, "longPress");
+    await fireEvent(hostOf(view, "Archived"), "longPress");
 
     expect(hintStyle(view).top).toBe(12);
     expect(hintStyle(view).bottom).toBeUndefined();
@@ -226,7 +253,7 @@ describe("Native Tooltip", () => {
       </Tooltip>,
     );
 
-    await fireEvent(view.getByText("Archived").parent, "longPress");
+    await fireEvent(hostOf(view, "Archived"), "longPress");
 
     expect(hintStyle(view).bottom).toBe(8);
   });
@@ -238,7 +265,7 @@ describe("Native Tooltip", () => {
       </Tooltip>,
     );
 
-    await fireEvent(view.getByText("Archived").parent, "longPress");
+    await fireEvent(hostOf(view, "Archived"), "longPress");
 
     const bubble = view.getByText("Kept for seven years").parent;
 
@@ -265,7 +292,7 @@ describe("Native Tooltip", () => {
       </Tooltip>,
     );
 
-    await fireEvent(view.getByText("Archived").parent, "longPress");
+    await fireEvent(hostOf(view, "Archived"), "longPress");
 
     expect(view.queryByText("Kept for seven years")).toBeNull();
     expect(
@@ -283,7 +310,7 @@ describe("Native Tooltip", () => {
       },
     );
 
-    await fireEvent(view.getByText("Archived").parent, "longPress");
+    await fireEvent(hostOf(view, "Archived"), "longPress");
 
     const classes = bubbleClasses(view);
 

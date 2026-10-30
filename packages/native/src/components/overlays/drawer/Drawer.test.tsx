@@ -8,7 +8,11 @@
  * with a side placement resolving to the sheet the platform uses.
  */
 
-import { fireEvent, render } from "@testing-library/react-native";
+import {
+  fireEvent,
+  type RenderResult,
+  render,
+} from "@testing-library/react-native";
 import type { ReactElement } from "react";
 import { Text } from "react-native";
 import { AsheeNativeProvider } from "../../../provider/AsheeNativeProvider";
@@ -33,7 +37,7 @@ async function renderDrawer(ui: ReactElement, config?: object) {
  * @param view - The rendered tree.
  * @returns Its class string.
  */
-function sheetClasses(view: ReturnType<typeof render>): string {
+function sheetClasses(view: RenderResult): string {
   const sheet = view.getByText("Filters").parent as {
     props: { className?: string };
   };
@@ -50,7 +54,7 @@ function sheetClasses(view: ReturnType<typeof render>): string {
  *
  * @param view - The rendered tree.
  */
-function requestPlatformClose(view: ReturnType<typeof render>): void {
+function requestPlatformClose(view: RenderResult): void {
   const host = view.container
     .queryAll((node) => typeof node.props.onRequestClose === "function")
     .at(0);

@@ -8,13 +8,10 @@
  * the fit, ratio and rounding resolve through the configuration cascade.
  */
 
-import {
-  fireEvent,
-  type ReactTestInstance,
-  render,
-} from "@testing-library/react-native";
+import { fireEvent, render } from "@testing-library/react-native";
 import type { ReactElement } from "react";
 import { Text } from "react-native";
+import type { TestInstance } from "test-renderer";
 import { AsheeNativeProvider } from "../../../provider/AsheeNativeProvider";
 import { Image } from "./Image";
 
@@ -40,13 +37,10 @@ async function renderImage(ui: ReactElement, config?: object) {
  * @param prop - The prop a descendant must carry.
  * @returns The descendants carrying it.
  */
-function descendantsWithProp(
-  node: ReactTestInstance,
-  prop: string,
-): ReactTestInstance[] {
-  const found: ReactTestInstance[] = [];
+function descendantsWithProp(node: TestInstance, prop: string): TestInstance[] {
+  const found: TestInstance[] = [];
 
-  const walk = (current: ReactTestInstance) => {
+  const walk = (current: TestInstance) => {
     if ((current.props as Record<string, unknown>)[prop] !== undefined) {
       found.push(current);
     }
@@ -69,9 +63,9 @@ function descendantsWithProp(
  * @returns The descendants carrying it.
  */
 function descendantsWithClass(
-  node: ReactTestInstance,
+  node: TestInstance,
   marker: string,
-): ReactTestInstance[] {
+): TestInstance[] {
   return descendantsWithProp(node, "className").filter((descendant) =>
     String(descendant.props.className).includes(marker),
   );

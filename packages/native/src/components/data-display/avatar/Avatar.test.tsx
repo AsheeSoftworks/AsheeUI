@@ -8,13 +8,10 @@
  * configuration cascade.
  */
 
-import {
-  fireEvent,
-  type ReactTestInstance,
-  render,
-} from "@testing-library/react-native";
+import { fireEvent, render } from "@testing-library/react-native";
 import type { ReactElement } from "react";
 import { Text } from "react-native";
+import type { TestInstance } from "test-renderer";
 import { AsheeNativeProvider } from "../../../provider/AsheeNativeProvider";
 import { Avatar } from "./Avatar";
 
@@ -40,13 +37,10 @@ async function renderAvatar(ui: ReactElement, config?: object) {
  * @param prop - The prop a descendant must carry.
  * @returns The descendants carrying it.
  */
-function descendantsWithProp(
-  node: ReactTestInstance,
-  prop: string,
-): ReactTestInstance[] {
-  const found: ReactTestInstance[] = [];
+function descendantsWithProp(node: TestInstance, prop: string): TestInstance[] {
+  const found: TestInstance[] = [];
 
-  const walk = (current: ReactTestInstance) => {
+  const walk = (current: TestInstance) => {
     if ((current.props as Record<string, unknown>)[prop] !== undefined) {
       found.push(current);
     }

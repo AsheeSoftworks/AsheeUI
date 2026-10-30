@@ -7,7 +7,11 @@
  * the tone, the density and the panel resolve through the configuration cascade.
  */
 
-import { fireEvent, render } from "@testing-library/react-native";
+import {
+  fireEvent,
+  type RenderResult,
+  render,
+} from "@testing-library/react-native";
 import type { ReactElement } from "react";
 import { Text } from "react-native";
 import { AsheeNativeProvider } from "../../../provider/AsheeNativeProvider";
@@ -38,7 +42,7 @@ async function renderState(ui: ReactElement, config?: object) {
  * @param testID - The state's test identifier.
  * @returns Its class string.
  */
-function classesOf(view: ReturnType<typeof render>, testID: string): string {
+function classesOf(view: RenderResult, testID: string): string {
   return (view.getByTestId(testID).props as { className?: string })
     .className as string;
 }
