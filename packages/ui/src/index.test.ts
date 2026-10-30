@@ -1,26 +1,41 @@
 /**
  * The umbrella package's contract.
  *
- * The package exists to route one import to two renderers, so what is worth testing is
- * the routing: that each branch exports the renderer it names, that the manifest sends a
- * resolver to a file that exists, and that neither branch carries the other platform's
- * renderer into a bundle. The web branch is imported for real, because a re-export that
- * silently drops a name is exactly the failure a consumer would meet. The native branch
- * is read rather than imported, because it imports React Native, which only the
- * platform's own test runner can transform — its behaviour is covered by the native
- * package's own suite.
+ * The package exists to route one import to two renderers, so two things are worth
+ * testing: the routing (each branch exports the renderer it names, the manifest sends a
+ * resolver to a file that exists, and neither branch carries the other platform's
+ * renderer) and the surface (both branches publish exactly `PORTABLE_API`).
+ *
+ * The surface is not re-derived here. `evaluateUmbrella` from
+ * `scripts/lib/umbrella-check.mjs` is the same function `pnpm check:umbrella` runs, so the
+ * suite and the command cannot disagree about what the package offers; a second copy of
+ * the six assertions is how the two would start to drift.
+ *
+ * The web branch is imported for real, because a re-export that silently drops a name is
+ * exactly the failure a consumer would meet. The native branch is read rather than
+ * imported, because it imports React Native, which only the platform's own test runner can
+ * transform — its behaviour is covered by the native package's own suite, and the
+ * evaluator reads its source.
  */
 
 import { existsSync, readFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { PORTABLE_API } from "@asheeui/core";
 import * as Web from "@asheeui/web";
 import { cn } from "@asheeui/web";
 import { describe, expect, it } from "vitest";
+import { evaluateUmbrella } from "../../../scripts/lib/umbrella-check.mjs";
 import * as Umbrella from "./index";
 
 /** The package directory, which holds the manifest and the entries. */
 const packageRoot = resolve(dirname(fileURLToPath(import.meta.url)), "..");
+
+/** The repository, which the guard reads the packages and the list from. */
+const repositoryRoot = resolve(packageRoot, "../..");
+
+/** The guard's evaluation of this working tree. */
+const evaluation = evaluateUmbrella({ root: repositoryRoot });
 
 /** The fields of the manifest a resolver reads, at the root and under `publishConfig`. */
 interface EntryFields {
@@ -40,6 +55,18 @@ interface Manifest extends EntryFields {
   // A publish rewrites only the fields a package manager knows, so the published set is
   // partial rather than a second copy of the manifest.
   publishConfig: Partial<EntryFields> & { exports: { ".": ExportConditions } };
+}
+
+/**
+ * One assertion by number.
+ *
+ * @param id - The assertion's number, 1–6.
+ * @returns The outcome.
+ */
+function assertion(id: number) {
+  const found = evaluation.assertions.find((entry) => entry.id === id);
+  if (!found) throw new Error(`the guard did not report assertion ${id}`);
+  return found;
 }
 
 /**
@@ -79,9 +106,43 @@ function code(name: string): string {
     .replaceAll(/(?:^|\s)\/\/.*$/gm, "");
 }
 
-describe("umbrella entry point", () => {
+describe("umbrella surface", () => {
+  it("passes the five blocking assertions", () => {
+    // 1 set equality, 2 declared source publishes the name, 3 no stale pending, 4 matrix
+    // agreement, 5 no platform-only leak. Assertion 6 is B22's and is checked below.
+    for (const id of [1, 2, 3, 4, 5]) {
+      expect(assertion(id).status, `assertion ${id}`).toBe("pass");
+    }
+  });
+
+  it("publishes exactly the portable value surface", () => {
+    // Types are erased at runtime and `AsheeConfig` is the one platform-specific alias, so
+    // the runtime namespace is every non-type entry. This is the consumer-facing half of
+    // assertion 1, checked against the imported entry rather than against its source.
+    const valueNames = PORTABLE_API.filter(
+      (entry) => entry.kind !== "type",
+    )
+      .map((entry) => entry.name)
+      .sort();
+
+    expect(Object.keys(Umbrella).sort()).toEqual(valueNames);
+  });
+
+  it("defers only the three subpaths B22 owns", () => {
+    const subpaths = assertion(6);
+
+    expect(subpaths.status).toBe("pending");
+    expect(subpaths.owner).toBe("B22");
+    // A pending assertion is not a blanket exemption: if any problem other than the known
+    // missing subpaths appeared, assertion 6 would fail rather than be pending.
+    expect(subpaths.offending.length).toBe(3);
+    for (const problem of subpaths.offending) {
+      expect(problem).toContain("(B22)");
+    }
+  });
+
   it("answers both text names, as one component", () => {
-    // The renderers publish the pair now — `Typography` canonically, `Text` as the same
+    // The renderers publish the pair — `Typography` canonically, `Text` as the same
     // reference — so a shared component writes either name and the umbrella states no alias
     // of its own. The native branch cannot be imported here, because it pulls React Native;
     // its pair is asserted by the native package's own suite, and what this checks is that
@@ -94,8 +155,11 @@ describe("umbrella entry point", () => {
     expect(Umbrella.cn).toBe(cn);
     expect(typeof Umbrella.resolveCascade).toBe("function");
     expect(typeof Umbrella.resolveClassKey).toBe("function");
+    expect(typeof Umbrella.resolveAnimate).toBe("function");
   });
+});
 
+describe("umbrella entry point", () => {
   it("routes the web to its own entry and React Native to the native one", () => {
     const { main, "react-native": reactNative } = manifest();
 
@@ -166,5 +230,14 @@ describe("umbrella entry point", () => {
     expect(code("index.ts")).not.toContain("@asheeui/native");
     expect(code("index.native.ts")).toContain('from "@asheeui/native"');
     expect(code("index.native.ts")).not.toContain("@asheeui/web");
+  });
+
+  it("says that it is generated, and from what", () => {
+    // The file is the generator's output; a direct edit is the drift the guard cannot see
+    // until the next regeneration. The header is the first thing a reader meets.
+    for (const entry of ["index.ts", "index.native.ts"]) {
+      expect(source(entry)).toContain("GENERATED FILE — do not edit");
+      expect(source(entry)).toContain("PORTABLE_API");
+    }
   });
 });

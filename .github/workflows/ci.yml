@@ -46,6 +46,12 @@ jobs:
       - name: Lint
         run: pnpm lint
 
+      # B18's promise: the class families that only a renderer with a real CSS engine can
+      # compile cannot live in core or in a shared string. Its own step, so a vocabulary
+      # breach is distinguishable from a general lint failure.
+      - name: Class Vocabulary
+        run: pnpm lint:class-vocabulary
+
       # Typecheck is a separate gate from the build: a package's build can succeed
       # while a rename silently breaks a consumer's types, because the build only
       # reads its own sources.
@@ -54,6 +60,11 @@ jobs:
 
       - name: Native Parity
         run: pnpm check:native-parity
+
+      # The umbrella is the intersection, not the union. Assertions 1–5 are blocking;
+      # the subpath assertion is pending on B22 and says so rather than passing silently.
+      - name: Umbrella Guard
+        run: pnpm check:umbrella
 
       # The shrink's ratchet: core is the contract, not the engine. No class string, no
       # dependency, no renderer import, and no export neither a renderer nor a test reads.
