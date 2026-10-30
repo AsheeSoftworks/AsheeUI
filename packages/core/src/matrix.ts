@@ -259,6 +259,7 @@ export const COMPONENT_SUPPORT: readonly ComponentSupport[] = [
     native: "List footer",
     note: "Native lists load more rather than paging",
   },
+  { name: "PasswordInput", module: "password-input", support: "shared" },
   { name: "PinInput", module: "pin-input", support: "shared" },
   {
     name: "PricingCard",
