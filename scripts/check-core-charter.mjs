@@ -96,7 +96,6 @@ const PUBLISHED_VOCABULARY = new Set([
   "SPACING_STEP",
   "SectionBlockHeadingElement",
   "SectionBlockOptions",
-  "ThemedContract",
   "VARIANT",
   "findComponentSupport",
   "validateConfig",

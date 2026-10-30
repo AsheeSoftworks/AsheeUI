@@ -5,17 +5,27 @@
  * `asheeui` is a router: one entry for the web branch, one for the device, and the
  * bundler decides which one an import reaches. That mechanism is sound and does not
  * need to change. What the umbrella *offers* behind it is the problem: both entries
- * are `export *` over a whole renderer, so the package offers 504 names on the web
- * branch and 458 on the native one, and a shared component written against the smaller
- * number of imports compiles and then finds `undefined` on the device.
+ * used to be `export *` over a whole renderer, so the package offered 791 names on the
+ * web branch and 1053 on the native one, and a shared component written against the
+ * smaller number of imports compiled and then found `undefined` on the device.
  *
  * `UMBRELLA-REPORT.md` states the target — a declared portable surface, generated into
  * both entries, set-equal by construction — and `§6` states six assertions that say
  * whether the target has been reached. This script evaluates those six and reports what
- * it finds. It is deliberately **non-blocking** while the surface is being rebuilt:
- * `IMPLEMENTATION-PLAN.md`'s B02 lands it in report mode so the number can be watched
- * moving, and B21 makes it blocking once the surface is fixed. A guard wired into CI
- * before the work it guards would only be switched off.
+ * it finds. B19 wrote `packages/core/src/portable.ts`, so assertions 2–4 now compare
+ * against real declarations; B20 generates the entries from that list; B21 makes the
+ * guard blocking. Until B21 the exit code stays 0 in report mode, because a guard wired
+ * into CI before the work it guards would only be switched off.
+ *
+ * ## The declared `source` (a documented extension of §3.2)
+ *
+ * §3.2's shape says what is portable but not where a name lives, and the generator needs
+ * to route every name to a package. B19 added `source: "core" | "renderer"` and assertion 2
+ * checks the declaration instead of assuming one rule: a `core` entry must be published by
+ * `@asheeui/core`, and a `renderer` entry by both renderer entries. The cascade helpers and
+ * the shared vocabulary are core's; `cn`, `resolveAnimate`, the hooks and every component
+ * are the renderers'. The deviation is deliberate — routing `cn` from core would give the
+ * umbrella a second implementation of it.
  *
  * Like the other guards, it reads the packages' own entry points and follows their
  * `export *` statements, so it asks what a package publishes rather than what its file
@@ -292,6 +302,15 @@ const surfaces = Object.fromEntries(
   BRANCHES.map(([branch, file]) => [branch, surfaceOf(file)]),
 );
 
+/**
+ * Core's published names.
+ *
+ * `source: "core"` is a claim about a different package, so assertion 2 has to read
+ * core's entry as well as the umbrella's. It is read the same way — source, not a build —
+ * for the same reason.
+ */
+const coreSurface = surfaceOf(join(ROOT, "packages/core/src/index.ts"));
+
 const web = [...surfaces.web.keys()].sort();
 const native = [...surfaces.native.keys()].sort();
 const shared = web.filter((name) => surfaces.native.has(name));
@@ -345,39 +364,59 @@ if (!portable) {
   findings.push(deferred(4, "the portable surface and the matrix agree"));
 } else {
   const portableNames = new Set(portable.map((entry) => entry.name));
-  const pendingNames = portable
-    .filter((entry) => entry.pending.length > 0)
-    .map((entry) => entry.name);
+  const pendingEntries = portable.filter((entry) => entry.pending.length > 0);
+  const declaredEntries = portable.filter((entry) => entry.pending.length === 0);
+  const pendingNames = pendingEntries.map((entry) => entry.name);
 
-  const unpublishable = portable.filter(
-    (entry) =>
-      !surfaces.web.has(entry.name) && !surfaces.native.has(entry.name),
+  /**
+   * Whether the package an entry names publishes it.
+   *
+   * The declared `source` is the point of the check: a `core` name that core does not
+   * publish, or a `renderer` name one branch is missing, is the drift this assertion
+   * exists for. A pending entry is exempt until its work lands.
+   */
+  const publishedBySource = (entry) =>
+    entry.source === "core"
+      ? coreSurface.has(entry.name)
+      : surfaces.web.has(entry.name) && surfaces.native.has(entry.name);
+
+  const undecidedSource = portable.filter(
+    (entry) => entry.source !== "core" && entry.source !== "renderer",
   );
-  const halfPublishable = portable.filter(
-    (entry) =>
-      surfaces.web.has(entry.name) !== surfaces.native.has(entry.name) &&
-      !pendingNames.includes(entry.name),
+  const unpublished = declaredEntries.filter(
+    (entry) => !publishedBySource(entry),
   );
 
   findings.push(
     finding({
       id: 2,
-      title: "every portable name is published by both renderers",
-      status: unpublishable.length === 0 && halfPublishable.length === 0 ? "pass" : "fail",
-      detail: `${portable.length} declared, ${pendingNames.length} pending work`,
+      title: "every portable name is published by its declared source",
+      status:
+        undecidedSource.length === 0 && unpublished.length === 0
+          ? "pass"
+          : "fail",
+      detail: `${portable.length} declared (${declaredEntries.length} ready, ${pendingEntries.length} pending), ${portable.filter((entry) => entry.source === "core").length} routed to core and ${portable.filter((entry) => entry.source === "renderer").length} to the branch renderer`,
       offending: [
-        ...unpublishable.map((entry) => `neither renderer: ${entry.name}`),
-        ...halfPublishable.map(
+        ...undecidedSource.map(
           (entry) =>
-            `one renderer only: ${entry.name} (${entry.pending.join(", ") || "no work package stated"})`,
+            `no declared source: ${entry.name} (${entry.source ?? "missing"})`,
+        ),
+        ...unpublished.map((entry) =>
+          entry.source === "core"
+            ? `@asheeui/core does not publish: ${entry.name}`
+            : `${
+                !surfaces.web.has(entry.name)
+                  ? "@asheeui/web"
+                  : "@asheeui/native"
+              } does not publish: ${entry.name}`,
         ),
       ],
     }),
   );
 
-  const stale = pendingNames.filter(
-    (name) => surfaces.web.has(name) && surfaces.native.has(name),
-  );
+  const stale = pendingEntries
+    .filter((entry) => publishedBySource(entry))
+    .map((entry) => entry.name);
 
   findings.push(
     finding({
@@ -385,28 +424,68 @@ if (!portable) {
       title: "no pending name is stale",
       status: stale.length === 0 ? "pass" : "fail",
       detail: `${pendingNames.length} names carry a pending work package`,
-      offending: stale.map((name) => `both renderers publish: ${name}`),
+      offending: stale.map(
+        (name) => `the declared source publishes it now: ${name}`,
+      ),
     }),
   );
 
-  const promised = matrix
-    .filter((entry) => entry.support === "shared" || entry.support === "shared-api")
+  /**
+   * The name a matrix component acquires in the umbrella.
+   *
+   * The matrix states the web export's name, and `native` names the counterpart when
+   * the platform publishes it under a different one (`Toast` is `ToastProvider` on both
+   * branches). A prose `native` value describes a platform rather than an export, so only
+   * an identifier is treated as an alias.
+   */
+  const namesOf = (entry) => {
+    const alias =
+      entry.native && /^[A-Za-z_$][A-Za-z0-9_$]*$/.test(entry.native)
+        ? [entry.native]
+        : [];
+    return [entry.name, ...alias];
+  };
+
+  const promised = matrix.filter(
+    (entry) => entry.support === "shared" || entry.support === "shared-api",
+  );
+  const absent = promised
+    .filter((entry) => !namesOf(entry).some((name) => portableNames.has(name)))
     .map((entry) => entry.name);
-  const absent = promised.filter((name) => !portableNames.has(name));
   const unclassified = portable.filter(
     (entry) => entry.support !== "shared" && entry.support !== "shared-api",
+  );
+  const platformOnly = matrix
+    .filter(
+      (entry) =>
+        entry.support === "web-only" ||
+        entry.support === "native-only" ||
+        entry.support === "not-applicable",
+    )
+    .map((entry) => entry.name);
+  const platformEntries = portable.filter((entry) =>
+    platformOnly.includes(entry.name),
   );
 
   findings.push(
     finding({
       id: 4,
       title: "the portable surface and the matrix agree",
-      status: absent.length === 0 && unclassified.length === 0 ? "pass" : "fail",
-      detail: `${promised.length} components the matrix classifies shared`,
+      status:
+        absent.length === 0 &&
+        unclassified.length === 0 &&
+        platformEntries.length === 0
+          ? "pass"
+          : "fail",
+      detail: `${promised.length} components the matrix classifies shared or shared-api, ${platformOnly.length} it classifies platform-only`,
       offending: [
         ...absent.map((name) => `shared, not portable: ${name}`),
         ...unclassified.map(
           (entry) => `portable, not shared: ${entry.name} (${entry.support})`,
+        ),
+        ...platformEntries.map(
+          (entry) =>
+            `platform-only, but portable: ${entry.name} (${entry.support})`,
         ),
       ],
     }),
@@ -504,6 +583,14 @@ const summary = {
   },
   publicWebOnly,
   publicNativeOnly,
+  portable: portable
+    ? {
+        size: portable.length,
+        core: portable.filter((entry) => entry.source === "core").length,
+        renderer: portable.filter((entry) => entry.source === "renderer").length,
+        pending: portable.filter((entry) => entry.pending.length > 0).length,
+      }
+    : null,
   assertions: findings,
 };
 
@@ -544,6 +631,13 @@ console.log(
 console.log(
   `  native only  ${String(onlyNative.length).padStart(4)} names  (${publicNativeOnly.length} public, ${internalNativeOnly.length} internals)`,
 );
+
+if (portable) {
+  const toCore = portable.filter((entry) => entry.source === "core").length;
+  console.log(
+    `  portable     ${String(portable.length).padStart(4)} names  (${toCore} from core, ${portable.length - toCore} from the branch renderer, ${portable.filter((entry) => entry.pending.length > 0).length} pending)`,
+  );
+}
 
 /** Print a wrapped, indented list so a long set of names stays readable. */
 function printNames(names, indent, width = 96) {

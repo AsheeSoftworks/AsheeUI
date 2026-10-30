@@ -20,14 +20,15 @@
  *
  * The compatibility matrix is not part of this entry. It is data only tooling reads — no component
  * imports it — so it is published from `@asheeui/core/dev` (C4): an application imports the contract,
- * and a tool imports the inventory.
+ * and a tool imports the inventory. `./portable` is different: it is the declared list of names the
+ * umbrella may re-export, so it stays on this entry where the umbrella can read it.
  *
  * It depends on no platform — no DOM, no React runtime, no React Native — because
  * a layer that depends on a platform is not shared: React bindings stay with the
- * renderer that owns them, and the only React reference here is a type-only
- * import in the action description, erased at build time. Each implementation
- * maps what it finds here into its own technology: Tailwind class names on the
- * web, NativeWind class names and style objects on native.
+ * renderer that owns them, and the only React references here are type-only
+ * imports in the action and substitution descriptions, erased at build time. Each
+ * implementation maps what it finds here into its own technology: Tailwind class
+ * names on the web, NativeWind class names and style objects on native.
  */
 
 export * from "./components";
@@ -37,7 +38,7 @@ export * from "./components/feedback/alert/alert-styles";
 export * from "./components/feedback/toast/toast-styles";
 export * from "./components/forms/stepper/stepper-styles";
 export * from "./config";
-export * from "./contracts";
+export * from "./portable";
 export * from "./registry";
 export * from "./shared";
 export * from "./theme";

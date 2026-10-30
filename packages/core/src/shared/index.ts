@@ -10,5 +10,6 @@ export * from "./press";
 export * from "./radius";
 export * from "./section-block";
 export * from "./spacing";
+export * from "./substitution";
 export * from "./typography";
 export * from "./variant";
