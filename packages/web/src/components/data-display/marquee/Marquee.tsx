@@ -8,12 +8,7 @@
  */
 "use client";
 
-import {
-  cn,
-  MARQUEE_SET_SPACING,
-  MARQUEE_SPEED_PRESETS,
-  resolveCascade,
-} from "@asheeui/core";
+import { MARQUEE_SPEED_PRESETS, resolveCascade } from "@asheeui/core";
 import { forwardRef, isValidElement, type ReactNode } from "react";
 import { useAsheeConfig } from "../../../libs/context";
 import { usePrefersReducedMotion } from "../../../libs/use-prefers-reduced-motion";
@@ -27,12 +22,14 @@ import {
   MARQUEE_PAUSE_ON_HOVER_CLASS,
   MARQUEE_SET_AXIS_CLASS,
   MARQUEE_SET_CLASS,
+  MARQUEE_SET_SPACING,
   MARQUEE_STILL_FRAME_CLASS,
   MARQUEE_STILL_SET_CLASS,
   MARQUEE_TRACK_CLASS,
   MARQUEE_TRACK_X_CLASS,
   MARQUEE_TRACK_Y_CLASS,
 } from "../../../styles/marquee";
+import { cn } from "../../../utils/cn";
 import {
   FALLBACK_MARQUEE_CONFIG,
   type MarqueeAxis,

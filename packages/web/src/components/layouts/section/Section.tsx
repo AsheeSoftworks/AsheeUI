@@ -9,14 +9,11 @@
 
 "use client";
 
-import {
-  cn,
-  resolveCascade,
-  SPACE_PADDING_Y_CLASS,
-  type Space,
-} from "@asheeui/core";
+import { resolveCascade, type Space } from "@asheeui/core";
 import { type ElementType, forwardRef, type HTMLAttributes } from "react";
 import { useAsheeConfig } from "../../../libs/context";
+import { SPACE_PADDING_Y_CLASS } from "../../../styles/portable";
+import { cn } from "../../../utils/cn";
 import { Container } from "../container/Container";
 import type { ContainerSize } from "../container/container-config";
 import {

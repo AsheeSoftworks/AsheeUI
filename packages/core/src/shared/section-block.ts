@@ -97,27 +97,6 @@ export const SECTION_BLOCK_HEADING_ROLE: Record<
 };
 
 /**
- * The element a band's heading renders as when the band names no element.
- *
- * A band is a *section* of a page, not the page's own title, so every size renders an `h2`:
- * a hero, a call to action, a feature grid and a testimonial wall can then sit on one page
- * without producing a heading per band at level one. Raising the level is the caller's
- * decision — `titleAs` on the heading — and it is the only way a band becomes the document's
- * `h1`; lowering it, for a band nested under an existing section, is the same prop.
- *
- * This is deliberately a map rather than a single constant: if a size ever needs a different
- * default the size is the thing that changes, and every renderer reads the change from here.
- */
-export const SECTION_BLOCK_HEADING_ELEMENT: Record<
-  SectionBlockHeadingSize,
-  SectionBlockHeadingElement
-> = {
-  md: "h2",
-  lg: "h2",
-  xl: "h2",
-};
-
-/**
  * The band options every band shares.
  *
  * A band's configuration extends this and adds what is particular to it — a hero adds where

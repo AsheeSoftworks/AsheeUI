@@ -14,8 +14,8 @@
 import { existsSync, readFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import { cn } from "@asheeui/core";
 import * as Web from "@asheeui/web";
+import { cn } from "@asheeui/web";
 import { describe, expect, it } from "vitest";
 import * as Umbrella from "./index";
 

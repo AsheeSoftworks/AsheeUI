@@ -7,10 +7,21 @@
  * states its own; the keys both must cover are asserted on each side.
  */
 
+import {
+  PLACEMENT_CLASSES,
+  type Size,
+  TOAST_ANIMATION_STATE,
+  TOAST_TYPE_COLOR,
+  type ToastPlacement,
+  type ToastType,
+} from "@asheeui/core";
 import { describe, expect, it } from "vitest";
-
-
-import { type Size, type ToastPlacement, type ToastType, PLACEMENT_CLASSES, TOAST_ANIMATION_STATE, TOAST_FONT_CLASS, TOAST_PADDING_CLASS, TOAST_TITLE_FONT_CLASS, TOAST_TYPE_COLOR, TOAST_WIDTH_CLASS } from "@asheeui/core";
+import {
+  TOAST_FONT_CLASS,
+  TOAST_PADDING_CLASS,
+  TOAST_TITLE_FONT_CLASS,
+  TOAST_WIDTH_CLASS,
+} from "./portable";
 
 /** The types of message the system names. */
 const TYPES: ToastType[] = ["success", "error", "info", "warning", "default"];
@@ -39,38 +50,35 @@ describe("what a type of message means", () => {
     expect(TOAST_TYPE_COLOR.success).toBe("success");
     expect(TOAST_TYPE_COLOR.info).toBe("primary");
   });
-
 });
 
 describe("the scale a message is drawn at", () => {
   it("describes every density, on both platforms", () => {
     for (const map of [
-          TOAST_WIDTH_CLASS,
-          TOAST_PADDING_CLASS,
-          TOAST_FONT_CLASS,
-          TOAST_TITLE_FONT_CLASS,
-        ]) {
-          expect(Object.keys(map).sort()).toEqual([...DENSITIES].sort());
-        }
+      TOAST_WIDTH_CLASS,
+      TOAST_PADDING_CLASS,
+      TOAST_FONT_CLASS,
+      TOAST_TITLE_FONT_CLASS,
+    ]) {
+      expect(Object.keys(map).sort()).toEqual([...DENSITIES].sort());
+    }
   });
 
   it("fits a message inside the screen it is read on", () => {
     for (const density of DENSITIES) {
-          expect(TOAST_WIDTH_CLASS[density]).toContain("max-w-full");
-        }
+      expect(TOAST_WIDTH_CLASS[density]).toContain("max-w-full");
+    }
   });
-
 });
 
 describe("where a message appears", () => {
   it("anchors every placement on the web, with an animation of its own", () => {
     expect(Object.keys(PLACEMENT_CLASSES).sort()).toEqual(
-          [...PLACEMENTS].sort(),
-        );
+      [...PLACEMENTS].sort(),
+    );
     for (const placement of PLACEMENTS) {
-          expect(typeof TOAST_ANIMATION_STATE[placement].enter).toBe("string");
-          expect(typeof TOAST_ANIMATION_STATE[placement].exit).toBe("string");
-        }
+      expect(typeof TOAST_ANIMATION_STATE[placement].enter).toBe("string");
+      expect(typeof TOAST_ANIMATION_STATE[placement].exit).toBe("string");
+    }
   });
-
 });

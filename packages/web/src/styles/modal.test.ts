@@ -7,11 +7,9 @@
  * states its own; the keys both must cover are asserted on each side.
  */
 
+import type { ModalPosition, ModalSizeKey } from "@asheeui/core";
 import { describe, expect, it } from "vitest";
-
-
 import { MODAL_MAX_WIDTH_CLASS, MODAL_POSITION_CLASS } from "./modal";
-import { type ModalPosition, type ModalSizeKey } from "@asheeui/core";
 
 /** The widths a modal can be. */
 const SIZES: ModalSizeKey[] = ["sm", "md", "lg", "xl", "full"];
@@ -22,23 +20,22 @@ const POSITIONS: ModalPosition[] = ["center", "top", "bottom"];
 describe("the modal's width", () => {
   it("describes every width on both renderers", () => {
     expect(Object.keys(MODAL_MAX_WIDTH_CLASS).sort()).toEqual(
-          [...SIZES].sort(),
-        );
+      [...SIZES].sort(),
+    );
   });
 
   it("measures the full width against the viewport on the web and against the screen on the platform", () => {
     // The web reads the viewport and takes a gutter off it; the platform is already drawn on
-        // the screen it has.
-        expect(MODAL_MAX_WIDTH_CLASS.full).toContain("100vw");
+    // the screen it has.
+    expect(MODAL_MAX_WIDTH_CLASS.full).toContain("100vw");
   });
-
 });
 
 describe("the modal's position", () => {
   it("describes every position on both renderers", () => {
     expect(Object.keys(MODAL_POSITION_CLASS).sort()).toEqual(
-          [...POSITIONS].sort(),
-        );
+      [...POSITIONS].sort(),
+    );
   });
 
   it("pushes the surface to the same edge on both platforms", () => {
@@ -49,5 +46,4 @@ describe("the modal's position", () => {
   it("leaves a centred modal to the space it is given", () => {
     expect(MODAL_POSITION_CLASS.center).toBe("");
   });
-
 });

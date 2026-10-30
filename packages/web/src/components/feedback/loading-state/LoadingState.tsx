@@ -10,12 +10,7 @@
 
 "use client";
 
-import {
-  cn,
-  resolveClassKey,
-  resolveConfigCascade,
-  SPACE_MIN_HEIGHT_CLASS,
-} from "@asheeui/core";
+import { resolveClassKey, resolveConfigCascade } from "@asheeui/core";
 import {
   type ElementType,
   forwardRef,
@@ -28,6 +23,8 @@ import {
   LOADING_STATE_PANEL_CLASS,
   LOADING_STATE_SIZE_CLASS,
 } from "../../../styles/loading-state";
+import { SPACE_MIN_HEIGHT_CLASS } from "../../../styles/portable";
+import { cn } from "../../../utils/cn";
 import { Typography } from "../../typography/Typography";
 import { Spinner } from "../spinner/spinner";
 import {

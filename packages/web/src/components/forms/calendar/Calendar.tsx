@@ -8,9 +8,7 @@
 "use client";
 
 import {
-  ASHEE_LAYER,
   type Color,
-  cn,
   resolveCascade,
   resolveClassKey,
   resolveRadiusKey,
@@ -29,6 +27,8 @@ import { ClearIcon } from "../../../icons/ClearIcon";
 import { ClockIcon } from "../../../icons/ClockIcon";
 import { useAsheeConfig } from "../../../libs/context";
 import { RADIUS_CLASS } from "../../../styles/radius";
+import { cn } from "../../../utils/cn";
+import { ASHEE_LAYER } from "../../../utils/stacking";
 import type { FieldSizeKey } from "../field/field-config";
 import { Input, type InputProps } from "../input/Input";
 import { FALLBACK_MENU_CONFIG, useMenuFloating } from "../menu";

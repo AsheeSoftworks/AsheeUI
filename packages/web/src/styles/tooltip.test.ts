@@ -7,10 +7,13 @@
  * states its own; the keys both must cover are asserted on each side.
  */
 
+import type { TooltipSizeKey } from "@asheeui/core";
 import { describe, expect, it } from "vitest";
-
-
-import { type TooltipSizeKey, TOOLTIP_FONT_CLASS, TOOLTIP_PADDING_X_CLASS, TOOLTIP_PADDING_Y_CLASS } from "@asheeui/core";
+import {
+  TOOLTIP_FONT_CLASS,
+  TOOLTIP_PADDING_X_CLASS,
+  TOOLTIP_PADDING_Y_CLASS,
+} from "./portable";
 
 /** The sizes a hint can be. */
 const SIZES: TooltipSizeKey[] = ["sm", "md", "lg"];
@@ -18,12 +21,12 @@ const SIZES: TooltipSizeKey[] = ["sm", "md", "lg"];
 describe("the tooltip's scale", () => {
   it("describes the padding and the type size at every size", () => {
     for (const map of [
-          TOOLTIP_PADDING_X_CLASS,
-          TOOLTIP_PADDING_Y_CLASS,
-          TOOLTIP_FONT_CLASS,
-        ]) {
-          expect(Object.keys(map).sort()).toEqual([...SIZES].sort());
-        }
+      TOOLTIP_PADDING_X_CLASS,
+      TOOLTIP_PADDING_Y_CLASS,
+      TOOLTIP_FONT_CLASS,
+    ]) {
+      expect(Object.keys(map).sort()).toEqual([...SIZES].sort());
+    }
   });
 
   it("grows the hint with its size", () => {
@@ -31,5 +34,4 @@ describe("the tooltip's scale", () => {
     expect(TOOLTIP_FONT_CLASS.md).toBe("text-sm");
     expect(TOOLTIP_FONT_CLASS.lg).toBe("text-base");
   });
-
 });

@@ -10,7 +10,7 @@
 
 "use client";
 
-import { cn, type DocsLayoutConfig, resolveConfigCascade } from "@asheeui/core";
+import { type DocsLayoutConfig, resolveConfigCascade } from "@asheeui/core";
 import {
   type ElementType,
   forwardRef,
@@ -26,6 +26,7 @@ import {
   DOCS_LAYOUT_TOC_CLASS,
   DOCS_LAYOUT_TOC_STICKY_CLASS,
 } from "../../../styles/docs-layout";
+import { cn } from "../../../utils/cn";
 import { SkipLink } from "../section-kit/SkipLink";
 import { SidebarLayout } from "../sidebar-layout/SidebarLayout";
 import { Split } from "../split/Split";

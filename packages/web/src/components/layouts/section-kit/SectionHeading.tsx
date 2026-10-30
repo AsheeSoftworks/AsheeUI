@@ -11,8 +11,6 @@
  */
 
 import {
-  cn,
-  SECTION_BLOCK_HEADING_ELEMENT,
   SECTION_BLOCK_HEADING_ROLE,
   type SectionBlockAlign,
   type SectionBlockHeadingSize,
@@ -23,7 +21,9 @@ import {
   SECTION_BLOCK_DESCRIPTION_CLASS,
   SECTION_BLOCK_HEADING_ALIGN_CLASS,
   SECTION_BLOCK_HEADING_CLASS,
+  SECTION_BLOCK_HEADING_ELEMENT,
 } from "../../../styles/section-block";
+import { cn } from "../../../utils/cn";
 import { Typography } from "../../typography/Typography";
 
 /**

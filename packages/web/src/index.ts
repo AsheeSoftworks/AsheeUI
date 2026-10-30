@@ -172,3 +172,21 @@ export {
   themeController,
 } from "./theme/controller";
 export { useTheme } from "./theme/useTheme";
+/**
+ * The renderer's own rules: the class merge, the stacking helpers, the animate resolver and the
+ * typed-date parser.
+ *
+ * They were `@asheeui/core`'s until C2. Each one states something only a browser can honour — a
+ * Tailwind conflict, a `z-index` derived from a stacking context, a `Date` parsed from a text
+ * field — so they belong to the renderer that compiles them, and the names did not change.
+ */
+export { cn } from "./utils/cn";
+export { parseDateString } from "./utils/parse-date";
+export { resolveAnimate } from "./utils/resolve-animate";
+export {
+  ASHEE_GLOBAL_LAYER,
+  ASHEE_LAYER,
+  establishesStackingContext,
+  resolveBaseZIndex,
+  resolveFloatingZIndex,
+} from "./utils/stacking";

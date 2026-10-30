@@ -9,9 +9,6 @@
 "use client";
 
 import {
-  ACCORDION_CONTENT_SIZE_CLASS,
-  ACCORDION_HEADER_SIZE_CLASS,
-  cn,
   resolveCascade,
   resolveClassKey,
   resolveRadiusKey,
@@ -31,7 +28,12 @@ import {
   ACCORDION_VARIANT_CONTAINER_CLASS,
   ACCORDION_VARIANT_ITEM_CLASS,
 } from "../../../styles/accordion";
+import {
+  ACCORDION_CONTENT_SIZE_CLASS,
+  ACCORDION_HEADER_SIZE_CLASS,
+} from "../../../styles/portable";
 import { RADIUS_CLASS } from "../../../styles/radius";
+import { cn } from "../../../utils/cn";
 import {
   type AccordionConfig,
   type AccordionItem,

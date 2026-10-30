@@ -13,13 +13,7 @@
  * label, the description and the message with the control.
  */
 
-import {
-  cn,
-  FALLBACK_FIELD_CONFIG,
-  FIELD_REQUIRED_MARKER_CLASS,
-  FIELD_STATUS_TEXT_CLASS,
-  isFieldInvalid,
-} from "@asheeui/core";
+import { FALLBACK_FIELD_CONFIG, isFieldInvalid } from "@asheeui/core";
 import type { ReactNode } from "react";
 import {
   FIELD_DESCRIPTION_CLASS,
@@ -29,6 +23,11 @@ import {
   FIELD_MESSAGE_CLASS,
   FIELD_SHELL_CLASS,
 } from "../../../styles/field";
+import {
+  FIELD_REQUIRED_MARKER_CLASS,
+  FIELD_STATUS_TEXT_CLASS,
+} from "../../../styles/portable";
+import { cn } from "../../../utils/cn";
 import { Spinner } from "../../feedback/spinner/spinner";
 import type { FieldStatus, LabelAlign } from "./field-config";
 

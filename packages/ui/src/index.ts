@@ -27,9 +27,7 @@
 import type { ExternalConfig } from "@asheeui/web";
 
 export {
-  cn,
   mergeObject,
-  resolveAnimate,
   resolveCascade,
   resolveClassKey,
   resolveConfigCascade,
@@ -45,6 +43,7 @@ export {
  */
 export type { TypographyProps as TextProps } from "@asheeui/web";
 export * from "@asheeui/web";
+export { cn, resolveAnimate } from "@asheeui/web";
 
 /**
  * The configuration type of the renderer this import resolved to.

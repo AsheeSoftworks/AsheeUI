@@ -10,7 +10,7 @@
 "use client";
 
 import type { ActionConfig } from "@asheeui/core";
-import { cn, resolveClassKey, resolveConfigCascade } from "@asheeui/core";
+import { resolveClassKey, resolveConfigCascade } from "@asheeui/core";
 import {
   type ElementType,
   forwardRef,
@@ -24,6 +24,7 @@ import {
   CTA_INNER_CLASS,
   CTA_PANEL_CLASS,
 } from "../../../styles/cta";
+import { cn } from "../../../utils/cn";
 import { Container } from "../../layouts/container/Container";
 import { Section } from "../../layouts/section/Section";
 import { ActionGroup } from "../../layouts/section-kit/ActionGroup";

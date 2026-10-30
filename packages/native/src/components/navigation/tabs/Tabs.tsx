@@ -30,8 +30,6 @@ import {
   type Radius,
   resolveCascade,
   type Size,
-  TABS_FONT_CLASS,
-  TABS_PADDING_X_CLASS,
   type TabItem,
   type TabsOptionsConfig,
   type TabsVariant,
@@ -41,6 +39,10 @@ import { useState } from "react";
 import type { StyleProp, ViewProps, ViewStyle } from "react-native";
 import { ScrollView, View } from "react-native";
 import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
+import {
+  TABS_FONT_CLASS,
+  TABS_PADDING_X_CLASS,
+} from "../../../styles/portable";
 import { NATIVE_RADIUS_CLASS } from "../../../styles/radius";
 import {
   NATIVE_TABS_LIST_CLASS,

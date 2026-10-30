@@ -7,11 +7,9 @@
  * states its own; the keys both must cover are asserted on each side.
  */
 
+import type { Size } from "@asheeui/core";
 import { describe, expect, it } from "vitest";
-
-
 import { INPUT_SIZE_CLASS } from "./input";
-import { type Size } from "@asheeui/core";
 
 /** The densities a field can be. */
 const DENSITIES: Size[] = ["sm", "md", "lg"];
@@ -23,9 +21,8 @@ describe("the web input's class maps", () => {
 
   it("hold whole static classes, because a class assembled at runtime is never compiled", () => {
     for (const value of Object.values(INPUT_SIZE_CLASS)) {
-          expect(value.length).toBeGreaterThan(0);
-          expect(value).not.toContain("undefined");
-        }
+      expect(value.length).toBeGreaterThan(0);
+      expect(value).not.toContain("undefined");
+    }
   });
-
 });

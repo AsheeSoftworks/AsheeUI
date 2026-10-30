@@ -14,7 +14,7 @@
  * the bar paints the theme's background solidly, because there is no backdrop to blur.
  */
 
-import { resolveConfigCascade, SPACE_PADDING_Y_CLASS } from "@asheeui/core";
+import { resolveConfigCascade } from "@asheeui/core";
 import type { ReactNode } from "react";
 import type { StyleProp, ViewProps, ViewStyle } from "react-native";
 import { View } from "react-native";
@@ -31,6 +31,7 @@ import {
   NATIVE_PAGE_HEADER_INNER_CLASS,
   NATIVE_PAGE_HEADER_STICKY_CLASS,
 } from "../../../styles/page";
+import { SPACE_PADDING_Y_CLASS } from "../../../styles/portable";
 import { classNames } from "../../../utils/class-names";
 import {
   FALLBACK_NATIVE_PAGE_CONFIG,

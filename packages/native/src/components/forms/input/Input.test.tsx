@@ -7,7 +7,6 @@
  * focus edge, and every option resolves through the configuration cascade.
  */
 
-import { FIELD_STATUS_TEXT_CLASS } from "@asheeui/core";
 import {
   act,
   fireEvent,
@@ -16,6 +15,7 @@ import {
 } from "@testing-library/react-native";
 import type { ReactElement } from "react";
 import { AsheeUIProvider } from "../../../provider/AsheeUIProvider";
+import { FIELD_STATUS_TEXT_CLASS } from "../../../styles/portable";
 import { Input } from "./Input";
 
 /**

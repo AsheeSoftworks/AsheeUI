@@ -9,15 +9,11 @@
 "use client";
 
 import {
-  CHIP_AVATAR_SIZE_CLASS,
-  CHIP_PRESSABLE_CLASS,
   type Color,
-  cn,
   resolveCascade,
   resolveChipVariant,
   resolveClassKey,
   resolveRadiusKey,
-  resolveVariantClass,
   type Size,
   type Variant,
 } from "@asheeui/core";
@@ -30,6 +26,7 @@ import {
 } from "react";
 import { CloseIcon } from "../../../icons/CloseIcon";
 import { useAsheeConfig } from "../../../libs/context";
+import { resolveVariantClass } from "../../../shared/variant";
 import {
   CHIP_AVATAR_CLASS,
   CHIP_BASE_CLASS,
@@ -42,9 +39,12 @@ import {
   CHIP_HEIGHT_CLASS,
   CHIP_ICON_SIZE_CLASS,
   CHIP_PADDING_CLASS,
+  CHIP_PRESSABLE_CLASS,
   CHIP_SLOT_CLASS,
 } from "../../../styles/chip";
+import { CHIP_AVATAR_SIZE_CLASS } from "../../../styles/portable";
 import { RADIUS_CLASS } from "../../../styles/radius";
+import { cn } from "../../../utils/cn";
 import {
   type ChipConfig,
   type ChipVariant,

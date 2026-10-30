@@ -10,7 +10,7 @@
 "use client";
 
 import type { Color, Variant } from "@asheeui/core";
-import { cn, resolveCascade, resolveRadiusKey } from "@asheeui/core";
+import { resolveCascade, resolveRadiusKey } from "@asheeui/core";
 import {
   forwardRef,
   type ReactNode,
@@ -21,6 +21,7 @@ import {
 } from "react";
 import { ChevronDownIcon } from "../../../icons/ChevronDownIcon";
 import { useAsheeConfig } from "../../../libs/context";
+import { cn } from "../../../utils/cn";
 import { Button } from "../button/Button";
 import { FieldShell } from "../field/FieldShell";
 import type { FieldSizeKey, LabelAlign } from "../field/field-config";

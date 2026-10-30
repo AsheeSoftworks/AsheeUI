@@ -7,7 +7,7 @@
 "use client";
 
 import type { Color, Radius, Size, Variant } from "@asheeui/core";
-import { cn, resolveCascade, resolveRadiusKey } from "@asheeui/core";
+import { resolveCascade, resolveRadiusKey } from "@asheeui/core";
 import {
   type ElementType,
   type FormHTMLAttributes,
@@ -15,6 +15,7 @@ import {
   type ReactNode,
 } from "react";
 import { useAsheeConfig } from "../../../libs/context";
+import { cn } from "../../../utils/cn";
 import { Button } from "../button";
 import { FALLBACK_FORM_CONFIG, type FormConfig } from "./form-config";
 import {

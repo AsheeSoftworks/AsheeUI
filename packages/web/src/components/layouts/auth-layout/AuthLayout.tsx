@@ -12,7 +12,6 @@
 
 import {
   type AuthLayoutConfig,
-  cn,
   resolveConfigCascade,
   resolveRadiusKey,
 } from "@asheeui/core";
@@ -36,6 +35,7 @@ import {
   AUTH_PANEL_PADDING_CLASS,
 } from "../../../styles/auth-layout";
 import { RADIUS_CLASS } from "../../../styles/radius";
+import { cn } from "../../../utils/cn";
 import { SectionHeading } from "../section-kit/SectionHeading";
 import { FALLBACK_AUTH_LAYOUT_CONFIG } from "./auth-layout-config";
 

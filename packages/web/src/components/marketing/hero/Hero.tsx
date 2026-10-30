@@ -11,7 +11,7 @@
 "use client";
 
 import type { ActionConfig } from "@asheeui/core";
-import { cn, resolveConfigCascade } from "@asheeui/core";
+import { resolveConfigCascade } from "@asheeui/core";
 import {
   type ElementType,
   forwardRef,
@@ -27,6 +27,7 @@ import {
   HERO_MEDIA_FIRST_CLASS,
   HERO_TEXT_COLUMN_CLASS,
 } from "../../../styles/hero";
+import { cn } from "../../../utils/cn";
 import { Container } from "../../layouts/container/Container";
 import { Section } from "../../layouts/section/Section";
 import { ActionGroup } from "../../layouts/section-kit/ActionGroup";

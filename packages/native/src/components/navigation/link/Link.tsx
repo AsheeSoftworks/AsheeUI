@@ -20,7 +20,6 @@
 
 import {
   type ColorRole,
-  LINK_SIZE_CLASS,
   type LinkUnderline,
   type LinkVariant,
   resolveCascade,
@@ -40,6 +39,7 @@ import {
   NATIVE_LINK_UNDERLINE_CLASS,
   NATIVE_LINK_VARIANT_CLASS,
 } from "../../../styles/link";
+import { LINK_SIZE_CLASS } from "../../../styles/portable";
 import { classNames } from "../../../utils/class-names";
 import { openDestination } from "../../../utils/open-destination";
 import { Typography } from "../../typography/text/Text";

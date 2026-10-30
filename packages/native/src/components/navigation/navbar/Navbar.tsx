@@ -22,7 +22,6 @@
  */
 
 import {
-  NAVBAR_BRAND_TEXT_CLASS,
   type NavbarAlign,
   type NavbarLink,
   type NavbarLinkItem,
@@ -50,6 +49,7 @@ import {
   NATIVE_TAB_BAR_ITEM_ACTIVE_CLASS,
   NATIVE_TAB_BAR_ITEM_CLASS,
 } from "../../../styles/navbar";
+import { NAVBAR_BRAND_TEXT_CLASS } from "../../../styles/portable";
 import { classNames } from "../../../utils/class-names";
 import { Typography } from "../../typography/text/Text";
 import { Link } from "../link";

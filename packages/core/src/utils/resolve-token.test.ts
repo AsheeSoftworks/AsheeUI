@@ -1,6 +1,5 @@
 import { describe, expect, it } from "vitest";
 import {
-  resolveAnimate,
   resolveCascade,
   resolveClassKey,
   resolveRadiusKey,
@@ -27,14 +26,6 @@ describe("resolveCascade", () => {
     expect(resolveCascade(false, true, true, true)).toBe(false);
     expect(resolveCascade(0, 8, 8, 8)).toBe(0);
     expect(resolveCascade("", "md", "md", "md")).toBe("");
-  });
-});
-
-describe("resolveAnimate", () => {
-  it("resolves without a global default tier", () => {
-    expect(resolveAnimate(undefined, undefined, true)).toBe(true);
-    expect(resolveAnimate(undefined, true, false)).toBe(true);
-    expect(resolveAnimate(false, true, true)).toBe(false);
   });
 });
 

@@ -7,11 +7,10 @@
  * states its own; the keys both must cover are asserted on each side.
  */
 
+import type { Size } from "@asheeui/core";
 import { describe, expect, it } from "vitest";
-
-
+import { TABS_FONT_CLASS, TABS_PADDING_X_CLASS } from "./portable";
 import { TABS_HEIGHT_CLASS } from "./tabs";
-import { type Size, TABS_FONT_CLASS, TABS_PADDING_X_CLASS } from "@asheeui/core";
 
 /** The densities a tab bar can be. */
 const DENSITIES: Size[] = ["sm", "md", "lg"];
@@ -19,12 +18,12 @@ const DENSITIES: Size[] = ["sm", "md", "lg"];
 describe("the tabs' scale", () => {
   it("describes the height, the padding and the type size at every density", () => {
     for (const map of [
-          TABS_HEIGHT_CLASS,
-          TABS_PADDING_X_CLASS,
-          TABS_FONT_CLASS,
-        ]) {
-          expect(Object.keys(map).sort()).toEqual([...DENSITIES].sort());
-        }
+      TABS_HEIGHT_CLASS,
+      TABS_PADDING_X_CLASS,
+      TABS_FONT_CLASS,
+    ]) {
+      expect(Object.keys(map).sort()).toEqual([...DENSITIES].sort());
+    }
   });
 
   it("grows a trigger with its density on the web", () => {
@@ -32,5 +31,4 @@ describe("the tabs' scale", () => {
     expect(TABS_HEIGHT_CLASS.md).toBe("h-10");
     expect(TABS_HEIGHT_CLASS.lg).toBe("h-12");
   });
-
 });

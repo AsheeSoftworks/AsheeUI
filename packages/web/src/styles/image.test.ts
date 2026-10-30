@@ -7,11 +7,9 @@
  * states its own; the keys both must cover are asserted on each side.
  */
 
+import type { ImageFit, ImageRatioKey } from "@asheeui/core";
 import { describe, expect, it } from "vitest";
-
-
 import { IMAGE_FIT_CLASS, IMAGE_RATIO_CLASS } from "./image";
-import { type ImageFit, type ImageRatioKey } from "@asheeui/core";
 
 /** The five fit strategies. */
 const FITS: ImageFit[] = ["cover", "contain", "fill", "none", "scale-down"];
@@ -31,12 +29,11 @@ describe("the image's fit", () => {
 
   it("states the two strategies the platform names differently in its own vocabulary", () => {
     // `fill` stretches on the web and on the platform alike; the platform calls it
-        // `stretch` because that is what its image view calls it.
-        expect(IMAGE_FIT_CLASS.fill).toBe("object-fill");
+    // `stretch` because that is what its image view calls it.
+    expect(IMAGE_FIT_CLASS.fill).toBe("object-fill");
     // `none` means the natural size, which is the platform's centered placement.
-        expect(IMAGE_FIT_CLASS.none).toBe("object-none");
+    expect(IMAGE_FIT_CLASS.none).toBe("object-none");
   });
-
 });
 
 describe("the image's ratio", () => {
@@ -46,7 +43,7 @@ describe("the image's ratio", () => {
 
   it("uses intrinsic dimensions when the ratio is auto, on both platforms", () => {
     // The web states this by adding no class; the platform by stating no number.
-        expect(IMAGE_RATIO_CLASS.auto).toBe("");
+    expect(IMAGE_RATIO_CLASS.auto).toBe("");
   });
 
   it("states the same two shapes on both platforms", () => {
@@ -56,8 +53,7 @@ describe("the image's ratio", () => {
 
   it("keeps the portrait ratio the web draws, as a number the platform lays out", () => {
     // The web states 3/4 as an arbitrary aspect class, so the two platforms must agree
-        // on the ratio itself rather than on the syntax that expresses it.
-        expect(IMAGE_RATIO_CLASS.portrait).toBe("aspect-[3/4]");
+    // on the ratio itself rather than on the syntax that expresses it.
+    expect(IMAGE_RATIO_CLASS.portrait).toBe("aspect-[3/4]");
   });
-
 });

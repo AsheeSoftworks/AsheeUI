@@ -32,9 +32,6 @@ import {
   resolveCascade,
   resolveMessageVariant,
   type Size,
-  TOOLTIP_FONT_CLASS,
-  TOOLTIP_PADDING_X_CLASS,
-  TOOLTIP_PADDING_Y_CLASS,
   type TooltipPlacement,
   type Variant,
 } from "@asheeui/core";
@@ -46,6 +43,11 @@ import {
   NATIVE_MESSAGE_SURFACE_CLASS,
   NATIVE_MESSAGE_TEXT_CLASS,
 } from "../../../styles/message-surface";
+import {
+  TOOLTIP_FONT_CLASS,
+  TOOLTIP_PADDING_X_CLASS,
+  TOOLTIP_PADDING_Y_CLASS,
+} from "../../../styles/portable";
 import { NATIVE_RADIUS_CLASS } from "../../../styles/radius";
 import {
   NATIVE_TOOLTIP_ALIGN_CLASS,

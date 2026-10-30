@@ -11,7 +11,7 @@
 
 "use client";
 
-import { cn, formatRowCountLabel, resolveConfigCascade } from "@asheeui/core";
+import { formatRowCountLabel, resolveConfigCascade } from "@asheeui/core";
 import {
   type ElementType,
   type HTMLAttributes,
@@ -32,6 +32,7 @@ import {
   DATA_TABLE_TOOLBAR_CLASS,
   DATA_TABLE_TOOLBAR_GROUP_CLASS,
 } from "../../../styles/data-table";
+import { cn } from "../../../utils/cn";
 import { EmptyState } from "../../feedback/empty-state/EmptyState";
 import { LoadingState } from "../../feedback/loading-state/LoadingState";
 import { SearchInput } from "../../forms/search-input/SearchInput";

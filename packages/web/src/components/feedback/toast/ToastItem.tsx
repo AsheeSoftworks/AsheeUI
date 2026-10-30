@@ -9,18 +9,12 @@
 
 import {
   type Color,
-  cn,
   type Radius,
   resolveCascade,
   resolveClassKey,
-  resolveVariantClass,
   type Size,
   TOAST_ANIMATION_STATE,
-  TOAST_FONT_CLASS,
-  TOAST_PADDING_CLASS,
-  TOAST_TITLE_FONT_CLASS,
   TOAST_TYPE_COLOR,
-  TOAST_WIDTH_CLASS,
   type Variant,
 } from "@asheeui/core";
 import { useCallback, useState } from "react";
@@ -30,7 +24,15 @@ import { ErrorIcon } from "../../../icons/ErrorIcon";
 import { InfoIcon } from "../../../icons/InfoIcon";
 import { WarningIcon } from "../../../icons/WarningIcon";
 import { useAsheeConfig } from "../../../libs/context";
+import { resolveVariantClass } from "../../../shared/variant";
+import {
+  TOAST_FONT_CLASS,
+  TOAST_PADDING_CLASS,
+  TOAST_TITLE_FONT_CLASS,
+  TOAST_WIDTH_CLASS,
+} from "../../../styles/portable";
 import { RADIUS_CLASS } from "../../../styles/radius";
+import { cn } from "../../../utils/cn";
 import {
   FALLBACK_TOAST_CONFIG,
   type ToastItemData,

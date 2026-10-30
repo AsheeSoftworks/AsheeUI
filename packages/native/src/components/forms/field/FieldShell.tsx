@@ -15,8 +15,6 @@
 
 import {
   FALLBACK_FIELD_CONFIG,
-  FIELD_REQUIRED_MARKER_CLASS,
-  FIELD_STATUS_TEXT_CLASS,
   type FieldStatus,
   isFieldInvalid,
 } from "@asheeui/core";
@@ -26,6 +24,10 @@ import {
   NATIVE_FIELD_LABEL_ROW_CLASS,
   NATIVE_FIELD_SHELL_CLASS,
 } from "../../../styles/field";
+import {
+  FIELD_REQUIRED_MARKER_CLASS,
+  FIELD_STATUS_TEXT_CLASS,
+} from "../../../styles/portable";
 import { Spinner } from "../../feedback/spinner/Spinner";
 import { Typography } from "../../typography/text/Text";
 

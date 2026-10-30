@@ -10,7 +10,6 @@
 
 "use client";
 
-import { resolveAnimate } from "@asheeui/core";
 import {
   type ReactNode,
   useCallback,
@@ -19,6 +18,7 @@ import {
   useState,
 } from "react";
 import { useAsheeConfig } from "../../../libs/context";
+import { resolveAnimate } from "../../../utils/resolve-animate";
 import { FALLBACK_CLIPBOARD_CONFIG } from "./clipboard-config";
 
 /**

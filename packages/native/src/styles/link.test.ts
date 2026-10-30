@@ -5,12 +5,11 @@
  * shrink no package can import both renderers, so neither suite compares them any more.
  */
 
-import {
-  type ColorRole,
-  LINK_SIZE_CLASS,
-  type LinkUnderline,
-  type LinkVariant,
-  type Size,
+import type {
+  ColorRole,
+  LinkUnderline,
+  LinkVariant,
+  Size,
 } from "@asheeui/core";
 import {
   NATIVE_LINK_COLOR_CLASS,
@@ -19,6 +18,7 @@ import {
   NATIVE_LINK_UNDERLINE_CLASS,
   NATIVE_LINK_VARIANT_CLASS,
 } from "./link";
+import { LINK_SIZE_CLASS } from "./portable";
 
 /** The densities a link can be. */
 const DENSITIES: Size[] = ["sm", "md", "lg"];

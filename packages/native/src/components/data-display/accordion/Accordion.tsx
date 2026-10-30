@@ -23,8 +23,6 @@
  */
 
 import {
-  ACCORDION_CONTENT_SIZE_CLASS,
-  ACCORDION_HEADER_SIZE_CLASS,
   type AccordionItem,
   type AccordionSizeKey,
   type AccordionVariant,
@@ -50,6 +48,10 @@ import {
   NATIVE_ACCORDION_VARIANT_CONTAINER_CLASS,
   NATIVE_ACCORDION_VARIANT_ITEM_CLASS,
 } from "../../../styles/accordion";
+import {
+  ACCORDION_CONTENT_SIZE_CLASS,
+  ACCORDION_HEADER_SIZE_CLASS,
+} from "../../../styles/portable";
 import { NATIVE_RADIUS_CLASS } from "../../../styles/radius";
 import { classNames } from "../../../utils/class-names";
 import { Typography } from "../../typography/text/Text";

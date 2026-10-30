@@ -23,7 +23,6 @@
 // core's would publish the name twice on this branch.
 export {
   mergeObject,
-  resolveAnimate,
   resolveCascade,
   resolveClassKey,
   resolveConfigCascade,

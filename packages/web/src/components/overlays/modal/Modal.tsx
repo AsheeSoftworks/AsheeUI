@@ -8,8 +8,6 @@
 "use client";
 
 import {
-  ASHEE_GLOBAL_LAYER,
-  cn,
   type Radius,
   resolveCascade,
   resolveClassKey,
@@ -34,6 +32,8 @@ import {
   MODAL_POSITION_CLASS,
 } from "../../../styles/modal";
 import { RADIUS_CLASS } from "../../../styles/radius";
+import { cn } from "../../../utils/cn";
+import { ASHEE_GLOBAL_LAYER } from "../../../utils/stacking";
 import {
   FALLBACK_MODAL_CONFIG,
   type ModalConfig,

@@ -11,8 +11,6 @@
 "use client";
 
 import {
-  cn,
-  NAVBAR_BRAND_TEXT_CLASS,
   type NavbarLink,
   type NavbarLinkItem,
   resolveConfigCascade,
@@ -47,6 +45,8 @@ import {
   NAVBAR_TOGGLE_CLASS,
   NAVBAR_VARIANT_CLASS,
 } from "../../../styles/navbar";
+import { NAVBAR_BRAND_TEXT_CLASS } from "../../../styles/portable";
+import { cn } from "../../../utils/cn";
 import { Button } from "../../forms/button/Button";
 import { Container } from "../../layouts/container/Container";
 import { Link } from "../link";

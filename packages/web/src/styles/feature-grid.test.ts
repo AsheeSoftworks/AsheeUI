@@ -9,8 +9,11 @@
 
 import { describe, expect, it } from "vitest";
 
-
-import { FEATURE_CARD_BODY_CLASS, FEATURE_HEADING_CLASS, FEATURE_ICON_CLASS } from "./feature-grid";
+import {
+  FEATURE_CARD_BODY_CLASS,
+  FEATURE_HEADING_CLASS,
+  FEATURE_ICON_CLASS,
+} from "./feature-grid";
 
 describe("the feature grid's badge", () => {
   it("draws a badge large enough to hold an icon on both platforms", () => {
@@ -24,10 +27,9 @@ describe("the feature grid's badge", () => {
 
   it("states the icon's colour on the platform, because the badge draws it as a child", () => {
     // On the web the badge's own text colour is inherited by an icon drawn in `currentColor`.
-        // The platform's child view does not inherit it, so the tone is named beside the badge.
-        expect(FEATURE_ICON_CLASS).toContain("text-primary");
+    // The platform's child view does not inherit it, so the tone is named beside the badge.
+    expect(FEATURE_ICON_CLASS).toContain("text-primary");
   });
-
 });
 
 describe("a feature card's body", () => {
@@ -38,12 +40,10 @@ describe("a feature card's body", () => {
   it("states its own rhythm on each platform", () => {
     expect(FEATURE_CARD_BODY_CLASS).toContain("gap-3");
   });
-
 });
 
 describe("the heading above the grid", () => {
   it("keeps space between the heading and the cards on both platforms", () => {
     expect(FEATURE_HEADING_CLASS).toBe("mb-10");
   });
-
 });

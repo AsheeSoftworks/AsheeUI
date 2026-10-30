@@ -7,11 +7,9 @@
  * states its own; the keys both must cover are asserted on each side.
  */
 
+import type { DrawerSize } from "@asheeui/core";
 import { describe, expect, it } from "vitest";
-
-
 import { DRAWER_HEIGHT_CLASS, DRAWER_WIDTH_CLASS } from "./drawer";
-import { type DrawerSize } from "@asheeui/core";
 
 /** The amounts of screen a drawer can take. */
 const SIZES: DrawerSize[] = ["sm", "md", "lg", "full"];
@@ -26,5 +24,4 @@ describe("how much of the screen a drawer takes", () => {
     expect(DRAWER_WIDTH_CLASS.full).toBe("w-screen");
     expect(DRAWER_HEIGHT_CLASS.full).toBe("h-screen");
   });
-
 });

@@ -9,7 +9,7 @@
 "use client";
 
 import type { Color, Radius, Size, Variant } from "@asheeui/core";
-import { cn, resolveCascade, resolveRadiusKey } from "@asheeui/core";
+import { resolveCascade, resolveRadiusKey } from "@asheeui/core";
 import {
   type FloatingContext,
   FloatingFocusManager,
@@ -31,6 +31,7 @@ import { CheckIcon } from "../../../icons/CheckIcon";
 import { SearchIcon } from "../../../icons/SearchIcon";
 import { useAsheeConfig } from "../../../libs/context";
 import { useBodyScrollLock } from "../../../libs/use-body-scroll-lock";
+import { cn } from "../../../utils/cn";
 import { Button } from "../button/Button";
 import { Input } from "../input/Input";
 import {

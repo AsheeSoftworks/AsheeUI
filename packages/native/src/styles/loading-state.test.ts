@@ -5,12 +5,13 @@
  * shrink no package can import both renderers, so neither suite compares them any more.
  */
 
-import { type Size, SPACE_MIN_HEIGHT_CLASS } from "@asheeui/core";
+import type { Size } from "@asheeui/core";
 import {
   NATIVE_LOADING_STATE_CLASS,
   NATIVE_LOADING_STATE_PANEL_CLASS,
   NATIVE_LOADING_STATE_SIZE_CLASS,
 } from "./loading-state";
+import { SPACE_MIN_HEIGHT_CLASS } from "./portable";
 
 /** The densities a loading region can be. */
 const DENSITIES: Size[] = ["sm", "md", "lg"];

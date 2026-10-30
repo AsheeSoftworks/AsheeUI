@@ -7,10 +7,12 @@
  * states its own; the keys both must cover are asserted on each side.
  */
 
+import {
+  type MessageVariant,
+  resolveMessageVariant,
+  type Variant,
+} from "@asheeui/core";
 import { describe, expect, it } from "vitest";
-
-
-import { type MessageVariant, resolveMessageVariant, type Variant } from "@asheeui/core";
 
 /** The treatments a message surface can wear. */
 const VARIANTS: MessageVariant[] = ["solid", "faded", "bordered", "ghost"];
@@ -21,20 +23,19 @@ const EVERY_VARIANT: Variant[] = [...VARIANTS, "underlined"];
 describe("the treatment a message surface wears", () => {
   it("resolves the one treatment a message does not have to its nearest equivalent", () => {
     // A consumer can set a global `underlined` for the components that have it, and a
-        // message has to answer with something a message can be.
-        expect(resolveMessageVariant("underlined")).toBe("bordered");
+    // message has to answer with something a message can be.
+    expect(resolveMessageVariant("underlined")).toBe("bordered");
   });
 
   it("leaves every treatment a message does have alone", () => {
     for (const variant of VARIANTS) {
-          expect(resolveMessageVariant(variant)).toBe(variant);
-        }
+      expect(resolveMessageVariant(variant)).toBe(variant);
+    }
   });
 
   it("answers every treatment a configuration can name, so nothing is left unmapped", () => {
     for (const variant of EVERY_VARIANT) {
-          expect(VARIANTS).toContain(resolveMessageVariant(variant));
-        }
+      expect(VARIANTS).toContain(resolveMessageVariant(variant));
+    }
   });
-
 });

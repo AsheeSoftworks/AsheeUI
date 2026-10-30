@@ -10,7 +10,7 @@
 
 "use client";
 
-import { cn, resolveConfigCascade } from "@asheeui/core";
+import { resolveConfigCascade } from "@asheeui/core";
 import {
   type ElementType,
   forwardRef,
@@ -29,6 +29,7 @@ import {
   SIDEBAR_LAYOUT_ROW_CLASS,
   SIDEBAR_LAYOUT_WIDTH_CLASS,
 } from "../../../styles/sidebar-layout";
+import { cn } from "../../../utils/cn";
 import { SidebarColumnContext } from "./sidebar-column";
 import {
   FALLBACK_SIDEBAR_LAYOUT_CONFIG,

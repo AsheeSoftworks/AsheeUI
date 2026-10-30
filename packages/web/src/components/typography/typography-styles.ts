@@ -8,7 +8,6 @@
  */
 
 import {
-  cn,
   TYPOGRAPHY_ROLE_TOKEN,
   type TypographyRole,
   type TypographyRoleTokens,
@@ -20,6 +19,7 @@ import {
   TYPOGRAPHY_TRACKING_CLASS,
   TYPOGRAPHY_WEIGHT_CLASS,
 } from "../../styles/typography";
+import { cn } from "../../utils/cn";
 
 /**
  * Compose a role's class string from its size/style tokens.

@@ -8,8 +8,6 @@
 
 import type { Size, Variant } from "@asheeui/core";
 import {
-  ASHEE_GLOBAL_LAYER,
-  cn,
   PLACEMENT_CLASSES,
   resolveCascade,
   resolveRadiusKey,
@@ -17,6 +15,8 @@ import {
 import { FloatingPortal } from "@floating-ui/react";
 import { type ReactNode, useCallback, useMemo, useState } from "react";
 import { useAsheeConfig } from "../../../libs/context";
+import { cn } from "../../../utils/cn";
+import { ASHEE_GLOBAL_LAYER } from "../../../utils/stacking";
 import { ToastContext } from "./ToastContext";
 import { ToastItem } from "./ToastItem";
 import {

@@ -10,11 +10,7 @@
 "use client";
 
 import type { ActionConfig } from "@asheeui/core";
-import {
-  cn,
-  type PricingFeatureItem,
-  resolveConfigCascade,
-} from "@asheeui/core";
+import { type PricingFeatureItem, resolveConfigCascade } from "@asheeui/core";
 import { forwardRef, type HTMLAttributes, type ReactNode } from "react";
 import { CheckIcon } from "../../../icons/CheckIcon";
 import { CloseIcon } from "../../../icons/CloseIcon";
@@ -30,6 +26,7 @@ import {
   PRICING_PRICE_CLASS,
 } from "../../../styles/pricing-card";
 import { VISUALLY_HIDDEN_CLASS } from "../../../styles/visually-hidden";
+import { cn } from "../../../utils/cn";
 import { Card, type CardTitleElement } from "../../data-display/card/Card";
 import { ActionGroup } from "../../layouts/section-kit/ActionGroup";
 import { Typography } from "../../typography/Typography";

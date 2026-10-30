@@ -7,11 +7,20 @@
  * states its own; the keys both must cover are asserted on each side.
  */
 
+import type { FooterVariant } from "@asheeui/core";
 import { describe, expect, it } from "vitest";
-
-
-import { FOOTER_BOTTOM_CLASS, FOOTER_BOTTOM_LINKS_CLASS, FOOTER_BRAND_COLUMN_CLASS, FOOTER_GROUP_CLASS, FOOTER_GROUPS_CLASS, FOOTER_LINK_CLASS, FOOTER_LIST_CLASS, FOOTER_SOCIAL_ROW_CLASS, FOOTER_TOP_CLASS, FOOTER_VARIANT_CLASS } from "./footer";
-import { type FooterVariant } from "@asheeui/core";
+import {
+  FOOTER_BOTTOM_CLASS,
+  FOOTER_BOTTOM_LINKS_CLASS,
+  FOOTER_BRAND_COLUMN_CLASS,
+  FOOTER_GROUP_CLASS,
+  FOOTER_GROUPS_CLASS,
+  FOOTER_LINK_CLASS,
+  FOOTER_LIST_CLASS,
+  FOOTER_SOCIAL_ROW_CLASS,
+  FOOTER_TOP_CLASS,
+  FOOTER_VARIANT_CLASS,
+} from "./footer";
 
 /** The surfaces a footer can take. */
 const VARIANTS: FooterVariant[] = ["solid", "muted", "bordered"];
@@ -19,8 +28,8 @@ const VARIANTS: FooterVariant[] = ["solid", "muted", "bordered"];
 describe("the footer's surface", () => {
   it("describes every treatment on both platforms", () => {
     expect(Object.keys(FOOTER_VARIANT_CLASS).sort()).toEqual(
-          [...VARIANTS].sort(),
-        );
+      [...VARIANTS].sort(),
+    );
   });
 
   it("draws the separator above the bordered footer on both platforms", () => {
@@ -30,15 +39,14 @@ describe("the footer's surface", () => {
   it("keeps the solid footer on the page background on both platforms", () => {
     expect(FOOTER_VARIANT_CLASS.solid).toBe("bg-background");
   });
-
 });
 
 describe("the footer's regions", () => {
   it("turns the upper region into a row at a breakpoint on the web and keeps it stacked on the platform", () => {
     expect(FOOTER_TOP_CLASS).toContain("lg:flex-row");
     // The platform's groups carry the wrapping instead: a footer that wrapped nothing would
-        // run its columns off the side of a phone.
-        expect(FOOTER_GROUPS_CLASS).toContain("flex-wrap");
+    // run its columns off the side of a phone.
+    expect(FOOTER_GROUPS_CLASS).toContain("flex-wrap");
   });
 
   it("keeps the brand column above its groups on both platforms", () => {
@@ -50,7 +58,6 @@ describe("the footer's regions", () => {
   it("separates the lower region from the upper one on both platforms", () => {
     expect(FOOTER_BOTTOM_CLASS).toContain("border-t border-border");
   });
-
 });
 
 describe("the footer's links", () => {
@@ -62,5 +69,4 @@ describe("the footer's links", () => {
     expect(FOOTER_BOTTOM_LINKS_CLASS).toContain("flex-wrap");
     expect(FOOTER_SOCIAL_ROW_CLASS).toContain("flex items-center");
   });
-
 });

@@ -2,7 +2,7 @@
   "name": "@asheeui/core",
   "version": "2.5.0",
   "description": "Platform-neutral design language, component contracts and cascade helpers shared by the AsheeUI web and native packages.",
-  "author": "Ashee Softworks <asheesoftworks@gmail.com>",
+  "author": "Ashee Softworks \u003casheesoftworks@gmail.com\u003e",
   "license": "Apache-2.0",
   "type": "module",
   "main": "./src/index.ts",
@@ -46,8 +46,5 @@
     "vite-plugin-dts": "^5.1.2",
     "vitest": "^5.0.5"
   },
-  "dependencies": {
-    "clsx": "^2.1.1",
-    "tailwind-merge": "^3.7.0"
-  }
+  "dependencies": {}
 }

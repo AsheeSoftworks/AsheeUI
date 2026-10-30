@@ -9,12 +9,7 @@
 "use client";
 
 import type { Color, Size } from "@asheeui/core";
-import {
-  cn,
-  LINK_SIZE_CLASS,
-  resolveCascade,
-  resolveClassKey,
-} from "@asheeui/core";
+import { resolveCascade, resolveClassKey } from "@asheeui/core";
 import {
   type AnchorHTMLAttributes,
   type ElementType,
@@ -29,6 +24,8 @@ import {
   LINK_UNDERLINE_CLASS,
   LINK_VARIANT_CLASS,
 } from "../../../styles/link";
+import { LINK_SIZE_CLASS } from "../../../styles/portable";
+import { cn } from "../../../utils/cn";
 import {
   FALLBACK_LINK_CONFIG,
   type LinkConfig,

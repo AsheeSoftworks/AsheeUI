@@ -9,11 +9,9 @@
 
 import {
   type Color,
-  cn,
   resolveCascade,
   resolveClassKey,
   resolveRadiusKey,
-  resolveVariantClass,
   type Variant,
 } from "@asheeui/core";
 import React, {
@@ -25,7 +23,9 @@ import React, {
   useRef,
 } from "react";
 import { useAsheeConfig } from "../../../libs/context";
+import { resolveVariantClass } from "../../../shared/variant";
 import { RADIUS_CLASS } from "../../../styles/radius";
+import { cn } from "../../../utils/cn";
 import {
   type KeyboardOpenOptions,
   useKeyboardField,

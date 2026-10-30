@@ -12,11 +12,9 @@
 import type { Size } from "@asheeui/core";
 import {
   type Color,
-  cn,
   resolveCascade,
   resolveClassKey,
   resolveRadiusKey,
-  resolveVariantClass,
   UnderlineRadius,
   type Variant,
 } from "@asheeui/core";
@@ -27,6 +25,7 @@ import {
   type ReactNode,
 } from "react";
 import { useAsheeConfig } from "../../../libs/context";
+import { resolveVariantClass } from "../../../shared/variant";
 import {
   BUTTON_BASE_CLASS,
   BUTTON_DISABLED_CLASS,
@@ -36,6 +35,7 @@ import {
   BUTTON_SIZE_CLASS,
 } from "../../../styles/button";
 import { RADIUS_CLASS } from "../../../styles/radius";
+import { cn } from "../../../utils/cn";
 import { Spinner } from "../../feedback/spinner/spinner";
 import { type ButtonConfig, FALLBACK_BUTTON_CONFIG } from "./button-config";
 

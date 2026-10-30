@@ -107,3 +107,9 @@ export const CHIP_AVATAR_CLASS =
 /** The web chip's remove control. */
 export const CHIP_CLOSE_CLASS =
   "inline-flex items-center justify-center shrink-0 rounded-full transition-opacity hover:opacity-70 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-current opacity-80 -mr-1";
+
+/**
+ * The web chip's pressable treatment, which the platform supplies itself.
+ */
+export const CHIP_PRESSABLE_CLASS =
+  "cursor-pointer hover:opacity-90 active:scale-[0.98]";

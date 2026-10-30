@@ -9,7 +9,7 @@
 
 "use client";
 
-import { cn, resolveConfigCascade } from "@asheeui/core";
+import { resolveConfigCascade } from "@asheeui/core";
 import {
   type DragEvent,
   forwardRef,
@@ -19,6 +19,7 @@ import {
   useState,
 } from "react";
 import { useAsheeConfig } from "../../../libs/context";
+import { cn } from "../../../utils/cn";
 import { Chip } from "../../data-display/chip/Chip";
 import { FieldShell } from "../field/FieldShell";
 import type { FieldStatus } from "../field/field-config";

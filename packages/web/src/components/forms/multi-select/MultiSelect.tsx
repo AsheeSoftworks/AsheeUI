@@ -10,7 +10,6 @@
 
 import type { Color, Size, Variant } from "@asheeui/core";
 import {
-  cn,
   resolveCascade,
   resolveClassKey,
   resolveFieldStatusColor,
@@ -34,6 +33,7 @@ import { ChevronDownIcon } from "../../../icons/ChevronDownIcon";
 import { CloseIcon } from "../../../icons/CloseIcon";
 import { useAsheeConfig } from "../../../libs/context";
 import { RADIUS_CLASS } from "../../../styles/radius";
+import { cn } from "../../../utils/cn";
 import { Chip } from "../../data-display/chip/Chip";
 import { Button } from "../button/Button";
 import { FieldShell } from "../field/FieldShell";

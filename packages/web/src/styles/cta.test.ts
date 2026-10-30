@@ -7,11 +7,9 @@
  * states its own; the keys both must cover are asserted on each side.
  */
 
+import type { CtaPanel } from "@asheeui/core";
 import { describe, expect, it } from "vitest";
-
-
 import { CTA_CENTERED_CLASS, CTA_INNER_CLASS, CTA_PANEL_CLASS } from "./cta";
-import { type CtaPanel } from "@asheeui/core";
 
 /** The three panel treatments. */
 const PANELS: CtaPanel[] = ["bordered", "muted", "plain"];
@@ -33,7 +31,6 @@ describe("the cta's panel", () => {
   it("steps its padding up at a breakpoint on the web and states the smaller step on the platform", () => {
     expect(CTA_PANEL_CLASS.bordered).toContain("md:p-12");
   });
-
 });
 
 describe("the cta's inner arrangement", () => {
@@ -44,5 +41,4 @@ describe("the cta's inner arrangement", () => {
   it("centres the block when the band is centred, on both platforms", () => {
     expect(CTA_CENTERED_CLASS).toContain("items-center");
   });
-
 });

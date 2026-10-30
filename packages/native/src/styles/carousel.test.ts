@@ -5,11 +5,7 @@
  * shrink no package can import both renderers, so neither suite compares them any more.
  */
 
-import {
-  CAROUSEL_PADDING_CLASS,
-  type CarouselVariant,
-  type Size,
-} from "@asheeui/core";
+import type { CarouselVariant, Size } from "@asheeui/core";
 import {
   NATIVE_CAROUSEL_CONTROL_CLASS,
   NATIVE_CAROUSEL_HEIGHT_CLASS,
@@ -19,6 +15,7 @@ import {
   NATIVE_CAROUSEL_PREV_GLYPH,
   NATIVE_CAROUSEL_VARIANT_CLASS,
 } from "./carousel";
+import { CAROUSEL_PADDING_CLASS } from "./portable";
 
 /** The heights a carousel can be. */
 const DENSITIES: Size[] = ["sm", "md", "lg"];

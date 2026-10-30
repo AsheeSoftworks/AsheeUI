@@ -22,7 +22,6 @@
  */
 
 import {
-  CAROUSEL_PADDING_CLASS,
   type CarouselItem,
   type Radius,
   resolveCarouselVariant,
@@ -64,6 +63,7 @@ import {
   NATIVE_CAROUSEL_TRACK_CLASS,
   NATIVE_CAROUSEL_VARIANT_CLASS,
 } from "../../../styles/carousel";
+import { CAROUSEL_PADDING_CLASS } from "../../../styles/portable";
 import { NATIVE_RADIUS_CLASS } from "../../../styles/radius";
 import { classNames } from "../../../utils/class-names";
 import { Typography } from "../../typography/text/Text";

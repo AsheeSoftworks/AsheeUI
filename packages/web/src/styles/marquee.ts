@@ -102,3 +102,19 @@ export const MARQUEE_FADE_END_CLASS: Record<MarqueeAxis, string> = {
   x: "top-0 -right-5 h-full w-24 bg-linear-to-l from-background to-transparent",
   y: "bottom-0 left-0 w-full h-24 bg-linear-to-t from-background to-transparent",
 };
+
+/**
+ * The width or height a copy claims along the axis, at the end that faces the next copy.
+ *
+ * It is the marquee's gap, and it belongs to the copy rather than to the track so that one
+ * copy's length already includes the space before the next one. The gap's value is a
+ * configured CSS length, so the renderer states it as an inline style; what is here is the
+ * direction it is stated in.
+ */
+export const MARQUEE_SET_SPACING: Record<
+  MarqueeAxis,
+  "paddingRight" | "paddingBottom"
+> = {
+  x: "paddingRight",
+  y: "paddingBottom",
+};

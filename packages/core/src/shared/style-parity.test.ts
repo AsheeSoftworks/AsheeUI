@@ -307,3 +307,48 @@ describe("every class string on both sides", () => {
     }
   });
 });
+
+describe("the strings both renderers compile", () => {
+  it("are the same literal in both packages, which is why they are duplicated", () => {
+    // §6.2 of `CORE-MIGRATION-REPORT.md`: the only class strings that must survive a "no class
+    // string in core" rule. They are copied into each renderer rather than kept in core, so this
+    // is the test that stops the copies drifting — change one, change both.
+    const PORTABLE = [
+      "ACCORDION_HEADER_SIZE_CLASS",
+      "ACCORDION_CONTENT_SIZE_CLASS",
+      "CAROUSEL_PADDING_CLASS",
+      "CHIP_AVATAR_SIZE_CLASS",
+      "DATA_TABLE_ROW_COUNT_LABEL",
+      "TOAST_WIDTH_CLASS",
+      "TOAST_PADDING_CLASS",
+      "TOAST_FONT_CLASS",
+      "TOAST_TITLE_FONT_CLASS",
+      "FIELD_REQUIRED_MARKER_CLASS",
+      "FIELD_STATUS_TEXT_CLASS",
+      "LINK_SIZE_CLASS",
+      "NAVBAR_BRAND_TEXT_CLASS",
+      "TABS_PADDING_X_CLASS",
+      "TABS_FONT_CLASS",
+      "TOOLTIP_PADDING_X_CLASS",
+      "TOOLTIP_PADDING_Y_CLASS",
+      "TOOLTIP_FONT_CLASS",
+      "SPACE_GAP_CLASS",
+      "SPACE_PADDING_Y_CLASS",
+      "SPACE_MIN_HEIGHT_CLASS",
+    ];
+
+    for (const name of PORTABLE) {
+      const webCopy = web.get(name);
+      const nativeCopy = native.get(name);
+
+      expect(webCopy, `${name} is in web's portable module`).toBeDefined();
+      expect(
+        nativeCopy,
+        `${name} is in the platform's portable module`,
+      ).toBeDefined();
+      expect(nativeCopy?.text.trim(), `${name} is one literal`).toEqual(
+        webCopy?.text.trim(),
+      );
+    }
+  });
+});

@@ -9,7 +9,7 @@
 "use client";
 
 import type { Color, Size } from "@asheeui/core";
-import { cn, resolveCascade, resolveClassKey } from "@asheeui/core";
+import { resolveCascade, resolveClassKey } from "@asheeui/core";
 import { forwardRef, type SVGAttributes } from "react";
 import { useAsheeConfig } from "../../../libs/context";
 import {
@@ -17,6 +17,7 @@ import {
   SPINNER_COLOR_CLASS,
   SPINNER_SIZE_CLASS,
 } from "../../../styles/spinner";
+import { cn } from "../../../utils/cn";
 import { FALLBACK_SPINNER_CONFIG, type SpinnerConfig } from "./spinner-config";
 
 /**

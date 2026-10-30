@@ -10,13 +10,11 @@
 
 "use client";
 
-import {
-  cn,
-  resolveConfigCascade,
-  SPACE_MIN_HEIGHT_CLASS,
-} from "@asheeui/core";
+import { resolveConfigCascade } from "@asheeui/core";
 import { type ElementType, forwardRef, type HTMLAttributes } from "react";
 import { useAsheeConfig } from "../../../libs/context";
+import { SPACE_MIN_HEIGHT_CLASS } from "../../../styles/portable";
+import { cn } from "../../../utils/cn";
 import { Container } from "../container/Container";
 import {
   type CenteredConfig,

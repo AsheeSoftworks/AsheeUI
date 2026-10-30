@@ -7,11 +7,16 @@
  * states its own; the keys both must cover are asserted on each side.
  */
 
+import {
+  CALENDAR_COLOR_CLASSES,
+  type Color,
+  type FieldSizeKey,
+} from "@asheeui/core";
 import { describe, expect, it } from "vitest";
-
-
-import { DATE_PICKER_CELL_SIZE_CLASS, DATE_PICKER_SIZE_CLASS } from "./calendar";
-import { type Color, type FieldSizeKey, CALENDAR_COLOR_CLASSES } from "@asheeui/core";
+import {
+  DATE_PICKER_CELL_SIZE_CLASS,
+  DATE_PICKER_SIZE_CLASS,
+} from "./calendar";
 
 /** Every colour role the framework names. */
 const COLORS: Color[] = [
@@ -29,17 +34,14 @@ const SIZES: FieldSizeKey[] = ["sm", "md", "lg"];
 describe("the Calendar's class dictionaries", () => {
   it("treats every colour role, so a chosen day is never left without a fill", () => {
     expect(Object.keys(CALENDAR_COLOR_CLASSES).sort()).toEqual(
-          [...COLORS].sort(),
-        );
+      [...COLORS].sort(),
+    );
   });
 
   it("sizes every density, so a day is never left without a cell", () => {
-    for (const map of [
-          DATE_PICKER_SIZE_CLASS,
-          DATE_PICKER_CELL_SIZE_CLASS,
-        ]) {
-          expect(Object.keys(map).sort()).toEqual([...SIZES].sort());
-        }
+    for (const map of [DATE_PICKER_SIZE_CLASS, DATE_PICKER_CELL_SIZE_CLASS]) {
+      expect(Object.keys(map).sort()).toEqual([...SIZES].sort());
+    }
   });
 
   it("holds whole static classes, because a class assembled at runtime is never compiled", () => {
@@ -51,5 +53,4 @@ describe("the Calendar's class dictionaries", () => {
       expect(value).not.toContain("undefined");
     }
   });
-
 });

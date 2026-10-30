@@ -10,7 +10,6 @@
 "use client";
 
 import {
-  cn,
   type Radius,
   resolveClassKey,
   resolveConfigCascade,
@@ -29,6 +28,7 @@ import {
 } from "react";
 import { useAsheeConfig } from "../../../libs/context";
 import { RADIUS_CLASS } from "../../../styles/radius";
+import { cn } from "../../../utils/cn";
 import { FieldShell } from "../field/FieldShell";
 import type { FieldStatus, LabelAlign } from "../field/field-config";
 import {

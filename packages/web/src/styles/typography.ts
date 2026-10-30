@@ -8,7 +8,15 @@
  * changed: every constant is the one core published, character for character.
  */
 
-import type { TypographyAlign, TypographyLeading, TypographyRole, TypographySize, TypographyTone, TypographyTracking, TypographyWeight } from "@asheeui/core";
+import type {
+  TypographyAlign,
+  TypographyLeading,
+  TypographyRole,
+  TypographySize,
+  TypographyTone,
+  TypographyTracking,
+  TypographyWeight,
+} from "@asheeui/core";
 
 /**
  * Size token to static Tailwind class.

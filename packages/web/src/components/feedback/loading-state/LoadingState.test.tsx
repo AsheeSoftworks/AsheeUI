@@ -6,13 +6,13 @@
  * every option resolves through the configuration cascade.
  */
 
-import { SPACE_MIN_HEIGHT_CLASS } from "@asheeui/core";
 import { createRef } from "react";
 import { describe, expect, it } from "vitest";
 import {
   LOADING_STATE_CLASS,
   LOADING_STATE_SIZE_CLASS,
 } from "../../../styles/loading-state";
+import { SPACE_MIN_HEIGHT_CLASS } from "../../../styles/portable";
 import { SPINNER_SIZE_CLASS } from "../../../styles/spinner";
 import {
   expectHydrationClean,

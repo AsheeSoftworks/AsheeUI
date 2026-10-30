@@ -10,11 +10,9 @@
 
 import {
   type Color,
-  cn,
   resolveCascade,
   resolveClassKey,
   resolveRadiusKey,
-  resolveVariantClass,
 } from "@asheeui/core";
 import {
   type ChangeEvent,
@@ -25,7 +23,9 @@ import {
   useState,
 } from "react";
 import { useAsheeConfig } from "../../../libs/context";
+import { resolveVariantClass } from "../../../shared/variant";
 import { RADIUS_CLASS } from "../../../styles/radius";
+import { cn } from "../../../utils/cn";
 import { FieldShell } from "../field/FieldShell";
 import type { FieldSizeKey, LabelAlign } from "../field/field-config";
 import { FALLBACK_SWITCH_CONFIG, type SwitchConfig } from "./switch-config";

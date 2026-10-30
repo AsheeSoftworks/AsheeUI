@@ -16,7 +16,7 @@
  * followed by the same sentence.
  */
 
-import { resolveConfigCascade, SPACE_MIN_HEIGHT_CLASS } from "@asheeui/core";
+import { resolveConfigCascade } from "@asheeui/core";
 import type { ReactNode } from "react";
 import type { StyleProp, ViewProps, ViewStyle } from "react-native";
 import { View } from "react-native";
@@ -27,6 +27,7 @@ import {
   NATIVE_LOADING_STATE_PANEL_CLASS,
   NATIVE_LOADING_STATE_SIZE_CLASS,
 } from "../../../styles/loading-state";
+import { SPACE_MIN_HEIGHT_CLASS } from "../../../styles/portable";
 import { classNames } from "../../../utils/class-names";
 import { Typography } from "../../typography/text/Text";
 import { Spinner } from "../spinner/Spinner";

@@ -10,12 +10,10 @@
 
 import type { Color, Size } from "@asheeui/core";
 import {
-  cn,
   type Radius,
   resolveCascade,
   resolveClassKey,
   resolveRadiusKey,
-  TABLE_COLOR_STYLES,
 } from "@asheeui/core";
 import { type HTMLAttributes, type ReactNode, useCallback } from "react";
 import { useAsheeConfig } from "../../../libs/context";
@@ -23,9 +21,11 @@ import { RADIUS_CLASS } from "../../../styles/radius";
 import {
   TABLE_CELL_PADDING_X_CLASS,
   TABLE_CELL_PADDING_Y_CLASS,
+  TABLE_COLOR_STYLES,
   TABLE_FONT_CLASS,
   TABLE_HEADER_FONT_CLASS,
 } from "../../../styles/table";
+import { cn } from "../../../utils/cn";
 import {
   type ColumnDef,
   FALLBACK_TABLE_CONFIG,
@@ -271,7 +271,7 @@ export function Table<TData>({
     FALLBACK_TABLE_CONFIG.radius,
   );
 
-  const activeColorStyles =
+  const activeColorStyles: (typeof TABLE_COLOR_STYLES)[Color] =
     TABLE_COLOR_STYLES[resolvedColorKey] ?? TABLE_COLOR_STYLES.primary;
 
   const getRowKey = useCallback(

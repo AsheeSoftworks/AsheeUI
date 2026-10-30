@@ -7,11 +7,15 @@
  * states its own; the keys both must cover are asserted on each side.
  */
 
+import {
+  ALERT_TYPE_COLOR,
+  ALERT_TYPE_ROLE,
+  type AlertType,
+  type Color,
+  type ColorRole,
+} from "@asheeui/core";
 import { describe, expect, it } from "vitest";
-
-
 import { ALERT_TYPE_ICON_CLASS } from "./alert";
-import { ALERT_TYPE_COLOR, ALERT_TYPE_ROLE, type AlertType, type Color, type ColorRole } from "@asheeui/core";
 
 /** The intents an alert can take. */
 const INTENTS: AlertType[] = ["info", "success", "warning", "error"];
@@ -30,8 +34,8 @@ describe("the meaning both renderers share", () => {
   it("gives every intent a colour role", () => {
     expect(Object.keys(ALERT_TYPE_COLOR).sort()).toEqual([...INTENTS].sort());
     for (const colour of Object.values(ALERT_TYPE_COLOR)) {
-          expect(COLOURS).toContain(colour as ColorRole);
-        }
+      expect(COLOURS).toContain(colour as ColorRole);
+    }
   });
 
   it("interrupts only for the two intents that need attention now", () => {
@@ -43,24 +47,22 @@ describe("the meaning both renderers share", () => {
 
   it("colours the leading affordance for every intent", () => {
     expect(Object.keys(ALERT_TYPE_ICON_CLASS).sort()).toEqual(
-          [...INTENTS].sort(),
-        );
+      [...INTENTS].sort(),
+    );
   });
-
 });
 
 describe("the alert's colour type", () => {
   it("names the framework's colour vocabulary rather than a palette of its own", () => {
     for (const colour of Object.values(ALERT_TYPE_COLOR)) {
-          expect([
-            "none",
-            "primary",
-            "secondary",
-            "danger",
-            "warning",
-            "success",
-          ] satisfies Color[]).toContain(colour);
-        }
+      expect([
+        "none",
+        "primary",
+        "secondary",
+        "danger",
+        "warning",
+        "success",
+      ] satisfies Color[]).toContain(colour);
+    }
   });
-
 });

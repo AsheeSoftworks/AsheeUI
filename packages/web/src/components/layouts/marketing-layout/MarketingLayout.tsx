@@ -11,7 +11,7 @@
 
 "use client";
 
-import { cn, resolveConfigCascade } from "@asheeui/core";
+import { resolveConfigCascade } from "@asheeui/core";
 import {
   type ElementType,
   forwardRef,
@@ -24,6 +24,7 @@ import {
   MARKETING_LAYOUT_BASE_CLASS,
   MARKETING_LAYOUT_MAIN_CLASS,
 } from "../../../styles/marketing-layout";
+import { cn } from "../../../utils/cn";
 import { SkipLink } from "../section-kit/SkipLink";
 import {
   FALLBACK_MARKETING_LAYOUT_CONFIG,

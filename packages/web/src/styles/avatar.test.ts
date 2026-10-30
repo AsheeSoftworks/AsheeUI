@@ -7,11 +7,14 @@
  * states its own; the keys both must cover are asserted on each side.
  */
 
+import { AVATAR_FALLBACK_VARIANT, type Size } from "@asheeui/core";
 import { describe, expect, it } from "vitest";
-
-
-import { AVATAR_BASE_CLASS, AVATAR_FALLBACK_CLASS, AVATAR_FONT_CLASS, AVATAR_SIZE_CLASS } from "./avatar";
-import { type Size, AVATAR_FALLBACK_VARIANT } from "@asheeui/core";
+import {
+  AVATAR_BASE_CLASS,
+  AVATAR_FALLBACK_CLASS,
+  AVATAR_FONT_CLASS,
+  AVATAR_SIZE_CLASS,
+} from "./avatar";
 
 /** The three diameters. */
 const SIZES: Size[] = ["sm", "md", "lg"];
@@ -23,9 +26,9 @@ describe("the avatar's diameter", () => {
 
   it("states the same three diameters, each in its own spelling", () => {
     // The web states one `size-*` utility, which is a width and a height at once; the
-        // platform states the pair, because that is the form its compiler reads. 8, 10 and
-        // 12 steps are 32, 40 and 48 points on both sides.
-        expect(AVATAR_SIZE_CLASS.md).toBe("size-10");
+    // platform states the pair, because that is the form its compiler reads. 8, 10 and
+    // 12 steps are 32, 40 and 48 points on both sides.
+    expect(AVATAR_SIZE_CLASS.md).toBe("size-10");
     expect(AVATAR_SIZE_CLASS.sm).toBe("size-8");
     expect(AVATAR_SIZE_CLASS.lg).toBe("size-12");
   });
@@ -34,7 +37,6 @@ describe("the avatar's diameter", () => {
     expect(AVATAR_FONT_CLASS.sm).toBe("text-xs");
     expect(AVATAR_FONT_CLASS.lg).toBe("text-base");
   });
-
 });
 
 describe("the avatar's frame", () => {
@@ -55,12 +57,10 @@ describe("the avatar's frame", () => {
     expect(AVATAR_BASE_CLASS).toContain("font-medium");
     expect(AVATAR_BASE_CLASS).toContain("uppercase");
   });
-
 });
 
 describe("the avatar's fallback surface", () => {
   it("is one treatment on the web, and the same treatment on the platform", () => {
     expect(AVATAR_FALLBACK_VARIANT).toBe("solid");
   });
-
 });

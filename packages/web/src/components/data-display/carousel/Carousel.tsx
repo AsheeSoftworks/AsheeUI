@@ -10,8 +10,6 @@
 
 import type { Size, Variant } from "@asheeui/core";
 import {
-  CAROUSEL_PADDING_CLASS,
-  cn,
   resolveCarouselVariant,
   resolveCascade,
   resolveClassKey,
@@ -37,7 +35,9 @@ import {
   CAROUSEL_HEIGHT_CLASS,
   CAROUSEL_VARIANT_CLASS,
 } from "../../../styles/carousel";
+import { CAROUSEL_PADDING_CLASS } from "../../../styles/portable";
 import { RADIUS_CLASS } from "../../../styles/radius";
+import { cn } from "../../../utils/cn";
 import {
   type CarouselConfig,
   type CarouselItem,

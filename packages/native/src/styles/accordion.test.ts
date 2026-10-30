@@ -5,18 +5,17 @@
  * shrink no package can import both renderers, so neither suite compares them any more.
  */
 
-import {
-  ACCORDION_CONTENT_SIZE_CLASS,
-  ACCORDION_HEADER_SIZE_CLASS,
-  type AccordionSizeKey,
-  type AccordionVariant,
-} from "@asheeui/core";
+import type { AccordionSizeKey, AccordionVariant } from "@asheeui/core";
 import {
   NATIVE_ACCORDION_DIVIDER_CLASS,
   NATIVE_ACCORDION_INDICATOR_GLYPH,
   NATIVE_ACCORDION_VARIANT_CONTAINER_CLASS,
   NATIVE_ACCORDION_VARIANT_ITEM_CLASS,
 } from "./accordion";
+import {
+  ACCORDION_CONTENT_SIZE_CLASS,
+  ACCORDION_HEADER_SIZE_CLASS,
+} from "./portable";
 
 /** The densities an accordion can be. */
 const DENSITIES: AccordionSizeKey[] = ["sm", "md", "lg"];

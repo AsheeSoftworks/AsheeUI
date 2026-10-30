@@ -9,12 +9,9 @@
  * cascade, so a configuration written for a browser describes a device as well.
  */
 
-import {
-  DATA_TABLE_ROW_COUNT_LABEL,
-  type DataTableConfig,
-  type TableConfig,
-} from "@asheeui/core";
+import type { DataTableConfig, TableConfig } from "@asheeui/core";
 import { registerNativeComponentDefaults } from "../../../config/registry";
+import { DATA_TABLE_ROW_COUNT_LABEL } from "../../../styles/portable";
 
 export type {
   ColumnDef,

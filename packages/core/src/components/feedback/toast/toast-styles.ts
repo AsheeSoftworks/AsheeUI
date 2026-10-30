@@ -21,7 +21,6 @@
  * `@asheeui/native`; what is left here is the web renderer's own.
  */
 
-import type { Size } from "../../../shared/radius";
 import type { Color } from "../../../shared/variant";
 import type { ToastPlacement, ToastType } from "./toast-config";
 
@@ -37,34 +36,6 @@ export const TOAST_TYPE_COLOR: Record<ToastType, Color> = {
   warning: "warning",
   info: "primary",
   default: "secondary",
-};
-
-/** Width of a message at each density, which is the width a sentence fits in. */
-export const TOAST_WIDTH_CLASS: Record<Size, string> = {
-  sm: "w-72 max-w-full",
-  md: "w-80 max-w-full",
-  lg: "w-96 max-w-full",
-};
-
-/** Padding of a message at each density. */
-export const TOAST_PADDING_CLASS: Record<Size, string> = {
-  sm: "p-2.5",
-  md: "p-3.5",
-  lg: "p-4",
-};
-
-/** Type size of a message at each density. */
-export const TOAST_FONT_CLASS: Record<Size, string> = {
-  sm: "text-xs",
-  md: "text-sm",
-  lg: "text-base",
-};
-
-/** Type size and weight of a message's title at each density. */
-export const TOAST_TITLE_FONT_CLASS: Record<Size, string> = {
-  sm: "text-xs font-semibold",
-  md: "text-sm font-semibold",
-  lg: "text-base font-semibold",
 };
 
 /**

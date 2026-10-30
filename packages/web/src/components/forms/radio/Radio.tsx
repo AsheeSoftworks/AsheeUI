@@ -8,7 +8,6 @@
 
 import type { Color } from "@asheeui/core";
 import {
-  cn,
   resolveCascade,
   resolveClassKey,
   resolveRadiusKey,
@@ -24,6 +23,7 @@ import {
 } from "react";
 import { useAsheeConfig } from "../../../libs/context";
 import { RADIUS_CLASS } from "../../../styles/radius";
+import { cn } from "../../../utils/cn";
 import type { FieldSizeKey } from "../field/field-config";
 import {
   FALLBACK_RADIO_CONFIG,

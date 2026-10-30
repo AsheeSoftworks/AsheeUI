@@ -10,12 +10,7 @@
 
 "use client";
 
-import {
-  cn,
-  resolveConfigCascade,
-  SPACE_GAP_CLASS,
-  type SplitConfig,
-} from "@asheeui/core";
+import { resolveConfigCascade, type SplitConfig } from "@asheeui/core";
 import {
   type ElementType,
   forwardRef,
@@ -23,6 +18,7 @@ import {
   type ReactNode,
 } from "react";
 import { useAsheeConfig } from "../../../libs/context";
+import { SPACE_GAP_CLASS } from "../../../styles/portable";
 import {
   SPLIT_ALIGN_CLASS,
   SPLIT_BASE_CLASS,
@@ -32,6 +28,7 @@ import {
   SPLIT_STACK_CLASS,
   SPLIT_STICKY_CLASS,
 } from "../../../styles/split";
+import { cn } from "../../../utils/cn";
 import { FALLBACK_SPLIT_CONFIG } from "./split-config";
 
 type BaseSplitProps = SplitConfig &

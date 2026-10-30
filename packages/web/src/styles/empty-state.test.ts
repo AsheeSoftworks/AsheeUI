@@ -7,11 +7,14 @@
  * states its own; the keys both must cover are asserted on each side.
  */
 
+import type { EmptyStateType, Size } from "@asheeui/core";
 import { describe, expect, it } from "vitest";
-
-
-import { EMPTY_STATE_ICON_CLASS, EMPTY_STATE_ICON_SIZE_CLASS, EMPTY_STATE_PANEL_CLASS, EMPTY_STATE_SIZE_CLASS } from "./empty-state";
-import { type Size, type EmptyStateType } from "@asheeui/core";
+import {
+  EMPTY_STATE_ICON_CLASS,
+  EMPTY_STATE_ICON_SIZE_CLASS,
+  EMPTY_STATE_PANEL_CLASS,
+  EMPTY_STATE_SIZE_CLASS,
+} from "./empty-state";
 
 /** The densities a state can be. */
 const DENSITIES: Size[] = ["sm", "md", "lg"];
@@ -22,43 +25,39 @@ const TONES: EmptyStateType[] = ["info", "success", "warning", "error"];
 describe("the empty state's density on both renderers", () => {
   it("describes every density on both platforms", () => {
     expect(Object.keys(EMPTY_STATE_SIZE_CLASS).sort()).toEqual(
-          [...DENSITIES].sort(),
-        );
+      [...DENSITIES].sort(),
+    );
     expect(Object.keys(EMPTY_STATE_ICON_SIZE_CLASS).sort()).toEqual(
-          [...DENSITIES].sort(),
-        );
+      [...DENSITIES].sort(),
+    );
   });
 
   it("leaves the room to the shared spacing scale rather than to a panel", () => {
     expect(EMPTY_STATE_PANEL_CLASS).not.toContain("p-");
   });
-
 });
 
 describe("the empty state's tone on both renderers", () => {
   it("describes every tone", () => {
     expect(Object.keys(EMPTY_STATE_ICON_CLASS).sort()).toEqual(
-          [...TONES].sort(),
-        );
+      [...TONES].sort(),
+    );
   });
 
-  it("separates the tones rather than tinting them all the same colour", () => {
-  });
-
+  it("separates the tones rather than tinting them all the same colour", () => {});
 });
 
 describe("the empty state's classes", () => {
   it("holds whole static classes, because a class assembled at runtime is never compiled", () => {
     for (const map of [
-          EMPTY_STATE_SIZE_CLASS,
-          EMPTY_STATE_ICON_SIZE_CLASS,
-          EMPTY_STATE_ICON_CLASS,
-        ]) {
-          for (const value of Object.values(map)) {
-            expect(value.length).toBeGreaterThan(0);
-            expect(value).not.toContain("undefined");
-          }
-        }
+      EMPTY_STATE_SIZE_CLASS,
+      EMPTY_STATE_ICON_SIZE_CLASS,
+      EMPTY_STATE_ICON_CLASS,
+    ]) {
+      for (const value of Object.values(map)) {
+        expect(value.length).toBeGreaterThan(0);
+        expect(value).not.toContain("undefined");
+      }
+    }
   });
-
 });

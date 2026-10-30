@@ -40,34 +40,6 @@ export function resolveCascade<T>(
 }
 
 /**
- * Resolves a value for animation or transition contexts.
- * Similar to resolveCascade but without the global default tier.
- * This is useful for values that should not inherit from theme defaults.
- *
- * @param instance - The prop value passed directly to the component instance.
- * @param section - The value from the component's configuration section.
- * @param hardFallback - The final fallback value if all others are undefined.
- * @returns The resolved value.
- *
- * @example
- * ```tsx
- * const animate = resolveAnimate(
- *   props.animate,                // false
- *   config.components?.button?.animate, // true
- *   true                          // hard fallback
- * );
- * // Returns false because instance prop takes precedence
- * ```
- */
-export function resolveAnimate<T>(
-  instance: T | undefined,
-  section: T | undefined,
-  hardFallback: T,
-): T {
-  return instance ?? section ?? hardFallback;
-}
-
-/**
  * Resolves a radius value using the standard cascade precedence order.
  * This is a specialized version of resolveCascade that provides a default
  * hard fallback of "md" for radius values.

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import type { Color, Variant } from "./variant";
+import type { Color, Variant } from "@asheeui/core";
 import { resolveVariantClass } from "./variant";
 
 const VARIANTS: Variant[] = [

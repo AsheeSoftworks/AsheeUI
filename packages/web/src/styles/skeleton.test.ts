@@ -9,7 +9,6 @@
 
 import { describe, expect, it } from "vitest";
 
-
 import { SKELETON_ANIMATION_CLASS, SKELETON_BASE_CLASS } from "./skeleton";
 
 describe("the web skeleton's classes", () => {
@@ -20,7 +19,6 @@ describe("the web skeleton's classes", () => {
   it("shimmer only where the visitor welcomes motion", () => {
     expect(SKELETON_ANIMATION_CLASS).toContain("motion-safe:");
   });
-
 });
 
 describe("the native skeleton's classes", () => {
@@ -32,5 +30,4 @@ describe("the native skeleton's classes", () => {
   it("leave the pulse to the platform's animator rather than to a class nothing runs", () => {
     expect(SKELETON_ANIMATION_CLASS).toContain("animate-pulse");
   });
-
 });

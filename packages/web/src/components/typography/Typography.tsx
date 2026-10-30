@@ -17,7 +17,6 @@
 "use client";
 
 import {
-  cn,
   deprecatedAlias,
   resolveCascade,
   TYPOGRAPHY_ROLE_DEFAULT_ELEMENT,
@@ -41,6 +40,7 @@ import {
   TYPOGRAPHY_ALIGN_CLASS,
   TYPOGRAPHY_TONE_CLASS,
 } from "../../styles/typography";
+import { cn } from "../../utils/cn";
 import {
   FALLBACK_TYPOGRAPHY_CONFIG,
   type TypographyConfig,

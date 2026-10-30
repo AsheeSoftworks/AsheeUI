@@ -5,13 +5,12 @@
  * shrink no package can import both renderers, so neither suite compares them any more.
  */
 
+import type { TooltipPlacement, TooltipSizeKey } from "@asheeui/core";
 import {
   TOOLTIP_FONT_CLASS,
   TOOLTIP_PADDING_X_CLASS,
   TOOLTIP_PADDING_Y_CLASS,
-  type TooltipPlacement,
-  type TooltipSizeKey,
-} from "@asheeui/core";
+} from "./portable";
 import { NATIVE_TOOLTIP_ALIGN_CLASS, NATIVE_TOOLTIP_ANCHOR } from "./tooltip";
 
 /** The sizes a hint can be. */

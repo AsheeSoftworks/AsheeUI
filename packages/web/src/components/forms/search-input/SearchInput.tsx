@@ -11,7 +11,7 @@
 
 "use client";
 
-import { cn, resolveConfigCascade } from "@asheeui/core";
+import { resolveConfigCascade } from "@asheeui/core";
 import {
   type ChangeEventHandler,
   forwardRef,
@@ -23,6 +23,7 @@ import {
 import { ClearIcon } from "../../../icons/ClearIcon";
 import { SearchIcon } from "../../../icons/SearchIcon";
 import { useAsheeConfig } from "../../../libs/context";
+import { cn } from "../../../utils/cn";
 import { Spinner } from "../../feedback/spinner/spinner";
 import { Button } from "../button";
 import type { FieldStatus } from "../field/field-config";

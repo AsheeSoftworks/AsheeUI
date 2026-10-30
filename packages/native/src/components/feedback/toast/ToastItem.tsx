@@ -21,11 +21,7 @@ import {
   type Radius,
   resolveMessageVariant,
   type Size,
-  TOAST_FONT_CLASS,
-  TOAST_PADDING_CLASS,
-  TOAST_TITLE_FONT_CLASS,
   TOAST_TYPE_COLOR,
-  TOAST_WIDTH_CLASS,
   type Variant,
 } from "@asheeui/core";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -35,6 +31,12 @@ import {
   NATIVE_MESSAGE_SURFACE_CLASS,
   NATIVE_MESSAGE_TEXT_CLASS,
 } from "../../../styles/message-surface";
+import {
+  TOAST_FONT_CLASS,
+  TOAST_PADDING_CLASS,
+  TOAST_TITLE_FONT_CLASS,
+  TOAST_WIDTH_CLASS,
+} from "../../../styles/portable";
 import { NATIVE_RADIUS_CLASS } from "../../../styles/radius";
 import {
   NATIVE_TOAST_ACTION_CLASS,

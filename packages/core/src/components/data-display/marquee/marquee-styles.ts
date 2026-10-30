@@ -13,7 +13,7 @@
  * `@asheeui/native`; what is left here is the web renderer's own.
  */
 
-import type { MarqueeAxis, MarqueeSpeedPreset } from "./marquee-config";
+import type { MarqueeSpeedPreset } from "./marquee-config";
 
 // ─── Shared ───────────────────────────────────────────────────────────────────
 
@@ -35,21 +35,5 @@ export const MARQUEE_SPEED_PRESETS: Record<MarqueeSpeedPreset, number> = {
 export const MARQUEE_FALLBACK_GAP = 24;
 
 // ─── Web ──────────────────────────────────────────────────────────────────────
-
-/**
- * The width or height a copy claims along the axis, at the end that faces the next copy.
- *
- * It is the marquee's gap, and it belongs to the copy rather than to the track so that one
- * copy's length already includes the space before the next one. The gap's value is a
- * configured CSS length, so the renderer states it as an inline style; what is here is the
- * direction it is stated in.
- */
-export const MARQUEE_SET_SPACING: Record<
-  MarqueeAxis,
-  "paddingRight" | "paddingBottom"
-> = {
-  x: "paddingRight",
-  y: "paddingBottom",
-};
 
 // ─── Native ───────────────────────────────────────────────────────────────────

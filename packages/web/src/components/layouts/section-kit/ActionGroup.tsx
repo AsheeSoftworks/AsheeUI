@@ -11,13 +11,13 @@
  * (https://www.asheeui.com/components/layouts/section) under "The section kit".
  */
 
-import type { ActionConfig } from "@asheeui/core";
-import { cn, type SectionBlockAlign } from "@asheeui/core";
+import type { ActionConfig, SectionBlockAlign } from "@asheeui/core";
 import type { ReactNode } from "react";
 import {
   SECTION_BLOCK_ACTIONS_ALIGN_CLASS,
   SECTION_BLOCK_ACTIONS_CLASS,
 } from "../../../styles/section-block";
+import { cn } from "../../../utils/cn";
 import { Button } from "../../forms/button/Button";
 
 /**

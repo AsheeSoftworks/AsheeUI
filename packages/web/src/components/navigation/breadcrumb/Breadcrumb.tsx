@@ -8,12 +8,7 @@
 "use client";
 
 import type { Color, Size } from "@asheeui/core";
-import {
-  cn,
-  LINK_SIZE_CLASS,
-  resolveCascade,
-  resolveClassKey,
-} from "@asheeui/core";
+import { resolveCascade, resolveClassKey } from "@asheeui/core";
 import {
   type ElementType,
   forwardRef,
@@ -23,6 +18,8 @@ import {
 import { ChevronRightIcon } from "../../../icons/ChevronRightIcon";
 import { useAsheeConfig } from "../../../libs/context";
 import { LINK_ICON_SIZE_CLASS } from "../../../styles/link";
+import { LINK_SIZE_CLASS } from "../../../styles/portable";
+import { cn } from "../../../utils/cn";
 import { Link } from "../link";
 import {
   type BreadcrumbConfig,

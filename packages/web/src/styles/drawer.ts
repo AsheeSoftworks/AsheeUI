@@ -42,3 +42,30 @@ export const DRAWER_BORDER_PLACEMENT_CLASS: Record<DrawerPlacement, string> = {
   top: "border-b",
   bottom: "border-t",
 };
+
+/**
+ * The web's slide animation for each placement.
+ * Each class is a keyframe animation a consumer's stylesheet defines; the platform animates
+ * the same movement with the modal presentation it already has.
+ */
+export const DRAWER_ANIMATION_STATE: Record<
+  DrawerPlacement,
+  { closed: string; open: string }
+> = {
+  right: {
+    closed: "drawer-slide-right-closed",
+    open: "drawer-slide-right-open",
+  },
+  left: {
+    closed: "drawer-slide-left-closed",
+    open: "drawer-slide-left-open",
+  },
+  top: {
+    closed: "drawer-slide-top-closed",
+    open: "drawer-slide-top-open",
+  },
+  bottom: {
+    closed: "drawer-slide-bottom-closed",
+    open: "drawer-slide-bottom-open",
+  },
+};

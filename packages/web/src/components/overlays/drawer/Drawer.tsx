@@ -7,13 +7,7 @@
  */
 "use client";
 
-import {
-  ASHEE_GLOBAL_LAYER,
-  cn,
-  DRAWER_ANIMATION_STATE,
-  resolveCascade,
-  resolveClassKey,
-} from "@asheeui/core";
+import { resolveCascade, resolveClassKey } from "@asheeui/core";
 import { FloatingFocusManager, FloatingPortal } from "@floating-ui/react";
 import {
   type CSSProperties,
@@ -31,11 +25,14 @@ import { OverlayCloseControl } from "../../../libs/overlay-close-control";
 import { useBodyScrollLock } from "../../../libs/use-body-scroll-lock";
 import { useDialogOverlay } from "../../../libs/use-dialog-overlay";
 import {
+  DRAWER_ANIMATION_STATE,
   DRAWER_BORDER_PLACEMENT_CLASS,
   DRAWER_CONTAINER_PLACEMENT_CLASS,
   DRAWER_HEIGHT_CLASS,
   DRAWER_WIDTH_CLASS,
 } from "../../../styles/drawer";
+import { cn } from "../../../utils/cn";
+import { ASHEE_GLOBAL_LAYER } from "../../../utils/stacking";
 import {
   type DrawerConfigOptions,
   type DrawerPlacement,

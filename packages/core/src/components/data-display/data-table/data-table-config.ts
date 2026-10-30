@@ -12,15 +12,6 @@
  */
 
 /**
- * The sentence a data table states its row count with, by default.
- *
- * The placeholders are the ones {@link formatRowCountLabel} fills: `{first}` and `{last}`
- * are the first and last row currently shown, and `{total}` is how many rows there are.
- */
-export const DATA_TABLE_ROW_COUNT_LABEL =
-  "Showing {first} to {last} of {total}";
-
-/**
  * The values a row count template is filled with.
  */
 export interface RowCountLabelValues {

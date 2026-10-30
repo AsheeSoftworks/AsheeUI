@@ -6,9 +6,9 @@
  */
 
 import type { Color } from "@asheeui/core";
-import { cn } from "@asheeui/core";
 import { useEffect, useState } from "react";
 import { ChevronDownIcon, ChevronUpIcon } from "../../../icons";
+import { cn } from "../../../utils/cn";
 import { pad2 } from "./calendar.helpers";
 import { CALENDAR_COLOR_CLASSES } from "./calendar-styles";
 

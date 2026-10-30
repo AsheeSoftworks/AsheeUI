@@ -10,12 +10,9 @@
 
 import type { Color, Size, Variant } from "@asheeui/core";
 import {
-  cn,
   resolveCascade,
   resolveClassKey,
   resolveRadiusKey,
-  TABS_FONT_CLASS,
-  TABS_PADDING_X_CLASS,
 } from "@asheeui/core";
 import {
   forwardRef,
@@ -26,8 +23,13 @@ import {
   useState,
 } from "react";
 import { useAsheeConfig } from "../../../libs/context";
+import {
+  TABS_FONT_CLASS,
+  TABS_PADDING_X_CLASS,
+} from "../../../styles/portable";
 import { RADIUS_CLASS } from "../../../styles/radius";
 import { TABS_HEIGHT_CLASS } from "../../../styles/tabs";
+import { cn } from "../../../utils/cn";
 import { Button } from "../../forms/button/Button";
 import {
   FALLBACK_TABS_CONFIG,
