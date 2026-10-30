@@ -1,60 +1,21 @@
 /**
  * Container component configuration for AsheeUI.
- * This file defines the configuration type and defaults for the Container
- * layout primitive, including its maximum width, gutter and centring
- * behaviour. It registers the default configuration with the component
- * registry and provides fallback values for the cascade resolution system.
+ *
+ * The *shape* of `components.container` is `@asheeui/core`'s — the maximum width, the gutter and the
+ * centring are declared once, for both platforms, in
+ * `packages/core/src/components/layouts/container/container-config.ts`. This module keeps what is the
+ * web's: the defaults it registers and the hard fallbacks it states.
  */
 
-import { type ContainerSize, registerComponentDefaults } from "@asheeui/core";
+import type { ContainerConfig } from "@asheeui/core";
+import { registerComponentDefaults } from "@asheeui/core";
 
 /**
- * Maximum content width of a container.
- *
- * The widths are shared layout vocabulary rather than a web idea: `@asheeui/core` declares
- * them, so a band's configuration and the container itself name one type on both platforms.
- * This module re-exports the type so code that already reaches for it here keeps working.
- *
- * - `sm`: a single reading column.
- * - `md`: a narrow application or form column.
- * - `lg`: the default content width.
- * - `xl`: a wide application shell.
- * - `full`: no maximum width.
+ * The shared width vocabulary, re-exported so code that already reaches for it here keeps working.
+ * The type itself is declared in `@asheeui/core`, so a band and a container name one type on both
+ * platforms.
  */
-export type { ContainerSize };
-
-/**
- * Theme configuration options for the Container component.
- *
- * Set under `components.container` in the AsheeUI config. Values feed the
- * component-level fallback tier of the theme cascade.
- */
-export interface ContainerConfig {
-  /**
-   * Maximum content width.
-   *
-   * @default "lg"
-   */
-  size?: ContainerSize | undefined;
-
-  /**
-   * Whether to reserve a horizontal gutter.
-   * The gutter widens with the viewport, so content never touches the edge on
-   * a phone and never stretches to the full screen on a desktop.
-   *
-   * @default true
-   */
-  gutter?: boolean | undefined;
-
-  /**
-   * Whether to centre the content horizontally.
-   * Leave this on unless the container is nested in another centring
-   * element that already does it.
-   *
-   * @default true
-   */
-  centered?: boolean | undefined;
-}
+export type { ContainerConfig, ContainerSize } from "@asheeui/core";
 
 /**
  * Default config values registered for the Container component.
@@ -64,12 +25,6 @@ export const defaultContainerConfig: ContainerConfig = {
   gutter: true,
   centered: true,
 };
-
-declare module "@asheeui/core" {
-  interface ComponentTypeConfigRegistry {
-    container: ContainerConfig;
-  }
-}
 
 registerComponentDefaults("container", defaultContainerConfig);
 

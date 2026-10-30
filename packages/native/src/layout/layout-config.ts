@@ -5,6 +5,13 @@
  * share one purpose: arranging content without a browser. Each primitive
  * registers its own defaults, so a native application configures the kit the way
  * it configures any other component, through `components.<name>`.
+ *
+ * The *shapes* of those sections are `@asheeui/core`'s — one module per primitive under
+ * `packages/core/src/components/layouts/` — and this package re-exports their types below. What
+ * stays here is the platform's half: the narrower interfaces a native primitive implements (a
+ * device's stack has no `baseline`, its grid takes a count rather than the shared column union) and
+ * the values it registers, which are the platform's own where a thumb wants more room than a
+ * pointer does.
  */
 
 import type {
@@ -14,6 +21,20 @@ import type {
   Space,
 } from "@asheeui/core";
 import { registerNativeComponentDefaults } from "../config/registry";
+
+export type {
+  CenteredAxis,
+  CenteredConfig,
+  ContainerConfig,
+  GridAlign,
+  GridColumns,
+  GridConfig,
+  SectionConfig,
+  StackAlign,
+  StackConfig,
+  StackDirection,
+  StackJustify,
+} from "@asheeui/core";
 
 /**
  * Maximum width of a container, in the framework's own sizes.

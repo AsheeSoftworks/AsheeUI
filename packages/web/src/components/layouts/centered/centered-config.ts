@@ -1,70 +1,16 @@
 /**
  * Centered component configuration for AsheeUI.
- * This file defines the configuration type and defaults for the Centered layout
- * primitive: the axis it centres on, how much vertical room it reserves, and
- * whether it holds its content in a Container. It registers the default
- * configuration with the component registry and provides fallback values for the
- * cascade resolution system.
+ *
+ * The *shape* of `components.centered` is `@asheeui/core`'s — the axis, the reserved height and the
+ * container options are declared once, for both platforms, in
+ * `packages/core/src/components/layouts/centered/centered-config.ts`. This module keeps what is the
+ * web's: the defaults it registers and the hard fallbacks it states.
  */
 
-import type { Space } from "@asheeui/core";
+import type { CenteredConfig } from "@asheeui/core";
 import { registerComponentDefaults } from "@asheeui/core";
-import type { ContainerSize } from "../container/container-config";
 
-/**
- * The axes a Centered block can centre on.
- *
- * - `both`: centres horizontally and vertically, the arrangement a sign-in card
- *   or an empty page wants. It also centres the block's text (`text-center`),
- *   because a block centred on both axes is almost always a short statement; the
- *   other two axes leave the text alignment alone.
- * - `horizontal`: centres sideways only, for a heading or a single control.
- * - `vertical`: centres vertically only, when the block's own width is intended.
- */
-export type CenteredAxis = "both" | "horizontal" | "vertical";
-
-/**
- * Theme configuration options for the Centered component.
- *
- * Set under `components.centered` in the AsheeUI config. Values feed the
- * component-level tier of the theme cascade.
- */
-export interface CenteredConfig {
-  /**
-   * The axis the content is centred on.
-   *
-   * `both` also applies `text-center`; `horizontal` and `vertical` centre the box
-   * only and leave the text alignment to the content.
-   *
-   * @default "both"
-   */
-  axis?: CenteredAxis | undefined;
-
-  /**
-   * Vertical room the block reserves before centring.
-   * A block that is as tall as its content cannot be centred vertically, so a
-   * consumer chooses how much height the block claims.
-   *
-   * @default "none"
-   */
-  minHeight?: Space | undefined;
-
-  /**
-   * Whether the content is held in a {@link Container}.
-   * Use it when the centred content is a whole page region rather than a single
-   * control, so the content keeps a readable maximum width.
-   *
-   * @default false
-   */
-  contained?: boolean | undefined;
-
-  /**
-   * Maximum content width when `contained` is on.
-   *
-   * @default "lg"
-   */
-  containerSize?: ContainerSize | undefined;
-}
+export type { CenteredAxis, CenteredConfig } from "@asheeui/core";
 
 /**
  * Default config values registered for the Centered component.
@@ -76,12 +22,6 @@ export const defaultCenteredConfig: CenteredConfig = {
   contained: false,
   containerSize: "lg",
 };
-
-declare module "@asheeui/core" {
-  interface ComponentTypeConfigRegistry {
-    centered: CenteredConfig;
-  }
-}
 
 registerComponentDefaults("centered", defaultCenteredConfig);
 
