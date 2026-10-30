@@ -22,12 +22,13 @@ import {
   type Color,
   type FieldStatus,
   isFieldInvalid,
+  type LabelAlign,
   type Radius,
   resolveCascade,
   resolveChange,
   type Size,
 } from "@asheeui/core";
-import { useState } from "react";
+import { type ReactNode, useState } from "react";
 import type { StyleProp, TextStyle } from "react-native";
 import { Pressable, TextInput, View } from "react-native";
 import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
@@ -96,6 +97,21 @@ export interface SearchInputProps extends NativeSearchInputConfig {
   /** Whether a search is in progress, which the field reports as busy. */
   isLoading?: boolean;
 
+  /** Whether the field must be filled in. */
+  required?: boolean;
+
+  /** Where the label row sits across the field. Defaults to "left". */
+  labelAlign?: LabelAlign;
+
+  /** Whether the field stretches to its parent's width. Defaults to true. */
+  fullWidth?: boolean;
+
+  /** Content rendered before the field, typically an icon. */
+  startContent?: ReactNode;
+
+  /** Content rendered after the field and before the dismiss control. */
+  endContent?: ReactNode;
+
   /** Platform styles for the field itself, for what NativeWind cannot express. */
   style?: StyleProp<TextStyle>;
 
@@ -141,6 +157,11 @@ export function SearchInput({
   message,
   status,
   isLoading,
+  required = false,
+  labelAlign = "left",
+  fullWidth = true,
+  startContent,
+  endContent,
   size,
   color,
   clearable,
@@ -210,58 +231,78 @@ export function SearchInput({
   );
 
   return (
-    <FieldShell
-      label={resolvedHideLabel ? undefined : resolvedLabel}
-      description={description}
-      message={message}
-      status={resolvedStatus}
-      isLoading={isLoading}>
-      <View className={classNames(NATIVE_SEARCH_INPUT_ROW_CLASS, className)}>
-        <TextInput
-          accessibilityRole="search"
-          accessibilityLabel={resolvedLabel}
-          accessibilityHint={description}
-          aria-invalid={isInvalid}
-          editable={!resolvedDisabled}
-          returnKeyType="search"
-          value={query}
-          onChangeText={(next) => {
-            if (!isControlled) setTypedValue(next);
-            resolveChange({ onChange, onChangeText, onValueChange }, next);
-          }}
-          onSubmitEditing={() => onSearch?.(query)}
-          onFocus={() => setIsFocused(true)}
-          onBlur={() => setIsFocused(false)}
-          className={classNames(
-            NATIVE_INPUT_BASE_CLASS,
-            NATIVE_INPUT_SIZE_CLASS[resolvedSize],
-            NATIVE_RADIUS_CLASS[resolvedRadius],
-            NATIVE_INPUT_VARIANT_CLASS.bordered,
-            edgeClass,
-            NATIVE_SEARCH_INPUT_FIELD_CLASS,
-            resolvedDisabled && NATIVE_INPUT_DISABLED_CLASS,
-          )}
-          style={style}
-        />
-        {isLoading && <Spinner size="sm" />}
-        {resolvedClearable && query.length > 0 && (
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel="Clear search"
-            disabled={resolvedDisabled}
-            onPress={() => {
-              if (!isControlled) setTypedValue("");
-              resolveChange({ onChange, onChangeText, onValueChange }, "");
+    <View
+      className={classNames(
+        "min-w-0",
+        fullWidth ? "w-full" : "self-start",
+      )}>
+      <FieldShell
+        label={resolvedHideLabel ? undefined : resolvedLabel}
+        labelAlign={labelAlign}
+        description={description}
+        message={message}
+        status={resolvedStatus}
+        required={required}
+        isLoading={isLoading}>
+        <View className={classNames(NATIVE_SEARCH_INPUT_ROW_CLASS, className)}>
+          {startContent ? (
+            <View
+              pointerEvents="none"
+              className="shrink-0 items-center text-foreground/50">
+              {startContent}
+            </View>
+          ) : null}
+          <TextInput
+            accessibilityRole="search"
+            accessibilityLabel={resolvedLabel}
+            accessibilityHint={description}
+            aria-invalid={isInvalid}
+            editable={!resolvedDisabled}
+            returnKeyType="search"
+            value={query}
+            onChangeText={(next) => {
+              if (!isControlled) setTypedValue(next);
+              resolveChange({ onChange, onChangeText, onValueChange }, next);
             }}
-            className={NATIVE_SEARCH_INPUT_CLEAR_CLASS}>
-            <Typography
-              role="body-md"
-              className={NATIVE_SEARCH_INPUT_CLEAR_GLYPH_CLASS}>
-              ✕
-            </Typography>
-          </Pressable>
-        )}
-      </View>
-    </FieldShell>
+            onSubmitEditing={() => onSearch?.(query)}
+            onFocus={() => setIsFocused(true)}
+            onBlur={() => setIsFocused(false)}
+            className={classNames(
+              NATIVE_INPUT_BASE_CLASS,
+              NATIVE_INPUT_SIZE_CLASS[resolvedSize],
+              NATIVE_RADIUS_CLASS[resolvedRadius],
+              NATIVE_INPUT_VARIANT_CLASS.bordered,
+              edgeClass,
+              NATIVE_SEARCH_INPUT_FIELD_CLASS,
+              resolvedDisabled && NATIVE_INPUT_DISABLED_CLASS,
+            )}
+            style={style}
+          />
+          {endContent ? (
+            <View className="shrink-0 items-center text-foreground/50">
+              {endContent}
+            </View>
+          ) : null}
+          {isLoading && <Spinner size="sm" />}
+          {resolvedClearable && query.length > 0 && (
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel="Clear search"
+              disabled={resolvedDisabled}
+              onPress={() => {
+                if (!isControlled) setTypedValue("");
+                resolveChange({ onChange, onChangeText, onValueChange }, "");
+              }}
+              className={NATIVE_SEARCH_INPUT_CLEAR_CLASS}>
+              <Typography
+                role="body-md"
+                className={NATIVE_SEARCH_INPUT_CLEAR_GLYPH_CLASS}>
+                ✕
+              </Typography>
+            </Pressable>
+          )}
+        </View>
+      </FieldShell>
+    </View>
   );
 }

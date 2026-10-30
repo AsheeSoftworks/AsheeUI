@@ -10,7 +10,7 @@
  * published, character for character.
  */
 
-import type { ColorRole, Size } from "@asheeui/core";
+import type { Color, Size } from "@asheeui/core";
 
 /**
  * The layout every native avatar starts from.
@@ -42,7 +42,7 @@ export const NATIVE_AVATAR_FONT_CLASS: Record<Size, string> = {
 /**
  * The accent surface the initials fall back to, per colour role.
  */
-export const NATIVE_AVATAR_FALLBACK_CLASS: Record<ColorRole, string> = {
+export const NATIVE_AVATAR_FALLBACK_CLASS: Record<Color, string> = {
   none: "bg-background",
   primary: "bg-primary",
   secondary: "bg-secondary",

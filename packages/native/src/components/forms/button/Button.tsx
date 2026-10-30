@@ -10,7 +10,7 @@
  */
 
 import {
-  type ColorRole,
+  type Color,
   type Radius,
   resolveCascade,
   resolvePress,
@@ -123,7 +123,7 @@ export function Button({
     config.defaultVariant,
     FALLBACK_NATIVE_BUTTON_CONFIG.variant,
   );
-  const resolvedColor = resolveCascade<ColorRole>(
+  const resolvedColor = resolveCascade<Color>(
     color,
     sectionConfig?.color,
     config.defaultColor,

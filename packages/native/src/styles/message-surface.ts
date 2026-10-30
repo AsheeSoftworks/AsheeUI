@@ -10,7 +10,7 @@
  * published, character for character.
  */
 
-import type { ColorRole, MessageVariant } from "@asheeui/core";
+import type { Color, MessageVariant } from "@asheeui/core";
 
 /**
  * The faded treatment, per colour role.
@@ -18,7 +18,7 @@ import type { ColorRole, MessageVariant } from "@asheeui/core";
  * with a border of the same hue, so the message is visible without competing with the
  * content beside it.
  */
-const NATIVE_MESSAGE_FADED_CLASS: Record<ColorRole, string> = {
+const NATIVE_MESSAGE_FADED_CLASS: Record<Color, string> = {
   none: "border-transparent bg-secondary/40",
   primary: "border-primary/20 bg-primary/10",
   secondary: "border-secondary/30 bg-secondary/15",
@@ -28,7 +28,7 @@ const NATIVE_MESSAGE_FADED_CLASS: Record<ColorRole, string> = {
 };
 
 /** The solid treatment, per colour role, which fills the surface. */
-const NATIVE_MESSAGE_SOLID_CLASS: Record<ColorRole, string> = {
+const NATIVE_MESSAGE_SOLID_CLASS: Record<Color, string> = {
   none: "border-transparent bg-background",
   primary: "border-transparent bg-primary",
   secondary: "border-transparent bg-secondary",
@@ -38,7 +38,7 @@ const NATIVE_MESSAGE_SOLID_CLASS: Record<ColorRole, string> = {
 };
 
 /** The bordered treatment, per colour role, which outlines the surface. */
-const NATIVE_MESSAGE_BORDERED_CLASS: Record<ColorRole, string> = {
+const NATIVE_MESSAGE_BORDERED_CLASS: Record<Color, string> = {
   none: "border-foreground/20 bg-transparent",
   primary: "border-primary bg-transparent",
   secondary: "border-secondary bg-transparent",
@@ -48,7 +48,7 @@ const NATIVE_MESSAGE_BORDERED_CLASS: Record<ColorRole, string> = {
 };
 
 /** The ghost treatment, per colour role, which is a tint with no outline. */
-const NATIVE_MESSAGE_GHOST_CLASS: Record<ColorRole, string> = {
+const NATIVE_MESSAGE_GHOST_CLASS: Record<Color, string> = {
   none: "border-transparent bg-transparent",
   primary: "border-transparent bg-primary/10",
   secondary: "border-transparent bg-secondary/10",
@@ -66,7 +66,7 @@ const NATIVE_MESSAGE_GHOST_CLASS: Record<ColorRole, string> = {
  */
 export const NATIVE_MESSAGE_SURFACE_CLASS: Record<
   MessageVariant,
-  Record<ColorRole, string>
+  Record<Color, string>
 > = {
   solid: NATIVE_MESSAGE_SOLID_CLASS,
   faded: NATIVE_MESSAGE_FADED_CLASS,
@@ -84,7 +84,7 @@ export const NATIVE_MESSAGE_SURFACE_CLASS: Record<
  */
 export const NATIVE_MESSAGE_TEXT_CLASS: Record<
   MessageVariant,
-  Record<ColorRole, string>
+  Record<Color, string>
 > = {
   solid: {
     none: "text-foreground",

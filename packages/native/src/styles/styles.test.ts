@@ -24,7 +24,7 @@ import {
   type AlertType,
   AVATAR_FALLBACK_VARIANT,
   type BadgeVariant,
-  type ColorRole,
+  type Color,
   type EmptyStateType,
   type MessageVariant,
   resolveMessageVariant,
@@ -263,7 +263,7 @@ describe("Alert class dictionaries", () => {
   const INTENTS: AlertType[] = ["info", "success", "warning", "error"];
 
   /** The colour roles both platforms name. */
-  const COLOURS: ColorRole[] = [
+  const COLOURS: Color[] = [
     "none",
     "primary",
     "secondary",
@@ -282,7 +282,7 @@ describe("Alert class dictionaries", () => {
 
   it("gives every intent a colour role", () => {
     for (const colour of Object.values(ALERT_TYPE_COLOR)) {
-      expect(COLOURS).toContain(colour as ColorRole);
+      expect(COLOURS).toContain(colour as Color);
     }
   });
 
@@ -333,7 +333,7 @@ describe("Alert class dictionaries", () => {
         "danger",
         "warning",
         "success",
-      ] satisfies ColorRole[]).toContain(colour);
+      ] satisfies Color[]).toContain(colour);
     }
   });
 });
@@ -388,7 +388,7 @@ describe("Badge class dictionaries", () => {
   const TREATMENTS: BadgeVariant[] = ["solid", "faded", "bordered", "ghost"];
 
   /** The colour roles both platforms name. */
-  const COLOURS: ColorRole[] = [
+  const COLOURS: Color[] = [
     "none",
     "primary",
     "secondary",
@@ -784,7 +784,7 @@ describe("Input class dictionaries", () => {
   ];
 
   /** The colour roles both platforms name. */
-  const COLOURS: ColorRole[] = [
+  const COLOURS: Color[] = [
     "none",
     "primary",
     "secondary",
@@ -909,7 +909,7 @@ describe("Marquee class dictionaries", () => {
 
 describe("MessageSurface class dictionaries", () => {
   /** The colour roles both platforms name. */
-  const COLOURS: ColorRole[] = [
+  const COLOURS: Color[] = [
     "none",
     "primary",
     "secondary",
@@ -1031,7 +1031,7 @@ describe("Skeleton class dictionaries", () => {
 
 describe("Spinner class dictionaries", () => {
   /** The colour roles both platforms name. */
-  const COLOURS: ColorRole[] = [
+  const COLOURS: Color[] = [
     "none",
     "primary",
     "secondary",

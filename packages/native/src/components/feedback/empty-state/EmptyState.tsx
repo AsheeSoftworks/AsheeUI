@@ -18,7 +18,7 @@
 
 import {
   type ActionConfig,
-  type ColorRole,
+  type Color,
   type EmptyStateRole,
   resolveConfigCascade,
 } from "@asheeui/core";
@@ -227,7 +227,7 @@ export function EmptyState({
           {primaryAction && (
             <Button
               variant={primaryAction.variant ?? "solid"}
-              color={primaryAction.color as ColorRole | undefined}
+              color={primaryAction.color as Color | undefined}
               size={primaryAction.size ?? resolved.size}
               radius={primaryAction.radius}
               onPress={pressFor(primaryAction)}>
@@ -237,7 +237,7 @@ export function EmptyState({
           {secondaryAction && (
             <Button
               variant={secondaryAction.variant ?? "bordered"}
-              color={secondaryAction.color as ColorRole | undefined}
+              color={secondaryAction.color as Color | undefined}
               size={secondaryAction.size ?? resolved.size}
               radius={secondaryAction.radius}
               onPress={pressFor(secondaryAction)}>

@@ -18,7 +18,7 @@ export const NATIVE_LINK_BASE_CLASS = "flex-row items-center shrink-0";
 /**
  * The colour of the text on the platform, which has no pointer to hover with.
  *
- * Typed as the web map is — `Color` rather than `ColorRole` — so the two maps must name
+ * Typed as the web map is — `Color` rather than `Color` — so the two maps must name
  * the same roles: the vocabulary is shared, and stating it the same way on both sides
  * makes a divergence a compile error instead of a silently unresolved class.
  */

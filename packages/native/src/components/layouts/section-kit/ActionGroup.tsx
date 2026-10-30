@@ -14,7 +14,7 @@
  * on the web.
  */
 
-import type { ActionConfig, ColorRole, SectionBlockAlign } from "@asheeui/core";
+import type { ActionConfig, Color, SectionBlockAlign } from "@asheeui/core";
 import type { ReactNode } from "react";
 import { View } from "react-native";
 import {
@@ -112,7 +112,7 @@ export function ActionGroup({
       {primaryAction && (
         <Button
           variant={primaryAction.variant ?? "solid"}
-          color={primaryAction.color as ColorRole | undefined}
+          color={primaryAction.color as Color | undefined}
           size={primaryAction.size}
           radius={primaryAction.radius}
           onPress={pressFor(primaryAction)}>
@@ -122,7 +122,7 @@ export function ActionGroup({
       {secondaryAction && (
         <Button
           variant={secondaryAction.variant ?? "bordered"}
-          color={secondaryAction.color as ColorRole | undefined}
+          color={secondaryAction.color as Color | undefined}
           size={secondaryAction.size}
           radius={secondaryAction.radius}
           onPress={pressFor(secondaryAction)}>

@@ -12,6 +12,8 @@
  * shared vocabulary both platforms speak ("step 4" rather than "1rem" or "16dp").
  */
 
+import type { Color } from "./shared/variant";
+
 /**
  * The spacing scale's steps.
  * A step is the Tailwind spacing multiplier: step 4 is 1rem on the web and four
@@ -93,8 +95,13 @@ export const COLOR_ROLE = {
 
 /**
  * The shared colour role names.
+ *
+ * @deprecated Use {@link Color} — the name `@asheeui/web` has always published and
+ * `@asheeui/native` now publishes too. The two are one union, not two: this alias is the same
+ * type, and a both-ways assignability test in the native package proves it. It is kept for a
+ * minor because a consumer's import still writes it.
  */
-export type ColorRole = keyof typeof COLOR_ROLE;
+export type ColorRole = Color;
 
 /**
  * The visual treatments a component may support.

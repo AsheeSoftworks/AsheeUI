@@ -26,7 +26,6 @@
 
 import {
   type Color,
-  type ColorRole,
   type Radius,
   resolveCascade,
   resolveClassKey,
@@ -479,7 +478,7 @@ export function Sidebar<T = string>({
     FALLBACK_NATIVE_SIDEBAR_CONFIG.tooltip.variant,
   );
 
-  const resolvedTooltipColor = resolveCascade<ColorRole>(
+  const resolvedTooltipColor = resolveCascade<Color>(
     tooltip?.color,
     sectionConfig?.tooltip?.color,
     undefined,

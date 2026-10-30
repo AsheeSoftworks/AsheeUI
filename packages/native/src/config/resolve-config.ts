@@ -19,7 +19,7 @@
 import {
   assertValidConfig,
   type ColorConfig,
-  type ColorRole,
+  type Color,
   defaultColorConfig,
   type ExternalConfig,
   mergeObject,
@@ -43,7 +43,7 @@ export interface NativePlatformConfig {
   defaultVariant?: Variant;
 
   /** The default colour role for components that resolve one. */
-  defaultColor?: ColorRole;
+  defaultColor?: Color;
 
   /** The default density for components that have one. */
   defaultSize?: Size;

@@ -10,7 +10,7 @@
  * published, character for character.
  */
 
-import type { ColorRole, Size } from "@asheeui/core";
+import type { Color, Size } from "@asheeui/core";
 
 /**
  * The classes the native ring is built from.
@@ -38,7 +38,7 @@ export const NATIVE_SPINNER_SIZE_CLASS: Record<Size, string> = {
 /**
  * The track of the native ring — every side of the border but the lit one.
  */
-export const NATIVE_SPINNER_TRACK_CLASS: Record<ColorRole, string> = {
+export const NATIVE_SPINNER_TRACK_CLASS: Record<Color, string> = {
   none: "border-foreground/25",
   primary: "border-primary/25",
   secondary: "border-secondary/25",
@@ -54,7 +54,7 @@ export const NATIVE_SPINNER_TRACK_CLASS: Record<ColorRole, string> = {
  * classes are different utilities and a class assembled at runtime is never
  * compiled.
  */
-export const NATIVE_SPINNER_HEAD_CLASS: Record<ColorRole, string> = {
+export const NATIVE_SPINNER_HEAD_CLASS: Record<Color, string> = {
   none: "border-t-foreground",
   primary: "border-t-primary",
   secondary: "border-t-secondary",

@@ -6,7 +6,7 @@
  * theme's accent on its border, which is what a card usually wants.
  */
 
-import type { ColorRole, Radius, Size, Variant } from "@asheeui/core";
+import type { Color, Radius, Size, Variant } from "@asheeui/core";
 
 /** Shared classes for every card. */
 export const CARD_BASE_CLASS = "flex-col gap-2";
@@ -21,7 +21,7 @@ export const CARD_VARIANT_CLASS: Record<Variant, string> = {
 };
 
 /** The accent colour of the surface's border, per colour role. */
-export const CARD_COLOR_CLASS: Record<ColorRole, string> = {
+export const CARD_COLOR_CLASS: Record<Color, string> = {
   none: "border-foreground/20",
   primary: "border-primary/40",
   secondary: "border-secondary",

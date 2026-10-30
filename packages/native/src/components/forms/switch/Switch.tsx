@@ -17,7 +17,7 @@
  */
 
 import {
-  type ColorRole,
+  type Color,
   type Radius,
   resolveCascade,
   resolveClassKey,
@@ -183,7 +183,7 @@ export function Switch({
     undefined,
     FALLBACK_NATIVE_SWITCH_CONFIG.variant,
   );
-  const resolvedColor = resolveCascade<ColorRole>(
+  const resolvedColor = resolveCascade<Color>(
     color,
     sectionConfig?.color,
     config.defaultColor,

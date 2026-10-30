@@ -10,7 +10,7 @@
  * published, character for character.
  */
 
-import type { BadgeVariant, ColorRole, Size } from "@asheeui/core";
+import type { BadgeVariant, Color, Size } from "@asheeui/core";
 
 /**
  * The layout every native badge starts from, before any resolved treatment is added.
@@ -33,7 +33,7 @@ export const NATIVE_BADGE_BASE_CLASS =
  */
 export const NATIVE_BADGE_VARIANT_CLASS: Record<
   BadgeVariant,
-  Record<ColorRole, string>
+  Record<Color, string>
 > = {
   solid: {
     none: "bg-foreground",
@@ -78,7 +78,7 @@ export const NATIVE_BADGE_VARIANT_CLASS: Record<
  */
 export const NATIVE_BADGE_TEXT_CLASS: Record<
   BadgeVariant,
-  Record<ColorRole, string>
+  Record<Color, string>
 > = {
   solid: {
     none: "text-background",

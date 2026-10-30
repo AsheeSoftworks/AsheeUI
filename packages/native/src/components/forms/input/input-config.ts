@@ -9,10 +9,12 @@
  * than restated, so a member of the family that renames or retypes one cannot leave the
  * input behind. The three options that follow are native's own: the platform has one
  * control for one line and for several, where the web has a field and a textarea
- * beside it, and it names the unavailable and the mandatory state itself. The family
- * axes native does not implement — `labelAlign` and `fullWidth` — are absent
- * deliberately, because a configuration that advertised them would offer a consumer
- * options the platform ignores.
+ * beside it, and it names the unavailable and the mandatory state itself.
+ *
+ * `labelAlign` and `fullWidth` were absent until B12, because a configuration that
+ * advertised them would have offered options the platform ignored. B12 implements both
+ * in the field shell, so they are part of the section now rather than a promise the
+ * component did not keep.
  */
 
 import type { FieldConfig } from "@asheeui/core";
@@ -21,8 +23,8 @@ import { registerNativeComponentDefaults } from "../../../config/registry";
 /**
  * Configuration options for the native Input.
  *
- * `size`, `radius`, `variant`, `color` and `status` carry the meanings the shared field
- * contract gives them.
+ * `size`, `radius`, `variant`, `color`, `status`, `labelAlign` and `fullWidth` carry the
+ * meanings the shared field contract gives them.
  *
  * @deprecated Use {@link InputConfig} from `@asheeui/core` — the name both renderers
  * publish.
@@ -30,7 +32,13 @@ import { registerNativeComponentDefaults } from "../../../config/registry";
 export interface NativeInputConfig
   extends Pick<
     FieldConfig,
-    "size" | "radius" | "variant" | "color" | "status"
+    | "size"
+    | "radius"
+    | "variant"
+    | "color"
+    | "status"
+    | "labelAlign"
+    | "fullWidth"
   > {
   /** Whether the field accepts several lines. Defaults to false. */
   multiline?: boolean;
@@ -57,6 +65,8 @@ export const defaultNativeInputConfig: NativeInputConfig = {
   multiline: false,
   isDisabled: false,
   required: false,
+  labelAlign: "left",
+  fullWidth: true,
 };
 
 declare module "../../../config/registry" {
@@ -82,4 +92,6 @@ export const FALLBACK_NATIVE_INPUT_CONFIG = {
   multiline: false,
   isDisabled: false,
   required: false,
+  labelAlign: "left",
+  fullWidth: true,
 } satisfies NativeInputConfig;

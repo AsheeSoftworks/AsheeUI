@@ -19,7 +19,7 @@
  */
 
 import {
-  type ColorRole,
+  type Color,
   type LinkUnderline,
   type LinkVariant,
   resolveCascade,
@@ -183,7 +183,7 @@ export function Link({
     undefined,
     FALLBACK_NATIVE_LINK_CONFIG.variant,
   );
-  const resolvedColor = resolveCascade<ColorRole>(
+  const resolvedColor = resolveCascade<Color>(
     color,
     sectionConfig?.color,
     config.defaultColor,

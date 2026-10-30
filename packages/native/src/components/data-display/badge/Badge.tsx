@@ -9,7 +9,7 @@
  */
 
 import {
-  type ColorRole,
+  type Color,
   type Radius,
   resolveBadgeVariant,
   resolveCascade,
@@ -89,7 +89,7 @@ export function Badge({
       FALLBACK_NATIVE_BADGE_CONFIG.variant,
     ),
   );
-  const resolvedColor = resolveCascade<ColorRole>(
+  const resolvedColor = resolveCascade<Color>(
     color,
     sectionConfig?.color,
     config.defaultColor,

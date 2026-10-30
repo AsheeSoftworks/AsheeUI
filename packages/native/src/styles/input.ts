@@ -10,7 +10,7 @@
  * published, character for character.
  */
 
-import type { ColorRole, Size, Variant } from "@asheeui/core";
+import type { Color, Size, Variant } from "@asheeui/core";
 
 /** Shared classes for every native field. */
 export const NATIVE_INPUT_BASE_CLASS =
@@ -67,7 +67,7 @@ export const NATIVE_INPUT_EDGE_NEUTRAL_CLASS: Record<Variant, string> = {
  * A field always shows a visible focus edge, whatever its treatment is, because a
  * focus indicator is a requirement rather than a decoration.
  */
-export const NATIVE_INPUT_EDGE_ACCENT_CLASS: Record<ColorRole, string> = {
+export const NATIVE_INPUT_EDGE_ACCENT_CLASS: Record<Color, string> = {
   none: "border-foreground",
   primary: "border-primary",
   secondary: "border-secondary",

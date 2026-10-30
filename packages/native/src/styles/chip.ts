@@ -10,7 +10,7 @@
  * published, character for character.
  */
 
-import type { ChipVariant, ColorRole, Size } from "@asheeui/core";
+import type { ChipVariant, Color, Size } from "@asheeui/core";
 
 /**
  * The layout every native chip starts from, before any resolved treatment is added.
@@ -75,7 +75,7 @@ export const NATIVE_CHIP_ICON_SIZE_CLASS: Record<Size, string> = {
  */
 export const NATIVE_CHIP_VARIANT_CLASS: Record<
   ChipVariant,
-  Record<ColorRole, string>
+  Record<Color, string>
 > = {
   solid: {
     none: "bg-foreground border border-transparent",
@@ -118,7 +118,7 @@ export const NATIVE_CHIP_VARIANT_CLASS: Record<
  */
 export const NATIVE_CHIP_TEXT_CLASS: Record<
   ChipVariant,
-  Record<ColorRole, string>
+  Record<Color, string>
 > = {
   solid: {
     none: "text-background",
@@ -159,7 +159,7 @@ export const NATIVE_CHIP_TEXT_CLASS: Record<
  * A consumer that passes its own colour string gets that value instead, which is the same
  * choice the web dot offers.
  */
-export const NATIVE_CHIP_DOT_CLASS: Record<ColorRole, string> = {
+export const NATIVE_CHIP_DOT_CLASS: Record<Color, string> = {
   none: "bg-foreground",
   primary: "bg-primary",
   secondary: "bg-secondary",

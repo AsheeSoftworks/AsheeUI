@@ -19,7 +19,7 @@
  * decorating takes its accessible name from it, and then announces itself as busy.
  */
 
-import { type ColorRole, resolveCascade, type Size } from "@asheeui/core";
+import { type Color, resolveCascade, type Size } from "@asheeui/core";
 import { useEffect, useRef } from "react";
 import type { StyleProp, ViewStyle } from "react-native";
 import { Animated, Easing, View, type ViewProps } from "react-native";
@@ -102,7 +102,7 @@ export function Spinner({
     undefined,
     FALLBACK_NATIVE_SPINNER_CONFIG.size,
   );
-  const resolvedColor = resolveCascade<ColorRole>(
+  const resolvedColor = resolveCascade<Color>(
     color,
     sectionConfig?.color,
     config.defaultColor,

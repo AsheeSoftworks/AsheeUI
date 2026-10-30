@@ -17,9 +17,11 @@ import {
   FALLBACK_FIELD_CONFIG,
   type FieldStatus,
   isFieldInvalid,
+  type LabelAlign,
 } from "@asheeui/core";
 import type { ReactNode } from "react";
 import { View } from "react-native";
+import { classNames } from "../../../utils/class-names";
 import {
   NATIVE_FIELD_LABEL_ROW_CLASS,
   NATIVE_FIELD_SHELL_CLASS,
@@ -51,6 +53,17 @@ export interface FieldShellProps {
   required?: boolean;
 
   /**
+   * Where the label row sits across the field.
+   *
+   * The web field has always accepted `labelAlign`; B12 gives the platform the same option,
+   * because the shared field contract advertises it and a field that silently ignored it
+   * would look aligned on one platform and not on the other.
+   *
+   * @default "left"
+   */
+  labelAlign?: LabelAlign;
+
+  /**
    * Whether the field is waiting for something.
    *
    * A pending field shows the framework's spinner in its label row, which is where a
@@ -63,6 +76,18 @@ export interface FieldShellProps {
   /** The control the shell describes. */
   children: ReactNode;
 }
+
+/**
+ * How a label row spends the space it is given, per alignment.
+ *
+ * A class per value rather than an inline style: NativeWind compiles a class it can read,
+ * and the row is a layout element the platform lays out itself.
+ */
+const LABEL_ALIGN_CLASS: Record<LabelAlign, string> = {
+  left: "justify-start",
+  center: "justify-center",
+  right: "justify-end",
+};
 
 /**
  * The label, description and message block a field shows.
@@ -83,13 +108,18 @@ export function FieldShell({
   message,
   status = FALLBACK_FIELD_CONFIG.status,
   required = false,
+  labelAlign = FALLBACK_FIELD_CONFIG.labelAlign,
   isLoading = false,
   children,
 }: FieldShellProps) {
   return (
     <View className={NATIVE_FIELD_SHELL_CLASS}>
       {label && (
-        <View className={NATIVE_FIELD_LABEL_ROW_CLASS}>
+        <View
+          className={classNames(
+            NATIVE_FIELD_LABEL_ROW_CLASS,
+            LABEL_ALIGN_CLASS[labelAlign],
+          )}>
           <Typography role="label">{label}</Typography>
           {required && (
             <Typography

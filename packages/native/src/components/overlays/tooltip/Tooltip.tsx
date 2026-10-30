@@ -27,7 +27,7 @@
  */
 
 import {
-  type ColorRole,
+  type Color,
   type Radius,
   resolveCascade,
   resolveMessageVariant,
@@ -142,7 +142,7 @@ export function Tooltip({
     undefined,
     FALLBACK_NATIVE_TOOLTIP_CONFIG.variant,
   );
-  const resolvedColor = resolveCascade<ColorRole>(
+  const resolvedColor = resolveCascade<Color>(
     color,
     sectionConfig?.color,
     undefined,

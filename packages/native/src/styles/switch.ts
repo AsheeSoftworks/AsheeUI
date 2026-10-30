@@ -10,7 +10,7 @@
  * published, character for character.
  */
 
-import type { ColorRole, SwitchSizeKey } from "@asheeui/core";
+import type { Color, SwitchSizeKey } from "@asheeui/core";
 
 /**
  * The track every native switch draws.
@@ -62,7 +62,7 @@ export const NATIVE_SWITCH_THUMB_TRAVEL: Record<SwitchSizeKey, number> = {
 };
 
 /** The track colour of a switch that is on, per colour role. */
-export const NATIVE_SWITCH_CHECKED_CLASS: Record<ColorRole, string> = {
+export const NATIVE_SWITCH_CHECKED_CLASS: Record<Color, string> = {
   none: "bg-foreground",
   primary: "bg-primary",
   secondary: "bg-secondary",

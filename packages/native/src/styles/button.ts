@@ -10,7 +10,7 @@
  * published, character for character.
  */
 
-import type { ColorRole, Size, Variant } from "@asheeui/core";
+import type { Color, Size, Variant } from "@asheeui/core";
 
 /**
  * Height, padding and text size for each density.
@@ -30,7 +30,7 @@ export const NATIVE_BUTTON_SIZE_CLASS: Record<Size, string> = {
 /**
  * The solid treatment, per colour role.
  */
-const NATIVE_SOLID_CLASS: Record<ColorRole, string> = {
+const NATIVE_SOLID_CLASS: Record<Color, string> = {
   none: "bg-foreground active:opacity-80",
   primary: "bg-primary active:opacity-80",
   secondary: "bg-secondary active:opacity-80",
@@ -42,7 +42,7 @@ const NATIVE_SOLID_CLASS: Record<ColorRole, string> = {
 /**
  * The faded treatment, per colour role.
  */
-const NATIVE_FADED_CLASS: Record<ColorRole, string> = {
+const NATIVE_FADED_CLASS: Record<Color, string> = {
   none: "bg-foreground/10 active:bg-foreground/20",
   primary: "bg-primary/10 active:bg-primary/20",
   secondary: "bg-secondary/20 active:bg-secondary/30",
@@ -54,7 +54,7 @@ const NATIVE_FADED_CLASS: Record<ColorRole, string> = {
 /**
  * The bordered treatment, per colour role.
  */
-const NATIVE_BORDERED_CLASS: Record<ColorRole, string> = {
+const NATIVE_BORDERED_CLASS: Record<Color, string> = {
   none: "border border-foreground bg-transparent active:bg-foreground/10",
   primary: "border border-primary bg-transparent active:bg-primary/10",
   secondary: "border border-secondary bg-transparent active:bg-secondary/10",
@@ -66,7 +66,7 @@ const NATIVE_BORDERED_CLASS: Record<ColorRole, string> = {
 /**
  * The ghost treatment, per colour role.
  */
-const NATIVE_GHOST_CLASS: Record<ColorRole, string> = {
+const NATIVE_GHOST_CLASS: Record<Color, string> = {
   none: "bg-transparent active:bg-foreground/10",
   primary: "bg-transparent active:bg-primary/10",
   secondary: "bg-transparent active:bg-secondary/10",
@@ -78,7 +78,7 @@ const NATIVE_GHOST_CLASS: Record<ColorRole, string> = {
 /**
  * The underlined treatment, per colour role.
  */
-const NATIVE_UNDERLINED_CLASS: Record<ColorRole, string> = {
+const NATIVE_UNDERLINED_CLASS: Record<Color, string> = {
   none: "border-b border-foreground bg-transparent active:opacity-70",
   primary: "border-b border-primary bg-transparent active:opacity-70",
   secondary: "border-b border-secondary bg-transparent active:opacity-70",
@@ -92,7 +92,7 @@ const NATIVE_UNDERLINED_CLASS: Record<ColorRole, string> = {
  */
 export const NATIVE_BUTTON_VARIANT_CLASS: Record<
   Variant,
-  Record<ColorRole, string>
+  Record<Color, string>
 > = {
   solid: NATIVE_SOLID_CLASS,
   faded: NATIVE_FADED_CLASS,
@@ -107,7 +107,7 @@ export const NATIVE_BUTTON_VARIANT_CLASS: Record<
  */
 export const NATIVE_BUTTON_TEXT_CLASS: Record<
   Variant,
-  Record<ColorRole, string>
+  Record<Color, string>
 > = {
   solid: {
     none: "text-background",

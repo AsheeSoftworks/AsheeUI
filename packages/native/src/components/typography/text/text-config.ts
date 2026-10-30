@@ -12,7 +12,7 @@
  * shape one.
  */
 
-import type { ColorRole, Size, TypographyRole } from "@asheeui/core";
+import type { Color, Size, TypographyRole } from "@asheeui/core";
 import { registerNativeComponentDefaults } from "../../../config/registry";
 
 export type { TypographyConfig } from "@asheeui/core";
@@ -31,7 +31,7 @@ export type NativeTextRole = TypographyRole;
  * The tone of a piece of text.
  * A colour role, or one of the two relative tones the framework adds.
  */
-export type NativeTextTone = ColorRole | "muted" | "default";
+export type NativeTextTone = Color | "muted" | "default";
 
 /**
  * Configuration options for the native Text.

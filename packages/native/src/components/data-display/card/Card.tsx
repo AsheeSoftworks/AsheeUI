@@ -10,7 +10,7 @@
 
 import {
   type CardVariant,
-  type ColorRole,
+  type Color,
   type Radius,
   resolveCascade,
   resolvePress,
@@ -135,7 +135,7 @@ export function Card({
       FALLBACK_NATIVE_CARD_CONFIG.variant,
     ),
   );
-  const resolvedColor = resolveCascade<ColorRole>(
+  const resolvedColor = resolveCascade<Color>(
     color,
     sectionConfig?.color,
     config.defaultColor,
