@@ -121,6 +121,15 @@ export const TYPOGRAPHY_ALIGN_VALUES = [
 
 export type TypographyAlign = (typeof TYPOGRAPHY_ALIGN_VALUES)[number];
 
+/** The line-height multiplier each leading token stands for. */
+export const TYPOGRAPHY_LEADING_MULTIPLIER: Record<TypographyLeading, number> = {
+  tight: 1.25,
+  snug: 1.375,
+  normal: 1.5,
+  relaxed: 1.625,
+  loose: 2,
+};
+
 /** The size/style tokens a role resolves to. */
 export interface TypographyRoleTokens {
   /** Size token. */
