@@ -10,8 +10,8 @@
  * every platform, without each renderer restating it.
  */
 
-import type { Space } from "../../../shared/spacing";
 import type { ContainerSize } from "../../../shared/section-block";
+import type { Space } from "../../../shared/spacing";
 
 /**
  * The axes a Centered block can centre on.

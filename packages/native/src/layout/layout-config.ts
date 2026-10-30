@@ -17,6 +17,7 @@
 import type {
   Concrete,
   ContainerSize,
+  GridColumns,
   SectionBackground,
   Space,
 } from "@asheeui/core";
@@ -82,16 +83,20 @@ export interface NativeStackConfig {
 
 /**
  * Configuration options for the native Grid.
+ *
+ * The column counts are the shared ones — `GridColumns` — rather than a bare `number`: a count the
+ * rule cannot express is a count `resolveGridColumns` cannot inherit, so the device states the same
+ * vocabulary the web does and the shared rule answers both.
  */
 export interface NativeGridConfig {
   /** Columns from the smallest window. Defaults to 1. */
-  columns?: number;
+  columns?: GridColumns;
 
   /** Columns from the `md` breakpoint upwards. */
-  columnsMd?: number;
+  columnsMd?: GridColumns;
 
   /** Columns from the `lg` breakpoint upwards. */
-  columnsLg?: number;
+  columnsLg?: GridColumns;
 
   /** Space between cells. Defaults to "md". */
   gap?: Space;

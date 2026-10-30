@@ -11,11 +11,11 @@
  * platform, without each renderer restating it.
  */
 
-import type { Space } from "../../../shared/spacing";
 import type {
   ContainerSize,
   SectionBackground,
 } from "../../../shared/section-block";
+import type { Space } from "../../../shared/spacing";
 
 /**
  * Background treatment of a section.
