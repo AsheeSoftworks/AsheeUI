@@ -1,15 +1,20 @@
 /**
- * Size and radius type definitions for AsheeUI components.
- * This file defines the common size and radius types used across the component
- * library, along with utility functions for applying radius styles based on
- * component variants and states.
+ * The size and radius vocabulary, and the one rule both renderers apply to it.
  *
  * The scales themselves are declared once, in `../tokens`: the unions below are
  * derived from the `SIZE` and `RADIUS_STEP` token maps, and every `Record` keyed
  * by them fails to compile until it states a newly added token.
  *
- * The platform's half of this file — the `NATIVE_*` dictionaries — moved to
- * `@asheeui/native`; what is left here is the web renderer's own.
+ * What a platform *draws* with those unions is not here. `RADIUS_CLASS` is the web's and
+ * `NATIVE_RADIUS_CLASS` is the platform's; both moved to the renderer that compiles them
+ * (C2 and C1), because a class string is a decision about pixels the two platforms do not
+ * share.
+ *
+ * `UnderlineRadius` is the one export here that is neither a type nor a drawing, and it stays:
+ * it is a *rule* both renderers have to answer the same way — an underlined control has square
+ * corners — and a rule kept in one renderer is a divergence waiting for the other one to be
+ * written (H18). The web applies it today; the platform adopts it in the batch that gives its
+ * controls a radius, which is a one-line change here rather than a second copy of the exception.
  */
 
 import type { Radius, Size } from "../tokens";
