@@ -1,20 +1,23 @@
 /**
- * The treatments a message surface can wear, per colour role, for the native renderer.
+ * The vocabulary a message surface shares: a treatment, and the rule that resolves one.
  *
- * An alert and a toast are the same kind of thing: a surface that carries a message in
- * one of the framework's colour roles. Both therefore ask the same question — what does
- * a `faded` surface in `danger` look like on the platform — and the answer has to be
- * one answer, because a consumer who retunes the treatment of a message cannot be left
- * with two components that disagree about it.
+ * An alert and a toast are the same kind of thing: a surface that carries a message in one of
+ * the framework's colour roles. Both therefore ask the same question — what does a `faded`
+ * surface in `danger` look like — and the *word* the answer is stated in has to be one word,
+ * because a consumer who retunes the treatment of a message cannot be left with two components
+ * that disagree about it.
  *
- * The web answers the same question with the shared `resolveVariantClass`, so the
- * matrix that renderer reads lives in `shared/variant`. The platform's map cannot be
- * that one: the platform's utilities state a pressed state rather than a hover state,
- * and its corner scale is its own. So the map is stated here, once, for every message
- * surface the platform draws.
+ * So `MessageVariant` and `resolveMessageVariant` are here rather than in a renderer. The first is
+ * vocabulary the configuration is written in (H17); the second is a *rule*: a message has no
+ * underline treatment, so a global `defaultVariant` of `underlined` resolves to `bordered` for one.
+ * Both renderers read it, and a rule that lives in one renderer is a divergence waiting for the
+ * other one to be written (H18).
  *
- * The platform's half of this file — the `NATIVE_*` dictionaries — moved to
- * `@asheeui/native`; what is left here is the web renderer's own.
+ * The *pictures* are each renderer's, and both have left core. The web draws a message through
+ * `resolveVariantClass` in `packages/web/src/shared/variant.ts`; the platform's map is
+ * `packages/native/src/styles/message-surface.ts`, because its utilities state a pressed state
+ * rather than a hover state and its corner scale is its own. This module therefore holds no class
+ * string and imports no renderer.
  */
 
 import type { Variant } from "./variant";
