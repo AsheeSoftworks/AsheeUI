@@ -24,7 +24,6 @@ import {
   type AlertType,
   AVATAR_FALLBACK_VARIANT,
   type BadgeVariant,
-  type Color,
   type ColorRole,
   type EmptyStateType,
   type MessageVariant,
@@ -334,7 +333,7 @@ describe("Alert class dictionaries", () => {
         "danger",
         "warning",
         "success",
-      ] satisfies Color[]).toContain(colour);
+      ] satisfies ColorRole[]).toContain(colour);
     }
   });
 });
@@ -466,9 +465,9 @@ describe("Calendar class dictionaries", () => {
     expect(NATIVE_CALENDAR_COLOR_CLASS.primary.bg).toBe("bg-primary");
     expect(NATIVE_CALENDAR_COLOR_CLASS.primary.border).toBe("border-primary");
     expect(NATIVE_CALENDAR_COLOR_CLASS.primary.text).toBe("text-primary");
-    // The platform's own convention for a filled accent, which the framework's controls
-    // share: an accent fill carries the application's background as its ink.
-    expect(NATIVE_CALENDAR_COLOR_CLASS.primary.on).toBe("text-background");
+    // The shared on-solid token, not the theme's background: the ink over a saturated fill
+    // is white in every theme, which is what the web renderer paints too.
+    expect(NATIVE_CALENDAR_COLOR_CLASS.primary.on).toBe("text-on-solid");
     expect(NATIVE_CALENDAR_COLOR_CLASS.secondary.on).toBe("text-foreground");
   });
 });
@@ -946,9 +945,9 @@ describe("MessageSurface class dictionaries", () => {
   it("paints a filled surface's text on the surface rather than in the role's own colour", () => {
     // A primary icon on a primary fill is invisible, so a filled treatment states the
     // colour its text is read in.
-    expect(NATIVE_MESSAGE_TEXT_CLASS.solid.primary).toBe("text-background");
-    expect(NATIVE_MESSAGE_TEXT_CLASS.solid.danger).toBe("text-background");
-    expect(NATIVE_MESSAGE_TEXT_CLASS.solid.warning).toBe("text-background");
+    expect(NATIVE_MESSAGE_TEXT_CLASS.solid.primary).toBe("text-on-solid");
+    expect(NATIVE_MESSAGE_TEXT_CLASS.solid.danger).toBe("text-on-solid");
+    expect(NATIVE_MESSAGE_TEXT_CLASS.solid.warning).toBe("text-on-solid");
     expect(NATIVE_MESSAGE_TEXT_CLASS.faded.primary).toBe("text-primary");
   });
 

@@ -73,10 +73,11 @@ const frameworkClasses = [
 ];
 
 /**
- * The eight roles the components reference, each as the custom property it reads.
+ * The roles the components reference, each as the custom property it reads.
  *
- * The names are the ones `@asheeui/core` states as `PALETTE_ROLES` and the provider applies
- * as `--ashee-<role>`; the `<alpha-value>` placeholder is what keeps `bg-secondary/40` and
+ * The eight are the ones `@asheeui/core` states as `PALETTE_ROLES` and the provider applies
+ * as `--ashee-<role>`; `on-solid` is the ninth token, the ink over a saturated fill, the same
+ * in every theme. The `<alpha-value>` placeholder is what keeps `bg-secondary/40` and
  * `bg-primary/10` working, because the alpha comes from the class rather than from the
  * value.
  */
@@ -89,6 +90,7 @@ const PALETTE_ROLES = [
   "danger",
   "warning",
   "success",
+  "on-solid",
 ];
 
 const colors = Object.fromEntries(

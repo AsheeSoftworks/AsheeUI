@@ -23,6 +23,8 @@
 
 import {
   type ColorVariant,
+  ON_SOLID_CHANNELS,
+  type OnSolidVariable,
   PALETTE_ROLES,
   type PaletteVariable,
 } from "@asheeui/core";
@@ -122,8 +124,8 @@ function readChannel(argument: string): number | undefined {
  */
 export function paletteVariables(
   variant: ColorVariant,
-): Record<PaletteVariable, string> {
-  const variables = {} as Record<PaletteVariable, string>;
+): Record<PaletteVariable | OnSolidVariable, string> {
+  const variables = {} as Record<PaletteVariable | OnSolidVariable, string>;
 
   for (const role of PALETTE_ROLES) {
     const value = variant[role];
@@ -137,6 +139,11 @@ export function paletteVariables(
 
     variables[`--ashee-${role}` as PaletteVariable] = channels;
   }
+
+  // The ninth token is not a palette role: it is the ink over a saturated fill, the same in
+  // every theme, and it comes from core so both renderers emit one value rather than two that
+  // happen to look alike. It is stated as channels like every other variable here.
+  variables["--ashee-on-solid"] = ON_SOLID_CHANNELS;
 
   return variables;
 }

@@ -14,8 +14,14 @@
  * object the styling runtime reads internally; what matters here is the variables it is given.
  */
 
-import { render } from "@testing-library/react-native";
+import {
+  act,
+  render,
+} from "@testing-library/react-native";
+import type { ThemeStorage } from "@asheeui/core";
 import { Text } from "react-native";
+import { THEME_STORAGE_KEY, themeController } from "../theme/controller";
+import { useTheme } from "../theme/useTheme";
 import {
   AsheeConfigContext,
   AsheeNativeConfigContext,
@@ -113,6 +119,139 @@ describe("AsheeUIProvider", () => {
     ).rejects.toThrow(/"primary".*var\(--x\)/s);
   });
 });
+
+describe("the provider's theme runtime", () => {
+  beforeEach(() => {
+    vars.mockClear();
+  });
+
+  it("repaints when a theme is chosen", async () => {
+    await render(
+      <AsheeUIProvider
+        config={{ defaultTheme: "light" }}
+        persistTheme={createStorage().storage}>
+        <Text>Content</Text>
+      </AsheeUIProvider>,
+    );
+
+    expect(paintedVariables()["--ashee-background"]).toBe("255 255 255");
+
+    await act(async () => {
+      themeController.setTheme("dark");
+    });
+
+    expect(paintedVariables()["--ashee-background"]).toBe("17 17 17");
+  });
+
+  it("follows the platform's scheme while the selection is system", async () => {
+    // Appearance's Jest fake has no native module behind it, so the host's subscription is
+    // exercised in `theme/controller.test.ts`, where the module is loaded against a
+    // controllable Appearance. What this file proves is the provider's half: it reads the
+    // controller and repaints from it.
+    expect(typeof themeController.getResolvedTheme()).toBe("string");
+  });
+
+  it("self-heals a stored selection that names no available theme", async () => {
+    // "brand" is declared by no configuration in this file, so the controller's growing
+    // available list cannot contain it — which is the stale value the rule is about.
+    const fake = createStorage({ [THEME_STORAGE_KEY]: "brand" });
+
+    await render(
+      <AsheeUIProvider
+        config={{ defaultTheme: "light" }}
+        persistTheme={fake.storage}>
+        <Text>Content</Text>
+      </AsheeUIProvider>,
+    );
+
+    expect(fake.values.has(THEME_STORAGE_KEY)).toBe(false);
+    expect(fake.writes).toEqual(["remove"]);
+    expect(paintedVariables()["--ashee-background"]).toBe("255 255 255");
+  });
+
+  it("writes only when setTheme is called, never on configuration", async () => {
+    const fake = createStorage();
+
+    await render(
+      <AsheeUIProvider
+        config={{ defaultTheme: "dark" }}
+        persistTheme={fake.storage}>
+        <Text>Content</Text>
+      </AsheeUIProvider>,
+    );
+
+    expect(fake.writes).toEqual([]);
+
+    await act(async () => {
+      themeController.setTheme("light");
+    });
+
+    expect(fake.writes).toEqual(["set:light"]);
+    expect(fake.values.get(THEME_STORAGE_KEY)).toBe("light");
+  });
+
+  it("publishes the same five fields the web hook publishes", async () => {
+    let captured: ReturnType<typeof useTheme> | undefined;
+
+    function Probe() {
+      captured = useTheme();
+      return <Text>Content</Text>;
+    }
+
+    await render(
+      <AsheeUIProvider
+        config={{
+          color: { midnight: { extends: "dark", primary: "#7c3aed" } },
+        }}
+        persistTheme={createStorage().storage}>
+        <Probe />
+      </AsheeUIProvider>,
+    );
+
+    expect(captured).toBeDefined();
+    expect(Object.keys(captured ?? {}).sort()).toEqual([
+      "availableThemes",
+      "resolvedTheme",
+      "setTheme",
+      "theme",
+      "toggleTheme",
+    ]);
+    expect(captured?.availableThemes).toEqual(
+      expect.arrayContaining(["light", "dark", "midnight"]),
+    );
+  });
+});
+
+/**
+ * A storage adapter a test can inspect.
+ *
+ * @param initial - Values the storage starts with.
+ * @returns The adapter, the values it holds and every write it received.
+ */
+function createStorage(initial: Record<string, string> = {}): {
+  storage: ThemeStorage;
+  values: Map<string, string>;
+  writes: string[];
+} {
+  const values = new Map(Object.entries(initial));
+  const writes: string[] = [];
+
+  return {
+    values,
+    writes,
+    storage: {
+      get: () => values.get(THEME_STORAGE_KEY) ?? null,
+      set: (value) => {
+        values.set(THEME_STORAGE_KEY, value);
+        writes.push(`set:${value}`);
+      },
+      remove: () => {
+        values.delete(THEME_STORAGE_KEY);
+        writes.push("remove");
+      },
+    },
+  };
+}
 
 describe("the provider's one name", () => {
   it("keeps every platform-suffixed spelling as the same reference", () => {

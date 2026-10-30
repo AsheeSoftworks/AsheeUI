@@ -8,7 +8,11 @@
  * there and is tested beside it.
  */
 
-import { defaultColorConfig, PALETTE_ROLES } from "@asheeui/core";
+import {
+  defaultColorConfig,
+  ON_SOLID_CHANNELS,
+  PALETTE_ROLES,
+} from "@asheeui/core";
 import { colorChannels, paletteVariables } from "./palette";
 
 describe("colorChannels", () => {
@@ -48,14 +52,19 @@ describe("colorChannels", () => {
 });
 
 describe("paletteVariables", () => {
-  it("states one custom property per role, as channels", () => {
+  it("states one custom property per role, as channels, plus the shared on-solid token", () => {
     const variables = paletteVariables(defaultColorConfig.light);
 
     expect(Object.keys(variables).sort()).toEqual(
-      PALETTE_ROLES.map((role) => `--ashee-${role}`).sort(),
+      [
+        ...PALETTE_ROLES.map((role) => `--ashee-${role}`),
+        "--ashee-on-solid",
+      ].sort(),
     );
     expect(variables["--ashee-background"]).toBe("255 255 255");
     expect(variables["--ashee-primary"]).toBe("37 99 235");
+    // The ninth token is the same in every theme, and it is the value core states.
+    expect(variables["--ashee-on-solid"]).toBe(ON_SOLID_CHANNELS);
   });
 
   it("paints a custom palette", () => {

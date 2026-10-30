@@ -88,11 +88,11 @@ export const NATIVE_MESSAGE_TEXT_CLASS: Record<
 > = {
   solid: {
     none: "text-foreground",
-    primary: "text-background",
+    primary: "text-on-solid",
     secondary: "text-foreground",
-    danger: "text-background",
-    warning: "text-background",
-    success: "text-background",
+    danger: "text-on-solid",
+    warning: "text-on-solid",
+    success: "text-on-solid",
   },
   faded: {
     none: "text-foreground",

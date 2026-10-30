@@ -9,7 +9,8 @@
  * application's and comes from the configuration.
  *
  * The role list is compared with `PALETTE_ROLES` in `@asheeui/core`, which is the list the
- * provider writes variables for. A role added to the framework and not to this preset would
+ * provider writes variables for, plus the one token that is not a palette role: `on-solid`,
+ * the ink over a saturated fill. A role added to the framework and not to this preset would
  * compile to nothing and paint with no style at all, which is the failure the preset exists
  * to prevent.
  *
@@ -50,14 +51,14 @@ describe("the native Tailwind preset", () => {
     ]);
   });
 
-  it("states every role the framework paints, and no others", () => {
+  it("states every role the framework paints, plus the shared on-solid token", () => {
     expect(Object.keys(preset.theme?.extend?.colors ?? {}).sort()).toEqual(
-      [...PALETTE_ROLES].sort(),
+      [...PALETTE_ROLES, "on-solid"].sort(),
     );
   });
 
   it("states a role as the custom property the provider sets", () => {
-    for (const role of PALETTE_ROLES) {
+    for (const role of [...PALETTE_ROLES, "on-solid"]) {
       // The `<alpha-value>` placeholder is what keeps `bg-secondary/40` working: the alpha
       // comes from the class, and the value comes from the theme.
       expect(preset.theme?.extend?.colors?.[role]).toBe(

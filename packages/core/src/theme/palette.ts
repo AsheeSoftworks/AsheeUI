@@ -1,4 +1,4 @@
-﻿/**
+/**
  * The palette model both renderers share.
  *
  * A theme is a set of eight colour roles. The web applies it by writing custom properties on
@@ -44,6 +44,28 @@ export type PaletteRole = (typeof PALETTE_ROLES)[number];
 
 /** The custom property a role is applied as, for example `--ashee-primary`. */
 export type PaletteVariable = `--ashee-${PaletteRole}`;
+
+/**
+ * The ink that sits on a saturated fill.
+ *
+ * A solid control's fill is a saturated role — `primary`, `danger`, `warning`, `success` — and
+ * the ink on it is white in every theme, because the fill is saturated in every theme. The web
+ * renderer has painted this as `--color-on-solid` from its stylesheet; the platform had no
+ * counterpart and painted `text-background`, which is white on the light theme and near-black
+ * on the dark one: the same solid button read white on a browser and dark on a device.
+ *
+ * The value is **channels**, because the platform's classes state
+ * `rgb(var(--ashee-on-solid) / <alpha-value>)` and supply the alpha themselves. It is a value,
+ * not a class string: the class that reads it belongs to the renderer, the decision that the
+ * ink is white belongs here.
+ *
+ * `none` and `secondary` do not use it. Those fills are the page and the muted surface, where
+ * white ink would be invisible; they keep the theme's own foreground.
+ */
+export const ON_SOLID_CHANNELS = "255 255 255";
+
+/** The custom property {@link ON_SOLID_CHANNELS} is applied as. */
+export type OnSolidVariable = "--ashee-on-solid";
 
 /** The colour scheme a platform reports, which "system" resolves to. */
 export type ColorScheme = "light" | "dark";

@@ -167,7 +167,7 @@ export const NATIVE_CALENDAR_COLOR_CLASS: Record<
   },
   primary: {
     bg: "bg-primary",
-    on: "text-background",
+    on: "text-on-solid",
     border: "border-primary",
     text: "text-primary",
   },
@@ -179,19 +179,19 @@ export const NATIVE_CALENDAR_COLOR_CLASS: Record<
   },
   success: {
     bg: "bg-success",
-    on: "text-background",
+    on: "text-on-solid",
     border: "border-success",
     text: "text-success",
   },
   warning: {
     bg: "bg-warning",
-    on: "text-background",
+    on: "text-on-solid",
     border: "border-warning",
     text: "text-warning",
   },
   danger: {
     bg: "bg-danger",
-    on: "text-background",
+    on: "text-on-solid",
     border: "border-danger",
     text: "text-danger",
   },

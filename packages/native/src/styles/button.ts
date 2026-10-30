@@ -111,11 +111,11 @@ export const NATIVE_BUTTON_TEXT_CLASS: Record<
 > = {
   solid: {
     none: "text-background",
-    primary: "text-background",
+    primary: "text-on-solid",
     secondary: "text-foreground",
-    danger: "text-background",
-    warning: "text-background",
-    success: "text-background",
+    danger: "text-on-solid",
+    warning: "text-on-solid",
+    success: "text-on-solid",
   },
   faded: {
     none: "text-foreground",

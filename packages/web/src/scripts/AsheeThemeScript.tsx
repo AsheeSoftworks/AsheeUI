@@ -8,6 +8,7 @@
  */
 
 import type { ColorConfig, ColorVariant, Config } from "@asheeui/core";
+import { ON_SOLID_CHANNELS } from "@asheeui/core";
 import { THEME_STORAGE_KEY } from "../theme/controller";
 
 /**
@@ -62,9 +63,13 @@ function buildThemeBlock(name: string, variant: ColorVariant): string {
   const declarations = Object.entries(variant)
     .map(([key, value]) => `  ${VAR_MAP[key as keyof ColorVariant]}: ${value};`)
     .join("\n");
+  // The ink over a solid fill is not a palette role: it is the same in every theme, and the
+  // value is core's constant so a device emits the same one. It is repeated in each block
+  // rather than stated once on `:root` so a theme block is self-contained, which is what the
+  // `ensureThemeVarsStyle` rebuild assumes when it replaces one block at a time.
   const selector = name === "light" ? ":root, .theme-light" : `.theme-${name}`;
 
-  return `${selector} {\n${declarations}\n}`;
+  return `${selector} {\n${declarations}\n  --ashee-on-solid: ${ON_SOLID_CHANNELS};\n}`;
 }
 
 /**

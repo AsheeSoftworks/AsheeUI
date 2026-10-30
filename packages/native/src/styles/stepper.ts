@@ -52,8 +52,8 @@ export const NATIVE_STEPPER_MARKER_TEXT_CLASS: Record<
   StepperStepState,
   string
 > = {
-  complete: "text-background",
-  current: "text-background",
+  complete: "text-on-solid",
+  current: "text-on-solid",
   upcoming: "text-foreground/70",
 };
 

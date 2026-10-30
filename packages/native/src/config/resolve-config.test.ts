@@ -14,6 +14,7 @@ import {
   type Config,
   defaultConfig,
   type ExternalConfig,
+  resolveConfig,
 } from "@asheeui/core";
 import { getNativeComponentDefaults } from "./registry";
 import {
@@ -153,6 +154,42 @@ describe("the shape a shared component reads", () => {
     expect(config.color.midnight?.primary).toBe("#8b5cf6");
     expect(config.color.midnight?.background).toBe(
       config.color.dark.background,
+    );
+  });
+
+  it("resolves the same palettes as the web renderer, because both call one function", () => {
+    // `CORE-MIGRATION-REPORT.md` §5 row 5: the colour resolution is one rule. The web
+    // renderer's `resolveConfig` and this package's `resolveNativeConfig` both call core's
+    // `resolveColorConfig` with `defaultColorConfig` and the configuration's own theme
+    // family, so the palettes a shared component reads are identical — including the base a
+    // custom theme with no `extends` inherits, which was the divergence the row recorded.
+    const partial = {
+      light: { primary: "#047857" },
+      midnight: { extends: "dark", primary: "#7c3aed" },
+    } as const;
+
+    for (const defaultTheme of [
+      "light",
+      "dark",
+      "system",
+      "midnight",
+    ] as const) {
+      const web = resolveConfig({
+        color: partial,
+        defaultTheme,
+      } as ExternalConfig);
+      const native = resolveNativeConfig({ color: partial, defaultTheme });
+
+      expect([defaultTheme, native.color]).toEqual([
+        defaultTheme,
+        web.color,
+      ]);
+    }
+
+    // The reference is the same call, so the assertion holding is not a coincidence of two
+    // implementations agreeing today.
+    expect(resolveConfig({ color: partial }).color).toEqual(
+      resolveNativeConfig({ color: partial }).color,
     );
   });
 });

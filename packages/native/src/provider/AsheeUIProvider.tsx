@@ -36,7 +36,12 @@
  * working and keeps warning.
  */
 
-import { deprecatedAlias, deprecateMany, selectTheme } from "@asheeui/core";
+import {
+  deprecatedAlias,
+  deprecateMany,
+  selectTheme,
+  type ThemeStorage,
+} from "@asheeui/core";
 import { vars } from "nativewind";
 import {
   createContext,
@@ -44,6 +49,8 @@ import {
   useContext,
   useEffect,
   useMemo,
+  useRef,
+  useSyncExternalStore,
 } from "react";
 import { useColorScheme, View } from "react-native";
 import {
@@ -51,6 +58,10 @@ import {
   type NativeExternalConfig,
   resolveNativeConfig,
 } from "../config/resolve-config";
+import {
+  setThemeStorage,
+  themeController,
+} from "../theme/controller";
 import { paletteVariables } from "../theme/palette";
 import { warnWhenStylingIsDisconnected } from "./nativewind-doctor";
 
@@ -72,6 +83,22 @@ export interface AsheeUIProviderProps {
    * theme and the per-component sections.
    */
   config?: NativeExternalConfig;
+
+  /**
+   * An optional adapter the theme selection is persisted through.
+   *
+   * The framework installs no storage package: persistence is the application's dependency,
+   * not the library's. An adapter is any object with `get`, `set` and `remove` (an
+   * AsyncStorage wrapper, an Expo key-value store), and without one the selection lasts for
+   * the session.
+   *
+   * ```tsx
+   * <AsheeUIProvider persistTheme={asyncStorageAdapter}>
+   *   <App />
+   * </AsheeUIProvider>
+   * ```
+   */
+  persistTheme?: ThemeStorage;
 
   /** The application tree. */
   children: ReactNode;
@@ -98,7 +125,11 @@ export interface AsheeUIProviderProps {
  * </AsheeUIProvider>;
  * ```
  */
-export function AsheeUIProvider({ config, children }: AsheeUIProviderProps) {
+export function AsheeUIProvider({
+  config,
+  persistTheme,
+  children,
+}: AsheeUIProviderProps) {
   // One resolution, handed to the context below and painted from here: the palette is part of the
   // resolved configuration (`color`), so this provider does not resolve the theme a second time and
   // a component that reads `config.color` reads the same palettes the screen was painted with.
@@ -108,15 +139,55 @@ export function AsheeUIProvider({ config, children }: AsheeUIProviderProps) {
   // is a light platform until it says otherwise.
   const scheme = useColorScheme() ?? "light";
 
-  const palette = useMemo(() => {
-    const { palette: active } = selectTheme(
-      value.color,
-      value.defaultTheme,
-      scheme,
-    );
+  // Whether the controller has been configured. It is a ref rather than state because it is
+  // read during the same render that sets it: the effect configures the controller and the
+  // controller's own notification re-renders this provider, so the flag only decides which
+  // source answers the *first* paint.
+  const isConfigured = useRef(false);
 
-    return paletteVariables(active);
-  }, [value.color, value.defaultTheme, scheme]);
+  useEffect(() => {
+    // The application's storage, installed before the controller reads it. Without an
+    // adapter the controller keeps the choice in memory for the session.
+    setThemeStorage(persistTheme);
+
+    themeController.configure({
+      defaultTheme: value.defaultTheme,
+      themes: Object.keys(value.color),
+      ownsDocument: true,
+    });
+
+    isConfigured.current = true;
+  }, [value, persistTheme]);
+
+  // The controller is the source of truth after configuration: `setTheme`, the operating
+  // system's scheme and the stored selection all reach the screen through this snapshot.
+  const resolvedTheme = useSyncExternalStore(
+    themeController.subscribe,
+    themeController.getResolvedTheme,
+    () => "light" as const,
+  );
+
+  // The first render happens before the effect above, so the configuration's own theme
+  // answers it rather than the controller's initial "light" — otherwise a device configured
+  // for dark would paint one light frame before the effect corrected it.
+  const initialTheme = useMemo(
+    () => selectTheme(value.color, value.defaultTheme, scheme).name,
+    [value.color, value.defaultTheme, scheme],
+  );
+
+  const activeTheme = isConfigured.current ? resolvedTheme : initialTheme;
+
+  // The controller's available list only grows, so it can resolve a theme another provider
+  // added while this configuration does not declare it. That theme is paintable inside the
+  // provider that declared it, not here; falling back to this configuration's own theme is
+  // better than a crash over a palette this provider cannot supply.
+  const paintableTheme = value.color[activeTheme] ? activeTheme : initialTheme;
+
+  const palette = useMemo(
+    () =>
+      paletteVariables(selectTheme(value.color, paintableTheme, scheme).palette),
+    [value.color, paintableTheme, scheme],
+  );
 
   // A new style object per palette, which is what tells the styling runtime to re-read the
   // variables rather than keep the previous theme's values.

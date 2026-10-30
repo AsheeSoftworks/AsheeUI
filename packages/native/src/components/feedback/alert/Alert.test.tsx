@@ -153,7 +153,7 @@ describe("Native Alert", () => {
     // colour, which would be invisible there.
     expect(
       (view.getByText("Slow").props as { className?: string }).className,
-    ).toContain("text-background");
+    ).toContain("text-on-solid");
   });
 
   it("keeps its own treatment when the platform's default is a filled one, because a message is not a block", async () => {

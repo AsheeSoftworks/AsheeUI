@@ -53,7 +53,7 @@ describe("Native Badge", () => {
     expect(classesOf(view, "badge")).toContain("bg-danger");
     expect(
       (view.getByText("Overdue").props as { className?: string }).className,
-    ).toContain("text-background");
+    ).toContain("text-on-solid");
   });
 
   it("takes its density and its radius from its props", async () => {
