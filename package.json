@@ -23,6 +23,7 @@
     "check:native-parity": "node scripts/check-native-parity.mjs",
     "check:native-artifact": "node scripts/check-native-artifact.mjs",
     "check:types": "turbo run check-types",
+    "check:umbrella": "node scripts/check-umbrella.mjs",
     "format": "biome format --write",
     "fix": "biome check --write",
     "changeset": "changeset",
