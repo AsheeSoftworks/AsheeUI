@@ -1,26 +1,23 @@
 /**
- * The class dictionaries' tests, moved with them.
+ * The platform's class dictionaries, tested where they live.
  *
- * These files state both renderers' maps side by side, which is how the two are kept in step.
- * The platform's half now lives in `@asheeui/native` (C1), and this is the only package that can
- * still read core's half, so the file came with it. C2 moves the web's half to `@asheeui/web`
- * and these assertions follow it there.
+ * The web half of this file moved to `@asheeui/web` in C2, with the strings it states: after the
+ * shrink no package can import both renderers, so neither suite compares them any more.
  */
 
+import {
+  ACCORDION_CONTENT_SIZE_CLASS,
+  ACCORDION_HEADER_SIZE_CLASS,
+  type AccordionSizeKey,
+  type AccordionVariant,
+} from "@asheeui/core";
 import {
   NATIVE_ACCORDION_DIVIDER_CLASS,
   NATIVE_ACCORDION_INDICATOR_GLYPH,
   NATIVE_ACCORDION_VARIANT_CONTAINER_CLASS,
   NATIVE_ACCORDION_VARIANT_ITEM_CLASS,
 } from "./accordion";
-import {
-  type AccordionSizeKey,
-  type AccordionVariant,
-  ACCORDION_CONTENT_SIZE_CLASS,
-  ACCORDION_HEADER_SIZE_CLASS,
-  ACCORDION_VARIANT_CONTAINER_CLASS,
-  ACCORDION_VARIANT_ITEM_CLASS,
-} from "@asheeui/core";
+
 /** The densities an accordion can be. */
 const DENSITIES: AccordionSizeKey[] = ["sm", "md", "lg"];
 
@@ -55,8 +52,6 @@ describe("the accordion's scale", () => {
 describe("the accordion's variants", () => {
   it("describes every variant on both renderers", () => {
     for (const map of [
-      ACCORDION_VARIANT_CONTAINER_CLASS,
-      ACCORDION_VARIANT_ITEM_CLASS,
       NATIVE_ACCORDION_VARIANT_CONTAINER_CLASS,
       NATIVE_ACCORDION_VARIANT_ITEM_CLASS,
     ]) {
@@ -65,35 +60,25 @@ describe("the accordion's variants", () => {
   });
 
   it("draws the grouped variants with a border and the separated ones with a gap", () => {
-    expect(ACCORDION_VARIANT_CONTAINER_CLASS.bordered).toContain("border");
     expect(NATIVE_ACCORDION_VARIANT_CONTAINER_CLASS.bordered).toContain(
       "border",
     );
-    expect(ACCORDION_VARIANT_CONTAINER_CLASS.separated).toContain("space-y");
     expect(NATIVE_ACCORDION_VARIANT_CONTAINER_CLASS.separated).toContain("gap");
   });
 
   it("keeps the flush variant free of borders and dividers on both renderers", () => {
-    expect(ACCORDION_VARIANT_CONTAINER_CLASS.flush).not.toContain("divide-y");
-    expect(ACCORDION_VARIANT_CONTAINER_CLASS.flush).not.toContain("border");
     expect(NATIVE_ACCORDION_VARIANT_CONTAINER_CLASS.flush).not.toContain(
       "border",
     );
-    expect(ACCORDION_VARIANT_ITEM_CLASS.flush).not.toContain("border");
     expect(NATIVE_ACCORDION_VARIANT_ITEM_CLASS.flush).not.toContain("border");
   });
 
   it("states the divider an item wears on the platform, where the web states it on the container", () => {
-    // The web reaches between its children with `divide-y`; the platform has no such rule
-    // and gives the item the divider it wears instead.
-    expect(ACCORDION_VARIANT_CONTAINER_CLASS.bordered).toContain("divide-y");
     expect(NATIVE_ACCORDION_DIVIDER_CLASS).toContain("border-t");
   });
 
   it("holds whole static classes, because a class assembled at runtime is never compiled", () => {
     for (const map of [
-      ACCORDION_VARIANT_CONTAINER_CLASS,
-      ACCORDION_VARIANT_ITEM_CLASS,
       NATIVE_ACCORDION_VARIANT_CONTAINER_CLASS,
       NATIVE_ACCORDION_VARIANT_ITEM_CLASS,
     ]) {

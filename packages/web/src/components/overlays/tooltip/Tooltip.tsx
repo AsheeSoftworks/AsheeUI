@@ -11,7 +11,6 @@
 import {
   type Color,
   cn,
-  RADIUS_CLASS,
   resolveCascade,
   resolveClassKey,
   resolveRadiusKey,
@@ -49,6 +48,7 @@ import {
 } from "react";
 import { useAsheeConfig } from "../../../libs/context";
 import { useFloatingZIndex } from "../../../libs/use-floating-z-index";
+import { RADIUS_CLASS } from "../../../styles/radius";
 import {
   FALLBACK_TOOLTIP_CONFIG,
   type TooltipConfig,

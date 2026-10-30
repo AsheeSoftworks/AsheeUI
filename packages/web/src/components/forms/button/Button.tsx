@@ -11,15 +11,8 @@
 
 import type { Size } from "@asheeui/core";
 import {
-  BUTTON_BASE_CLASS,
-  BUTTON_DISABLED_CLASS,
-  BUTTON_FOCUS_CLASS,
-  BUTTON_FULL_WIDTH_CLASS,
-  BUTTON_ICON_SIZE_CLASS,
-  BUTTON_SIZE_CLASS,
   type Color,
   cn,
-  RADIUS_CLASS,
   resolveCascade,
   resolveClassKey,
   resolveRadiusKey,
@@ -34,6 +27,15 @@ import {
   type ReactNode,
 } from "react";
 import { useAsheeConfig } from "../../../libs/context";
+import {
+  BUTTON_BASE_CLASS,
+  BUTTON_DISABLED_CLASS,
+  BUTTON_FOCUS_CLASS,
+  BUTTON_FULL_WIDTH_CLASS,
+  BUTTON_ICON_SIZE_CLASS,
+  BUTTON_SIZE_CLASS,
+} from "../../../styles/button";
+import { RADIUS_CLASS } from "../../../styles/radius";
 import { Spinner } from "../../feedback/spinner/spinner";
 import { type ButtonConfig, FALLBACK_BUTTON_CONFIG } from "./button-config";
 

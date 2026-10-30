@@ -1,23 +1,17 @@
 /**
- * The class dictionaries' tests, moved with them.
+ * The platform's class dictionaries, tested where they live.
  *
- * These files state both renderers' maps side by side, which is how the two are kept in step.
- * The platform's half now lives in `@asheeui/native` (C1), and this is the only package that can
- * still read core's half, so the file came with it. C2 moves the web's half to `@asheeui/web`
- * and these assertions follow it there.
+ * The web half of this file moved to `@asheeui/web` in C2, with the strings it states: after the
+ * shrink no package can import both renderers, so neither suite compares them any more.
  */
 
+import type { DrawerPlacement, DrawerSize } from "@asheeui/core";
 import {
   NATIVE_DRAWER_BACKDROP_CLASS,
   NATIVE_DRAWER_SHEET_EDGE,
   NATIVE_DRAWER_SIZE_CLASS,
 } from "./drawer";
-import {
-  type DrawerPlacement,
-  type DrawerSize,
-  DRAWER_HEIGHT_CLASS,
-  DRAWER_WIDTH_CLASS,
-} from "@asheeui/core";
+
 /** The amounts of screen a drawer can take. */
 const SIZES: DrawerSize[] = ["sm", "md", "lg", "full"];
 
@@ -26,25 +20,12 @@ const PLACEMENTS: DrawerPlacement[] = ["right", "left", "top", "bottom"];
 
 describe("how much of the screen a drawer takes", () => {
   it("describes every size on both platforms", () => {
-    expect(Object.keys(DRAWER_WIDTH_CLASS).sort()).toEqual([...SIZES].sort());
-    expect(Object.keys(DRAWER_HEIGHT_CLASS).sort()).toEqual([...SIZES].sort());
     expect(Object.keys(NATIVE_DRAWER_SIZE_CLASS).sort()).toEqual(
       [...SIZES].sort(),
     );
   });
 
-  it("measures a side panel by its width and the platform's sheet by its height", () => {
-    // The web panel is a column at the side of the page, so a side placement is a width; the
-    // platform's sheet comes up from an edge, so every size is a height.
-    for (const size of SIZES) {
-      expect(DRAWER_WIDTH_CLASS[size]).toMatch(/^w-/);
-      expect(NATIVE_DRAWER_SIZE_CLASS[size]).toMatch(/^h-/);
-    }
-  });
-
   it("lets the largest size take the whole screen on both platforms", () => {
-    expect(DRAWER_WIDTH_CLASS.full).toBe("w-screen");
-    expect(DRAWER_HEIGHT_CLASS.full).toBe("h-screen");
     expect(NATIVE_DRAWER_SIZE_CLASS.full).toBe("h-full");
   });
 });

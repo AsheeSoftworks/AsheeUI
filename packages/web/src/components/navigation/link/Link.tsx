@@ -11,11 +11,7 @@
 import type { Color, Size } from "@asheeui/core";
 import {
   cn,
-  LINK_COLOR_CLASS,
-  LINK_ICON_SIZE_CLASS,
   LINK_SIZE_CLASS,
-  LINK_UNDERLINE_CLASS,
-  LINK_VARIANT_CLASS,
   resolveCascade,
   resolveClassKey,
 } from "@asheeui/core";
@@ -27,6 +23,12 @@ import {
 } from "react";
 import { ExternalLinkIcon } from "../../../icons/ExternalLinkIcon";
 import { useAsheeConfig } from "../../../libs/context";
+import {
+  LINK_COLOR_CLASS,
+  LINK_ICON_SIZE_CLASS,
+  LINK_UNDERLINE_CLASS,
+  LINK_VARIANT_CLASS,
+} from "../../../styles/link";
 import {
   FALLBACK_LINK_CONFIG,
   type LinkConfig,

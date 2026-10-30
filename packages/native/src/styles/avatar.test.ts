@@ -1,12 +1,11 @@
 /**
- * The class dictionaries' tests, moved with them.
+ * The platform's class dictionaries, tested where they live.
  *
- * These files state both renderers' maps side by side, which is how the two are kept in step.
- * The platform's half now lives in `@asheeui/native` (C1), and this is the only package that can
- * still read core's half, so the file came with it. C2 moves the web's half to `@asheeui/web`
- * and these assertions follow it there.
+ * The web half of this file moved to `@asheeui/web` in C2, with the strings it states: after the
+ * shrink no package can import both renderers, so neither suite compares them any more.
  */
 
+import { AVATAR_FALLBACK_VARIANT, type Size } from "@asheeui/core";
 import {
   NATIVE_AVATAR_BASE_CLASS,
   NATIVE_AVATAR_FALLBACK_CLASS,
@@ -16,14 +15,7 @@ import {
   NATIVE_AVATAR_SIZE_CLASS,
   NATIVE_AVATAR_TEXT_BLOCK_CLASS,
 } from "./avatar";
-import {
-  type Size,
-  AVATAR_BASE_CLASS,
-  AVATAR_FALLBACK_CLASS,
-  AVATAR_FALLBACK_VARIANT,
-  AVATAR_FONT_CLASS,
-  AVATAR_SIZE_CLASS,
-} from "@asheeui/core";
+
 /** The three diameters. */
 const SIZES: Size[] = ["sm", "md", "lg"];
 
@@ -39,27 +31,18 @@ const ROLES = [
 
 describe("the avatar's diameter", () => {
   it("describes every size on both platforms", () => {
-    expect(Object.keys(AVATAR_SIZE_CLASS).sort()).toEqual([...SIZES].sort());
     expect(Object.keys(NATIVE_AVATAR_SIZE_CLASS).sort()).toEqual(
       [...SIZES].sort(),
     );
   });
 
   it("states the same three diameters, each in its own spelling", () => {
-    // The web states one `size-*` utility, which is a width and a height at once; the
-    // platform states the pair, because that is the form its compiler reads. 8, 10 and
-    // 12 steps are 32, 40 and 48 points on both sides.
-    expect(AVATAR_SIZE_CLASS.md).toBe("size-10");
     expect(NATIVE_AVATAR_SIZE_CLASS.md).toBe("h-10 w-10");
-    expect(AVATAR_SIZE_CLASS.sm).toBe("size-8");
     expect(NATIVE_AVATAR_SIZE_CLASS.sm).toBe("h-8 w-8");
-    expect(AVATAR_SIZE_CLASS.lg).toBe("size-12");
     expect(NATIVE_AVATAR_SIZE_CLASS.lg).toBe("h-12 w-12");
   });
 
   it("steps the initials' scale with the diameter on both platforms", () => {
-    expect(AVATAR_FONT_CLASS.sm).toBe("text-xs");
-    expect(AVATAR_FONT_CLASS.lg).toBe("text-base");
     // A native label starts one step higher: it is read at arm's length.
     expect(NATIVE_AVATAR_FONT_CLASS.sm).toBe("text-sm");
     expect(NATIVE_AVATAR_FONT_CLASS.lg).toBe("text-lg");
@@ -68,25 +51,19 @@ describe("the avatar's diameter", () => {
 
 describe("the avatar's frame", () => {
   it("clips what it holds on both platforms", () => {
-    expect(AVATAR_BASE_CLASS).toContain("overflow-hidden");
     expect(NATIVE_AVATAR_BASE_CLASS).toContain("overflow-hidden");
   });
 
   it("centres what it holds on both platforms", () => {
-    expect(AVATAR_BASE_CLASS).toContain("items-center");
-    expect(AVATAR_BASE_CLASS).toContain("justify-center");
     expect(NATIVE_AVATAR_BASE_CLASS).toContain("items-center");
     expect(NATIVE_AVATAR_BASE_CLASS).toContain("justify-center");
   });
 
   it("fills the frame with the fallback on both platforms", () => {
-    expect(AVATAR_FALLBACK_CLASS).toContain("size-full");
     expect(NATIVE_AVATAR_TEXT_BLOCK_CLASS).toContain("h-full w-full");
   });
 
   it("weights and uppercases the initials on both platforms", () => {
-    expect(AVATAR_BASE_CLASS).toContain("font-medium");
-    expect(AVATAR_BASE_CLASS).toContain("uppercase");
     expect(NATIVE_AVATAR_INITIALS_CLASS).toContain("font-medium");
     expect(NATIVE_AVATAR_INITIALS_CLASS).toContain("uppercase");
   });

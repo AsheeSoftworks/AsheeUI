@@ -1,16 +1,8 @@
 /**
- * Tests for the marquee's still-frame class maps.
+ * The platform's class dictionaries, tested where they live.
  *
- * The stillness is the one part of the marquee that has nothing to move, so its classes
- * are the whole of the statement: with the loop stopped the platform renders the content
- * once, in a frame that scrolls, and the copy wraps on the horizontal axis so what would
- * have scrolled past is read in place. The two maps live here beside every other marquee
- * class map so a style change to the resting marquee is made once, for both renderers.
- *
- * The dictionaries these tests state are split across two packages for one release: the
- * platform's half moved to `@asheeui/native`, and the file moved with it because it states both
- * renderers side by side and native is the package that can still see core. C2 moves the web's
- * half to `@asheeui/web`, and these assertions follow it.
+ * The web half of this file moved to `@asheeui/web` in C2, with the strings it states: after the
+ * shrink no package can import both renderers, so neither suite compares them any more.
  */
 
 import {

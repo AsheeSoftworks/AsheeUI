@@ -14,4 +14,4 @@ export {
   PIN_INPUT_GROUP_CLASS,
   PIN_INPUT_SEPARATOR_CLASS,
   PIN_INPUT_SIZE_CLASS,
-} from "@asheeui/core";
+} from "../../../styles/pin-input";

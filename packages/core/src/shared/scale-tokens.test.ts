@@ -11,13 +11,12 @@
  */
 
 import { describe, expect, it } from "vitest";
-import { RADIUS_STEP, SIZE, SPACING_STEP } from "../tokens";
-import { RADIUS_CLASS } from "./radius";
+import { SIZE, SPACING_STEP } from "../tokens";
+
 import {
   SPACE_BLOCK_CLASS,
   SPACE_GAP_CLASS,
   SPACE_MIN_HEIGHT_CLASS,
-  SPACE_PADDING_X_CLASS,
   SPACE_PADDING_Y_CLASS,
 } from "./spacing";
 
@@ -25,12 +24,7 @@ const SPACING_MAPS = {
   gap: SPACE_GAP_CLASS,
   block: SPACE_BLOCK_CLASS,
   paddingY: SPACE_PADDING_Y_CLASS,
-  paddingX: SPACE_PADDING_X_CLASS,
   minHeight: SPACE_MIN_HEIGHT_CLASS,
-};
-
-const RADIUS_MAPS = {
-  web: RADIUS_CLASS,
 };
 
 describe("the shared scales", () => {
@@ -38,14 +32,6 @@ describe("the shared scales", () => {
     const steps = Object.keys(SPACING_STEP).sort();
 
     for (const [name, map] of Object.entries(SPACING_MAPS)) {
-      expect(Object.keys(map).sort(), name).toEqual(steps);
-    }
-  });
-
-  it("maps exactly the radius steps the token map declares", () => {
-    const steps = Object.keys(RADIUS_STEP).sort();
-
-    for (const [name, map] of Object.entries(RADIUS_MAPS)) {
       expect(Object.keys(map).sort(), name).toEqual(steps);
     }
   });

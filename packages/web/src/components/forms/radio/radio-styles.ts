@@ -16,4 +16,4 @@ export {
   RADIO_INNER_SIZE_CLASS,
   RADIO_OUTER_SIZE_CLASS,
   RADIO_STATUS_BORDER_CLASS,
-} from "@asheeui/core";
+} from "../../../styles/radio";

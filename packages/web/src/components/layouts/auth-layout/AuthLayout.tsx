@@ -11,19 +11,8 @@
 "use client";
 
 import {
-  AUTH_CONTENT_SIZE_CLASS,
-  AUTH_FOOTER_CLASS,
-  AUTH_FORM_COLUMN_CENTERED_CLASS,
-  AUTH_FORM_COLUMN_CLASS,
-  AUTH_FORM_WRAPPER_CLASS,
-  AUTH_LAYOUT_CLASS,
-  AUTH_MEDIA_COLUMN_CLASS,
-  AUTH_MEDIA_FIRST_CLASS,
-  AUTH_PANEL_CLASS,
-  AUTH_PANEL_PADDING_CLASS,
   type AuthLayoutConfig,
   cn,
-  RADIUS_CLASS,
   resolveConfigCascade,
   resolveRadiusKey,
 } from "@asheeui/core";
@@ -34,6 +23,19 @@ import {
   type ReactNode,
 } from "react";
 import { useAsheeConfig } from "../../../libs/context";
+import {
+  AUTH_CONTENT_SIZE_CLASS,
+  AUTH_FOOTER_CLASS,
+  AUTH_FORM_COLUMN_CENTERED_CLASS,
+  AUTH_FORM_COLUMN_CLASS,
+  AUTH_FORM_WRAPPER_CLASS,
+  AUTH_LAYOUT_CLASS,
+  AUTH_MEDIA_COLUMN_CLASS,
+  AUTH_MEDIA_FIRST_CLASS,
+  AUTH_PANEL_CLASS,
+  AUTH_PANEL_PADDING_CLASS,
+} from "../../../styles/auth-layout";
+import { RADIUS_CLASS } from "../../../styles/radius";
 import { SectionHeading } from "../section-kit/SectionHeading";
 import { FALLBACK_AUTH_LAYOUT_CONFIG } from "./auth-layout-config";
 

@@ -11,7 +11,6 @@
 import type { Size, Variant } from "@asheeui/core";
 import {
   cn,
-  RADIUS_CLASS,
   type Radius,
   resolveAnimate,
   resolveCascade,
@@ -28,6 +27,7 @@ import {
   useId,
 } from "react";
 import { useAsheeConfig } from "../../../libs/context";
+import { RADIUS_CLASS } from "../../../styles/radius";
 import { Image } from "../image/Image";
 import type { ImageFit, ImageRatioKey } from "../image/image-config";
 import {

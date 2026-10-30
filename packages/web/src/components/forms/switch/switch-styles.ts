@@ -12,4 +12,4 @@ export {
   SWITCH_THUMB_SIZE_CLASS,
   SWITCH_THUMB_TRANSLATE_CLASS,
   SWITCH_TRACK_SIZE_CLASS,
-} from "@asheeui/core";
+} from "../../../styles/switch";

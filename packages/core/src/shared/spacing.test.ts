@@ -1,17 +1,18 @@
 /**
  * Tests for the shared spacing scale.
  *
- * The scale is a contract between the layout components, so the checks are
- * about completeness and about the property the whole framework depends on:
- * every entry is a complete class string, never a fragment that would have to be
- * assembled at render time.
+ * The scale is a contract between the layout components, so the checks are about completeness
+ * and about the property the whole framework depends on: every entry is a complete class string,
+ * never a fragment that would have to be assembled at render time.
+ *
+ * `SPACE_PADDING_X_CLASS` moved to `@asheeui/web` in C2 with the rest of the web renderer's
+ * dictionaries; the maps that stay here are the ones both renderers compile.
  */
 
 import { describe, expect, it } from "vitest";
 import {
   SPACE_BLOCK_CLASS,
   SPACE_GAP_CLASS,
-  SPACE_PADDING_X_CLASS,
   SPACE_PADDING_Y_CLASS,
   type Space,
 } from "./spacing";
@@ -22,7 +23,6 @@ const MAPS = {
   gap: SPACE_GAP_CLASS,
   block: SPACE_BLOCK_CLASS,
   paddingY: SPACE_PADDING_Y_CLASS,
-  paddingX: SPACE_PADDING_X_CLASS,
 };
 
 describe("the spacing scale", () => {
@@ -55,10 +55,5 @@ describe("the spacing scale", () => {
       "gap-8",
       "gap-12",
     ]);
-  });
-
-  it("gives a section a wider step on a wider screen", () => {
-    expect(SPACE_PADDING_Y_CLASS.lg).toContain("md:");
-    expect(SPACE_PADDING_X_CLASS.lg).toContain("lg:");
   });
 });

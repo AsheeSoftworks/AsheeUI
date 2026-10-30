@@ -4,19 +4,9 @@ import {
   type CarouselVariant,
   resolveCarouselVariant,
 } from "./carousel-config";
-import { CAROUSEL_VARIANT_CLASS } from "./carousel-styles";
 
-/** The frames the carousel's contract lets it draw. */
+/** The frames the carousel can express, which are the variants a consumer may state. */
 const EXPRESSIBLE: CarouselVariant[] = ["bordered", "ghost"];
-
-/** Every treatment the cascade can produce, including the ones the carousel cannot draw. */
-const EVERY_TREATMENT: Variant[] = [
-  "solid",
-  "bordered",
-  "ghost",
-  "faded",
-  "underlined",
-];
 
 describe("resolveCarouselVariant", () => {
   it("passes the carousel's own frames through unchanged", () => {
@@ -29,15 +19,6 @@ describe("resolveCarouselVariant", () => {
     expect(resolveCarouselVariant("solid")).toBe("bordered");
     expect(resolveCarouselVariant("faded")).toBe("bordered");
     expect(resolveCarouselVariant("underlined")).toBe("bordered");
-  });
-
-  it("never answers with undefined for any treatment the cascade can produce", () => {
-    for (const treatment of EVERY_TREATMENT) {
-      const frame = resolveCarouselVariant(treatment);
-
-      expect(EXPRESSIBLE).toContain(frame);
-      expect(CAROUSEL_VARIANT_CLASS[frame]).toBeTypeOf("string");
-    }
   });
 
   it("lands a treatment a plain JavaScript consumer invents on the default frame", () => {

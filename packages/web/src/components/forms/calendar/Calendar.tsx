@@ -11,7 +11,6 @@ import {
   ASHEE_LAYER,
   type Color,
   cn,
-  RADIUS_CLASS,
   resolveCascade,
   resolveClassKey,
   resolveRadiusKey,
@@ -29,6 +28,7 @@ import { CalendarIcon } from "../../../icons/CalendarIcon";
 import { ClearIcon } from "../../../icons/ClearIcon";
 import { ClockIcon } from "../../../icons/ClockIcon";
 import { useAsheeConfig } from "../../../libs/context";
+import { RADIUS_CLASS } from "../../../styles/radius";
 import type { FieldSizeKey } from "../field/field-config";
 import { Input, type InputProps } from "../input/Input";
 import { FALLBACK_MENU_CONFIG, useMenuFloating } from "../menu";

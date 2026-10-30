@@ -1,20 +1,19 @@
 /**
- * The class dictionaries' tests, moved with them.
+ * The platform's class dictionaries, tested where they live.
  *
- * These files state both renderers' maps side by side, which is how the two are kept in step.
- * The platform's half now lives in `@asheeui/native` (C1), and this is the only package that can
- * still read core's half, so the file came with it. C2 moves the web's half to `@asheeui/web`
- * and these assertions follow it there.
+ * The web half of this file moved to `@asheeui/web` in C2, with the strings it states: after the
+ * shrink no package can import both renderers, so neither suite compares them any more.
  */
 
-import { NATIVE_TOOLTIP_ALIGN_CLASS, NATIVE_TOOLTIP_ANCHOR } from "./tooltip";
 import {
-  type TooltipPlacement,
-  type TooltipSizeKey,
   TOOLTIP_FONT_CLASS,
   TOOLTIP_PADDING_X_CLASS,
   TOOLTIP_PADDING_Y_CLASS,
+  type TooltipPlacement,
+  type TooltipSizeKey,
 } from "@asheeui/core";
+import { NATIVE_TOOLTIP_ALIGN_CLASS, NATIVE_TOOLTIP_ANCHOR } from "./tooltip";
+
 /** The sizes a hint can be. */
 const SIZES: TooltipSizeKey[] = ["sm", "md", "lg"];
 
@@ -90,7 +89,6 @@ describe("where the platform puts a hint", () => {
       "end",
       "start",
     ]);
-
     for (const placement of PLACEMENTS) {
       expect(Object.keys(NATIVE_TOOLTIP_ALIGN_CLASS)).toContain(
         NATIVE_TOOLTIP_ANCHOR[placement].align,

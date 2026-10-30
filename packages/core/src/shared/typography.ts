@@ -11,27 +11,50 @@
  */
 
 /** The available typography size tokens. */
-export type TypographySize = "xs" | "sm" | "md" | "lg" | "xl" | "2xl" | "3xl";
+export const TYPOGRAPHY_SIZE_VALUES = [
+  "xs",
+  "sm",
+  "md",
+  "lg",
+  "xl",
+  "2xl",
+  "3xl",
+] as const;
+
+export type TypographySize = (typeof TYPOGRAPHY_SIZE_VALUES)[number];
 
 /** The available font-weight tokens. */
-export type TypographyWeight = "normal" | "medium" | "semibold" | "bold";
+export const TYPOGRAPHY_WEIGHT_VALUES = [
+  "normal",
+  "medium",
+  "semibold",
+  "bold",
+] as const;
+
+export type TypographyWeight = (typeof TYPOGRAPHY_WEIGHT_VALUES)[number];
 
 /** The available line-height tokens. */
-export type TypographyLeading =
-  | "tight"
-  | "snug"
-  | "normal"
-  | "relaxed"
-  | "loose";
+export const TYPOGRAPHY_LEADING_VALUES = [
+  "tight",
+  "snug",
+  "normal",
+  "relaxed",
+  "loose",
+] as const;
+
+export type TypographyLeading = (typeof TYPOGRAPHY_LEADING_VALUES)[number];
 
 /** The available letter-spacing tokens. */
-export type TypographyTracking =
-  | "tighter"
-  | "tight"
-  | "normal"
-  | "wide"
-  | "wider"
-  | "widest";
+export const TYPOGRAPHY_TRACKING_VALUES = [
+  "tighter",
+  "tight",
+  "normal",
+  "wide",
+  "wider",
+  "widest",
+] as const;
+
+export type TypographyTracking = (typeof TYPOGRAPHY_TRACKING_VALUES)[number];
 
 /**
  * The semantic typography roles.
@@ -60,19 +83,29 @@ export type TypographyRole =
  * the remaining values are framework colour tokens resolved through the colour
  * engine, never raw Tailwind palette colours.
  */
-export type TypographyTone =
-  | "default"
-  | "muted"
-  | "disabled"
-  | "primary"
-  | "secondary"
-  | "danger"
-  | "warning"
-  | "success"
-  | "none";
+export const TYPOGRAPHY_TONE_VALUES = [
+  "default",
+  "muted",
+  "disabled",
+  "primary",
+  "secondary",
+  "danger",
+  "warning",
+  "success",
+  "none",
+] as const;
+
+export type TypographyTone = (typeof TYPOGRAPHY_TONE_VALUES)[number];
 
 /** Text alignment options. */
-export type TypographyAlign = "left" | "center" | "right" | "justify";
+export const TYPOGRAPHY_ALIGN_VALUES = [
+  "left",
+  "center",
+  "right",
+  "justify",
+] as const;
+
+export type TypographyAlign = (typeof TYPOGRAPHY_ALIGN_VALUES)[number];
 
 /** The size/style tokens a role resolves to. */
 export interface TypographyRoleTokens {
@@ -85,69 +118,6 @@ export interface TypographyRoleTokens {
   /** Letter-spacing token. */
   tracking: TypographyTracking;
 }
-
-/**
- * Size token to static Tailwind class.
- * Note the deliberate difference between the token name (`md`) and the utility
- * (`text-base`): the token is the semantic name, as with `RADIUS_CLASS`.
- */
-export const TYPOGRAPHY_SIZE_CLASS: Record<TypographySize, string> = {
-  xs: "text-xs",
-  sm: "text-sm",
-  md: "text-base",
-  lg: "text-lg",
-  xl: "text-xl",
-  "2xl": "text-2xl",
-  "3xl": "text-3xl",
-};
-
-/** Font-weight token to static Tailwind class. */
-export const TYPOGRAPHY_WEIGHT_CLASS: Record<TypographyWeight, string> = {
-  normal: "font-normal",
-  medium: "font-medium",
-  semibold: "font-semibold",
-  bold: "font-bold",
-};
-
-/** Line-height token to static Tailwind class. */
-export const TYPOGRAPHY_LEADING_CLASS: Record<TypographyLeading, string> = {
-  tight: "leading-tight",
-  snug: "leading-snug",
-  normal: "leading-normal",
-  relaxed: "leading-relaxed",
-  loose: "leading-loose",
-};
-
-/** Letter-spacing token to static Tailwind class. */
-export const TYPOGRAPHY_TRACKING_CLASS: Record<TypographyTracking, string> = {
-  tighter: "tracking-tighter",
-  tight: "tracking-tight",
-  normal: "tracking-normal",
-  wide: "tracking-wide",
-  wider: "tracking-wider",
-  widest: "tracking-widest",
-};
-
-/** Tone token to static Tailwind class, using framework colour tokens only. */
-export const TYPOGRAPHY_TONE_CLASS: Record<TypographyTone, string> = {
-  default: "text-foreground",
-  muted: "text-foreground/60",
-  disabled: "text-foreground/50",
-  primary: "text-primary",
-  secondary: "text-secondary",
-  danger: "text-danger",
-  warning: "text-warning",
-  success: "text-success",
-  none: "text-background",
-};
-
-/** Alignment token to static Tailwind class. */
-export const TYPOGRAPHY_ALIGN_CLASS: Record<TypographyAlign, string> = {
-  left: "text-left",
-  center: "text-center",
-  right: "text-right",
-  justify: "text-justify",
-};
 
 /**
  * The size/style tokens each semantic role resolves to.
@@ -250,27 +220,4 @@ export const TYPOGRAPHY_ROLE_DEFAULT_ELEMENT: Record<TypographyRole, string> = {
   label: "span",
   caption: "span",
   overline: "span",
-};
-
-/**
- * The complete, static class string for each semantic role.
- *
- * These are written out in full rather than composed at render time: Tailwind
- * class names must always be static and complete. The entries are asserted
- * against {@link TYPOGRAPHY_ROLE_TOKEN} in the test suite, so the documented
- * token table and the shipped classes cannot drift.
- */
-export const TYPOGRAPHY_ROLE_CLASS: Record<TypographyRole, string> = {
-  display: "text-3xl font-semibold leading-tight tracking-tight",
-  "page-title": "text-xl font-semibold leading-snug tracking-normal",
-  "heading-xl": "text-2xl font-semibold leading-tight tracking-tight",
-  "heading-lg": "text-xl font-semibold leading-snug tracking-normal",
-  "heading-md": "text-lg font-semibold leading-snug tracking-normal",
-  "heading-sm": "text-base font-semibold leading-snug tracking-normal",
-  "body-lg": "text-lg font-normal leading-relaxed tracking-normal",
-  "body-md": "text-base font-normal leading-normal tracking-normal",
-  "body-sm": "text-sm font-normal leading-normal tracking-normal",
-  label: "text-sm font-medium leading-normal tracking-normal",
-  caption: "text-xs font-normal leading-normal tracking-normal",
-  overline: "text-xs font-semibold leading-normal tracking-wider",
 };

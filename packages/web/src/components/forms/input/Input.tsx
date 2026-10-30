@@ -10,10 +10,7 @@
 import {
   type Color,
   cn,
-  FIELD_STATUS_BORDER_CLASS,
-  INPUT_SIZE_CLASS,
   isFieldInvalid,
-  RADIUS_CLASS,
   resolveCascade,
   resolveClassKey,
   resolveFieldStatusColor,
@@ -31,6 +28,9 @@ import React, {
   useRef,
 } from "react";
 import { useAsheeConfig } from "../../../libs/context";
+import { FIELD_STATUS_BORDER_CLASS } from "../../../styles/field";
+import { INPUT_SIZE_CLASS } from "../../../styles/input";
+import { RADIUS_CLASS } from "../../../styles/radius";
 import {
   type KeyboardOpenOptions,
   useKeyboardField,

@@ -7,16 +7,16 @@
  */
 
 export type { StepperStepState } from "@asheeui/core";
+export { STEPPER_LABEL_SIZE_TOKEN } from "@asheeui/core";
 export {
   STEPPER_CONNECTOR_CLASS,
   STEPPER_DESCRIPTION_CLASS,
   STEPPER_ITEM_BUTTON_CLASS,
   STEPPER_ITEM_CLASS,
   STEPPER_LABEL_CLASS,
-  STEPPER_LABEL_SIZE_TOKEN,
   STEPPER_LIST_CLASS,
   STEPPER_MARKER_CLASS,
   STEPPER_MARKER_SIZE_CLASS,
   STEPPER_MARKER_STATE_CLASS,
   STEPPER_STATE_TEXT_CLASS,
-} from "@asheeui/core";
+} from "../../../styles/stepper";

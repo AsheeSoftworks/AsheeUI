@@ -1,48 +1,22 @@
 /**
- * The class dictionaries' tests, moved with them.
+ * The platform's class dictionaries, tested where they live.
  *
- * These files state both renderers' maps side by side, which is how the two are kept in step.
- * The platform's half now lives in `@asheeui/native` (C1), and this is the only package that can
- * still read core's half, so the file came with it. C2 moves the web's half to `@asheeui/web`
- * and these assertions follow it there.
+ * The web half of this file moved to `@asheeui/web` in C2, with the strings it states: after the
+ * shrink no package can import both renderers, so neither suite compares them any more.
  */
 
+import type { TabsVariant } from "@asheeui/core";
 import {
   NATIVE_TABS_LIST_CLASS,
   NATIVE_TABS_TRIGGER_CLASS,
   NATIVE_TABS_VARIANT_CONTENT_CLASS,
   NATIVE_TABS_VARIANT_LIST_CLASS,
 } from "./tabs";
-import {
-  type Size,
-  type TabsVariant,
-  TABS_FONT_CLASS,
-  TABS_HEIGHT_CLASS,
-  TABS_PADDING_X_CLASS,
-} from "@asheeui/core";
-/** The densities a tab bar can be. */
-const DENSITIES: Size[] = ["sm", "md", "lg"];
 
 /** The visual styles a tab bar can take. */
 const VARIANTS: TabsVariant[] = ["underline", "bordered", "ghost"];
 
 describe("the tabs' scale", () => {
-  it("describes the height, the padding and the type size at every density", () => {
-    for (const map of [
-      TABS_HEIGHT_CLASS,
-      TABS_PADDING_X_CLASS,
-      TABS_FONT_CLASS,
-    ]) {
-      expect(Object.keys(map).sort()).toEqual([...DENSITIES].sort());
-    }
-  });
-
-  it("grows a trigger with its density on the web", () => {
-    expect(TABS_HEIGHT_CLASS.sm).toBe("h-8");
-    expect(TABS_HEIGHT_CLASS.md).toBe("h-10");
-    expect(TABS_HEIGHT_CLASS.lg).toBe("h-12");
-  });
-
   it("never lets a native trigger fall short of the shared touch target", () => {
     // A web trigger is sized for a pointer; a platform trigger is sized for a thumb, and
     // the shared rule states the least a target may be.

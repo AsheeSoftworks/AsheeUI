@@ -11,18 +11,7 @@
 
 "use client";
 
-import {
-  cn,
-  DATA_TABLE_CLASS,
-  DATA_TABLE_FOOTER_CLASS,
-  DATA_TABLE_HEADING_CLASS,
-  DATA_TABLE_REGION_CLASS,
-  DATA_TABLE_SEARCH_CLASS,
-  DATA_TABLE_TOOLBAR_CLASS,
-  DATA_TABLE_TOOLBAR_GROUP_CLASS,
-  formatRowCountLabel,
-  resolveConfigCascade,
-} from "@asheeui/core";
+import { cn, formatRowCountLabel, resolveConfigCascade } from "@asheeui/core";
 import {
   type ElementType,
   type HTMLAttributes,
@@ -34,6 +23,15 @@ import {
   useState,
 } from "react";
 import { useAsheeConfig } from "../../../libs/context";
+import {
+  DATA_TABLE_CLASS,
+  DATA_TABLE_FOOTER_CLASS,
+  DATA_TABLE_HEADING_CLASS,
+  DATA_TABLE_REGION_CLASS,
+  DATA_TABLE_SEARCH_CLASS,
+  DATA_TABLE_TOOLBAR_CLASS,
+  DATA_TABLE_TOOLBAR_GROUP_CLASS,
+} from "../../../styles/data-table";
 import { EmptyState } from "../../feedback/empty-state/EmptyState";
 import { LoadingState } from "../../feedback/loading-state/LoadingState";
 import { SearchInput } from "../../forms/search-input/SearchInput";

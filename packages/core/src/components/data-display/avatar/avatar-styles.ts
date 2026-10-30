@@ -22,35 +22,9 @@
  * `@asheeui/native`; what is left here is the web renderer's own.
  */
 
-import type { Size } from "../../../shared/radius";
 import type { Variant } from "../../../shared/variant";
 
 // ─── Web ──────────────────────────────────────────────────────────────────────
-
-/**
- * CSS classes for the avatar's diameter based on size.
- */
-export const AVATAR_SIZE_CLASS: Record<Size, string> = {
-  sm: "size-8",
-  md: "size-10",
-  lg: "size-12",
-};
-
-/**
- * CSS classes for the initials' font size based on size.
- */
-export const AVATAR_FONT_CLASS: Record<Size, string> = {
-  sm: "text-xs",
-  md: "text-sm",
-  lg: "text-base",
-};
-
-/**
- * Base classes for the avatar frame.
- * The frame clips the picture to the resolved radius and centres a fallback.
- */
-export const AVATAR_BASE_CLASS =
-  "relative inline-flex items-center justify-center shrink-0 overflow-hidden select-none font-medium uppercase";
 
 /**
  * The variant the initials fall back to.
@@ -58,11 +32,5 @@ export const AVATAR_BASE_CLASS =
  * than an outline or a tint.
  */
 export const AVATAR_FALLBACK_VARIANT: Variant = "solid";
-
-/**
- * The classes the initials block carries, on the web.
- */
-export const AVATAR_FALLBACK_CLASS =
-  "inline-flex items-center justify-center size-full";
 
 // ─── Native ───────────────────────────────────────────────────────────────────

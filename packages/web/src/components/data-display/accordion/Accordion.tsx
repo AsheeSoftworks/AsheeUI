@@ -11,10 +11,7 @@
 import {
   ACCORDION_CONTENT_SIZE_CLASS,
   ACCORDION_HEADER_SIZE_CLASS,
-  ACCORDION_VARIANT_CONTAINER_CLASS,
-  ACCORDION_VARIANT_ITEM_CLASS,
   cn,
-  RADIUS_CLASS,
   resolveCascade,
   resolveClassKey,
   resolveRadiusKey,
@@ -30,6 +27,11 @@ import {
 } from "react";
 import { ChevronDownIcon } from "../../../icons/ChevronDownIcon";
 import { useAsheeConfig } from "../../../libs/context";
+import {
+  ACCORDION_VARIANT_CONTAINER_CLASS,
+  ACCORDION_VARIANT_ITEM_CLASS,
+} from "../../../styles/accordion";
+import { RADIUS_CLASS } from "../../../styles/radius";
 import {
   type AccordionConfig,
   type AccordionItem,

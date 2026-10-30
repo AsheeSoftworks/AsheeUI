@@ -9,15 +9,7 @@
 
 import type { Color, Radius, Size, Variant } from "@asheeui/core";
 import {
-  BADGE_BASE_CLASS,
-  BADGE_FONT_CLASS,
-  BADGE_GAP_CLASS,
-  BADGE_HEIGHT_CLASS,
-  BADGE_ICON_SIZE_CLASS,
-  BADGE_PADDING_CLASS,
-  BADGE_SLOT_CLASS,
   cn,
-  RADIUS_CLASS,
   resolveBadgeVariant,
   resolveCascade,
   resolveClassKey,
@@ -31,6 +23,16 @@ import {
   useEffect,
 } from "react";
 import { useAsheeConfig } from "../../../libs/context";
+import {
+  BADGE_BASE_CLASS,
+  BADGE_FONT_CLASS,
+  BADGE_GAP_CLASS,
+  BADGE_HEIGHT_CLASS,
+  BADGE_ICON_SIZE_CLASS,
+  BADGE_PADDING_CLASS,
+  BADGE_SLOT_CLASS,
+} from "../../../styles/badge";
+import { RADIUS_CLASS } from "../../../styles/radius";
 import {
   type BadgeConfig,
   type BadgeVariant,

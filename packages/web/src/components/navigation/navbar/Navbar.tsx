@@ -12,21 +12,7 @@
 
 import {
   cn,
-  NAVBAR_ACTIONS_CLASS,
-  NAVBAR_BRAND_CLASS,
   NAVBAR_BRAND_TEXT_CLASS,
-  NAVBAR_INNER_CLASS,
-  NAVBAR_LINK_ACTIVE_CLASS,
-  NAVBAR_LINK_CLASS,
-  NAVBAR_LINK_LIST_CLASS,
-  NAVBAR_LINKS_CENTER_CLASS,
-  NAVBAR_LINKS_CLASS,
-  NAVBAR_LINKS_END_CLASS,
-  NAVBAR_MOBILE_PANEL_CLASS,
-  NAVBAR_POSITION_CLASS,
-  NAVBAR_SECONDARY_CLASS,
-  NAVBAR_TOGGLE_CLASS,
-  NAVBAR_VARIANT_CLASS,
   type NavbarLink,
   type NavbarLinkItem,
   resolveConfigCascade,
@@ -45,6 +31,22 @@ import {
 import { ChevronDownIcon } from "../../../icons/ChevronDownIcon";
 import { ChevronUpIcon } from "../../../icons/ChevronUpIcon";
 import { useAsheeConfig } from "../../../libs/context";
+import {
+  NAVBAR_ACTIONS_CLASS,
+  NAVBAR_BRAND_CLASS,
+  NAVBAR_INNER_CLASS,
+  NAVBAR_LINK_ACTIVE_CLASS,
+  NAVBAR_LINK_CLASS,
+  NAVBAR_LINK_LIST_CLASS,
+  NAVBAR_LINKS_CENTER_CLASS,
+  NAVBAR_LINKS_CLASS,
+  NAVBAR_LINKS_END_CLASS,
+  NAVBAR_MOBILE_PANEL_CLASS,
+  NAVBAR_POSITION_CLASS,
+  NAVBAR_SECONDARY_CLASS,
+  NAVBAR_TOGGLE_CLASS,
+  NAVBAR_VARIANT_CLASS,
+} from "../../../styles/navbar";
 import { Button } from "../../forms/button/Button";
 import { Container } from "../../layouts/container/Container";
 import { Link } from "../link";

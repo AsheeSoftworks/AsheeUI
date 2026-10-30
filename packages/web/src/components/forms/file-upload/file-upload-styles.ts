@@ -1,9 +1,9 @@
 /**
  * FileUpload component styles for the web renderer.
  *
- * The class strings live in `@asheeui/core`, beside the native ones, because the zone a file is
- * dropped into and the list of chosen files are the same decisions on both platforms. This
- * module re-exports them so the component keeps reading one module.
+ * They live in `@asheeui/web/src/styles`, beside this module's component; the barrel re-exports
+ * them so the component keeps reading one module. Core no longer holds either renderer's
+ * strings (C2).
  */
 
 export {
@@ -15,4 +15,4 @@ export {
   FILE_UPLOAD_ZONE_ACTIVE_CLASS,
   FILE_UPLOAD_ZONE_CLASS,
   FILE_UPLOAD_ZONE_DISABLED_CLASS,
-} from "@asheeui/core";
+} from "../../../styles/file-upload";

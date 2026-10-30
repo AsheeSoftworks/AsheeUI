@@ -8,14 +8,9 @@
 
 import type { Color, Radius, Size } from "@asheeui/core";
 import {
-  AVATAR_BASE_CLASS,
-  AVATAR_FALLBACK_CLASS,
   AVATAR_FALLBACK_VARIANT,
-  AVATAR_FONT_CLASS,
-  AVATAR_SIZE_CLASS,
   cn,
   getInitials,
-  RADIUS_CLASS,
   resolveCascade,
   resolveClassKey,
   resolveVariantClass,
@@ -28,6 +23,13 @@ import {
   useState,
 } from "react";
 import { useAsheeConfig } from "../../../libs/context";
+import {
+  AVATAR_BASE_CLASS,
+  AVATAR_FALLBACK_CLASS,
+  AVATAR_FONT_CLASS,
+  AVATAR_SIZE_CLASS,
+} from "../../../styles/avatar";
+import { RADIUS_CLASS } from "../../../styles/radius";
 import { Image } from "../image";
 import { type AvatarConfig, FALLBACK_AVATAR_CONFIG } from "./avatar-config";
 

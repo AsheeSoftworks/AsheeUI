@@ -20,9 +20,7 @@ import {
   cn,
   deprecatedAlias,
   resolveCascade,
-  TYPOGRAPHY_ALIGN_CLASS,
   TYPOGRAPHY_ROLE_DEFAULT_ELEMENT,
-  TYPOGRAPHY_TONE_CLASS,
   type TypographyAlign,
   type TypographyLeading,
   type TypographyRole,
@@ -39,6 +37,10 @@ import {
   type ReactNode,
 } from "react";
 import { useAsheeConfig } from "../../libs/context";
+import {
+  TYPOGRAPHY_ALIGN_CLASS,
+  TYPOGRAPHY_TONE_CLASS,
+} from "../../styles/typography";
 import {
   FALLBACK_TYPOGRAPHY_CONFIG,
   type TypographyConfig,

@@ -16,18 +16,11 @@
 import {
   type Color,
   cn,
-  RADIUS_CLASS,
   type Radius,
   resolveCascade,
   resolveClassKey,
   resolveRadiusKey,
   resolveVariantClass,
-  SIDEBAR_COLLAPSED_WIDTH_CLASS,
-  SIDEBAR_EXPANDED_WIDTH_CLASS,
-  SIDEBAR_HEADER_CLASS,
-  SIDEBAR_ITEM_CLASS,
-  SIDEBAR_SECTION_LABEL_CLASS,
-  SIDEBAR_VARIANT_CLASS,
   type Variant,
 } from "@asheeui/core";
 import {
@@ -44,6 +37,15 @@ import {
 } from "react";
 import { ArrowLeftIcon } from "../../../icons/ArrowLeftIcon";
 import { useAsheeConfig } from "../../../libs/context";
+import { RADIUS_CLASS } from "../../../styles/radius";
+import {
+  SIDEBAR_COLLAPSED_WIDTH_CLASS,
+  SIDEBAR_EXPANDED_WIDTH_CLASS,
+  SIDEBAR_HEADER_CLASS,
+  SIDEBAR_ITEM_CLASS,
+  SIDEBAR_SECTION_LABEL_CLASS,
+  SIDEBAR_VARIANT_CLASS,
+} from "../../../styles/sidebar";
 import { Button } from "../../forms/button/Button";
 import { useWithinSidebarColumn } from "../../layouts/sidebar-layout/sidebar-column";
 import { Tooltip } from "../../overlays/tooltip/Tooltip";

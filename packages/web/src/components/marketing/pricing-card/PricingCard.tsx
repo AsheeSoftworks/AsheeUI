@@ -12,6 +12,14 @@
 import type { ActionConfig } from "@asheeui/core";
 import {
   cn,
+  type PricingFeatureItem,
+  resolveConfigCascade,
+} from "@asheeui/core";
+import { forwardRef, type HTMLAttributes, type ReactNode } from "react";
+import { CheckIcon } from "../../../icons/CheckIcon";
+import { CloseIcon } from "../../../icons/CloseIcon";
+import { useAsheeConfig } from "../../../libs/context";
+import {
   PRICING_BADGE_CLASS,
   PRICING_BODY_CLASS,
   PRICING_FEATURE_CLASS,
@@ -20,14 +28,8 @@ import {
   PRICING_FEATURES_CLASS,
   PRICING_HIGHLIGHTED_CLASS,
   PRICING_PRICE_CLASS,
-  type PricingFeatureItem,
-  resolveConfigCascade,
-  VISUALLY_HIDDEN_CLASS,
-} from "@asheeui/core";
-import { forwardRef, type HTMLAttributes, type ReactNode } from "react";
-import { CheckIcon } from "../../../icons/CheckIcon";
-import { CloseIcon } from "../../../icons/CloseIcon";
-import { useAsheeConfig } from "../../../libs/context";
+} from "../../../styles/pricing-card";
+import { VISUALLY_HIDDEN_CLASS } from "../../../styles/visually-hidden";
 import { Card, type CardTitleElement } from "../../data-display/card/Card";
 import { ActionGroup } from "../../layouts/section-kit/ActionGroup";
 import { Typography } from "../../typography/Typography";

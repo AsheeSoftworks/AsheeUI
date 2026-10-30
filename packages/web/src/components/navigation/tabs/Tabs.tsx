@@ -11,12 +11,10 @@
 import type { Color, Size, Variant } from "@asheeui/core";
 import {
   cn,
-  RADIUS_CLASS,
   resolveCascade,
   resolveClassKey,
   resolveRadiusKey,
   TABS_FONT_CLASS,
-  TABS_HEIGHT_CLASS,
   TABS_PADDING_X_CLASS,
 } from "@asheeui/core";
 import {
@@ -28,6 +26,8 @@ import {
   useState,
 } from "react";
 import { useAsheeConfig } from "../../../libs/context";
+import { RADIUS_CLASS } from "../../../styles/radius";
+import { TABS_HEIGHT_CLASS } from "../../../styles/tabs";
 import { Button } from "../../forms/button/Button";
 import {
   FALLBACK_TABS_CONFIG,

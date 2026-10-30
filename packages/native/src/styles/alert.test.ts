@@ -1,15 +1,12 @@
 /**
- * The class dictionaries' tests, moved with them.
+ * The platform's class dictionaries, tested where they live.
  *
- * These files state both renderers' maps side by side, which is how the two are kept in step.
- * The platform's half now lives in `@asheeui/native` (C1), and this is the only package that can
- * still read core's half, so the file came with it. C2 moves the web's half to `@asheeui/web`
- * and these assertions follow it there.
+ * The web half of this file moved to `@asheeui/web` in C2, with the strings it states: after the
+ * shrink no package can import both renderers, so neither suite compares them any more.
  */
 
 import {
   ALERT_TYPE_COLOR,
-  ALERT_TYPE_ICON_CLASS,
   ALERT_TYPE_ROLE,
   type AlertType,
   type Color,
@@ -51,7 +48,6 @@ const VARIANTS: Exclude<Variant, "underlined">[] = [
 describe("the meaning both renderers share", () => {
   it("gives every intent a colour role", () => {
     expect(Object.keys(ALERT_TYPE_COLOR).sort()).toEqual([...INTENTS].sort());
-
     for (const colour of Object.values(ALERT_TYPE_COLOR)) {
       expect(COLOURS).toContain(colour as ColorRole);
     }
@@ -63,12 +59,6 @@ describe("the meaning both renderers share", () => {
     expect(ALERT_TYPE_ROLE.info).toBe("status");
     expect(ALERT_TYPE_ROLE.success).toBe("status");
   });
-
-  it("colours the leading affordance for every intent", () => {
-    expect(Object.keys(ALERT_TYPE_ICON_CLASS).sort()).toEqual(
-      [...INTENTS].sort(),
-    );
-  });
 });
 
 describe("the native alert's class maps", () => {
@@ -76,7 +66,6 @@ describe("the native alert's class maps", () => {
     expect(Object.keys(NATIVE_ALERT_TYPE_GLYPH).sort()).toEqual(
       [...INTENTS].sort(),
     );
-
     for (const glyph of Object.values(NATIVE_ALERT_TYPE_GLYPH)) {
       expect(glyph.length).toBeGreaterThan(0);
     }

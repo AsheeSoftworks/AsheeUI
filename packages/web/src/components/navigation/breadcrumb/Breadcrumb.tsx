@@ -10,7 +10,6 @@
 import type { Color, Size } from "@asheeui/core";
 import {
   cn,
-  LINK_ICON_SIZE_CLASS,
   LINK_SIZE_CLASS,
   resolveCascade,
   resolveClassKey,
@@ -23,6 +22,7 @@ import {
 } from "react";
 import { ChevronRightIcon } from "../../../icons/ChevronRightIcon";
 import { useAsheeConfig } from "../../../libs/context";
+import { LINK_ICON_SIZE_CLASS } from "../../../styles/link";
 import { Link } from "../link";
 import {
   type BreadcrumbConfig,

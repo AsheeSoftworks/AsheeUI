@@ -11,15 +11,7 @@
 "use client";
 
 import type { ActionConfig } from "@asheeui/core";
-import {
-  cn,
-  HERO_CENTERED_CLASS,
-  HERO_LAYOUT_CLASS,
-  HERO_MEDIA_CLASS,
-  HERO_MEDIA_FIRST_CLASS,
-  HERO_TEXT_COLUMN_CLASS,
-  resolveConfigCascade,
-} from "@asheeui/core";
+import { cn, resolveConfigCascade } from "@asheeui/core";
 import {
   type ElementType,
   forwardRef,
@@ -28,6 +20,13 @@ import {
   useId,
 } from "react";
 import { useAsheeConfig } from "../../../libs/context";
+import {
+  HERO_CENTERED_CLASS,
+  HERO_LAYOUT_CLASS,
+  HERO_MEDIA_CLASS,
+  HERO_MEDIA_FIRST_CLASS,
+  HERO_TEXT_COLUMN_CLASS,
+} from "../../../styles/hero";
 import { Container } from "../../layouts/container/Container";
 import { Section } from "../../layouts/section/Section";
 import { ActionGroup } from "../../layouts/section-kit/ActionGroup";

@@ -10,4 +10,4 @@ export {
   FORM_FIELD_GROUP_CLASS,
   FORM_LEGEND_CLASS,
   FORM_SUBMIT_ROW_CLASS,
-} from "@asheeui/core";
+} from "../../../styles/form";

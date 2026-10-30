@@ -19,40 +19,7 @@
  * `@asheeui/native`; what is left here is the web renderer's own.
  */
 
-import type { DrawerPlacement, DrawerSize } from "./drawer-config";
-
-/** How wide a side panel is, on the web. */
-export const DRAWER_WIDTH_CLASS: Record<DrawerSize, string> = {
-  sm: "w-80",
-  md: "w-[28rem]",
-  lg: "w-[36rem]",
-  full: "w-screen",
-};
-
-/** How tall a top or bottom panel is, on the web. */
-export const DRAWER_HEIGHT_CLASS: Record<DrawerSize, string> = {
-  sm: "h-80",
-  md: "h-[28rem]",
-  lg: "h-[36rem]",
-  full: "h-screen",
-};
-
-/** Where the panel sits, per placement, on the web. */
-export const DRAWER_CONTAINER_PLACEMENT_CLASS: Record<DrawerPlacement, string> =
-  {
-    right: "justify-end items-stretch",
-    left: "justify-start items-stretch",
-    top: "flex-col justify-start items-stretch",
-    bottom: "flex-col justify-end items-stretch",
-  };
-
-/** The edge the panel is outlined on, per placement, on the web. */
-export const DRAWER_BORDER_PLACEMENT_CLASS: Record<DrawerPlacement, string> = {
-  right: "border-l",
-  left: "border-r",
-  top: "border-b",
-  bottom: "border-t",
-};
+import type { DrawerPlacement } from "./drawer-config";
 
 /**
  * The web's slide animation for each placement.

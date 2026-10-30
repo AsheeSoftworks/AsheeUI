@@ -9,15 +9,12 @@
 
 "use client";
 
-import {
-  CLIPBOARD_STATUS_CLASS,
-  type Radius,
-  resolveCascade,
-} from "@asheeui/core";
+import { type Radius, resolveCascade } from "@asheeui/core";
 import { forwardRef, type ReactNode } from "react";
 import { CheckIcon } from "../../../icons/CheckIcon";
 import { CopyIcon } from "../../../icons/CopyIcon";
 import { useAsheeConfig } from "../../../libs/context";
+import { CLIPBOARD_STATUS_CLASS } from "../../../styles/clipboard";
 import { Button, type ButtonProps } from "../../forms/button/Button";
 import { Clipboard } from "./Clipboard";
 import { FALLBACK_CLIPBOARD_CONFIG } from "./clipboard-config";

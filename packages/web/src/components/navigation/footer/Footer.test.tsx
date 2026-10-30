@@ -2,8 +2,8 @@
  * Behaviour tests for the Footer pattern.
  */
 
-import { FOOTER_BOTTOM_LINKS_CLASS } from "@asheeui/core";
 import { describe, expect, it } from "vitest";
+import { FOOTER_BOTTOM_LINKS_CLASS } from "../../../styles/footer";
 import {
   expectHydrationClean,
   makeComponentConfig,

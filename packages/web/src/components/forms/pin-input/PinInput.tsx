@@ -11,7 +11,6 @@
 
 import {
   cn,
-  RADIUS_CLASS,
   type Radius,
   resolveClassKey,
   resolveConfigCascade,
@@ -29,6 +28,7 @@ import {
   useState,
 } from "react";
 import { useAsheeConfig } from "../../../libs/context";
+import { RADIUS_CLASS } from "../../../styles/radius";
 import { FieldShell } from "../field/FieldShell";
 import type { FieldStatus, LabelAlign } from "../field/field-config";
 import {

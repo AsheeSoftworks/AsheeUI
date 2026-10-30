@@ -7,8 +7,9 @@
  * control. Escape anywhere else in the bar is not the bar's to take.
  */
 
-import { NAVBAR_BRAND_CLASS, NAVBAR_BRAND_TEXT_CLASS } from "@asheeui/core";
+import { NAVBAR_BRAND_TEXT_CLASS } from "@asheeui/core";
 import { describe, expect, it } from "vitest";
+import { NAVBAR_BRAND_CLASS } from "../../../styles/navbar";
 import {
   expectFocused,
   expectHydrationClean,

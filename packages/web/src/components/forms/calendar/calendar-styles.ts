@@ -8,9 +8,9 @@
  * markup is unchanged, and there is one place where a calendar's appearance is decided.
  */
 
+export { CALENDAR_COLOR_CLASSES } from "@asheeui/core";
 export {
-  CALENDAR_COLOR_CLASSES,
   DATE_PICKER_CELL_SIZE_CLASS,
   DATE_PICKER_SIZE_CLASS,
   DATE_PICKER_STATUS_BORDER_CLASS,
-} from "@asheeui/core";
+} from "../../../styles/calendar";

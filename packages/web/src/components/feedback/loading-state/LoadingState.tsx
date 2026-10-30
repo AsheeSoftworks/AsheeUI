@@ -12,9 +12,6 @@
 
 import {
   cn,
-  LOADING_STATE_CLASS,
-  LOADING_STATE_PANEL_CLASS,
-  LOADING_STATE_SIZE_CLASS,
   resolveClassKey,
   resolveConfigCascade,
   SPACE_MIN_HEIGHT_CLASS,
@@ -26,6 +23,11 @@ import {
   type ReactNode,
 } from "react";
 import { useAsheeConfig } from "../../../libs/context";
+import {
+  LOADING_STATE_CLASS,
+  LOADING_STATE_PANEL_CLASS,
+  LOADING_STATE_SIZE_CLASS,
+} from "../../../styles/loading-state";
 import { Typography } from "../../typography/Typography";
 import { Spinner } from "../spinner/spinner";
 import {

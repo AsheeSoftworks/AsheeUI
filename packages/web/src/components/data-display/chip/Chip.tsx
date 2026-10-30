@@ -9,23 +9,10 @@
 "use client";
 
 import {
-  CHIP_AVATAR_CLASS,
   CHIP_AVATAR_SIZE_CLASS,
-  CHIP_BASE_CLASS,
-  CHIP_CLOSE_CLASS,
-  CHIP_DISABLED_CLASS,
-  CHIP_DOT_CLASS,
-  CHIP_FOCUS_CLASS,
-  CHIP_FONT_CLASS,
-  CHIP_GAP_CLASS,
-  CHIP_HEIGHT_CLASS,
-  CHIP_ICON_SIZE_CLASS,
-  CHIP_PADDING_CLASS,
   CHIP_PRESSABLE_CLASS,
-  CHIP_SLOT_CLASS,
   type Color,
   cn,
-  RADIUS_CLASS,
   resolveCascade,
   resolveChipVariant,
   resolveClassKey,
@@ -43,6 +30,21 @@ import {
 } from "react";
 import { CloseIcon } from "../../../icons/CloseIcon";
 import { useAsheeConfig } from "../../../libs/context";
+import {
+  CHIP_AVATAR_CLASS,
+  CHIP_BASE_CLASS,
+  CHIP_CLOSE_CLASS,
+  CHIP_DISABLED_CLASS,
+  CHIP_DOT_CLASS,
+  CHIP_FOCUS_CLASS,
+  CHIP_FONT_CLASS,
+  CHIP_GAP_CLASS,
+  CHIP_HEIGHT_CLASS,
+  CHIP_ICON_SIZE_CLASS,
+  CHIP_PADDING_CLASS,
+  CHIP_SLOT_CLASS,
+} from "../../../styles/chip";
+import { RADIUS_CLASS } from "../../../styles/radius";
 import {
   type ChipConfig,
   type ChipVariant,

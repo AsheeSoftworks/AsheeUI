@@ -15,7 +15,7 @@
  * `@asheeui/native`; what is left here is the web renderer's own.
  */
 
-import type { AccordionSizeKey, AccordionVariant } from "./accordion-config";
+import type { AccordionSizeKey } from "./accordion-config";
 
 /** Header padding and type size at each density. */
 export const ACCORDION_HEADER_SIZE_CLASS: Record<AccordionSizeKey, string> = {
@@ -29,26 +29,6 @@ export const ACCORDION_CONTENT_SIZE_CLASS: Record<AccordionSizeKey, string> = {
   sm: "px-3.5 pb-2 text-xs",
   md: "px-5 pb-3.5 text-sm",
   lg: "px-6 pb-4 text-base",
-};
-
-/** The container's treatment, per variant, on the web. */
-export const ACCORDION_VARIANT_CONTAINER_CLASS: Record<
-  AccordionVariant,
-  string
-> = {
-  bordered: "border border-border divide-y divide-border",
-  separated: "space-y-3",
-  ghost: "divide-y divide-border border-y border-border",
-  flush: "space-y-1",
-};
-
-/** An item's treatment, per variant, on the web. */
-export const ACCORDION_VARIANT_ITEM_CLASS: Record<AccordionVariant, string> = {
-  bordered: "bg-secondary transition-colors hover:bg-foreground/10",
-  separated:
-    "border border-border bg-secondary transition-colors hover:bg-secondary/30 shadow-xs",
-  ghost: "bg-transparent transition-colors hover:bg-secondary/20",
-  flush: "bg-transparent hover:bg-secondary/50 transition-colors",
 };
 
 // ─── Native ───────────────────────────────────────────────────────────────────

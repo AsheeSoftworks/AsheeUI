@@ -26,20 +26,6 @@ import type { Variant } from "./";
 export type { Radius, Size };
 
 /**
- * CSS class mapping for radius values.
- * Each radius option maps to the corresponding Tailwind rounded class.
- */
-export const RADIUS_CLASS: Record<Radius, string> = {
-  none: "rounded-none",
-  xs: "rounded-xs",
-  sm: "rounded-sm",
-  md: "rounded-md",
-  lg: "rounded-lg",
-  xl: "rounded-xl",
-  full: "rounded-full",
-};
-
-/**
  * Determines the appropriate radius to apply based on the component variant.
  * For underlined variants, the radius is forced to "none" because underlined
  * elements should not have rounded corners. For all other variants, the

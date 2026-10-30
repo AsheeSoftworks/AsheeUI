@@ -11,12 +11,7 @@
 "use client";
 
 import type { ActionConfig } from "@asheeui/core";
-import {
-  ERROR_STATE_DETAIL_BODY_CLASS,
-  ERROR_STATE_DETAIL_CLASS,
-  ERROR_STATE_DETAIL_SUMMARY_CLASS,
-  resolveConfigCascade,
-} from "@asheeui/core";
+import { resolveConfigCascade } from "@asheeui/core";
 import {
   type ElementType,
   forwardRef,
@@ -25,6 +20,11 @@ import {
 } from "react";
 import { ErrorIcon } from "../../../icons/ErrorIcon";
 import { useAsheeConfig } from "../../../libs/context";
+import {
+  ERROR_STATE_DETAIL_BODY_CLASS,
+  ERROR_STATE_DETAIL_CLASS,
+  ERROR_STATE_DETAIL_SUMMARY_CLASS,
+} from "../../../styles/error-state";
 import { Button } from "../../forms/button";
 import {
   EmptyState,

@@ -1,22 +1,21 @@
 /**
- * The class dictionaries' tests, moved with them.
+ * The platform's class dictionaries, tested where they live.
  *
- * These files state both renderers' maps side by side, which is how the two are kept in step.
- * The platform's half now lives in `@asheeui/native` (C1), and this is the only package that can
- * still read core's half, so the file came with it. C2 moves the web's half to `@asheeui/web`
- * and these assertions follow it there.
+ * The web half of this file moved to `@asheeui/web` in C2, with the strings it states: after the
+ * shrink no package can import both renderers, so neither suite compares them any more.
  */
 
-import {
-  NATIVE_MESSAGE_SURFACE_CLASS,
-  NATIVE_MESSAGE_TEXT_CLASS,
-} from "./message-surface";
 import {
   type ColorRole,
   type MessageVariant,
   resolveMessageVariant,
   type Variant,
 } from "@asheeui/core";
+import {
+  NATIVE_MESSAGE_SURFACE_CLASS,
+  NATIVE_MESSAGE_TEXT_CLASS,
+} from "./message-surface";
+
 /** The colour roles both platforms name. */
 const COLOURS: ColorRole[] = [
   "none",
@@ -61,7 +60,6 @@ describe("the treatments a native message surface can wear", () => {
     expect(Object.keys(NATIVE_MESSAGE_TEXT_CLASS).sort()).toEqual(
       [...VARIANTS].sort(),
     );
-
     for (const variant of VARIANTS) {
       expect(Object.keys(NATIVE_MESSAGE_SURFACE_CLASS[variant]).sort()).toEqual(
         [...COLOURS].sort(),

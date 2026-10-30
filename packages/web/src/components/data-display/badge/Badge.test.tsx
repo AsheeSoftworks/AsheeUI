@@ -1,5 +1,6 @@
-import { BADGE_ICON_SIZE_CLASS, CHIP_ICON_SIZE_CLASS } from "@asheeui/core";
 import { afterEach, describe, expect, it, vi } from "vitest";
+import { BADGE_ICON_SIZE_CLASS } from "../../../styles/badge";
+import { CHIP_ICON_SIZE_CLASS } from "../../../styles/chip";
 import {
   expectHydrationClean,
   makeComponentConfig,

@@ -66,20 +66,6 @@ export const SPACE_PADDING_Y_CLASS: Record<Space, string> = {
 };
 
 /**
- * Horizontal padding classes for a page gutter.
- * Used by `Container`, where the gutter widens with the viewport.
- */
-export const SPACE_PADDING_X_CLASS: Record<Space, string> = {
-  none: "px-0",
-  xs: "px-1",
-  sm: "px-3",
-  md: "px-4 sm:px-6",
-  lg: "px-4 sm:px-6 lg:px-8",
-  xl: "px-6 sm:px-8 lg:px-12",
-  "2xl": "px-8 sm:px-12 lg:px-16",
-};
-
-/**
  * Minimum height classes for a region that claims space before it places its
  * content.
  * The scale is deliberately coarse: it exists so a layout can claim a region of

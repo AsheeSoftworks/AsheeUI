@@ -10,9 +10,15 @@
 
 "use client";
 
+import { cn, resolveConfigCascade } from "@asheeui/core";
 import {
-  cn,
-  resolveConfigCascade,
+  type ElementType,
+  forwardRef,
+  type HTMLAttributes,
+  type ReactNode,
+} from "react";
+import { useAsheeConfig } from "../../../libs/context";
+import {
   SIDEBAR_LAYOUT_ASIDE_CLASS,
   SIDEBAR_LAYOUT_ASIDE_END_BORDER_CLASS,
   SIDEBAR_LAYOUT_ASIDE_END_CLASS,
@@ -22,14 +28,7 @@ import {
   SIDEBAR_LAYOUT_CONTENT_CLASS,
   SIDEBAR_LAYOUT_ROW_CLASS,
   SIDEBAR_LAYOUT_WIDTH_CLASS,
-} from "@asheeui/core";
-import {
-  type ElementType,
-  forwardRef,
-  type HTMLAttributes,
-  type ReactNode,
-} from "react";
-import { useAsheeConfig } from "../../../libs/context";
+} from "../../../styles/sidebar-layout";
 import { SidebarColumnContext } from "./sidebar-column";
 import {
   FALLBACK_SIDEBAR_LAYOUT_CONFIG,

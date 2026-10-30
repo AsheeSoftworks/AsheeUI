@@ -1,18 +1,15 @@
 /**
- * Tests for the Calendar's class dictionaries.
+ * The platform's class dictionaries, tested where they live.
  *
- * The two renderers read one module, so what these tests hold them to is what the module
- * promises: every colour role has a treatment on both platforms, every density has a size on
- * both, and the shape each renderer's colour entry takes is the one its renderer reads —
- * the web's carries the pointer treatments, the native one carries the ink a filled cell's
- * number is written in and no pointer treatment at all, because the platform has no pointer.
- *
- * The dictionaries these tests state are split across two packages for one release: the
- * platform's half moved to `@asheeui/native`, and the file moved with it because it states both
- * renderers side by side and native is the package that can still see core. C2 moves the web's
- * half to `@asheeui/web`, and these assertions follow it.
+ * The web half of this file moved to `@asheeui/web` in C2, with the strings it states: after the
+ * shrink no package can import both renderers, so neither suite compares them any more.
  */
 
+import {
+  CALENDAR_COLOR_CLASSES,
+  type Color,
+  type FieldSizeKey,
+} from "@asheeui/core";
 import {
   NATIVE_CALENDAR_CELL_CLASS,
   NATIVE_CALENDAR_CELL_DISABLED_CLASS,
@@ -46,13 +43,7 @@ import {
   NATIVE_CALENDAR_WEEKDAY_CLASS,
   NATIVE_CALENDAR_WEEKDAYS_CLASS,
 } from "./calendar";
-import {
-  type Color,
-  type FieldSizeKey,
-  CALENDAR_COLOR_CLASSES,
-  DATE_PICKER_CELL_SIZE_CLASS,
-  DATE_PICKER_SIZE_CLASS,
-} from "@asheeui/core";
+
 /** Every colour role the framework names. */
 const COLORS: Color[] = [
   "none",
@@ -110,11 +101,7 @@ describe("the Calendar's class dictionaries", () => {
   });
 
   it("sizes every density, so a day is never left without a cell", () => {
-    for (const map of [
-      DATE_PICKER_SIZE_CLASS,
-      DATE_PICKER_CELL_SIZE_CLASS,
-      NATIVE_CALENDAR_CELL_SIZE_CLASS,
-    ]) {
+    for (const map of [NATIVE_CALENDAR_CELL_SIZE_CLASS]) {
       expect(Object.keys(map).sort()).toEqual([...SIZES].sort());
     }
   });
@@ -130,7 +117,6 @@ describe("the Calendar's class dictionaries", () => {
         entry.text,
       ]),
     ];
-
     for (const value of classes) {
       expect(value.length).toBeGreaterThan(0);
       expect(value).not.toContain("undefined");

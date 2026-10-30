@@ -20,13 +20,6 @@
 
 import type { Size } from "../../../shared/radius";
 
-/** The height of a trigger at each density, on the web. */
-export const TABS_HEIGHT_CLASS: Record<Size, string> = {
-  sm: "h-8",
-  md: "h-10",
-  lg: "h-12",
-};
-
 /** The horizontal padding of a trigger at each density. */
 export const TABS_PADDING_X_CLASS: Record<Size, string> = {
   sm: "px-2.5",

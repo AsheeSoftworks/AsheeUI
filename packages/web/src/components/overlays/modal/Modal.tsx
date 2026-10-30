@@ -10,9 +10,6 @@
 import {
   ASHEE_GLOBAL_LAYER,
   cn,
-  MODAL_MAX_WIDTH_CLASS,
-  MODAL_POSITION_CLASS,
-  RADIUS_CLASS,
   type Radius,
   resolveCascade,
   resolveClassKey,
@@ -32,6 +29,11 @@ import { useLayerEscape } from "../../../libs/layer-stack";
 import { OverlayCloseControl } from "../../../libs/overlay-close-control";
 import { useBodyScrollLock } from "../../../libs/use-body-scroll-lock";
 import { useDialogOverlay } from "../../../libs/use-dialog-overlay";
+import {
+  MODAL_MAX_WIDTH_CLASS,
+  MODAL_POSITION_CLASS,
+} from "../../../styles/modal";
+import { RADIUS_CLASS } from "../../../styles/radius";
 import {
   FALLBACK_MODAL_CONFIG,
   type ModalConfig,

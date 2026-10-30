@@ -12,13 +12,12 @@
  */
 
 import type { ActionConfig } from "@asheeui/core";
+import { cn, type SectionBlockAlign } from "@asheeui/core";
+import type { ReactNode } from "react";
 import {
-  cn,
   SECTION_BLOCK_ACTIONS_ALIGN_CLASS,
   SECTION_BLOCK_ACTIONS_CLASS,
-  type SectionBlockAlign,
-} from "@asheeui/core";
-import type { ReactNode } from "react";
+} from "../../../styles/section-block";
 import { Button } from "../../forms/button/Button";
 
 /**

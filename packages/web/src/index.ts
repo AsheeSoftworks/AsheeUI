@@ -49,15 +49,6 @@ export type {
 export { resolveGridColumns } from "@asheeui/core";
 export type { AsheeUIProviderProps } from "./AsheeUIProvider";
 export { AsheeUIProvider } from "./AsheeUIProvider";
-/**
- * All component exports.
- * Each component is exported from its respective directory.
- *
- * Internal building blocks (`field` and `menu`) are deliberately not
- * exported. They are implementation details shared by the components that
- * use them, so they are not part of the public component surface and must
- * not be listed as components.
- */
 export * from "./components/data-display/accordion";
 export * from "./components/data-display/avatar";
 export * from "./components/data-display/badge";
@@ -155,6 +146,23 @@ export {
   usePrefersReducedMotion,
   useReduceMotion,
 } from "./libs/use-prefers-reduced-motion";
+/**
+ * All component exports.
+ * Each component is exported from its respective directory.
+ *
+ * Internal building blocks (`field` and `menu`) are deliberately not
+ * exported. They are implementation details shared by the components that
+ * use them, so they are not part of the public component surface and must
+ * not be listed as components.
+ */
+/**
+ * The web renderer's own class dictionaries.
+ *
+ * They were `@asheeui/core`'s until C2. A class string states a decision about pixels, and the
+ * two platforms' pixels differ, so the strings a browser compiles live here and the shared
+ * contract keeps the tokens, the rules and the types. The names did not change.
+ */
+export * from "./styles";
 /**
  * Theme utilities and hooks.
  * These provide runtime theme management and reactivity.

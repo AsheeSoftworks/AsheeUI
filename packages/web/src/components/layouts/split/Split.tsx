@@ -14,13 +14,6 @@ import {
   cn,
   resolveConfigCascade,
   SPACE_GAP_CLASS,
-  SPLIT_ALIGN_CLASS,
-  SPLIT_BASE_CLASS,
-  SPLIT_DIVIDER_CLASS,
-  SPLIT_PANE_BASE_CLASS,
-  SPLIT_PANE_WIDTH_CLASS,
-  SPLIT_STACK_CLASS,
-  SPLIT_STICKY_CLASS,
   type SplitConfig,
 } from "@asheeui/core";
 import {
@@ -30,6 +23,15 @@ import {
   type ReactNode,
 } from "react";
 import { useAsheeConfig } from "../../../libs/context";
+import {
+  SPLIT_ALIGN_CLASS,
+  SPLIT_BASE_CLASS,
+  SPLIT_DIVIDER_CLASS,
+  SPLIT_PANE_BASE_CLASS,
+  SPLIT_PANE_WIDTH_CLASS,
+  SPLIT_STACK_CLASS,
+  SPLIT_STICKY_CLASS,
+} from "../../../styles/split";
 import { FALLBACK_SPLIT_CONFIG } from "./split-config";
 
 type BaseSplitProps = SplitConfig &

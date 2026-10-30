@@ -1,29 +1,28 @@
 /**
- * The class dictionaries' tests, moved with them.
+ * The platform's class dictionaries, tested where they live.
  *
- * These files state both renderers' maps side by side, which is how the two are kept in step.
- * The platform's half now lives in `@asheeui/native` (C1), and this is the only package that can
- * still read core's half, so the file came with it. C2 moves the web's half to `@asheeui/web`
- * and these assertions follow it there.
+ * The web half of this file moved to `@asheeui/web` in C2, with the strings it states: after the
+ * shrink no package can import both renderers, so neither suite compares them any more.
  */
 
 import {
-  NATIVE_TOAST_CONTAINER_CLASS,
-  NATIVE_TOAST_PLACEMENT_CLASS,
-  NATIVE_TOAST_TYPE_GLYPH,
-} from "./toast";
-import {
-  type Size,
-  type ToastPlacement,
-  type ToastType,
   PLACEMENT_CLASSES,
+  type Size,
   TOAST_ANIMATION_STATE,
   TOAST_FONT_CLASS,
   TOAST_PADDING_CLASS,
   TOAST_TITLE_FONT_CLASS,
   TOAST_TYPE_COLOR,
   TOAST_WIDTH_CLASS,
+  type ToastPlacement,
+  type ToastType,
 } from "@asheeui/core";
+import {
+  NATIVE_TOAST_CONTAINER_CLASS,
+  NATIVE_TOAST_PLACEMENT_CLASS,
+  NATIVE_TOAST_TYPE_GLYPH,
+} from "./toast";
+
 /** The types of message the system names. */
 const TYPES: ToastType[] = ["success", "error", "info", "warning", "default"];
 
@@ -56,7 +55,6 @@ describe("what a type of message means", () => {
     expect(Object.keys(NATIVE_TOAST_TYPE_GLYPH).sort()).toEqual(
       [...TYPES].sort(),
     );
-
     for (const glyph of Object.values(NATIVE_TOAST_TYPE_GLYPH)) {
       expect(glyph.length).toBeGreaterThan(0);
     }
@@ -87,7 +85,6 @@ describe("where a message appears", () => {
     expect(Object.keys(PLACEMENT_CLASSES).sort()).toEqual(
       [...PLACEMENTS].sort(),
     );
-
     for (const placement of PLACEMENTS) {
       expect(typeof TOAST_ANIMATION_STATE[placement].enter).toBe("string");
       expect(typeof TOAST_ANIMATION_STATE[placement].exit).toBe("string");
@@ -98,7 +95,6 @@ describe("where a message appears", () => {
     expect(Object.keys(NATIVE_TOAST_PLACEMENT_CLASS).sort()).toEqual(
       [...PLACEMENTS].sort(),
     );
-
     for (const placement of PLACEMENTS) {
       const classes = NATIVE_TOAST_PLACEMENT_CLASS[placement];
 
@@ -124,7 +120,6 @@ describe("where a message appears", () => {
 
   it("stacks messages in one absolute layer on the platform, rather than fixing each message", () => {
     expect(NATIVE_TOAST_CONTAINER_CLASS).toContain("absolute");
-
     for (const placement of PLACEMENTS) {
       expect(NATIVE_TOAST_PLACEMENT_CLASS[placement]).not.toContain("absolute");
     }

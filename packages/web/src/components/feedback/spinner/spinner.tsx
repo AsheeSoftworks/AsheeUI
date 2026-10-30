@@ -9,16 +9,14 @@
 "use client";
 
 import type { Color, Size } from "@asheeui/core";
+import { cn, resolveCascade, resolveClassKey } from "@asheeui/core";
+import { forwardRef, type SVGAttributes } from "react";
+import { useAsheeConfig } from "../../../libs/context";
 import {
-  cn,
-  resolveCascade,
-  resolveClassKey,
   SPINNER_BASE_CLASS,
   SPINNER_COLOR_CLASS,
   SPINNER_SIZE_CLASS,
-} from "@asheeui/core";
-import { forwardRef, type SVGAttributes } from "react";
-import { useAsheeConfig } from "../../../libs/context";
+} from "../../../styles/spinner";
 import { FALLBACK_SPINNER_CONFIG, type SpinnerConfig } from "./spinner-config";
 
 /**

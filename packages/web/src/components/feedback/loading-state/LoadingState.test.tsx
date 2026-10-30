@@ -6,14 +6,14 @@
  * every option resolves through the configuration cascade.
  */
 
+import { SPACE_MIN_HEIGHT_CLASS } from "@asheeui/core";
+import { createRef } from "react";
+import { describe, expect, it } from "vitest";
 import {
   LOADING_STATE_CLASS,
   LOADING_STATE_SIZE_CLASS,
-  SPACE_MIN_HEIGHT_CLASS,
-  SPINNER_SIZE_CLASS,
-} from "@asheeui/core";
-import { createRef } from "react";
-import { describe, expect, it } from "vitest";
+} from "../../../styles/loading-state";
+import { SPINNER_SIZE_CLASS } from "../../../styles/spinner";
 import {
   expectHydrationClean,
   makeComponentConfig,

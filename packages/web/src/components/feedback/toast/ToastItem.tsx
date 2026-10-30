@@ -10,7 +10,6 @@
 import {
   type Color,
   cn,
-  RADIUS_CLASS,
   type Radius,
   resolveCascade,
   resolveClassKey,
@@ -31,6 +30,7 @@ import { ErrorIcon } from "../../../icons/ErrorIcon";
 import { InfoIcon } from "../../../icons/InfoIcon";
 import { WarningIcon } from "../../../icons/WarningIcon";
 import { useAsheeConfig } from "../../../libs/context";
+import { RADIUS_CLASS } from "../../../styles/radius";
 import {
   FALLBACK_TOAST_CONFIG,
   type ToastItemData,

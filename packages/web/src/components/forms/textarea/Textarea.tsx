@@ -10,7 +10,6 @@
 import {
   type Color,
   cn,
-  RADIUS_CLASS,
   resolveCascade,
   resolveClassKey,
   resolveRadiusKey,
@@ -26,6 +25,7 @@ import React, {
   useRef,
 } from "react";
 import { useAsheeConfig } from "../../../libs/context";
+import { RADIUS_CLASS } from "../../../styles/radius";
 import {
   type KeyboardOpenOptions,
   useKeyboardField,

@@ -1,12 +1,11 @@
-﻿/**
- * The class dictionaries' tests, moved with them.
+/**
+ * The platform's class dictionaries, tested where they live.
  *
- * These files state both renderers' maps side by side, which is how the two are kept in step.
- * The platform's half now lives in `@asheeui/native` (C1), and this is the only package that can
- * still read core's half, so the file came with it. C2 moves the web's half to `@asheeui/web`
- * and these assertions follow it there.
+ * The web half of this file moved to `@asheeui/web` in C2, with the strings it states: after the
+ * shrink no package can import both renderers, so neither suite compares them any more.
  */
 
+import type { ImageFit, ImageRatioKey } from "@asheeui/core";
 import {
   NATIVE_IMAGE_ASPECT_RATIO,
   NATIVE_IMAGE_FRAME_CLASS,
@@ -15,12 +14,7 @@ import {
   NATIVE_IMAGE_RESIZE_MODE,
   NATIVE_IMAGE_SKELETON_CLASS,
 } from "./image";
-import {
-  type ImageFit,
-  type ImageRatioKey,
-  IMAGE_FIT_CLASS,
-  IMAGE_RATIO_CLASS,
-} from "@asheeui/core";
+
 /** The five fit strategies. */
 const FITS: ImageFit[] = ["cover", "contain", "fill", "none", "scale-down"];
 
@@ -29,26 +23,18 @@ const RATIOS: ImageRatioKey[] = ["auto", "square", "video", "portrait"];
 
 describe("the image's fit", () => {
   it("describes every strategy on both platforms", () => {
-    expect(Object.keys(IMAGE_FIT_CLASS).sort()).toEqual([...FITS].sort());
     expect(Object.keys(NATIVE_IMAGE_RESIZE_MODE).sort()).toEqual(
       [...FITS].sort(),
     );
   });
 
   it("covers and contains on both platforms", () => {
-    expect(IMAGE_FIT_CLASS.cover).toBe("object-cover");
-    expect(IMAGE_FIT_CLASS.contain).toBe("object-contain");
     expect(NATIVE_IMAGE_RESIZE_MODE.cover).toBe("cover");
     expect(NATIVE_IMAGE_RESIZE_MODE.contain).toBe("contain");
   });
 
   it("states the two strategies the platform names differently in its own vocabulary", () => {
-    // `fill` stretches on the web and on the platform alike; the platform calls it
-    // `stretch` because that is what its image view calls it.
-    expect(IMAGE_FIT_CLASS.fill).toBe("object-fill");
     expect(NATIVE_IMAGE_RESIZE_MODE.fill).toBe("stretch");
-    // `none` means the natural size, which is the platform's centered placement.
-    expect(IMAGE_FIT_CLASS.none).toBe("object-none");
     expect(NATIVE_IMAGE_RESIZE_MODE.none).toBe("center");
   });
 
@@ -61,29 +47,21 @@ describe("the image's fit", () => {
 
 describe("the image's ratio", () => {
   it("describes every ratio on both platforms", () => {
-    expect(Object.keys(IMAGE_RATIO_CLASS).sort()).toEqual([...RATIOS].sort());
     expect(Object.keys(NATIVE_IMAGE_ASPECT_RATIO).sort()).toEqual(
       [...RATIOS].sort(),
     );
   });
 
   it("uses intrinsic dimensions when the ratio is auto, on both platforms", () => {
-    // The web states this by adding no class; the platform by stating no number.
-    expect(IMAGE_RATIO_CLASS.auto).toBe("");
     expect(NATIVE_IMAGE_ASPECT_RATIO.auto).toBeUndefined();
   });
 
   it("states the same two shapes on both platforms", () => {
-    expect(IMAGE_RATIO_CLASS.square).toBe("aspect-square");
-    expect(IMAGE_RATIO_CLASS.video).toBe("aspect-video");
     expect(NATIVE_IMAGE_ASPECT_RATIO.square).toBe(1);
     expect(NATIVE_IMAGE_ASPECT_RATIO.video).toBe(16 / 9);
   });
 
   it("keeps the portrait ratio the web draws, as a number the platform lays out", () => {
-    // The web states 3/4 as an arbitrary aspect class, so the two platforms must agree
-    // on the ratio itself rather than on the syntax that expresses it.
-    expect(IMAGE_RATIO_CLASS.portrait).toBe("aspect-[3/4]");
     expect(NATIVE_IMAGE_ASPECT_RATIO.portrait).toBe(3 / 4);
   });
 });

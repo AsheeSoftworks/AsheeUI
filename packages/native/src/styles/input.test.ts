@@ -1,12 +1,11 @@
 /**
- * The class dictionaries' tests, moved with them.
+ * The platform's class dictionaries, tested where they live.
  *
- * These files state both renderers' maps side by side, which is how the two are kept in step.
- * The platform's half now lives in `@asheeui/native` (C1), and this is the only package that can
- * still read core's half, so the file came with it. C2 moves the web's half to `@asheeui/web`
- * and these assertions follow it there.
+ * The web half of this file moved to `@asheeui/web` in C2, with the strings it states: after the
+ * shrink no package can import both renderers, so neither suite compares them any more.
  */
 
+import type { ColorRole, Size, Variant } from "@asheeui/core";
 import {
   NATIVE_INPUT_BASE_CLASS,
   NATIVE_INPUT_DISABLED_CLASS,
@@ -18,13 +17,7 @@ import {
   NATIVE_INPUT_SIZE_CLASS,
   NATIVE_INPUT_VARIANT_CLASS,
 } from "./input";
-import {
-  type Size,
-  type Variant,
-  type ColorRole,
-  FIELD_STATUS_BORDER_CLASS,
-  INPUT_SIZE_CLASS,
-} from "@asheeui/core";
+
 /** The densities a field can be. */
 const DENSITIES: Size[] = ["sm", "md", "lg"];
 
@@ -46,19 +39,6 @@ const COLOURS: ColorRole[] = [
   "warning",
   "success",
 ];
-
-describe("the web input's class maps", () => {
-  it("describe every density an input can be", () => {
-    expect(Object.keys(INPUT_SIZE_CLASS).sort()).toEqual([...DENSITIES].sort());
-  });
-
-  it("hold whole static classes, because a class assembled at runtime is never compiled", () => {
-    for (const value of Object.values(INPUT_SIZE_CLASS)) {
-      expect(value.length).toBeGreaterThan(0);
-      expect(value).not.toContain("undefined");
-    }
-  });
-});
 
 describe("the native input's class maps", () => {
   it("describe every density an input can be", () => {
@@ -108,7 +88,6 @@ describe("the native input's class maps", () => {
 
   it("draws the one edge an underlined field has", () => {
     expect(NATIVE_INPUT_EDGE_WIDTH_CLASS.underlined).toBe("border-b");
-
     for (const treatment of TREATMENTS) {
       if (treatment !== "underlined") {
         expect(NATIVE_INPUT_EDGE_WIDTH_CLASS[treatment]).toBe("border");
@@ -124,12 +103,6 @@ describe("the native input's class maps", () => {
     for (const treatment of ["bordered", "underlined"] as Variant[]) {
       expect(NATIVE_INPUT_EDGE_NEUTRAL_CLASS[treatment]).toContain("border-");
     }
-  });
-
-  it("states the same danger edge the field family's failed status states", () => {
-    expect(FIELD_STATUS_BORDER_CLASS.error).toContain(
-      NATIVE_INPUT_EDGE_INVALID_CLASS,
-    );
   });
 
   it("holds the classes the field shows for its own states", () => {
