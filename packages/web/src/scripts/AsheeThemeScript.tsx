@@ -181,6 +181,27 @@ const SCROLLBAR_BLOCK_KEY = "\u0000scrollbar";
 /** The stylesheet text last written, so an unchanged rebuild is a no-op. */
 let appliedCss = "";
 
+/** Write the registered blocks into the document, rebuilding only when the text changed. */
+function writeRegisteredBlocks(): void {
+  if (typeof document === "undefined") return;
+
+  const css = [...registeredBlocks.values()].join("\n\n");
+  let style = document.getElementById(THEME_VARS_STYLE_ID);
+
+  // The element may be missing even when the text is unchanged — a test or a consumer can
+  // remove it — so the no-op path checks for both.
+  if (style && css === appliedCss) return;
+
+  if (!style) {
+    style = document.createElement("style");
+    style.id = THEME_VARS_STYLE_ID;
+    document.head.appendChild(style);
+  }
+
+  style.textContent = css;
+  appliedCss = css;
+}
+
 /**
  * Ensure the theme CSS variables are present in the document.
  *
@@ -214,21 +235,22 @@ export function ensureThemeVarsStyle(config: Config): void {
   if (scrollbar === "") registeredBlocks.delete(SCROLLBAR_BLOCK_KEY);
   else registeredBlocks.set(SCROLLBAR_BLOCK_KEY, scrollbar);
 
-  const css = [...registeredBlocks.values()].join("\n\n");
-  let style = document.getElementById(THEME_VARS_STYLE_ID);
+  writeRegisteredBlocks();
+}
 
-  // The element may be missing even when the text is unchanged — a test or a consumer can
-  // remove it — so the no-op path checks for both.
-  if (style && css === appliedCss) return;
-
-  if (!style) {
-    style = document.createElement("style");
-    style.id = THEME_VARS_STYLE_ID;
-    document.head.appendChild(style);
-  }
-
-  style.textContent = css;
-  appliedCss = css;
+/**
+ * Remove one theme's variable block.
+ *
+ * Called when a provider's `themes` prop drops a runtime theme that the configuration does not
+ * define. A configured theme is re-registered by {@link ensureThemeVarsStyle} instead, so the
+ * caller checks the resolved configuration first. Removing a block that was never registered is
+ * a no-op.
+ *
+ * @param name - The theme whose block should go.
+ */
+export function unregisterThemeBlock(name: string): void {
+  if (!registeredBlocks.delete(name)) return;
+  writeRegisteredBlocks();
 }
 
 /**

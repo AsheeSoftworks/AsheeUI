@@ -115,6 +115,16 @@ export interface ThemeConfigInput {
    * @default true
    */
   ownsDocument?: boolean | undefined;
+
+  /**
+   * The provider instance that contributes these names, when it can change them.
+   *
+   * A provider that only ever adds themes may omit this: repeated `configure` calls are a
+   * union, which is the nested-provider rule. A provider whose list can *shrink* — the root
+   * provider carrying a `themes` prop — passes a stable object so its next configuration
+   * replaces its own contribution rather than accumulating names the application removed.
+   */
+  owner?: object | undefined;
 }
 
 /**
@@ -156,6 +166,16 @@ export interface ThemeController {
 
   /** Observe theme changes; returns the unsubscribe. */
   subscribe(listener: () => void): () => void;
+
+  /**
+   * Remove one provider's contributed themes.
+   *
+   * The provider that contributed the names calls this when it unmounts. A name another
+   * contribution still states, or a built-in, stays available.
+   *
+   * @param owner - The object the provider passed to {@link ThemeController.configure}.
+   */
+  releaseThemes(owner: object): void;
 }
 
 /** One theme-change listener. */
@@ -189,7 +209,35 @@ export function createThemeController(host: ThemeHost): ThemeController {
   let defaultTheme: ThemeSelection = "light";
   let availableThemes: readonly ThemeName[] = [];
 
+  /**
+   * The names each ownable provider contributes.
+   *
+   * Rule 1 (a nested provider only adds) is preserved for callers that pass no owner, and is
+   * still how a nested provider behaves. The owner is what lets the root provider's `themes`
+   * prop shrink: its next contribution replaces the previous one, while the union of every
+   * contribution is what the picker and the controller see.
+   */
+  const contributions = new Map<object, readonly ThemeName[]>();
+  let legacyThemes: readonly ThemeName[] = [];
+
   const listeners = new Set<Listener>();
+
+  /** Recompute the union of every contribution, preserving first-seen order. */
+  const rebuildAvailable = (): void => {
+    const next: ThemeName[] = [];
+
+    for (const names of contributions.values()) {
+      for (const name of names) {
+        if (!next.includes(name)) next.push(name);
+      }
+    }
+
+    for (const name of legacyThemes) {
+      if (!next.includes(name)) next.push(name);
+    }
+
+    availableThemes = next;
+  };
 
   const isValid = (candidate: ThemeSelection): boolean => {
     if (candidate === "system") return true;
@@ -198,8 +246,30 @@ export function createThemeController(host: ThemeHost): ThemeController {
     return true;
   };
 
-  const sanitize = (candidate: ThemeSelection): ThemeSelection =>
-    isValid(candidate) ? candidate : defaultTheme;
+  const sanitize = (candidate: ThemeSelection): ThemeSelection => {
+    if (isValid(candidate)) return candidate;
+    if (isValid(defaultTheme)) return defaultTheme;
+    return availableThemes[0] ?? defaultTheme;
+  };
+
+  /** Adopt the stored selection, or the default when there is none. */
+  const settleSelection = (): void => {
+    const stored = host.storage?.get() ?? null;
+    const hasValidStored =
+      stored !== null && isValid(stored as ThemeSelection);
+
+    if (!hasValidStored && stored !== null) {
+      // Rule 3: a value that names no available theme is a leftover. Dropping it is the
+      // self-healing path; warning on every load would train the reader to ignore it.
+      host.storage?.remove();
+    }
+
+    // Rule 4: seeded, never written. A nested provider has just declined to replace the
+    // default, so the selection is the application's, whichever provider mounted first.
+    selection = hasValidStored
+      ? (stored as ThemeSelection)
+      : sanitize(defaultTheme);
+  };
 
   const resolve = (candidate: ThemeSelection): ThemeName =>
     candidate === "system" ? host.systemScheme() : candidate;
@@ -237,34 +307,51 @@ export function createThemeController(host: ThemeHost): ThemeController {
   host.onSystemChange?.(handleSystemChange);
 
   const configure = (input: ThemeConfigInput): void => {
-    const { defaultTheme: nextDefault, themes, ownsDocument = true } = input;
+    const {
+      defaultTheme: nextDefault,
+      themes,
+      ownsDocument = true,
+      owner,
+    } = input;
 
-    // Rule 2: only the document's owner may state what a first visit shows.
+    // Rule 1: a nested provider may add a theme, never remove one. The root provider's
+    // `themes` prop is the exception that needs removal, so its contribution replaces the
+    // previous one; every contribution is still unioned before the list is published.
+    if (owner) {
+      contributions.set(owner, themes);
+    } else {
+      legacyThemes = [...new Set([...legacyThemes, ...themes])];
+    }
+    rebuildAvailable();
+
+    // Rule 2: only the document's owner may state what a first visit shows. A default theme
+    // the owner removed is not a default any more; the first remaining theme is.
     if (ownsDocument) {
-      defaultTheme = nextDefault;
+      defaultTheme = isValid(nextDefault)
+        ? nextDefault
+        : (availableThemes[0] ?? nextDefault);
     }
 
-    // Rule 1: a nested provider may add a theme, never remove one.
-    availableThemes =
-      availableThemes.length === 0
-        ? themes
-        : [...new Set([...availableThemes, ...themes])];
+    settleSelection();
+    applySelection();
+    notify();
+  };
 
-    const stored = host.storage?.get() ?? null;
-    const hasValidStored =
-      stored !== null && isValid(stored as ThemeSelection);
+  const releaseThemes = (owner: object): void => {
+    if (!contributions.delete(owner)) return;
 
-    if (!hasValidStored && stored !== null) {
-      // Rule 3: a value that names no available theme is a leftover. Dropping it is the
-      // self-healing path; warning on every load would train the reader to ignore it.
-      host.storage?.remove();
+    rebuildAvailable();
+
+    if (!isValid(defaultTheme)) {
+      defaultTheme = availableThemes[0] ?? defaultTheme;
     }
 
-    // Rule 4: seeded, never written. A nested provider has just declined to replace the
-    // default, so the selection is the application's, whichever provider mounted first.
-    selection = hasValidStored
-      ? (stored as ThemeSelection)
-      : defaultTheme;
+    // Deliberately do not touch storage: React StrictMode runs an effect's cleanup and then the
+    // effect again, and a stored selection may name a theme this contribution just withdrew. The
+    // next `configure` reads it back; a real unmount leaves it for the next mount to validate.
+    if (!isValid(selection)) {
+      selection = sanitize(defaultTheme);
+    }
 
     applySelection();
     notify();
@@ -314,5 +401,6 @@ export function createThemeController(host: ThemeHost): ThemeController {
     setTheme,
     toggleTheme,
     subscribe,
+    releaseThemes,
   };
 }

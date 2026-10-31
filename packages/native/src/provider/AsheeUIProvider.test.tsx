@@ -17,6 +17,7 @@
 import {
   act,
   render,
+  waitFor,
 } from "@testing-library/react-native";
 import type { ThemeStorage } from "@asheeui/core";
 import { Text } from "react-native";
@@ -108,6 +109,53 @@ describe("AsheeUIProvider", () => {
     // The named theme extends the one it states, so the rest of the palette is its base's.
     expect(paintedVariables()["--ashee-background"]).toBe("17 17 17");
   });
+
+  it("paints a theme the application added at runtime", async () => {
+    await render(
+      <AsheeUIProvider
+        config={{ defaultTheme: "ocean" }}
+        themes={{
+          ocean: { extends: "dark", primary: "#0ea5e9" },
+        }}>
+        <Text>Content</Text>
+      </AsheeUIProvider>,
+    );
+
+    expect(paintedVariables()["--ashee-primary"]).toBe("14 165 233");
+    expect(paintedVariables()["--ashee-background"]).toBe("17 17 17");
+  });
+
+  it("repaints from the configured definition when a runtime override is removed", async () => {
+    const { rerender } = await render(
+      <AsheeUIProvider
+        config={{
+          color: { midnight: { extends: "dark", primary: "#111111" } },
+          defaultTheme: "midnight",
+        }}
+        themes={{ midnight: { extends: "dark", primary: "#222222" } }}>
+        <Text>Content</Text>
+      </AsheeUIProvider>,
+    );
+
+    await act(async () => {
+      themeController.setTheme("midnight");
+    });
+
+    expect(paintedVariables()["--ashee-primary"]).toBe("34 34 34");
+
+    rerender(
+      <AsheeUIProvider
+        config={{
+          color: { midnight: { extends: "dark", primary: "#111111" } },
+          defaultTheme: "midnight",
+        }}>
+        <Text>Content</Text>
+      </AsheeUIProvider>,
+    );
+
+    await waitFor(() => {
+      expect(paintedVariables()["--ashee-primary"]).toBe("17 17 17");
+    });  });
 
   it("refuses a colour the platform cannot apply", async () => {
     await expect(

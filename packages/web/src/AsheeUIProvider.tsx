@@ -8,12 +8,21 @@
  */
 "use client";
 
-import type { ExternalConfig } from "@asheeui/core";
-import { assertValidConfig, resolveConfig } from "@asheeui/core";
+import type {
+  ExternalColorConfig,
+  ExternalConfig,
+} from "@asheeui/core";
+import {
+  assertValidConfig,
+  mergeRuntimeThemes,
+  resolveConfig,
+} from "@asheeui/core";
 import {
   type ReactNode,
   useContext,
+  useEffect,
   useMemo,
+  useRef,
   useSyncExternalStore,
 } from "react";
 import { AsheeConfigContext } from "./libs/context";
@@ -21,6 +30,7 @@ import { useIsomorphicLayoutEffect } from "./libs/use-isomorphic-layout-effect";
 import {
   AsheeThemeScript,
   ensureThemeVarsStyle,
+  unregisterThemeBlock,
 } from "./scripts/AsheeThemeScript";
 import { themeController } from "./theme/controller";
 
@@ -36,6 +46,21 @@ export interface AsheeUIProviderProps {
    * defaults and per-component options at runtime.
    */
   config?: ExternalConfig | undefined;
+
+  /**
+   * Themes the application added while it was running.
+   *
+   * The definitions are the same shape as `config.color`, and they are merged over it before
+   * resolution, so a runtime theme may extend a built-in, a configured theme or another runtime
+   * theme. `light` and `dark` are reserved: the built-ins are retuned in `config.color`, never
+   * by a runtime definition. Removing a name from this object removes it from the picker (and
+   * from the stylesheet) and restores the configured definition of that name, if there is one.
+   *
+   * The application owns this state and its persistence: load the definitions before the
+   * provider's first render when a stored selection may name one, otherwise the controller
+   * correctly treats that selection as stale and drops it.
+   */
+  themes?: ExternalColorConfig | undefined;
 
   /**
    * The child components to render within the provider context.
@@ -117,25 +142,40 @@ function useRendersServerOutput(): boolean {
  */
 export function AsheeUIProvider({
   config = {},
+  themes,
   children,
 }: AsheeUIProviderProps) {
   const resolvedConfig = useMemo(() => {
+    // Runtime definitions take the same pipeline as the configured ones: merged first, then
+    // validated and resolved, so `extends`, inheritance and the palette are one code path.
+    const merged = mergeRuntimeThemes(config, themes);
+
     // Validated once per configuration object (M3, `U-4`): invalid values throw
     // while rendering the provider, unknown keys warn in development only.
-    assertValidConfig(config);
-    return resolveConfig(config);
-  }, [config]);
+    assertValidConfig(merged);
+    return resolveConfig(merged);
+  }, [config, themes]);
 
   // A provider rendered inside another one does not own the document: the application's
   // provider does. Both decisions that depend on ownership — which provider's default theme
   // the controller keeps, and which provider emits the pre-paint script — read this.
   const hasAncestorProvider = useContext(AsheeConfigContext) !== null;
 
+  // The controller's owner token. It is stable for this provider instance, so a `themes`
+  // prop that loses a name replaces this provider's contribution instead of accumulating it.
+  const owner = useRef<object>({});
+
+  // The runtime names this provider's stylesheet contributed last time. A name that is no
+  // longer contributed and is not a configured theme has its CSS block removed; a name that
+  // still exists in the configuration is re-registered by `ensureThemeVarsStyle` instead.
+  const previousThemes = useRef<ReadonlySet<string>>(new Set());
+
   useIsomorphicLayoutEffect(() => {
     themeController.configure({
       defaultTheme: resolvedConfig.defaultTheme ?? "system",
       themes: Object.keys(resolvedConfig.color),
       ownsDocument: !hasAncestorProvider,
+      owner: owner.current,
     });
 
     // The pre-paint script injects the theme variables while the server HTML is
@@ -143,7 +183,24 @@ export function AsheeUIProvider({
     // instead, still before the first paint. This is a no-op once the script has
     // done it.
     ensureThemeVarsStyle(resolvedConfig);
-  }, [resolvedConfig, hasAncestorProvider]);
+
+    const current = new Set(Object.keys(themes ?? {}));
+    for (const name of previousThemes.current) {
+      if (!current.has(name) && !(name in resolvedConfig.color)) {
+        unregisterThemeBlock(name);
+      }
+    }
+    previousThemes.current = current;
+  }, [resolvedConfig, hasAncestorProvider, themes]);
+
+  // A provider that unmounts releases its contribution; a nested demo's runtime theme must
+  // not remain selectable after the demo is gone.
+  useEffect(
+    () => () => {
+      themeController.releaseThemes(owner.current);
+    },
+    [],
+  );
 
   // The pre-paint script only pays off where the HTML it sits in is parsed by a
   // browser, which is the server output and the hydration of that output. A

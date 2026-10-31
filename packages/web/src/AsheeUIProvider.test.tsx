@@ -13,7 +13,17 @@ import {
   THEME_SCRIPT_ID,
   THEME_VARS_STYLE_ID,
 } from "./scripts/AsheeThemeScript";
-import { expectHydrationClean, render, renderToServerString } from "./test";
+import {
+  THEME_STORAGE_KEY,
+  themeController,
+} from "./theme/controller";
+import { useTheme } from "./theme/useTheme";
+import {
+  act,
+  expectHydrationClean,
+  render,
+  renderToServerString,
+} from "./test";
 
 /** Test helper: invalid configurations are the point, so typing is bypassed. */
 const asOptions = (value: unknown) => ({
@@ -133,5 +143,122 @@ describe("AsheeUIProvider pre-paint theme", () => {
 
     // The script stayed in the markup, and the variables are present.
     expect(document.getElementById(THEME_VARS_STYLE_ID)).not.toBeNull();
+  });
+});
+
+describe("AsheeUIProvider runtime themes", () => {
+  beforeEach(() => {
+    window.localStorage.removeItem(THEME_STORAGE_KEY);
+    document.documentElement.className = "";
+    document.getElementById(THEME_VARS_STYLE_ID)?.remove();
+  });
+
+  it("registers a runtime theme, lists it and applies it", () => {
+    let captured: ReturnType<typeof useTheme> | undefined;
+
+    function Probe() {
+      captured = useTheme();
+      return <span>ok</span>;
+    }
+
+    const { unmount } = render(
+      <AsheeUIProvider
+        config={{ defaultTheme: "light" }}
+        themes={{
+          ocean: { extends: "dark", primary: "#0ea5e9" },
+        }}>
+        <Probe />
+      </AsheeUIProvider>,
+    );
+
+    expect(captured?.availableThemes).toContain("ocean");
+
+    const style = document.getElementById(THEME_VARS_STYLE_ID);
+    expect(style?.textContent).toContain(".theme-ocean");
+    expect(style?.textContent).toContain("--ashee-primary: #0ea5e9");
+
+    act(() => themeController.setTheme("ocean"));
+
+    expect(document.documentElement.classList.contains("theme-ocean")).toBe(true);
+    expect(captured?.resolvedTheme).toBe("ocean");
+
+    unmount();
+  });
+
+  it("removes a runtime theme and falls back when its selection is withdrawn", () => {
+    function Probe() {
+      return <span>ok</span>;
+    }
+
+    const { rerender, unmount } = render(
+      <AsheeUIProvider
+        config={{ defaultTheme: "light" }}
+        themes={{ ocean: { extends: "dark", primary: "#0ea5e9" } }}>
+        <Probe />
+      </AsheeUIProvider>,
+    );
+
+    act(() => themeController.setTheme("ocean"));
+    expect(document.documentElement.classList.contains("theme-ocean")).toBe(true);
+
+    rerender(
+      <AsheeUIProvider config={{ defaultTheme: "light" }} themes={{}}>
+        <Probe />
+      </AsheeUIProvider>,
+    );
+
+    expect(themeController.getAvailableThemes()).not.toContain("ocean");
+    expect(themeController.getSelection()).toBe("light");
+    expect(document.documentElement.classList.contains("theme-ocean")).toBe(false);
+
+    const style = document.getElementById(THEME_VARS_STYLE_ID);
+    expect(style?.textContent).not.toContain(".theme-ocean");
+
+    unmount();
+  });
+
+  it("resolves a runtime theme that extends another runtime theme", () => {
+    const markup = renderToServerString(<span>ok</span>, {
+      config: { defaultTheme: "light" },
+      themes: {
+        base: { extends: "dark", background: "#0b0b12" },
+        accent: { extends: "base", primary: "#8b5cf6" },
+      },
+    });
+
+    expect(markup).toContain(".theme-accent");
+    expect(markup).toContain("--ashee-background: #0b0b12");
+    expect(markup).toContain("--ashee-primary: #8b5cf6");
+  });
+
+  it("keeps the configured definition when a runtime override is removed", () => {
+    const { rerender, unmount } = render(
+      <AsheeUIProvider
+        config={{
+          color: { midnight: { extends: "dark", primary: "#111111" } },
+          defaultTheme: "light",
+        }}
+        themes={{ midnight: { extends: "dark", primary: "#222222" } }}>
+        <span>ok</span>
+      </AsheeUIProvider>,
+    );
+
+    let style = document.getElementById(THEME_VARS_STYLE_ID);
+    expect(style?.textContent).toContain("--ashee-primary: #222222");
+
+    rerender(
+      <AsheeUIProvider
+        config={{
+          color: { midnight: { extends: "dark", primary: "#111111" } },
+          defaultTheme: "light",
+        }}>
+        <span>ok</span>
+      </AsheeUIProvider>,
+    );
+
+    style = document.getElementById(THEME_VARS_STYLE_ID);
+    expect(style?.textContent).toContain("--ashee-primary: #111111");
+
+    unmount();
   });
 });

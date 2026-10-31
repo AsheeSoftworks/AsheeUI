@@ -322,3 +322,94 @@ describe("the controller's six rules", () => {
     expect(tester.painted).toEqual(["light"]);
   });
 });
+
+describe("owner-scoped runtime themes", () => {
+  it("removes a theme its owner withdrew, and falls back to the default", () => {
+    const tester = createHost();
+    const controller = createThemeController(tester.host);
+    const owner = {};
+
+    controller.configure({
+      defaultTheme: "light",
+      themes: ["light", "dark", "ocean"],
+      owner,
+    });
+    controller.setTheme("ocean");
+
+    expect(tester.stored.get(THEME_STORAGE_KEY)).toBe("ocean");
+
+    controller.configure({
+      defaultTheme: "light",
+      themes: ["light", "dark"],
+      owner,
+    });
+
+    expect(controller.getAvailableThemes()).toEqual(["light", "dark"]);
+    expect(controller.getSelection()).toBe("light");
+    expect(controller.getResolvedTheme()).toBe("light");
+    expect(tester.stored.has(THEME_STORAGE_KEY)).toBe(false);
+    expect(tester.painted.at(-1)).toBe("light");
+  });
+
+  it("keeps a name another contribution still states", () => {
+    const controller = createThemeController(createHost().host);
+    const first = {};
+    const second = {};
+
+    controller.configure({
+      defaultTheme: "light",
+      themes: ["light", "dark", "ocean"],
+      owner: first,
+    });
+    controller.configure({
+      defaultTheme: "light",
+      themes: ["light", "dark", "ocean"],
+      owner: second,
+    });
+
+    // The first provider withdraws it; the second still declares it.
+    controller.configure({
+      defaultTheme: "light",
+      themes: ["light", "dark"],
+      owner: first,
+    });
+
+    expect(controller.getAvailableThemes()).toEqual(["light", "dark", "ocean"]);
+  });
+
+  it("releases a contribution when its provider unmounts", () => {
+    const controller = createThemeController(createHost().host);
+    const owner = {};
+
+    controller.configure({
+      defaultTheme: "light",
+      themes: ["light", "dark", "ocean"],
+      owner,
+    });
+
+    controller.releaseThemes(owner);
+
+    expect(controller.getAvailableThemes()).toEqual([]);
+    expect(controller.getSelection()).toBe("light");
+  });
+
+  it("falls back when the withdrawn theme was the owner's default", () => {
+    const controller = createThemeController(createHost().host);
+    const owner = {};
+
+    controller.configure({
+      defaultTheme: "ocean",
+      themes: ["light", "dark", "ocean"],
+      owner,
+    });
+
+    controller.configure({
+      defaultTheme: "ocean",
+      themes: ["light", "dark"],
+      owner,
+    });
+
+    expect(controller.getSelection()).toBe("light");
+    expect(controller.getResolvedTheme()).toBe("light");
+  });
+});

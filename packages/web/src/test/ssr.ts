@@ -16,27 +16,34 @@
  * server-rendering test does.
  */
 
-import type { ExternalConfig } from "@asheeui/core";
+import type { ExternalColorConfig, ExternalConfig } from "@asheeui/core";
 import { act } from "@testing-library/react";
 import { createElement, type ReactElement } from "react";
 import { hydrateRoot, type Root } from "react-dom/client";
 import { renderToString } from "react-dom/server";
 import { AsheeUIProvider } from "../AsheeUIProvider";
 
+/** The options the provider accepts in these helpers. */
+export interface ProviderTestOptions {
+  config?: ExternalConfig;
+  themes?: ExternalColorConfig;
+}
+
 /**
  * Render `element` to an HTML string inside the framework provider.
  *
  * @param element - Element to render on the server.
- * @param options - Optional global configuration for the provider.
+ * @param options - Optional global configuration and runtime themes for the provider.
  * @returns The rendered markup.
  */
 export function renderToServerString(
   element: ReactElement,
-  options: { config?: ExternalConfig } = {},
+  options: ProviderTestOptions = {},
 ): string {
   return renderToString(
     createElement(AsheeUIProvider, {
       config: options.config,
+      themes: options.themes,
       children: element,
     }),
   );
@@ -68,7 +75,7 @@ export interface HydrationResult {
  */
 export function renderHydrated(
   element: ReactElement,
-  options: { config?: ExternalConfig } = {},
+  options: ProviderTestOptions = {},
 ): HydrationResult {
   const container = document.createElement("div");
   container.innerHTML = renderToServerString(element, options);
@@ -88,6 +95,7 @@ export function renderHydrated(
         container,
         createElement(AsheeUIProvider, {
           config: options.config,
+          themes: options.themes,
           children: element,
         }),
         {
@@ -124,7 +132,7 @@ export function renderHydrated(
  */
 export function expectHydrationClean(
   element: ReactElement,
-  options: { config?: ExternalConfig } = {},
+  options: ProviderTestOptions = {},
 ): void {
   const result = renderHydrated(element, options);
 

@@ -39,6 +39,8 @@
 import {
   deprecatedAlias,
   deprecateMany,
+  type ExternalColorConfig,
+  mergeRuntimeThemes,
   selectTheme,
   type ThemeStorage,
 } from "@asheeui/core";
@@ -86,6 +88,17 @@ export interface AsheeUIProviderProps {
   config?: NativeExternalConfig;
 
   /**
+   * Themes the application added while it was running.
+   *
+   * The same definitions the web provider accepts: partial palettes that extend a built-in, a
+   * configured theme or another runtime theme. They are merged over `config.color` before
+   * resolution, so inheritance and validation are shared. `light` and `dark` are reserved; retune
+   * them in `config.color`. Removing a runtime name removes it from the picker and repaints from
+   * the configured definition, if one exists.
+   */
+  themes?: ExternalColorConfig;
+
+  /**
    * An optional adapter the theme selection is persisted through.
    *
    * The framework installs no storage package: persistence is the application's dependency,
@@ -128,6 +141,7 @@ export interface AsheeUIProviderProps {
  */
 export function AsheeUIProvider({
   config,
+  themes,
   persistTheme,
   children,
 }: AsheeUIProviderProps) {
@@ -135,11 +149,15 @@ export function AsheeUIProvider({
   // resolved configuration (`color`), so this provider does not resolve the theme a second time and
   // a component that reads `config.color` reads the same palettes the screen was painted with.
   const value = useMemo(() => {
+    // Runtime themes take the same path as configured ones: merge, validate, resolve. The merge
+    // keeps the native configuration's platform-only fields (`defaultSize`).
+    const merged = mergeRuntimeThemes(config, themes);
+
     // The ledger's config half: an option only the web can honour is accepted and said out
     // loud here, once per option for the process.
-    auditUnsupportedConfig((config ?? {}) as NativeExternalConfig);
-    return resolveNativeConfig(config);
-  }, [config]);
+    auditUnsupportedConfig(merged as NativeExternalConfig);
+    return resolveNativeConfig(merged);
+  }, [config, themes]);
 
   // The platform's own answer, which is what "system" means. A platform that reports nothing
   // is a light platform until it says otherwise.
@@ -151,6 +169,11 @@ export function AsheeUIProvider({
   // source answers the *first* paint.
   const isConfigured = useRef(false);
 
+  // One stable token per provider instance. It lets a changed `themes` prop replace this
+  // provider's contribution, so a removed runtime theme leaves the picker instead of
+  // accumulating as a name no palette answers.
+  const owner = useRef<object>({});
+
   useEffect(() => {
     // The application's storage, installed before the controller reads it. Without an
     // adapter the controller keeps the choice in memory for the session.
@@ -160,10 +183,20 @@ export function AsheeUIProvider({
       defaultTheme: value.defaultTheme,
       themes: Object.keys(value.color),
       ownsDocument: true,
+      owner: owner.current,
     });
 
     isConfigured.current = true;
   }, [value, persistTheme]);
+
+  // A provider that unmounts releases its contribution, so a nested demo's runtime theme
+  // does not remain selectable after the demo is gone.
+  useEffect(
+    () => () => {
+      themeController.releaseThemes(owner.current);
+    },
+    [],
+  );
 
   // The controller is the source of truth after configuration: `setTheme`, the operating
   // system's scheme and the stored selection all reach the screen through this snapshot.
