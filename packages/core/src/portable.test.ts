@@ -163,17 +163,31 @@ describe("PORTABLE_API", () => {
 
   it("names a real batch in every pending work package", () => {
     // The ratchet points at the plan, so an id has to be a batch the plan actually
-    // defines. Reading the plan is allowed here and in the guard; core itself only
-    // publishes the names.
-    const plan = readFileSync(join(ROOT, "IMPLEMENTATION-PLAN.md"), "utf8");
+    // defines. The plan is an internal working document and is not tracked, so a checkout
+    // without it is valid as long as there is nothing pending to check; when a pending id
+    // is added, the plan has to be present with it.
+    const pending = PORTABLE_API.flatMap((entry) =>
+      (entry.pending ?? []).map((id) => ({ name: entry.name, id })),
+    );
+    if (pending.length === 0) {
+      expect(pending).toEqual([]);
+      return;
+    }
+
+    const planPath = join(ROOT, "IMPLEMENTATION-PLAN.md");
+    if (!existsSync(planPath)) {
+      throw new Error(
+        "PORTABLE_API has pending work packages but IMPLEMENTATION-PLAN.md is not in this checkout; keep the plan beside the list when the ratchet is in use.",
+      );
+    }
+
+    const plan = readFileSync(planPath, "utf8");
     const batches = new Set(
       [...plan.matchAll(/^#### (B\d+)\b/gm)].map((match) => match[1]),
     );
-    const unknown = PORTABLE_API.flatMap((entry) =>
-      (entry.pending ?? [])
-        .filter((id) => !batches.has(id))
-        .map((id) => `${entry.name}: ${id}`),
-    );
+    const unknown = pending
+      .filter((entry) => !batches.has(entry.id))
+      .map((entry) => `${entry.name}: ${entry.id}`);
 
     expect(unknown).toEqual([]);
   });
