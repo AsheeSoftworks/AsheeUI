@@ -31,6 +31,7 @@ interface MatrixEntry {
   module: string;
   support: string;
   native?: string;
+  subpath?: string;
 }
 
 /**
@@ -128,6 +129,11 @@ describe("PORTABLE_API", () => {
       .filter(
         (entry) => entry.support === "shared" || entry.support === "shared-api",
       )
+      // A component published on a subpath is not on the umbrella's root surface: the
+      // section kit is `asheeui/section-kit`, and the umbrella's own suite asserts its
+      // exact contents. The matrix records the subpath so this test can tell the two
+      // apart instead of demanding that `ActionGroup` appear at the root.
+      .filter((entry) => entry.subpath === undefined)
       .filter(
         (entry) =>
           !portableNamesOf(entry).some((candidate) => names.has(candidate)),

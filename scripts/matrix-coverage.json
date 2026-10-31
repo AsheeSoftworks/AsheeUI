@@ -1,0 +1,16 @@
+{
+  "aliases": {
+    "Dropdown": "Dropmenu",
+    "HStack": "Stack",
+    "KeyboardProvider": "Keyboard",
+    "OnScreenKeyboard": "Keyboard",
+    "PageContent": "Page",
+    "PageFooter": "Page",
+    "PageHeader": "Page",
+    "RadioGroup": "Radio",
+    "Text": "Typography",
+    "ToastItem": "Toast",
+    "ToastProvider": "Toast",
+    "VStack": "Stack"
+  }
+}

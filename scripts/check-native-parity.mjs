@@ -18,6 +18,13 @@
  * following the package's own entry point through its `export *` statements, so the
  * check asks what the package publishes rather than what its file names suggest.
  *
+ * Since B24 the guard also runs the coverage assertion `NATIVE-PARITY-REPORT.md` §F13
+ * describes: the web package's public entries — `"."` and `"./section-kit"` — must have no
+ * public component without a matrix entry. `scripts/lib/matrix-coverage.mjs` owns that
+ * check, and the matrix's own test calls the same function, so a component cannot be added
+ * to one reader and not the other. The section-kit subpath is read on both platforms for
+ * the same reason: a matrix entry that promises `ActionGroup` must find it where it lives.
+ *
  * Usage:
  *
  *   node scripts/check-native-parity.mjs          # verify, exit non-zero on drift
@@ -27,6 +34,7 @@
 import { existsSync, readFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { evaluateMatrixCoverage } from "./lib/matrix-coverage.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 /**
@@ -35,7 +43,16 @@ const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
  * runtime; reading the source keeps this guard independent of a build.
  */
 const MATRIX_FILE = join(ROOT, "packages/core/src/matrix.ts");
-const NATIVE_ENTRY = join(ROOT, "packages/native/src/index.ts");
+/**
+ * Every entry point the native package publishes a component through.
+ *
+ * `./section-kit` is a subpath, so it is named explicitly: `SectionHeading` and `ActionGroup`
+ * are public components that the root entry does not re-export.
+ */
+const NATIVE_ENTRIES = [
+  join(ROOT, "packages/native/src/index.ts"),
+  join(ROOT, "packages/native/src/components/layouts/section-kit/index.ts"),
+];
 const QUEUE_FILE = join(ROOT, "scripts/native-parity.json");
 
 /** The classifications that promise a native implementation. */
@@ -171,7 +188,9 @@ const promised = entries
 
 const promisedModules = new Set(promised.map((entry) => entry.module));
 const published = new Set();
-collectExports(NATIVE_ENTRY, published, new Set());
+for (const entry of NATIVE_ENTRIES) {
+  collectExports(entry, published, new Set());
+}
 
 const queuedForNothing = [...pending].filter(
   (module) => !promisedModules.has(module),
@@ -235,6 +254,37 @@ if (missing.length > 0) {
   process.exit(1);
 }
 
+// The coverage assertion: the matrix is only the statement of record if it actually
+// names every public component the web package publishes.
+const coverage = evaluateMatrixCoverage({ root: ROOT });
+
+if (
+  coverage.uncovered.length > 0 ||
+  coverage.unknownAliases.length > 0 ||
+  coverage.staleAliases.length > 0
+) {
+  console.error(
+    "Native parity: the matrix does not cover every public component the web package publishes:",
+  );
+  for (const name of coverage.uncovered) {
+    console.error(
+      `  - ${name} has no matrix entry (add one, or an alias in scripts/matrix-coverage.json when it is a part of an existing module)`,
+    );
+  }
+  for (const alias of coverage.unknownAliases) {
+    console.error(`  - the alias ${alias} names no matrix entry`);
+  }
+  for (const name of coverage.staleAliases) {
+    console.error(
+      `  - the alias ${name} names an export the web package no longer publishes; remove it`,
+    );
+  }
+  console.error(
+    "\nThe matrix is the statement of what each platform promises. A component nobody classified is a platform decision nobody made.",
+  );
+  process.exit(1);
+}
+
 console.log(
-  `Native parity: ${shipped} of ${promised.length} promised components are implemented, ${pending.size} queued.`,
+  `Native parity: ${shipped} of ${promised.length} promised components are implemented, ${pending.size} queued; the matrix covers ${coverage.publicComponents.length} public components.`,
 );

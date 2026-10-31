@@ -17,6 +17,27 @@
  * - `native-only`: the reverse, a native concept the web has no equivalent for.
  * - `not-applicable`: the component compensates for a browser constraint that the
  *   platform itself solves, so porting it would add a defect rather than a feature.
+ *
+ * ## Decisions this matrix records
+ *
+ * - `Breadcrumb` stays **web-only** (WP-13 is not taken): a URL trail has no device
+ *   counterpart, and a web application imports it from `@asheeui/web`.
+ * - `ResizableScreen` is **web-only** (D-6): a draggable split is a desktop idiom; a
+ *   platform's split view comes from the platform.
+ * - The keyboard family is **not-applicable** (D-7): a rendered keyboard compensates for a
+ *   browser constraint, and the device already supplies one.
+ * - Shadows and blur **diverge** (D-4): each renderer uses its platform's elevation and
+ *   blur, and the matrix does not pretend the two are pixel-equal. The shared token scale
+ *   is the vocabulary, not a guarantee that every level renders identically.
+ * - The two Tailwind majors (D-8) are a packaging decision rather than a component one:
+ *   the web renderer is Tailwind 4 and the native renderer is NativeWind on Tailwind 3, so
+ *   an application that targets both keeps the two pipelines separate. `asheeui`'s README
+ *   states the peer range.
+ *
+ * A component that is missing from this list is a component whose platform support nobody
+ * decided; `scripts/lib/matrix-coverage.mjs` fails the build for it. An export that is an
+ * alias or a part of a bigger module (`Text` → `Typography`, `PageHeader` → `Page`) is
+ * declared in `scripts/matrix-coverage.json` instead.
  */
 
 /**
@@ -45,6 +66,14 @@ export interface ComponentSupport {
   /** The native equivalent when the two implementations differ. */
   native?: string | undefined;
 
+  /**
+   * The subpath that publishes the component when the root entry does not.
+   *
+   * The section kit is public through the `section-kit` subpath rather than the root entry,
+   * so its components are classified here but are not part of the umbrella's root surface.
+   */
+  subpath?: string | undefined;
+
   /** The reason for the classification, where it is not self-evident. */
   note?: string | undefined;
 }
@@ -56,6 +85,7 @@ export interface ComponentSupport {
  * documentation, and the test suite keeps the two in step.
  */
 export const COMPONENT_SUPPORT: readonly ComponentSupport[] = [
+  { name: "AsheeUIProvider", module: "provider", support: "shared" },
   {
     name: "Accordion",
     module: "accordion",
@@ -117,6 +147,7 @@ export const COMPONENT_SUPPORT: readonly ComponentSupport[] = [
     native: "Clipboard",
     note: "Native copies through the platform clipboard module",
   },
+  { name: "CopyButton", module: "copy-button", support: "shared" },
   {
     name: "Container",
     module: "container",
@@ -288,6 +319,27 @@ export const COMPONENT_SUPPORT: readonly ComponentSupport[] = [
     note: "Composes the shared input contract with a search landmark and a clear control; `shortcut` is accepted and warns",
   },
   { name: "Section", module: "section", support: "shared" },
+  {
+    name: "ActionGroup",
+    module: "action-group",
+    support: "shared",
+    subpath: "section-kit",
+    note: "The section kit's action row; both renderers publish it on their section-kit subpath",
+  },
+  {
+    name: "SectionHeading",
+    module: "section-heading",
+    support: "shared",
+    subpath: "section-kit",
+    note: "The section kit's heading block; both renderers publish it on their section-kit subpath",
+  },
+  {
+    name: "SkipLink",
+    module: "skip-link",
+    support: "web-only",
+    subpath: "section-kit",
+    note: "A skip link compensates for a browser's tab order; the platform's focus order and accessibility rotor need no equivalent, so `asheeui/section-kit` does not carry it",
+  },
   {
     name: "Sidebar",
     module: "sidebar",

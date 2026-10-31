@@ -496,7 +496,12 @@ export function evaluateUmbrella({ root = process.cwd() } = {}) {
     };
 
     const promised = matrix.filter(
-      (entry) => entry.support === "shared" || entry.support === "shared-api",
+      (entry) =>
+        (entry.support === "shared" || entry.support === "shared-api") &&
+        // A subpath component is public through `asheeui/section-kit`, not the root
+        // entry, so it is covered by assertion 6 and the umbrella's own section-kit test
+        // rather than by this surface.
+        entry.subpath === undefined,
     );
     const matrixAbsent = promised
       .filter(

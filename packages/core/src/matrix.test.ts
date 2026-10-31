@@ -9,9 +9,10 @@
  * support nobody has decided.
  */
 
-import { readFileSync } from "node:fs";
+import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
+import { evaluateMatrixCoverage } from "../../../scripts/lib/matrix-coverage.mjs";
 import {
   COMPONENT_SUPPORT,
   findComponentSupport,
@@ -29,32 +30,6 @@ import {
   SPACING_STEP,
   VARIANT,
 } from "./tokens";
-
-/**
- * Where the matrix's array literal begins in its source file.
- *
- * It is `scripts/check-native-parity.mjs`'s own pattern, and it is repeated here on purpose: the
- * guard reads the matrix as *data* rather than importing it, so that it never verifies a stale
- * build, and a component is only promised anything if that reader can see it.
- */
-const MATRIX_ARRAY = /COMPONENT_SUPPORT[^=]*=\s*\[([\s\S]*?)\n\];/;
-
-/**
- * Read the classified module of every entry the parity guard would see.
- *
- * @returns The modules, in source order.
- */
-function modulesInMatrixSource(): string[] {
-  const source = readFileSync(
-    fileURLToPath(new URL("./matrix.ts", import.meta.url)),
-    "utf8",
-  );
-  const array = source.match(MATRIX_ARRAY)?.[1] ?? "";
-
-  return [...array.matchAll(/\{([^{}]*)\}/g)]
-    .map((match) => /module:\s*"([^"]*)"/.exec(match[1])?.[1])
-    .filter((module): module is string => module !== undefined);
-}
 
 describe("the design language", () => {
   it("orders the spacing scale from the smallest step to the largest", () => {
@@ -113,16 +88,23 @@ describe("the compatibility matrix", () => {
     expect(new Set(modules).size).toBe(modules.length);
   });
 
-  it("covers the component inventory", () => {
-    // The number is not stated here any more: it is read from the same source the parity guard
-    // reads, so the two readers cannot disagree about how many components the framework
-    // classifies, and an entry the guard's reader cannot see fails this test instead of quietly
-    // shrinking what the guard promises. B24 replaces this with the coverage check
-    // `NATIVE-PARITY-REPORT.md` F13 describes, which asks the web package's entry points instead.
-    const classified = modulesInMatrixSource();
+  it("covers every public component the web package publishes", () => {
+    // F13's coverage check, shared with the parity guard so the two readers cannot
+    // disagree: the web package's `"."` and `"./section-kit"` entries must have no public
+    // component without a matrix entry or a declared alias. A component the matrix misses
+    // is a platform decision nobody made, which is exactly what a new component used to be
+    // able to ship as.
+    const root = resolve(dirname(fileURLToPath(import.meta.url)), "../../..");
+    const coverage = evaluateMatrixCoverage({ root });
 
-    expect(COMPONENT_SUPPORT).toHaveLength(classified.length);
-    expect(classified).toEqual(COMPONENT_SUPPORT.map((entry) => entry.module));
+    expect(coverage.uncovered).toEqual([]);
+    expect(coverage.unknownAliases).toEqual([]);
+    expect(coverage.staleAliases).toEqual([]);
+    // The matrix is read as data by both readers, so an entry one of them cannot see
+    // promises nothing; the source order is the one the guard reports.
+    expect(coverage.entries.map((entry) => entry.module)).toEqual(
+      COMPONENT_SUPPORT.map((entry) => entry.module),
+    );
   });
 
   it("uses a classification the vocabulary explains", () => {
