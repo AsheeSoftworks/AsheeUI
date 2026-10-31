@@ -15,5 +15,6 @@ export * from "./screens/Studio";
 export * from "./screens/WorkoutDetail";
 export * from "./screens/Workouts";
 export * from "./theme";
+export * from "./theme-settings";
 
 export type { AsheePuckData } from "@asheeui/puck";

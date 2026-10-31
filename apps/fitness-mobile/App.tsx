@@ -1,25 +1,25 @@
 /**
  * The Expo entry.
  *
- * The provider and the toast queue wrap the shell, exactly as they do on the web; the
- * theme, the configuration and every screen come from the same shared package.
+ * The theme root loads the persisted definitions before the provider mounts; the provider,
+ * toast queue and device shell then wrap the same shared screens as the web.
  */
-import { config } from "@asheeui/fitness-shared";
-import { AsheeUIProvider, ToastProvider } from "asheeui";
+import { ToastProvider } from "asheeui";
 import { StatusBar } from "expo-status-bar";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { MobileShell } from "./src/MobileShell";
+import { ThemeRoot } from "./src/ThemeRoot";
 import "./global.css";
 
 export default function App() {
   return (
     <SafeAreaProvider>
-      <AsheeUIProvider config={config}>
+      <ThemeRoot>
         <ToastProvider>
           <StatusBar style="auto" />
           <MobileShell />
         </ToastProvider>
-      </AsheeUIProvider>
+      </ThemeRoot>
     </SafeAreaProvider>
   );
 }

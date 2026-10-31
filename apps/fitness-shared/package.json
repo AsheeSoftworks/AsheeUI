@@ -10,7 +10,9 @@
     "check-types": "tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {
+    "@asheeui/core": "workspace:^",
     "@asheeui/puck": "workspace:^",
+    "@asheeui/theme": "workspace:^",
     "asheeui": "workspace:^"
   },
   "peerDependencies": {

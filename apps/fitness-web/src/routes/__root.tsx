@@ -1,8 +1,8 @@
-import { config } from "@asheeui/fitness-shared";
 import { createRootRoute, HeadContent, Scripts } from "@tanstack/react-router";
-import { AsheeUIProvider, ToastProvider } from "asheeui";
+import { ToastProvider } from "asheeui";
 import type { ReactNode } from "react";
 import { AppShell } from "../shell/AppShell";
+import { ThemeRoot } from "../shell/ThemeRoot";
 import appCss from "../styles.css?url";
 
 /** The HTML document, the provider, the toast queue and the top navigation. */
@@ -13,11 +13,11 @@ function RootDocument({ children }: { children: ReactNode }) {
         <HeadContent />
       </head>
       <body>
-        <AsheeUIProvider config={config}>
+        <ThemeRoot>
           <ToastProvider>
             <AppShell>{children}</AppShell>
           </ToastProvider>
-        </AsheeUIProvider>
+        </ThemeRoot>
         <Scripts />
       </body>
     </html>

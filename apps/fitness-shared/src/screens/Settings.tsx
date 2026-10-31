@@ -21,15 +21,21 @@ import {
   RadioGroup,
   Switch,
   Typography,
-  type ThemeSelection,
+  type ThemeName,
   useTheme,
   useToast,
   VStack,
 } from "asheeui";
+import {
+  ThemeEditor,
+  ThemeGallery,
+  ThemeSwitcher,
+} from "@asheeui/theme";
 import { useState } from "react";
 import { Panel, ScreenHeading } from "../components";
 import { profile } from "../data";
 import type { ScreenProps } from "../theme";
+import { useThemeSettings } from "../theme-settings";
 
 const UNITS = [
   { label: "Metric (kg, km)", value: "metric" },
@@ -45,15 +51,28 @@ const THEME_LABELS: Record<string, string> = {
 /** Settings. */
 export function SettingsScreen(_props: ScreenProps) {
   const toast = useToast();
-  const { theme, resolvedTheme, setTheme, availableThemes } = useTheme();
+  const { theme, resolvedTheme, setTheme } = useTheme();
+  const { themes: customThemes, onChange: setCustomThemes } = useThemeSettings();
   const [units, setUnits] = useState("metric");
   const [notifications, setNotifications] = useState(true);
   const [weekly, setWeekly] = useState("three");
   const [deleting, setDeleting] = useState(false);
   const [shortcuts, setShortcuts] = useState(false);
   const [email, setEmail] = useState("maya@example.com");
+  const [editingTheme, setEditingTheme] = useState<ThemeName | undefined>();
+  const [editorOpen, setEditorOpen] = useState(false);
 
-  const themes: string[] = ["system", ...availableThemes];
+  const openEditor = (name?: ThemeName) => {
+    setEditingTheme(name);
+    setEditorOpen(true);
+  };
+
+  const removeTheme = (name: ThemeName) => {
+    const next = { ...customThemes };
+    delete next[name];
+    setCustomThemes(next);
+    if (theme === name) setTheme("system");
+  };
 
   return (
     <VStack gap="xl">
@@ -123,21 +142,26 @@ export function SettingsScreen(_props: ScreenProps) {
                 {resolvedTheme}
               </Badge>
             </HStack>
+            <ThemeSwitcher showSystem label="Theme" />
             <VStack gap="sm">
-              {themes.map((choice) => (
-                <Button
-                  key={choice}
-                  variant={theme === choice ? "solid" : "bordered"}
-                  size="sm"
-                  onPress={() => setTheme(choice as ThemeSelection)}
-                >
-                  {THEME_LABELS[choice] ?? choice}
-                </Button>
-              ))}
+              <HStack justify="between" align="center">
+                <Typography role="label">Custom themes</Typography>
+                <Badge color="secondary" variant="bordered" size="sm">
+                  {Object.keys(customThemes).length}
+                </Badge>
+              </HStack>
+              <ThemeGallery
+                themes={customThemes}
+                activeTheme={theme}
+                onSelect={(name) => setTheme(name)}
+                onEdit={openEditor}
+                onDelete={removeTheme}
+                onCreate={() => openEditor()}
+              />
             </VStack>
             <Typography role="caption" tone="muted">
-              The choice is stored by the platform: a document preference on the web, the
-              application's storage adapter on a device.
+              The selection is stored by the platform. Theme definitions live with the
+              application: localStorage on the web, AsyncStorage on a device.
             </Typography>
           </VStack>
         </Panel>
@@ -219,6 +243,30 @@ export function SettingsScreen(_props: ScreenProps) {
               </HStack>
             ))}
           </VStack>
+        </VStack>
+      </Drawer>
+
+      <Drawer
+        isOpen={editorOpen}
+        onClose={() => setEditorOpen(false)}
+        placement="right"
+        size="md"
+      >
+        <VStack gap="md">
+          <Typography role="heading-md">
+            {editingTheme ? "Edit theme" : "Create a theme"}
+          </Typography>
+          <ThemeEditor
+            themes={customThemes}
+            onChange={setCustomThemes}
+            initialTheme={editingTheme}
+            activeTheme={theme}
+            onApply={(name) => {
+              setTheme(name);
+              setEditorOpen(false);
+            }}
+            onCancel={() => setEditorOpen(false)}
+          />
         </VStack>
       </Drawer>
     </VStack>
