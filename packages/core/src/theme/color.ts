@@ -134,7 +134,7 @@ export type ColorConfig = Record<KnownThemeName, ColorVariant> &
  * A color variant that can be partially defined.
  * Custom themes can extend any theme, built in or custom, to inherit its colors.
  */
-export type ExternalColorVariant = Partial<ColorVariant> & {
+type ExternalColorVariant = Partial<ColorVariant> & {
   /**
    * Optional theme to extend.
    * When provided, the custom theme inherits colors from the theme it names, with any
