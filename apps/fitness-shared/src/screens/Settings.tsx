@@ -27,11 +27,13 @@ import {
   VStack,
 } from "asheeui";
 import {
+  THEME_PRESETS,
   ThemeEditor,
   ThemeGallery,
   ThemeSwitcher,
+  type ThemePreset,
 } from "@asheeui/theme";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Panel, ScreenHeading } from "../components";
 import { profile } from "../data";
 import type { ScreenProps } from "../theme";
@@ -61,6 +63,26 @@ export function SettingsScreen(_props: ScreenProps) {
   const [email, setEmail] = useState("maya@example.com");
   const [editingTheme, setEditingTheme] = useState<ThemeName | undefined>();
   const [editorOpen, setEditorOpen] = useState(false);
+  const [pendingTheme, setPendingTheme] = useState<ThemeName | undefined>();
+
+  // A preset is added to the map first; the controller can only select a theme the provider has
+  // configured, so the selection waits for the next render that carries the new name.
+  useEffect(() => {
+    if (pendingTheme && customThemes[pendingTheme]) {
+      setTheme(pendingTheme);
+      setPendingTheme(undefined);
+    }
+  }, [customThemes, pendingTheme, setTheme]);
+
+  const applyPreset = (preset: ThemePreset) => {
+    if (customThemes[preset.slug]) {
+      setTheme(preset.slug);
+      return;
+    }
+
+    setCustomThemes({ ...customThemes, [preset.slug]: preset.definition });
+    setPendingTheme(preset.slug);
+  };
 
   const openEditor = (name?: ThemeName) => {
     setEditingTheme(name);
@@ -153,6 +175,8 @@ export function SettingsScreen(_props: ScreenProps) {
               <ThemeGallery
                 themes={customThemes}
                 activeTheme={theme}
+                presets={THEME_PRESETS}
+                onPresetSelect={applyPreset}
                 onSelect={(name) => setTheme(name)}
                 onEdit={openEditor}
                 onDelete={removeTheme}

@@ -12,4 +12,5 @@ export * from "./components/ThemeCard";
 export * from "./components/ThemeEditor";
 export * from "./components/ThemeGallery";
 export * from "./components/ThemeSwitcher";
+export * from "./lib/presets";
 export * from "./lib/slug";

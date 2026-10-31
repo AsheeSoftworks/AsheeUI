@@ -12,6 +12,7 @@ export default defineConfig({
   test: {
     environment: "jsdom",
     include: ["src/**/*.test.{ts,tsx}"],
+    exclude: ["**/node_modules/**", "**/*.native.test.{ts,tsx}"],
     setupFiles: ["../web/src/test/setup.ts"],
     restoreMocks: true,
     testTimeout: 20_000,

@@ -108,7 +108,7 @@ export function ThemeCard({
           )}
           {base && (
             <Badge color="secondary" variant="bordered" size="sm">
-              extends {base}
+              {`extends ${base}`}
             </Badge>
           )}
         </HStack>

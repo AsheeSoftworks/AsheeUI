@@ -49,6 +49,26 @@ complete map; the application persists it and passes it to `AsheeUIProvider them
 palette, and `ColorField`/`ContrastBadge` are the building blocks if an application wants its own
 form.
 
+## Starter presets
+
+`THEME_PRESETS` is a small set of ready definitions; the gallery can offer them without saving
+anything itself:
+
+```tsx
+import { THEME_PRESETS, ThemeGallery } from "@asheeui/theme";
+
+<ThemeGallery
+  themes={themes}
+  presets={THEME_PRESETS}
+  onPresetSelect={(preset) => {
+    setThemes({ ...themes, [preset.slug]: preset.definition });
+  }}
+/>;
+```
+
+The application decides whether a preset replaces an existing theme or is added beside it. Select
+it on the next render, after the provider knows the name.
+
 ## Rules the editor follows
 
 - `light`, `dark` and `system` are reserved; retune the built-ins in `config.color`.
