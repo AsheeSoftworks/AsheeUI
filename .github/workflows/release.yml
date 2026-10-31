@@ -43,5 +43,8 @@ jobs:
       - name: Native Artifact
         run: pnpm check:native-artifact
 
+      # Release runs the suite one package at a time: the native renderer's tests are the
+      # heaviest, and a two-core runner that is also running the web, puck and umbrella
+      # suites can push a single React Native render past the test's wall-clock budget.
       - name: Run Tests
-        run: pnpm test
+        run: pnpm test --concurrency=1
