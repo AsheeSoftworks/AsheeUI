@@ -10,13 +10,7 @@
 
 "use client";
 
-import {
-  resolveConfigCascade,
-  TESTIMONIAL_HEADING_CLASS,
-  TESTIMONIAL_PERSON_CLASS,
-  TESTIMONIAL_QUOTE_CLASS,
-  type TestimonialItem,
-} from "@asheeui/core";
+import { resolveConfigCascade, type TestimonialItem } from "@asheeui/core";
 import {
   type ElementType,
   forwardRef,
@@ -25,6 +19,11 @@ import {
   useId,
 } from "react";
 import { useAsheeConfig } from "../../../libs/context";
+import {
+  TESTIMONIAL_HEADING_CLASS,
+  TESTIMONIAL_PERSON_CLASS,
+  TESTIMONIAL_QUOTE_CLASS,
+} from "../../../styles/testimonials";
 import { Avatar } from "../../data-display/avatar/Avatar";
 import { Card } from "../../data-display/card/Card";
 import { Container } from "../../layouts/container/Container";

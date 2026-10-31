@@ -12,7 +12,7 @@
 import { fireEvent, render } from "@testing-library/react-native";
 import type { ReactElement } from "react";
 import { Text, View } from "react-native";
-import { AsheeNativeProvider } from "../../../provider/AsheeNativeProvider";
+import { AsheeUIProvider } from "../../../provider/AsheeUIProvider";
 import { openDestination } from "../../../utils/open-destination";
 import { Link } from "./Link";
 
@@ -34,9 +34,7 @@ beforeEach(() => {
  * @returns The rendered tree and its queries.
  */
 async function renderLink(ui: ReactElement, config?: object) {
-  return render(
-    <AsheeNativeProvider config={config}>{ui}</AsheeNativeProvider>,
-  );
+  return render(<AsheeUIProvider config={config}>{ui}</AsheeUIProvider>);
 }
 
 describe("Native Link", () => {
@@ -215,9 +213,7 @@ describe("Native Link", () => {
   it("refuses to render outside the provider, because that is a setup mistake", async () => {
     const silence = jest.spyOn(console, "error").mockImplementation(() => {});
 
-    await expect(render(<Link>Terms</Link>)).rejects.toThrow(
-      /AsheeNativeProvider/,
-    );
+    await expect(render(<Link>Terms</Link>)).rejects.toThrow(/AsheeUIProvider/);
 
     silence.mockRestore();
   });

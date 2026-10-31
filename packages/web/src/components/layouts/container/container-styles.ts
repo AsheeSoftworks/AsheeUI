@@ -4,7 +4,7 @@
  * primitive: maximum widths and the shared base classes.
  */
 
-import { SPACE_PADDING_X_CLASS } from "@asheeui/core";
+import { SPACE_PADDING_X_CLASS } from "../../../styles/spacing";
 import type { ContainerSize } from "./container-config";
 
 /**

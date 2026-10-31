@@ -1,6 +1,7 @@
+import { resolveBreakpoint as sharedResolveBreakpoint } from "@asheeui/core";
 import { act, render } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import { useBreakpoint } from "./use-breakpoint";
+import { resolveBreakpoint, useBreakpoint } from "./use-breakpoint";
 
 /**
  * Sets the window width the hook measures.
@@ -79,5 +80,11 @@ describe("useBreakpoint", () => {
     const view = render(<Probe />);
 
     expect(view.getByTestId("state")).toHaveTextContent("md:768:false");
+  });
+
+  it("re-exports the shared rule, rather than restating it", () => {
+    // The boundary is core's: a device and a browser that say `lg` mean the same width,
+    // and two copies of a boundary are two boundaries.
+    expect(resolveBreakpoint).toBe(sharedResolveBreakpoint);
   });
 });

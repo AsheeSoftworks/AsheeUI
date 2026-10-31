@@ -8,7 +8,7 @@
  */
 "use client";
 
-import { cn, resolveCascade } from "@asheeui/core";
+import { resolveCascade } from "@asheeui/core";
 import {
   forwardRef,
   type HTMLAttributes,
@@ -21,6 +21,7 @@ import {
   useState,
 } from "react";
 import { useAsheeConfig } from "../../../libs/context";
+import { cn } from "../../../utils/cn";
 import {
   FALLBACK_RESIZABLE_SCREEN_CONFIG,
   type ResizableOrientation,

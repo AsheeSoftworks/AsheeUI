@@ -12,4 +12,4 @@ export {
   SEARCH_INPUT_HINT_CLASS,
   SEARCH_INPUT_HINT_SIZE_CLASS,
   SEARCH_INPUT_REGION_CLASS,
-} from "@asheeui/core";
+} from "../../../styles/search-input";

@@ -12,16 +12,16 @@
  * through the configuration cascade.
  */
 
-import { NATIVE_ANNOUNCEMENT_LIVE_REGION } from "@asheeui/core";
 import {
   act,
   fireEvent,
-  type ReactTestInstance,
   type RenderResult,
   render,
 } from "@testing-library/react-native";
 import type { ReactElement } from "react";
-import { AsheeNativeProvider } from "../../../provider/AsheeNativeProvider";
+import type { TestInstance } from "test-renderer";
+import { AsheeUIProvider } from "../../../provider/AsheeUIProvider";
+import { NATIVE_ANNOUNCEMENT_LIVE_REGION } from "../../../shared/announcement";
 import { RowList } from "./RowList";
 
 /** One invoice, which is what a row of the test list is. */
@@ -51,9 +51,7 @@ const COLUMNS = [
  * @returns The rendered tree and its queries.
  */
 async function renderList(ui: ReactElement, config?: object) {
-  return render(
-    <AsheeNativeProvider config={config}>{ui}</AsheeNativeProvider>,
-  );
+  return render(<AsheeUIProvider config={config}>{ui}</AsheeUIProvider>);
 }
 
 /**
@@ -86,7 +84,7 @@ function classesOfRow(view: RenderResult, index: number): string[] {
  * @returns The live region, or undefined when the wording is not announced.
  */
 function liveRegionOf(view: RenderResult, text: string): string | undefined {
-  let node: ReactTestInstance | null = view.getByText(text).parent;
+  let node: TestInstance | null = view.getByText(text).parent;
 
   while (node) {
     const { accessibilityLiveRegion } = node.props as {
@@ -428,7 +426,7 @@ describe("Native RowList", () => {
 
     await expect(
       render(<RowList data={INVOICES} columns={COLUMNS} />),
-    ).rejects.toThrow(/AsheeNativeProvider/);
+    ).rejects.toThrow(/AsheeUIProvider/);
 
     silence.mockRestore();
   });

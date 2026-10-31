@@ -39,36 +39,16 @@ export type {
   ThemeName,
   Variant,
 } from "@asheeui/core";
+/**
+ * The shared rules both renderers read.
+ *
+ * `resolveGridColumns` answers "how many columns does this grid show here"; the web's own
+ * `Grid` states its counts as classes and needs no number, but a component that measures
+ * its own container — or one written for both platforms — asks the question in a value.
+ */
+export { resolveGridColumns } from "@asheeui/core";
 export type { AsheeUIProviderProps } from "./AsheeUIProvider";
 export { AsheeUIProvider } from "./AsheeUIProvider";
-
-/**
- * Platform questions a shared component has to ask.
- *
- * Both are the same names and the same shapes the platform renderer exports, so a component
- * written once can ask them and mean the same thing on either platform. `useBreakpoint` is
- * the one that makes a *branch* possible: a media query styles an element, but choosing
- * between a table and cards decides which elements exist, and that needs a value.
- */
-export {
-  useBreakpoint,
-  type WebBreakpoint,
-  type WebBreakpointState,
-} from "./libs/use-breakpoint";
-export {
-  usePrefersReducedMotion,
-  useReduceMotion,
-} from "./libs/use-prefers-reduced-motion";
-
-/**
- * All component exports.
- * Each component is exported from its respective directory.
- *
- * Internal building blocks (`field` and `menu`) are deliberately not
- * exported. They are implementation details shared by the components that
- * use them, so they are not part of the public component surface and must
- * not be listed as components.
- */
 export * from "./components/data-display/accordion";
 export * from "./components/data-display/avatar";
 export * from "./components/data-display/badge";
@@ -147,6 +127,43 @@ export {
   useAsheeConfig,
 } from "./libs/context";
 /**
+ * Platform questions a shared component has to ask.
+ *
+ * Both are the same names and the same shapes the platform renderer exports, so a component
+ * written once can ask them and mean the same thing on either platform. `useBreakpoint` is
+ * the one that makes a *branch* possible: a media query styles an element, but choosing
+ * between a table and cards decides which elements exist, and that needs a value.
+ */
+export {
+  type BreakpointName,
+  type BreakpointState,
+  resolveBreakpoint,
+  useBreakpoint,
+  type WebBreakpoint,
+  type WebBreakpointState,
+} from "./libs/use-breakpoint";
+export {
+  usePrefersReducedMotion,
+  useReduceMotion,
+} from "./libs/use-prefers-reduced-motion";
+/**
+ * All component exports.
+ * Each component is exported from its respective directory.
+ *
+ * Internal building blocks (`field` and `menu`) are deliberately not
+ * exported. They are implementation details shared by the components that
+ * use them, so they are not part of the public component surface and must
+ * not be listed as components.
+ */
+/**
+ * The web renderer's own class dictionaries.
+ *
+ * They were `@asheeui/core`'s until C2. A class string states a decision about pixels, and the
+ * two platforms' pixels differ, so the strings a browser compiles live here and the shared
+ * contract keeps the tokens, the rules and the types. The names did not change.
+ */
+export * from "./styles";
+/**
  * Theme utilities and hooks.
  * These provide runtime theme management and reactivity.
  */
@@ -155,3 +172,21 @@ export {
   themeController,
 } from "./theme/controller";
 export { useTheme } from "./theme/useTheme";
+/**
+ * The renderer's own rules: the class merge, the stacking helpers, the animate resolver and the
+ * typed-date parser.
+ *
+ * They were `@asheeui/core`'s until C2. Each one states something only a browser can honour — a
+ * Tailwind conflict, a `z-index` derived from a stacking context, a `Date` parsed from a text
+ * field — so they belong to the renderer that compiles them, and the names did not change.
+ */
+export { cn } from "./utils/cn";
+export { parseDateString } from "./utils/parse-date";
+export { resolveAnimate } from "./utils/resolve-animate";
+export {
+  ASHEE_GLOBAL_LAYER,
+  ASHEE_LAYER,
+  establishesStackingContext,
+  resolveBaseZIndex,
+  resolveFloatingZIndex,
+} from "./utils/stacking";

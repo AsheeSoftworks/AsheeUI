@@ -9,7 +9,10 @@
  * support nobody has decided.
  */
 
+import { dirname, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
+import { evaluateMatrixCoverage } from "../../../scripts/lib/matrix-coverage.mjs";
 import {
   COMPONENT_SUPPORT,
   findComponentSupport,
@@ -85,11 +88,23 @@ describe("the compatibility matrix", () => {
     expect(new Set(modules).size).toBe(modules.length);
   });
 
-  it("covers the component inventory", () => {
-    // The matrix describes the 61 components the web package publishes. A new
-    // component must be classified here in the same change, so platform support is
-    // never left undecided.
-    expect(COMPONENT_SUPPORT).toHaveLength(61);
+  it("covers every public component the web package publishes", () => {
+    // F13's coverage check, shared with the parity guard so the two readers cannot
+    // disagree: the web package's `"."` and `"./section-kit"` entries must have no public
+    // component without a matrix entry or a declared alias. A component the matrix misses
+    // is a platform decision nobody made, which is exactly what a new component used to be
+    // able to ship as.
+    const root = resolve(dirname(fileURLToPath(import.meta.url)), "../../..");
+    const coverage = evaluateMatrixCoverage({ root });
+
+    expect(coverage.uncovered).toEqual([]);
+    expect(coverage.unknownAliases).toEqual([]);
+    expect(coverage.staleAliases).toEqual([]);
+    // The matrix is read as data by both readers, so an entry one of them cannot see
+    // promises nothing; the source order is the one the guard reports.
+    expect(coverage.entries.map((entry) => entry.module)).toEqual(
+      COMPONENT_SUPPORT.map((entry) => entry.module),
+    );
   });
 
   it("uses a classification the vocabulary explains", () => {

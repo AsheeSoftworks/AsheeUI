@@ -8,10 +8,19 @@
  * with a side placement resolving to the sheet the platform uses.
  */
 
-import { fireEvent, render } from "@testing-library/react-native";
+import {
+  fireEvent,
+  type RenderResult,
+  render,
+} from "@testing-library/react-native";
 import type { ReactElement } from "react";
 import { Text } from "react-native";
-import { AsheeNativeProvider } from "../../../provider/AsheeNativeProvider";
+import { AsheeUIProvider } from "../../../provider/AsheeUIProvider";
+import type {
+  DrawerContentProps,
+  DrawerOverlayProps,
+  DrawerPartOverride,
+} from "./Drawer";
 import { Drawer } from "./Drawer";
 
 /**
@@ -22,9 +31,7 @@ import { Drawer } from "./Drawer";
  * @returns The rendered tree and its queries.
  */
 async function renderDrawer(ui: ReactElement, config?: object) {
-  return render(
-    <AsheeNativeProvider config={config}>{ui}</AsheeNativeProvider>,
-  );
+  return render(<AsheeUIProvider config={config}>{ui}</AsheeUIProvider>);
 }
 
 /**
@@ -33,7 +40,7 @@ async function renderDrawer(ui: ReactElement, config?: object) {
  * @param view - The rendered tree.
  * @returns Its class string.
  */
-function sheetClasses(view: ReturnType<typeof render>): string {
+function sheetClasses(view: RenderResult): string {
   const sheet = view.getByText("Filters").parent as {
     props: { className?: string };
   };
@@ -50,7 +57,7 @@ function sheetClasses(view: ReturnType<typeof render>): string {
  *
  * @param view - The rendered tree.
  */
-function requestPlatformClose(view: ReturnType<typeof render>): void {
+function requestPlatformClose(view: RenderResult): void {
   const host = view.container
     .queryAll((node) => typeof node.props.onRequestClose === "function")
     .at(0);
@@ -244,6 +251,44 @@ describe("Native Drawer", () => {
     expect(sheetClasses(view).endsWith("mt-2")).toBe(true);
   });
 
+  it("names its part overrides the way the web renderer names them", async () => {
+    // The two part types are the shared spelling, so a shared description of a drawer's parts is
+    // written once. `DrawerPartOverride` is the old name for the same shape, which is what an
+    // alias means for a type: a value of one is a value of the other, in both directions.
+    const overlay: DrawerOverlayProps = { className: "bg-danger/40" };
+    const legacy: DrawerPartOverride = overlay;
+    const canonical: DrawerOverlayProps = legacy;
+    const content: DrawerContentProps = { className: "bg-warning/20" };
+
+    const view = await renderDrawer(
+      <Drawer isOpen overlay={canonical} content={content}>
+        <Text>Filters</Text>
+      </Drawer>,
+    );
+
+    expect(view.getByLabelText("Close").props.className).toContain(
+      "bg-danger/40",
+    );
+    expect(sheetClasses(view)).toContain("bg-warning/20");
+  });
+
+  it("offers a close control even when both dismissals are switched off", async () => {
+    const onClose = jest.fn();
+    const view = await renderDrawer(
+      <Drawer
+        isOpen
+        onClose={onClose}
+        closeOnBackdropClick={false}
+        closeOnEscape={false}>
+        <Text>Filters</Text>
+      </Drawer>,
+    );
+
+    await fireEvent.press(view.getByLabelText("Close drawer"));
+
+    expect(onClose).toHaveBeenCalledTimes(1);
+  });
+
   it("refuses to render outside the provider, because that is a setup mistake", async () => {
     const silence = jest.spyOn(console, "error").mockImplementation(() => {});
 
@@ -253,7 +298,7 @@ describe("Native Drawer", () => {
           <Text>Filters</Text>
         </Drawer>,
       ),
-    ).rejects.toThrow(/AsheeNativeProvider/);
+    ).rejects.toThrow(/AsheeUIProvider/);
 
     silence.mockRestore();
   });

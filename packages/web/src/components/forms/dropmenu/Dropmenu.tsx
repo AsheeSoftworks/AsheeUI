@@ -10,7 +10,7 @@
 "use client";
 
 import type { Color, Variant } from "@asheeui/core";
-import { cn, resolveCascade, resolveRadiusKey } from "@asheeui/core";
+import { resolveCascade, resolveRadiusKey } from "@asheeui/core";
 import {
   forwardRef,
   type ReactNode,
@@ -21,6 +21,7 @@ import {
 } from "react";
 import { ChevronDownIcon } from "../../../icons/ChevronDownIcon";
 import { useAsheeConfig } from "../../../libs/context";
+import { cn } from "../../../utils/cn";
 import { Button } from "../button/Button";
 import { FieldShell } from "../field/FieldShell";
 import type { FieldSizeKey, LabelAlign } from "../field/field-config";
@@ -75,6 +76,9 @@ export interface DropmenuProps
    * Receives a synthetic change event.
    */
   onChange?: ((e: React.ChangeEvent<HTMLSelectElement>) => void) | undefined;
+
+  /** Called with the picked value, under the platform's most specific name. */
+  onChangeText?: ((value: string) => void) | undefined;
 
   /**
    * Value change handler.
@@ -259,6 +263,7 @@ export const Dropmenu = forwardRef<HTMLButtonElement, DropmenuProps>(
       options = [],
       value,
       onChange,
+      onChangeText,
       onValueChange,
       size,
       radius,
@@ -376,17 +381,20 @@ export const Dropmenu = forwardRef<HTMLButtonElement, DropmenuProps>(
      */
     const handleOptionSelect = useCallback(
       (option: MenuOption) => {
-        onValueChange?.(option.value);
+        // The order is the shared resolver's: the DOM's event first, then the two
+        // value-only names, so a handler copied from a device sees the same sequence.
         if (onChange) {
           const event = {
             target: { value: option.value, name: name ?? "" },
           } as React.ChangeEvent<HTMLSelectElement>;
           onChange(event);
         }
+        onChangeText?.(String(option.value));
+        onValueChange?.(option.value);
         setIsOpen(false);
         setSearchQuery("");
       },
-      [name, onChange, onValueChange],
+      [name, onChange, onChangeText, onValueChange],
     );
 
     /**

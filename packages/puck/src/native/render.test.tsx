@@ -9,7 +9,7 @@
  * application's own provider must not be replaced by a second one.
  */
 
-import { AsheeNativeProvider } from "@asheeui/native";
+import { AsheeUIProvider } from "@asheeui/native";
 import { render } from "@testing-library/react-native";
 import { PUCK_BLOCK_NAMES } from "../shared";
 import { asheeNativePuckConfig } from "./config";
@@ -123,9 +123,9 @@ describe("a stored page on the platform", () => {
 
   it("keeps a provider the application already has", async () => {
     const { getByText } = await render(
-      <AsheeNativeProvider config={{ defaultRadius: "full" }}>
+      <AsheeUIProvider config={{ defaultRadius: "full" }}>
         <PuckPage data={data} />
-      </AsheeNativeProvider>,
+      </AsheeUIProvider>,
     );
 
     expect(getByText("Ashee SMS")).toBeTruthy();

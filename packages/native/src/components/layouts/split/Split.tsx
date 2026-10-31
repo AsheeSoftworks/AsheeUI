@@ -14,6 +14,13 @@
  * and class names on the web.
  */
 
+import { resolveConfigCascade } from "@asheeui/core";
+import type { ReactNode } from "react";
+import type { StyleProp, ViewProps, ViewStyle } from "react-native";
+import { View } from "react-native";
+import { useBreakpoint } from "../../../hooks/use-breakpoint";
+import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
+import { SPACE_GAP_CLASS } from "../../../styles/portable";
 import {
   NATIVE_SPLIT_ALIGN_CLASS,
   NATIVE_SPLIT_BASE_CLASS,
@@ -23,15 +30,13 @@ import {
   NATIVE_SPLIT_PANE_STACKED_CLASS,
   NATIVE_SPLIT_PANE_WIDTH_CLASS,
   NATIVE_SPLIT_STICKY_CLASS,
-  resolveConfigCascade,
-  SPACE_GAP_CLASS,
-} from "@asheeui/core";
-import type { ReactNode } from "react";
-import type { StyleProp, ViewProps, ViewStyle } from "react-native";
-import { View } from "react-native";
-import { useBreakpoint } from "../../../hooks/use-breakpoint";
-import { useAsheeNativeConfig } from "../../../provider/AsheeNativeProvider";
-import { classNames } from "../../../utils/class-names";
+} from "../../../styles/split";
+import { cn } from "../../../utils/cn";
+import {
+  type UnsupportedElementProps,
+  useUnsupportedElementProps,
+} from "../../../utils/unsupported-element-props";
+import { useUnsupportedProps } from "../../../utils/unsupported-prop";
 import {
   FALLBACK_NATIVE_SPLIT_CONFIG,
   type NativeSplitConfig,
@@ -42,7 +47,8 @@ import {
  */
 export interface SplitProps
   extends NativeSplitConfig,
-    Omit<ViewProps, "children" | "style"> {
+    Omit<ViewProps, "children" | "style">,
+    UnsupportedElementProps {
   /**
    * The first pane.
    * Left out when the layout has one pane only, which is what a screen that grows a
@@ -112,12 +118,23 @@ export function Split({
   align,
   divider,
   stickyEnd,
+  as,
+  titleAs,
   className,
   style,
   ...rest
 }: SplitProps) {
-  const config = useAsheeNativeConfig();
+  useUnsupportedElementProps("Split", { as, titleAs });
+
+  const config = useAsheeConfig();
   const { isAtLeast } = useBreakpoint();
+
+  useUnsupportedProps("Split", {
+    stickyEnd: {
+      value: stickyEnd,
+      substitute: "place the second pane outside the scrolling container",
+    },
+  });
 
   const resolved = resolveConfigCascade<
     NativeSplitConfig,
@@ -144,7 +161,7 @@ export function Split({
 
   return (
     <View
-      className={classNames(
+      className={cn(
         NATIVE_SPLIT_BASE_CLASS,
         sideBySide
           ? NATIVE_SPLIT_DIRECTION_CLASS.sideBySide
@@ -156,12 +173,12 @@ export function Split({
       style={style}
       {...rest}>
       {start !== undefined && (
-        <View className={classNames(paneClass("start"))}>{start}</View>
+        <View className={cn(paneClass("start"))}>{start}</View>
       )}
 
       {end !== undefined && (
         <View
-          className={classNames(
+          className={cn(
             paneClass("end"),
             dividerClass,
             resolved.stickyEnd && NATIVE_SPLIT_STICKY_CLASS,

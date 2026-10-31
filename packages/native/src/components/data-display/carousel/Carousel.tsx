@@ -22,23 +22,7 @@
  */
 
 import {
-  CAROUSEL_PADDING_CLASS,
   type CarouselItem,
-  NATIVE_CAROUSEL_BASE_CLASS,
-  NATIVE_CAROUSEL_CONTROL_CLASS,
-  NATIVE_CAROUSEL_HEIGHT_CLASS,
-  NATIVE_CAROUSEL_INDICATOR_CLASS,
-  NATIVE_CAROUSEL_INDICATOR_DOT_CLASS,
-  NATIVE_CAROUSEL_INDICATOR_MARK_CLASS,
-  NATIVE_CAROUSEL_INDICATORS_CLASS,
-  NATIVE_CAROUSEL_NEXT_CLASS,
-  NATIVE_CAROUSEL_NEXT_GLYPH,
-  NATIVE_CAROUSEL_PREV_CLASS,
-  NATIVE_CAROUSEL_PREV_GLYPH,
-  NATIVE_CAROUSEL_SLIDE_CLASS,
-  NATIVE_CAROUSEL_TRACK_CLASS,
-  NATIVE_CAROUSEL_VARIANT_CLASS,
-  NATIVE_RADIUS_CLASS,
   type Radius,
   resolveCarouselVariant,
   resolveCascade,
@@ -62,9 +46,27 @@ import type {
 } from "react-native";
 import { Pressable, ScrollView, View } from "react-native";
 import { useReduceMotion } from "../../../hooks/use-reduce-motion";
-import { useAsheeNativeConfig } from "../../../provider/AsheeNativeProvider";
-import { classNames } from "../../../utils/class-names";
-import { Text } from "../../typography/text/Text";
+import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
+import {
+  NATIVE_CAROUSEL_BASE_CLASS,
+  NATIVE_CAROUSEL_CONTROL_CLASS,
+  NATIVE_CAROUSEL_HEIGHT_CLASS,
+  NATIVE_CAROUSEL_INDICATOR_CLASS,
+  NATIVE_CAROUSEL_INDICATOR_DOT_CLASS,
+  NATIVE_CAROUSEL_INDICATOR_MARK_CLASS,
+  NATIVE_CAROUSEL_INDICATORS_CLASS,
+  NATIVE_CAROUSEL_NEXT_CLASS,
+  NATIVE_CAROUSEL_NEXT_GLYPH,
+  NATIVE_CAROUSEL_PREV_CLASS,
+  NATIVE_CAROUSEL_PREV_GLYPH,
+  NATIVE_CAROUSEL_SLIDE_CLASS,
+  NATIVE_CAROUSEL_TRACK_CLASS,
+  NATIVE_CAROUSEL_VARIANT_CLASS,
+} from "../../../styles/carousel";
+import { CAROUSEL_PADDING_CLASS } from "../../../styles/portable";
+import { NATIVE_RADIUS_CLASS } from "../../../styles/radius";
+import { cn } from "../../../utils/cn";
+import { Typography } from "../../typography/text/Text";
 import {
   FALLBACK_NATIVE_CAROUSEL_CONFIG,
   type NativeCarouselConfig,
@@ -174,7 +176,7 @@ export function Carousel({
   style,
   ...rest
 }: CarouselProps) {
-  const config = useAsheeNativeConfig();
+  const config = useAsheeConfig();
   const sectionConfig = config.components.carousel;
 
   const resolvedSize = resolveCascade<Size>(
@@ -367,7 +369,7 @@ export function Carousel({
           ? `Slide ${activeIndex + 1} of ${items.length}`
           : undefined
       }
-      className={classNames(
+      className={cn(
         NATIVE_CAROUSEL_BASE_CLASS,
         NATIVE_CAROUSEL_HEIGHT_CLASS[resolvedSize],
         variantClass,
@@ -406,13 +408,13 @@ export function Carousel({
               }
               focusable={isActive ? undefined : false}
               style={width > 0 ? { width } : undefined}
-              className={classNames(
+              className={cn(
                 NATIVE_CAROUSEL_SLIDE_CLASS,
                 CAROUSEL_PADDING_CLASS[resolvedSize],
                 itemClassName,
               )}>
               {typeof slide.content === "string" ? (
-                <Text role="body-md">{slide.content}</Text>
+                <Typography role="body-md">{slide.content}</Typography>
               ) : (
                 slide.content
               )}
@@ -435,12 +437,12 @@ export function Carousel({
               accessibilityState={{ disabled: isPrevDisabled }}
               disabled={isPrevDisabled}
               onPress={() => paginate(-1)}
-              className={classNames(
+              className={cn(
                 NATIVE_CAROUSEL_CONTROL_CLASS,
                 NATIVE_CAROUSEL_PREV_CLASS,
                 controlClassName,
               )}>
-              <Text role="label">{NATIVE_CAROUSEL_PREV_GLYPH}</Text>
+              <Typography role="label">{NATIVE_CAROUSEL_PREV_GLYPH}</Typography>
             </Pressable>
           )}
 
@@ -456,12 +458,12 @@ export function Carousel({
               accessibilityState={{ disabled: isNextDisabled }}
               disabled={isNextDisabled}
               onPress={() => paginate(1)}
-              className={classNames(
+              className={cn(
                 NATIVE_CAROUSEL_CONTROL_CLASS,
                 NATIVE_CAROUSEL_NEXT_CLASS,
                 controlClassName,
               )}>
-              <Text role="label">{NATIVE_CAROUSEL_NEXT_GLYPH}</Text>
+              <Typography role="label">{NATIVE_CAROUSEL_NEXT_GLYPH}</Typography>
             </Pressable>
           )}
         </>
@@ -479,12 +481,12 @@ export function Carousel({
                 accessibilityLabel={`Go to slide ${slideIndex + 1}`}
                 accessibilityState={{ selected: isActive }}
                 onPress={() => goTo(slideIndex)}
-                className={classNames(
+                className={cn(
                   NATIVE_CAROUSEL_INDICATOR_CLASS,
                   indicatorClassName,
                 )}>
                 <View
-                  className={classNames(
+                  className={cn(
                     NATIVE_CAROUSEL_INDICATOR_DOT_CLASS,
                     NATIVE_CAROUSEL_INDICATOR_MARK_CLASS[
                       isActive ? "active" : "resting"

@@ -10,14 +10,14 @@
  */
 
 import {
-  type ReactElement,
-  type ReactTestInstance,
   type RenderResult,
   render,
   within,
 } from "@testing-library/react-native";
+import type { ReactElement } from "react";
 import { Dimensions, Text, View } from "react-native";
-import { AsheeNativeProvider } from "../../../provider/AsheeNativeProvider";
+import type { TestInstance } from "test-renderer";
+import { AsheeUIProvider } from "../../../provider/AsheeUIProvider";
 import { AuthLayout } from "./AuthLayout";
 
 /**
@@ -28,9 +28,7 @@ import { AuthLayout } from "./AuthLayout";
  * @returns The rendered tree and its queries.
  */
 async function renderShell(ui: ReactElement, config?: object) {
-  return render(
-    <AsheeNativeProvider config={config}>{ui}</AsheeNativeProvider>,
-  );
+  return render(<AsheeUIProvider config={config}>{ui}</AsheeUIProvider>);
 }
 
 /**
@@ -71,9 +69,9 @@ function classesOf(view: RenderResult, testID: string): string {
  * @returns The ancestor, or undefined when there is none.
  */
 function ancestorWithClass(
-  node: ReactTestInstance,
+  node: TestInstance,
   marker: string,
-): ReactTestInstance | undefined {
+): TestInstance | undefined {
   let current = node.parent;
 
   while (current) {
@@ -160,7 +158,7 @@ describe("Native AuthLayout", () => {
     const panel = ancestorWithClass(
       view.getByTestId("form"),
       "border-border",
-    ) as ReactTestInstance;
+    ) as TestInstance;
 
     expect(view.getByText("Forgot your password?")).toBeTruthy();
     expect(within(panel).getByText("Forgot your password?")).toBeTruthy();
@@ -237,8 +235,7 @@ describe("Native AuthLayout", () => {
 
     expect(wrapper).toBeDefined();
     expect(
-      ((wrapper as ReactTestInstance).props as { className?: string })
-        .className,
+      ((wrapper as TestInstance).props as { className?: string }).className,
     ).not.toContain("border-border");
   });
 
@@ -263,7 +260,7 @@ describe("Native AuthLayout", () => {
           <View testID="form" />
         </AuthLayout>,
       ),
-    ).rejects.toThrow(/AsheeNativeProvider/);
+    ).rejects.toThrow(/AsheeUIProvider/);
 
     silence.mockRestore();
   });

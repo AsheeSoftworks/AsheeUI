@@ -8,7 +8,13 @@
     "types": ["jest", "node", "nativewind/types"],
     "lib": ["es2022"],
     "paths": {
-      "@asheeui/core": ["../core/src/index.ts"]
+      // The built declarations, not the source: a native program compiles with no DOM
+      // library, and core's source contains modules that read `document` and `window`
+      // because the web renderer reaches them. Resolving the package's own `dist` is
+      // what a consumer's compiler does, and it is what `tsconfig.build.json` already
+      // did; only this config pointed at the source, which made the typecheck read a
+      // program it could not compile.
+      "@asheeui/core": ["../core/dist/index.d.ts"]
     }
   },
   "include": ["src"]

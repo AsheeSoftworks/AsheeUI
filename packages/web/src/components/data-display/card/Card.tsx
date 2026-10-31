@@ -10,10 +10,7 @@
 
 import type { Size, Variant } from "@asheeui/core";
 import {
-  cn,
-  RADIUS_CLASS,
   type Radius,
-  resolveAnimate,
   resolveCascade,
   resolveClassKey,
   resolveRadiusKey,
@@ -28,6 +25,9 @@ import {
   useId,
 } from "react";
 import { useAsheeConfig } from "../../../libs/context";
+import { RADIUS_CLASS } from "../../../styles/radius";
+import { cn } from "../../../utils/cn";
+import { resolveAnimate } from "../../../utils/resolve-animate";
 import { Image } from "../image/Image";
 import type { ImageFit, ImageRatioKey } from "../image/image-config";
 import {
@@ -37,7 +37,6 @@ import {
   type CardImagePosition,
   type CardVariant,
   FALLBACK_CARD_CONFIG,
-  resolveCardVariant,
 } from "./card-config";
 import {
   CARD_GAP_CLASS,
@@ -45,6 +44,7 @@ import {
   CARD_PADDING_CLASS,
   CARD_VARIANT_CLASS,
 } from "./card-styles";
+import { cardSurfaceFor } from "./card-surface";
 
 type BaseCardProps = Omit<CardConfig, "image"> &
   Omit<HTMLAttributes<HTMLDivElement>, "title" | "children">;
@@ -122,9 +122,19 @@ export interface CardLinkProps extends CardLinkConfig {
  */
 export interface CardProps extends BaseCardProps {
   /**
+   * Called when the card is activated, under the name the platform package uses.
+   *
+   * `onClick` is the DOM's event and `onPress` is React Native's, and they are the same act:
+   * the card's guarded handler already refuses a disabled control and already runs on
+   * keyboard activation, so both names reach the same place. When both are given, both run,
+   * `onClick` first.
+   */
+  onPress?: (() => void) | undefined;
+
+  /**
    * Whether the card is clickable.
    * When true, the card becomes interactive with hover and focus states.
-   * This is automatically enabled when link or onClick is provided.
+   * This is automatically enabled when link, onClick or onPress is provided.
    *
    * @default false
    */
@@ -319,9 +329,16 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(
       className,
       children,
       onClick,
+      onPress,
       id,
       style,
       onKeyDown,
+      // The two options the shared card section states and this renderer does not draw: the platform
+      // paints `color` as its border's accent, and `isPressable` is a `Pressable` prop. They are
+      // pulled out here so a consumer that writes them — a configuration shared with a device — does
+      // not hand an unknown attribute to the DOM.
+      color: _color,
+      isPressable: _isPressable,
       ...rest
     },
     ref,
@@ -339,7 +356,7 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(
       FALLBACK_CARD_CONFIG.size,
     );
 
-    const resolvedVariantKey = resolveCardVariant(
+    const resolvedVariantKey = cardSurfaceFor(
       resolveCascade<Variant | CardVariant>(
         variant,
         cardConfig?.variant,
@@ -386,7 +403,8 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(
     const LinkComponent: ElementType =
       link?.component ?? (isLink ? "a" : "div");
 
-    const resolvedClickable = isClickable ?? Boolean(isLink || onClick);
+    const resolvedClickable =
+      isClickable ?? Boolean(isLink || onClick || onPress);
 
     // A link renders an element the browser itself puts in the tab order, so an
     // explicit `isClickable={false}` — which opts out of the *card's* own pointer
@@ -466,6 +484,7 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(
         return;
       }
       onClick?.(e);
+      onPress?.();
       (
         linkOnClick as ((event: MouseEvent<HTMLDivElement>) => void) | undefined
       )?.(e);

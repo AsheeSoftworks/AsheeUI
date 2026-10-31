@@ -15,6 +15,9 @@ export type { PaginationConfig } from "@asheeui/core";
 
 /**
  * Configuration options for the native collection footer.
+ *
+ * @deprecated Use {@link PaginationConfig} from `@asheeui/core` — the name both renderers
+ * publish.
  */
 export type NativePaginationConfig = PaginationConfig;
 
@@ -24,6 +27,9 @@ export type NativePaginationConfig = PaginationConfig;
  * They are the web's own values, including the two the platform has no trail to apply
  * (`siblingCount` and `showEdges`): the options still resolve, so a configuration written
  * for a browser describes a device as well rather than quietly becoming something else.
+ *
+ * @deprecated Use {@link defaultPaginationConfig} — the name both renderers publish. The value is
+ * this one: a fallback states the platform's default, and the name is shared.
  */
 export const defaultNativePaginationConfig: NativePaginationConfig = {
   size: "md",
@@ -42,6 +48,9 @@ registerNativeComponentDefaults("pagination", defaultNativePaginationConfig);
 
 /**
  * The values the collection footer falls back to when no tier provides one.
+ *
+ * @deprecated Use {@link FALLBACK_PAGINATION_CONFIG} — the name both renderers publish. The value is
+ * this one: a fallback states the platform's default, and the name is shared.
  */
 export const FALLBACK_NATIVE_PAGINATION_CONFIG = {
   size: "md",

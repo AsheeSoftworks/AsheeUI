@@ -16,7 +16,9 @@
 
 import { fireEvent, render } from "@testing-library/react-native";
 import type { ReactElement } from "react";
-import { AsheeNativeProvider } from "../../../provider/AsheeNativeProvider";
+import { Linking, Text } from "react-native";
+import { AsheeUIProvider } from "../../../provider/AsheeUIProvider";
+import { Form } from "../form/Form";
 import { Button } from "./Button";
 
 /**
@@ -27,9 +29,7 @@ import { Button } from "./Button";
  * @returns The rendered tree and its queries.
  */
 async function renderWithProvider(ui: ReactElement, config?: object) {
-  return render(
-    <AsheeNativeProvider config={config}>{ui}</AsheeNativeProvider>,
-  );
+  return render(<AsheeUIProvider config={config}>{ui}</AsheeUIProvider>);
 }
 
 describe("Native Button", () => {
@@ -104,6 +104,25 @@ describe("Native Button", () => {
     expect(className).toContain("px-3");
   });
 
+  it("lets a consumer's own class win over the component's", async () => {
+    // `cn` merges on property families: a background stated by the consumer replaces the
+    // background the variant stated, rather than being emitted beside it and losing to
+    // source order in a stylesheet the device does not have.
+    const view = await renderWithProvider(
+      <Button color="primary" className="bg-danger">
+        Save
+      </Button>,
+    );
+    const className = view.getByRole("button", { name: "Save" }).props
+      .className;
+    const tokens = String(className).split(/\s+/);
+
+    expect(tokens).toContain("bg-danger");
+    // The variant's own background is gone; its `active:` state is a different declaration
+    // and survives, which is the family rule stated in `utils/cn.ts`.
+    expect(tokens).not.toContain("bg-primary");
+  });
+
   it("lets an instance prop override the configuration", async () => {
     const view = await renderWithProvider(
       <Button variant="bordered">Save</Button>,
@@ -156,9 +175,98 @@ describe("Native Button", () => {
     const silence = jest.spyOn(console, "error").mockImplementation(() => {});
 
     await expect(render(<Button>Save</Button>)).rejects.toThrow(
-      /AsheeNativeProvider/,
+      /AsheeUIProvider/,
     );
 
     silence.mockRestore();
+  });
+
+  it("accepts the web's onClick name and runs it on a press", async () => {
+    const onClick = jest.fn();
+    const view = await renderWithProvider(
+      <Button onClick={onClick}>Save</Button>,
+    );
+
+    await fireEvent.press(view.getByRole("button", { name: "Save" }));
+
+    expect(onClick).toHaveBeenCalledTimes(1);
+  });
+
+  it("runs both names when both are given, onClick first", async () => {
+    // The order is what a consumer that passes both sees, and the web button documents
+    // `onClick` first. A handler that only ever ran one of the two would still pass a test
+    // that asserted "the press happened".
+    const calls: string[] = [];
+    const view = await renderWithProvider(
+      <Button
+        onClick={() => calls.push("onClick")}
+        onPress={() => calls.push("onPress")}>
+        Save
+      </Button>,
+    );
+
+    await fireEvent.press(view.getByRole("button", { name: "Save" }));
+
+    expect(calls).toEqual(["onClick", "onPress"]);
+  });
+
+  it("renders content on both sides of its label", async () => {
+    const view = await renderWithProvider(
+      <Button
+        startContent={<Text>←</Text>}
+        endContent={<Text>→</Text>}>
+        Save
+      </Button>,
+    );
+
+    expect(view.getByText("←")).toBeTruthy();
+    expect(view.getByText("Save")).toBeTruthy();
+    expect(view.getByText("→")).toBeTruthy();
+  });
+
+  it("takes a square from the size axis when it is icon-only", async () => {
+    const view = await renderWithProvider(
+      <Button icon size="md" aria-label="Refresh">
+        <Text>↻</Text>
+      </Button>,
+    );
+
+    const className = view.getByRole("button", { name: "Refresh" }).props
+      .className as string;
+    expect(className).toContain("w-11");
+    expect(className).toContain("h-11");
+  });
+
+  it("submits the enclosing form when its type says so", async () => {
+    // The platform has no submit event, so the form states what submitting means in a
+    // context and the button asks it. A button outside a form does nothing form-related.
+    const onSubmit = jest.fn();
+    const onReset = jest.fn();
+    const view = await renderWithProvider(
+      <Form onSubmit={onSubmit} onReset={onReset}>
+        <Button type="submit">Send</Button>
+        <Button type="reset">Clear</Button>
+      </Form>,
+    );
+
+    await fireEvent.press(view.getByRole("button", { name: "Send" }));
+    await fireEvent.press(view.getByRole("button", { name: "Clear" }));
+
+    expect(onSubmit).toHaveBeenCalledTimes(1);
+    expect(onReset).toHaveBeenCalledTimes(1);
+  });
+
+  it("follows href through the platform's URL handler when no handler is given", async () => {
+    const openURL = jest
+      .spyOn(Linking, "openURL")
+      .mockResolvedValue(true as never);
+
+    const view = await renderWithProvider(
+      <Button href="https://asheesoftworks.com">Docs</Button>,
+    );
+    await fireEvent.press(view.getByRole("button", { name: "Docs" }));
+
+    expect(openURL).toHaveBeenCalledWith("https://asheesoftworks.com");
+    openURL.mockRestore();
   });
 });

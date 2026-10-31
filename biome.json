@@ -32,7 +32,7 @@
       }
     },
     {
-      "includes": ["apps/expo-playground/global.css"],
+      "includes": ["apps/fitness-mobile/global.css"],
       "linter": {
         "rules": {
           "suspicious": {

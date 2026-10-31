@@ -9,17 +9,17 @@
  */
 
 import {
-  NATIVE_TEXTAREA_ROW_HEIGHT,
-  NATIVE_TEXTAREA_SIZE_CLASS,
-} from "@asheeui/core";
-import {
   act,
   fireEvent,
   type RenderResult,
   render,
 } from "@testing-library/react-native";
 import type { ReactElement } from "react";
-import { AsheeNativeProvider } from "../../../provider/AsheeNativeProvider";
+import { AsheeUIProvider } from "../../../provider/AsheeUIProvider";
+import {
+  NATIVE_TEXTAREA_ROW_HEIGHT,
+  NATIVE_TEXTAREA_SIZE_CLASS,
+} from "../../../styles/textarea";
 import { Textarea } from "./Textarea";
 
 /**
@@ -30,9 +30,7 @@ import { Textarea } from "./Textarea";
  * @returns The rendered tree and its queries.
  */
 async function renderTextarea(ui: ReactElement, config?: object) {
-  return render(
-    <AsheeNativeProvider config={config}>{ui}</AsheeNativeProvider>,
-  );
+  return render(<AsheeUIProvider config={config}>{ui}</AsheeUIProvider>);
 }
 
 /**

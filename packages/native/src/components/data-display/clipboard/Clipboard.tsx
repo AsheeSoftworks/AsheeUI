@@ -21,7 +21,7 @@ import {
   useRef,
   useState,
 } from "react";
-import { useAsheeNativeConfig } from "../../../provider/AsheeNativeProvider";
+import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
 import { writeToClipboard } from "../../../utils/write-to-clipboard";
 import {
   FALLBACK_NATIVE_CLIPBOARD_CONFIG,
@@ -121,7 +121,7 @@ export function Clipboard({
   onError,
   children,
 }: ClipboardProps) {
-  const config = useAsheeNativeConfig();
+  const config = useAsheeConfig();
 
   const resolved = resolveConfigCascade<
     NativeClipboardConfig,

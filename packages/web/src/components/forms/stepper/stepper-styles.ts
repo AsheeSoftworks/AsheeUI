@@ -1,9 +1,12 @@
 /**
- * Stepper component styles for the web renderer.
+ * Stepper styles for the web renderer.
  *
- * The class strings live in `@asheeui/core`, beside the native ones, because a marker, the
- * label beside it and the rule drawn between steps are the same decisions on both platforms.
- * This module re-exports them so the component keeps reading one module.
+ * The class strings live in `../../../styles/stepper`, which is where Tailwind can read them: a
+ * marker, the label beside it and the rule drawn between steps are decisions about this renderer's
+ * pixels. This module keeps the component's import path, so the stepper reads one module.
+ *
+ * `StepperStepState` is the exception — a type never moves (H17) — and is re-exported from
+ * `@asheeui/core`, where both renderers name the same three states of a step.
  */
 
 export type { StepperStepState } from "@asheeui/core";
@@ -19,4 +22,4 @@ export {
   STEPPER_MARKER_SIZE_CLASS,
   STEPPER_MARKER_STATE_CLASS,
   STEPPER_STATE_TEXT_CLASS,
-} from "@asheeui/core";
+} from "../../../styles/stepper";

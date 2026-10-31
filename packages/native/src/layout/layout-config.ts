@@ -5,16 +5,37 @@
  * share one purpose: arranging content without a browser. Each primitive
  * registers its own defaults, so a native application configures the kit the way
  * it configures any other component, through `components.<name>`.
+ *
+ * The *shapes* of those sections are `@asheeui/core`'s — one module per primitive under
+ * `packages/core/src/components/layouts/` — and this package re-exports their types below. What
+ * stays here is the platform's half: the narrower interfaces a native primitive implements (a
+ * device's stack has no `baseline`, its grid takes a count rather than the shared column union) and
+ * the values it registers, which are the platform's own where a thumb wants more room than a
+ * pointer does.
  */
 
 import type {
   Concrete,
   ContainerSize,
+  GridColumns,
   SectionBackground,
   Space,
 } from "@asheeui/core";
 import { registerNativeComponentDefaults } from "../config/registry";
-import type { NativeBreakpoint } from "../hooks/use-breakpoint";
+
+export type {
+  CenteredAxis,
+  CenteredConfig,
+  ContainerConfig,
+  GridAlign,
+  GridColumns,
+  GridConfig,
+  SectionConfig,
+  StackAlign,
+  StackConfig,
+  StackDirection,
+  StackJustify,
+} from "@asheeui/core";
 
 /**
  * Maximum width of a container, in the framework's own sizes.
@@ -23,6 +44,9 @@ import type { NativeBreakpoint } from "../hooks/use-breakpoint";
  * content at `lg` is asking the same question on a tablet as in a browser, so the
  * shared vocabulary is what the two renderers name and this alias is kept so the
  * layout kit reads as one kit.
+ *
+ * @deprecated Use {@link ContainerSize} from `@asheeui/core` — the name both renderers
+ * publish.
  */
 export type NativeContainerSize = ContainerSize;
 
@@ -59,16 +83,20 @@ export interface NativeStackConfig {
 
 /**
  * Configuration options for the native Grid.
+ *
+ * The column counts are the shared ones — `GridColumns` — rather than a bare `number`: a count the
+ * rule cannot express is a count `resolveGridColumns` cannot inherit, so the device states the same
+ * vocabulary the web does and the shared rule answers both.
  */
 export interface NativeGridConfig {
   /** Columns from the smallest window. Defaults to 1. */
-  columns?: number;
+  columns?: GridColumns;
 
   /** Columns from the `md` breakpoint upwards. */
-  columnsMd?: number;
+  columnsMd?: GridColumns;
 
   /** Columns from the `lg` breakpoint upwards. */
-  columnsLg?: number;
+  columnsLg?: GridColumns;
 
   /** Space between cells. Defaults to "md". */
   gap?: Space;
@@ -103,13 +131,21 @@ export interface NativeCenteredConfig {
   minHeight?: Space;
 }
 
-/** The defaults the native Container registers. */
+/**
+ * The defaults the native Container registers.
+ *
+ * @deprecated Use {@link defaultContainerConfig} — the name both renderers publish.
+ */
 export const defaultNativeContainerConfig: NativeContainerConfig = {
   size: "lg",
   gutter: true,
 };
 
-/** The defaults the native Stack registers. */
+/**
+ * The defaults the native Stack registers.
+ *
+ * @deprecated Use {@link defaultStackConfig} — the name both renderers publish.
+ */
 export const defaultNativeStackConfig: NativeStackConfig = {
   direction: "column",
   gap: "md",
@@ -118,19 +154,31 @@ export const defaultNativeStackConfig: NativeStackConfig = {
   wrap: false,
 };
 
-/** The defaults the native Grid registers. */
+/**
+ * The defaults the native Grid registers.
+ *
+ * @deprecated Use {@link defaultGridConfig} — the name both renderers publish.
+ */
 export const defaultNativeGridConfig: NativeGridConfig = {
   columns: 1,
   gap: "md",
 };
 
-/** The defaults the native Section registers. */
+/**
+ * The defaults the native Section registers.
+ *
+ * @deprecated Use {@link defaultSectionConfig} — the name both renderers publish.
+ */
 export const defaultNativeSectionConfig: NativeSectionConfig = {
   spacing: "md",
   background: "none",
 };
 
-/** The defaults the native Centered registers. */
+/**
+ * The defaults the native Centered registers.
+ *
+ * @deprecated Use {@link defaultCenteredConfig} — the name both renderers publish.
+ */
 export const defaultNativeCenteredConfig: NativeCenteredConfig = {
   axis: "both",
   minHeight: "none",
@@ -152,13 +200,21 @@ registerNativeComponentDefaults("grid", defaultNativeGridConfig);
 registerNativeComponentDefaults("section", defaultNativeSectionConfig);
 registerNativeComponentDefaults("centered", defaultNativeCenteredConfig);
 
-/** The values the native Container falls back to. */
+/**
+ * The values the native Container falls back to.
+ *
+ * @deprecated Use {@link FALLBACK_CONTAINER_CONFIG} — the name both renderers publish.
+ */
 export const FALLBACK_NATIVE_CONTAINER_CONFIG = {
   size: "lg",
   gutter: true,
 } satisfies NativeContainerConfig;
 
-/** The values the native Stack falls back to. */
+/**
+ * The values the native Stack falls back to.
+ *
+ * @deprecated Use {@link FALLBACK_STACK_CONFIG} — the name both renderers publish.
+ */
 export const FALLBACK_NATIVE_STACK_CONFIG = {
   direction: "column",
   gap: "md",
@@ -175,6 +231,9 @@ export const FALLBACK_NATIVE_STACK_CONFIG = {
  * key left out of this object never reaches the grid at all. Undefined is how the grid
  * states "inherit the count below me", which is the same rule the web grid gets from
  * the order of its class variants.
+ *
+ * @deprecated Use {@link FALLBACK_GRID_CONFIG} — the name both renderers publish. The value is
+ * this one: a fallback states the platform's default, and the name is shared.
  */
 export const FALLBACK_NATIVE_GRID_CONFIG: Concrete<
   Pick<NativeGridConfig, "columns" | "gap">
@@ -186,49 +245,32 @@ export const FALLBACK_NATIVE_GRID_CONFIG: Concrete<
   columnsLg: undefined,
 };
 
-/** The values the native Section falls back to. */
+/**
+ * The values the native Section falls back to.
+ *
+ * @deprecated Use {@link FALLBACK_SECTION_CONFIG} — the name both renderers publish.
+ */
 export const FALLBACK_NATIVE_SECTION_CONFIG = {
   spacing: "md",
   background: "none",
 } satisfies NativeSectionConfig;
 
-/** The values the native Centered falls back to. */
+/**
+ * The values the native Centered falls back to.
+ *
+ * @deprecated Use {@link FALLBACK_CENTERED_CONFIG} — the name both renderers publish.
+ */
 export const FALLBACK_NATIVE_CENTERED_CONFIG = {
   axis: "both",
   minHeight: "none",
 } satisfies NativeCenteredConfig;
 
 /**
- * Resolve how many columns a grid shows at a breakpoint.
+ * How many columns a grid shows at a breakpoint.
  *
- * A count stated at a smaller breakpoint is inherited by the larger ones, which
- * is the same rule the web grid gets from the order of its class variants: a grid
- * that never changes shape only has to state `columns`. The function is pure so
- * the inheritance can be tested without a device, and so a component that
- * measures its own container can reuse it.
- *
- * @param config - The grid's options.
- * @param breakpoint - The breakpoint the layout is being resolved at.
- * @returns The column count to use.
- *
- * @example
- * ```ts
- * resolveGridColumns({ columns: 1, columnsMd: 2 }, "lg"); // 2
- * ```
+ * The rule is `@asheeui/core`'s: a count stated at a smaller breakpoint is inherited by
+ * the larger ones, and a boundary written twice is two boundaries. It is re-exported here
+ * so the layout kit's imports keep resolving, and so the package publishes the same name
+ * the web renderer does.
  */
-export function resolveGridColumns(
-  config: NativeGridConfig,
-  breakpoint: NativeBreakpoint,
-): number {
-  const base = config.columns ?? 1;
-
-  if (breakpoint === "lg" || breakpoint === "xl") {
-    return config.columnsLg ?? config.columnsMd ?? base;
-  }
-
-  if (breakpoint === "md") {
-    return config.columnsMd ?? base;
-  }
-
-  return base;
-}
+export { resolveGridColumns } from "@asheeui/core";

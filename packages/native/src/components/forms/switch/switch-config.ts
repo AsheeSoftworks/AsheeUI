@@ -21,6 +21,9 @@ import { registerNativeComponentDefaults } from "../../../config/registry";
  *
  * `size`, `radius`, `variant` and `color` carry the meanings the shared field family
  * gives them.
+ *
+ * @deprecated Use {@link SwitchConfig} from `@asheeui/core` — the name both renderers
+ * publish.
  */
 export interface NativeSwitchConfig
   extends Pick<FieldConfig, "size" | "radius" | "variant" | "color"> {
@@ -37,6 +40,9 @@ export interface NativeSwitchConfig
  * The track is `full`, which is what makes a switch read as a track and a knob rather
  * than as a checkbox, and the density is the shared `md` whose proportions the native
  * scale makes thumb-sized.
+ *
+ * @deprecated Use {@link defaultSwitchConfig} — the name both renderers publish. The value is
+ * this one: a fallback states the platform's default, and the name is shared.
  */
 export const defaultNativeSwitchConfig: NativeSwitchConfig = {
   size: "md",
@@ -56,6 +62,9 @@ registerNativeComponentDefaults("switch", defaultNativeSwitchConfig);
 
 /**
  * The values the switch falls back to when no tier provides one.
+ *
+ * @deprecated Use {@link FALLBACK_SWITCH_CONFIG} — the name both renderers publish. The value is
+ * this one: a fallback states the platform's default, and the name is shared.
  */
 export const FALLBACK_NATIVE_SWITCH_CONFIG = {
   size: "md",

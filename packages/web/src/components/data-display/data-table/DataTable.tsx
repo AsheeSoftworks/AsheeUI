@@ -12,14 +12,7 @@
 "use client";
 
 import {
-  cn,
-  DATA_TABLE_CLASS,
-  DATA_TABLE_FOOTER_CLASS,
-  DATA_TABLE_HEADING_CLASS,
-  DATA_TABLE_REGION_CLASS,
-  DATA_TABLE_SEARCH_CLASS,
-  DATA_TABLE_TOOLBAR_CLASS,
-  DATA_TABLE_TOOLBAR_GROUP_CLASS,
+  ANNOUNCEMENT_ROLE,
   formatRowCountLabel,
   resolveConfigCascade,
 } from "@asheeui/core";
@@ -34,6 +27,16 @@ import {
   useState,
 } from "react";
 import { useAsheeConfig } from "../../../libs/context";
+import {
+  DATA_TABLE_CLASS,
+  DATA_TABLE_FOOTER_CLASS,
+  DATA_TABLE_HEADING_CLASS,
+  DATA_TABLE_REGION_CLASS,
+  DATA_TABLE_SEARCH_CLASS,
+  DATA_TABLE_TOOLBAR_CLASS,
+  DATA_TABLE_TOOLBAR_GROUP_CLASS,
+} from "../../../styles/data-table";
+import { cn } from "../../../utils/cn";
 import { EmptyState } from "../../feedback/empty-state/EmptyState";
 import { LoadingState } from "../../feedback/loading-state/LoadingState";
 import { SearchInput } from "../../forms/search-input/SearchInput";
@@ -481,7 +484,9 @@ export function DataTable<TData>({
             // stated as `none` rather than left unset, so a configured
             // `components.emptystate.role` cannot turn the first paint into an
             // announcement the table did not have.
-            role={isQueryResult ? "status" : "none"}
+            role={
+              isQueryResult ? ANNOUNCEMENT_ROLE.status : "none"
+            }
             title={resolved.emptyTitle}
             description={resolved.emptyDescription}
           />
@@ -510,7 +515,7 @@ export function DataTable<TData>({
           {resolved.showRowCount && (
             // The count is a status region, so a reader who searches or pages is
             // told how many rows are left rather than having to find out.
-            <div role="status">
+            <div role={ANNOUNCEMENT_ROLE.status}>
               <Typography role="caption" tone="muted">
                 {rowCountText}
               </Typography>

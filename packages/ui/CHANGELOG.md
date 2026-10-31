@@ -1,5 +1,58 @@
 # asheeui
 
+## 3.0.0
+
+### Major Changes
+
+- # The intersection, generated
+  
+  `asheeui` is no longer `export *` over each renderer. It offers **182 names** — the intersection both
+  renderers publish under the same name and contract — generated into both of its entries from
+  `PORTABLE_API` in `@asheeui/core`.
+  
+  **Breaking.** It used to offer 791 names on the web branch and 1053 on the native one. A name that is
+  only on one renderer now stays with that renderer: import `Breadcrumb`, the keyboard family or
+  `SkipLink` from `@asheeui/web`; import `RowList` or `TabBar` from `@asheeui/native`. `Text` is
+  re-exported as itself (both renderers export it), not as an umbrella alias. The migration guide lists
+  each category and its replacement.
+  
+  ## The install story
+  
+  - `@asheeui/web` and `@asheeui/native` are **optional peers**. `npm i asheeui` installs
+    `@asheeui/core` and no renderer; install the renderer you build for.
+  - `asheeui/styles` is the umbrella's one-line stylesheet (`@import "@asheeui/web/styles";`), and
+    `sideEffects: ["*.css"]` keeps it in the bundle.
+  - `asheeui/section-kit` routes to both renderers and exports `ActionGroup` and `SectionHeading`.
+    `SkipLink` stays on `@asheeui/web/section-kit`.
+  - The Tailwind peer range is `>=3.4.0`: web uses 4, native uses NativeWind on 3.
+  
+  ## The surface is guarded
+  
+  `pnpm check:umbrella` is blocking and exits non-zero on drift. Its six assertions: the two entries
+  publish the declared surface and nothing else; every name is published by its declared source; no
+  stale `pending`; the matrix agrees; no platform-only name leaks; the four subpaths resolve and are
+  shipped. The suite calls the same evaluator, so the command and the tests cannot disagree.
+  
+  `resolveAnimate` joins `@asheeui/native` so the name is portable on both branches, and
+  `useAsheeConfig` and `RadioGroup` were corrected in the list — the hook had been filtered out as if it
+  were a configuration type, and the group had been declared a type.
+  
+  ## Consumers
+  
+  A real Vite consumer builds through the umbrella (its only framework dependency) and imports the
+  stylesheet from `asheeui/styles`; `scripts/verify-native-routing.mjs` proves the manifest's conditions
+  send a default build to `@asheeui/web` and a `react-native` build to `@asheeui/native`, never the
+  other; the distribution check installs the packed umbrella tarball and builds through it.
+
+### Patch Changes
+
+- Updated dependencies
+- Updated dependencies
+- Updated dependencies
+  - @asheeui/core@3.0.0
+  - @asheeui/native@2.8.0
+  - @asheeui/web@2.8.0
+
 ## 2.5.0
 
 ### Minor Changes

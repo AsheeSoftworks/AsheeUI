@@ -10,8 +10,9 @@
  */
 
 import { AsheeUIProvider } from "@asheeui/web";
-import { renderWithProvider } from "@asheeui/web/src/test";
 import { type ComponentConfig, Render } from "@puckeditor/core";
+import { render } from "@testing-library/react";
+import type { ReactElement, ReactNode } from "react";
 import { describe, expect, it } from "vitest";
 import { PUCK_BLOCK_NAMES } from "../shared";
 import { asheePuckConfig } from "./config";
@@ -73,6 +74,27 @@ describe("the AsheeUI web registry", () => {
     });
   });
 });
+
+/**
+ * Render a page inside the framework provider.
+ *
+ * The web package has its own harness for this, and importing it was the obvious thing
+ * to do — until the typecheck: the harness lives in that package's *source*, so checking
+ * this test would have meant compiling the renderer's whole program here, module
+ * augmentations and DOM matchers included. The wrapper is the provider and nothing
+ * else, over the public seam both packages share, so there is nothing for a copy to
+ * drift from.
+ *
+ * @param ui - The page under test.
+ * @returns The rendered page and its queries.
+ */
+function renderWithProvider(ui: ReactElement) {
+  return render(ui, {
+    wrapper: ({ children }: { children: ReactNode }) => (
+      <AsheeUIProvider>{children}</AsheeUIProvider>
+    ),
+  });
+}
 
 describe("a published Puck page", () => {
   /** A page assembled from the blocks a marketing page is built from. */

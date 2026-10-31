@@ -11,7 +11,12 @@
 import { fireEvent, render } from "@testing-library/react-native";
 import type { ReactElement } from "react";
 import { Text } from "react-native";
-import { AsheeNativeProvider } from "../../../provider/AsheeNativeProvider";
+import { AsheeUIProvider } from "../../../provider/AsheeUIProvider";
+import type {
+  ModalContentProps,
+  ModalOverlayProps,
+  ModalPartOverride,
+} from "./Modal";
 import { Modal } from "./Modal";
 
 /**
@@ -22,9 +27,7 @@ import { Modal } from "./Modal";
  * @returns The rendered tree and its queries.
  */
 async function renderModal(ui: ReactElement, config?: object) {
-  return render(
-    <AsheeNativeProvider config={config}>{ui}</AsheeNativeProvider>,
-  );
+  return render(<AsheeUIProvider config={config}>{ui}</AsheeUIProvider>);
 }
 
 describe("Native Modal", () => {
@@ -125,6 +128,31 @@ describe("Native Modal", () => {
     expect(surface?.className?.endsWith("mt-2")).toBe(true);
   });
 
+  it("names its part overrides the way the web renderer names them", async () => {
+    // The two part types are the shared spelling, so a shared description of a modal's parts is
+    // written once. `ModalPartOverride` is the old name for the same shape, which is what an
+    // alias means for a type: a value of one is a value of the other, in both directions.
+    const overlay: ModalOverlayProps = { className: "bg-danger/40" };
+    const legacy: ModalPartOverride = overlay;
+    const canonical: ModalOverlayProps = legacy;
+    const content: ModalContentProps = { className: "p-8" };
+
+    const view = await renderModal(
+      <Modal isOpen overlay={canonical} content={content}>
+        <Text>Delete this invoice?</Text>
+      </Modal>,
+    );
+
+    expect(view.getByLabelText("Close").props.className).toContain(
+      "bg-danger/40",
+    );
+    const surface = view.getByText("Delete this invoice?").parent?.props as
+      | { className?: string }
+      | undefined;
+
+    expect(surface?.className).toContain("p-8");
+  });
+
   it("refuses to render outside the provider, because that is a setup mistake", async () => {
     const silence = jest.spyOn(console, "error").mockImplementation(() => {});
 
@@ -134,8 +162,37 @@ describe("Native Modal", () => {
           <Text>Delete this invoice?</Text>
         </Modal>,
       ),
-    ).rejects.toThrow(/AsheeNativeProvider/);
+    ).rejects.toThrow(/AsheeUIProvider/);
 
     silence.mockRestore();
+  });
+
+  it("offers a close control even when both dismissals are switched off", async () => {
+    // A transparent modal on a screen that also refuses the backdrop press and the
+    // platform's way out would otherwise have no way to leave it.
+    const onClose = jest.fn();
+    const view = await renderModal(
+      <Modal
+        isOpen
+        onClose={onClose}
+        closeOnBackdropClick={false}
+        closeOnEscape={false}>
+        <Text>Delete this invoice?</Text>
+      </Modal>,
+    );
+
+    await fireEvent.press(view.getByLabelText("Close dialog"));
+
+    expect(onClose).toHaveBeenCalledTimes(1);
+  });
+
+  it("names its close control through closeLabel", async () => {
+    const view = await renderModal(
+      <Modal isOpen onClose={jest.fn()} closeLabel="Dismiss the invoice">
+        <Text>Delete this invoice?</Text>
+      </Modal>,
+    );
+
+    expect(view.getByLabelText("Dismiss the invoice")).toBeTruthy();
   });
 });

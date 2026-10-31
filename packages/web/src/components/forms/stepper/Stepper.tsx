@@ -10,7 +10,7 @@
 
 "use client";
 
-import { cn, resolveConfigCascade } from "@asheeui/core";
+import { resolveConfigCascade } from "@asheeui/core";
 import {
   type ElementType,
   forwardRef,
@@ -19,6 +19,7 @@ import {
 } from "react";
 import { CheckIcon } from "../../../icons/CheckIcon";
 import { useAsheeConfig } from "../../../libs/context";
+import { cn } from "../../../utils/cn";
 import { Typography } from "../../typography/Typography";
 import { FALLBACK_STEPPER_CONFIG, type StepperConfig } from "./stepper-config";
 import {

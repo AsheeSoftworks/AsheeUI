@@ -19,15 +19,6 @@
 import {
   type Color,
   getInitials,
-  NATIVE_AVATAR_BASE_CLASS,
-  NATIVE_AVATAR_FALLBACK_CLASS,
-  NATIVE_AVATAR_FALLBACK_TEXT_CLASS,
-  NATIVE_AVATAR_FONT_CLASS,
-  NATIVE_AVATAR_INITIALS_CLASS,
-  NATIVE_AVATAR_SIZE_CLASS,
-  NATIVE_AVATAR_TEXT_BLOCK_CLASS,
-  NATIVE_IMAGE_PICTURE_FILL_CLASS,
-  NATIVE_RADIUS_CLASS,
   type Radius,
   resolveCascade,
   resolveClassKey,
@@ -41,8 +32,19 @@ import {
   type ViewProps,
   type ViewStyle,
 } from "react-native";
-import { useAsheeNativeConfig } from "../../../provider/AsheeNativeProvider";
-import { classNames } from "../../../utils/class-names";
+import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
+import {
+  NATIVE_AVATAR_BASE_CLASS,
+  NATIVE_AVATAR_FALLBACK_CLASS,
+  NATIVE_AVATAR_FALLBACK_TEXT_CLASS,
+  NATIVE_AVATAR_FONT_CLASS,
+  NATIVE_AVATAR_INITIALS_CLASS,
+  NATIVE_AVATAR_SIZE_CLASS,
+  NATIVE_AVATAR_TEXT_BLOCK_CLASS,
+} from "../../../styles/avatar";
+import { NATIVE_IMAGE_PICTURE_FILL_CLASS } from "../../../styles/image";
+import { NATIVE_RADIUS_CLASS } from "../../../styles/radius";
+import { cn } from "../../../utils/cn";
 import { Image } from "../image/Image";
 import {
   FALLBACK_NATIVE_AVATAR_CONFIG,
@@ -148,7 +150,7 @@ export function Avatar({
   style,
   ...rest
 }: AvatarProps) {
-  const config = useAsheeNativeConfig();
+  const config = useAsheeConfig();
   const sectionConfig = config.components.avatar;
   // The source whose load failed, rather than a bare "has failed" flag: a list recycles
   // an avatar slot, so a fresh `src` is a fresh picture and must get its own chance.
@@ -208,7 +210,7 @@ export function Avatar({
       importantForAccessibility={
         accessibleName ? "auto" : "no-hide-descendants"
       }
-      className={classNames(
+      className={cn(
         NATIVE_AVATAR_BASE_CLASS,
         sizeClass,
         radiusClass,
@@ -236,13 +238,13 @@ export function Avatar({
         />
       ) : (
         <View
-          className={classNames(
+          className={cn(
             NATIVE_AVATAR_TEXT_BLOCK_CLASS,
             NATIVE_AVATAR_FALLBACK_CLASS[resolvedColor],
           )}>
           <Text
             // The frame carries the layout and the text carries its own treatment.
-            className={classNames(
+            className={cn(
               NATIVE_AVATAR_INITIALS_CLASS,
               fontClass,
               NATIVE_AVATAR_FALLBACK_TEXT_CLASS,

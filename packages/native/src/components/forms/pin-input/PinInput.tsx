@@ -16,7 +16,19 @@
 
 import {
   type FieldStatus,
-  NATIVE_INPUT_EDGE_ACCENT_CLASS,
+  type PinInputMode,
+  type PinInputSize,
+  type Radius,
+  resolveCascade,
+  resolveChange,
+  sanitizePinValue,
+} from "@asheeui/core";
+import { Fragment, useRef, useState } from "react";
+import type { TextInputInstance } from "react-native";
+import { Pressable, TextInput, View } from "react-native";
+import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
+import { NATIVE_INPUT_EDGE_ACCENT_CLASS } from "../../../styles/input";
+import {
   NATIVE_PIN_INPUT_BOX_CLASS,
   NATIVE_PIN_INPUT_BOX_DEFAULT_CLASS,
   NATIVE_PIN_INPUT_BOX_DISABLED_CLASS,
@@ -28,19 +40,10 @@ import {
   NATIVE_PIN_INPUT_SIZE_CLASS,
   NATIVE_PIN_INPUT_VALUE_CLASS,
   NATIVE_PIN_INPUT_VALUE_DISABLED_CLASS,
-  NATIVE_RADIUS_CLASS,
-  type PinInputMode,
-  type PinInputSize,
-  type Radius,
-  resolveCascade,
-  sanitizePinValue,
-} from "@asheeui/core";
-import { Fragment, useRef, useState } from "react";
-import type { TextInputInstance } from "react-native";
-import { Pressable, TextInput, View } from "react-native";
-import { useAsheeNativeConfig } from "../../../provider/AsheeNativeProvider";
-import { classNames } from "../../../utils/class-names";
-import { Text } from "../../typography/text/Text";
+} from "../../../styles/pin-input";
+import { NATIVE_RADIUS_CLASS } from "../../../styles/radius";
+import { cn } from "../../../utils/cn";
+import { Typography } from "../../typography/text/Text";
 import { FieldShell } from "../field/FieldShell";
 import {
   FALLBACK_NATIVE_PIN_INPUT_CONFIG,
@@ -67,6 +70,17 @@ export interface PinInputProps extends NativePinInputConfig {
 
   /** Called with the whole code whenever it changes. */
   onValueChange?: (value: string) => void;
+
+  /**
+   * Called with the whole code, under the name the browser gives the event.
+   *
+   * The event is a shim with `target.value`; `preventDefault` and `stopPropagation` are not
+   * part of it, because the platform has no default action here to stop.
+   */
+  onChange?: (event: { target: { value: string } }) => void;
+
+  /** Called with the whole code, under the platform's most specific name. */
+  onChangeText?: (value: string) => void;
 
   /**
    * Called once when the code reaches its full length.
@@ -142,6 +156,8 @@ export interface PinInputProps extends NativePinInputConfig {
 export function PinInput({
   value,
   defaultValue,
+  onChange,
+  onChangeText,
   onValueChange,
   onComplete,
   label,
@@ -162,7 +178,7 @@ export function PinInput({
   className,
   testID,
 }: PinInputProps) {
-  const config = useAsheeNativeConfig();
+  const config = useAsheeConfig();
   const sectionConfig = config.components.pininput;
   const [typedValue, setTypedValue] = useState(defaultValue ?? "");
   const [isFocused, setIsFocused] = useState(false);
@@ -219,7 +235,7 @@ export function PinInput({
     const capped = sanitizePinValue(next, resolvedMode, resolvedLength);
 
     if (!isControlled) setTypedValue(capped);
-    onValueChange?.(capped);
+    resolveChange({ onChange, onChangeText, onValueChange }, capped);
 
     if (capped.length === resolvedLength) onComplete?.(capped);
   };
@@ -243,7 +259,7 @@ export function PinInput({
         accessibilityHint={description}
         disabled={resolvedDisabled}
         onPress={() => fieldRef.current?.focus()}
-        className={classNames(NATIVE_PIN_INPUT_GROUP_CLASS, className)}>
+        className={cn(NATIVE_PIN_INPUT_GROUP_CLASS, className)}>
         <TextInput
           ref={fieldRef}
           testID={testID}
@@ -266,7 +282,7 @@ export function PinInput({
           <Fragment key={`pin-${index}`}>
             <View
               accessible={false}
-              className={classNames(
+              className={cn(
                 NATIVE_PIN_INPUT_BOX_CLASS,
                 NATIVE_PIN_INPUT_SIZE_CLASS[resolvedSize],
                 NATIVE_RADIUS_CLASS[resolvedRadius],
@@ -277,27 +293,27 @@ export function PinInput({
                   ? NATIVE_INPUT_EDGE_ACCENT_CLASS[config.defaultColor]
                   : undefined,
               )}>
-              <Text
+              <Typography
                 role="body-lg"
-                className={classNames(
+                className={cn(
                   NATIVE_PIN_INPUT_FONT_CLASS[resolvedSize],
                   resolvedDisabled
                     ? NATIVE_PIN_INPUT_VALUE_DISABLED_CLASS
                     : NATIVE_PIN_INPUT_VALUE_CLASS,
                 )}>
                 {resolvedMasked && code[index] ? "•" : (code[index] ?? "")}
-              </Text>
+              </Typography>
             </View>
             {separatorAfter !== undefined &&
               separatorAfter > 0 &&
               index + 1 === separatorAfter &&
               index + 1 < resolvedLength && (
-                <Text
+                <Typography
                   accessible={false}
                   role="body-md"
                   className={NATIVE_PIN_INPUT_SEPARATOR_CLASS}>
                   -
-                </Text>
+                </Typography>
               )}
           </Fragment>
         ))}

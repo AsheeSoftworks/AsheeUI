@@ -10,13 +10,11 @@
  * sticky contents — change nothing here.
  */
 
-import {
-  type ReactElement,
-  type RenderResult,
-  render,
-} from "@testing-library/react-native";
+import { type RenderResult, render } from "@testing-library/react-native";
+import type { ReactElement } from "react";
 import { Text, View } from "react-native";
-import { AsheeNativeProvider } from "../../../provider/AsheeNativeProvider";
+import type { TestInstance } from "test-renderer";
+import { AsheeUIProvider } from "../../../provider/AsheeUIProvider";
 import { DocsLayout } from "./DocsLayout";
 
 /**
@@ -27,9 +25,7 @@ import { DocsLayout } from "./DocsLayout";
  * @returns The rendered tree and its queries.
  */
 async function renderPage(ui: ReactElement, config?: object) {
-  return render(
-    <AsheeNativeProvider config={config}>{ui}</AsheeNativeProvider>,
-  );
+  return render(<AsheeUIProvider config={config}>{ui}</AsheeUIProvider>);
 }
 
 /**
@@ -53,7 +49,7 @@ function classesOf(view: RenderResult, testID: string): string {
  */
 function regionsOf(view: RenderResult): (string | undefined)[] {
   const content = view.getByTestId("docs-layout-navigation")
-    .parent as ReactTestInstance;
+    .parent as TestInstance;
   const { children } = content.props as { children?: unknown };
   const list = Array.isArray(children) ? children : [children];
 
@@ -231,7 +227,7 @@ describe("Native DocsLayout", () => {
           <Text>Layout</Text>
         </DocsLayout>,
       ),
-    ).rejects.toThrow(/AsheeNativeProvider/);
+    ).rejects.toThrow(/AsheeUIProvider/);
 
     silence.mockRestore();
   });

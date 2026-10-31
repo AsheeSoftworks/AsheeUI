@@ -21,6 +21,12 @@
  * web's own flow gives them at its narrow widths.
  */
 
+import { resolveConfigCascade } from "@asheeui/core";
+import type { ReactNode } from "react";
+import type { StyleProp, ViewProps, ViewStyle } from "react-native";
+import { View } from "react-native";
+import { useBreakpoint } from "../../../hooks/use-breakpoint";
+import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
 import {
   NATIVE_AUTH_CONTENT_SIZE_CLASS,
   NATIVE_AUTH_FOOTER_CLASS,
@@ -32,14 +38,12 @@ import {
   NATIVE_AUTH_MEDIA_COLUMN_CLASS,
   NATIVE_AUTH_PANEL_CLASS,
   NATIVE_AUTH_PANEL_PADDING_CLASS,
-  resolveConfigCascade,
-} from "@asheeui/core";
-import type { ReactNode } from "react";
-import type { StyleProp, ViewProps, ViewStyle } from "react-native";
-import { View } from "react-native";
-import { useBreakpoint } from "../../../hooks/use-breakpoint";
-import { useAsheeNativeConfig } from "../../../provider/AsheeNativeProvider";
-import { classNames } from "../../../utils/class-names";
+} from "../../../styles/auth-layout";
+import { cn } from "../../../utils/cn";
+import {
+  type UnsupportedElementProps,
+  useUnsupportedElementProps,
+} from "../../../utils/unsupported-element-props";
 import { SectionHeading } from "../section-kit/SectionHeading";
 import {
   FALLBACK_NATIVE_AUTH_LAYOUT_CONFIG,
@@ -51,7 +55,8 @@ import {
  */
 export interface AuthLayoutProps
   extends NativeAuthLayoutConfig,
-    Omit<ViewProps, "children" | "style"> {
+    Omit<ViewProps, "children" | "style">,
+    UnsupportedElementProps {
   /** Brand content above the heading, typically a logo and product name. */
   brand?: ReactNode;
 
@@ -132,12 +137,16 @@ export function AuthLayout({
   align,
   mediaPosition,
   contentSize,
+  as,
+  titleAs,
   className,
   style,
   children,
   ...rest
 }: AuthLayoutProps) {
-  const config = useAsheeNativeConfig();
+  useUnsupportedElementProps("AuthLayout", { as, titleAs });
+
+  const config = useAsheeConfig();
   const { isAtLeast } = useBreakpoint();
 
   const resolved = resolveConfigCascade<
@@ -163,12 +172,12 @@ export function AuthLayout({
   const formColumn = (
     <View
       testID="auth-layout-form"
-      className={classNames(
+      className={cn(
         NATIVE_AUTH_FORM_COLUMN_CLASS,
         resolved.align === "center" && NATIVE_AUTH_FORM_COLUMN_CENTERED_CLASS,
       )}>
       <View
-        className={classNames(
+        className={cn(
           NATIVE_AUTH_FORM_WRAPPER_CLASS,
           NATIVE_AUTH_CONTENT_SIZE_CLASS[resolved.contentSize],
           resolved.panel && NATIVE_AUTH_PANEL_CLASS,
@@ -192,7 +201,7 @@ export function AuthLayout({
 
   return (
     <View
-      className={classNames(
+      className={cn(
         NATIVE_AUTH_LAYOUT_CLASS,
         sideBySide && NATIVE_AUTH_LAYOUT_SPLIT_CLASS,
         className,

@@ -16,12 +16,17 @@
   "scripts": {
     "build": "turbo run build",
     "lint": "biome lint",
+    "lint:class-vocabulary": "node scripts/lint-class-vocabulary.mjs",
     "check": "biome check",
     "verify:distribution": "node scripts/verify-distribution.mjs",
     "verify:released": "node scripts/verify-released.mjs",
+    "verify:native-routing": "node scripts/verify-native-routing.mjs",
     "check:changesets": "node scripts/check-changesets.mjs",
+    "check:core-charter": "node scripts/check-core-charter.mjs",
     "check:native-parity": "node scripts/check-native-parity.mjs",
     "check:native-artifact": "node scripts/check-native-artifact.mjs",
+    "check:types": "turbo run check-types",
+    "check:umbrella": "node scripts/check-umbrella.mjs",
     "format": "biome format --write",
     "fix": "biome check --write",
     "changeset": "changeset",
@@ -29,7 +34,8 @@
     "release": "turbo run build && changeset publish",
     "release:notes": "node scripts/sync-release-notes.mjs",
     "publish": "changeset publish",
-    "test": "turbo run test"
+    "test": "turbo run test",
+    "test:changed": "node scripts/test-changed.mjs"
   },
   "devDependencies": {
     "@biomejs/biome": "latest",

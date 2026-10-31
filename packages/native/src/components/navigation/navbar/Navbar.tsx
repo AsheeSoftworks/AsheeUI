@@ -22,6 +22,17 @@
  */
 
 import {
+  type NavbarAlign,
+  type NavbarLink,
+  type NavbarLinkItem,
+  resolveConfigCascade,
+} from "@asheeui/core";
+import type { ReactNode } from "react";
+import type { StyleProp, ViewProps, ViewStyle } from "react-native";
+import { ScrollView, View } from "react-native";
+import { Container } from "../../../layout/Container";
+import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
+import {
   NATIVE_NAVBAR_ACTIONS_CLASS,
   NATIVE_NAVBAR_ALIGN_CLASS,
   NATIVE_NAVBAR_BASE_CLASS,
@@ -37,19 +48,11 @@ import {
   NATIVE_TAB_BAR_CLASS,
   NATIVE_TAB_BAR_ITEM_ACTIVE_CLASS,
   NATIVE_TAB_BAR_ITEM_CLASS,
-  NAVBAR_BRAND_TEXT_CLASS,
-  type NavbarAlign,
-  type NavbarLink,
-  type NavbarLinkItem,
-  resolveConfigCascade,
-} from "@asheeui/core";
-import type { ReactNode } from "react";
-import type { StyleProp, ViewProps, ViewStyle } from "react-native";
-import { ScrollView, View } from "react-native";
-import { Container } from "../../../layout/Container";
-import { useAsheeNativeConfig } from "../../../provider/AsheeNativeProvider";
-import { classNames } from "../../../utils/class-names";
-import { Text } from "../../typography/text/Text";
+} from "../../../styles/navbar";
+import { NAVBAR_BRAND_TEXT_CLASS } from "../../../styles/portable";
+import { cn } from "../../../utils/cn";
+import { useUnsupportedProps } from "../../../utils/unsupported-prop";
+import { Typography } from "../../typography/text/Text";
 import { Link } from "../link";
 import {
   FALLBACK_NATIVE_NAVBAR_CONFIG,
@@ -153,7 +156,7 @@ function Destinations({
     <View
       accessibilityRole="tablist"
       accessibilityLabel={label}
-      className={classNames(
+      className={cn(
         NATIVE_NAVBAR_LINKS_ROW_CLASS,
         align && NATIVE_NAVBAR_ALIGN_CLASS[align],
         className,
@@ -175,7 +178,7 @@ function Destinations({
           size="sm"
           component={item.component ?? link?.component}
           componentProps={{ ...link?.props, ...item.componentProps }}
-          className={classNames(
+          className={cn(
             itemClassName,
             item.isActive && activeClassName,
           )}>
@@ -218,7 +221,7 @@ function Destinations({
  * @example
  * ```tsx
  * <Navbar
- *   brand={<Text role="label">Ashee SMS</Text>}
+ *   brand={<Typography role="label">Ashee SMS</Typography>}
  *   links={[
  *     { label: "Campaigns", href: "/campaigns", isActive: true },
  *     { label: "Contacts", href: "/contacts" },
@@ -251,7 +254,7 @@ export function Navbar({
   children,
   ...rest
 }: NavbarProps) {
-  const config = useAsheeNativeConfig();
+  const config = useAsheeConfig();
 
   const resolved = resolveConfigCascade<
     NativeNavbarConfig,
@@ -262,11 +265,25 @@ export function Navbar({
     FALLBACK_NATIVE_NAVBAR_CONFIG,
   );
 
-  // Named so the two disclosure options are visibly read rather than forgotten: they describe the
-  // web's control, and the platform has no such control, so they end here.
-  void mobileLabel;
-  void mobileOpen;
-  void onMobileOpenChange;
+  // The web's disclosure options describe a control the platform does not have: the bar
+  // scrolls and keeps every destination in reach. They are accepted so a shared bar
+  // compiles, and said out loud once rather than silently ending here.
+  useUnsupportedProps("Navbar", {
+    mobileLabel: {
+      value: mobileLabel,
+      substitute: "there is no disclosure control to name",
+    },
+    mobileOpen: {
+      value: mobileOpen,
+      substitute:
+        "the bar scrolls rather than disclosing; every destination stays in the row",
+    },
+    onMobileOpenChange: {
+      value: onMobileOpenChange,
+      substitute:
+        "there is no disclosure to report; the destinations are always reachable",
+    },
+  });
 
   const hasLinks = Boolean(links && links.length > 0);
 
@@ -292,7 +309,7 @@ export function Navbar({
             ) : typeof brand === "string" ? (
               // The platform renders text through its own element; the web's brand is an element
               // already, so the difference is stated rather than left to the renderer to guess.
-              <Text role="label">{brand}</Text>
+              <Typography role="label">{brand}</Typography>
             ) : (
               brand
             )}
@@ -330,7 +347,7 @@ export function Navbar({
 
   return (
     <View
-      className={classNames(
+      className={cn(
         NATIVE_NAVBAR_BASE_CLASS,
         NATIVE_NAVBAR_VARIANT_CLASS[resolved.variant],
         resolved.position === "sticky" && NATIVE_NAVBAR_POSITION_CLASS,
@@ -380,6 +397,9 @@ export interface TabBarProps extends Omit<ViewProps, "children" | "style"> {
  * is that half, drawing the same destinations with the same states through the same renderer, so a
  * screen offers both without describing its navigation twice.
  *
+ * It is **native-only** — there is no web counterpart to port — and the compatibility matrix says
+ * so, so a shared screen cannot depend on a bar the web bundle does not have.
+ *
  * @param props - The destinations and the platform's view props.
  * @param props.items - The destinations, in order.
  * @param props.link - Substitution for every destination.
@@ -409,7 +429,7 @@ export function TabBar({
 }: TabBarProps) {
   return (
     <View
-      className={classNames(NATIVE_TAB_BAR_CLASS, className)}
+      className={cn(NATIVE_TAB_BAR_CLASS, className)}
       style={style}
       {...rest}>
       <Destinations

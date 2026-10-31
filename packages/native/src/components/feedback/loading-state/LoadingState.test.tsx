@@ -8,10 +8,10 @@
  * resolve through the configuration cascade.
  */
 
-import { render } from "@testing-library/react-native";
+import { type RenderResult, render } from "@testing-library/react-native";
 import type { ReactElement } from "react";
 import { View } from "react-native";
-import { AsheeNativeProvider } from "../../../provider/AsheeNativeProvider";
+import { AsheeUIProvider } from "../../../provider/AsheeUIProvider";
 import { LoadingState } from "./LoadingState";
 
 /**
@@ -22,9 +22,7 @@ import { LoadingState } from "./LoadingState";
  * @returns The rendered tree and its queries.
  */
 async function renderLoading(ui: ReactElement, config?: object) {
-  return render(
-    <AsheeNativeProvider config={config}>{ui}</AsheeNativeProvider>,
-  );
+  return render(<AsheeUIProvider config={config}>{ui}</AsheeUIProvider>);
 }
 
 /**
@@ -34,7 +32,7 @@ async function renderLoading(ui: ReactElement, config?: object) {
  * @param testID - The region's test identifier.
  * @returns Its class string.
  */
-function classesOf(view: ReturnType<typeof render>, testID: string): string {
+function classesOf(view: RenderResult, testID: string): string {
   return (view.getByTestId(testID).props as { className?: string })
     .className as string;
 }
@@ -123,9 +121,7 @@ describe("Native LoadingState", () => {
   it("refuses to render outside the provider, because that is a setup mistake", async () => {
     const silence = jest.spyOn(console, "error").mockImplementation(() => {});
 
-    await expect(render(<LoadingState />)).rejects.toThrow(
-      /AsheeNativeProvider/,
-    );
+    await expect(render(<LoadingState />)).rejects.toThrow(/AsheeUIProvider/);
 
     silence.mockRestore();
   });

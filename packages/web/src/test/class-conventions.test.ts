@@ -208,15 +208,21 @@ describe("raw palette colour scanner", () => {
 });
 
 describe("the source trees the scanners walk", () => {
-  it("walks the core style maps and the native package, not only this package", async () => {
+  it("walks this package's style maps, the native package and core, not only its components", async () => {
     const coreFiles = await listSourceFiles(CORE_SOURCE_ROOT);
     const nativeFiles = await listSourceFiles(NATIVE_SOURCE_ROOT);
 
-    // The style maps are where most class strings live; they are the reason the
-    // walk leaves `packages/web/src`.
-    expect(
-      coreFiles.filter((file) => file.endsWith("-styles.ts")).length,
-    ).toBeGreaterThan(30);
+    // C2 took the web class strings out of core and into `src/styles`, so the walk has to
+    // reach them here; core is still walked because it holds the tokens and the rules the
+    // scanners check, even though it no longer holds a class string.
     expect(nativeFiles.length).toBeGreaterThan(50);
+    expect(
+      coreFiles.filter((file) => file.endsWith("-config.ts")).length,
+    ).toBeGreaterThan(20);
+    expect(
+      (await listSourceFiles(SOURCE_ROOT)).filter((file) =>
+        file.replaceAll("\\", "/").includes("src/styles/"),
+      ).length,
+    ).toBeGreaterThan(40);
   });
 });

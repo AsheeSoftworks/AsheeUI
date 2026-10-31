@@ -9,9 +9,11 @@
 
 "use client";
 
-import { cn, resolveCascade, SPACE_GAP_CLASS, type Space } from "@asheeui/core";
+import { resolveCascade, type Space } from "@asheeui/core";
 import { type ElementType, forwardRef, type HTMLAttributes } from "react";
 import { useAsheeConfig } from "../../../libs/context";
+import { SPACE_GAP_CLASS } from "../../../styles/portable";
+import { cn } from "../../../utils/cn";
 import {
   FALLBACK_STACK_CONFIG,
   type StackAlign,

@@ -19,6 +19,9 @@ import { registerNativeComponentDefaults } from "../../../config/registry";
  *
  * `size`, `color` and `speed` carry the meanings the shared spinner contract gives
  * them, and `className` is the extra classes a consumer applies to every instance.
+ *
+ * @deprecated Use {@link SpinnerConfig} from `@asheeui/core` — the name both renderers
+ * publish.
  */
 export type NativeSpinnerConfig = Pick<
   SpinnerConfig,
@@ -31,6 +34,9 @@ export type NativeSpinnerConfig = Pick<
  * `color` stays unset so it inherits from the platform's configuration rather than
  * pinning a role, and the speed is the framework's own, so a consumer who retunes it
  * retunes both platforms.
+ *
+ * @deprecated Use {@link defaultSpinnerConfig} — the name both renderers publish. The value is
+ * this one: a fallback states the platform's default, and the name is shared.
  */
 export const defaultNativeSpinnerConfig: NativeSpinnerConfig = {
   size: "md",
@@ -47,6 +53,9 @@ registerNativeComponentDefaults("spinner", defaultNativeSpinnerConfig);
 
 /**
  * The values the spinner falls back to when no tier provides one.
+ *
+ * @deprecated Use {@link FALLBACK_SPINNER_CONFIG} — the name both renderers publish. The value is
+ * this one: a fallback states the platform's default, and the name is shared.
  */
 export const FALLBACK_NATIVE_SPINNER_CONFIG = {
   size: "md",

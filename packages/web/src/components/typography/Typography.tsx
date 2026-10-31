@@ -17,11 +17,8 @@
 "use client";
 
 import {
-  cn,
+  deprecatedAlias,
   resolveCascade,
-  TYPOGRAPHY_ALIGN_CLASS,
-  TYPOGRAPHY_ROLE_DEFAULT_ELEMENT,
-  TYPOGRAPHY_TONE_CLASS,
   type TypographyAlign,
   type TypographyLeading,
   type TypographyRole,
@@ -38,6 +35,12 @@ import {
   type ReactNode,
 } from "react";
 import { useAsheeConfig } from "../../libs/context";
+import {
+  TYPOGRAPHY_ALIGN_CLASS,
+  TYPOGRAPHY_ROLE_DEFAULT_ELEMENT,
+  TYPOGRAPHY_TONE_CLASS,
+} from "../../styles/typography";
+import { cn } from "../../utils/cn";
 import {
   FALLBACK_TYPOGRAPHY_CONFIG,
   type TypographyConfig,
@@ -203,3 +206,14 @@ export const Typography = forwardRef<HTMLElement, TypographyProps>(
 );
 
 Typography.displayName = "Typography";
+
+/**
+ * The component under the platform's own word for a line of text.
+ *
+ * Both renderers publish both names, so a shared component can write either one and reach
+ * the same component on each platform; `Typography` is the canonical name and this is the
+ * same reference, not a second implementation. It is not deprecated on this renderer — the
+ * web never published a `Text` to move away from — and it is kept because the pair is what
+ * lets one file describe text for a browser and a device.
+ */
+export const Text = deprecatedAlias(Typography);

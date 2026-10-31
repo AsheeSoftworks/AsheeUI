@@ -27,32 +27,39 @@
  */
 
 import {
-  type ColorRole,
-  NATIVE_MESSAGE_SURFACE_CLASS,
-  NATIVE_MESSAGE_TEXT_CLASS,
-  NATIVE_RADIUS_CLASS,
-  NATIVE_TOOLTIP_ALIGN_CLASS,
-  NATIVE_TOOLTIP_ANCHOR,
-  NATIVE_TOOLTIP_ARROW_CLASS,
-  NATIVE_TOOLTIP_BUBBLE_CLASS,
-  NATIVE_TOOLTIP_CONTAINER_CLASS,
-  NATIVE_TOOLTIP_WRAPPER_CLASS,
+  type Color,
   type Radius,
   resolveCascade,
   resolveMessageVariant,
   type Size,
-  TOOLTIP_FONT_CLASS,
-  TOOLTIP_PADDING_X_CLASS,
-  TOOLTIP_PADDING_Y_CLASS,
   type TooltipPlacement,
   type Variant,
 } from "@asheeui/core";
 import { type ReactNode, useEffect, useRef, useState } from "react";
 import type { StyleProp, ViewStyle } from "react-native";
 import { Pressable, View } from "react-native";
-import { useAsheeNativeConfig } from "../../../provider/AsheeNativeProvider";
-import { classNames } from "../../../utils/class-names";
-import { Text } from "../../typography/text/Text";
+import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
+import {
+  NATIVE_MESSAGE_SURFACE_CLASS,
+  NATIVE_MESSAGE_TEXT_CLASS,
+} from "../../../styles/message-surface";
+import {
+  TOOLTIP_FONT_CLASS,
+  TOOLTIP_PADDING_X_CLASS,
+  TOOLTIP_PADDING_Y_CLASS,
+} from "../../../styles/portable";
+import { NATIVE_RADIUS_CLASS } from "../../../styles/radius";
+import {
+  NATIVE_TOOLTIP_ALIGN_CLASS,
+  NATIVE_TOOLTIP_ANCHOR,
+  NATIVE_TOOLTIP_ARROW_CLASS,
+  NATIVE_TOOLTIP_BUBBLE_CLASS,
+  NATIVE_TOOLTIP_CONTAINER_CLASS,
+  NATIVE_TOOLTIP_WRAPPER_CLASS,
+} from "../../../styles/tooltip";
+import { cn } from "../../../utils/cn";
+import { useUnsupportedProps } from "../../../utils/unsupported-prop";
+import { Typography } from "../../typography/text/Text";
 import {
   FALLBACK_NATIVE_TOOLTIP_CONFIG,
   type NativeTooltipConfig,
@@ -80,6 +87,14 @@ export interface TooltipProps extends NativeTooltipConfig {
    * @default false
    */
   isDisabled?: boolean;
+
+  /**
+   * The web's stacking order.
+   *
+   * The platform has no z-axis; a later sibling is drawn above an earlier one. Accepted so
+   * a shared tooltip compiles; warns once and changes nothing.
+   */
+  zIndex?: number;
 
   /** Platform styles for the wrapper, for what NativeWind cannot express. */
   style?: StyleProp<ViewStyle>;
@@ -124,11 +139,19 @@ export function Tooltip({
   offset,
   radius,
   showArrow,
+  zIndex,
   className,
   style,
 }: TooltipProps) {
-  const config = useAsheeNativeConfig();
+  const config = useAsheeConfig();
   const sectionConfig = config.components.tooltip;
+
+  useUnsupportedProps("Tooltip", {
+    zIndex: {
+      value: zIndex,
+      substitute: "render the hint later in the tree; there is no z-axis",
+    },
+  });
 
   const resolvedVariant = resolveCascade<Variant>(
     variant,
@@ -136,7 +159,7 @@ export function Tooltip({
     undefined,
     FALLBACK_NATIVE_TOOLTIP_CONFIG.variant,
   );
-  const resolvedColor = resolveCascade<ColorRole>(
+  const resolvedColor = resolveCascade<Color>(
     color,
     sectionConfig?.color,
     undefined,
@@ -274,7 +297,7 @@ export function Tooltip({
           // The hint is not interactive: it explains what is under it, and a press belongs to
           // that control rather than to the hint.
           pointerEvents="none"
-          className={classNames(
+          className={cn(
             NATIVE_TOOLTIP_CONTAINER_CLASS,
             NATIVE_TOOLTIP_ALIGN_CLASS[anchor.align],
           )}
@@ -288,7 +311,7 @@ export function Tooltip({
             accessibilityLabel={
               typeof content === "string" ? content : undefined
             }
-            className={classNames(
+            className={cn(
               NATIVE_TOOLTIP_BUBBLE_CLASS,
               TOOLTIP_PADDING_X_CLASS[resolvedSize],
               TOOLTIP_PADDING_Y_CLASS[resolvedSize],
@@ -300,19 +323,19 @@ export function Tooltip({
               <View
                 accessibilityElementsHidden
                 importantForAccessibility="no-hide-descendants"
-                className={classNames(NATIVE_TOOLTIP_ARROW_CLASS, surfaceClass)}
+                className={cn(NATIVE_TOOLTIP_ARROW_CLASS, surfaceClass)}
               />
             )}
 
             {typeof content === "string" ? (
-              <Text
+              <Typography
                 role="label"
-                className={classNames(
+                className={cn(
                   TOOLTIP_FONT_CLASS[resolvedSize],
                   textClass,
                 )}>
                 {content}
-              </Text>
+              </Typography>
             ) : (
               content
             )}
@@ -321,7 +344,7 @@ export function Tooltip({
               <View
                 accessibilityElementsHidden
                 importantForAccessibility="no-hide-descendants"
-                className={classNames(NATIVE_TOOLTIP_ARROW_CLASS, surfaceClass)}
+                className={cn(NATIVE_TOOLTIP_ARROW_CLASS, surfaceClass)}
               />
             )}
           </View>

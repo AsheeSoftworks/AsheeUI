@@ -8,16 +8,18 @@
  */
 
 import {
-  cn,
-  TYPOGRAPHY_LEADING_CLASS,
-  TYPOGRAPHY_ROLE_CLASS,
   TYPOGRAPHY_ROLE_TOKEN,
-  TYPOGRAPHY_SIZE_CLASS,
-  TYPOGRAPHY_TRACKING_CLASS,
-  TYPOGRAPHY_WEIGHT_CLASS,
   type TypographyRole,
   type TypographyRoleTokens,
 } from "@asheeui/core";
+import {
+  TYPOGRAPHY_LEADING_CLASS,
+  TYPOGRAPHY_ROLE_CLASS,
+  TYPOGRAPHY_SIZE_CLASS,
+  TYPOGRAPHY_TRACKING_CLASS,
+  TYPOGRAPHY_WEIGHT_CLASS,
+} from "../../styles/typography";
+import { cn } from "../../utils/cn";
 
 /**
  * Compose a role's class string from its size/style tokens.

@@ -18,6 +18,16 @@ import {
   type Color,
   type FieldStatus,
   isFieldInvalid,
+  type Radius,
+  resolveCascade,
+  resolveChange,
+  type Size,
+  type Variant,
+} from "@asheeui/core";
+import { useState } from "react";
+import { Pressable } from "react-native";
+import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
+import {
   NATIVE_INPUT_BASE_CLASS,
   NATIVE_INPUT_DISABLED_CLASS,
   NATIVE_INPUT_EDGE_ACCENT_CLASS,
@@ -26,17 +36,11 @@ import {
   NATIVE_INPUT_EDGE_WIDTH_CLASS,
   NATIVE_INPUT_SIZE_CLASS,
   NATIVE_INPUT_VARIANT_CLASS,
-  NATIVE_RADIUS_CLASS,
-  type Radius,
-  resolveCascade,
-  type Size,
-  type Variant,
-} from "@asheeui/core";
-import { useState } from "react";
-import { Pressable } from "react-native";
-import { useAsheeNativeConfig } from "../../../provider/AsheeNativeProvider";
-import { classNames } from "../../../utils/class-names";
-import { Text } from "../../typography/text/Text";
+} from "../../../styles/input";
+import { NATIVE_RADIUS_CLASS } from "../../../styles/radius";
+import { cn } from "../../../utils/cn";
+import { useUnsupportedProps } from "../../../utils/unsupported-prop";
+import { Typography } from "../../typography/text/Text";
 import { FieldShell } from "../field/FieldShell";
 import { PickerSheet, type PickerSheetOption } from "../picker/PickerSheet";
 import { NATIVE_PICKER_TRIGGER_CLASS } from "../picker/picker-styles";
@@ -60,6 +64,29 @@ export interface DropmenuProps extends NativeDropmenuConfig {
 
   /** Called with the value the reader picked. */
   onValueChange?: (value: string) => void;
+
+  /**
+   * The field's form name.
+   *
+   * A form name is a DOM concept: the platform reads a field's value from the consumer's
+   * state, not from a named control. Accepted so a shared form compiles; warns once and
+   * changes nothing.
+   */
+  name?: string;
+
+  /** The name of the picker's search field, for the same reason as {@link name}. */
+  searchInputName?: string;
+
+  /**
+   * Called with the value the reader picked, under the name the browser gives the event.
+   *
+   * The event is a shim with `target.value`; `preventDefault` and `stopPropagation` are not
+   * part of it, because the platform has no default action here to stop.
+   */
+  onChange?: (event: { target: { value: string } }) => void;
+
+  /** Called with the value the reader picked, under the platform's most specific name. */
+  onChangeText?: (value: string) => void;
 
   /** What the trigger says while nothing is picked. */
   placeholder?: string;
@@ -120,7 +147,11 @@ export function Dropmenu({
   options,
   value,
   initialValue,
+  onChange,
+  onChangeText,
   onValueChange,
+  name,
+  searchInputName,
   placeholder = "Select an option",
   label,
   description,
@@ -138,8 +169,19 @@ export function Dropmenu({
   testID,
   optionTestID,
 }: DropmenuProps) {
-  const config = useAsheeNativeConfig();
+  const config = useAsheeConfig();
   const sectionConfig = config.components.dropmenu;
+
+  useUnsupportedProps("Dropmenu", {
+    name: {
+      value: name,
+      substitute: "read the field's value from state; a form name is a DOM concept",
+    },
+    searchInputName: {
+      value: searchInputName,
+      substitute: "the picker's search field is internal and has no form name",
+    },
+  });
   const [isOpen, setIsOpen] = useState(false);
   const [uncontrolledValue, setUncontrolledValue] = useState(initialValue);
 
@@ -191,7 +233,7 @@ export function Dropmenu({
   const pickedOption = options.find((option) => option.value === picked);
 
   const isInvalid = isFieldInvalid(resolvedStatus);
-  const edgeClass = classNames(
+  const edgeClass = cn(
     NATIVE_INPUT_EDGE_WIDTH_CLASS[resolvedVariant],
     isInvalid
       ? NATIVE_INPUT_EDGE_INVALID_CLASS
@@ -220,7 +262,7 @@ export function Dropmenu({
         }}
         disabled={resolvedDisabled}
         onPress={() => setIsOpen(true)}
-        className={classNames(
+        className={cn(
           NATIVE_INPUT_BASE_CLASS,
           NATIVE_INPUT_SIZE_CLASS[resolvedSize],
           NATIVE_RADIUS_CLASS[resolvedRadius],
@@ -230,10 +272,12 @@ export function Dropmenu({
           resolvedDisabled && NATIVE_INPUT_DISABLED_CLASS,
           className,
         )}>
-        <Text role="body-md">{pickedOption?.label ?? placeholder}</Text>
-        <Text role="body-md" accessible={false}>
+        <Typography role="body-md">
+          {pickedOption?.label ?? placeholder}
+        </Typography>
+        <Typography role="body-md" accessible={false}>
           ⌄
-        </Text>
+        </Typography>
       </Pressable>
       <PickerSheet
         isOpen={isOpen}
@@ -243,7 +287,7 @@ export function Dropmenu({
         testID={optionTestID}
         onSelect={(next) => {
           if (!isControlled) setUncontrolledValue(next);
-          onValueChange?.(next);
+          resolveChange({ onChange, onChangeText, onValueChange }, next);
           setIsOpen(false);
         }}
         onClose={() => setIsOpen(false)}

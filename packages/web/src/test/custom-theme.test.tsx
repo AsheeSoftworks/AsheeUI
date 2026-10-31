@@ -71,6 +71,27 @@ function _customThemeNamesAreFirstClass(
   void named;
 }
 
+/**
+ * Type-level assertion: `extends` may name another custom theme.
+ *
+ * Closing `extends` over the built-ins made `brand: { extends: "midnight" }` fail to compile, and
+ * typed code could not reach the resolver's cross-theme support at all. The assertion lived in
+ * `@asheeui/core`'s `theme/color.ts` until C4, as a local alias kept alive by an exported
+ * `_ColorConfigGuards` carrier — and that carrier was an export nothing read, which core may not
+ * publish. It belongs here: this is where the configuration vocabulary is consumed, and `tsc` is
+ * part of the gate. Never called; `tsc` is the runner.
+ */
+function _aCustomThemeMayExtendAnotherCustomTheme(): void {
+  const config: ExternalConfig = {
+    color: {
+      midnight: { extends: "dark", background: "#0b0b12", primary: "#8b5cf6" },
+      brand: { extends: "midnight", primary: "#a78bfa" },
+    },
+  };
+
+  void config;
+}
+
 describe("custom theme", () => {
   it("registers the theme and generates its CSS block", () => {
     render(

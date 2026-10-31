@@ -11,7 +11,7 @@
 
 import { fireEvent, render } from "@testing-library/react-native";
 import type { ReactElement } from "react";
-import { AsheeNativeProvider } from "../../../provider/AsheeNativeProvider";
+import { AsheeUIProvider } from "../../../provider/AsheeUIProvider";
 import { Tabs } from "./Tabs";
 
 /** The tabs the tests move between. */
@@ -34,9 +34,7 @@ const TABS = [
  * @returns The rendered tree and its queries.
  */
 async function renderTabs(ui: ReactElement, config?: object) {
-  return render(
-    <AsheeNativeProvider config={config}>{ui}</AsheeNativeProvider>,
-  );
+  return render(<AsheeUIProvider config={config}>{ui}</AsheeUIProvider>);
 }
 
 describe("Native Tabs", () => {
@@ -179,7 +177,7 @@ describe("Native Tabs", () => {
     const silence = jest.spyOn(console, "error").mockImplementation(() => {});
 
     await expect(render(<Tabs tabs={TABS} />)).rejects.toThrow(
-      /AsheeNativeProvider/,
+      /AsheeUIProvider/,
     );
 
     silence.mockRestore();

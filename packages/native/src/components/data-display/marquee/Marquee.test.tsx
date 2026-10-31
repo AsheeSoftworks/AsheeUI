@@ -18,10 +18,6 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import {
-  NATIVE_MARQUEE_STILL_FRAME_CLASS,
-  NATIVE_MARQUEE_STILL_SET_CLASS,
-} from "@asheeui/core";
-import {
   act,
   fireEvent,
   type RenderResult,
@@ -29,7 +25,11 @@ import {
 } from "@testing-library/react-native";
 import type { ReactElement } from "react";
 import { AccessibilityInfo, Animated, Text } from "react-native";
-import { AsheeNativeProvider } from "../../../provider/AsheeNativeProvider";
+import { AsheeUIProvider } from "../../../provider/AsheeUIProvider";
+import {
+  NATIVE_MARQUEE_STILL_FRAME_CLASS,
+  NATIVE_MARQUEE_STILL_SET_CLASS,
+} from "../../../styles/marquee";
 import { Marquee } from "./Marquee";
 import {
   defaultNativeMarqueeConfig,
@@ -79,9 +79,7 @@ afterEach(() => {
  * @returns The rendered tree and its queries.
  */
 async function renderMarquee(ui: ReactElement, config?: object) {
-  return render(
-    <AsheeNativeProvider config={config}>{ui}</AsheeNativeProvider>,
-  );
+  return render(<AsheeUIProvider config={config}>{ui}</AsheeUIProvider>);
 }
 
 /**

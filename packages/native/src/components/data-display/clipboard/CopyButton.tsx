@@ -13,18 +13,18 @@
  * with a glyph in front of it, because a reader asked to press "Copy" should hear "Copy".
  */
 
+import { type Radius, resolveCascade } from "@asheeui/core";
+import type { ReactNode } from "react";
+import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
+import { NATIVE_ANNOUNCEMENT_LIVE_REGION } from "../../../shared/announcement";
+import { announce } from "../../../utils/announce";
 import {
-  NATIVE_ANNOUNCEMENT_LIVE_REGION,
   NATIVE_CLIPBOARD_COPIED_GLYPH,
   NATIVE_CLIPBOARD_COPY_GLYPH,
   NATIVE_CLIPBOARD_STATUS_CLASS,
-  type Radius,
-  resolveCascade,
-} from "@asheeui/core";
-import type { ReactNode } from "react";
-import { useAsheeNativeConfig } from "../../../provider/AsheeNativeProvider";
+} from "../../../styles/clipboard";
 import { Button, type ButtonProps } from "../../forms/button/Button";
-import { Text } from "../../typography/text/Text";
+import { Typography } from "../../typography/text/Text";
 import { Clipboard } from "./Clipboard";
 import { FALLBACK_NATIVE_CLIPBOARD_CONFIG } from "./clipboard-config";
 
@@ -120,7 +120,7 @@ export function CopyButton({
   copiedIcon,
   ...rest
 }: CopyButtonProps) {
-  const config = useAsheeNativeConfig();
+  const config = useAsheeConfig();
   const sectionConfig = config.components.clipboard;
 
   const resolvedLabel = resolveCascade<ReactNode>(
@@ -152,8 +152,23 @@ export function CopyButton({
     <Clipboard
       value={value}
       timeout={timeout}
-      onCopy={onCopy}
-      onError={onError}>
+      onCopy={(text) => {
+        // The live region below is what a browser announces with; the platform has no
+        // region of that kind, so the same message is announced imperatively. The level is
+        // the one the framework names, and the platform's API decides how to say it.
+        announce(
+          copiedAnnouncement ?? `${String(resolvedCopiedLabel)}: ${text}`,
+          "status",
+        );
+        onCopy?.(text);
+      }}
+      onError={(cause) => {
+        announce(
+          errorAnnouncement ?? `${String(resolvedLabel)} failed`,
+          "alert",
+        );
+        onError?.(cause);
+      }}>
       {({ copied, error, copy }) => {
         const wording = copied ? resolvedCopiedLabel : resolvedLabel;
         const affordance = copied
@@ -189,18 +204,18 @@ export function CopyButton({
               }}
               {...rest}>
               {typeof affordance === "string" ? (
-                <Text>{affordance}</Text>
+                <Typography>{affordance}</Typography>
               ) : (
                 affordance
               )}
-              <Text>{wording}</Text>
+              <Typography>{wording}</Typography>
             </Button>
-            <Text
+            <Typography
               accessibilityLiveRegion={NATIVE_ANNOUNCEMENT_LIVE_REGION.status}
               className={NATIVE_CLIPBOARD_STATUS_CLASS}
               testID="clipboard-status">
               {announcement}
-            </Text>
+            </Typography>
           </>
         );
       }}

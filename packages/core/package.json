@@ -1,8 +1,8 @@
 {
   "name": "@asheeui/core",
-  "version": "2.5.0",
+  "version": "3.0.0",
   "description": "Platform-neutral design language, component contracts and cascade helpers shared by the AsheeUI web and native packages.",
-  "author": "Ashee Softworks <asheesoftworks@gmail.com>",
+  "author": "Ashee Softworks \u003casheesoftworks@gmail.com\u003e",
   "license": "Apache-2.0",
   "type": "module",
   "main": "./src/index.ts",
@@ -12,6 +12,11 @@
       "types": "./src/index.ts",
       "import": "./src/index.ts",
       "default": "./src/index.ts"
+    },
+    "./dev": {
+      "types": "./src/dev.ts",
+      "import": "./src/dev.ts",
+      "default": "./src/dev.ts"
     }
   },
   "publishConfig": {
@@ -23,6 +28,11 @@
         "types": "./dist/index.d.ts",
         "import": "./dist/index.js",
         "default": "./dist/index.js"
+      },
+      "./dev": {
+        "types": "./dist/dev.d.ts",
+        "import": "./dist/dev.js",
+        "default": "./dist/dev.js"
       }
     }
   },
@@ -46,8 +56,5 @@
     "vite-plugin-dts": "^5.1.2",
     "vitest": "^5.0.5"
   },
-  "dependencies": {
-    "clsx": "^2.1.1",
-    "tailwind-merge": "^3.7.0"
-  }
+  "dependencies": {}
 }

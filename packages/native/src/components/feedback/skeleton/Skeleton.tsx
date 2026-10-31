@@ -19,18 +19,14 @@
  * so a consumer who needs the wait announced gets it.
  */
 
-import {
-  NATIVE_RADIUS_CLASS,
-  NATIVE_SKELETON_BASE_CLASS,
-  type Radius,
-  resolveCascade,
-  resolveClassKey,
-} from "@asheeui/core";
+import { type Radius, resolveCascade, resolveClassKey } from "@asheeui/core";
 import { useEffect, useRef } from "react";
 import type { StyleProp, ViewStyle } from "react-native";
 import { Animated, View, type ViewProps } from "react-native";
-import { useAsheeNativeConfig } from "../../../provider/AsheeNativeProvider";
-import { classNames } from "../../../utils/class-names";
+import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
+import { NATIVE_RADIUS_CLASS } from "../../../styles/radius";
+import { NATIVE_SKELETON_BASE_CLASS } from "../../../styles/skeleton";
+import { cn } from "../../../utils/cn";
 import {
   FALLBACK_NATIVE_SKELETON_CONFIG,
   type NativeSkeletonConfig,
@@ -118,7 +114,7 @@ export function Skeleton({
   style,
   ...rest
 }: SkeletonProps) {
-  const config = useAsheeNativeConfig();
+  const config = useAsheeConfig();
   const sectionConfig = config.components.skeleton;
 
   const resolvedRadius = resolveCascade<Radius>(
@@ -161,7 +157,7 @@ export function Skeleton({
     };
   }, [resolvedAnimated, opacity]);
 
-  const classes = classNames(
+  const classes = cn(
     NATIVE_SKELETON_BASE_CLASS,
     resolveClassKey(
       resolvedRadius,

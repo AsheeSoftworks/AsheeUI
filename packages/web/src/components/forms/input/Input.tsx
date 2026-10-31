@@ -9,16 +9,11 @@
 
 import {
   type Color,
-  cn,
-  FIELD_STATUS_BORDER_CLASS,
-  INPUT_SIZE_CLASS,
   isFieldInvalid,
-  RADIUS_CLASS,
   resolveCascade,
   resolveClassKey,
   resolveFieldStatusColor,
   resolveRadiusKey,
-  resolveVariantClass,
   type Variant,
 } from "@asheeui/core";
 import React, {
@@ -31,6 +26,11 @@ import React, {
   useRef,
 } from "react";
 import { useAsheeConfig } from "../../../libs/context";
+import { resolveVariantClass } from "../../../shared/variant";
+import { FIELD_STATUS_BORDER_CLASS } from "../../../styles/field";
+import { INPUT_SIZE_CLASS } from "../../../styles/input";
+import { RADIUS_CLASS } from "../../../styles/radius";
+import { cn } from "../../../utils/cn";
 import {
   type KeyboardOpenOptions,
   useKeyboardField,
@@ -123,6 +123,14 @@ export interface InputProps extends BaseInputProps {
    * choice between the two; passing both calls both.
    */
   onChangeText?: ((value: string) => void) | undefined;
+
+  /**
+   * Called with the field's next value, under the name the picker family already used.
+   *
+   * `onChange`, `onChangeText` and `onValueChange` are the same change; all three run when
+   * all three are given, in that order, so a handler copied from a device keeps working.
+   */
+  onValueChange?: ((value: string) => void) | undefined;
 
   /**
    * Whether the field stretches to fill its parent's width.
@@ -263,6 +271,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
       onBlur,
       onChange,
       onChangeText,
+      onValueChange,
       enableVirtualKeyboard = true,
       ...rest
     },
@@ -325,8 +334,9 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
       (e: React.ChangeEvent<HTMLInputElement>) => {
         onChange?.(e);
         onChangeText?.(e.target.value);
+        onValueChange?.(e.target.value);
       },
-      [onChange, onChangeText],
+      [onChange, onChangeText, onValueChange],
     );
 
     // ─── Token Resolvers ──────────────────────────────────────────────────

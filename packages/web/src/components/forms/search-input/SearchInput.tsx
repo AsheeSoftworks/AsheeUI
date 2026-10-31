@@ -11,7 +11,7 @@
 
 "use client";
 
-import { cn, resolveConfigCascade } from "@asheeui/core";
+import { resolveConfigCascade } from "@asheeui/core";
 import {
   type ChangeEventHandler,
   forwardRef,
@@ -23,6 +23,7 @@ import {
 import { ClearIcon } from "../../../icons/ClearIcon";
 import { SearchIcon } from "../../../icons/SearchIcon";
 import { useAsheeConfig } from "../../../libs/context";
+import { cn } from "../../../utils/cn";
 import { Spinner } from "../../feedback/spinner/spinner";
 import { Button } from "../button";
 import type { FieldStatus } from "../field/field-config";
@@ -77,6 +78,9 @@ export interface SearchInputProps extends BaseSearchInputProps {
    * emptied. It is the handler to use when the query drives a result list.
    */
   onValueChange?: ((value: string) => void) | undefined;
+
+  /** Called with the next query, under the platform's most specific name. */
+  onChangeText?: ((value: string) => void) | undefined;
 
   /**
    * Called with the query when the reader submits the field.
@@ -173,6 +177,7 @@ export const SearchInput = forwardRef<HTMLInputElement, SearchInputProps>(
       value,
       defaultValue,
       onChange,
+      onChangeText,
       onValueChange,
       onSearch,
       description,
@@ -225,6 +230,7 @@ export const SearchInput = forwardRef<HTMLInputElement, SearchInputProps>(
 
     const handleChange: ChangeEventHandler<HTMLInputElement> = (event) => {
       onChange?.(event);
+      onChangeText?.(event.target.value);
 
       if (value === undefined) {
         setTypedValue(event.target.value);
@@ -247,6 +253,7 @@ export const SearchInput = forwardRef<HTMLInputElement, SearchInputProps>(
         setTypedValue("");
       }
 
+      onChangeText?.("");
       onValueChange?.("");
     };
 

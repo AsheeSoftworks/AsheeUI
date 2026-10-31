@@ -9,11 +9,31 @@
  * one nested key keeps the sibling keys the component registered beside it.
  */
 
-import { defaultConfig } from "@asheeui/core";
+import {
+  assertValidConfig,
+  type Config,
+  defaultConfig,
+  type ExternalConfig,
+  resolveConfig,
+} from "@asheeui/core";
 import { getNativeComponentDefaults } from "./registry";
-import { NATIVE_FALLBACK_CONFIG, resolveNativeConfig } from "./resolve-config";
+import {
+  NATIVE_FALLBACK_CONFIG,
+  type NativeExternalConfig,
+  resolveNativeConfig,
+} from "./resolve-config";
 // Importing the package's surface is what registers every component's defaults.
 import "..";
+
+/**
+ * The one invalid configuration both renderers are tested against.
+ *
+ * It is a shared object in the sense that matters: the same key, the same wrong value, and the same
+ * expected rejection — because both providers call the same `assertValidConfig`.
+ */
+const INVALID_CONFIG = {
+  defaultVariant: "primry",
+} as unknown as ExternalConfig;
 
 describe("native configuration resolution", () => {
   it("resolves the platform defaults when a consumer provides none", () => {
@@ -104,5 +124,99 @@ describe("native configuration resolution", () => {
 
     expect(registered?.options?.active?.variant).toBe("solid");
     expect(registered?.tooltip).toEqual({ show: true, placement: "right" });
+  });
+});
+
+describe("the shape a shared component reads", () => {
+  it("is core's configuration plus the platform's density", () => {
+    const config = resolveNativeConfig();
+
+    // Every field the web renderer's resolved configuration carries...
+    expect(config).toHaveProperty("color");
+    expect(config).toHaveProperty("defaultTheme");
+    expect(config.defaultTheme).toBe("system");
+    expect(Object.keys(config.color)).toEqual(
+      expect.arrayContaining(["light", "dark"]),
+    );
+
+    // ...and it is assignable to core's `Config` by construction. The assertion is the compiler's:
+    // `asCore` is a type error the day a field is missing or has the wrong type.
+    const asCore: Config = config;
+    expect(asCore.defaultVariant).toBe(NATIVE_FALLBACK_CONFIG.defaultVariant);
+  });
+
+  it("resolves a custom theme's palette, so a component reads filled-in colours", () => {
+    const config = resolveNativeConfig({
+      color: { midnight: { extends: "dark", primary: "#8b5cf6" } },
+    });
+
+    // The declared colour, and the ones it inherits from the theme it extends.
+    expect(config.color.midnight?.primary).toBe("#8b5cf6");
+    expect(config.color.midnight?.background).toBe(
+      config.color.dark.background,
+    );
+  });
+
+  it("resolves the same palettes as the web renderer, because both call one function", () => {
+    // `CORE-MIGRATION-REPORT.md` §5 row 5: the colour resolution is one rule. The web
+    // renderer's `resolveConfig` and this package's `resolveNativeConfig` both call core's
+    // `resolveColorConfig` with `defaultColorConfig` and the configuration's own theme
+    // family, so the palettes a shared component reads are identical — including the base a
+    // custom theme with no `extends` inherits, which was the divergence the row recorded.
+    const partial = {
+      light: { primary: "#047857" },
+      midnight: { extends: "dark", primary: "#7c3aed" },
+    } as const;
+
+    for (const defaultTheme of [
+      "light",
+      "dark",
+      "system",
+      "midnight",
+    ] as const) {
+      const web = resolveConfig({
+        color: partial,
+        defaultTheme,
+      } as ExternalConfig);
+      const native = resolveNativeConfig({ color: partial, defaultTheme });
+
+      expect([defaultTheme, native.color]).toEqual([
+        defaultTheme,
+        web.color,
+      ]);
+    }
+
+    // The reference is the same call, so the assertion holding is not a coincidence of two
+    // implementations agreeing today.
+    expect(resolveConfig({ color: partial }).color).toEqual(
+      resolveNativeConfig({ color: partial }).color,
+    );
+  });
+});
+
+describe("configuration validation", () => {
+  it("rejects the configuration the web provider rejects, with core's message", () => {
+    // Core's `assertValidConfig` is the one validation both providers run; the assertion is that the
+    // device raises exactly what it says, so an invalid shared config fails the same way on both.
+    let expected = "";
+    try {
+      assertValidConfig(INVALID_CONFIG);
+    } catch (error) {
+      expected = (error as Error).message;
+    }
+
+    expect(() =>
+      resolveNativeConfig(INVALID_CONFIG as NativeExternalConfig),
+    ).toThrow(expected);
+    expect(expected).toContain("defaultVariant");
+  });
+
+  it("does not call the platform's own density an unknown key", () => {
+    const warn = jest.spyOn(console, "warn").mockImplementation(() => {});
+
+    resolveNativeConfig({ defaultSize: "lg" });
+
+    expect(warn).not.toHaveBeenCalled();
+    warn.mockRestore();
   });
 });

@@ -7,14 +7,11 @@
  * ever unmounted, and every option resolves through the configuration cascade.
  */
 
-import {
-  type ReactTestInstance,
-  type RenderResult,
-  render,
-} from "@testing-library/react-native";
+import { type RenderResult, render } from "@testing-library/react-native";
 import type { ReactElement } from "react";
 import { Dimensions, Text } from "react-native";
-import { AsheeNativeProvider } from "../../../provider/AsheeNativeProvider";
+import type { TestInstance } from "test-renderer";
+import { AsheeUIProvider } from "../../../provider/AsheeUIProvider";
 import { Split } from "./Split";
 
 /**
@@ -25,9 +22,7 @@ import { Split } from "./Split";
  * @returns The rendered tree and its queries.
  */
 async function renderSplit(ui: ReactElement, config?: object) {
-  return render(
-    <AsheeNativeProvider config={config}>{ui}</AsheeNativeProvider>,
-  );
+  return render(<AsheeUIProvider config={config}>{ui}</AsheeUIProvider>);
 }
 
 /**
@@ -69,7 +64,7 @@ function classesOf(view: RenderResult, testID: string): string {
  * @returns The classes of the pane wrapping it.
  */
 function paneClassesOf(view: RenderResult, testID: string): string {
-  const pane = view.getByTestId(testID).parent as ReactTestInstance | null;
+  const pane = view.getByTestId(testID).parent as TestInstance | null;
 
   return String((pane?.props as { className?: string })?.className ?? "");
 }

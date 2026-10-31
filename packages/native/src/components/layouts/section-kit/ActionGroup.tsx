@@ -14,16 +14,14 @@
  * on the web.
  */
 
-import {
-  type ActionConfig,
-  type ColorRole,
-  NATIVE_SECTION_BLOCK_ACTIONS_ALIGN_CLASS,
-  NATIVE_SECTION_BLOCK_ACTIONS_CLASS,
-  type SectionBlockAlign,
-} from "@asheeui/core";
+import type { ActionConfig, Color, SectionBlockAlign } from "@asheeui/core";
 import type { ReactNode } from "react";
 import { View } from "react-native";
-import { classNames } from "../../../utils/class-names";
+import {
+  NATIVE_SECTION_BLOCK_ACTIONS_ALIGN_CLASS,
+  NATIVE_SECTION_BLOCK_ACTIONS_CLASS,
+} from "../../../styles/section-block";
+import { cn } from "../../../utils/cn";
 import { openDestination } from "../../../utils/open-destination";
 import { Button } from "../../forms/button/Button";
 
@@ -106,7 +104,7 @@ export function ActionGroup({
 
   return (
     <View
-      className={classNames(
+      className={cn(
         NATIVE_SECTION_BLOCK_ACTIONS_CLASS,
         NATIVE_SECTION_BLOCK_ACTIONS_ALIGN_CLASS[align],
         className,
@@ -114,7 +112,7 @@ export function ActionGroup({
       {primaryAction && (
         <Button
           variant={primaryAction.variant ?? "solid"}
-          color={primaryAction.color as ColorRole | undefined}
+          color={primaryAction.color as Color | undefined}
           size={primaryAction.size}
           radius={primaryAction.radius}
           onPress={pressFor(primaryAction)}>
@@ -124,7 +122,7 @@ export function ActionGroup({
       {secondaryAction && (
         <Button
           variant={secondaryAction.variant ?? "bordered"}
-          color={secondaryAction.color as ColorRole | undefined}
+          color={secondaryAction.color as Color | undefined}
           size={secondaryAction.size}
           radius={secondaryAction.radius}
           onPress={pressFor(secondaryAction)}>

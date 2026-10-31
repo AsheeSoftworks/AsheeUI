@@ -14,17 +14,15 @@
  * is behind it should not be read (`accessibilityViewIsModal`).
  *
  * The two overrides the web offers are offered here too, in the platform's form: classes for
- * the dimmed layer and for the surface a consumer's `overlay` and `content` name.
+ * the dimmed layer and for the surface a consumer's `overlay` and `content` name. They are named
+ * the way the web names them — `ModalOverlayProps` and `ModalContentProps` — so a shared
+ * description of a modal's parts is written once.
  */
 
 import {
+  CLOSE_LABEL,
   type ModalPosition,
   type ModalSizeKey,
-  NATIVE_MODAL_BACKDROP_CLASS,
-  NATIVE_MODAL_PANEL_CLASS,
-  NATIVE_MODAL_POSITION_CLASS,
-  NATIVE_MODAL_WIDTH_CLASS,
-  NATIVE_RADIUS_CLASS,
   type Radius,
   resolveCascade,
 } from "@asheeui/core";
@@ -36,23 +34,48 @@ import type {
   ViewStyle,
 } from "react-native";
 import { Modal as PlatformModal, Pressable } from "react-native";
-import { useAsheeNativeConfig } from "../../../provider/AsheeNativeProvider";
-import { classNames } from "../../../utils/class-names";
+import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
+import {
+  NATIVE_MODAL_BACKDROP_CLASS,
+  NATIVE_MODAL_PANEL_CLASS,
+  NATIVE_MODAL_POSITION_CLASS,
+  NATIVE_MODAL_WIDTH_CLASS,
+} from "../../../styles/modal";
+import { NATIVE_RADIUS_CLASS } from "../../../styles/radius";
+import { cn } from "../../../utils/cn";
+import { LayerCloseControl } from "../LayerCloseControl";
 import {
   FALLBACK_NATIVE_MODAL_CONFIG,
   type NativeModalConfig,
 } from "./modal-config";
 
 /**
- * Overrides for the dimmed layer or the surface.
+ * Props for the modal's backdrop overlay, under the name both renderers publish.
  *
- * The web states these as element props; the platform states them as classes, because a
- * platform view is not an element and has no attributes to override.
+ * The web states these as element props; the platform states them as classes, because a platform
+ * view is not an element and has no attributes to override. Only the name is shared, so a
+ * description of a modal's parts is written once and compiled against either renderer.
  */
-export interface ModalPartOverride {
-  /** Extra classes applied to the part. */
+export interface ModalOverlayProps {
+  /** Extra classes applied to the dimmed layer. */
   className?: string;
 }
+
+/**
+ * Props for the modal's content surface, under the name both renderers publish.
+ */
+export interface ModalContentProps {
+  /** Extra classes applied to the surface the modal holds its content in. */
+  className?: string;
+}
+
+/**
+ * The name the modal's part overrides used to be published under.
+ *
+ * @deprecated Use {@link ModalOverlayProps}, or {@link ModalContentProps} — the two parts take
+ * the same shape, and those are the names both renderers publish.
+ */
+export type ModalPartOverride = ModalOverlayProps;
 
 /**
  * Props for the native Modal.
@@ -66,6 +89,17 @@ export interface ModalProps
   /** Called when the modal should close, however it was dismissed. */
   onClose?: () => void;
 
+  /**
+   * Accessible name of the modal's built-in close control.
+   *
+   * The control is always drawn, and it is the layer's guaranteed way out: a
+   * `transparent` modal with `closeOnBackdropClick={false}` and the platform's own way out
+   * switched off is still dismissible by a reader who cannot aim at anything else.
+   *
+   * @default "Close dialog"
+   */
+  closeLabel?: string;
+
   /** What the modal holds. */
   children: ReactNode;
 
@@ -76,10 +110,10 @@ export interface ModalProps
   height?: DimensionValue;
 
   /** Overrides the dimmed layer. */
-  overlay?: ModalPartOverride;
+  overlay?: ModalOverlayProps;
 
   /** Overrides the surface. */
-  content?: ModalPartOverride;
+  content?: ModalContentProps;
 
   /** Extra classes appended last, so a consumer's own classes win. */
   className?: string;
@@ -121,6 +155,7 @@ export interface ModalProps
 export function Modal({
   isOpen,
   onClose,
+  closeLabel = `${CLOSE_LABEL} dialog`,
   children,
   size,
   position,
@@ -136,7 +171,7 @@ export function Modal({
   style,
   ...rest
 }: ModalProps) {
-  const config = useAsheeNativeConfig();
+  const config = useAsheeConfig();
   const sectionConfig = config.components.modal;
 
   const resolvedSize = resolveCascade<ModalSizeKey>(
@@ -192,14 +227,14 @@ export function Modal({
         // not to. The press is not announced as a control of the modal's own: the layer is
         // what a reader touches to get back to the screen behind it.
         onPress={resolvedCloseOnBackdrop ? onClose : undefined}
-        className={classNames(NATIVE_MODAL_BACKDROP_CLASS, overlay?.className)}>
+        className={cn(NATIVE_MODAL_BACKDROP_CLASS, overlay?.className)}>
         <Pressable
           // The surface takes its own presses, so a press inside the modal does not reach the
           // layer behind it and dismiss it. Without this, pressing anything the modal holds
           // would close it, which is the opposite of what a modal is for.
           onPress={(event) => event.stopPropagation()}
           accessibilityViewIsModal
-          className={classNames(
+          className={cn(
             NATIVE_MODAL_WIDTH_CLASS[resolvedSize],
             NATIVE_MODAL_PANEL_CLASS,
             NATIVE_MODAL_POSITION_CLASS[resolvedPosition],
@@ -208,6 +243,9 @@ export function Modal({
             className,
           )}
           style={[{ width, height }, style]}>
+          {onClose ? (
+            <LayerCloseControl label={closeLabel} onClose={onClose} />
+          ) : null}
           {children}
         </Pressable>
       </Pressable>

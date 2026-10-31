@@ -17,6 +17,27 @@
  * - `native-only`: the reverse, a native concept the web has no equivalent for.
  * - `not-applicable`: the component compensates for a browser constraint that the
  *   platform itself solves, so porting it would add a defect rather than a feature.
+ *
+ * ## Decisions this matrix records
+ *
+ * - `Breadcrumb` stays **web-only** (WP-13 is not taken): a URL trail has no device
+ *   counterpart, and a web application imports it from `@asheeui/web`.
+ * - `ResizableScreen` is **web-only** (D-6): a draggable split is a desktop idiom; a
+ *   platform's split view comes from the platform.
+ * - The keyboard family is **not-applicable** (D-7): a rendered keyboard compensates for a
+ *   browser constraint, and the device already supplies one.
+ * - Shadows and blur **diverge** (D-4): each renderer uses its platform's elevation and
+ *   blur, and the matrix does not pretend the two are pixel-equal. The shared token scale
+ *   is the vocabulary, not a guarantee that every level renders identically.
+ * - The two Tailwind majors (D-8) are a packaging decision rather than a component one:
+ *   the web renderer is Tailwind 4 and the native renderer is NativeWind on Tailwind 3, so
+ *   an application that targets both keeps the two pipelines separate. `asheeui`'s README
+ *   states the peer range.
+ *
+ * A component that is missing from this list is a component whose platform support nobody
+ * decided; `scripts/lib/matrix-coverage.mjs` fails the build for it. An export that is an
+ * alias or a part of a bigger module (`Text` → `Typography`, `PageHeader` → `Page`) is
+ * declared in `scripts/matrix-coverage.json` instead.
  */
 
 /**
@@ -45,6 +66,14 @@ export interface ComponentSupport {
   /** The native equivalent when the two implementations differ. */
   native?: string | undefined;
 
+  /**
+   * The subpath that publishes the component when the root entry does not.
+   *
+   * The section kit is public through the `section-kit` subpath rather than the root entry,
+   * so its components are classified here but are not part of the umbrella's root surface.
+   */
+  subpath?: string | undefined;
+
   /** The reason for the classification, where it is not self-evident. */
   note?: string | undefined;
 }
@@ -56,6 +85,7 @@ export interface ComponentSupport {
  * documentation, and the test suite keeps the two in step.
  */
 export const COMPONENT_SUPPORT: readonly ComponentSupport[] = [
+  { name: "AsheeUIProvider", module: "provider", support: "shared" },
   {
     name: "Accordion",
     module: "accordion",
@@ -92,7 +122,7 @@ export const COMPONENT_SUPPORT: readonly ComponentSupport[] = [
     module: "calendar",
     support: "shared-api",
     native: "Calendar",
-    note: "Native picks from one surface at a time and steps the time, because the platform has no floating layer beside a control",
+    note: "Native picks from one surface at a time and steps the time, because the platform has no floating layer beside a control; `picker`, `portal` and `lockScroll` are accepted and warn",
   },
   { name: "Card", module: "card", support: "shared" },
   {
@@ -117,6 +147,7 @@ export const COMPONENT_SUPPORT: readonly ComponentSupport[] = [
     native: "Clipboard",
     note: "Native copies through the platform clipboard module",
   },
+  { name: "CopyButton", module: "copy-button", support: "shared" },
   {
     name: "Container",
     module: "container",
@@ -129,8 +160,8 @@ export const COMPONENT_SUPPORT: readonly ComponentSupport[] = [
     name: "DataTable",
     module: "data-table",
     support: "shared-api",
-    native: "RowList",
-    note: "Native lists its rows instead of presenting a table, for the same reason Table does",
+    native: "DataTable",
+    note: "Native's DataTable is the same rows with the search, the count and the paging around them, drawn through RowList, for the same reason Table is",
   },
   {
     name: "DocsLayout",
@@ -151,7 +182,7 @@ export const COMPONENT_SUPPORT: readonly ComponentSupport[] = [
     module: "dropmenu",
     support: "shared-api",
     native: "Dropmenu",
-    note: "Native uses the platform selection control or an action sheet; both renderers also export it as `Dropdown`, the name the documentation uses",
+    note: "Native uses the platform selection control or an action sheet; both renderers also export it as `Dropdown`, the name the documentation uses; `name` and `searchInputName` are accepted and warn",
   },
   { name: "EmptyState", module: "empty-state", support: "shared" },
   {
@@ -190,7 +221,7 @@ export const COMPONENT_SUPPORT: readonly ComponentSupport[] = [
     note: "Native expresses columns as a wrapped row of fixed-basis children",
   },
   { name: "Hero", module: "hero", support: "shared-api", native: "Hero" },
-  { name: "Image", module: "image", support: "shared" },
+  { name: "Image", module: "image", support: "shared", note: "`loading` is accepted and warns; a native picture is fetched when its view mounts" },
   { name: "Input", module: "input", support: "shared" },
   {
     name: "Keyboard",
@@ -243,14 +274,14 @@ export const COMPONENT_SUPPORT: readonly ComponentSupport[] = [
     module: "navbar",
     support: "shared-api",
     native: "Header and TabBar",
-    note: "Native navigation is a header with a tab bar, not a bar of links",
+    note: "Native navigation is a header with a tab bar, not a bar of links; `mobileOpen`, `onMobileOpenChange` and `mobileLabel` are accepted and warn",
   },
   {
     name: "Page",
     module: "page",
     support: "shared-api",
     native: "Screen",
-    note: "Native composes a screen with safe areas and a scroll view",
+    note: "Native composes a screen with safe areas and a scroll view; `sticky` is accepted and warns",
   },
   {
     name: "Pagination",
@@ -259,6 +290,7 @@ export const COMPONENT_SUPPORT: readonly ComponentSupport[] = [
     native: "List footer",
     note: "Native lists load more rather than paging",
   },
+  { name: "PasswordInput", module: "password-input", support: "shared" },
   { name: "PinInput", module: "pin-input", support: "shared" },
   {
     name: "PricingCard",
@@ -275,12 +307,39 @@ export const COMPONENT_SUPPORT: readonly ComponentSupport[] = [
     note: "A draggable split is a desktop idiom; native split views come from the platform",
   },
   {
+    name: "RowList",
+    module: "row-list",
+    support: "native-only",
+    note: "The platform's own renderer of the table and data-table contracts, which native's Table and DataTable draw through; the web has no counterpart to port",
+  },
+  {
     name: "SearchInput",
     module: "search-input",
     support: "shared",
-    note: "Composes the shared input contract with a search landmark and a clear control",
+    note: "Composes the shared input contract with a search landmark and a clear control; `shortcut` is accepted and warns",
   },
   { name: "Section", module: "section", support: "shared" },
+  {
+    name: "ActionGroup",
+    module: "action-group",
+    support: "shared",
+    subpath: "section-kit",
+    note: "The section kit's action row; both renderers publish it on their section-kit subpath",
+  },
+  {
+    name: "SectionHeading",
+    module: "section-heading",
+    support: "shared",
+    subpath: "section-kit",
+    note: "The section kit's heading block; both renderers publish it on their section-kit subpath",
+  },
+  {
+    name: "SkipLink",
+    module: "skip-link",
+    support: "web-only",
+    subpath: "section-kit",
+    note: "A skip link compensates for a browser's tab order; the platform's focus order and accessibility rotor need no equivalent, so `asheeui/section-kit` does not carry it",
+  },
   {
     name: "Sidebar",
     module: "sidebar",
@@ -302,7 +361,7 @@ export const COMPONENT_SUPPORT: readonly ComponentSupport[] = [
     module: "split",
     support: "shared-api",
     native: "Split",
-    note: "Native reads the window width rather than a media query, and `stickyEnd` resolves through the contract without stating a class, because the platform has no scroll-linked positioning",
+    note: "Native reads the window width rather than a media query, and `stickyEnd` resolves through the contract without stating a class, because the platform has no scroll-linked positioning; `stickyEnd` is accepted and warns",
   },
   { name: "Stack", module: "stack", support: "shared" },
   {
@@ -313,11 +372,17 @@ export const COMPONENT_SUPPORT: readonly ComponentSupport[] = [
   },
   { name: "Switch", module: "switch", support: "shared" },
   {
+    name: "TabBar",
+    module: "tab-bar",
+    support: "native-only",
+    note: "The platform's bar of destinations at the edge a thumb reaches, shipped from the navbar module; the web keeps its destinations in the bar at the top of the page",
+  },
+  {
     name: "Table",
     module: "table",
     support: "shared-api",
-    native: "RowList",
-    note: "Native renders rows rather than a table, because a table is not a native reading pattern",
+    native: "Table",
+    note: "Native's Table draws the same rows through RowList, because a table is not a native reading pattern: a row is a set of labelled lines",
   },
   {
     name: "Tabs",
@@ -332,26 +397,26 @@ export const COMPONENT_SUPPORT: readonly ComponentSupport[] = [
     support: "shared-api",
     native: "Testimonials",
   },
-  { name: "Textarea", module: "textarea", support: "shared" },
+  { name: "Textarea", module: "textarea", support: "shared", note: "`enableVirtualKeyboard` is accepted and warns; the system keyboard is the one that appears" },
   {
     name: "Toast",
     module: "toast",
     support: "shared-api",
     native: "ToastProvider",
-    note: "Native stacks the messages in a layer above the screen and anchors them to the bottom by default, because the platform's own snackbar cannot carry the title, the action or the dismissal the contract names",
+    note: "Native stacks the messages in a layer above the screen and anchors them to the bottom by default, because the platform's own snackbar cannot carry the title, the action or the dismissal the contract names; `portal` and `portalTarget` are accepted and warn",
   },
   {
     name: "Tooltip",
     module: "tooltip",
     support: "shared-api",
     native: "Tooltip",
-    note: "Native triggers on long press, because there is no hover",
+    note: "Native triggers on long press, because there is no hover; `zIndex` is accepted and warns",
   },
   {
     name: "Typography",
     module: "typography",
     support: "shared-api",
-    native: "Text",
+    native: "Typography",
     note: "Native resolves the same roles to platform text styles",
   },
 ];

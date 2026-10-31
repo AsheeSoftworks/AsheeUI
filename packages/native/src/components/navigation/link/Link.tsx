@@ -19,10 +19,23 @@
  */
 
 import {
-  type ColorRole,
-  LINK_SIZE_CLASS,
+  type Color,
   type LinkUnderline,
   type LinkVariant,
+  resolveCascade,
+  resolvePress,
+  type Size,
+} from "@asheeui/core";
+import type { ElementType, ReactNode } from "react";
+import type {
+  GestureResponderEvent,
+  PressableProps,
+  StyleProp,
+  ViewStyle,
+} from "react-native";
+import { Pressable, View } from "react-native";
+import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
+import {
   NATIVE_LINK_BASE_CLASS,
   NATIVE_LINK_COLOR_CLASS,
   NATIVE_LINK_DISABLED_CLASS,
@@ -31,16 +44,11 @@ import {
   NATIVE_LINK_ICON_SIZE_CLASS,
   NATIVE_LINK_UNDERLINE_CLASS,
   NATIVE_LINK_VARIANT_CLASS,
-  resolveCascade,
-  type Size,
-} from "@asheeui/core";
-import type { ElementType, ReactNode } from "react";
-import type { PressableProps, StyleProp, ViewStyle } from "react-native";
-import { Pressable, View } from "react-native";
-import { useAsheeNativeConfig } from "../../../provider/AsheeNativeProvider";
-import { classNames } from "../../../utils/class-names";
+} from "../../../styles/link";
+import { LINK_SIZE_CLASS } from "../../../styles/portable";
+import { cn } from "../../../utils/cn";
 import { openDestination } from "../../../utils/open-destination";
-import { Text } from "../../typography/text/Text";
+import { Typography } from "../../typography/text/Text";
 import {
   FALLBACK_NATIVE_LINK_CONFIG,
   type NativeLinkConfig,
@@ -54,6 +62,15 @@ export interface LinkProps
     Omit<PressableProps, "children" | "style"> {
   /** The destination URL of the link. */
   href?: string;
+
+  /**
+   * A route destination for a router passed through `component`.
+   *
+   * A router names a destination `to`; a framework link follows `href` through the
+   * platform's URL handler. Stating `to` is what lets the same call site work before and
+   * after a router exists, which is the rule the web link already states.
+   */
+  to?: string;
 
   /**
    * Whether the link points to another resource.
@@ -100,6 +117,17 @@ export interface LinkProps
   /** Extra classes appended last, so a consumer's own classes win. */
   className?: string;
 
+  /**
+   * Called when the link is activated, under the name the web package uses.
+   *
+   * The platform's `Pressable` already accepts this name and hands the press event to it;
+   * the link reads it explicitly so that it runs through the shared resolver. When both
+   * names are given, both run, `onClick` first. A link that states neither follows its
+   * destination; one that states either is handled by its consumer, which is what routing
+   * inside an application means.
+   */
+  onClick?: PressableProps["onClick"];
+
   /** Platform styles, for what NativeWind cannot express. */
   style?: StyleProp<ViewStyle>;
 }
@@ -138,6 +166,7 @@ export interface LinkProps
  */
 export function Link({
   href,
+  to,
   isExternal,
   disabled = false,
   startIcon,
@@ -148,13 +177,14 @@ export function Link({
   underline,
   component,
   componentProps,
+  onClick,
   onPress,
   className,
   style,
   children,
   ...rest
 }: LinkProps) {
-  const config = useAsheeNativeConfig();
+  const config = useAsheeConfig();
   const sectionConfig = config.components.link;
 
   const resolvedVariant = resolveCascade<LinkVariant>(
@@ -163,7 +193,7 @@ export function Link({
     undefined,
     FALLBACK_NATIVE_LINK_CONFIG.variant,
   );
-  const resolvedColor = resolveCascade<ColorRole>(
+  const resolvedColor = resolveCascade<Color>(
     color,
     sectionConfig?.color,
     config.defaultColor,
@@ -193,12 +223,12 @@ export function Link({
   const colourClass =
     resolvedVariant === "muted"
       ? NATIVE_LINK_VARIANT_CLASS.muted
-      : classNames(
+      : cn(
           NATIVE_LINK_COLOR_CLASS[resolvedColor],
           NATIVE_LINK_VARIANT_CLASS[resolvedVariant],
         );
 
-  const classes = classNames(
+  const classes = cn(
     NATIVE_LINK_BASE_CLASS,
     LINK_SIZE_CLASS[resolvedSize],
     colourClass,
@@ -212,7 +242,7 @@ export function Link({
   const content = (
     <>
       {startIcon && (
-        <View className={classNames(NATIVE_LINK_ICON_CLASS, iconSizeClass)}>
+        <View className={cn(NATIVE_LINK_ICON_CLASS, iconSizeClass)}>
           {startIcon}
         </View>
       )}
@@ -220,22 +250,24 @@ export function Link({
       {typeof children === "string" ? (
         // The platform's text does not inherit a container's colour, so the label states
         // the role's colour itself rather than relying on the link's own classes.
-        <Text role="body-md" className={colourClass}>
+        <Typography role="body-md" className={colourClass}>
           {children}
-        </Text>
+        </Typography>
       ) : (
         children
       )}
 
       {endIcon ? (
-        <View className={classNames(NATIVE_LINK_ICON_CLASS, iconSizeClass)}>
+        <View className={cn(NATIVE_LINK_ICON_CLASS, iconSizeClass)}>
           {endIcon}
         </View>
       ) : (
         resolvedIsExternal && (
-          <Text role="label" className={classNames(iconSizeClass, colourClass)}>
+          <Typography
+            role="label"
+            className={cn(iconSizeClass, colourClass)}>
             {NATIVE_LINK_EXTERNAL_GLYPH}
-          </Text>
+          </Typography>
         )
       )}
     </>
@@ -243,15 +275,31 @@ export function Link({
 
   /** Follow the destination through the platform's URL handler. */
   const followDestination = () => {
-    if (href) {
-      openDestination(href);
+    const destination = href ?? to;
+    if (destination) {
+      openDestination(destination);
     }
   };
 
   // The consumer's own handler wins: a link that routes inside the application has
   // somewhere else to go than the platform's URL handler, and it says so by handling the
-  // press itself. A disabled link has no handler at all.
-  const press = disabled ? undefined : (onPress ?? followDestination);
+  // press itself. A disabled link has no handler at all. Both spellings run when both are
+  // given, and a link that states neither follows its destination.
+  const press = disabled
+    ? undefined
+    : (pressEvent: GestureResponderEvent) => {
+        resolvePress(
+          {
+            onClick,
+            onPress: onPress ? () => onPress(pressEvent) : undefined,
+          },
+          pressEvent,
+        );
+
+        if (!onPress) {
+          followDestination();
+        }
+      };
 
   // A consumer that routes internally names the component that renders the link, which
   // is the same substitution API the web link offers.
@@ -260,7 +308,10 @@ export function Link({
 
     return (
       <Component
-        href={href}
+        // A router states its destination as `to`; the platform's anchor has none, so the
+        // URL is what it receives. Telling the two apart is what lets one call site work
+        // with and without a router.
+        {...(component && to ? { to } : { href: href ?? to })}
         onPress={press}
         accessibilityRole="link"
         accessibilityState={{ disabled }}

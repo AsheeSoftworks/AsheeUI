@@ -15,6 +15,9 @@ export type { ClipboardConfig } from "@asheeui/core";
 
 /**
  * Configuration options for the native clipboard pair.
+ *
+ * @deprecated Use {@link ClipboardConfig} from `@asheeui/core` — the name both renderers
+ * publish.
  */
 export type NativeClipboardConfig = ClipboardConfig;
 
@@ -29,6 +32,9 @@ export type NativeClipboardConfig = ClipboardConfig;
  *
  * `radius` is intentionally absent, as it is on the web, so the control inherits the
  * application's `defaultRadius` — the fallback below is only the last tier of the cascade.
+ *
+ * @deprecated Use {@link defaultClipboardConfig} — the name both renderers publish. The value is
+ * this one: a fallback states the platform's default, and the name is shared.
  */
 export const defaultNativeClipboardConfig: NativeClipboardConfig = {
   timeout: 2000,
@@ -49,6 +55,9 @@ registerNativeComponentDefaults("clipboard", defaultNativeClipboardConfig);
 
 /**
  * The values the clipboard pair falls back to when no tier provides one.
+ *
+ * @deprecated Use {@link FALLBACK_CLIPBOARD_CONFIG} — the name both renderers publish. The value is
+ * this one: a fallback states the platform's default, and the name is shared.
  */
 export const FALLBACK_NATIVE_CLIPBOARD_CONFIG = {
   timeout: 2000,

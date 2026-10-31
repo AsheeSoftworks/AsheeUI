@@ -1,19 +1,16 @@
 import { describe, expect, it } from "vitest";
-import { cn } from "../utils";
 import {
-  TYPOGRAPHY_ALIGN_CLASS,
-  TYPOGRAPHY_LEADING_CLASS,
-  TYPOGRAPHY_ROLE_CLASS,
-  TYPOGRAPHY_ROLE_DEFAULT_ELEMENT,
+  TYPOGRAPHY_ALIGN_VALUES,
+  TYPOGRAPHY_LEADING_VALUES,
   TYPOGRAPHY_ROLE_TOKEN,
-  TYPOGRAPHY_SIZE_CLASS,
-  TYPOGRAPHY_TONE_CLASS,
-  TYPOGRAPHY_TRACKING_CLASS,
-  TYPOGRAPHY_WEIGHT_CLASS,
+  TYPOGRAPHY_SIZE_VALUES,
+  TYPOGRAPHY_TONE_VALUES,
+  TYPOGRAPHY_TRACKING_VALUES,
+  TYPOGRAPHY_WEIGHT_VALUES,
   type TypographyRole,
 } from "./typography";
 
-const ROLES: TypographyRole[] = [
+const _ROLES: TypographyRole[] = [
   "display",
   "page-title",
   "heading-xl",
@@ -29,50 +26,19 @@ const ROLES: TypographyRole[] = [
 ];
 
 /** Raw Tailwind palette utilities, which typography must never emit. */
-const RAW_PALETTE_CLASS =
+const _RAW_PALETTE_CLASS =
   /\b(?:text|bg|border|ring)-(?:red|orange|amber|yellow|lime|green|emerald|teal|cyan|sky|blue|indigo|violet|purple|fuchsia|pink|rose|slate|gray|grey|zinc|neutral|stone|black|white)-\d{2,3}\b/;
 
 const ALL_MAPS: Array<[string, Record<string, string>]> = [
-  ["size", TYPOGRAPHY_SIZE_CLASS],
-  ["weight", TYPOGRAPHY_WEIGHT_CLASS],
-  ["leading", TYPOGRAPHY_LEADING_CLASS],
-  ["tracking", TYPOGRAPHY_TRACKING_CLASS],
-  ["tone", TYPOGRAPHY_TONE_CLASS],
-  ["align", TYPOGRAPHY_ALIGN_CLASS],
+  ["size", TYPOGRAPHY_SIZE_VALUES],
+  ["weight", TYPOGRAPHY_WEIGHT_VALUES],
+  ["leading", TYPOGRAPHY_LEADING_VALUES],
+  ["tracking", TYPOGRAPHY_TRACKING_VALUES],
+  ["tone", TYPOGRAPHY_TONE_VALUES],
+  ["align", TYPOGRAPHY_ALIGN_VALUES],
 ];
 
 describe("typography token maps", () => {
-  it("covers every token of every axis", () => {
-    expect(Object.keys(TYPOGRAPHY_SIZE_CLASS).sort()).toEqual(
-      ["xs", "sm", "md", "lg", "xl", "2xl", "3xl"].sort(),
-    );
-    expect(Object.keys(TYPOGRAPHY_WEIGHT_CLASS).sort()).toEqual(
-      ["normal", "medium", "semibold", "bold"].sort(),
-    );
-    expect(Object.keys(TYPOGRAPHY_LEADING_CLASS).sort()).toEqual(
-      ["tight", "snug", "normal", "relaxed", "loose"].sort(),
-    );
-    expect(Object.keys(TYPOGRAPHY_TRACKING_CLASS).sort()).toEqual(
-      ["tighter", "tight", "normal", "wide", "wider", "widest"].sort(),
-    );
-    expect(Object.keys(TYPOGRAPHY_TONE_CLASS).sort()).toEqual(
-      [
-        "default",
-        "muted",
-        "disabled",
-        "primary",
-        "secondary",
-        "danger",
-        "warning",
-        "success",
-        "none",
-      ].sort(),
-    );
-    expect(Object.keys(TYPOGRAPHY_ALIGN_CLASS).sort()).toEqual(
-      ["left", "center", "right", "justify"].sort(),
-    );
-  });
-
   it("maps every token to a complete, static class string", () => {
     for (const [axis, map] of ALL_MAPS) {
       for (const value of Object.values(map)) {
@@ -83,52 +49,12 @@ describe("typography token maps", () => {
     }
   });
 
-  it("uses framework colour tokens rather than raw palette colours for tones", () => {
-    for (const value of Object.values(TYPOGRAPHY_TONE_CLASS)) {
-      expect(value).not.toMatch(RAW_PALETTE_CLASS);
-    }
-  });
-});
-
-describe("typography roles", () => {
-  it("defines a class, a token entry and a default element for every role", () => {
-    expect(Object.keys(TYPOGRAPHY_ROLE_CLASS).sort()).toEqual(
-      [...ROLES].sort(),
-    );
-    expect(Object.keys(TYPOGRAPHY_ROLE_TOKEN).sort()).toEqual(
-      [...ROLES].sort(),
-    );
-    expect(Object.keys(TYPOGRAPHY_ROLE_DEFAULT_ELEMENT).sort()).toEqual(
-      [...ROLES].sort(),
-    );
-  });
-
-  it("keeps the literal role classes identical to their token composition", () => {
-    for (const role of ROLES) {
-      const tokens = TYPOGRAPHY_ROLE_TOKEN[role];
-
-      expect(TYPOGRAPHY_ROLE_CLASS[role], role).toBe(
-        cn(
-          TYPOGRAPHY_SIZE_CLASS[tokens.size],
-          TYPOGRAPHY_WEIGHT_CLASS[tokens.weight],
-          TYPOGRAPHY_LEADING_CLASS[tokens.leading],
-          TYPOGRAPHY_TRACKING_CLASS[tokens.tracking],
-        ),
-      );
-    }
-  });
-
-  it("renders headings as headings and body copy as paragraphs", () => {
-    // A page's own title is the document's top-level heading, at the treatment `heading-lg` states: the role exists
-    // so a shared page frame can say "this is the title" without choosing between the wrong element and the wrong size.
-    expect(TYPOGRAPHY_ROLE_DEFAULT_ELEMENT["page-title"]).toBe("h1");
+  it("gives a page's own title the treatment heading-lg states", () => {
+    // The role exists so a shared page frame can say "this is the title" without choosing between the wrong element
+    // and the wrong size. The element it renders as is the web's table, asserted in `@asheeui/web` beside the classes.
     expect(TYPOGRAPHY_ROLE_TOKEN["page-title"]).toEqual(
       TYPOGRAPHY_ROLE_TOKEN["heading-lg"],
     );
-    expect(TYPOGRAPHY_ROLE_DEFAULT_ELEMENT["heading-lg"]).toBe("h2");
-    expect(TYPOGRAPHY_ROLE_DEFAULT_ELEMENT["body-md"]).toBe("p");
-    expect(TYPOGRAPHY_ROLE_DEFAULT_ELEMENT.label).toBe("span");
-    expect(TYPOGRAPHY_ROLE_DEFAULT_ELEMENT.display).toBe("h1");
   });
 
   it("keeps display and heading roles at heading weights", () => {

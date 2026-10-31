@@ -15,10 +15,11 @@ import {
   render,
 } from "@testing-library/react-native";
 import type { ReactElement } from "react";
-import { AsheeNativeProvider } from "../../../provider/AsheeNativeProvider";
+import { AccessibilityInfo } from "react-native";
+import { AsheeUIProvider } from "../../../provider/AsheeUIProvider";
 import { writeToClipboard } from "../../../utils/write-to-clipboard";
 import { Button } from "../../forms/button/Button";
-import { Text } from "../../typography/text/Text";
+import { Typography } from "../../typography/text/Text";
 import { Clipboard } from "./Clipboard";
 import { CopyButton } from "./CopyButton";
 
@@ -37,9 +38,7 @@ const write = writeToClipboard as jest.MockedFunction<typeof writeToClipboard>;
  * @returns The rendered tree and its queries.
  */
 async function renderClipboard(ui: ReactElement, config?: object) {
-  return render(
-    <AsheeNativeProvider config={config}>{ui}</AsheeNativeProvider>,
-  );
+  return render(<AsheeUIProvider config={config}>{ui}</AsheeUIProvider>);
 }
 
 /**
@@ -289,8 +288,8 @@ describe("Native CopyButton", () => {
     const view = await renderClipboard(
       <CopyButton
         value="INV-1042"
-        copyIcon={<Text>Copy it</Text>}
-        copiedIcon={<Text>Done</Text>}
+        copyIcon={<Typography>Copy it</Typography>}
+        copiedIcon={<Typography>Done</Typography>}
       />,
     );
 
@@ -360,6 +359,46 @@ describe("Native CopyButton", () => {
     expect(view.getByTestId("clipboard-status").props.children).toBe(
       "Copy failed",
     );
+  });
+
+  it("announces a successful copy through the platform's own API", async () => {
+    // The live region below the control is what a browser announces with; the platform has
+    // no equivalent region, so the same message is spoken imperatively on iOS and Android.
+    write.mockResolvedValueOnce(true);
+    const speak = jest
+      .spyOn(AccessibilityInfo, "announceForAccessibility")
+      .mockImplementation(() => {});
+
+    const view = await renderClipboard(
+      <CopyButton value="INV-1042" copiedAnnouncement="Invoice copied" />,
+    );
+
+    await act(async () => {
+      fireEvent.press(view.getByRole("button", { name: "Copy" }));
+    });
+
+    expect(speak).toHaveBeenCalledWith("Invoice copied");
+
+    speak.mockRestore();
+  });
+
+  it("announces a failed copy through the platform's own API, at the alert level", async () => {
+    write.mockResolvedValueOnce(false);
+    const speak = jest
+      .spyOn(AccessibilityInfo, "announceForAccessibility")
+      .mockImplementation(() => {});
+
+    const view = await renderClipboard(
+      <CopyButton value="INV-1042" errorAnnouncement="Nothing to copy" />,
+    );
+
+    await act(async () => {
+      fireEvent.press(view.getByRole("button", { name: "Copy" }));
+    });
+
+    expect(speak).toHaveBeenCalledWith("Nothing to copy");
+
+    speak.mockRestore();
   });
 
   it("rounds the control by the application's default when nothing configures it", async () => {

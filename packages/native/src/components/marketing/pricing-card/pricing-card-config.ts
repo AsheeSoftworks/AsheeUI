@@ -19,6 +19,9 @@ export type {
 
 /**
  * Configuration options for the native PricingCard.
+ *
+ * @deprecated Use {@link PricingCardConfig} from `@asheeui/core` — the name both renderers
+ * publish.
  */
 export type NativePricingCardConfig = PricingCardConfig;
 
@@ -32,6 +35,9 @@ export type NativePricingCardConfig = PricingCardConfig;
  *
  * `highlighted` is not registered: a recommendation describes one plan among its siblings, so
  * it is an instance prop rather than a theme option.
+ *
+ * @deprecated Use {@link defaultPricingCardConfig} — the name both renderers publish. The value is
+ * this one: a fallback states the platform's default, and the name is shared.
  */
 export const defaultNativePricingCardConfig: NativePricingCardConfig = {
   variant: "bordered",
@@ -48,6 +54,9 @@ registerNativeComponentDefaults("pricingcard", defaultNativePricingCardConfig);
 
 /**
  * The values the PricingCard falls back to when no tier provides one.
+ *
+ * @deprecated Use {@link FALLBACK_PRICING_CARD_CONFIG} — the name both renderers publish. The value is
+ * this one: a fallback states the platform's default, and the name is shared.
  */
 export const FALLBACK_NATIVE_PRICING_CARD_CONFIG = {
   variant: "bordered",

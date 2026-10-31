@@ -68,6 +68,17 @@ export interface AutocompleteProps
     | undefined;
 
   /**
+   * Called with the field's next value, under the DOM's name.
+   *
+   * `onChange`, `onChangeText` and `onValueChange` are the same change; all three run when
+   * all three are given, in that order, so a handler copied from a device keeps working.
+   */
+  onChange?: React.ChangeEventHandler<HTMLInputElement> | undefined;
+
+  /** Called with the field's next value, under the platform's most specific name. */
+  onChangeText?: ((value: string) => void) | undefined;
+
+  /**
    * Callback fired whenever the raw input text changes.
    * Called on every keystroke, providing the current input value.
    */
@@ -187,6 +198,8 @@ export const Autocomplete = forwardRef<HTMLInputElement, AutocompleteProps>(
       options = [],
       value,
       onValueChange,
+      onChange,
+      onChangeText,
       onInputChange,
       allowCustomValue = false,
       belowList,
@@ -305,11 +318,25 @@ export const Autocomplete = forwardRef<HTMLInputElement, AutocompleteProps>(
         // stays current between keystrokes.
         setActiveIndex(null);
 
+        // The order is the shared resolver's: the DOM's event first, then the two
+        // value-only names, so a handler copied from a device sees the same sequence.
+        onChange?.(e);
+        onChangeText?.(text);
+
+        // The typed text is the value only while free text is allowed; otherwise the
+        // field's value is the picked option, and reporting the text as a value would
+        // tell the consumer about a value it never accepted.
         if (allowCustomValue) {
           onValueChange?.(text);
         }
       },
-      [allowCustomValue, onInputChange, onValueChange],
+      [
+        allowCustomValue,
+        onChange,
+        onChangeText,
+        onInputChange,
+        onValueChange,
+      ],
     );
 
     /**
@@ -319,11 +346,15 @@ export const Autocomplete = forwardRef<HTMLInputElement, AutocompleteProps>(
     const handleOptionSelect = useCallback(
       (option: MenuOption) => {
         setInputValue(option.label);
+        onChange?.({
+          target: { value: String(option.value) },
+        } as React.ChangeEvent<HTMLInputElement>);
+        onChangeText?.(String(option.value));
         onValueChange?.(option.value, option);
         setIsOpen(false);
         setActiveIndex(null);
       },
-      [onValueChange],
+      [onChange, onChangeText, onValueChange],
     );
 
     /**

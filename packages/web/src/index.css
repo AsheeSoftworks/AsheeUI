@@ -56,10 +56,14 @@
    * is the same saturated colour either way. The token exists so the solid variants do not hard-code `text-white`
    * (a raw palette colour, which the library's own scanner rejects), not to make the ink theme-dependent.
    *
+   * The value is `--ashee-on-solid`, which the theme script emits from core's `ON_SOLID_CHANNELS` for both
+   * renderers. It is channels rather than a colour because the platform's classes supply the alpha the same way,
+   * so the `rgb()` wrapper is what turns the one shared value into a colour here.
+   *
    * `background` and `secondary` do not use it: those fills are the page and the muted surface, where white text
    * was invisible. They take `text-foreground`.
    */
-  --color-on-solid: white;
+  --color-on-solid: rgb(var(--ashee-on-solid));
 
   /**
    * Scrollbar configuration variables.

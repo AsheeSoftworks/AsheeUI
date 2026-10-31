@@ -15,17 +15,23 @@
 
 import {
   FALLBACK_FIELD_CONFIG,
-  FIELD_REQUIRED_MARKER_CLASS,
-  FIELD_STATUS_TEXT_CLASS,
   type FieldStatus,
   isFieldInvalid,
-  NATIVE_FIELD_LABEL_ROW_CLASS,
-  NATIVE_FIELD_SHELL_CLASS,
+  type LabelAlign,
 } from "@asheeui/core";
 import type { ReactNode } from "react";
 import { View } from "react-native";
+import { cn } from "../../../utils/cn";
+import {
+  NATIVE_FIELD_LABEL_ROW_CLASS,
+  NATIVE_FIELD_SHELL_CLASS,
+} from "../../../styles/field";
+import {
+  FIELD_REQUIRED_MARKER_CLASS,
+  FIELD_STATUS_TEXT_CLASS,
+} from "../../../styles/portable";
 import { Spinner } from "../../feedback/spinner/Spinner";
-import { Text } from "../../typography/text/Text";
+import { Typography } from "../../typography/text/Text";
 
 /**
  * Props for the internal native field shell.
@@ -47,6 +53,17 @@ export interface FieldShellProps {
   required?: boolean;
 
   /**
+   * Where the label row sits across the field.
+   *
+   * The web field has always accepted `labelAlign`; B12 gives the platform the same option,
+   * because the shared field contract advertises it and a field that silently ignored it
+   * would look aligned on one platform and not on the other.
+   *
+   * @default "left"
+   */
+  labelAlign?: LabelAlign;
+
+  /**
    * Whether the field is waiting for something.
    *
    * A pending field shows the framework's spinner in its label row, which is where a
@@ -59,6 +76,18 @@ export interface FieldShellProps {
   /** The control the shell describes. */
   children: ReactNode;
 }
+
+/**
+ * How a label row spends the space it is given, per alignment.
+ *
+ * A class per value rather than an inline style: NativeWind compiles a class it can read,
+ * and the row is a layout element the platform lays out itself.
+ */
+const LABEL_ALIGN_CLASS: Record<LabelAlign, string> = {
+  left: "justify-start",
+  center: "justify-center",
+  right: "justify-end",
+};
 
 /**
  * The label, description and message block a field shows.
@@ -79,40 +108,45 @@ export function FieldShell({
   message,
   status = FALLBACK_FIELD_CONFIG.status,
   required = false,
+  labelAlign = FALLBACK_FIELD_CONFIG.labelAlign,
   isLoading = false,
   children,
 }: FieldShellProps) {
   return (
     <View className={NATIVE_FIELD_SHELL_CLASS}>
       {label && (
-        <View className={NATIVE_FIELD_LABEL_ROW_CLASS}>
-          <Text role="label">{label}</Text>
+        <View
+          className={cn(
+            NATIVE_FIELD_LABEL_ROW_CLASS,
+            LABEL_ALIGN_CLASS[labelAlign],
+          )}>
+          <Typography role="label">{label}</Typography>
           {required && (
-            <Text
+            <Typography
               role="label"
               className={FIELD_REQUIRED_MARKER_CLASS}
               accessible={false}>
               *
-            </Text>
+            </Typography>
           )}
           {isLoading && <Spinner size="sm" />}
         </View>
       )}
       {description && (
-        <Text role="body-sm" tone="muted">
+        <Typography role="body-sm" tone="muted">
           {description}
-        </Text>
+        </Typography>
       )}
       {children}
       {message && (
-        <Text
+        <Typography
           role="body-sm"
           className={FIELD_STATUS_TEXT_CLASS[status]}
           // A failed field announces its message when it appears; the others
           // are part of the form's own text.
           accessibilityLiveRegion={isFieldInvalid(status) ? "polite" : "none"}>
           {message}
-        </Text>
+        </Typography>
       )}
     </View>
   );

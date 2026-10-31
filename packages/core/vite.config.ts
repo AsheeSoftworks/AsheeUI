@@ -14,6 +14,11 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
  * package keeps the shape of `src` and stays debuggable in a consumer's bundle.
  * The two class-composition libraries are external: both platforms already bring
  * them, and a shared layer must not duplicate what its consumers install.
+ *
+ * Two entries, because the package publishes two: the contract (`index`) and the data only tooling
+ * reads (`@asheeui/core/dev`, C4). `preserveModules` emits every module once, so the second entry
+ * costs its own barrel and nothing else — and, deliberately, `matrix.ts` leaves the root entry's
+ * graph, which is what stops the inventory being reachable from the contract.
  */
 export default defineConfig({
   plugins: [
@@ -25,7 +30,10 @@ export default defineConfig({
   ],
   build: {
     lib: {
-      entry: { index: resolve(__dirname, "src", "index.ts") },
+      entry: {
+        index: resolve(__dirname, "src", "index.ts"),
+        dev: resolve(__dirname, "src", "dev.ts"),
+      },
       formats: ["es"],
     },
     rollupOptions: {

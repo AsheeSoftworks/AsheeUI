@@ -20,6 +20,16 @@ import {
   type Color,
   type FieldStatus,
   isFieldInvalid,
+  type Radius,
+  resolveCascade,
+  resolveChange,
+  type Size,
+  type Variant,
+} from "@asheeui/core";
+import { useEffect, useState } from "react";
+import { Pressable, TextInput, View } from "react-native";
+import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
+import {
   NATIVE_INPUT_BASE_CLASS,
   NATIVE_INPUT_DISABLED_CLASS,
   NATIVE_INPUT_EDGE_ACCENT_CLASS,
@@ -28,17 +38,10 @@ import {
   NATIVE_INPUT_EDGE_WIDTH_CLASS,
   NATIVE_INPUT_SIZE_CLASS,
   NATIVE_INPUT_VARIANT_CLASS,
-  NATIVE_RADIUS_CLASS,
-  type Radius,
-  resolveCascade,
-  type Size,
-  type Variant,
-} from "@asheeui/core";
-import { useEffect, useState } from "react";
-import { Pressable, TextInput, View } from "react-native";
-import { useAsheeNativeConfig } from "../../../provider/AsheeNativeProvider";
-import { classNames } from "../../../utils/class-names";
-import { Text } from "../../typography/text/Text";
+} from "../../../styles/input";
+import { NATIVE_RADIUS_CLASS } from "../../../styles/radius";
+import { cn } from "../../../utils/cn";
+import { Typography } from "../../typography/text/Text";
 import { FieldShell } from "../field/FieldShell";
 import type { PickerSheetOption } from "../picker/PickerSheet";
 import {
@@ -63,6 +66,17 @@ export interface AutocompleteProps extends NativeAutocompleteConfig {
 
   /** Called with the picked value and the option it came from. */
   onValueChange?: (value: string, option?: PickerSheetOption) => void;
+
+  /**
+   * Called with the field's next value, under the name the browser gives the event.
+   *
+   * The event is a shim with `target.value`; `preventDefault` and `stopPropagation` are not
+   * part of it, because the platform has no default action here to stop.
+   */
+  onChange?: (event: { target: { value: string } }) => void;
+
+  /** Called with the field's next value, under the platform's most specific name. */
+  onChangeText?: (value: string) => void;
 
   /** Called with the text as the reader types, which is what a remote lookup follows. */
   onInputChange?: (inputValue: string) => void;
@@ -128,6 +142,8 @@ export interface AutocompleteProps extends NativeAutocompleteConfig {
 export function Autocomplete({
   options,
   value,
+  onChange,
+  onChangeText,
   onValueChange,
   onInputChange,
   allowCustomValue = false,
@@ -148,7 +164,7 @@ export function Autocomplete({
   testID,
   optionTestID,
 }: AutocompleteProps) {
-  const config = useAsheeNativeConfig();
+  const config = useAsheeConfig();
   const sectionConfig = config.components.autocomplete;
   const [text, setText] = useState("");
   const [isFocused, setIsFocused] = useState(false);
@@ -213,7 +229,7 @@ export function Autocomplete({
   const isListOpen = isFocused && !resolvedDisabled && query.length > 0;
 
   const isInvalid = isFieldInvalid(resolvedStatus);
-  const edgeClass = classNames(
+  const edgeClass = cn(
     NATIVE_INPUT_EDGE_WIDTH_CLASS[resolvedVariant],
     isInvalid
       ? NATIVE_INPUT_EDGE_INVALID_CLASS
@@ -242,11 +258,21 @@ export function Autocomplete({
         onChangeText={(next) => {
           setText(next);
           onInputChange?.(next);
-          if (allowCustomValue) onValueChange?.(next);
+          // The typed text is the value only while free text is allowed; otherwise the
+          // field's value is the picked option, and reporting the text as a value would
+          // tell the consumer about a value it never accepted.
+          resolveChange(
+            {
+              onChange,
+              onChangeText,
+              onValueChange: allowCustomValue ? onValueChange : undefined,
+            },
+            next,
+          );
         }}
         onFocus={() => setIsFocused(true)}
         onBlur={() => setIsFocused(false)}
-        className={classNames(
+        className={cn(
           NATIVE_INPUT_BASE_CLASS,
           NATIVE_INPUT_SIZE_CLASS[resolvedSize],
           NATIVE_RADIUS_CLASS[resolvedRadius],
@@ -259,9 +285,11 @@ export function Autocomplete({
       {isListOpen && (
         <View className={NATIVE_SUGGESTION_LIST_CLASS}>
           {matches.length === 0 ? (
-            <Text role="body-sm" className={NATIVE_SUGGESTION_EMPTY_CLASS}>
+            <Typography
+              role="body-sm"
+              className={NATIVE_SUGGESTION_EMPTY_CLASS}>
               {noResultsLabel}
-            </Text>
+            </Typography>
           ) : (
             matches.map((option) => (
               <Pressable
@@ -279,15 +307,26 @@ export function Autocomplete({
                 disabled={option.isDisabled}
                 onPress={() => {
                   setText(option.label);
-                  onValueChange?.(option.value, option);
+                  // The pick is the change; the option travels with `onValueChange` so a
+                  // consumer that needs its metadata keeps it, and the two value-only names
+                  // still receive the value the pick stands for.
+                  resolveChange(
+                    {
+                      onChange,
+                      onChangeText,
+                      onValueChange: (picked) =>
+                        onValueChange?.(picked, option),
+                    },
+                    option.value,
+                  );
                   setIsFocused(false);
                 }}
                 className={NATIVE_SUGGESTION_CLASS}>
-                <Text role="body-md">{option.label}</Text>
+                <Typography role="body-md">{option.label}</Typography>
                 {option.description && (
-                  <Text role="body-sm" tone="muted">
+                  <Typography role="body-sm" tone="muted">
                     {option.description}
-                  </Text>
+                  </Typography>
                 )}
               </Pressable>
             ))

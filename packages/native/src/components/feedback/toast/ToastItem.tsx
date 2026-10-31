@@ -18,30 +18,36 @@
  */
 
 import {
-  NATIVE_ANNOUNCEMENT_LIVE_REGION,
+  type Radius,
+  resolveMessageVariant,
+  type Size,
+  TOAST_TYPE_COLOR,
+  type Variant,
+} from "@asheeui/core";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { Animated, Easing, Pressable, View } from "react-native";
+import { NATIVE_ANNOUNCEMENT_LIVE_REGION } from "../../../shared/announcement";
+import {
   NATIVE_MESSAGE_SURFACE_CLASS,
   NATIVE_MESSAGE_TEXT_CLASS,
-  NATIVE_RADIUS_CLASS,
+} from "../../../styles/message-surface";
+import {
+  TOAST_FONT_CLASS,
+  TOAST_PADDING_CLASS,
+  TOAST_TITLE_FONT_CLASS,
+  TOAST_WIDTH_CLASS,
+} from "../../../styles/portable";
+import { NATIVE_RADIUS_CLASS } from "../../../styles/radius";
+import {
   NATIVE_TOAST_ACTION_CLASS,
   NATIVE_TOAST_BASE_CLASS,
   NATIVE_TOAST_BODY_CLASS,
   NATIVE_TOAST_DISMISS_CLASS,
   NATIVE_TOAST_ICON_CLASS,
   NATIVE_TOAST_TYPE_GLYPH,
-  type Radius,
-  resolveMessageVariant,
-  type Size,
-  TOAST_FONT_CLASS,
-  TOAST_PADDING_CLASS,
-  TOAST_TITLE_FONT_CLASS,
-  TOAST_TYPE_COLOR,
-  TOAST_WIDTH_CLASS,
-  type Variant,
-} from "@asheeui/core";
-import { useCallback, useEffect, useRef, useState } from "react";
-import { Animated, Easing, Pressable, View } from "react-native";
-import { classNames } from "../../../utils/class-names";
-import { Text } from "../../typography/text/Text";
+} from "../../../styles/toast";
+import { cn } from "../../../utils/cn";
+import { Typography } from "../../typography/text/Text";
 import type { ToastItemData, ToastPlacement } from "./toast-config";
 
 /**
@@ -181,7 +187,7 @@ export function ToastItem({
         // it is news, and news waits for a pause in what a reader is already hearing.
         accessible
         accessibilityLiveRegion={NATIVE_ANNOUNCEMENT_LIVE_REGION.status}
-        className={classNames(
+        className={cn(
           NATIVE_TOAST_BASE_CLASS,
           TOAST_WIDTH_CLASS[size],
           TOAST_PADDING_CLASS[size],
@@ -195,24 +201,28 @@ export function ToastItem({
           importantForAccessibility="no-hide-descendants"
           className={NATIVE_TOAST_ICON_CLASS}>
           {icon ?? (
-            <Text role="label" className={classNames(fontClass, textClass)}>
+            <Typography
+              role="label"
+              className={cn(fontClass, textClass)}>
               {NATIVE_TOAST_TYPE_GLYPH[type ?? "info"]}
-            </Text>
+            </Typography>
           )}
         </View>
 
         <View className={NATIVE_TOAST_BODY_CLASS}>
           {title && (
-            <Text
+            <Typography
               role="label"
-              className={classNames(TOAST_TITLE_FONT_CLASS[size], textClass)}
+              className={cn(TOAST_TITLE_FONT_CLASS[size], textClass)}
               numberOfLines={1}>
               {title}
-            </Text>
+            </Typography>
           )}
-          <Text role="body-md" className={classNames(fontClass, textClass)}>
+          <Typography
+            role="body-md"
+            className={cn(fontClass, textClass)}>
             {message}
-          </Text>
+          </Typography>
           {action && (
             <View className={NATIVE_TOAST_ACTION_CLASS}>{action}</View>
           )}
@@ -224,9 +234,11 @@ export function ToastItem({
             accessibilityLabel="Dismiss notification"
             onPress={handleDismiss}
             className={NATIVE_TOAST_DISMISS_CLASS}>
-            <Text role="label" className={classNames(fontClass, textClass)}>
+            <Typography
+              role="label"
+              className={cn(fontClass, textClass)}>
               ✕
-            </Text>
+            </Typography>
           </Pressable>
         )}
       </View>

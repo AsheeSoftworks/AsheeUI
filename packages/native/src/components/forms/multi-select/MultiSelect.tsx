@@ -18,6 +18,15 @@ import {
   type Color,
   type FieldStatus,
   isFieldInvalid,
+  type Radius,
+  resolveCascade,
+  type Size,
+  type Variant,
+} from "@asheeui/core";
+import { useState } from "react";
+import { Pressable, View } from "react-native";
+import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
+import {
   NATIVE_INPUT_BASE_CLASS,
   NATIVE_INPUT_DISABLED_CLASS,
   NATIVE_INPUT_EDGE_ACCENT_CLASS,
@@ -26,17 +35,10 @@ import {
   NATIVE_INPUT_EDGE_WIDTH_CLASS,
   NATIVE_INPUT_SIZE_CLASS,
   NATIVE_INPUT_VARIANT_CLASS,
-  NATIVE_RADIUS_CLASS,
-  type Radius,
-  resolveCascade,
-  type Size,
-  type Variant,
-} from "@asheeui/core";
-import { useState } from "react";
-import { Pressable, View } from "react-native";
-import { useAsheeNativeConfig } from "../../../provider/AsheeNativeProvider";
-import { classNames } from "../../../utils/class-names";
-import { Text } from "../../typography/text/Text";
+} from "../../../styles/input";
+import { NATIVE_RADIUS_CLASS } from "../../../styles/radius";
+import { cn } from "../../../utils/cn";
+import { Typography } from "../../typography/text/Text";
 import { FieldShell } from "../field/FieldShell";
 import { PickerSheet, type PickerSheetOption } from "../picker/PickerSheet";
 import {
@@ -146,7 +148,7 @@ export function MultiSelect({
   testID,
   optionTestID,
 }: MultiSelectProps) {
-  const config = useAsheeNativeConfig();
+  const config = useAsheeConfig();
   const sectionConfig = config.components.multiSelect;
   const [isOpen, setIsOpen] = useState(false);
   const [uncontrolledValues, setUncontrolledValues] = useState<
@@ -205,7 +207,7 @@ export function MultiSelect({
   };
 
   const isInvalid = isFieldInvalid(resolvedStatus);
-  const edgeClass = classNames(
+  const edgeClass = cn(
     NATIVE_INPUT_EDGE_WIDTH_CLASS[resolvedVariant],
     isInvalid
       ? NATIVE_INPUT_EDGE_INVALID_CLASS
@@ -231,7 +233,7 @@ export function MultiSelect({
         accessibilityState={{ expanded: isOpen, disabled: resolvedDisabled }}
         disabled={resolvedDisabled}
         onPress={() => setIsOpen(true)}
-        className={classNames(
+        className={cn(
           NATIVE_INPUT_BASE_CLASS,
           NATIVE_INPUT_SIZE_CLASS[resolvedSize],
           NATIVE_RADIUS_CLASS[resolvedRadius],
@@ -242,7 +244,7 @@ export function MultiSelect({
           className,
         )}>
         {pickedValues.length === 0 ? (
-          <Text role="body-md">{placeholder}</Text>
+          <Typography role="body-md">{placeholder}</Typography>
         ) : (
           <View className={NATIVE_CHIP_ROW_CLASS}>
             {pickedValues.map((picked) => {
@@ -250,9 +252,11 @@ export function MultiSelect({
 
               return (
                 <View key={picked} className={NATIVE_CHIP_CLASS}>
-                  <Text role="body-sm" className={NATIVE_CHIP_LABEL_CLASS}>
+                  <Typography
+                    role="body-sm"
+                    className={NATIVE_CHIP_LABEL_CLASS}>
                     {option?.label ?? picked}
-                  </Text>
+                  </Typography>
                   <Pressable
                     accessibilityRole="button"
                     accessibilityLabel={`Remove ${option?.label ?? picked}`}
@@ -260,18 +264,18 @@ export function MultiSelect({
                       commit(pickedValues.filter((entry) => entry !== picked))
                     }
                     className={NATIVE_CHIP_REMOVE_CLASS}>
-                    <Text role="body-sm" accessible={false}>
+                    <Typography role="body-sm" accessible={false}>
                       ✕
-                    </Text>
+                    </Typography>
                   </Pressable>
                 </View>
               );
             })}
           </View>
         )}
-        <Text role="body-md" accessible={false}>
+        <Typography role="body-md" accessible={false}>
           ⌄
-        </Text>
+        </Typography>
       </Pressable>
       <PickerSheet
         isOpen={isOpen}

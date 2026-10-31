@@ -19,21 +19,19 @@
  * decorating takes its accessible name from it, and then announces itself as busy.
  */
 
+import { type Color, resolveCascade, type Size } from "@asheeui/core";
+import { useEffect, useRef } from "react";
+import type { StyleProp, ViewStyle } from "react-native";
+import { Animated, Easing, View, type ViewProps } from "react-native";
+import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
 import {
-  type ColorRole,
   NATIVE_SPINNER_BASE_CLASS,
   NATIVE_SPINNER_HEAD_CLASS,
   NATIVE_SPINNER_SIZE_CLASS,
   NATIVE_SPINNER_TRACK_CLASS,
-  resolveCascade,
-  resolveSpinnerDurationMs,
-  type Size,
-} from "@asheeui/core";
-import { useEffect, useRef } from "react";
-import type { StyleProp, ViewStyle } from "react-native";
-import { Animated, Easing, View, type ViewProps } from "react-native";
-import { useAsheeNativeConfig } from "../../../provider/AsheeNativeProvider";
-import { classNames } from "../../../utils/class-names";
+} from "../../../styles/spinner";
+import { cn } from "../../../utils/cn";
+import { resolveSpinnerDurationMs } from "./resolve-duration";
 import {
   FALLBACK_NATIVE_SPINNER_CONFIG,
   type NativeSpinnerConfig,
@@ -95,7 +93,7 @@ export function Spinner({
   style,
   ...rest
 }: SpinnerProps) {
-  const config = useAsheeNativeConfig();
+  const config = useAsheeConfig();
   const sectionConfig = config.components.spinner;
 
   const resolvedSize = resolveCascade<Size>(
@@ -104,7 +102,7 @@ export function Spinner({
     undefined,
     FALLBACK_NATIVE_SPINNER_CONFIG.size,
   );
-  const resolvedColor = resolveCascade<ColorRole>(
+  const resolvedColor = resolveCascade<Color>(
     color,
     sectionConfig?.color,
     config.defaultColor,
@@ -117,7 +115,7 @@ export function Spinner({
     FALLBACK_NATIVE_SPINNER_CONFIG.speed,
   );
 
-  const ringClass = classNames(
+  const ringClass = cn(
     NATIVE_SPINNER_BASE_CLASS,
     NATIVE_SPINNER_SIZE_CLASS[resolvedSize],
     NATIVE_SPINNER_TRACK_CLASS[resolvedColor],
@@ -168,7 +166,7 @@ export function Spinner({
         accessibilityState={label ? { busy: true } : undefined}
         accessibilityElementsHidden={label ? undefined : true}
         importantForAccessibility={label ? "auto" : "no-hide-descendants"}
-        className={classNames(ringClass, className)}
+        className={cn(ringClass, className)}
         style={style}
         {...rest}
       />

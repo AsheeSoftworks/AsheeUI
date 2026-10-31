@@ -8,11 +8,7 @@
 "use client";
 
 import {
-  ASHEE_GLOBAL_LAYER,
-  cn,
-  MODAL_MAX_WIDTH_CLASS,
-  MODAL_POSITION_CLASS,
-  RADIUS_CLASS,
+  CLOSE_LABEL,
   type Radius,
   resolveCascade,
   resolveClassKey,
@@ -32,6 +28,13 @@ import { useLayerEscape } from "../../../libs/layer-stack";
 import { OverlayCloseControl } from "../../../libs/overlay-close-control";
 import { useBodyScrollLock } from "../../../libs/use-body-scroll-lock";
 import { useDialogOverlay } from "../../../libs/use-dialog-overlay";
+import {
+  MODAL_MAX_WIDTH_CLASS,
+  MODAL_POSITION_CLASS,
+} from "../../../styles/modal";
+import { RADIUS_CLASS } from "../../../styles/radius";
+import { cn } from "../../../utils/cn";
+import { ASHEE_GLOBAL_LAYER } from "../../../utils/stacking";
 import {
   FALLBACK_MODAL_CONFIG,
   type ModalConfig,
@@ -215,7 +218,7 @@ export interface ModalProps extends BaseModalProps {
 export function Modal({
   isOpen,
   onClose,
-  closeLabel = "Close dialog",
+  closeLabel = `${CLOSE_LABEL} dialog`,
   children,
   width,
   height,

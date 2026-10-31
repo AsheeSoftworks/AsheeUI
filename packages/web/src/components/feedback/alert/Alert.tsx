@@ -8,18 +8,11 @@
 
 import type { Radius, Variant } from "@asheeui/core";
 import {
-  ALERT_BASE_CLASS,
-  ALERT_DISMISS_CLASS,
-  ALERT_ICON_CLASS,
   ALERT_TYPE_COLOR,
-  ALERT_TYPE_ICON_CLASS,
   ALERT_TYPE_ROLE,
-  cn,
-  RADIUS_CLASS,
   resolveCascade,
   resolveClassKey,
   resolveMessageVariant,
-  resolveVariantClass,
 } from "@asheeui/core";
 import { forwardRef, type HTMLAttributes, type ReactNode } from "react";
 import { CheckIcon } from "../../../icons/CheckIcon";
@@ -28,6 +21,15 @@ import { ErrorIcon } from "../../../icons/ErrorIcon";
 import { InfoIcon } from "../../../icons/InfoIcon";
 import { WarningIcon } from "../../../icons/WarningIcon";
 import { useAsheeConfig } from "../../../libs/context";
+import { resolveVariantClass } from "../../../shared/variant";
+import {
+  ALERT_BASE_CLASS,
+  ALERT_DISMISS_CLASS,
+  ALERT_ICON_CLASS,
+  ALERT_TYPE_ICON_CLASS,
+} from "../../../styles/alert";
+import { RADIUS_CLASS } from "../../../styles/radius";
+import { cn } from "../../../utils/cn";
 import {
   type AlertConfig,
   type AlertType,

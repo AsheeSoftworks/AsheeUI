@@ -10,12 +10,7 @@
 "use client";
 
 import type { FeatureItem } from "@asheeui/core";
-import {
-  FEATURE_CARD_BODY_CLASS,
-  FEATURE_HEADING_CLASS,
-  FEATURE_ICON_CLASS,
-  resolveConfigCascade,
-} from "@asheeui/core";
+import { resolveConfigCascade } from "@asheeui/core";
 import {
   type ElementType,
   forwardRef,
@@ -24,6 +19,11 @@ import {
   useId,
 } from "react";
 import { useAsheeConfig } from "../../../libs/context";
+import {
+  FEATURE_CARD_BODY_CLASS,
+  FEATURE_HEADING_CLASS,
+  FEATURE_ICON_CLASS,
+} from "../../../styles/feature-grid";
 import { Card } from "../../data-display/card/Card";
 import { Container } from "../../layouts/container/Container";
 import { Grid } from "../../layouts/grid/Grid";

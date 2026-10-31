@@ -11,13 +11,9 @@
 "use client";
 
 import {
-  cn,
-  LOADING_STATE_CLASS,
-  LOADING_STATE_PANEL_CLASS,
-  LOADING_STATE_SIZE_CLASS,
+  ANNOUNCEMENT_ROLE,
   resolveClassKey,
   resolveConfigCascade,
-  SPACE_MIN_HEIGHT_CLASS,
 } from "@asheeui/core";
 import {
   type ElementType,
@@ -26,6 +22,13 @@ import {
   type ReactNode,
 } from "react";
 import { useAsheeConfig } from "../../../libs/context";
+import {
+  LOADING_STATE_CLASS,
+  LOADING_STATE_PANEL_CLASS,
+  LOADING_STATE_SIZE_CLASS,
+} from "../../../styles/loading-state";
+import { SPACE_MIN_HEIGHT_CLASS } from "../../../styles/portable";
+import { cn } from "../../../utils/cn";
 import { Typography } from "../../typography/Typography";
 import { Spinner } from "../spinner/spinner";
 import {
@@ -131,7 +134,7 @@ export const LoadingState = forwardRef<HTMLDivElement, LoadingStateProps>(
     return (
       <Component
         ref={ref}
-        role="status"
+        role={ANNOUNCEMENT_ROLE.status}
         className={cn(
           LOADING_STATE_CLASS,
           resolveClassKey(resolved.size, LOADING_STATE_SIZE_CLASS, "md"),

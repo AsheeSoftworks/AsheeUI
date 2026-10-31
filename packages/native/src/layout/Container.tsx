@@ -12,8 +12,12 @@ import { resolveConfigCascade } from "@asheeui/core";
 import type { ReactNode } from "react";
 import type { StyleProp, ViewProps, ViewStyle } from "react-native";
 import { View } from "react-native";
-import { useAsheeNativeConfig } from "../provider/AsheeNativeProvider";
-import { classNames } from "../utils/class-names";
+import { useAsheeConfig } from "../provider/AsheeUIProvider";
+import { cn } from "../utils/cn";
+import {
+  type UnsupportedElementProps,
+  useUnsupportedElementProps,
+} from "../utils/unsupported-element-props";
 import {
   FALLBACK_NATIVE_CONTAINER_CONFIG,
   type NativeContainerConfig,
@@ -29,7 +33,8 @@ import {
  */
 export interface ContainerProps
   extends NativeContainerConfig,
-    Omit<ViewProps, "children" | "style"> {
+    Omit<ViewProps, "children" | "style">,
+    UnsupportedElementProps {
   /** The content the container holds. */
   children?: ReactNode;
 
@@ -60,12 +65,16 @@ export interface ContainerProps
 export function Container({
   size,
   gutter,
+  as,
+  titleAs,
   className,
   style,
   children,
   ...rest
 }: ContainerProps) {
-  const config = useAsheeNativeConfig();
+  useUnsupportedElementProps("Container", { as, titleAs });
+
+  const config = useAsheeConfig();
 
   const resolved = resolveConfigCascade<
     NativeContainerConfig,
@@ -78,7 +87,7 @@ export function Container({
 
   return (
     <View
-      className={classNames(
+      className={cn(
         CONTAINER_BASE_CLASS,
         "self-center",
         CONTAINER_MAX_WIDTH_CLASS[resolved.size],

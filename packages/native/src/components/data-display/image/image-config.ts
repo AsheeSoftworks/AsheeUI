@@ -25,6 +25,9 @@ export type { ImageConfig, ImageFit, ImageRatioKey } from "@asheeui/core";
  *
  * `fit`, `ratio`, `radius` and `showSkeleton` carry the meanings the shared image
  * contract gives them.
+ *
+ * @deprecated Use {@link ImageConfig} from `@asheeui/core` — the name both renderers
+ * publish.
  */
 export type NativeImageConfig = Omit<ImageConfig, "loading">;
 
@@ -43,6 +46,9 @@ export type NativeImageConfig = Omit<ImageConfig, "loading">;
  * purpose, which is why their rounding ignores the application's default.
  * {@link FALLBACK_NATIVE_IMAGE_CONFIG} still states `md` for the case where no tier answers at
  * all.
+ *
+ * @deprecated Use {@link defaultImageConfig} — the name both renderers publish. The value is
+ * this one: a fallback states the platform's default, and the name is shared.
  */
 export const defaultNativeImageConfig: NativeImageConfig = {
   fit: "cover",
@@ -60,6 +66,9 @@ registerNativeComponentDefaults("image", defaultNativeImageConfig);
 
 /**
  * The values the picture falls back to when no tier provides one.
+ *
+ * @deprecated Use {@link FALLBACK_IMAGE_CONFIG} — the name both renderers publish. The value is
+ * this one: a fallback states the platform's default, and the name is shared.
  */
 export const FALLBACK_NATIVE_IMAGE_CONFIG = {
   fit: "cover",

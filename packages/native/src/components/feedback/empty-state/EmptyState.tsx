@@ -18,9 +18,19 @@
 
 import {
   type ActionConfig,
-  type ColorRole,
+  type Color,
   type EmptyStateRole,
+  resolveConfigCascade,
+} from "@asheeui/core";
+import type { ReactNode } from "react";
+import type { StyleProp, ViewProps, ViewStyle } from "react-native";
+import { View } from "react-native";
+import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
+import {
   NATIVE_ANNOUNCEMENT_LIVE_REGION,
+  resolveNativeAnnouncementRole,
+} from "../../../shared/announcement";
+import {
   NATIVE_EMPTY_STATE_ACTIONS_CLASS,
   NATIVE_EMPTY_STATE_CLASS,
   NATIVE_EMPTY_STATE_HEADING_CLASS,
@@ -29,17 +39,15 @@ import {
   NATIVE_EMPTY_STATE_ICON_TEXT_CLASS,
   NATIVE_EMPTY_STATE_PANEL_CLASS,
   NATIVE_EMPTY_STATE_SIZE_CLASS,
-  resolveConfigCascade,
-  resolveNativeAnnouncementRole,
-} from "@asheeui/core";
-import type { ReactNode } from "react";
-import type { StyleProp, ViewProps, ViewStyle } from "react-native";
-import { View } from "react-native";
-import { useAsheeNativeConfig } from "../../../provider/AsheeNativeProvider";
-import { classNames } from "../../../utils/class-names";
+} from "../../../styles/empty-state";
+import { cn } from "../../../utils/cn";
+import {
+  type UnsupportedElementProps,
+  useUnsupportedElementProps,
+} from "../../../utils/unsupported-element-props";
 import { openDestination } from "../../../utils/open-destination";
 import { Button } from "../../forms/button/Button";
-import { Text } from "../../typography/text/Text";
+import { Typography } from "../../typography/text/Text";
 import {
   FALLBACK_NATIVE_EMPTY_STATE_CONFIG,
   type NativeEmptyStateConfig,
@@ -54,7 +62,8 @@ export interface EmptyStateProps
     // platform's own vocabulary. The framework's `role` says how a state is announced,
     // and the component states that itself, so the platform's is left out rather than
     // colliding with it.
-    Omit<ViewProps, "children" | "style" | "role"> {
+    Omit<ViewProps, "children" | "style" | "role">,
+    UnsupportedElementProps {
   /** Icon shown above the title, inside a badge coloured by the state's tone. */
   icon?: ReactNode;
 
@@ -156,12 +165,16 @@ export function EmptyState({
   panel,
   role,
   actions,
+  as,
+  titleAs,
   className,
   style,
   children,
   ...rest
 }: EmptyStateProps) {
-  const config = useAsheeNativeConfig();
+  useUnsupportedElementProps("EmptyState", { as, titleAs });
+
+  const config = useAsheeConfig();
 
   const resolved = resolveConfigCascade<
     NativeEmptyStateConfig,
@@ -188,7 +201,7 @@ export function EmptyState({
           ? NATIVE_ANNOUNCEMENT_LIVE_REGION[announcementRole]
           : undefined
       }
-      className={classNames(
+      className={cn(
         NATIVE_EMPTY_STATE_CLASS,
         NATIVE_EMPTY_STATE_SIZE_CLASS[resolved.size],
         resolved.panel && NATIVE_EMPTY_STATE_PANEL_CLASS,
@@ -198,7 +211,7 @@ export function EmptyState({
       {...rest}>
       {icon && (
         <View
-          className={classNames(
+          className={cn(
             NATIVE_EMPTY_STATE_ICON_CLASS[resolved.type],
             NATIVE_EMPTY_STATE_ICON_SIZE_CLASS[resolved.size],
             NATIVE_EMPTY_STATE_ICON_TEXT_CLASS[resolved.type],
@@ -208,13 +221,13 @@ export function EmptyState({
       )}
 
       <View className={NATIVE_EMPTY_STATE_HEADING_CLASS}>
-        <Text role="heading-sm" align="center">
+        <Typography role="heading-sm" align="center">
           {title}
-        </Text>
+        </Typography>
         {description && (
-          <Text role="body-sm" tone="muted" align="center">
+          <Typography role="body-sm" tone="muted" align="center">
             {description}
-          </Text>
+          </Typography>
         )}
       </View>
 
@@ -223,7 +236,7 @@ export function EmptyState({
           {primaryAction && (
             <Button
               variant={primaryAction.variant ?? "solid"}
-              color={primaryAction.color as ColorRole | undefined}
+              color={primaryAction.color as Color | undefined}
               size={primaryAction.size ?? resolved.size}
               radius={primaryAction.radius}
               onPress={pressFor(primaryAction)}>
@@ -233,7 +246,7 @@ export function EmptyState({
           {secondaryAction && (
             <Button
               variant={secondaryAction.variant ?? "bordered"}
-              color={secondaryAction.color as ColorRole | undefined}
+              color={secondaryAction.color as Color | undefined}
               size={secondaryAction.size ?? resolved.size}
               radius={secondaryAction.radius}
               onPress={pressFor(secondaryAction)}>

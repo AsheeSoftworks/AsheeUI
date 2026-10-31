@@ -8,7 +8,8 @@
 
 import { type RenderResult, render } from "@testing-library/react-native";
 import type { ReactElement } from "react";
-import { AsheeNativeProvider } from "../../../provider/AsheeNativeProvider";
+import { Text } from "react-native";
+import { AsheeUIProvider } from "../../../provider/AsheeUIProvider";
 import { Badge } from "./Badge";
 
 /**
@@ -19,9 +20,7 @@ import { Badge } from "./Badge";
  * @returns The rendered tree and its queries.
  */
 async function renderBadge(ui: ReactElement, config?: object) {
-  return render(
-    <AsheeNativeProvider config={config}>{ui}</AsheeNativeProvider>,
-  );
+  return render(<AsheeUIProvider config={config}>{ui}</AsheeUIProvider>);
 }
 
 /**
@@ -55,7 +54,7 @@ describe("Native Badge", () => {
     expect(classesOf(view, "badge")).toContain("bg-danger");
     expect(
       (view.getByText("Overdue").props as { className?: string }).className,
-    ).toContain("text-background");
+    ).toContain("text-on-solid");
   });
 
   it("takes its density and its radius from its props", async () => {
@@ -111,5 +110,25 @@ describe("Native Badge", () => {
     );
 
     expect(classesOf(view, "badge").endsWith("self-end")).toBe(true);
+  });
+
+  it("accepts the web's label name as the children's alias", async () => {
+    const view = await renderBadge(<Badge testID="badge" label="Paid" />);
+
+    expect(view.getByText("Paid")).toBeTruthy();
+  });
+
+  it("renders content on both sides of the label", async () => {
+    const view = await renderBadge(
+      <Badge
+        testID="badge"
+        label="Paid"
+        startContent={<Text>•</Text>}
+        endContent={<Text>✓</Text>}
+      />,
+    );
+
+    expect(view.getByText("•")).toBeTruthy();
+    expect(view.getByText("✓")).toBeTruthy();
   });
 });

@@ -7,8 +7,8 @@
 
 "use client";
 
-import { resolveBaseZIndex } from "@asheeui/core";
 import { useState } from "react";
+import { resolveBaseZIndex } from "../utils/stacking";
 import { useIsomorphicLayoutEffect } from "./use-isomorphic-layout-effect";
 
 /**

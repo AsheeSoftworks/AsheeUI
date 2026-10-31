@@ -10,10 +10,11 @@
  * them, by packing each package, installing the tarballs into a throwaway Vite
  * application outside the workspace, and building it.
  *
- * The application imports a component through `@asheeui/web` and the stylesheet through
- * `@asheeui/web/styles`, so the build exercises both entry points the docs tell a
- * consumer to use. It renders the component and the provider, which resolves them from
- * the tarball rather than from workspace source.
+ * The application imports a component through `asheeui` and the stylesheet through
+ * `asheeui/styles`, and installs the web renderer beside the umbrella as the peer the
+ * umbrella expects. That is the install story the README documents, and it exercises the
+ * umbrella's own entry, its stylesheet subpath and its packed manifest — including the
+ * `@asheeui/core` dependency it carries, which is why the fixture does not name core.
  *
  * Every step has a hard timeout and reports the command's own output on failure, so a
  * hung install reports instead of hanging the pipeline. A registry failure is named as
@@ -179,7 +180,9 @@ function fixtureManifest(tarballs) {
       type: "module",
       scripts: { build: "vite build" },
       dependencies: {
-        "@asheeui/core": `file:./${tarballs.core}`,
+        // The documented install: the umbrella plus one renderer. Core arrives through
+        // the umbrella, so naming it here would test a dependency a consumer never writes.
+        asheeui: `file:./${tarballs.asheeui}`,
         "@asheeui/web": `file:./${tarballs.web}`,
         react: versions.react,
         "react-dom": versions["react-dom"],
@@ -255,11 +258,11 @@ function fixtureFiles(tarballs) {
     ].join("\n"),
     "src/styles.css": [
       '@import "tailwindcss";',
-      '@import "@asheeui/web/styles";',
+      '@import "asheeui/styles";',
       "",
     ].join("\n"),
     "src/main.tsx": [
-      'import { AsheeUIProvider, Button } from "@asheeui/web";',
+      'import { AsheeUIProvider, Button } from "asheeui";',
       'import { StrictMode } from "react";',
       'import { createRoot } from "react-dom/client";',
       'import "./styles.css";',
@@ -302,7 +305,7 @@ export function verifyConsumer() {
   if (packages.length === 0)
     throw new Error("no publishable package under packages/");
 
-  const required = ["@asheeui/web", "@asheeui/core"];
+  const required = ["asheeui", "@asheeui/web", "@asheeui/core"];
   const missing = required.filter(
     (name) => !packages.some((pkg) => pkg.name === name),
   );
@@ -326,7 +329,9 @@ export function verifyConsumer() {
 
     const tarballs = Object.fromEntries(
       required.map((name) => [
-        name.slice(1).split("/")[1],
+        // `@asheeui/web` is keyed `web` (the fixture writes the file names itself); the
+        // unscoped `asheeui` keeps its name rather than losing its first character.
+        name.startsWith("@") ? name.split("/")[1] : name,
         packages.find((pkg) => pkg.name === name).tarball,
       ]),
     );
@@ -352,18 +357,21 @@ export function verifyConsumer() {
       throw error;
     }
 
-    // The installed package has to be the packed one, not a workspace link.
-    const installed = JSON.parse(
-      readFileSync(
-        join(directory, "node_modules", "@asheeui", "web", "package.json"),
-        "utf8",
-      ),
-    );
-    const packed = packages.find((pkg) => pkg.name === "@asheeui/web");
-    if (installed.version !== packed.version) {
-      throw new Error(
-        `the fixture installed @asheeui/web ${installed.version} instead of the packed ${packed.version}`,
+    // The installed packages have to be the packed ones, not workspace links. The
+    // umbrella is the package under test now: it is what the fixture imports through.
+    for (const name of ["asheeui", "@asheeui/web"]) {
+      const installed = JSON.parse(
+        readFileSync(
+          join(directory, "node_modules", ...name.split("/"), "package.json"),
+          "utf8",
+        ),
       );
+      const packed = packages.find((pkg) => pkg.name === name);
+      if (installed.version !== packed.version) {
+        throw new Error(
+          `the fixture installed ${name} ${installed.version} instead of the packed ${packed.version}`,
+        );
+      }
     }
 
     runPnpm(["run", "build"], {
@@ -382,7 +390,7 @@ export function verifyConsumer() {
     }
     if (!style) {
       throw new Error(
-        "the fixture built no stylesheet, so `@asheeui/web/styles` did not resolve",
+        "the fixture built no stylesheet, so `asheeui/styles` did not resolve",
       );
     }
 

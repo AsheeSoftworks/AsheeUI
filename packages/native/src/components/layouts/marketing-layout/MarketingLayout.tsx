@@ -19,18 +19,22 @@
  * that.
  */
 
+import { resolveConfigCascade } from "@asheeui/core";
+import type { ReactNode } from "react";
+import type { ScrollViewProps, StyleProp, ViewStyle } from "react-native";
+import { ScrollView, View } from "react-native";
+import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
 import {
   NATIVE_MARKETING_LAYOUT_BACKGROUND_CLASS,
   NATIVE_MARKETING_LAYOUT_CLASS,
   NATIVE_MARKETING_LAYOUT_CONTENT_CLASS,
   NATIVE_MARKETING_LAYOUT_MAIN_CLASS,
-  resolveConfigCascade,
-} from "@asheeui/core";
-import type { ReactNode } from "react";
-import type { ScrollViewProps, StyleProp, ViewStyle } from "react-native";
-import { ScrollView, View } from "react-native";
-import { useAsheeNativeConfig } from "../../../provider/AsheeNativeProvider";
-import { classNames } from "../../../utils/class-names";
+} from "../../../styles/marketing-layout";
+import { cn } from "../../../utils/cn";
+import {
+  type UnsupportedElementProps,
+  useUnsupportedElementProps,
+} from "../../../utils/unsupported-element-props";
 import {
   FALLBACK_NATIVE_MARKETING_LAYOUT_CONFIG,
   type NativeMarketingLayoutConfig,
@@ -41,7 +45,8 @@ import {
  */
 export interface MarketingLayoutProps
   extends NativeMarketingLayoutConfig,
-    Omit<ScrollViewProps, "children" | "style" | "contentContainerStyle"> {
+    Omit<ScrollViewProps, "children" | "style" | "contentContainerStyle">,
+    UnsupportedElementProps {
   /**
    * The page's navigation, above the main region.
    * The framework's own navigation is the platform's header, which announces itself as one.
@@ -119,11 +124,15 @@ export function MarketingLayout({
   skipLink,
   skipLinkLabel,
   background,
+  as,
+  titleAs,
   className,
   style,
   ...rest
 }: MarketingLayoutProps) {
-  const config = useAsheeNativeConfig();
+  useUnsupportedElementProps("MarketingLayout", { as, titleAs });
+
+  const config = useAsheeConfig();
 
   const resolved = resolveConfigCascade<
     NativeMarketingLayoutConfig,
@@ -136,7 +145,7 @@ export function MarketingLayout({
 
   return (
     <ScrollView
-      className={classNames(
+      className={cn(
         NATIVE_MARKETING_LAYOUT_CLASS,
         NATIVE_MARKETING_LAYOUT_BACKGROUND_CLASS[resolved.background],
         className,

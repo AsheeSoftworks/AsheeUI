@@ -27,17 +27,9 @@
 
 import {
   type Color,
-  NATIVE_RADIUS_CLASS,
-  NATIVE_TABS_LIST_CLASS,
-  NATIVE_TABS_PANEL_CLASS,
-  NATIVE_TABS_TRIGGER_CLASS,
-  NATIVE_TABS_VARIANT_CONTENT_CLASS,
-  NATIVE_TABS_VARIANT_LIST_CLASS,
   type Radius,
   resolveCascade,
   type Size,
-  TABS_FONT_CLASS,
-  TABS_PADDING_X_CLASS,
   type TabItem,
   type TabsOptionsConfig,
   type TabsVariant,
@@ -46,10 +38,22 @@ import {
 import { useState } from "react";
 import type { StyleProp, ViewProps, ViewStyle } from "react-native";
 import { ScrollView, View } from "react-native";
-import { useAsheeNativeConfig } from "../../../provider/AsheeNativeProvider";
-import { classNames } from "../../../utils/class-names";
+import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
+import {
+  TABS_FONT_CLASS,
+  TABS_PADDING_X_CLASS,
+} from "../../../styles/portable";
+import { NATIVE_RADIUS_CLASS } from "../../../styles/radius";
+import {
+  NATIVE_TABS_LIST_CLASS,
+  NATIVE_TABS_PANEL_CLASS,
+  NATIVE_TABS_TRIGGER_CLASS,
+  NATIVE_TABS_VARIANT_CONTENT_CLASS,
+  NATIVE_TABS_VARIANT_LIST_CLASS,
+} from "../../../styles/tabs";
+import { cn } from "../../../utils/cn";
 import { Button } from "../../forms/button/Button";
-import { Text } from "../../typography/text/Text";
+import { Typography } from "../../typography/text/Text";
 import {
   FALLBACK_NATIVE_TABS_CONFIG,
   type NativeTabsConfig,
@@ -151,7 +155,7 @@ export function Tabs({
   style,
   ...rest
 }: TabsProps) {
-  const config = useAsheeNativeConfig();
+  const config = useAsheeConfig();
   const sectionConfig = config.components.tabs;
 
   const resolvedSize = resolveCascade<Size>(
@@ -235,20 +239,20 @@ export function Tabs({
 
   return (
     <View
-      className={classNames("w-full flex-col gap-4", className)}
+      className={cn("w-full flex-col gap-4", className)}
       style={style}
       {...rest}>
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
-        className={classNames(
+        className={cn(
           NATIVE_TABS_VARIANT_LIST_CLASS[resolvedVariant],
           resolvedVariant !== "underline" &&
             NATIVE_RADIUS_CLASS[resolvedRadius],
           tabListClassName,
         )}>
         <View
-          className={classNames(
+          className={cn(
             NATIVE_TABS_LIST_CLASS,
             NATIVE_TABS_VARIANT_CONTENT_CLASS[resolvedVariant],
           )}>
@@ -285,7 +289,7 @@ export function Tabs({
                     : resolvedInactiveColor
                 }
                 onPress={() => select(tab.id)}
-                className={classNames(
+                className={cn(
                   NATIVE_TABS_TRIGGER_CLASS,
                   TABS_PADDING_X_CLASS[resolvedSize],
                   TABS_FONT_CLASS[resolvedSize],
@@ -296,7 +300,7 @@ export function Tabs({
                 {typeof label === "string" ? (
                   // The platform cannot draw a string inside a control, so a label that is
                   // one is drawn as the framework's text.
-                  <Text role="label">{label}</Text>
+                  <Typography role="label">{label}</Typography>
                 ) : (
                   label
                 )}
@@ -307,9 +311,9 @@ export function Tabs({
         </View>
       </ScrollView>
 
-      <View className={classNames(NATIVE_TABS_PANEL_CLASS, tabPanelClassName)}>
+      <View className={cn(NATIVE_TABS_PANEL_CLASS, tabPanelClassName)}>
         {typeof activeTab?.content === "string" ? (
-          <Text role="body-md">{activeTab.content}</Text>
+          <Typography role="body-md">{activeTab.content}</Typography>
         ) : (
           activeTab?.content
         )}

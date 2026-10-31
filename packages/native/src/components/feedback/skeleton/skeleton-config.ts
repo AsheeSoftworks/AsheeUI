@@ -19,6 +19,9 @@ import { registerNativeComponentDefaults } from "../../../config/registry";
  *
  * `radius` and `isAnimated` carry the meanings the shared skeleton contract gives
  * them.
+ *
+ * @deprecated Use {@link SkeletonConfig} from `@asheeui/core` — the name both renderers
+ * publish.
  */
 export type NativeSkeletonConfig = Pick<
   SkeletonConfig,
@@ -31,6 +34,9 @@ export type NativeSkeletonConfig = Pick<
  * The radius is `sm`, because a placeholder most often stands in for a line of text,
  * and it is animated, because a placeholder that breathes reads as waiting rather
  * than as broken.
+ *
+ * @deprecated Use {@link defaultSkeletonConfig} — the name both renderers publish. The value is
+ * this one: a fallback states the platform's default, and the name is shared.
  */
 export const defaultNativeSkeletonConfig: NativeSkeletonConfig = {
   radius: "sm",
@@ -47,6 +53,9 @@ registerNativeComponentDefaults("skeleton", defaultNativeSkeletonConfig);
 
 /**
  * The values the placeholder falls back to when no tier provides one.
+ *
+ * @deprecated Use {@link FALLBACK_SKELETON_CONFIG} — the name both renderers publish. The value is
+ * this one: a fallback states the platform's default, and the name is shared.
  */
 export const FALLBACK_NATIVE_SKELETON_CONFIG = {
   radius: "sm",

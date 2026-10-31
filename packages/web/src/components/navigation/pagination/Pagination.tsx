@@ -9,18 +9,9 @@
 
 import type { Color, Radius, Size, Variant } from "@asheeui/core";
 import {
-  cn,
-  PAGINATION_BASE_CLASS,
-  PAGINATION_CONTROL_CLASS,
-  PAGINATION_DISABLED_CLASS,
-  PAGINATION_GAP_CLASS,
-  PAGINATION_LINK_CONTROL_CLASS,
-  PAGINATION_LIST_CLASS,
-  RADIUS_CLASS,
   resolveCascade,
   resolveClassKey,
   resolveRadiusKey,
-  resolveVariantClass,
 } from "@asheeui/core";
 import {
   type ElementType,
@@ -31,6 +22,17 @@ import {
 import { ChevronLeftIcon } from "../../../icons/ChevronLeftIcon";
 import { ChevronRightIcon } from "../../../icons/ChevronRightIcon";
 import { useAsheeConfig } from "../../../libs/context";
+import { resolveVariantClass } from "../../../shared/variant";
+import {
+  PAGINATION_BASE_CLASS,
+  PAGINATION_CONTROL_CLASS,
+  PAGINATION_DISABLED_CLASS,
+  PAGINATION_GAP_CLASS,
+  PAGINATION_LINK_CONTROL_CLASS,
+  PAGINATION_LIST_CLASS,
+} from "../../../styles/pagination";
+import { RADIUS_CLASS } from "../../../styles/radius";
+import { cn } from "../../../utils/cn";
 import { Button } from "../../forms/button";
 import { Link } from "../link";
 import { getPaginationRange } from "./pagination.helpers";

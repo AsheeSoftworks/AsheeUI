@@ -12,18 +12,13 @@
  * is the platform's other half of a navigation.
  */
 
-import {
-  NATIVE_NAVBAR_BRAND_CLASS,
-  NAVBAR_BRAND_TEXT_CLASS,
-} from "@asheeui/core";
-import {
-  type ReactTestInstance,
-  type RenderResult,
-  render,
-} from "@testing-library/react-native";
+import { type RenderResult, render } from "@testing-library/react-native";
 import type { ReactElement } from "react";
 import { Text } from "react-native";
-import { AsheeNativeProvider } from "../../../provider/AsheeNativeProvider";
+import type { TestInstance } from "test-renderer";
+import { AsheeUIProvider } from "../../../provider/AsheeUIProvider";
+import { NATIVE_NAVBAR_BRAND_CLASS } from "../../../styles/navbar";
+import { NAVBAR_BRAND_TEXT_CLASS } from "../../../styles/portable";
 import { Navbar, TabBar } from "./Navbar";
 import type { NavbarLinkItem } from "./navbar-config";
 
@@ -41,9 +36,7 @@ const LINKS: NavbarLinkItem[] = [
  * @returns The rendered tree and its queries.
  */
 async function renderBar(ui: ReactElement, config?: object) {
-  return render(
-    <AsheeNativeProvider config={config}>{ui}</AsheeNativeProvider>,
-  );
+  return render(<AsheeUIProvider config={config}>{ui}</AsheeUIProvider>);
 }
 
 /**
@@ -69,8 +62,8 @@ function classesOf(view: RenderResult, testID: string): string {
  * @param label - The destination's label.
  * @returns The control carrying it.
  */
-function destinationOf(view: RenderResult, label: string): ReactTestInstance {
-  return view.getByText(label).parent as ReactTestInstance;
+function destinationOf(view: RenderResult, label: string): TestInstance {
+  return view.getByText(label).parent as TestInstance;
 }
 
 /**
@@ -95,9 +88,9 @@ function destinationClasses(view: RenderResult, label: string): string {
  * @returns The ancestor, or undefined when there is none.
  */
 function ancestorWithClass(
-  node: ReactTestInstance,
+  node: TestInstance,
   marker: string,
-): ReactTestInstance | undefined {
+): TestInstance | undefined {
   let current = node.parent;
 
   while (current) {
@@ -179,7 +172,7 @@ describe("Native Navbar", () => {
       <Navbar testID="bar" brand="Ashee SMS" brandHref="/" links={LINKS} />,
     );
     const link = destinationOf(view, "Ashee SMS");
-    const wrapper = link.parent as ReactTestInstance;
+    const wrapper = link.parent as TestInstance;
 
     expect(NATIVE_NAVBAR_BRAND_CLASS).toContain("shrink-0");
     expect(NATIVE_NAVBAR_BRAND_CLASS).not.toContain("font-semibold");
@@ -306,7 +299,7 @@ describe("Native Navbar setup", () => {
     const silence = jest.spyOn(console, "error").mockImplementation(() => {});
 
     await expect(render(<Navbar links={LINKS} />)).rejects.toThrow(
-      /AsheeNativeProvider/,
+      /AsheeUIProvider/,
     );
 
     silence.mockRestore();

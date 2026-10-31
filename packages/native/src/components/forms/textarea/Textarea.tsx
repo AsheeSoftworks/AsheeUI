@@ -14,29 +14,36 @@
  */
 
 import {
-  type ColorRole,
+  type Color,
   type FieldStatus,
   isFieldInvalid,
-  NATIVE_INPUT_DISABLED_CLASS,
-  NATIVE_INPUT_EDGE_ACCENT_CLASS,
-  NATIVE_INPUT_EDGE_INVALID_CLASS,
-  NATIVE_INPUT_EDGE_NEUTRAL_CLASS,
-  NATIVE_INPUT_EDGE_WIDTH_CLASS,
-  NATIVE_INPUT_VARIANT_CLASS,
-  NATIVE_RADIUS_CLASS,
-  NATIVE_TEXTAREA_BASE_CLASS,
-  NATIVE_TEXTAREA_ROW_HEIGHT,
-  NATIVE_TEXTAREA_SIZE_CLASS,
+  type LabelAlign,
   type Radius,
   resolveCascade,
+  resolveChange,
+  resolveFieldStatusColor,
   type Size,
   type Variant,
 } from "@asheeui/core";
-import { useState } from "react";
+import { type ReactNode, useState } from "react";
 import type { StyleProp, TextInputProps, TextStyle } from "react-native";
-import { TextInput } from "react-native";
-import { useAsheeNativeConfig } from "../../../provider/AsheeNativeProvider";
-import { classNames } from "../../../utils/class-names";
+import { TextInput, View } from "react-native";
+import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
+import {
+  NATIVE_INPUT_DISABLED_CLASS,
+  NATIVE_INPUT_EDGE_ACCENT_CLASS,
+  NATIVE_INPUT_EDGE_NEUTRAL_CLASS,
+  NATIVE_INPUT_EDGE_WIDTH_CLASS,
+  NATIVE_INPUT_VARIANT_CLASS,
+} from "../../../styles/input";
+import { NATIVE_RADIUS_CLASS } from "../../../styles/radius";
+import {
+  NATIVE_TEXTAREA_BASE_CLASS,
+  NATIVE_TEXTAREA_ROW_HEIGHT,
+  NATIVE_TEXTAREA_SIZE_CLASS,
+} from "../../../styles/textarea";
+import { cn } from "../../../utils/cn";
+import { useUnsupportedProps } from "../../../utils/unsupported-prop";
 import { FieldShell } from "../field/FieldShell";
 import {
   FALLBACK_NATIVE_TEXTAREA_CONFIG,
@@ -48,7 +55,10 @@ import {
  */
 export interface TextareaProps
   extends NativeTextareaConfig,
-    Omit<TextInputProps, "children" | "style" | "multiline" | "rows"> {
+    Omit<
+      TextInputProps,
+      "children" | "style" | "multiline" | "rows" | "onChange" | "onChangeText"
+    > {
   /** The field's label, which also names the control. */
   label?: string;
 
@@ -60,6 +70,34 @@ export interface TextareaProps
 
   /** Whether the field is waiting for something, which shows a pending marker. */
   isLoading?: boolean;
+
+  /** Content rendered at the start of the field, typically an icon. */
+  startContent?: ReactNode;
+
+  /** Content rendered at the end of the field. */
+  endContent?: ReactNode;
+
+  /**
+   * Whether the web raises its own virtual keyboard for this field.
+   *
+   * The platform's system keyboard is always the one that appears, so there is nothing to
+   * switch. Accepted so a shared field compiles; warns once and changes nothing.
+   */
+  enableVirtualKeyboard?: boolean;
+
+  /**
+   * Called with the field's next value, under the name the browser gives the event.
+   *
+   * The event is a shim with `target.value`; `preventDefault` and `stopPropagation` are
+   * not part of it, because the platform has no default action here to stop.
+   */
+  onChange?: (event: { target: { value: string } }) => void;
+
+  /** Called with the field's next value, under the platform's most specific name. */
+  onChangeText?: (value: string) => void;
+
+  /** Called with the field's next value, under the name the picker family already used. */
+  onValueChange?: (value: string) => void;
 
   /** Extra classes appended last, so a consumer's own classes win. */
   className?: string;
@@ -106,14 +144,29 @@ export function Textarea({
   color,
   isDisabled,
   required,
+  labelAlign,
+  fullWidth,
+  startContent,
+  endContent,
+  enableVirtualKeyboard,
   className,
   style,
   onFocus,
   onBlur,
+  onChange,
+  onChangeText,
+  onValueChange,
   ...rest
 }: TextareaProps) {
-  const config = useAsheeNativeConfig();
+  const config = useAsheeConfig();
   const sectionConfig = config.components.textarea;
+
+  useUnsupportedProps("Textarea", {
+    enableVirtualKeyboard: {
+      value: enableVirtualKeyboard,
+      substitute: "the system keyboard is always the one that appears on a device",
+    },
+  });
   const [isFocused, setIsFocused] = useState(false);
 
   const resolvedStatus = resolveCascade<FieldStatus>(
@@ -140,7 +193,7 @@ export function Textarea({
     undefined,
     FALLBACK_NATIVE_TEXTAREA_CONFIG.variant,
   );
-  const resolvedColor = resolveCascade<ColorRole>(
+  const resolvedColor = resolveCascade<Color>(
     color,
     sectionConfig?.color,
     config.defaultColor,
@@ -164,58 +217,97 @@ export function Textarea({
     undefined,
     FALLBACK_NATIVE_TEXTAREA_CONFIG.required,
   );
+  const resolvedLabelAlign = resolveCascade<LabelAlign>(
+    labelAlign,
+    sectionConfig?.labelAlign,
+    undefined,
+    FALLBACK_NATIVE_TEXTAREA_CONFIG.labelAlign,
+  );
+  const resolvedFullWidth = resolveCascade<boolean>(
+    fullWidth,
+    sectionConfig?.fullWidth,
+    undefined,
+    FALLBACK_NATIVE_TEXTAREA_CONFIG.fullWidth,
+  );
 
   const isInvalid = isFieldInvalid(resolvedStatus);
-  const edgeClass = classNames(
+  const statusColor = resolveFieldStatusColor(resolvedStatus, resolvedColor);
+  const edgeClass = cn(
     NATIVE_INPUT_EDGE_WIDTH_CLASS[resolvedVariant],
-    isInvalid
-      ? NATIVE_INPUT_EDGE_INVALID_CLASS
+    resolvedStatus !== "default"
+      ? NATIVE_INPUT_EDGE_ACCENT_CLASS[statusColor]
       : isFocused
         ? NATIVE_INPUT_EDGE_ACCENT_CLASS[resolvedColor]
         : NATIVE_INPUT_EDGE_NEUTRAL_CLASS[resolvedVariant],
   );
 
   return (
-    <FieldShell
-      label={label}
-      description={description}
-      message={message}
-      status={resolvedStatus}
-      required={resolvedRequired}
-      isLoading={isLoading}>
-      <TextInput
-        {...rest}
-        accessibilityLabel={label}
-        accessibilityHint={description}
-        aria-invalid={isInvalid}
-        editable={!resolvedDisabled}
-        multiline
-        numberOfLines={resolvedRows}
-        textAlignVertical="top"
-        onFocus={(event) => {
-          setIsFocused(true);
-          onFocus?.(event);
-        }}
-        onBlur={(event) => {
-          setIsFocused(false);
-          onBlur?.(event);
-        }}
-        className={classNames(
-          NATIVE_TEXTAREA_BASE_CLASS,
-          NATIVE_TEXTAREA_SIZE_CLASS[resolvedSize],
-          NATIVE_RADIUS_CLASS[resolvedRadius],
-          NATIVE_INPUT_VARIANT_CLASS[resolvedVariant],
-          edgeClass,
-          resolvedDisabled && NATIVE_INPUT_DISABLED_CLASS,
-          className,
-        )}
-        // The rows option is a height here: the platform's field grows with its
-        // content, so the number of rows is what it starts from.
-        style={[
-          style,
-          { minHeight: resolvedRows * NATIVE_TEXTAREA_ROW_HEIGHT },
-        ]}
-      />
-    </FieldShell>
+    <View
+      className={cn(
+        "min-w-0",
+        resolvedFullWidth ? "w-full" : "self-start",
+      )}>
+      <FieldShell
+        label={label}
+        labelAlign={resolvedLabelAlign}
+        description={description}
+        message={message}
+        status={resolvedStatus}
+        required={resolvedRequired}
+        isLoading={isLoading}>
+        <View className="relative w-full">
+          {startContent ? (
+            <View
+              pointerEvents="none"
+              className="absolute left-3 top-3 z-10 flex items-center text-foreground/50">
+              {startContent}
+            </View>
+          ) : null}
+          <TextInput
+            {...rest}
+            accessibilityLabel={label}
+            accessibilityHint={description}
+            aria-invalid={isInvalid}
+            editable={!resolvedDisabled}
+            multiline
+            numberOfLines={resolvedRows}
+            textAlignVertical="top"
+            onChangeText={(value) =>
+              resolveChange({ onChange, onChangeText, onValueChange }, value)
+            }
+            onFocus={(event) => {
+              setIsFocused(true);
+              onFocus?.(event);
+            }}
+            onBlur={(event) => {
+              setIsFocused(false);
+              onBlur?.(event);
+            }}
+            className={cn(
+              NATIVE_TEXTAREA_BASE_CLASS,
+              NATIVE_TEXTAREA_SIZE_CLASS[resolvedSize],
+              NATIVE_RADIUS_CLASS[resolvedRadius],
+              NATIVE_INPUT_VARIANT_CLASS[resolvedVariant],
+              edgeClass,
+              resolvedDisabled && NATIVE_INPUT_DISABLED_CLASS,
+              startContent ? "pl-11" : undefined,
+              endContent ? "pr-11" : undefined,
+              className,
+            )}
+            // The rows option is a height here: the platform's field grows with its
+            // content, so the number of rows is what it starts from.
+            style={[
+              style,
+              { minHeight: resolvedRows * NATIVE_TEXTAREA_ROW_HEIGHT },
+            ]}
+          />
+          {endContent ? (
+            <View className="absolute right-3 top-3 z-10 flex items-center text-foreground/50">
+              {endContent}
+            </View>
+          ) : null}
+        </View>
+      </FieldShell>
+    </View>
   );
 }

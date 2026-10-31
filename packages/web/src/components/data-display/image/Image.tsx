@@ -9,10 +9,6 @@
 "use client";
 
 import {
-  cn,
-  IMAGE_FIT_CLASS,
-  IMAGE_RATIO_CLASS,
-  RADIUS_CLASS,
   type Radius,
   resolveCascade,
   resolveClassKey,
@@ -28,6 +24,9 @@ import {
   useState,
 } from "react";
 import { useAsheeConfig } from "../../../libs/context";
+import { IMAGE_FIT_CLASS, IMAGE_RATIO_CLASS } from "../../../styles/image";
+import { RADIUS_CLASS } from "../../../styles/radius";
+import { cn } from "../../../utils/cn";
 import {
   FALLBACK_IMAGE_CONFIG,
   type ImageConfig,

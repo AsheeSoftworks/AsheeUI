@@ -21,6 +21,14 @@
 
 import {
   type ActionConfig,
+  type PricingFeatureItem,
+  resolveConfigCascade,
+} from "@asheeui/core";
+import type { ReactNode } from "react";
+import type { StyleProp, ViewProps, ViewStyle } from "react-native";
+import { View } from "react-native";
+import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
+import {
   NATIVE_PRICING_BADGE_CLASS,
   NATIVE_PRICING_BADGE_TEXT_CLASS,
   NATIVE_PRICING_BODY_CLASS,
@@ -33,18 +41,12 @@ import {
   NATIVE_PRICING_HIGHLIGHTED_CLASS,
   NATIVE_PRICING_INCLUDED_GLYPH,
   NATIVE_PRICING_PRICE_CLASS,
-  NATIVE_VISUALLY_HIDDEN_CLASS,
-  type PricingFeatureItem,
-  resolveConfigCascade,
-} from "@asheeui/core";
-import type { ReactNode } from "react";
-import type { StyleProp, ViewProps, ViewStyle } from "react-native";
-import { View } from "react-native";
-import { useAsheeNativeConfig } from "../../../provider/AsheeNativeProvider";
-import { classNames } from "../../../utils/class-names";
+} from "../../../styles/pricing-card";
+import { NATIVE_VISUALLY_HIDDEN_CLASS } from "../../../styles/visually-hidden";
+import { cn } from "../../../utils/cn";
 import { Card } from "../../data-display/card/Card";
 import { ActionGroup } from "../../layouts/section-kit/ActionGroup";
-import { Text } from "../../typography/text/Text";
+import { Typography } from "../../typography/text/Text";
 import {
   FALLBACK_NATIVE_PRICING_CARD_CONFIG,
   type NativePricingCardConfig,
@@ -157,7 +159,7 @@ export function PricingCard({
   children,
   ...rest
 }: PricingCardProps) {
-  const config = useAsheeNativeConfig();
+  const config = useAsheeConfig();
 
   const resolved = resolveConfigCascade<
     NativePricingCardConfig,
@@ -179,7 +181,7 @@ export function PricingCard({
       variant={resolved.variant === "elevated" ? "solid" : "bordered"}
       color={isHighlighted ? "primary" : undefined}
       size={resolved.size}
-      className={classNames(
+      className={cn(
         isHighlighted && NATIVE_PRICING_HIGHLIGHTED_CLASS,
         className,
       )}
@@ -188,29 +190,31 @@ export function PricingCard({
       <View className={NATIVE_PRICING_BODY_CLASS}>
         {badge ? (
           <View className={NATIVE_PRICING_BADGE_CLASS}>
-            <Text role="label" className={NATIVE_PRICING_BADGE_TEXT_CLASS}>
+            <Typography
+              role="label"
+              className={NATIVE_PRICING_BADGE_TEXT_CLASS}>
               {badge}
-            </Text>
+            </Typography>
           </View>
         ) : null}
 
         {/* The plan's name heads the card, so a reader can move between plans. */}
-        <Text role="heading-md" accessibilityRole="header">
+        <Typography role="heading-md" accessibilityRole="header">
           {name}
-        </Text>
+        </Typography>
 
         {description ? (
-          <Text role="body-sm" tone="muted">
+          <Typography role="body-sm" tone="muted">
             {description}
-          </Text>
+          </Typography>
         ) : null}
 
         <View className={NATIVE_PRICING_PRICE_CLASS}>
-          <Text role="heading-xl">{price}</Text>
+          <Typography role="heading-xl">{price}</Typography>
           {period ? (
-            <Text role="body-sm" tone="muted">
+            <Typography role="body-sm" tone="muted">
               {period}
-            </Text>
+            </Typography>
           ) : null}
         </View>
 
@@ -223,8 +227,8 @@ export function PricingCard({
                 <View
                   key={feature.id ?? index}
                   className={NATIVE_PRICING_FEATURE_CLASS}>
-                  <Text
-                    className={classNames(
+                  <Typography
+                    className={cn(
                       NATIVE_PRICING_FEATURE_MARKER_CLASS,
                       excluded
                         ? NATIVE_PRICING_FEATURE_EXCLUDED_CLASS
@@ -233,17 +237,19 @@ export function PricingCard({
                     {excluded
                       ? NATIVE_PRICING_EXCLUDED_GLYPH
                       : NATIVE_PRICING_INCLUDED_GLYPH}
-                  </Text>
-                  <Text role="body-sm" tone={excluded ? "muted" : "default"}>
+                  </Typography>
+                  <Typography
+                    role="body-sm"
+                    tone={excluded ? "muted" : "default"}>
                     {feature.label}
-                  </Text>
+                  </Typography>
                   {/* The marker says it in style; the wording says it in words, so the
                       meaning never depends on the drawing alone. */}
                   {excluded ? (
-                    <Text className={NATIVE_VISUALLY_HIDDEN_CLASS}>
+                    <Typography className={NATIVE_VISUALLY_HIDDEN_CLASS}>
                       {" "}
                       (not included)
-                    </Text>
+                    </Typography>
                   ) : null}
                 </View>
               );

@@ -8,9 +8,10 @@
  * `components.field` one option at a time.
  *
  * What an input adds to the family is behaviour rather than configuration — a
- * consumer reads and writes a string — and that part of the contract is stated once
- * in `../../contracts`, including the name of the handler both platforms report a
- * change through.
+ * consumer reads and writes a string — and the handler both platforms report a
+ * change through is a prop of the renderers' own components. `portable.ts` records
+ * the names a shared file may import; this module states what every platform's
+ * component configures.
  *
  * The module registers nothing and imports no renderer. Its side effect is a type
  * augmentation: declaring `input` here is what makes `components.input` a known

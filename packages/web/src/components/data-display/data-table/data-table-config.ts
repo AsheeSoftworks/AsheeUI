@@ -9,11 +9,8 @@
  * and the registration that puts them in the web registry.
  */
 
-import {
-  DATA_TABLE_ROW_COUNT_LABEL,
-  type DataTableConfig,
-  registerComponentDefaults,
-} from "@asheeui/core";
+import { type DataTableConfig, registerComponentDefaults } from "@asheeui/core";
+import { DATA_TABLE_ROW_COUNT_LABEL } from "../../../styles/portable";
 
 export type { DataTableConfig };
 

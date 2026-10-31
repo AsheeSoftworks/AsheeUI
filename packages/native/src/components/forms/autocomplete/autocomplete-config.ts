@@ -35,6 +35,9 @@ export interface NativeAutocompleteConfig
 
 /**
  * The defaults the Autocomplete registers with the native registry.
+ *
+ * @deprecated Use {@link defaultAutocompleteConfig} — the name both renderers publish. The value is
+ * this one: a fallback states the platform's default, and the name is shared.
  */
 export const defaultNativeAutocompleteConfig: NativeAutocompleteConfig = {
   size: "md",
@@ -56,6 +59,9 @@ registerNativeComponentDefaults(
 
 /**
  * The values the field falls back to when no tier provides one.
+ *
+ * @deprecated Use {@link FALLBACK_AUTOCOMPLETE_CONFIG} — the name both renderers publish. The value is
+ * this one: a fallback states the platform's default, and the name is shared.
  */
 export const FALLBACK_NATIVE_AUTOCOMPLETE_CONFIG = {
   size: "md",

@@ -16,15 +16,15 @@ import {
   type Color,
   type FieldSizeKey,
   type FieldStatus,
-  NATIVE_RADIO_GROUP_CLASS,
   type RadioVariant,
   resolveCascade,
 } from "@asheeui/core";
 import type { ReactNode } from "react";
 import { useCallback, useState } from "react";
 import { View, type ViewProps } from "react-native";
-import { useAsheeNativeConfig } from "../../../provider/AsheeNativeProvider";
-import { classNames } from "../../../utils/class-names";
+import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
+import { NATIVE_RADIO_GROUP_CLASS } from "../../../styles/radio";
+import { cn } from "../../../utils/cn";
 import { FieldShell } from "../field/FieldShell";
 import {
   FALLBACK_NATIVE_RADIO_CONFIG,
@@ -128,7 +128,7 @@ export function RadioGroup({
   className,
   ...rest
 }: RadioGroupProps) {
-  const config = useAsheeNativeConfig();
+  const config = useAsheeConfig();
   const sectionConfig = config.components.radio as
     | NativeRadioConfig
     | undefined;
@@ -174,7 +174,7 @@ export function RadioGroup({
           accessibilityRole="radiogroup"
           accessibilityLabel={label}
           accessibilityHint={description}
-          className={classNames(
+          className={cn(
             NATIVE_RADIO_GROUP_CLASS[orientation],
             className,
           )}>

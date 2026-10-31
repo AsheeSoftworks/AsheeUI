@@ -1,12 +1,20 @@
 /**
- * Size and radius type definitions for AsheeUI components.
- * This file defines the common size and radius types used across the component
- * library, along with utility functions for applying radius styles based on
- * component variants and states.
+ * The size and radius vocabulary, and the one rule both renderers apply to it.
  *
  * The scales themselves are declared once, in `../tokens`: the unions below are
  * derived from the `SIZE` and `RADIUS_STEP` token maps, and every `Record` keyed
  * by them fails to compile until it states a newly added token.
+ *
+ * What a platform *draws* with those unions is not here. `RADIUS_CLASS` is the web's and
+ * `NATIVE_RADIUS_CLASS` is the platform's; both moved to the renderer that compiles them
+ * (C2 and C1), because a class string is a decision about pixels the two platforms do not
+ * share.
+ *
+ * `UnderlineRadius` is the one export here that is neither a type nor a drawing, and it stays:
+ * it is a *rule* both renderers have to answer the same way — an underlined control has square
+ * corners — and a rule kept in one renderer is a divergence waiting for the other one to be
+ * written (H18). The web applies it today; the platform adopts it in the batch that gives its
+ * controls a radius, which is a one-line change here rather than a second copy of the exception.
  */
 
 import type { Radius, Size } from "../tokens";
@@ -21,46 +29,6 @@ import type { Variant } from "./";
  * (circular or pill shapes).
  */
 export type { Radius, Size };
-
-/**
- * CSS class mapping for radius values.
- * Each radius option maps to the corresponding Tailwind rounded class.
- */
-export const RADIUS_CLASS: Record<Radius, string> = {
-  none: "rounded-none",
-  xs: "rounded-xs",
-  sm: "rounded-sm",
-  md: "rounded-md",
-  lg: "rounded-lg",
-  xl: "rounded-xl",
-  full: "rounded-full",
-};
-
-/**
- * The native renderer's radius vocabulary.
- *
- * The two platforms compile the same `rounded-*` names, but the scale's first two
- * steps do not line up: the web map follows Tailwind v4, where `rounded-xs` is the
- * smallest corner and `rounded-sm` the next, and the native map keeps the earlier
- * spelling the native renderer has always shipped, where `rounded-sm` is the
- * smallest and `rounded` the next. Native therefore cannot be handed `RADIUS_CLASS`
- * without its corners moving.
- *
- * The map lives here rather than in the component that reads it because it is the
- * platform's vocabulary rather than the component's: every native surface that
- * rounds reads this one map, so a change to the native scale is one edit. Aligning
- * the two vocabularies is a change to how a native surface rounds rather than a
- * detail of this module, so it is a design-language decision and not a refactor.
- */
-export const NATIVE_RADIUS_CLASS: Record<Radius, string> = {
-  none: "rounded-none",
-  xs: "rounded-sm",
-  sm: "rounded",
-  md: "rounded-md",
-  lg: "rounded-lg",
-  xl: "rounded-xl",
-  full: "rounded-full",
-};
 
 /**
  * Determines the appropriate radius to apply based on the component variant.

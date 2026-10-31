@@ -14,17 +14,17 @@
  */
 
 import {
-  RADIUS_CLASS,
-  TYPOGRAPHY_ALIGN_CLASS,
-  TYPOGRAPHY_LEADING_CLASS,
+  TYPOGRAPHY_ALIGN_VALUES,
+  TYPOGRAPHY_LEADING_VALUES,
   TYPOGRAPHY_ROLE_TOKEN,
-  TYPOGRAPHY_SIZE_CLASS,
-  TYPOGRAPHY_TONE_CLASS,
-  TYPOGRAPHY_TRACKING_CLASS,
-  TYPOGRAPHY_WEIGHT_CLASS,
+  TYPOGRAPHY_SIZE_VALUES,
+  TYPOGRAPHY_TONE_VALUES,
+  TYPOGRAPHY_TRACKING_VALUES,
+  TYPOGRAPHY_WEIGHT_VALUES,
   type Variant,
 } from "../shared";
 import { defaultColorConfig } from "../theme";
+import { RADIUS_STEP } from "../tokens";
 import type { Config, ExternalConfig } from "./config";
 
 /** How severe a configuration problem is. */
@@ -63,20 +63,27 @@ const VARIANT_COVERAGE: Record<Variant, true> = {
 
 const TOP_LEVEL_KEYS = Object.keys(CONFIG_KEY_COVERAGE);
 const VARIANTS = Object.keys(VARIANT_COVERAGE) as Variant[];
-const RADII = Object.keys(RADIUS_CLASS);
+const RADII = Object.keys(RADIUS_STEP);
 const TYPOGRAPHY_ROLES = Object.keys(TYPOGRAPHY_ROLE_TOKEN);
 
 /** Keys accepted on a typography role override, beyond the role's own tokens. */
 const ROLE_OVERRIDE_EXTRA_KEYS = ["tone", "align", "className"];
 
-/** Every token map a typography role override may draw from. */
-const ROLE_TOKEN_MAPS: Record<string, Record<string, string>> = {
-  size: TYPOGRAPHY_SIZE_CLASS,
-  weight: TYPOGRAPHY_WEIGHT_CLASS,
-  leading: TYPOGRAPHY_LEADING_CLASS,
-  tracking: TYPOGRAPHY_TRACKING_CLASS,
-  tone: TYPOGRAPHY_TONE_CLASS,
-  align: TYPOGRAPHY_ALIGN_CLASS,
+/**
+ * Every token list a typography role override may draw from.
+ *
+ * The lists are the design language's own (`shared/typography.ts`), not one renderer's class
+ * maps: a value is valid because the framework names it, not because some stylesheet compiled it.
+ * Until C2 the validator read them off the web class maps, which is why it could only run in a
+ * package that held a renderer's strings.
+ */
+const ROLE_TOKEN_VALUES: Record<string, readonly string[]> = {
+  size: TYPOGRAPHY_SIZE_VALUES,
+  weight: TYPOGRAPHY_WEIGHT_VALUES,
+  leading: TYPOGRAPHY_LEADING_VALUES,
+  tracking: TYPOGRAPHY_TRACKING_VALUES,
+  tone: TYPOGRAPHY_TONE_VALUES,
+  align: TYPOGRAPHY_ALIGN_VALUES,
 };
 
 /** Keys accepted on `components.typography`. */
@@ -284,18 +291,8 @@ function checkTypographyConfig(
   }
 
   checkEnum(issues, `${path}.role`, value.role, TYPOGRAPHY_ROLES);
-  checkEnum(
-    issues,
-    `${path}.tone`,
-    value.tone,
-    Object.keys(TYPOGRAPHY_TONE_CLASS),
-  );
-  checkEnum(
-    issues,
-    `${path}.align`,
-    value.align,
-    Object.keys(TYPOGRAPHY_ALIGN_CLASS),
-  );
+  checkEnum(issues, `${path}.tone`, value.tone, TYPOGRAPHY_TONE_VALUES);
+  checkEnum(issues, `${path}.align`, value.align, TYPOGRAPHY_ALIGN_VALUES);
 
   if (value.truncate !== undefined && typeof value.truncate !== "boolean") {
     issues.push({
@@ -343,9 +340,9 @@ function checkTypographyConfig(
 
     for (const [token, tokenValue] of Object.entries(tokens)) {
       checkUnknownKey(issues, rolePath, token, acceptedKeys);
-      const map = ROLE_TOKEN_MAPS[token];
-      if (map) {
-        checkEnum(issues, `${rolePath}.${token}`, tokenValue, Object.keys(map));
+      const values = ROLE_TOKEN_VALUES[token];
+      if (values) {
+        checkEnum(issues, `${rolePath}.${token}`, tokenValue, values);
       }
     }
   }

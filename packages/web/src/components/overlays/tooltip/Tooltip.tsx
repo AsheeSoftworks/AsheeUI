@@ -10,15 +10,9 @@
 
 import {
   type Color,
-  cn,
-  RADIUS_CLASS,
   resolveCascade,
   resolveClassKey,
   resolveRadiusKey,
-  resolveVariantClass,
-  TOOLTIP_FONT_CLASS,
-  TOOLTIP_PADDING_X_CLASS,
-  TOOLTIP_PADDING_Y_CLASS,
   type Variant,
 } from "@asheeui/core";
 import {
@@ -49,6 +43,14 @@ import {
 } from "react";
 import { useAsheeConfig } from "../../../libs/context";
 import { useFloatingZIndex } from "../../../libs/use-floating-z-index";
+import { resolveVariantClass } from "../../../shared/variant";
+import {
+  TOOLTIP_FONT_CLASS,
+  TOOLTIP_PADDING_X_CLASS,
+  TOOLTIP_PADDING_Y_CLASS,
+} from "../../../styles/portable";
+import { RADIUS_CLASS } from "../../../styles/radius";
+import { cn } from "../../../utils/cn";
 import {
   FALLBACK_TOOLTIP_CONFIG,
   type TooltipConfig,

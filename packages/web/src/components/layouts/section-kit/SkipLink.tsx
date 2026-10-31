@@ -10,7 +10,7 @@
  * (https://www.asheeui.com/components/layouts/section) under "The section kit".
  */
 
-import { cn } from "@asheeui/core";
+import { cn } from "../../../utils/cn";
 
 /**
  * Classes of the skip link.

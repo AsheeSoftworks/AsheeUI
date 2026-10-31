@@ -1,25 +1,17 @@
 /**
- * Class name helper for the native package.
+ * The native class helper, under the name this package published before 2.8.
  *
- * The native implementation composes NativeWind class strings the same way the
- * web implementation composes Tailwind ones: the component's base classes first,
- * the resolved classes next, the consumer's own classes last. One helper keeps
- * that order identical everywhere, so a consumer's class always wins.
+ * A rename, not a second helper: `classNames` is the very function `cn` is, so a component
+ * that composes classes through it produces what the merge produces. The module announces
+ * the move once per process and only outside a production bundle.
  */
 
-/**
- * Join class names, dropping the empty ones.
- *
- * @param values - The class names, in the order they should apply.
- * @returns The joined class string.
- *
- * @example
- * ```tsx
- * classNames("flex-row", isDisabled && "opacity-50", className);
- * ```
- */
-export function classNames(
-  ...values: Array<string | false | null | undefined>
-): string {
-  return values.filter(Boolean).join(" ");
-}
+import { deprecatedAlias, deprecateMany } from "@asheeui/core";
+import { cn } from "./cn";
+
+deprecateMany("@asheeui/native/utils", [
+  { from: "classNames", to: "cn", since: "2.8.0" },
+]);
+
+/** Join class names, under the name this package published before 2.8. */
+export const classNames = deprecatedAlias(cn);

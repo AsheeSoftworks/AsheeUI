@@ -23,11 +23,17 @@
  */
 
 import {
-  ACCORDION_CONTENT_SIZE_CLASS,
-  ACCORDION_HEADER_SIZE_CLASS,
   type AccordionItem,
   type AccordionSizeKey,
   type AccordionVariant,
+  type Radius,
+  resolveCascade,
+} from "@asheeui/core";
+import { type ReactNode, useState } from "react";
+import type { StyleProp, ViewProps, ViewStyle } from "react-native";
+import { LayoutAnimation, Pressable, View } from "react-native";
+import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
+import {
   NATIVE_ACCORDION_CONTENT_CLASS,
   NATIVE_ACCORDION_DIVIDER_CLASS,
   NATIVE_ACCORDION_HEADER_CLASS,
@@ -41,16 +47,14 @@ import {
   NATIVE_ACCORDION_TITLE_CLASS,
   NATIVE_ACCORDION_VARIANT_CONTAINER_CLASS,
   NATIVE_ACCORDION_VARIANT_ITEM_CLASS,
-  NATIVE_RADIUS_CLASS,
-  type Radius,
-  resolveCascade,
-} from "@asheeui/core";
-import { type ReactNode, useState } from "react";
-import type { StyleProp, ViewProps, ViewStyle } from "react-native";
-import { LayoutAnimation, Pressable, View } from "react-native";
-import { useAsheeNativeConfig } from "../../../provider/AsheeNativeProvider";
-import { classNames } from "../../../utils/class-names";
-import { Text } from "../../typography/text/Text";
+} from "../../../styles/accordion";
+import {
+  ACCORDION_CONTENT_SIZE_CLASS,
+  ACCORDION_HEADER_SIZE_CLASS,
+} from "../../../styles/portable";
+import { NATIVE_RADIUS_CLASS } from "../../../styles/radius";
+import { cn } from "../../../utils/cn";
+import { Typography } from "../../typography/text/Text";
 import {
   FALLBACK_NATIVE_ACCORDION_CONFIG,
   type NativeAccordionConfig,
@@ -158,7 +162,7 @@ export function Accordion({
   style,
   ...rest
 }: AccordionProps) {
-  const config = useAsheeNativeConfig();
+  const config = useAsheeConfig();
   const sectionConfig = config.components.accordion;
 
   const resolvedSize = resolveCascade<AccordionSizeKey>(
@@ -240,7 +244,7 @@ export function Accordion({
 
   return (
     <View
-      className={classNames(containerVariantClass, className)}
+      className={cn(containerVariantClass, className)}
       style={style}
       {...rest}>
       {items.map((item, index) => {
@@ -253,7 +257,7 @@ export function Accordion({
         return (
           <View
             key={key}
-            className={classNames(
+            className={cn(
               itemVariantClass,
               itemRadiusClass,
               isDivided && NATIVE_ACCORDION_DIVIDER_CLASS,
@@ -282,7 +286,7 @@ export function Accordion({
               // above says the same thing and leaves the trigger reachable; the press is
               // refused in `toggle`.
               onPress={() => toggle(key, item.disabled)}
-              className={classNames(
+              className={cn(
                 NATIVE_ACCORDION_HEADER_CLASS,
                 ACCORDION_HEADER_SIZE_CLASS[resolvedSize],
                 headerClassName,
@@ -294,19 +298,19 @@ export function Accordion({
                   </View>
                 )}
                 <View className={NATIVE_ACCORDION_HEADING_CLASS}>
-                  <Text
+                  <Typography
                     role="label"
                     className={NATIVE_ACCORDION_TITLE_CLASS}
                     numberOfLines={1}>
                     {item.title}
-                  </Text>
+                  </Typography>
                   {item.subtitle && (
-                    <Text
+                    <Typography
                       role="caption"
                       className={NATIVE_ACCORDION_SUBTITLE_CLASS}
                       numberOfLines={1}>
                       {item.subtitle}
-                    </Text>
+                    </Typography>
                   )}
                 </View>
               </View>
@@ -317,19 +321,21 @@ export function Accordion({
                 // announcement.
                 accessibilityElementsHidden
                 importantForAccessibility="no-hide-descendants"
-                className={classNames(
+                className={cn(
                   NATIVE_ACCORDION_INDICATOR_CLASS,
                   isOpen && NATIVE_ACCORDION_INDICATOR_OPEN_CLASS,
                 )}>
                 {expandIcon ?? (
-                  <Text role="label">{NATIVE_ACCORDION_INDICATOR_GLYPH}</Text>
+                  <Typography role="label">
+                    {NATIVE_ACCORDION_INDICATOR_GLYPH}
+                  </Typography>
                 )}
               </View>
             </Pressable>
 
             {isOpen && (
               <View
-                className={classNames(
+                className={cn(
                   NATIVE_ACCORDION_CONTENT_CLASS,
                   ACCORDION_CONTENT_SIZE_CLASS[resolvedSize],
                   contentClassName,
@@ -338,7 +344,7 @@ export function Accordion({
                     one is drawn as the framework's text, which is the same rule the
                     button and the link follow for their labels. */}
                 {typeof item.content === "string" ? (
-                  <Text role="body-md">{item.content}</Text>
+                  <Typography role="body-md">{item.content}</Typography>
                 ) : (
                   item.content
                 )}

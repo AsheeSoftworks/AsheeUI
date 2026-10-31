@@ -17,21 +17,24 @@
  * actions, so the two arrangements agree.
  */
 
+import { type ActionConfig, resolveConfigCascade } from "@asheeui/core";
+import { type ReactNode, useState } from "react";
+import type { StyleProp, ViewProps, ViewStyle } from "react-native";
+import { Pressable, View } from "react-native";
+import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
 import {
-  type ActionConfig,
   NATIVE_ERROR_STATE_DETAIL_BODY_CLASS,
   NATIVE_ERROR_STATE_DETAIL_BODY_TEXT_CLASS,
   NATIVE_ERROR_STATE_DETAIL_CLASS,
   NATIVE_ERROR_STATE_DETAIL_SUMMARY_CLASS,
-  resolveConfigCascade,
-} from "@asheeui/core";
-import { type ReactNode, useState } from "react";
-import type { StyleProp, ViewProps, ViewStyle } from "react-native";
-import { Pressable, View } from "react-native";
-import { useAsheeNativeConfig } from "../../../provider/AsheeNativeProvider";
-import { classNames } from "../../../utils/class-names";
+} from "../../../styles/error-state";
+import { cn } from "../../../utils/cn";
+import {
+  type UnsupportedElementProps,
+  useUnsupportedElementProps,
+} from "../../../utils/unsupported-element-props";
 import { Button } from "../../forms/button/Button";
-import { Text } from "../../typography/text/Text";
+import { Typography } from "../../typography/text/Text";
 import { EmptyState } from "../empty-state/EmptyState";
 import {
   FALLBACK_NATIVE_ERROR_STATE_CONFIG,
@@ -47,7 +50,8 @@ export interface ErrorStateProps
     // platform's own vocabulary. The framework's `role` says how a failure is announced,
     // and the component states that itself, so the platform's is left out rather than
     // colliding with it.
-    Omit<ViewProps, "children" | "style" | "role"> {
+    Omit<ViewProps, "children" | "style" | "role">,
+    UnsupportedElementProps {
   /** What failed, in the reader's terms. */
   title: ReactNode;
 
@@ -138,12 +142,16 @@ export function ErrorState({
   role,
   retryLabel,
   detailLabel,
+  as,
+  titleAs,
   className,
   style,
   children,
   ...rest
 }: ErrorStateProps) {
-  const config = useAsheeNativeConfig();
+  useUnsupportedElementProps("ErrorState", { as, titleAs });
+
+  const config = useAsheeConfig();
 
   const resolved = resolveConfigCascade<
     NativeErrorStateConfig,
@@ -201,18 +209,18 @@ export function ErrorState({
             accessibilityState={{ expanded: isDetailOpen }}
             onPress={() => setIsDetailOpen((isOpen) => !isOpen)}
             className={NATIVE_ERROR_STATE_DETAIL_SUMMARY_CLASS}>
-            <Text role="label">{resolved.detailLabel}</Text>
+            <Typography role="label">{resolved.detailLabel}</Typography>
           </Pressable>
 
           {isDetailOpen && (
             <View className={NATIVE_ERROR_STATE_DETAIL_BODY_CLASS}>
-              <Text
+              <Typography
                 role="caption"
-                className={classNames(
+                className={cn(
                   NATIVE_ERROR_STATE_DETAIL_BODY_TEXT_CLASS,
                 )}>
                 {detail}
-              </Text>
+              </Typography>
             </View>
           )}
         </View>

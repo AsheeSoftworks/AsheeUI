@@ -1,71 +1,244 @@
 /**
- * The AsheeUI umbrella package.
+ * The AsheeUI umbrella package, web branch.
  *
- * One entry point, two renderers. An application installs `asheeui`, imports the
- * components it needs and writes the same import specifiers whether it runs in a browser
- * or on a device; the resolver decides which implementation answers:
+ * GENERATED FILE — do not edit. This entry is written from PORTABLE_API in
+ * packages/core/src/portable.ts by scripts/generate-umbrella.mjs, and the other
+ * branch from the same list, so the two cannot drift: a name that is portable is
+ * exported by both, and a name that is not is exported by neither.
  *
- * - On the web, the resolver reads `main` (and the `import` condition) and reaches the
- *   DOM implementation in `@asheeui/web`.
- * - Under Expo and Metro, it reads the manifest's `react-native` field, then the
- *   `react-native` condition of the exports map, and finally Metro's platform extension
- *   (`.native.ts` next to `.ts`), and reaches the React Native implementation in
- *   `@asheeui/native`.
+ * The bundler reaches this file for the browser. It re-exports the portable surface and
+ * nothing else, which is what keeps a shared file compiling on both platforms. The
+ * names cross a package boundary rather than a runtime check, so an import that is
+ * not on the list is a compile error on the platform that lacks it.
  *
- * The routing is a property of the file name and the manifest rather than a runtime
- * check, which is what keeps a browser bundle free of React Native and a native bundle
- * free of the DOM: this module is the web branch, and it imports no native renderer.
- * The native branch is the sibling `./index.native`, which exports the other renderer
- * and the same helpers.
- *
- * The helpers exported after the renderer belong to neither platform: the class-name
- * composition and the cascade every component resolves through are the parts of the
- * framework an application uses directly, and they come from `@asheeui/core` so both
- * branches offer exactly the same ones.
+ * Edit the list, then run `node scripts/generate-umbrella.mjs` (or
+ * `pnpm --filter asheeui build`, which runs it first).
  */
 
-import type { ExternalConfig } from "@asheeui/web";
+"use client";
+
+import "@asheeui/web";
+
+import type { ExternalConfig } from "@asheeui/core";
+
+/**
+ * The renderer's values: every component, provider and hook, plus the helpers and
+ * constants the renderer owns.
+ */
 
 export {
+  Accordion,
+  Alert,
+  AsheeConfigContext,
+  AsheeUIProvider,
+  AuthLayout,
+  Autocomplete,
+  Avatar,
+  Badge,
+  Button,
+  CTA,
+  Calendar,
+  Card,
+  Carousel,
+  Centered,
+  Chip,
+  Clipboard,
+  Container,
+  CopyButton,
+  DataTable,
+  DocsLayout,
+  Drawer,
+  Dropdown,
+  Dropmenu,
+  EmptyState,
+  ErrorState,
+  FeatureGrid,
+  FileUpload,
+  Footer,
+  Form,
+  Grid,
+  HStack,
+  Hero,
+  Image,
+  Input,
+  Link,
+  LoadingState,
+  MarketingLayout,
+  Marquee,
+  Modal,
+  MultiSelect,
+  Navbar,
+  Page,
+  PageContent,
+  PageFooter,
+  PageHeader,
+  Pagination,
+  PasswordInput,
+  PinInput,
+  PricingCard,
+  Radio,
+  RadioGroup,
+  SearchInput,
+  Section,
+  Sidebar,
+  SidebarCollapseContext,
+  SidebarLayout,
+  Skeleton,
+  Spinner,
+  Split,
+  Stack,
+  Stepper,
+  Switch,
+  Table,
+  Tabs,
+  Testimonials,
+  Text,
+  Textarea,
+  ToastContext,
+  ToastItem,
+  ToastProvider,
+  Tooltip,
+  Typography,
+  VStack,
   cn,
-  mergeObject,
   resolveAnimate,
+  themeController,
+  useAshee,
+  useAsheeConfig,
+  useBreakpoint,
+  usePrefersReducedMotion,
+  useReduceMotion,
+  useSidebarCollapse,
+  useTheme,
+  useToast,
+} from "@asheeui/web";
+
+/**
+ * Core's values: the cascade helpers and the constants both platforms share.
+ */
+
+export {
+  THEME_STORAGE_KEY,
+  mergeObject,
+  resolveBreakpoint,
+  resolveCardVariant,
   resolveCascade,
   resolveClassKey,
   resolveConfigCascade,
+  resolveGridColumns,
   resolveRadiusKey,
 } from "@asheeui/core";
-export * from "@asheeui/web";
 
 /**
- * The renderer's semantic text, under the name both branches answer to.
- *
- * The two renderers call the same component by different names: the DOM package exports
- * `Typography` and the platform package exports `Text`, because each name is the one its own
- * ecosystem uses. That is a real difference between the packages and an artificial one for an
- * application, whose shared components are the whole point of the umbrella: a component that
- * had to write `Typography` on the web and `Text` on a device could not be shared at all,
- * which is what the shared kit met first.
- *
- * So the umbrella states the one name a shared component can rely on. This branch points it at
- * `Typography`; the sibling `./index.native` already receives `Text` from `@asheeui/native`,
- * so the same import compiles and renders on both platforms. Nothing is renamed inside the
- * renderers - `Typography` and `Text` both stay exported, with the same props (role, tone,
- * align, truncate) - which is what makes this an alias rather than an adapter.
+ * Core's types: the vocabulary both platforms name.
  */
-export { Typography as Text } from "@asheeui/web";
 
-/** The props of {@link Text}, which are `Typography`'s on the web. */
-export type { TypographyProps as TextProps } from "@asheeui/web";
+export type {
+  AccordionItem,
+  AccordionSizeKey,
+  AccordionVariant,
+  AsheeColorRegistry,
+  AuthLayoutAlign,
+  AuthLayoutMediaPosition,
+  BreakpointName,
+  BreakpointState,
+  CardImageLoading,
+  CardImagePosition,
+  CardVariant,
+  CarouselItem,
+  CarouselVariant,
+  CenteredAxis,
+  Color,
+  ColorVariant,
+  ColumnDef,
+  ContainerSize,
+  CtaPanel,
+  DrawerConfigOptions,
+  DrawerPlacement,
+  DrawerSize,
+  ErrorStateRole,
+  ExternalConfig,
+  FeatureItem,
+  FooterGroup,
+  FooterLinkItem,
+  FooterVariant,
+  GridAlign,
+  GridColumns,
+  HeroAlign,
+  HeroMediaPosition,
+  ImageFit,
+  ImageRatioKey,
+  LinkSubstitution,
+  LinkUnderline,
+  LinkVariant,
+  MarketingLayoutBackground,
+  MarqueeAxis,
+  MarqueeDirection,
+  MarqueeSpeedPreset,
+  ModalPosition,
+  ModalSizeKey,
+  NavbarAlign,
+  NavbarLink,
+  NavbarLinkItem,
+  NavbarPosition,
+  NavbarVariant,
+  PricingCardVariant,
+  PricingFeatureItem,
+  Radius,
+  SidebarItem,
+  SidebarItems,
+  SidebarLayoutSide,
+  SidebarLayoutWidth,
+  SidebarLinkSubstitution,
+  SidebarSection,
+  SidebarSizeKey,
+  SidebarVariant,
+  Size,
+  Space,
+  SplitAlign,
+  SplitRatio,
+  SplitStackAt,
+  StackAlign,
+  StackDirection,
+  StackJustify,
+  Substitution,
+  TabItem,
+  TableVariant,
+  TabsVariant,
+  TestimonialItem,
+  ThemeName,
+  ThemeSelection,
+  ToastItemData,
+  ToastPlacement,
+  ToastShowOptions,
+  ToastType,
+  TooltipPlacement,
+  TooltipSizeKey,
+  Variant,
+} from "@asheeui/core";
 
 /**
- * The configuration type of the renderer this import resolved to.
- *
- * A configuration file that both platforms read names this type, so one object describes
- * both: on the web it is `@asheeui/web`'s `ExternalConfig`, and the sibling `./index.native`
- * exports `@asheeui/native`'s `AsheeConfig` under the same name — the same axes, the same
- * palette and the same theme, with the options that only the platform has. An option one
- * platform cannot honour is refused by the other, which is the point: the alternative is a
- * key that is accepted and silently does nothing.
+ * The renderer's types: the shapes its own components state.
  */
+
+export type {
+  AsheeUIProviderProps,
+  ClipboardState,
+  FeatureGridLink,
+  FooterLink,
+  PaginationLink,
+  SidebarCollapse,
+  StepperStep,
+  ToastContextType,
+} from "@asheeui/web";
+
+/**
+ * Platform-specific section.
+ *
+ * These are the only hand-written lines in the file. `AsheeConfig` is the
+ * configuration type of the renderer this branch resolves to; both branches spell it
+ * the same so one configuration file can be typed on either platform, and the two
+ * describe the same axes with the options the platform actually has.
+ */
+
 export type AsheeConfig = ExternalConfig;

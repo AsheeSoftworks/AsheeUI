@@ -1,6 +1,6 @@
 {
   "name": "@asheeui/cli",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Scaffold and maintain AsheeUI in an existing React app, with framework detection, provider wiring, and doctor, fix and list commands.",
   "author": "Ashee Softworks <asheesoftworks@gmail.com>",
   "homepage": "https://asheeui.com",
@@ -54,6 +54,7 @@
   ],
   "scripts": {
     "build": "tsdown src/index.ts --format esm --clean",
+    "check-types": "tsc -p tsconfig.json --noEmit",
     "prepublishOnly": "pnpm build",
     "test": "vitest run",
     "test:watch": "vitest"

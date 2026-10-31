@@ -22,6 +22,12 @@
  * have, so both options resolve through the shared contract and change nothing here.
  */
 
+import { resolveConfigCascade } from "@asheeui/core";
+import type { ReactNode } from "react";
+import type { ScrollViewProps, StyleProp, ViewStyle } from "react-native";
+import { ScrollView, View } from "react-native";
+import { Container } from "../../../layout/Container";
+import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
 import {
   NATIVE_DOCS_LAYOUT_ARTICLE_CLASS,
   NATIVE_DOCS_LAYOUT_BODY_CLASS,
@@ -30,15 +36,14 @@ import {
   NATIVE_DOCS_LAYOUT_CONTENT_CLASS,
   NATIVE_DOCS_LAYOUT_NAVIGATION_CLASS,
   NATIVE_DOCS_LAYOUT_REGION_CLASS,
-  resolveConfigCascade,
-} from "@asheeui/core";
-import type { ReactNode } from "react";
-import type { ScrollViewProps, StyleProp, ViewStyle } from "react-native";
-import { ScrollView, View } from "react-native";
-import { Container } from "../../../layout/Container";
-import { useAsheeNativeConfig } from "../../../provider/AsheeNativeProvider";
-import { classNames } from "../../../utils/class-names";
-import { Text } from "../../typography/text/Text";
+} from "../../../styles/docs-layout";
+import { cn } from "../../../utils/cn";
+import {
+  type UnsupportedElementProps,
+  useUnsupportedElementProps,
+} from "../../../utils/unsupported-element-props";
+import { useUnsupportedProps } from "../../../utils/unsupported-prop";
+import { Typography } from "../../typography/text/Text";
 import {
   FALLBACK_NATIVE_DOCS_LAYOUT_CONFIG,
   type NativeDocsLayoutConfig,
@@ -49,7 +54,8 @@ import {
  */
 export interface DocsLayoutProps
   extends NativeDocsLayoutConfig,
-    Omit<ScrollViewProps, "children" | "style"> {
+    Omit<ScrollViewProps, "children" | "style">,
+    UnsupportedElementProps {
   /**
    * The documentation navigation, typically a `Sidebar` of sections and pages.
    */
@@ -120,8 +126,8 @@ export interface DocsLayoutProps
  *   header={<Navbar brand="Ashee" />}
  *   navigation={<Sidebar items={sections} activeKey="layout" />}
  *   toc={<Contents items={headings} />}>
- *   <Text role="heading-lg">Layout</Text>
- *   <Text role="body-md">A page is composed from the layout layer.</Text>
+ *   <Typography role="heading-lg">Layout</Typography>
+ *   <Typography role="body-md">A page is composed from the layout layer.</Typography>
  * </DocsLayout>
  * ```
  *
@@ -140,11 +146,22 @@ export function DocsLayout({
   stickyToc,
   skipLink,
   skipLinkLabel,
+  as,
+  titleAs,
   className,
   style,
   ...rest
 }: DocsLayoutProps) {
-  const config = useAsheeNativeConfig();
+  const config = useAsheeConfig();
+
+  useUnsupportedElementProps("DocsLayout", { as, titleAs });
+
+  useUnsupportedProps("DocsLayout", {
+    stickyToc: {
+      value: stickyToc,
+      substitute: "place the contents outside the scrolling container",
+    },
+  });
 
   const resolved = resolveConfigCascade<
     NativeDocsLayoutConfig,
@@ -164,7 +181,7 @@ export function DocsLayout({
 
   return (
     <ScrollView
-      className={classNames(NATIVE_DOCS_LAYOUT_CLASS, className)}
+      className={cn(NATIVE_DOCS_LAYOUT_CLASS, className)}
       style={style}
       {...rest}>
       <View className={NATIVE_DOCS_LAYOUT_CONTENT_CLASS}>
@@ -174,7 +191,9 @@ export function DocsLayout({
           testID="docs-layout-navigation"
           className={NATIVE_DOCS_LAYOUT_REGION_CLASS}>
           <Container size={NATIVE_DOCS_LAYOUT_BODY_SIZE}>
-            <Text role="heading-sm">{resolved.navigationLabel}</Text>
+            <Typography role="heading-sm">
+              {resolved.navigationLabel}
+            </Typography>
 
             <View className={NATIVE_DOCS_LAYOUT_NAVIGATION_CLASS}>
               {navigation}
@@ -198,7 +217,7 @@ export function DocsLayout({
             testID="docs-layout-toc"
             className={NATIVE_DOCS_LAYOUT_REGION_CLASS}>
             <Container size={NATIVE_DOCS_LAYOUT_BODY_SIZE}>
-              <Text role="heading-sm">{resolved.tocLabel}</Text>
+              <Typography role="heading-sm">{resolved.tocLabel}</Typography>
 
               <View className={NATIVE_DOCS_LAYOUT_NAVIGATION_CLASS}>{toc}</View>
             </Container>

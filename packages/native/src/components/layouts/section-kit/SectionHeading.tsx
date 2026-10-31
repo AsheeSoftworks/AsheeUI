@@ -15,17 +15,20 @@
  */
 
 import {
-  NATIVE_SECTION_BLOCK_HEADING_ALIGN_CLASS,
-  NATIVE_SECTION_BLOCK_HEADING_CLASS,
   SECTION_BLOCK_HEADING_ROLE,
-  SECTION_BLOCK_TEXT_ALIGN,
   type SectionBlockAlign,
   type SectionBlockHeadingSize,
 } from "@asheeui/core";
 import type { ReactNode } from "react";
 import { View } from "react-native";
-import { classNames } from "../../../utils/class-names";
-import { Text } from "../../typography/text/Text";
+import {
+  NATIVE_SECTION_BLOCK_HEADING_ALIGN_CLASS,
+  NATIVE_SECTION_BLOCK_HEADING_CLASS,
+  SECTION_BLOCK_TEXT_ALIGN,
+} from "../../../styles/section-block";
+import { cn } from "../../../utils/cn";
+import { useUnsupportedProps } from "../../../utils/unsupported-prop";
+import { Typography } from "../../typography/text/Text";
 
 /**
  * Heading sizes a section heading can use.
@@ -78,6 +81,17 @@ export interface SectionHeadingProps {
    * Additional classes for the wrapper.
    */
   className?: string;
+
+  /**
+   * The id the web gives the heading so another element can reference it.
+   *
+   * A device has no ids to reference; the heading's meaning is carried by the role.
+   * Accepted so a shared section compiles; warns once and changes nothing.
+   */
+  titleId?: string;
+
+  /** The id of the element a skip control targets, for the same reason as {@link titleId}. */
+  targetId?: string;
 }
 
 /**
@@ -95,8 +109,22 @@ export function SectionHeading({
   description,
   align = "start",
   size = "md",
+  titleId,
+  targetId,
   className,
 }: SectionHeadingProps) {
+  useUnsupportedProps("SectionHeading", {
+    titleId: {
+      value: titleId,
+      substitute: "ids address DOM elements; nothing references them on a device",
+    },
+    targetId: {
+      value: targetId,
+      substitute:
+        "a skip control has no element to target; place the reader with setAccessibilityFocus",
+    },
+  });
+
   if (!eyebrow && !title && !description) {
     return null;
   }
@@ -105,25 +133,25 @@ export function SectionHeading({
 
   return (
     <View
-      className={classNames(
+      className={cn(
         NATIVE_SECTION_BLOCK_HEADING_CLASS,
         NATIVE_SECTION_BLOCK_HEADING_ALIGN_CLASS[align],
         className,
       )}>
       {eyebrow && (
-        <Text role="overline" tone="primary" align={textAlign}>
+        <Typography role="overline" tone="primary" align={textAlign}>
           {eyebrow}
-        </Text>
+        </Typography>
       )}
       {title && (
-        <Text role={SECTION_BLOCK_HEADING_ROLE[size]} align={textAlign}>
+        <Typography role={SECTION_BLOCK_HEADING_ROLE[size]} align={textAlign}>
           {title}
-        </Text>
+        </Typography>
       )}
       {description && (
-        <Text role="body-lg" tone="muted" align={textAlign}>
+        <Typography role="body-lg" tone="muted" align={textAlign}>
           {description}
-        </Text>
+        </Typography>
       )}
     </View>
   );

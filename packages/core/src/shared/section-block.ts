@@ -15,12 +15,18 @@
  * means. They are declared here rather than inside either renderer, and both renderers
  * re-export them, so a configuration on either platform names one type.
  *
- * What the module also states is the arrangement a band's heading and its action row take,
- * as class dictionaries for each renderer, kept side by side so they cannot drift. The web
- * composes its bands from a heading helper and an action group; the platform composes the
- * same two shapes from the same strings. What differs is the technology — the web states
- * responsive alignment with a class variant and the platform states one arrangement,
- * because it resolves the window itself rather than a stylesheet doing it.
+ * What a platform *draws* from that vocabulary is not here. The web's heading and action-row
+ * classes are in `packages/web/src/styles/section-block.ts`, with
+ * `SECTION_BLOCK_HEADING_ELEMENT` beside them because the element a heading renders as is the
+ * document outline's and a device has no outline; the platform's `NATIVE_*` classes are in
+ * `packages/native/src/styles/section-block.ts`, with `SECTION_BLOCK_TEXT_ALIGN` beside them
+ * because that map states which side a `Text` is aligned to and only a `Text` takes it. It moved
+ * to the platform in C3; the web states the same alignment once on the block, as a class.
+ *
+ * `SECTION_BLOCK_HEADING_ROLE` stays, and is the one value here that is neither a type nor a
+ * drawing: which typography role a heading size resolves to is a decision about the shared scale,
+ * so a hero and a call to action cannot disagree about what a `lg` heading looks like — and it is
+ * stated in the roles both renderers read rather than in either one's classes (B15, B16).
  *
  * The module registers nothing and imports no renderer.
  */
@@ -94,27 +100,6 @@ export const SECTION_BLOCK_HEADING_ROLE: Record<
 };
 
 /**
- * The element a band's heading renders as when the band names no element.
- *
- * A band is a *section* of a page, not the page's own title, so every size renders an `h2`:
- * a hero, a call to action, a feature grid and a testimonial wall can then sit on one page
- * without producing a heading per band at level one. Raising the level is the caller's
- * decision — `titleAs` on the heading — and it is the only way a band becomes the document's
- * `h1`; lowering it, for a band nested under an existing section, is the same prop.
- *
- * This is deliberately a map rather than a single constant: if a size ever needs a different
- * default the size is the thing that changes, and every renderer reads the change from here.
- */
-export const SECTION_BLOCK_HEADING_ELEMENT: Record<
-  SectionBlockHeadingSize,
-  SectionBlockHeadingElement
-> = {
-  md: "h2",
-  lg: "h2",
-  xl: "h2",
-};
-
-/**
  * The band options every band shares.
  *
  * A band's configuration extends this and adds what is particular to it — a hero adds where
@@ -146,92 +131,3 @@ export interface SectionBlockOptions {
    */
   contained?: boolean | undefined;
 }
-
-// ─── The heading block ────────────────────────────────────────────────────────
-
-/**
- * The heading block, on the web: an eyebrow, a title and a supporting sentence.
- * The alignment is added from the map below rather than stated here, because it is the one
- * part of the block that changes with the band's own choice.
- */
-export const SECTION_BLOCK_HEADING_CLASS = "flex flex-col gap-2";
-
-/** Alignment of the heading block, on the web. */
-export const SECTION_BLOCK_HEADING_ALIGN_CLASS: Record<
-  SectionBlockAlign,
-  string
-> = {
-  start: "",
-  center: "items-center text-center",
-};
-
-/**
- * Measure of the supporting sentence, on the web.
- * A sentence reads badly past a certain width, so the block states one.
- */
-export const SECTION_BLOCK_DESCRIPTION_CLASS = "max-w-2xl";
-
-/** The measure a centred supporting sentence keeps, on the web. */
-export const SECTION_BLOCK_DESCRIPTION_CENTERED_CLASS = "mx-auto";
-
-/** The heading block, on the platform. */
-export const NATIVE_SECTION_BLOCK_HEADING_CLASS = "w-full flex-col gap-1";
-
-/** Alignment of the heading block, on the platform. */
-export const NATIVE_SECTION_BLOCK_HEADING_ALIGN_CLASS: Record<
-  SectionBlockAlign,
-  string
-> = {
-  start: "items-start",
-  center: "items-center",
-};
-
-/**
- * How a band's text is aligned, per alignment.
- * The web states this with a `text-center` class on the block; the platform states it on
- * each `Text`, so the band passes the value rather than a class.
- */
-export const SECTION_BLOCK_TEXT_ALIGN: Record<
-  SectionBlockAlign,
-  "left" | "center"
-> = {
-  start: "left",
-  center: "center",
-};
-
-// ─── The action row ───────────────────────────────────────────────────────────
-
-/**
- * The row that holds a band's configured actions, on the web.
- * It stacks on a narrow screen and sits in a row from the `sm` breakpoint, which is the
- * arrangement that keeps two actions readable on a phone without a media query.
- */
-export const SECTION_BLOCK_ACTIONS_CLASS =
-  "flex flex-col gap-3 sm:flex-row sm:items-center";
-
-/** Alignment of the action row, on the web. */
-export const SECTION_BLOCK_ACTIONS_ALIGN_CLASS: Record<
-  SectionBlockAlign,
-  string
-> = {
-  start: "",
-  center: "sm:justify-center",
-};
-
-/**
- * The row that holds a band's configured actions, on the platform.
- * The platform has one width, so the row is a wrapping row rather than a column that becomes
- * a row at a breakpoint: two actions wrap onto a second line when their labels need the
- * room, which is what a thumb reads best.
- */
-export const NATIVE_SECTION_BLOCK_ACTIONS_CLASS =
-  "flex-row flex-wrap items-center gap-2";
-
-/** Alignment of the action row, on the platform. */
-export const NATIVE_SECTION_BLOCK_ACTIONS_ALIGN_CLASS: Record<
-  SectionBlockAlign,
-  string
-> = {
-  start: "justify-start",
-  center: "justify-center",
-};

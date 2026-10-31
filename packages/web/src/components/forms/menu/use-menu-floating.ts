@@ -11,7 +11,6 @@
 
 "use client";
 
-import { ASHEE_LAYER } from "@asheeui/core";
 import type { UseInteractionsReturn } from "@floating-ui/react";
 import {
   autoUpdate,
@@ -27,6 +26,7 @@ import {
   useRole,
 } from "@floating-ui/react";
 import { useFloatingZIndex } from "../../../libs/use-floating-z-index";
+import { ASHEE_LAYER } from "../../../utils/stacking";
 
 /**
  * Configuration options for the useMenuFloating hook.

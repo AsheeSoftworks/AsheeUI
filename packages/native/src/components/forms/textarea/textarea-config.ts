@@ -7,9 +7,9 @@
  * the meaning the shared contract gives it: the renderer turns it into the minimum
  * height a platform field starts from.
  *
- * The family axes native does not implement — `labelAlign` and `fullWidth` — are
- * absent deliberately, because a configuration that advertised them would offer a
- * consumer options the platform would ignore.
+ * `labelAlign` and `fullWidth` are part of the section as of B12: the field shell draws
+ * the alignment and the field wrapper states the width, so the options are honoured
+ * rather than advertised.
  */
 
 import type { FieldConfig } from "@asheeui/core";
@@ -18,13 +18,19 @@ import { registerNativeComponentDefaults } from "../../../config/registry";
 /**
  * Configuration options for the native Textarea.
  *
- * `size`, `radius`, `variant`, `color` and `status` carry the meanings the shared field
- * family gives them.
+ * `size`, `radius`, `variant`, `color`, `status`, `labelAlign` and `fullWidth` carry the
+ * meanings the shared field family gives them.
  */
 export interface NativeTextareaConfig
   extends Pick<
     FieldConfig,
-    "size" | "radius" | "variant" | "color" | "status"
+    | "size"
+    | "radius"
+    | "variant"
+    | "color"
+    | "status"
+    | "labelAlign"
+    | "fullWidth"
   > {
   /** How many rows of text are visible at once. Defaults to 4. */
   rows?: number;
@@ -40,6 +46,9 @@ export interface NativeTextareaConfig
  * The defaults the Textarea registers with the native registry.
  * The density is the shared `md` whose proportions the native scale makes touch-sized,
  * and four rows is the height a value of a few sentences reads at without scrolling.
+ *
+ * @deprecated Use {@link defaultTextareaConfig} — the name both renderers publish. The value is
+ * this one: a fallback states the platform's default, and the name is shared.
  */
 export const defaultNativeTextareaConfig: NativeTextareaConfig = {
   size: "md",
@@ -47,6 +56,8 @@ export const defaultNativeTextareaConfig: NativeTextareaConfig = {
   rows: 4,
   isDisabled: false,
   required: false,
+  labelAlign: "left",
+  fullWidth: true,
 };
 
 declare module "../../../config/registry" {
@@ -59,6 +70,9 @@ registerNativeComponentDefaults("textarea", defaultNativeTextareaConfig);
 
 /**
  * The values the field falls back to when no tier provides one.
+ *
+ * @deprecated Use {@link FALLBACK_TEXTAREA_CONFIG} — the name both renderers publish. The value is
+ * this one: a fallback states the platform's default, and the name is shared.
  */
 export const FALLBACK_NATIVE_TEXTAREA_CONFIG = {
   size: "md",
@@ -69,4 +83,6 @@ export const FALLBACK_NATIVE_TEXTAREA_CONFIG = {
   rows: 4,
   isDisabled: false,
   required: false,
+  labelAlign: "left",
+  fullWidth: true,
 } satisfies NativeTextareaConfig;

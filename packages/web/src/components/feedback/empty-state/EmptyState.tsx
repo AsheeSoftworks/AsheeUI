@@ -12,15 +12,7 @@
 "use client";
 
 import type { ActionConfig } from "@asheeui/core";
-import {
-  cn,
-  EMPTY_STATE_CLASS,
-  EMPTY_STATE_ICON_CLASS,
-  EMPTY_STATE_ICON_SIZE_CLASS,
-  EMPTY_STATE_PANEL_CLASS,
-  EMPTY_STATE_SIZE_CLASS,
-  resolveConfigCascade,
-} from "@asheeui/core";
+import { resolveConfigCascade } from "@asheeui/core";
 import {
   type ElementType,
   forwardRef,
@@ -28,6 +20,14 @@ import {
   type ReactNode,
 } from "react";
 import { useAsheeConfig } from "../../../libs/context";
+import {
+  EMPTY_STATE_CLASS,
+  EMPTY_STATE_ICON_CLASS,
+  EMPTY_STATE_ICON_SIZE_CLASS,
+  EMPTY_STATE_PANEL_CLASS,
+  EMPTY_STATE_SIZE_CLASS,
+} from "../../../styles/empty-state";
+import { cn } from "../../../utils/cn";
 import { ActionGroup } from "../../layouts/section-kit/ActionGroup";
 import { SectionHeading } from "../../layouts/section-kit/SectionHeading";
 import {

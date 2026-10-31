@@ -17,19 +17,11 @@
  */
 
 import {
-  type ColorRole,
-  NATIVE_RADIUS_CLASS,
-  NATIVE_SWITCH_CHECKED_CLASS,
-  NATIVE_SWITCH_DISABLED_CLASS,
-  NATIVE_SWITCH_THUMB_CLASS,
-  NATIVE_SWITCH_THUMB_SIZE_CLASS,
-  NATIVE_SWITCH_THUMB_TRAVEL,
-  NATIVE_SWITCH_TRACK_CLASS,
-  NATIVE_SWITCH_TRACK_SIZE_CLASS,
-  NATIVE_SWITCH_UNCHECKED_CLASS,
+  type Color,
   type Radius,
   resolveCascade,
   resolveClassKey,
+  resolvePress,
   type Size,
   type Variant,
 } from "@asheeui/core";
@@ -42,8 +34,19 @@ import {
   type PressableProps,
   View,
 } from "react-native";
-import { useAsheeNativeConfig } from "../../../provider/AsheeNativeProvider";
-import { classNames } from "../../../utils/class-names";
+import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
+import { NATIVE_RADIUS_CLASS } from "../../../styles/radius";
+import {
+  NATIVE_SWITCH_CHECKED_CLASS,
+  NATIVE_SWITCH_DISABLED_CLASS,
+  NATIVE_SWITCH_THUMB_CLASS,
+  NATIVE_SWITCH_THUMB_SIZE_CLASS,
+  NATIVE_SWITCH_THUMB_TRAVEL,
+  NATIVE_SWITCH_TRACK_CLASS,
+  NATIVE_SWITCH_TRACK_SIZE_CLASS,
+  NATIVE_SWITCH_UNCHECKED_CLASS,
+} from "../../../styles/switch";
+import { cn } from "../../../utils/cn";
 import { FieldShell } from "../field/FieldShell";
 import {
   FALLBACK_NATIVE_SWITCH_CONFIG,
@@ -78,6 +81,15 @@ export interface SwitchProps
 
   /** Called with the next state whenever the switch is toggled. */
   onChange?: (checked: boolean) => void;
+
+  /**
+   * Called when the switch is pressed, under the name the web package uses.
+   *
+   * The switch's own press is what toggles it, so this is the press rather than the change:
+   * it runs before `onChange` and says nothing about the next state. `onPress` was already
+   * excluded from the props because the platform's switch owns that act.
+   */
+  onClick?: PressableProps["onClick"];
 
   /**
    * Whether the switch is waiting for something.
@@ -133,6 +145,7 @@ export function Switch({
   checked,
   defaultChecked = false,
   onChange,
+  onClick,
   isDisabled,
   isLoading,
   required,
@@ -144,7 +157,7 @@ export function Switch({
   style,
   ...rest
 }: SwitchProps) {
-  const config = useAsheeNativeConfig();
+  const config = useAsheeConfig();
   const sectionConfig = config.components.switch;
   const [uncontrolledChecked, setUncontrolledChecked] =
     useState(defaultChecked);
@@ -170,7 +183,7 @@ export function Switch({
     undefined,
     FALLBACK_NATIVE_SWITCH_CONFIG.variant,
   );
-  const resolvedColor = resolveCascade<ColorRole>(
+  const resolvedColor = resolveCascade<Color>(
     color,
     sectionConfig?.color,
     config.defaultColor,
@@ -229,18 +242,21 @@ export function Switch({
           busy: Boolean(isLoading),
         }}
         disabled={isUnavailable}
-        onPress={() => {
+        onPress={(pressEvent) => {
           if (isUnavailable) return;
+          // The press is the act and the change is its result, so the press is reported
+          // first; a consumer that passed both names sees the order the web switch has.
+          resolvePress({ onClick }, pressEvent);
           if (!isControlled) setUncontrolledChecked(!isChecked);
           onChange?.(!isChecked);
         }}
-        className={classNames(
+        className={cn(
           "self-start",
           isUnavailable && NATIVE_SWITCH_DISABLED_CLASS,
           className,
         )}>
         <View
-          className={classNames(
+          className={cn(
             NATIVE_SWITCH_TRACK_CLASS,
             NATIVE_SWITCH_TRACK_SIZE_CLASS[resolvedSize],
             radiusClass,
@@ -251,7 +267,7 @@ export function Switch({
           )}
           style={style}>
           <Animated.View
-            className={classNames(
+            className={cn(
               NATIVE_SWITCH_THUMB_CLASS,
               NATIVE_SWITCH_THUMB_SIZE_CLASS[resolvedSize],
               radiusClass,

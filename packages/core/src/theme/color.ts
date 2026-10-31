@@ -158,46 +158,15 @@ export type ExternalColorVariant = Partial<ColorVariant> & {
 export type ExternalColorConfig = Record<string, ExternalColorVariant>;
 
 /**
- * Compile-time guard: a theme map the types have to accept.
- *
- * The constraint is what makes the guard enforce anything. A bare
- * `Map extends ExternalColorConfig ? true : never` alias resolves to `never` when the map is
- * rejected, and an unused alias that resolves to `never` is not a compile error, so it would
- * only look like a check. Instantiating this with a rejected map fails the constraint.
+ * The two properties this file used to assert — "the documented custom-theme declaration compiles"
+ * and "`extends` may name another custom theme" — are type-level checks, and core cannot host one:
+ * they were local aliases with an exported `_ColorConfigGuards` carrier that kept `noUnusedLocals`
+ * quiet, and that carrier was a public name nobody read. C4 deleted all three and moved the
+ * assertions to `packages/web/src/test/custom-theme.test.tsx`, where the configuration vocabulary is
+ * consumed and where `tsc` is part of the gate. Deleting them instead would have removed the only
+ * check that a custom theme with `extends` compiles — `apps/showcase` builds core's source with
+ * `noUnusedLocals`, which is how this file found out that the carrier was load-bearing.
  */
-type AcceptedColorConfig<T extends ExternalColorConfig> = T;
-
-/**
- * Compile-time guard: the documented custom-theme declaration has to compile as written,
- * without a registry entry and without a cast. `ExternalColorConfig` is the half of that
- * declaration this file can state; `defaultTheme` and `setTheme` are checked in
- * `packages/web/src/test/custom-theme.test.tsx`, where those symbols live.
- */
-type _CustomThemeDeclarationCompiles = AcceptedColorConfig<{
-  midnight: { extends: "dark"; background: string; primary: string };
-}>;
-
-/**
- * Compile-time guard: `extends` may name another custom theme, so it cannot be closed over
- * the built-ins. Closing it made `brand: { extends: "midnight" }` fail to compile, and typed
- * code could not reach the resolver's cross-theme support at all.
- */
-type _CustomThemeExtendsDeclaredTheme = AcceptedColorConfig<{
-  brand: { extends: "midnight"; primary: string };
-  midnight: { extends: "dark"; background: string };
-}>;
-
-/**
- * The two guards above, kept in one place a compiler can see.
- *
- * They are checks rather than values, so nothing reads them — and a consumer whose build enables
- * `noUnusedLocals` reports them. Referencing them here keeps the checks alive without inventing a
- * runtime object to carry them. Not part of the API: ignore it.
- */
-export type _ColorConfigGuards = [
-  _CustomThemeDeclarationCompiles,
-  _CustomThemeExtendsDeclaredTheme,
-];
 
 /**
  * The default color configuration for AsheeUI.

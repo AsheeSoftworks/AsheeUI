@@ -19,6 +19,9 @@ export type { AlertConfig } from "@asheeui/core";
 
 /**
  * Configuration options for the native Alert.
+ *
+ * @deprecated Use {@link AlertConfig} from `@asheeui/core` — the name both renderers
+ * publish.
  */
 export type NativeAlertConfig = AlertConfig;
 
@@ -29,6 +32,9 @@ export type NativeAlertConfig = AlertConfig;
  * leaving it out would let the platform's filled default turn every message into a
  * solid block, which is what the card pins its own treatment to avoid. `type` and
  * `radius` follow the component's documented defaults.
+ *
+ * @deprecated Use {@link defaultAlertConfig} — the name both renderers publish. The value is
+ * this one: a fallback states the platform's default, and the name is shared.
  */
 export const defaultNativeAlertConfig: NativeAlertConfig = {
   type: "info",
@@ -46,6 +52,9 @@ registerNativeComponentDefaults("alert", defaultNativeAlertConfig);
 
 /**
  * The values the alert falls back to when no tier provides one.
+ *
+ * @deprecated Use {@link FALLBACK_ALERT_CONFIG} — the name both renderers publish. The value is
+ * this one: a fallback states the platform's default, and the name is shared.
  */
 export const FALLBACK_NATIVE_ALERT_CONFIG = {
   type: "info",

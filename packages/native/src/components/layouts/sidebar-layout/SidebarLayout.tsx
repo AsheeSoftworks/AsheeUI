@@ -17,6 +17,12 @@
  * itself, because a platform screen has no landmark vocabulary but does let a view be named.
  */
 
+import { resolveConfigCascade } from "@asheeui/core";
+import type { ReactNode } from "react";
+import type { StyleProp, ViewProps, ViewStyle } from "react-native";
+import { View } from "react-native";
+import { useBreakpoint } from "../../../hooks/use-breakpoint";
+import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
 import {
   NATIVE_SIDEBAR_LAYOUT_ASIDE_CLASS,
   NATIVE_SIDEBAR_LAYOUT_ASIDE_END_BORDER_CLASS,
@@ -29,14 +35,13 @@ import {
   NATIVE_SIDEBAR_LAYOUT_ROW_CLASS,
   NATIVE_SIDEBAR_LAYOUT_ROW_SPLIT_CLASS,
   NATIVE_SIDEBAR_LAYOUT_WIDTH_CLASS,
-  resolveConfigCascade,
-} from "@asheeui/core";
-import type { ReactNode } from "react";
-import type { StyleProp, ViewProps, ViewStyle } from "react-native";
-import { View } from "react-native";
-import { useBreakpoint } from "../../../hooks/use-breakpoint";
-import { useAsheeNativeConfig } from "../../../provider/AsheeNativeProvider";
-import { classNames } from "../../../utils/class-names";
+} from "../../../styles/sidebar-layout";
+import { cn } from "../../../utils/cn";
+import {
+  type UnsupportedElementProps,
+  useUnsupportedElementProps,
+} from "../../../utils/unsupported-element-props";
+import { useUnsupportedProps } from "../../../utils/unsupported-prop";
 import {
   FALLBACK_NATIVE_SIDEBAR_LAYOUT_CONFIG,
   type NativeSidebarLayoutConfig,
@@ -47,7 +52,8 @@ import {
  */
 export interface SidebarLayoutProps
   extends NativeSidebarLayoutConfig,
-    Omit<ViewProps, "children" | "style"> {
+    Omit<ViewProps, "children" | "style">,
+    UnsupportedElementProps {
   /** The navigation column, typically the framework's native `Sidebar`. */
   sidebar: ReactNode;
 
@@ -121,13 +127,24 @@ export function SidebarLayout({
   side,
   sidebarWidth,
   stickySidebar,
+  as,
+  titleAs,
   className,
   style,
   children,
   ...rest
 }: SidebarLayoutProps) {
-  const config = useAsheeNativeConfig();
+  useUnsupportedElementProps("SidebarLayout", { as, titleAs });
+
+  const config = useAsheeConfig();
   const { isAtLeast } = useBreakpoint();
+
+  useUnsupportedProps("SidebarLayout", {
+    stickySidebar: {
+      value: stickySidebar,
+      substitute: "place the sidebar outside the scrolling container",
+    },
+  });
 
   const resolved = resolveConfigCascade<
     NativeSidebarLayoutConfig,
@@ -145,21 +162,21 @@ export function SidebarLayout({
 
   return (
     <View
-      className={classNames(NATIVE_SIDEBAR_LAYOUT_CLASS, className)}
+      className={cn(NATIVE_SIDEBAR_LAYOUT_CLASS, className)}
       style={style}
       {...rest}>
       {header}
 
       <View
         testID="sidebar-layout-row"
-        className={classNames(
+        className={cn(
           NATIVE_SIDEBAR_LAYOUT_ROW_CLASS,
           sideBySide && NATIVE_SIDEBAR_LAYOUT_ROW_SPLIT_CLASS,
         )}>
         <View
           accessibilityLabel={sidebarLabel}
           testID="sidebar-layout-sidebar"
-          className={classNames(
+          className={cn(
             NATIVE_SIDEBAR_LAYOUT_ASIDE_CLASS,
             atEnd && NATIVE_SIDEBAR_LAYOUT_ASIDE_END_CLASS,
             sideBySide

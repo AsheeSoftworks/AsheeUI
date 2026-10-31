@@ -16,7 +16,7 @@
 import { act, fireEvent, render } from "@testing-library/react-native";
 import type { ReactNode } from "react";
 import { View } from "react-native";
-import { AsheeNativeProvider } from "../../../provider/AsheeNativeProvider";
+import { AsheeUIProvider } from "../../../provider/AsheeUIProvider";
 import { type ToastContextType, useToast } from "./ToastContext";
 import { ToastProvider } from "./ToastProvider";
 
@@ -54,11 +54,11 @@ async function renderApp(
   toastProps?: Record<string, unknown>,
 ) {
   return render(
-    <AsheeNativeProvider config={config}>
+    <AsheeUIProvider config={config}>
       <ToastProvider animated={false} {...toastProps}>
         {children}
       </ToastProvider>
-    </AsheeNativeProvider>,
+    </AsheeUIProvider>,
   );
 }
 
@@ -204,9 +204,9 @@ describe("Native Toast", () => {
 
   it("shows nothing rather than failing when a screen has no provider above it", async () => {
     const view = await render(
-      <AsheeNativeProvider>
+      <AsheeUIProvider>
         <Probe />
-      </AsheeNativeProvider>,
+      </AsheeUIProvider>,
     );
 
     expect(api.toasts).toEqual([]);

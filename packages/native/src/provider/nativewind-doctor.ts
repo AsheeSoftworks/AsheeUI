@@ -27,7 +27,7 @@
  *
  * The check is deliberately quiet when everything works: silence in a correct
  * application, one actionable warning in a broken one. It runs once per process, from
- * `AsheeNativeProvider`'s first mount, and only when `NODE_ENV` is `development`, which
+ * `AsheeUIProvider`'s first mount, and only when `NODE_ENV` is `development`, which
  * is what a Metro development bundle states — so a production bundle, a test run and a
  * Node script all carry none of it.
  */

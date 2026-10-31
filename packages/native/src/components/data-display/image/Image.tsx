@@ -18,15 +18,9 @@
  */
 
 import {
+  type ImageConfig,
   type ImageFit,
   type ImageRatioKey,
-  NATIVE_IMAGE_ASPECT_RATIO,
-  NATIVE_IMAGE_FRAME_CLASS,
-  NATIVE_IMAGE_PICTURE_CLASS,
-  NATIVE_IMAGE_PICTURE_FILL_CLASS,
-  NATIVE_IMAGE_RESIZE_MODE,
-  NATIVE_IMAGE_SKELETON_CLASS,
-  NATIVE_RADIUS_CLASS,
   type Radius,
   resolveCascade,
   resolveClassKey,
@@ -40,8 +34,18 @@ import {
   type ViewProps,
   type ViewStyle,
 } from "react-native";
-import { useAsheeNativeConfig } from "../../../provider/AsheeNativeProvider";
-import { classNames } from "../../../utils/class-names";
+import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
+import {
+  NATIVE_IMAGE_ASPECT_RATIO,
+  NATIVE_IMAGE_FRAME_CLASS,
+  NATIVE_IMAGE_PICTURE_CLASS,
+  NATIVE_IMAGE_PICTURE_FILL_CLASS,
+  NATIVE_IMAGE_RESIZE_MODE,
+  NATIVE_IMAGE_SKELETON_CLASS,
+} from "../../../styles/image";
+import { NATIVE_RADIUS_CLASS } from "../../../styles/radius";
+import { cn } from "../../../utils/cn";
+import { useUnsupportedProps } from "../../../utils/unsupported-prop";
 import { Skeleton } from "../../feedback/skeleton/Skeleton";
 import {
   FALLBACK_NATIVE_IMAGE_CONFIG,
@@ -85,6 +89,16 @@ export interface ImageProps
 
   /** Called once the picture has failed to load, and every fallback has too. */
   onError?: (error: unknown) => void;
+
+  /**
+   * The browser's loading strategy.
+   *
+   * Accepted so a shared picture compiles, and a no-op on the platform: a native picture
+   * is fetched when its view mounts, and a list mounts a row when it scrolls into view,
+   * which is the laziness the option asks for stated by the platform instead. B17 makes
+   * the no-op say so; this batch only accepts it.
+   */
+  loading?: ImageConfig["loading"];
 
   /** Extra classes appended last, which is where a consumer sizes the frame. */
   className?: string;
@@ -141,12 +155,22 @@ export function Image({
   componentProps,
   onLoad,
   onError,
+  loading,
   className,
   style,
   ...rest
 }: ImageProps) {
-  const config = useAsheeNativeConfig();
+  const config = useAsheeConfig();
   const sectionConfig = config.components.image;
+
+  // The option is accepted and read nowhere: see the prop's documentation.
+  useUnsupportedProps("Image", {
+    loading: {
+      value: loading,
+      substitute:
+        "a native picture is fetched when its view mounts; a list mounts a row as it scrolls into view",
+    },
+  });
 
   const [currentSrc, setCurrentSrc] = useState(src);
   const [isLoaded, setIsLoaded] = useState(false);
@@ -188,7 +212,7 @@ export function Image({
   // The placeholder must not then animate forever for a picture that can never arrive.
   const hasSource = isValidSrc(currentSrc);
 
-  const frameClasses = classNames(
+  const frameClasses = cn(
     NATIVE_IMAGE_FRAME_CLASS,
     resolveClassKey(
       resolvedRadius,

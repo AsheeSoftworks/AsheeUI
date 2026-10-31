@@ -20,6 +20,9 @@ export type {
 
 /**
  * Configuration options for the native Marquee.
+ *
+ * @deprecated Use {@link MarqueeConfig} from `@asheeui/core` — the name both renderers
+ * publish.
  */
 export type NativeMarqueeConfig = MarqueeConfig;
 
@@ -30,6 +33,9 @@ export type NativeMarqueeConfig = MarqueeConfig;
  * speed, a gap and a half apart, and it moves unless something says otherwise. The platform
  * adds nothing to them, because what a marquee is has nothing to do with the pointer: a
  * device shows the same band of content the browser shows.
+ *
+ * @deprecated Use {@link defaultMarqueeConfig} — the name both renderers publish. The value is
+ * this one: a fallback states the platform's default, and the name is shared.
  */
 export const defaultNativeMarqueeConfig: NativeMarqueeConfig = {
   axis: "x",
@@ -58,6 +64,9 @@ registerNativeComponentDefaults("marquee", defaultNativeMarqueeConfig);
  * {@link defaultNativeMarqueeConfig}: a fallback that differed from the value registered one
  * tier up would make an option change meaning when the section it was configured in happened
  * not to resolve.
+ *
+ * @deprecated Use {@link FALLBACK_MARQUEE_CONFIG} — the name both renderers publish. The value is
+ * this one: a fallback states the platform's default, and the name is shared.
  */
 export const FALLBACK_NATIVE_MARQUEE_CONFIG = {
   axis: "x",

@@ -11,13 +11,10 @@
  * says out loud that it is being rendered without the provider, because that is a setup mistake.
  */
 
-import {
-  type ReactElement,
-  type RenderResult,
-  render,
-} from "@testing-library/react-native";
+import { type RenderResult, render } from "@testing-library/react-native";
+import type { ReactElement } from "react";
 import { Dimensions, Text, View } from "react-native";
-import { AsheeNativeProvider } from "../../../provider/AsheeNativeProvider";
+import { AsheeUIProvider } from "../../../provider/AsheeUIProvider";
 import { SidebarLayout } from "./SidebarLayout";
 
 /**
@@ -28,9 +25,7 @@ import { SidebarLayout } from "./SidebarLayout";
  * @returns The rendered tree and its queries.
  */
 async function renderShell(ui: ReactElement, config?: object) {
-  return render(
-    <AsheeNativeProvider config={config}>{ui}</AsheeNativeProvider>,
-  );
+  return render(<AsheeUIProvider config={config}>{ui}</AsheeUIProvider>);
 }
 
 /**
@@ -226,7 +221,7 @@ describe("Native SidebarLayout", () => {
     const silence = jest.spyOn(console, "error").mockImplementation(() => {});
 
     await expect(render(<SidebarLayout sidebar={<View />} />)).rejects.toThrow(
-      /AsheeNativeProvider/,
+      /AsheeUIProvider/,
     );
 
     silence.mockRestore();

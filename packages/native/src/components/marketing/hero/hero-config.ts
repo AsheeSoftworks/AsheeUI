@@ -15,6 +15,9 @@ export type { HeroAlign, HeroConfig, HeroMediaPosition } from "@asheeui/core";
 
 /**
  * Configuration options for the native Hero.
+ *
+ * @deprecated Use {@link HeroConfig} from `@asheeui/core` — the name both renderers
+ * publish.
  */
 export type NativeHeroConfig = HeroConfig;
 
@@ -24,6 +27,9 @@ export type NativeHeroConfig = HeroConfig;
  * They are the web's own values, because a leading statement is the same statement
  * on either platform: the differences a hero has here are in what it draws, not in
  * what it defaults to.
+ *
+ * @deprecated Use {@link defaultHeroConfig} — the name both renderers publish. The value is
+ * this one: a fallback states the platform's default, and the name is shared.
  */
 export const defaultNativeHeroConfig: NativeHeroConfig = {
   align: "start",
@@ -44,6 +50,9 @@ registerNativeComponentDefaults("hero", defaultNativeHeroConfig);
 
 /**
  * The values the hero falls back to when no tier provides one.
+ *
+ * @deprecated Use {@link FALLBACK_HERO_CONFIG} — the name both renderers publish. The value is
+ * this one: a fallback states the platform's default, and the name is shared.
  */
 export const FALLBACK_NATIVE_HERO_CONFIG = {
   align: "start",

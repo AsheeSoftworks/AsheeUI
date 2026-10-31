@@ -1,73 +1,21 @@
 /**
  * Section component configuration for AsheeUI.
- * This file defines the configuration type and defaults for the Section layout
- * component: vertical rhythm, background treatment, optional container and
- * divider. It registers the default configuration with the component registry
- * and provides fallback values for the cascade resolution system.
+ *
+ * The *shape* of `components.section` is `@asheeui/core`'s — the vertical rhythm, the background
+ * treatment, the optional container and the divider are declared once, for both platforms, in
+ * `packages/core/src/components/layouts/section/section-config.ts`. This module keeps what is the
+ * web's: the defaults it registers and the hard fallbacks it states.
  */
 
-import type { SectionBackground } from "@asheeui/core";
-import { registerComponentDefaults, type Space } from "@asheeui/core";
-import type { ContainerSize } from "../container/container-config";
+import type { SectionConfig } from "@asheeui/core";
+import { registerComponentDefaults } from "@asheeui/core";
 
 /**
- * Background treatment of a section.
- *
- * The three treatments are shared vocabulary rather than a web idea: `@asheeui/core`
- * declares them, so a `Section`, a hero and a call to action name one type on both
- * platforms. This module re-exports the type so code that already reaches for it here keeps
- * working.
- *
- * - `none`: transparent, so the page background shows through.
- * - `muted`: a subdued band, used to separate one section from the next.
- * - `tinted`: a faint accent band, used to emphasise a section.
+ * The shared background vocabulary, re-exported so code that already reaches for it here keeps
+ * working. The type itself is declared in `@asheeui/core`, so a `Section`, a hero and a call to
+ * action name one type on both platforms.
  */
-export type { SectionBackground };
-
-/**
- * Theme configuration options for the Section component.
- *
- * Set under `components.section` in the AsheeUI config. Values feed the
- * component-level fallback tier of the theme cascade.
- */
-export interface SectionConfig {
-  /**
-   * Vertical padding of the section.
-   *
-   * @default "lg"
-   */
-  spacing?: Space | undefined;
-
-  /**
-   * Background treatment.
-   *
-   * @default "none"
-   */
-  background?: SectionBackground | undefined;
-
-  /**
-   * Whether the section wraps its children in a {@link Container}.
-   * Off by default, so a section can be composed with any other layout
-   * element. On, the section owns the maximum width and the gutter.
-   *
-   * @default false
-   */
-  contained?: boolean | undefined;
-
-  /**
-   * Maximum content width used when the section is contained.
-   *
-   * @default "lg"
-   */
-  containerSize?: ContainerSize | undefined;
-
-  /**
-   * Whether to draw a separator line above the section.
-   *
-   * @default false
-   */
-  divider?: boolean | undefined;
-}
+export type { SectionBackground, SectionConfig } from "@asheeui/core";
 
 /**
  * Default config values registered for the Section component.
@@ -79,12 +27,6 @@ export const defaultSectionConfig: SectionConfig = {
   containerSize: "lg",
   divider: false,
 };
-
-declare module "@asheeui/core" {
-  interface ComponentTypeConfigRegistry {
-    section: SectionConfig;
-  }
-}
 
 registerComponentDefaults("section", defaultSectionConfig);
 

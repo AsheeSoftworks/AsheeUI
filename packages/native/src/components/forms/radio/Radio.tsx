@@ -22,21 +22,11 @@
 import {
   type Color,
   type FieldStatus,
-  NATIVE_RADIO_CARD_CLASS,
-  NATIVE_RADIO_COLOR_CLASS,
-  NATIVE_RADIO_DISABLED_CLASS,
-  NATIVE_RADIO_FONT_CLASS,
-  NATIVE_RADIO_GAP_CLASS,
-  NATIVE_RADIO_INNER_SIZE_CLASS,
-  NATIVE_RADIO_OUTER_BASE_CLASS,
-  NATIVE_RADIO_OUTER_SIZE_CLASS,
-  NATIVE_RADIO_ROW_CLASS,
-  NATIVE_RADIO_STATUS_BORDER_CLASS,
-  NATIVE_RADIUS_CLASS,
   type RadioVariant,
   type Radius,
   resolveCascade,
   resolveClassKey,
+  resolvePress,
   type Size,
 } from "@asheeui/core";
 import { useEffect, useRef, useState } from "react";
@@ -48,9 +38,22 @@ import {
   type PressableProps,
   View,
 } from "react-native";
-import { useAsheeNativeConfig } from "../../../provider/AsheeNativeProvider";
-import { classNames } from "../../../utils/class-names";
-import { Text } from "../../typography/text/Text";
+import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
+import {
+  NATIVE_RADIO_CARD_CLASS,
+  NATIVE_RADIO_COLOR_CLASS,
+  NATIVE_RADIO_DISABLED_CLASS,
+  NATIVE_RADIO_FONT_CLASS,
+  NATIVE_RADIO_GAP_CLASS,
+  NATIVE_RADIO_INNER_SIZE_CLASS,
+  NATIVE_RADIO_OUTER_BASE_CLASS,
+  NATIVE_RADIO_OUTER_SIZE_CLASS,
+  NATIVE_RADIO_ROW_CLASS,
+  NATIVE_RADIO_STATUS_BORDER_CLASS,
+} from "../../../styles/radio";
+import { NATIVE_RADIUS_CLASS } from "../../../styles/radius";
+import { cn } from "../../../utils/cn";
+import { Typography } from "../../typography/text/Text";
 import {
   FALLBACK_NATIVE_RADIO_CONFIG,
   type NativeRadioConfig,
@@ -93,6 +96,15 @@ export interface RadioProps
   /** Called with the state and the value when the radio is picked. */
   onChange?: (checked: boolean, value: string) => void;
 
+  /**
+   * Called when the option is pressed, under the name the web package uses.
+   *
+   * The radio's own press is what picks it, so this is the press rather than the change: it
+   * runs before `onChange` and says nothing about the selection. `onPress` was already
+   * excluded from the props because the platform's choice owns that act.
+   */
+  onClick?: PressableProps["onClick"];
+
   /** Extra classes appended last, so a consumer's own classes win. */
   className?: string;
 
@@ -133,6 +145,7 @@ export function Radio({
   checked,
   defaultChecked = false,
   onChange,
+  onClick,
   isDisabled,
   size,
   radius,
@@ -143,7 +156,7 @@ export function Radio({
   style,
   ...rest
 }: RadioProps) {
-  const config = useAsheeNativeConfig();
+  const config = useAsheeConfig();
   const sectionConfig = config.components.radio;
   const group = useRadioGroupContext();
   const [uncontrolledChecked, setUncontrolledChecked] =
@@ -226,8 +239,11 @@ export function Radio({
       accessibilityHint={description}
       accessibilityState={{ checked: isChecked, disabled: resolvedDisabled }}
       disabled={resolvedDisabled}
-      onPress={() => {
+      onPress={(pressEvent) => {
         if (resolvedDisabled) return;
+        // The press is the act and the change is its result, so the press is reported
+        // first; a consumer that passed both names sees the order the web radio has.
+        resolvePress({ onClick }, pressEvent);
         if (group) {
           group.onChange?.(value);
         } else if (checked === undefined) {
@@ -235,28 +251,28 @@ export function Radio({
         }
         onChange?.(true, value);
       }}
-      className={classNames(
+      className={cn(
         NATIVE_RADIO_ROW_CLASS,
         NATIVE_RADIO_GAP_CLASS[resolvedSize],
         isCard && NATIVE_RADIO_CARD_CLASS,
         isCard && cardRadiusClass,
         isCard &&
           (isChecked
-            ? classNames(colorClasses.border, colorClasses.cardBg)
+            ? cn(colorClasses.border, colorClasses.cardBg)
             : statusBorder),
         resolvedDisabled && NATIVE_RADIO_DISABLED_CLASS,
         className,
       )}
       style={style}>
       <View
-        className={classNames(
+        className={cn(
           NATIVE_RADIO_OUTER_BASE_CLASS,
           NATIVE_RADIO_OUTER_SIZE_CLASS[resolvedSize],
           radiusClass,
           isChecked ? colorClasses.border : statusBorder,
         )}>
         <Animated.View
-          className={classNames(
+          className={cn(
             NATIVE_RADIO_INNER_SIZE_CLASS[resolvedSize],
             radiusClass,
             colorClasses.bg,
@@ -267,19 +283,19 @@ export function Radio({
       {(label || description) && (
         <View className="flex-col min-w-0">
           {label && (
-            <Text
+            <Typography
               role="label"
               className={NATIVE_RADIO_FONT_CLASS[resolvedSize]}>
               {label}
-            </Text>
+            </Typography>
           )}
           {description && (
-            <Text
+            <Typography
               role="body-sm"
               tone="muted"
               className={NATIVE_RADIO_FONT_CLASS[resolvedSize]}>
               {description}
-            </Text>
+            </Typography>
           )}
         </View>
       )}

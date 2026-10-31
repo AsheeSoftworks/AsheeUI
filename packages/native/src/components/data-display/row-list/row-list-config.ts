@@ -9,12 +9,9 @@
  * cascade, so a configuration written for a browser describes a device as well.
  */
 
-import {
-  DATA_TABLE_ROW_COUNT_LABEL,
-  type DataTableConfig,
-  type TableConfig,
-} from "@asheeui/core";
+import type { DataTableConfig, TableConfig } from "@asheeui/core";
 import { registerNativeComponentDefaults } from "../../../config/registry";
+import { DATA_TABLE_ROW_COUNT_LABEL } from "../../../styles/portable";
 
 export type {
   ColumnDef,
@@ -25,11 +22,17 @@ export type {
 
 /**
  * Configuration options for the native rendering of the table contract.
+ *
+ * @deprecated Use {@link TableConfig} from `@asheeui/core` — the name both renderers
+ * publish.
  */
 export type NativeTableConfig = TableConfig;
 
 /**
  * Configuration options for the native rendering of the data-table contract.
+ *
+ * @deprecated Use {@link DataTableConfig} from `@asheeui/core` — the name both renderers
+ * publish.
  */
 export type NativeDataTableConfig = DataTableConfig;
 
@@ -38,6 +41,9 @@ export type NativeDataTableConfig = DataTableConfig;
  *
  * They are the web's own values: rows at the framework's middle density, on the surface the
  * framework's rows are drawn on.
+ *
+ * @deprecated Use {@link defaultTableConfig} — the name both renderers publish. The value is
+ * this one: a fallback states the platform's default, and the name is shared.
  */
 export const defaultNativeTableConfig: NativeTableConfig = {
   size: "md",
@@ -50,6 +56,9 @@ export const defaultNativeTableConfig: NativeTableConfig = {
  * They are the web's own values. A search control appears only when the list is given
  * something to search, exactly as it does on the web, because a field that cannot search is
  * a control that does nothing.
+ *
+ * @deprecated Use {@link defaultDataTableConfig} — the name both renderers publish. The value is
+ * this one: a fallback states the platform's default, and the name is shared.
  */
 export const defaultNativeDataTableConfig: NativeDataTableConfig = {
   searchable: true,
@@ -75,6 +84,9 @@ registerNativeComponentDefaults("datatable", defaultNativeDataTableConfig);
 
 /**
  * The table values RowList falls back to when no tier provides one.
+ *
+ * @deprecated Use {@link FALLBACK_TABLE_CONFIG} — the name both renderers publish. The value is
+ * this one: a fallback states the platform's default, and the name is shared.
  */
 export const FALLBACK_NATIVE_TABLE_CONFIG = {
   size: "md",
@@ -89,6 +101,9 @@ export const FALLBACK_NATIVE_TABLE_CONFIG = {
 
 /**
  * The data-table values RowList falls back to when no tier provides one.
+ *
+ * @deprecated Use {@link FALLBACK_DATA_TABLE_CONFIG} — the name both renderers publish. The value is
+ * this one: a fallback states the platform's default, and the name is shared.
  */
 export const FALLBACK_NATIVE_DATA_TABLE_CONFIG = {
   searchable: true,

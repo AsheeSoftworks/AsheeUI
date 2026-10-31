@@ -104,6 +104,12 @@ describe("public entry point", () => {
     }
   });
 
+  it("publishes both names for the configuration hook, as one function", () => {
+    // A shared component writes `useAshee()`; the longer name stays because it is what the
+    // documentation and a great many imports use. They are the same reference on both renderers.
+    expect(AsheeUI.useAshee).toBe(AsheeUI.useAsheeConfig);
+  });
+
   it("keeps internal helpers and the configuration-only module out of the public surface", () => {
     expect(AsheeUI).not.toHaveProperty("FieldShell");
     expect(AsheeUI).not.toHaveProperty("Menu");
@@ -126,13 +132,14 @@ describe("public entry point", () => {
     expect(AsheeUI).not.toHaveProperty("describeRejectedFiles");
   });
 
-  it("keeps every component's class maps out of the public surface", () => {
-    // Styles are the component's own business: a consumer restyles through the
-    // cascade, `className` or configuration, never by importing a class string.
-    expect(AsheeUI).not.toHaveProperty("CENTERED_AXIS_CLASS");
-    expect(AsheeUI).not.toHaveProperty("SPLIT_STACK_CLASS");
-    expect(AsheeUI).not.toHaveProperty("DATA_TABLE_CLASS");
-    expect(AsheeUI).not.toHaveProperty("STEPPER_LIST_CLASS");
+  it("publishes the renderer's class dictionaries, which it now owns", () => {
+    // C2 moved the web class strings out of `@asheeui/core` and into this package, because a
+    // class string is a decision about pixels that only one renderer compiles. A consumer that
+    // imported `BUTTON_SIZE_CLASS` from core imports it from here; the names did not change.
+    expect(AsheeUI).toHaveProperty("BUTTON_SIZE_CLASS");
+    expect(AsheeUI).toHaveProperty("TABLE_CELL_PADDING_Y_CLASS");
+    expect(AsheeUI).toHaveProperty("MODAL_MAX_WIDTH_CLASS");
+    expect(AsheeUI).toHaveProperty("STEPPER_MARKER_CLASS");
   });
 
   it("keeps the section kit and the Puck registry off the main entry point", () => {

@@ -18,6 +18,15 @@
  */
 
 import {
+  resolveCascade,
+  type Size,
+  type StepperOrientation,
+  type StepperStepState,
+} from "@asheeui/core";
+import { Fragment } from "react";
+import { Pressable, View } from "react-native";
+import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
+import {
   NATIVE_STEPPER_CONNECTOR_CLASS,
   NATIVE_STEPPER_DESCRIPTION_CLASS,
   NATIVE_STEPPER_ITEM_CLASS,
@@ -28,16 +37,9 @@ import {
   NATIVE_STEPPER_MARKER_STATE_CLASS,
   NATIVE_STEPPER_MARKER_TEXT_CLASS,
   NATIVE_STEPPER_TEXT_CLASS,
-  resolveCascade,
-  type Size,
-  type StepperOrientation,
-  type StepperStepState,
-} from "@asheeui/core";
-import { Fragment } from "react";
-import { Pressable, View } from "react-native";
-import { useAsheeNativeConfig } from "../../../provider/AsheeNativeProvider";
-import { classNames } from "../../../utils/class-names";
-import { Text } from "../../typography/text/Text";
+} from "../../../styles/stepper";
+import { cn } from "../../../utils/cn";
+import { Typography } from "../../typography/text/Text";
 import {
   FALLBACK_NATIVE_STEPPER_CONFIG,
   type NativeStepperConfig,
@@ -136,7 +138,7 @@ export function Stepper({
   className,
   testID,
 }: StepperProps) {
-  const config = useAsheeNativeConfig();
+  const config = useAsheeConfig();
   const sectionConfig = config.components.stepper;
 
   const resolvedOrientation = resolveCascade<StepperOrientation>(
@@ -161,7 +163,7 @@ export function Stepper({
   return (
     <View
       accessibilityLabel={label}
-      className={classNames(
+      className={cn(
         NATIVE_STEPPER_LIST_CLASS[resolvedOrientation],
         className,
       )}>
@@ -169,19 +171,19 @@ export function Stepper({
         const state = stepState(index, currentStep);
         const marker = (
           <View
-            className={classNames(
+            className={cn(
               NATIVE_STEPPER_MARKER_CLASS,
               NATIVE_STEPPER_MARKER_SIZE_CLASS[resolvedSize],
               NATIVE_STEPPER_MARKER_STATE_CLASS[state],
             )}>
-            <Text
+            <Typography
               role="label"
-              className={classNames(
+              className={cn(
                 NATIVE_STEPPER_MARKER_FONT_CLASS[resolvedSize],
                 NATIVE_STEPPER_MARKER_TEXT_CLASS[state],
               )}>
               {state === "complete" ? "✓" : String(index + 1)}
-            </Text>
+            </Typography>
           </View>
         );
 
@@ -189,16 +191,18 @@ export function Stepper({
           <View className={NATIVE_STEPPER_TEXT_CLASS}>
             {/* The label is what names the step, so it takes the role the density names and
                 scales with the marker beside it; `md` resolves to the size it always had. */}
-            <Text
+            <Typography
               role={NATIVE_STEPPER_LABEL_ROLE[resolvedSize]}
               tone={NATIVE_STEPPER_LABEL_TONE[state]}
               className={NATIVE_STEPPER_LABEL_WEIGHT_CLASS}>
               {step.label}
-            </Text>
+            </Typography>
             {resolvedShowDescriptions && step.description && (
-              <Text role="body-sm" className={NATIVE_STEPPER_DESCRIPTION_CLASS}>
+              <Typography
+                role="body-sm"
+                className={NATIVE_STEPPER_DESCRIPTION_CLASS}>
                 {step.description}
-              </Text>
+              </Typography>
             )}
           </View>
         );

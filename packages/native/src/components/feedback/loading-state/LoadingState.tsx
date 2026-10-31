@@ -16,20 +16,24 @@
  * followed by the same sentence.
  */
 
-import {
-  NATIVE_ANNOUNCEMENT_LIVE_REGION,
-  NATIVE_LOADING_STATE_CLASS,
-  NATIVE_LOADING_STATE_PANEL_CLASS,
-  NATIVE_LOADING_STATE_SIZE_CLASS,
-  resolveConfigCascade,
-  SPACE_MIN_HEIGHT_CLASS,
-} from "@asheeui/core";
+import { resolveConfigCascade } from "@asheeui/core";
 import type { ReactNode } from "react";
 import type { StyleProp, ViewProps, ViewStyle } from "react-native";
 import { View } from "react-native";
-import { useAsheeNativeConfig } from "../../../provider/AsheeNativeProvider";
-import { classNames } from "../../../utils/class-names";
-import { Text } from "../../typography/text/Text";
+import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
+import { NATIVE_ANNOUNCEMENT_LIVE_REGION } from "../../../shared/announcement";
+import {
+  NATIVE_LOADING_STATE_CLASS,
+  NATIVE_LOADING_STATE_PANEL_CLASS,
+  NATIVE_LOADING_STATE_SIZE_CLASS,
+} from "../../../styles/loading-state";
+import { SPACE_MIN_HEIGHT_CLASS } from "../../../styles/portable";
+import { cn } from "../../../utils/cn";
+import {
+  type UnsupportedElementProps,
+  useUnsupportedElementProps,
+} from "../../../utils/unsupported-element-props";
+import { Typography } from "../../typography/text/Text";
 import { Spinner } from "../spinner/Spinner";
 import {
   FALLBACK_NATIVE_LOADING_STATE_CONFIG,
@@ -41,7 +45,8 @@ import {
  */
 export interface LoadingStateProps
   extends NativeLoadingStateConfig,
-    Omit<ViewProps, "children" | "style"> {
+    Omit<ViewProps, "children" | "style">,
+    UnsupportedElementProps {
   /** Supporting sentence under the label, for example what is being fetched. */
   description?: ReactNode;
 
@@ -94,12 +99,16 @@ export function LoadingState({
   size,
   panel,
   minHeight,
+  as,
+  titleAs,
   className,
   style,
   children,
   ...rest
 }: LoadingStateProps) {
-  const config = useAsheeNativeConfig();
+  useUnsupportedElementProps("LoadingState", { as, titleAs });
+
+  const config = useAsheeConfig();
 
   const resolved = resolveConfigCascade<
     NativeLoadingStateConfig,
@@ -117,7 +126,7 @@ export function LoadingState({
       // not that something has gone wrong.
       accessible
       accessibilityLiveRegion={NATIVE_ANNOUNCEMENT_LIVE_REGION.status}
-      className={classNames(
+      className={cn(
         NATIVE_LOADING_STATE_CLASS,
         NATIVE_LOADING_STATE_SIZE_CLASS[resolved.size],
         SPACE_MIN_HEIGHT_CLASS[resolved.minHeight],
@@ -127,13 +136,13 @@ export function LoadingState({
       style={style}
       {...rest}>
       {indicator ?? <Spinner size={resolved.size} />}
-      <Text role="body-sm" tone="muted" align="center">
+      <Typography role="body-sm" tone="muted" align="center">
         {resolved.label}
-      </Text>
+      </Typography>
       {description && (
-        <Text role="caption" tone="muted" align="center">
+        <Typography role="caption" tone="muted" align="center">
           {description}
-        </Text>
+        </Typography>
       )}
       {children}
     </View>

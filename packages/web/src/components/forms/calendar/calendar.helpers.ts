@@ -21,8 +21,8 @@ export {
   isFutureDay,
   MONTHS,
   pad2,
-  parseDateString,
 } from "@asheeui/core";
+export { parseDateString } from "../../../utils/parse-date";
 
 // ─── Cursor Management Functions ───────────────────────────────────────────
 

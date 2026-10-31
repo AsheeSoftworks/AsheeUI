@@ -15,6 +15,9 @@ export type { EmptyStateConfig } from "@asheeui/core";
 
 /**
  * Configuration options for the native EmptyState.
+ *
+ * @deprecated Use {@link EmptyStateConfig} from `@asheeui/core` — the name both renderers
+ * publish.
  */
 export type NativeEmptyStateConfig = EmptyStateConfig;
 
@@ -25,6 +28,9 @@ export type NativeEmptyStateConfig = EmptyStateConfig;
  * markup is not a change, and announcing it would describe something that never
  * happened. The decision is the same one the web state makes, so the two platforms
  * read one configuration.
+ *
+ * @deprecated Use {@link defaultEmptyStateConfig} — the name both renderers publish. The value is
+ * this one: a fallback states the platform's default, and the name is shared.
  */
 export const defaultNativeEmptyStateConfig: NativeEmptyStateConfig = {
   type: "info",
@@ -43,6 +49,9 @@ registerNativeComponentDefaults("emptystate", defaultNativeEmptyStateConfig);
 
 /**
  * The values the state falls back to when no tier provides one.
+ *
+ * @deprecated Use {@link FALLBACK_EMPTY_STATE_CONFIG} — the name both renderers publish. The value is
+ * this one: a fallback states the platform's default, and the name is shared.
  */
 export const FALLBACK_NATIVE_EMPTY_STATE_CONFIG = {
   type: "info",

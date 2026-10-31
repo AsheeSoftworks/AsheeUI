@@ -9,12 +9,7 @@
  */
 
 import {
-  type ColorRole,
-  NATIVE_BADGE_BASE_CLASS,
-  NATIVE_BADGE_FONT_CLASS,
-  NATIVE_BADGE_TEXT_CLASS,
-  NATIVE_BADGE_VARIANT_CLASS,
-  NATIVE_RADIUS_CLASS,
+  type Color,
   type Radius,
   resolveBadgeVariant,
   resolveCascade,
@@ -24,8 +19,15 @@ import {
 import type { ReactNode } from "react";
 import type { StyleProp, ViewProps, ViewStyle } from "react-native";
 import { Text, View } from "react-native";
-import { useAsheeNativeConfig } from "../../../provider/AsheeNativeProvider";
-import { classNames } from "../../../utils/class-names";
+import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
+import {
+  NATIVE_BADGE_BASE_CLASS,
+  NATIVE_BADGE_FONT_CLASS,
+  NATIVE_BADGE_TEXT_CLASS,
+  NATIVE_BADGE_VARIANT_CLASS,
+} from "../../../styles/badge";
+import { NATIVE_RADIUS_CLASS } from "../../../styles/radius";
+import { cn } from "../../../utils/cn";
 import {
   FALLBACK_NATIVE_BADGE_CONFIG,
   type NativeBadgeConfig,
@@ -39,6 +41,21 @@ export interface BadgeProps
     Omit<ViewProps, "children" | "style"> {
   /** The label's text. */
   children?: ReactNode;
+
+  /**
+   * The label, under the name the web badge gives it.
+   *
+   * `children` wins when both are stated, which is the order the web badge reads them in:
+   * a shared component may pass a node as children and a plain string as the label for the
+   * accessibility name.
+   */
+  label?: string;
+
+  /** Content rendered before the label, typically a dot or an icon. */
+  startContent?: ReactNode;
+
+  /** Content rendered after the label. */
+  endContent?: ReactNode;
 
   /** Extra classes appended last, so a consumer's own classes win. */
   className?: string;
@@ -67,12 +84,15 @@ export function Badge({
   color,
   size,
   radius,
+  label,
+  startContent,
+  endContent,
   className,
   style,
   children,
   ...rest
 }: BadgeProps) {
-  const config = useAsheeNativeConfig();
+  const config = useAsheeConfig();
   const sectionConfig = config.components.badge;
 
   // The cascade's last two tiers belong to the platform rather than to the badge, so what
@@ -87,7 +107,7 @@ export function Badge({
       FALLBACK_NATIVE_BADGE_CONFIG.variant,
     ),
   );
-  const resolvedColor = resolveCascade<ColorRole>(
+  const resolvedColor = resolveCascade<Color>(
     color,
     sectionConfig?.color,
     config.defaultColor,
@@ -106,9 +126,11 @@ export function Badge({
     FALLBACK_NATIVE_BADGE_CONFIG.radius,
   );
 
+  const content = children ?? label;
+
   return (
     <View
-      className={classNames(
+      className={cn(
         NATIVE_BADGE_BASE_CLASS,
         NATIVE_BADGE_VARIANT_CLASS[resolvedVariant][resolvedColor],
         NATIVE_RADIUS_CLASS[resolvedRadius],
@@ -116,17 +138,23 @@ export function Badge({
       )}
       style={style}
       {...rest}>
-      <Text
-        accessible
-        // The label is the badge's one accessible name, so it is read as a
-        // single piece of text rather than as a view containing a text node.
-        accessibilityLabel={typeof children === "string" ? children : undefined}
-        className={classNames(
-          NATIVE_BADGE_FONT_CLASS[resolvedSize],
-          NATIVE_BADGE_TEXT_CLASS[resolvedVariant][resolvedColor],
-        )}>
-        {children}
-      </Text>
+      {startContent}
+      {typeof content === "string" || typeof content === "number" ? (
+        <Text
+          accessible
+          // The label is the badge's one accessible name, so it is read as a
+          // single piece of text rather than as a view containing a text node.
+          accessibilityLabel={String(content)}
+          className={cn(
+            NATIVE_BADGE_FONT_CLASS[resolvedSize],
+            NATIVE_BADGE_TEXT_CLASS[resolvedVariant][resolvedColor],
+          )}>
+          {content}
+        </Text>
+      ) : (
+        content
+      )}
+      {endContent}
     </View>
   );
 }

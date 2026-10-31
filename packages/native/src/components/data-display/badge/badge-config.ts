@@ -17,6 +17,9 @@ import { registerNativeComponentDefaults } from "../../../config/registry";
  * animation belongs to the platform's own `Pressable`, a badge has no option that is
  * one platform's alone, so the native type is the shared one rather than a narrowing
  * of it.
+ *
+ * @deprecated Use {@link BadgeConfig} from `@asheeui/core` — the name both renderers
+ * publish.
  */
 export type NativeBadgeConfig = BadgeConfig;
 
@@ -28,6 +31,9 @@ export type NativeBadgeConfig = BadgeConfig;
  * rather than a style choice, so the badge pins the low-emphasis `faded` treatment — the
  * same value both platforms now use as their global default — and a consumer's own
  * component section still outranks it.
+ *
+ * @deprecated Use {@link defaultBadgeConfig} — the name both renderers publish. The value is
+ * this one: a fallback states the platform's default, and the name is shared.
  */
 export const defaultNativeBadgeConfig: NativeBadgeConfig = {
   variant: "faded",
@@ -45,6 +51,9 @@ registerNativeComponentDefaults("badge", defaultNativeBadgeConfig);
 
 /**
  * The values the badge falls back to when no tier provides one.
+ *
+ * @deprecated Use {@link FALLBACK_BADGE_CONFIG} — the name both renderers publish. The value is
+ * this one: a fallback states the platform's default, and the name is shared.
  */
 export const FALLBACK_NATIVE_BADGE_CONFIG = {
   variant: "faded",

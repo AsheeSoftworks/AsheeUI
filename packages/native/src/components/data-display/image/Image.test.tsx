@@ -8,14 +8,11 @@
  * the fit, ratio and rounding resolve through the configuration cascade.
  */
 
-import {
-  fireEvent,
-  type ReactTestInstance,
-  render,
-} from "@testing-library/react-native";
+import { fireEvent, render } from "@testing-library/react-native";
 import type { ReactElement } from "react";
 import { Text } from "react-native";
-import { AsheeNativeProvider } from "../../../provider/AsheeNativeProvider";
+import type { TestInstance } from "test-renderer";
+import { AsheeUIProvider } from "../../../provider/AsheeUIProvider";
 import { Image } from "./Image";
 
 /**
@@ -26,9 +23,7 @@ import { Image } from "./Image";
  * @returns The rendered tree and its queries.
  */
 async function renderImage(ui: ReactElement, config?: object) {
-  return render(
-    <AsheeNativeProvider config={config}>{ui}</AsheeNativeProvider>,
-  );
+  return render(<AsheeUIProvider config={config}>{ui}</AsheeUIProvider>);
 }
 
 /**
@@ -40,13 +35,10 @@ async function renderImage(ui: ReactElement, config?: object) {
  * @param prop - The prop a descendant must carry.
  * @returns The descendants carrying it.
  */
-function descendantsWithProp(
-  node: ReactTestInstance,
-  prop: string,
-): ReactTestInstance[] {
-  const found: ReactTestInstance[] = [];
+function descendantsWithProp(node: TestInstance, prop: string): TestInstance[] {
+  const found: TestInstance[] = [];
 
-  const walk = (current: ReactTestInstance) => {
+  const walk = (current: TestInstance) => {
     if ((current.props as Record<string, unknown>)[prop] !== undefined) {
       found.push(current);
     }
@@ -69,9 +61,9 @@ function descendantsWithProp(
  * @returns The descendants carrying it.
  */
 function descendantsWithClass(
-  node: ReactTestInstance,
+  node: TestInstance,
   marker: string,
-): ReactTestInstance[] {
+): TestInstance[] {
   return descendantsWithProp(node, "className").filter((descendant) =>
     String(descendant.props.className).includes(marker),
   );
@@ -222,12 +214,30 @@ describe("Native Image", () => {
     expect(picture.props.className).toBe("w-full");
   });
 
+  it("accepts the browser's loading option, and says it is a no-op", async () => {
+    // A native picture is fetched when its view mounts, so the browser's strategy has
+    // nothing to switch. B13 accepts it so a shared picture compiles; B17 makes the no-op
+    // say so, once, naming what the platform does instead.
+    const warn = jest.spyOn(console, "warn").mockImplementation(() => {});
+
+    const view = await renderImage(
+      <Image testID="frame" src="/photo.jpg" alt="A photo" loading="lazy" />,
+    );
+
+    expect(view.getByLabelText("A photo")).toBeTruthy();
+    expect(warn).toHaveBeenCalledTimes(1);
+    expect(String(warn.mock.calls[0]?.[0])).toContain("Image.loading");
+    expect(String(warn.mock.calls[0]?.[0])).toContain("fetched when its view mounts");
+
+    warn.mockRestore();
+  });
+
   it("refuses to render outside the provider, because that is a setup mistake", async () => {
     const silence = jest.spyOn(console, "error").mockImplementation(() => {});
 
     await expect(
       render(<Image src="/photo.jpg" alt="A photo" />),
-    ).rejects.toThrow(/AsheeNativeProvider/);
+    ).rejects.toThrow(/AsheeUIProvider/);
 
     silence.mockRestore();
   });

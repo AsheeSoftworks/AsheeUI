@@ -1,4 +1,4 @@
-import { cn } from "@asheeui/core";
+import { cn } from "../utils/cn";
 import type { IconProps } from "./types";
 
 export function InfoIcon({ className, ...props }: IconProps) {

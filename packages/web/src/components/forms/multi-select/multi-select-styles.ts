@@ -4,7 +4,7 @@
  * height, padding, font, and status border options.
  */
 
-import { FIELD_STATUS_BORDER_CLASS } from "@asheeui/core";
+import { FIELD_STATUS_BORDER_CLASS } from "../../../styles/field";
 import type { FieldSizeKey, FieldStatus } from "../field/field-config";
 
 /**

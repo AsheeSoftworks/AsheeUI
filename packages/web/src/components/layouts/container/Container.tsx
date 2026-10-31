@@ -10,9 +10,10 @@
 
 "use client";
 
-import { cn, resolveCascade } from "@asheeui/core";
+import { resolveCascade } from "@asheeui/core";
 import { type ElementType, forwardRef, type HTMLAttributes } from "react";
 import { useAsheeConfig } from "../../../libs/context";
+import { cn } from "../../../utils/cn";
 import {
   type ContainerConfig,
   type ContainerSize,

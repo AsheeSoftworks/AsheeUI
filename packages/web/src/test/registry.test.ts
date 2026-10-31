@@ -1,3 +1,4 @@
+// @vitest-environment node
 /**
  * Web-side integration test: the real web component defaults are registered and
  * then resolved through the core pipeline, so it lives here rather than in core.

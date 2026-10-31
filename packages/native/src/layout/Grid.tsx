@@ -12,8 +12,12 @@ import { Children, cloneElement, isValidElement, type ReactNode } from "react";
 import type { StyleProp, ViewProps, ViewStyle } from "react-native";
 import { View } from "react-native";
 import { useBreakpoint } from "../hooks/use-breakpoint";
-import { useAsheeNativeConfig } from "../provider/AsheeNativeProvider";
-import { classNames } from "../utils/class-names";
+import { useAsheeConfig } from "../provider/AsheeUIProvider";
+import { cn } from "../utils/cn";
+import {
+  type UnsupportedElementProps,
+  useUnsupportedElementProps,
+} from "../utils/unsupported-element-props";
 import {
   FALLBACK_NATIVE_GRID_CONFIG,
   type NativeGridConfig,
@@ -30,7 +34,8 @@ import {
  */
 export interface GridProps
   extends NativeGridConfig,
-    Omit<ViewProps, "children" | "style"> {
+    Omit<ViewProps, "children" | "style">,
+    UnsupportedElementProps {
   /** The cells, in order. */
   children?: ReactNode;
 
@@ -72,12 +77,16 @@ export function Grid({
   columnsMd,
   columnsLg,
   gap,
+  as,
+  titleAs,
   className,
   style,
   children,
   ...rest
 }: GridProps) {
-  const config = useAsheeNativeConfig();
+  useUnsupportedElementProps("Grid", { as, titleAs });
+
+  const config = useAsheeConfig();
   const { breakpoint } = useBreakpoint();
 
   const resolved = resolveConfigCascade<
@@ -94,7 +103,7 @@ export function Grid({
 
   return (
     <View
-      className={classNames(
+      className={cn(
         GRID_BASE_CLASS,
         GRID_GAP_CLASS[resolved.gap],
         className,
@@ -114,7 +123,7 @@ export function Grid({
         return cloneElement(
           cell as React.ReactElement<{ className?: string }>,
           {
-            className: classNames(cellClass, cellProps.className),
+            className: cn(cellClass, cellProps.className),
           },
         );
       })}

@@ -35,6 +35,9 @@ export interface NativeMultiSelectConfig
 
 /**
  * The defaults the MultiSelect registers with the native registry.
+ *
+ * @deprecated Use {@link defaultMultiSelectConfig} — the name both renderers publish. The value is
+ * this one: a fallback states the platform's default, and the name is shared.
  */
 export const defaultNativeMultiSelectConfig: NativeMultiSelectConfig = {
   size: "md",
@@ -53,6 +56,9 @@ registerNativeComponentDefaults("multiSelect", defaultNativeMultiSelectConfig);
 
 /**
  * The values the field falls back to when no tier provides one.
+ *
+ * @deprecated Use {@link FALLBACK_MULTI_SELECT_CONFIG} — the name both renderers publish. The value is
+ * this one: a fallback states the platform's default, and the name is shared.
  */
 export const FALLBACK_NATIVE_MULTI_SELECT_CONFIG = {
   size: "md",

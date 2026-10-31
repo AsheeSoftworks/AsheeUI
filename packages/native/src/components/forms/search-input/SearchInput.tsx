@@ -22,6 +22,17 @@ import {
   type Color,
   type FieldStatus,
   isFieldInvalid,
+  type LabelAlign,
+  type Radius,
+  resolveCascade,
+  resolveChange,
+  type Size,
+} from "@asheeui/core";
+import { type ReactNode, useState } from "react";
+import type { StyleProp, TextStyle } from "react-native";
+import { Pressable, TextInput, View } from "react-native";
+import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
+import {
   NATIVE_INPUT_BASE_CLASS,
   NATIVE_INPUT_DISABLED_CLASS,
   NATIVE_INPUT_EDGE_ACCENT_CLASS,
@@ -30,22 +41,18 @@ import {
   NATIVE_INPUT_EDGE_WIDTH_CLASS,
   NATIVE_INPUT_SIZE_CLASS,
   NATIVE_INPUT_VARIANT_CLASS,
-  NATIVE_RADIUS_CLASS,
+} from "../../../styles/input";
+import { NATIVE_RADIUS_CLASS } from "../../../styles/radius";
+import {
   NATIVE_SEARCH_INPUT_CLEAR_CLASS,
   NATIVE_SEARCH_INPUT_CLEAR_GLYPH_CLASS,
   NATIVE_SEARCH_INPUT_FIELD_CLASS,
   NATIVE_SEARCH_INPUT_ROW_CLASS,
-  type Radius,
-  resolveCascade,
-  type Size,
-} from "@asheeui/core";
-import { useState } from "react";
-import type { StyleProp, TextStyle } from "react-native";
-import { Pressable, TextInput, View } from "react-native";
-import { useAsheeNativeConfig } from "../../../provider/AsheeNativeProvider";
-import { classNames } from "../../../utils/class-names";
+} from "../../../styles/search-input";
+import { cn } from "../../../utils/cn";
+import { useUnsupportedProps } from "../../../utils/unsupported-prop";
 import { Spinner } from "../../feedback/spinner/Spinner";
-import { Text } from "../../typography/text/Text";
+import { Typography } from "../../typography/text/Text";
 import { FieldShell } from "../field/FieldShell";
 import {
   FALLBACK_NATIVE_SEARCH_INPUT_CONFIG,
@@ -65,6 +72,17 @@ export interface SearchInputProps extends NativeSearchInputConfig {
   /** Called with the next query whenever it changes, including when the field is emptied. */
   onValueChange?: (value: string) => void;
 
+  /**
+   * Called with the next query, under the name the browser gives the event.
+   *
+   * The event is a shim with `target.value`; `preventDefault` and `stopPropagation` are not
+   * part of it, because the platform has no default action here to stop.
+   */
+  onChange?: (event: { target: { value: string } }) => void;
+
+  /** Called with the next query, under the platform's most specific name. */
+  onChangeText?: (value: string) => void;
+
   /** Called with the query when the reader submits the field. */
   onSearch?: (value: string) => void;
 
@@ -79,6 +97,29 @@ export interface SearchInputProps extends NativeSearchInputConfig {
 
   /** Whether a search is in progress, which the field reports as busy. */
   isLoading?: boolean;
+
+  /** Whether the field must be filled in. */
+  required?: boolean;
+
+  /** Where the label row sits across the field. Defaults to "left". */
+  labelAlign?: LabelAlign;
+
+  /** Whether the field stretches to its parent's width. Defaults to true. */
+  fullWidth?: boolean;
+
+  /** Content rendered before the field, typically an icon. */
+  startContent?: ReactNode;
+
+  /** Content rendered after the field and before the dismiss control. */
+  endContent?: ReactNode;
+
+  /**
+   * The keyboard shortcut the web shows beside the field.
+   *
+   * A device has no keyboard, so the hint has nothing to describe. Accepted so a shared
+   * search field compiles; warns once and changes nothing.
+   */
+  shortcut?: string;
 
   /** Platform styles for the field itself, for what NativeWind cannot express. */
   style?: StyleProp<TextStyle>;
@@ -117,12 +158,20 @@ export interface SearchInputProps extends NativeSearchInputConfig {
 export function SearchInput({
   value,
   defaultValue,
+  onChange,
+  onChangeText,
   onValueChange,
   onSearch,
   description,
   message,
   status,
   isLoading,
+  required = false,
+  labelAlign = "left",
+  fullWidth = true,
+  startContent,
+  endContent,
+  shortcut,
   size,
   color,
   clearable,
@@ -132,8 +181,16 @@ export function SearchInput({
   style,
   className,
 }: SearchInputProps) {
-  const config = useAsheeNativeConfig();
+  const config = useAsheeConfig();
   const sectionConfig = config.components.searchinput;
+
+  useUnsupportedProps("SearchInput", {
+    shortcut: {
+      value: shortcut,
+      substitute:
+        "bind the shortcut in the application; a device has no keyboard to press it on",
+    },
+  });
   const [typedValue, setTypedValue] = useState(defaultValue ?? "");
   const [isFocused, setIsFocused] = useState(false);
 
@@ -182,7 +239,7 @@ export function SearchInput({
   // A search field has no rounding of its own, so it takes the application's default
   // radius rather than pinning one.
   const resolvedRadius: Radius = config.defaultRadius;
-  const edgeClass = classNames(
+  const edgeClass = cn(
     NATIVE_INPUT_EDGE_WIDTH_CLASS.bordered,
     isInvalid
       ? NATIVE_INPUT_EDGE_INVALID_CLASS
@@ -192,58 +249,78 @@ export function SearchInput({
   );
 
   return (
-    <FieldShell
-      label={resolvedHideLabel ? undefined : resolvedLabel}
-      description={description}
-      message={message}
-      status={resolvedStatus}
-      isLoading={isLoading}>
-      <View className={classNames(NATIVE_SEARCH_INPUT_ROW_CLASS, className)}>
-        <TextInput
-          accessibilityRole="search"
-          accessibilityLabel={resolvedLabel}
-          accessibilityHint={description}
-          aria-invalid={isInvalid}
-          editable={!resolvedDisabled}
-          returnKeyType="search"
-          value={query}
-          onChangeText={(next) => {
-            if (!isControlled) setTypedValue(next);
-            onValueChange?.(next);
-          }}
-          onSubmitEditing={() => onSearch?.(query)}
-          onFocus={() => setIsFocused(true)}
-          onBlur={() => setIsFocused(false)}
-          className={classNames(
-            NATIVE_INPUT_BASE_CLASS,
-            NATIVE_INPUT_SIZE_CLASS[resolvedSize],
-            NATIVE_RADIUS_CLASS[resolvedRadius],
-            NATIVE_INPUT_VARIANT_CLASS.bordered,
-            edgeClass,
-            NATIVE_SEARCH_INPUT_FIELD_CLASS,
-            resolvedDisabled && NATIVE_INPUT_DISABLED_CLASS,
-          )}
-          style={style}
-        />
-        {isLoading && <Spinner size="sm" />}
-        {resolvedClearable && query.length > 0 && (
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel="Clear search"
-            disabled={resolvedDisabled}
-            onPress={() => {
-              if (!isControlled) setTypedValue("");
-              onValueChange?.("");
+    <View
+      className={cn(
+        "min-w-0",
+        fullWidth ? "w-full" : "self-start",
+      )}>
+      <FieldShell
+        label={resolvedHideLabel ? undefined : resolvedLabel}
+        labelAlign={labelAlign}
+        description={description}
+        message={message}
+        status={resolvedStatus}
+        required={required}
+        isLoading={isLoading}>
+        <View className={cn(NATIVE_SEARCH_INPUT_ROW_CLASS, className)}>
+          {startContent ? (
+            <View
+              pointerEvents="none"
+              className="shrink-0 items-center text-foreground/50">
+              {startContent}
+            </View>
+          ) : null}
+          <TextInput
+            accessibilityRole="search"
+            accessibilityLabel={resolvedLabel}
+            accessibilityHint={description}
+            aria-invalid={isInvalid}
+            editable={!resolvedDisabled}
+            returnKeyType="search"
+            value={query}
+            onChangeText={(next) => {
+              if (!isControlled) setTypedValue(next);
+              resolveChange({ onChange, onChangeText, onValueChange }, next);
             }}
-            className={NATIVE_SEARCH_INPUT_CLEAR_CLASS}>
-            <Text
-              role="body-md"
-              className={NATIVE_SEARCH_INPUT_CLEAR_GLYPH_CLASS}>
-              ✕
-            </Text>
-          </Pressable>
-        )}
-      </View>
-    </FieldShell>
+            onSubmitEditing={() => onSearch?.(query)}
+            onFocus={() => setIsFocused(true)}
+            onBlur={() => setIsFocused(false)}
+            className={cn(
+              NATIVE_INPUT_BASE_CLASS,
+              NATIVE_INPUT_SIZE_CLASS[resolvedSize],
+              NATIVE_RADIUS_CLASS[resolvedRadius],
+              NATIVE_INPUT_VARIANT_CLASS.bordered,
+              edgeClass,
+              NATIVE_SEARCH_INPUT_FIELD_CLASS,
+              resolvedDisabled && NATIVE_INPUT_DISABLED_CLASS,
+            )}
+            style={style}
+          />
+          {endContent ? (
+            <View className="shrink-0 items-center text-foreground/50">
+              {endContent}
+            </View>
+          ) : null}
+          {isLoading && <Spinner size="sm" />}
+          {resolvedClearable && query.length > 0 && (
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel="Clear search"
+              disabled={resolvedDisabled}
+              onPress={() => {
+                if (!isControlled) setTypedValue("");
+                resolveChange({ onChange, onChangeText, onValueChange }, "");
+              }}
+              className={NATIVE_SEARCH_INPUT_CLEAR_CLASS}>
+              <Typography
+                role="body-md"
+                className={NATIVE_SEARCH_INPUT_CLEAR_GLYPH_CLASS}>
+                ✕
+              </Typography>
+            </Pressable>
+          )}
+        </View>
+      </FieldShell>
+    </View>
   );
 }

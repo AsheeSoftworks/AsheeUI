@@ -24,38 +24,47 @@
  * counterpart, because a phone has no double-click, so the list takes a single row press.
  * And the web's `headerClassName` applies to a row the platform does not draw; it resolves
  * through the shared contract and changes nothing here.
+ *
+ * The component is the platform's own and is **native-only**: it has no web counterpart, and
+ * the names a shared screen writes are `Table` and `DataTable`, which draw through it. It stays
+ * exported because a native screen may want the rows without either contract's name, and
+ * because it is the renderer those two are built on.
  */
 
 import {
   type ColumnDef,
   formatRowCountLabel,
-  NATIVE_ANNOUNCEMENT_LIVE_REGION,
-  NATIVE_ROW_LIST_CLASS,
-  NATIVE_ROW_LIST_COUNT_CLASS,
-  NATIVE_ROW_LIST_FIELD_CLASS,
-  NATIVE_ROW_LIST_FOOTER_CLASS,
-  NATIVE_ROW_LIST_HEADING_CLASS,
-  NATIVE_ROW_LIST_REGION_CLASS,
-  NATIVE_ROW_LIST_ROW_CLASS,
-  NATIVE_ROW_LIST_SELECTED_CLASS,
-  NATIVE_ROW_LIST_SURFACE,
-  NATIVE_ROW_LIST_TOOLBAR_CLASS,
-  NATIVE_ROW_LIST_TOOLBAR_GROUP_CLASS,
-  NATIVE_ROW_LIST_VALUE_CLASS,
-  NATIVE_ROW_LIST_WRAPPER_CLASS,
   resolveConfigCascade,
 } from "@asheeui/core";
 import { type ReactNode, useEffect, useMemo, useRef, useState } from "react";
 import type { StyleProp, ViewProps, ViewStyle } from "react-native";
 import { View } from "react-native";
-import { useAsheeNativeConfig } from "../../../provider/AsheeNativeProvider";
-import { classNames } from "../../../utils/class-names";
+import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
+import { NATIVE_ANNOUNCEMENT_LIVE_REGION } from "../../../shared/announcement";
+import {
+  NATIVE_ROW_LIST_COUNT_CLASS,
+  NATIVE_ROW_LIST_FOOTER_CLASS,
+  NATIVE_ROW_LIST_HEADING_CLASS,
+  NATIVE_ROW_LIST_REGION_CLASS,
+  NATIVE_ROW_LIST_TOOLBAR_CLASS,
+  NATIVE_ROW_LIST_TOOLBAR_GROUP_CLASS,
+  NATIVE_ROW_LIST_WRAPPER_CLASS,
+} from "../../../styles/data-table";
+import {
+  NATIVE_ROW_LIST_CLASS,
+  NATIVE_ROW_LIST_FIELD_CLASS,
+  NATIVE_ROW_LIST_ROW_CLASS,
+  NATIVE_ROW_LIST_SELECTED_CLASS,
+  NATIVE_ROW_LIST_SURFACE,
+  NATIVE_ROW_LIST_VALUE_CLASS,
+} from "../../../styles/table";
+import { cn } from "../../../utils/cn";
 import { EmptyState } from "../../feedback/empty-state/EmptyState";
 import { LoadingState } from "../../feedback/loading-state/LoadingState";
 import { SearchInput } from "../../forms/search-input/SearchInput";
 import { SectionHeading } from "../../layouts/section-kit/SectionHeading";
 import { Pagination } from "../../navigation/pagination/Pagination";
-import { Text } from "../../typography/text/Text";
+import { Typography } from "../../typography/text/Text";
 import { Card } from "../card/Card";
 import {
   FALLBACK_NATIVE_DATA_TABLE_CONFIG,
@@ -69,7 +78,16 @@ import {
  */
 export interface RowListProps<TData>
   extends NativeDataTableConfig,
-    Pick<NativeTableConfig, "size" | "variant" | "color" | "radius">,
+    Pick<
+      NativeTableConfig,
+      | "size"
+      | "variant"
+      | "color"
+      | "radius"
+      | "headerClassName"
+      | "rowClassName"
+      | "cellClassName"
+    >,
     Omit<ViewProps, "children" | "style"> {
   /** The rows the list shows, in the order the consumer gives them. */
   data: TData[];
@@ -174,6 +192,10 @@ export interface RowListProps<TData>
  * @param props.size - Density of each row. Defaults to "md".
  * @param props.color - Accent of a chosen row. Defaults to "primary".
  * @param props.radius - Corner rounding of each row. Defaults to "md".
+ * @param props.headerClassName - Resolves through the shared contract and changes nothing,
+ * because the platform draws no header row.
+ * @param props.rowClassName - Extra classes applied to each row the list draws.
+ * @param props.cellClassName - Extra classes applied to each labelled line it draws.
  * @returns The rendered list.
  *
  * @example
@@ -214,6 +236,9 @@ export function RowList<TData>({
   variant,
   color,
   radius,
+  headerClassName,
+  rowClassName,
+  cellClassName,
   searchable,
   searchLabel,
   paginated,
@@ -227,13 +252,21 @@ export function RowList<TData>({
   style,
   ...rest
 }: RowListProps<TData>) {
-  const config = useAsheeNativeConfig();
+  const config = useAsheeConfig();
 
   const resolvedTable = resolveConfigCascade<
     NativeTableConfig,
     Required<NativeTableConfig>
   >(
-    { size, variant, color, radius },
+    {
+      size,
+      variant,
+      color,
+      radius,
+      headerClassName,
+      rowClassName,
+      cellClassName,
+    },
     config.components.table,
     FALLBACK_NATIVE_TABLE_CONFIG,
   );
@@ -388,7 +421,7 @@ export function RowList<TData>({
 
   return (
     <View
-      className={classNames(NATIVE_ROW_LIST_WRAPPER_CLASS, className)}
+      className={cn(NATIVE_ROW_LIST_WRAPPER_CLASS, className)}
       style={style}
       {...rest}>
       {hasHeading ? (
@@ -423,7 +456,7 @@ export function RowList<TData>({
         ) : (
           <View
             testID="row-list"
-            className={classNames(
+            className={cn(
               NATIVE_ROW_LIST_CLASS,
               resolvedTable.className,
             )}>
@@ -439,7 +472,7 @@ export function RowList<TData>({
                   variant={NATIVE_ROW_LIST_SURFACE[resolvedTable.variant]}
                   radius={resolvedTable.radius}
                   size={resolvedTable.size}
-                  className={classNames(
+                  className={cn(
                     "w-full",
                     resolvedTable.rowClassName,
                     // The chosen row states the accent fully, and it is applied last so it
@@ -459,20 +492,20 @@ export function RowList<TData>({
                       return (
                         <View
                           key={column.id ?? columnIndex}
-                          className={classNames(
+                          className={cn(
                             NATIVE_ROW_LIST_FIELD_CLASS,
                             resolvedTable.cellClassName,
                           )}>
-                          <Text role="caption" tone="muted">
+                          <Typography role="caption" tone="muted">
                             {column.header}
-                          </Text>
+                          </Typography>
                           <View className={NATIVE_ROW_LIST_VALUE_CLASS}>
                             {/* The platform renders text inside a text element, so a
                                 cell that states a value as text is wrapped and one that
                                 renders an element is placed as it is. */}
                             {typeof value === "string" ||
                             typeof value === "number" ? (
-                              <Text role="body-sm">{value}</Text>
+                              <Typography role="body-sm">{value}</Typography>
                             ) : (
                               value
                             )}
@@ -493,13 +526,13 @@ export function RowList<TData>({
           {resolved.showRowCount ? (
             // The count is a status region, so a reader who searches or pages is told how
             // many rows are left rather than having to find out.
-            <Text
+            <Typography
               role="caption"
               tone="muted"
               className={NATIVE_ROW_LIST_COUNT_CLASS}
               accessibilityLiveRegion={NATIVE_ANNOUNCEMENT_LIVE_REGION.status}>
               {rowCountText}
-            </Text>
+            </Typography>
           ) : null}
 
           {resolved.paginated && pageCount > 1 ? (

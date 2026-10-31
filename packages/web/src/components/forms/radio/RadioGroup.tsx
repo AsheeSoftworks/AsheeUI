@@ -7,7 +7,7 @@
 "use client";
 
 import type { Color } from "@asheeui/core";
-import { cn, resolveCascade } from "@asheeui/core";
+import { resolveCascade } from "@asheeui/core";
 import {
   forwardRef,
   type ReactNode,
@@ -16,6 +16,7 @@ import {
   useState,
 } from "react";
 import { useAsheeConfig } from "../../../libs/context";
+import { cn } from "../../../utils/cn";
 import { FieldShell } from "../field/FieldShell";
 import type {
   FieldSizeKey,

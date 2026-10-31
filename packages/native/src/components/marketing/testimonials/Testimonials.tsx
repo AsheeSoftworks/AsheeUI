@@ -15,25 +15,28 @@
  * promise stated the way the platform can keep it.
  */
 
-import {
-  NATIVE_TESTIMONIAL_HEADING_CLASS,
-  NATIVE_TESTIMONIAL_PERSON_CLASS,
-  NATIVE_TESTIMONIAL_PERSON_TEXT_CLASS,
-  NATIVE_TESTIMONIAL_QUOTE_CLASS,
-  resolveConfigCascade,
-  type TestimonialItem,
-} from "@asheeui/core";
+import { resolveConfigCascade, type TestimonialItem } from "@asheeui/core";
 import type { ReactNode } from "react";
 import type { StyleProp, ViewProps, ViewStyle } from "react-native";
 import { View } from "react-native";
 import { Container } from "../../../layout/Container";
 import { Grid } from "../../../layout/Grid";
 import { Section } from "../../../layout/Section";
-import { useAsheeNativeConfig } from "../../../provider/AsheeNativeProvider";
+import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
+import {
+  type UnsupportedElementProps,
+  useUnsupportedElementProps,
+} from "../../../utils/unsupported-element-props";
+import {
+  NATIVE_TESTIMONIAL_HEADING_CLASS,
+  NATIVE_TESTIMONIAL_PERSON_CLASS,
+  NATIVE_TESTIMONIAL_PERSON_TEXT_CLASS,
+  NATIVE_TESTIMONIAL_QUOTE_CLASS,
+} from "../../../styles/testimonials";
 import { Avatar } from "../../data-display/avatar/Avatar";
 import { Card } from "../../data-display/card/Card";
 import { SectionHeading } from "../../layouts/section-kit/SectionHeading";
-import { Text } from "../../typography/text/Text";
+import { Typography } from "../../typography/text/Text";
 import {
   FALLBACK_NATIVE_TESTIMONIALS_CONFIG,
   type NativeTestimonialsConfig,
@@ -44,7 +47,8 @@ import {
  */
 export interface TestimonialsProps
   extends NativeTestimonialsConfig,
-    Omit<ViewProps, "children" | "style"> {
+    Omit<ViewProps, "children" | "style">,
+    UnsupportedElementProps {
   /** The quotes to show. */
   items: TestimonialItem[];
 
@@ -113,12 +117,16 @@ export function Testimonials({
   align,
   containerSize,
   contained,
+  as,
+  titleAs,
   className,
   style,
   children,
   ...rest
 }: TestimonialsProps) {
-  const config = useAsheeNativeConfig();
+  useUnsupportedElementProps("Testimonials", { as, titleAs });
+
+  const config = useAsheeConfig();
 
   const resolved = resolveConfigCascade<
     NativeTestimonialsConfig,
@@ -162,7 +170,7 @@ export function Testimonials({
             {/* The words come first and the attribution follows, which is how a reader
                 hears a quotation the platform has no figure element to state. */}
             <View className={NATIVE_TESTIMONIAL_QUOTE_CLASS}>
-              <Text role="body-md">{item.quote}</Text>
+              <Typography role="body-md">{item.quote}</Typography>
               <View className={NATIVE_TESTIMONIAL_PERSON_CLASS}>
                 <Avatar
                   name={item.name}
@@ -172,11 +180,11 @@ export function Testimonials({
                   componentProps={item.avatarComponentProps}
                 />
                 <View className={NATIVE_TESTIMONIAL_PERSON_TEXT_CLASS}>
-                  <Text role="label">{item.name}</Text>
+                  <Typography role="label">{item.name}</Typography>
                   {item.role ? (
-                    <Text role="caption" tone="muted">
+                    <Typography role="caption" tone="muted">
                       {item.role}
-                    </Text>
+                    </Typography>
                   ) : null}
                 </View>
               </View>

@@ -25,11 +25,17 @@ export type {
 
 /**
  * Configuration options for the native Accordion.
+ *
+ * @deprecated Use {@link AccordionConfig} from `@asheeui/core` — the name both renderers
+ * publish.
  */
 export type NativeAccordionConfig = AccordionConfig;
 
 /**
  * The defaults the Accordion registers with the native registry.
+ *
+ * @deprecated Use {@link defaultAccordionConfig} — the name both renderers publish. The value is
+ * this one: a fallback states the platform's default, and the name is shared.
  */
 export const defaultNativeAccordionConfig: NativeAccordionConfig = {
   size: "md",
@@ -47,6 +53,9 @@ registerNativeComponentDefaults("accordion", defaultNativeAccordionConfig);
 
 /**
  * The values the accordion falls back to when no tier provides one.
+ *
+ * @deprecated Use {@link FALLBACK_ACCORDION_CONFIG} — the name both renderers publish. The value is
+ * this one: a fallback states the platform's default, and the name is shared.
  */
 export const FALLBACK_NATIVE_ACCORDION_CONFIG = {
   size: "md",

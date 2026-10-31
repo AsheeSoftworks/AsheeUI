@@ -15,37 +15,59 @@
  * platform has no anchor a router could replace.
  */
 
-import {
-  type FeatureItem,
-  NATIVE_FEATURE_CARD_BODY_CLASS,
-  NATIVE_FEATURE_HEADING_CLASS,
-  NATIVE_FEATURE_ICON_CLASS,
-  NATIVE_FEATURE_ICON_TONE_CLASS,
-  resolveConfigCascade,
-} from "@asheeui/core";
-import type { ReactNode } from "react";
+import { type FeatureItem, resolveConfigCascade } from "@asheeui/core";
+import type { ElementType, ReactNode } from "react";
 import type { StyleProp, ViewProps, ViewStyle } from "react-native";
 import { View } from "react-native";
 import { Container } from "../../../layout/Container";
 import { Grid } from "../../../layout/Grid";
 import { Section } from "../../../layout/Section";
-import { useAsheeNativeConfig } from "../../../provider/AsheeNativeProvider";
-import { classNames } from "../../../utils/class-names";
+import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
+import {
+  NATIVE_FEATURE_CARD_BODY_CLASS,
+  NATIVE_FEATURE_HEADING_CLASS,
+  NATIVE_FEATURE_ICON_CLASS,
+  NATIVE_FEATURE_ICON_TONE_CLASS,
+} from "../../../styles/feature-grid";
+import { cn } from "../../../utils/cn";
+import {
+  type UnsupportedElementProps,
+  useUnsupportedElementProps,
+} from "../../../utils/unsupported-element-props";
 import { openDestination } from "../../../utils/open-destination";
 import { Card } from "../../data-display/card/Card";
 import { SectionHeading } from "../../layouts/section-kit/SectionHeading";
-import { Text } from "../../typography/text/Text";
+import { Typography } from "../../typography/text/Text";
 import {
   FALLBACK_NATIVE_FEATURE_GRID_CONFIG,
   type NativeFeatureGridConfig,
 } from "./feature-grid-config";
 
 /**
+ * The substitution a feature grid accepts, under the web renderer's key names.
+ *
+ * The type is published on both renderers so a shared screen can name it; the native grid
+ * renders a feature's destination through `Card`, so the substitute reaches the card's
+ * press when the consumer passes it there.
+ */
+export interface FeatureGridLink {
+  /** Component that replaces the anchor, such as a framework router link. */
+  component?: ElementType;
+
+  /** Additional props for that component, spread last so they win. */
+  props?: Record<string, unknown>;
+
+  /** A route destination a router understands. */
+  to?: string;
+}
+
+/**
  * Props for the native FeatureGrid.
  */
 export interface FeatureGridProps
   extends NativeFeatureGridConfig,
-    Omit<ViewProps, "children" | "style"> {
+    Omit<ViewProps, "children" | "style">,
+    UnsupportedElementProps {
   /** The features to show. */
   items: FeatureItem[];
 
@@ -116,12 +138,16 @@ export function FeatureGrid({
   align,
   containerSize,
   contained,
+  as,
+  titleAs,
   className,
   style,
   children,
   ...rest
 }: FeatureGridProps) {
-  const config = useAsheeNativeConfig();
+  useUnsupportedElementProps("FeatureGrid", { as, titleAs });
+
+  const config = useAsheeConfig();
 
   const resolved = resolveConfigCascade<
     NativeFeatureGridConfig,
@@ -171,18 +197,18 @@ export function FeatureGrid({
               <View className={NATIVE_FEATURE_CARD_BODY_CLASS}>
                 {item.icon && (
                   <View
-                    className={classNames(
+                    className={cn(
                       NATIVE_FEATURE_ICON_CLASS,
                       NATIVE_FEATURE_ICON_TONE_CLASS,
                     )}>
                     {item.icon}
                   </View>
                 )}
-                <Text role="heading-sm">{item.title}</Text>
+                <Typography role="heading-sm">{item.title}</Typography>
                 {item.description && (
-                  <Text role="body-sm" tone="muted">
+                  <Typography role="body-sm" tone="muted">
                     {item.description}
-                  </Text>
+                  </Typography>
                 )}
               </View>
             </Card>

@@ -1,5 +1,42 @@
 # @asheeui/web
 
+## 2.8.0
+
+### Minor Changes
+
+- # The web renderer owns its pixels
+  
+  The web package now owns the strings, helpers and rules only a browser compiles, and the shared
+  work moved into the contracts both renderers use.
+  
+  ## What it owns
+  
+  - **The web class dictionaries**: 266 constants in 52 modules under `packages/web/src/styles/`, under
+    the names core published. `./styles` is exported from the entry.
+  - **`cn`**, with `clsx` and `tailwind-merge` (already web dependencies), and the styling helpers that
+    moved with it: `ASHEE_LAYER`, `ASHEE_GLOBAL_LAYER`, `resolveBaseZIndex`, `resolveFloatingZIndex`,
+    `establishesStackingContext`, `resolveAnimate`, `parseDateString`, `resolveVariantClass` and the
+    variant maps.
+  - **The 21 portable strings**, in `web/src/styles/portable.ts`, paired with native's copy and asserted
+    equal by `core/src/shared/style-parity.test.ts`.
+  
+  ## What it gained
+  
+  - **`Text`** as an alias of `Typography` (not deprecated on this renderer).
+  - **Composition and events**: `startContent`/`endContent`, `onPress` alongside `onClick`,
+    `onChangeText` alongside `onChange`, the field's `type`/slots/`labelAlign`, the overlay close
+    control, and the shared announcement contract.
+  - **Typography**: the one role table, the four token overrides and `components.typography`.
+  - **The theme host**: the web half of the shared state machine (`matchMedia`, `localStorage`, the
+    document paint) is an adapter over core's `createThemeController`.
+  - **The substitution contract**: `Link`, `Image` and `Navbar` accept the shared `Substitution` and
+    `LinkSubstitution`.
+
+### Patch Changes
+
+- Updated dependencies
+  - @asheeui/core@3.0.0
+
 ## 2.7.0
 
 ### Minor Changes

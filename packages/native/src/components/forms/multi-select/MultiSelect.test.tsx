@@ -14,7 +14,7 @@ import {
   render,
 } from "@testing-library/react-native";
 import type { ReactElement } from "react";
-import { AsheeNativeProvider } from "../../../provider/AsheeNativeProvider";
+import { AsheeUIProvider } from "../../../provider/AsheeUIProvider";
 import { MultiSelect } from "./MultiSelect";
 
 // The first surface this file opens loads the platform's modal machinery, which costs far
@@ -29,9 +29,7 @@ const OPTIONS = [
 
 /** Render the field inside the framework provider. */
 async function renderMulti(ui: ReactElement, config?: object) {
-  return render(
-    <AsheeNativeProvider config={config}>{ui}</AsheeNativeProvider>,
-  );
+  return render(<AsheeUIProvider config={config}>{ui}</AsheeUIProvider>);
 }
 
 /** Press an element and wait for the state it sets to be flushed. */

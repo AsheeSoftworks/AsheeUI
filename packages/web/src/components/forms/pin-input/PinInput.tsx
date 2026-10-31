@@ -10,8 +10,6 @@
 "use client";
 
 import {
-  cn,
-  RADIUS_CLASS,
   type Radius,
   resolveClassKey,
   resolveConfigCascade,
@@ -29,6 +27,8 @@ import {
   useState,
 } from "react";
 import { useAsheeConfig } from "../../../libs/context";
+import { RADIUS_CLASS } from "../../../styles/radius";
+import { cn } from "../../../utils/cn";
 import { FieldShell } from "../field/FieldShell";
 import type { FieldStatus, LabelAlign } from "../field/field-config";
 import {
@@ -80,6 +80,17 @@ export interface PinInputProps extends BasePinInputProps {
 
   /** Called with the whole code whenever it changes. */
   onValueChange?: ((value: string) => void) | undefined;
+
+  /**
+   * Called with the whole code when a box changes, under the DOM's name.
+   *
+   * `onChange`, `onChangeText` and `onValueChange` are the same change; all three run when
+   * all three are given, in that order, so a handler copied from a device keeps working.
+   */
+  onChange?: ((event: { target: { value: string } }) => void) | undefined;
+
+  /** Called with the whole code, under the platform's most specific name. */
+  onChangeText?: ((value: string) => void) | undefined;
 
   /**
    * Called once when the code reaches its full length.
@@ -181,6 +192,8 @@ export const PinInput = forwardRef<HTMLFieldSetElement, PinInputProps>(
     {
       value,
       defaultValue,
+      onChange,
+      onChangeText,
       onValueChange,
       onComplete,
       length,
@@ -263,6 +276,10 @@ export const PinInput = forwardRef<HTMLFieldSetElement, PinInputProps>(
       if (!isControlled) {
         setInternalValue(capped);
       }
+      // The order is the shared resolver's: the DOM-shaped event first, then the two
+      // value-only names, so a handler copied from a device sees the same sequence.
+      onChange?.({ target: { value: capped } });
+      onChangeText?.(capped);
       onValueChange?.(capped);
 
       if (capped.length === resolved.length) {

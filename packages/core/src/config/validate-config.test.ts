@@ -1,8 +1,8 @@
 import { describe, expect, it, vi } from "vitest";
 import {
   TYPOGRAPHY_ROLE_TOKEN,
-  TYPOGRAPHY_SIZE_CLASS,
-  TYPOGRAPHY_TONE_CLASS,
+  TYPOGRAPHY_SIZE_VALUES,
+  TYPOGRAPHY_TONE_VALUES,
   type TypographySize,
   type TypographyTone,
 } from "../shared";
@@ -27,8 +27,8 @@ const warningPaths = (config: unknown): string[] =>
 type TypographyRole = keyof typeof TYPOGRAPHY_ROLE_TOKEN;
 
 const ROLE = Object.keys(TYPOGRAPHY_ROLE_TOKEN)[0] as TypographyRole;
-const TONE = Object.keys(TYPOGRAPHY_TONE_CLASS)[0] as TypographyTone;
-const SIZE = Object.keys(TYPOGRAPHY_SIZE_CLASS)[0] as TypographySize;
+const TONE = TYPOGRAPHY_TONE_VALUES[0] as TypographyTone;
+const SIZE = TYPOGRAPHY_SIZE_VALUES[0] as TypographySize;
 
 describe("validateConfig", () => {
   it("accepts an empty configuration", () => {

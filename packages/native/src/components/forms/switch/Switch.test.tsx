@@ -9,19 +9,19 @@
  */
 
 import {
-  FIELD_REQUIRED_MARKER_CLASS,
-  NATIVE_SWITCH_THUMB_CLASS,
-  NATIVE_SWITCH_THUMB_SIZE_CLASS,
-  NATIVE_SWITCH_THUMB_TRAVEL,
-} from "@asheeui/core";
-import {
   act,
   fireEvent,
   type RenderResult,
   render,
 } from "@testing-library/react-native";
 import type { ReactElement } from "react";
-import { AsheeNativeProvider } from "../../../provider/AsheeNativeProvider";
+import { AsheeUIProvider } from "../../../provider/AsheeUIProvider";
+import { FIELD_REQUIRED_MARKER_CLASS } from "../../../styles/portable";
+import {
+  NATIVE_SWITCH_THUMB_CLASS,
+  NATIVE_SWITCH_THUMB_SIZE_CLASS,
+  NATIVE_SWITCH_THUMB_TRAVEL,
+} from "../../../styles/switch";
 import { Switch } from "./Switch";
 
 /**
@@ -32,9 +32,7 @@ import { Switch } from "./Switch";
  * @returns The rendered tree and its queries.
  */
 async function renderSwitch(ui: ReactElement, config?: object) {
-  return render(
-    <AsheeNativeProvider config={config}>{ui}</AsheeNativeProvider>,
-  );
+  return render(<AsheeUIProvider config={config}>{ui}</AsheeUIProvider>);
 }
 
 /**

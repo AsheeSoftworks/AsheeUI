@@ -10,6 +10,8 @@
  * changes — so the time a reader sets is the time either platform keeps.
  */
 
+import { pad2 } from "@asheeui/core";
+import { Pressable, View } from "react-native";
 import {
   NATIVE_CALENDAR_STEP_CLASS,
   NATIVE_CALENDAR_STEP_LABEL_CLASS,
@@ -17,10 +19,8 @@ import {
   NATIVE_CALENDAR_TIME_LABEL_CLASS,
   NATIVE_CALENDAR_TIME_VALUE_CLASS,
   NATIVE_CALENDAR_TIME_VALUE_TEXT_CLASS,
-  pad2,
-} from "@asheeui/core";
-import { Pressable, View } from "react-native";
-import { Text } from "../../typography/text/Text";
+} from "../../../styles/calendar";
+import { Typography } from "../../typography/text/Text";
 
 /**
  * Props for the internal time column.
@@ -59,29 +59,29 @@ export function TimeColumn({
 }: TimeColumnProps) {
   return (
     <View className={NATIVE_CALENDAR_TIME_COLUMN_CLASS}>
-      <Text role="overline" className={NATIVE_CALENDAR_TIME_LABEL_CLASS}>
+      <Typography role="overline" className={NATIVE_CALENDAR_TIME_LABEL_CLASS}>
         {label}
-      </Text>
+      </Typography>
       <Pressable
         testID={testID ? `${testID}-increment` : undefined}
         accessibilityRole="button"
         accessibilityLabel={`Increment ${label}`}
         onPress={() => onChange(value >= max ? 0 : value + 1)}
         className={NATIVE_CALENDAR_STEP_CLASS}>
-        <Text
+        <Typography
           role="body-md"
           className={NATIVE_CALENDAR_STEP_LABEL_CLASS}
           accessible={false}>
           ▴
-        </Text>
+        </Typography>
       </Pressable>
       <View className={NATIVE_CALENDAR_TIME_VALUE_CLASS}>
-        <Text
+        <Typography
           role="body-md"
           accessibilityLabel={`${label} ${pad2(value)}`}
           className={NATIVE_CALENDAR_TIME_VALUE_TEXT_CLASS}>
           {pad2(value)}
-        </Text>
+        </Typography>
       </View>
       <Pressable
         testID={testID ? `${testID}-decrement` : undefined}
@@ -89,12 +89,12 @@ export function TimeColumn({
         accessibilityLabel={`Decrement ${label}`}
         onPress={() => onChange(value <= 0 ? max : value - 1)}
         className={NATIVE_CALENDAR_STEP_CLASS}>
-        <Text
+        <Typography
           role="body-md"
           className={NATIVE_CALENDAR_STEP_LABEL_CLASS}
           accessible={false}>
           ▾
-        </Text>
+        </Typography>
       </Pressable>
     </View>
   );

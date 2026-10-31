@@ -10,13 +10,13 @@
 
 import {
   fireEvent,
-  type ReactTestInstance,
   type RenderResult,
   render,
 } from "@testing-library/react-native";
 import type { ReactElement } from "react";
 import { Text } from "react-native";
-import { AsheeNativeProvider } from "../../../provider/AsheeNativeProvider";
+import type { TestInstance } from "test-renderer";
+import { AsheeUIProvider } from "../../../provider/AsheeUIProvider";
 import { openDestination } from "../../../utils/open-destination";
 import { CTA } from "./CTA";
 
@@ -32,9 +32,7 @@ jest.mock("../../../utils/open-destination", () => ({
  * @returns The rendered tree and its queries.
  */
 async function renderCta(ui: ReactElement, config?: object) {
-  return render(
-    <AsheeNativeProvider config={config}>{ui}</AsheeNativeProvider>,
-  );
+  return render(<AsheeUIProvider config={config}>{ui}</AsheeUIProvider>);
 }
 
 /**
@@ -55,7 +53,7 @@ function classesOf(view: RenderResult, testID: string): string {
  * @param node - The node, when one was found.
  * @returns Its class string, or an empty one.
  */
-function classesOfNode(node: ReactTestInstance | null | undefined): string {
+function classesOfNode(node: TestInstance | null | undefined): string {
   return ((node?.props ?? {}) as { className?: string }).className ?? "";
 }
 
@@ -69,9 +67,9 @@ function classesOfNode(node: ReactTestInstance | null | undefined): string {
  * @returns The ancestor, or undefined when there is none.
  */
 function ancestorWithClass(
-  node: ReactTestInstance,
+  node: TestInstance,
   marker: string,
-): ReactTestInstance | undefined {
+): TestInstance | undefined {
   let current = node.parent;
 
   while (current) {
@@ -219,7 +217,7 @@ describe("Native CTA", () => {
 
     await expect(
       render(<CTA title="Send your first campaign today" />),
-    ).rejects.toThrow(/AsheeNativeProvider/);
+    ).rejects.toThrow(/AsheeUIProvider/);
 
     silence.mockRestore();
   });

@@ -11,8 +11,12 @@ import { resolveConfigCascade } from "@asheeui/core";
 import type { ReactNode } from "react";
 import type { StyleProp, ViewProps, ViewStyle } from "react-native";
 import { View } from "react-native";
-import { useAsheeNativeConfig } from "../provider/AsheeNativeProvider";
-import { classNames } from "../utils/class-names";
+import { useAsheeConfig } from "../provider/AsheeUIProvider";
+import { cn } from "../utils/cn";
+import {
+  type UnsupportedElementProps,
+  useUnsupportedElementProps,
+} from "../utils/unsupported-element-props";
 import {
   FALLBACK_NATIVE_SECTION_CONFIG,
   type NativeSectionConfig,
@@ -28,7 +32,8 @@ import {
  */
 export interface SectionProps
   extends NativeSectionConfig,
-    Omit<ViewProps, "children" | "style"> {
+    Omit<ViewProps, "children" | "style">,
+    UnsupportedElementProps {
   /** The section's content. */
   children?: ReactNode;
 
@@ -61,12 +66,16 @@ export interface SectionProps
 export function Section({
   spacing,
   background,
+  as,
+  titleAs,
   className,
   style,
   children,
   ...rest
 }: SectionProps) {
-  const config = useAsheeNativeConfig();
+  useUnsupportedElementProps("Section", { as, titleAs });
+
+  const config = useAsheeConfig();
 
   const resolved = resolveConfigCascade<
     NativeSectionConfig,
@@ -79,7 +88,7 @@ export function Section({
 
   return (
     <View
-      className={classNames(
+      className={cn(
         SECTION_BASE_CLASS,
         SECTION_SPACING_CLASS[resolved.spacing],
         SECTION_BACKGROUND_CLASS[resolved.background],

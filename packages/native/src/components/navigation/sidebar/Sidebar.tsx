@@ -26,8 +26,26 @@
 
 import {
   type Color,
-  type ColorRole,
-  NATIVE_RADIUS_CLASS,
+  type Radius,
+  resolveCascade,
+  resolveClassKey,
+  resolveRadiusKey,
+  type TooltipPlacement,
+  type Variant,
+} from "@asheeui/core";
+import {
+  Fragment,
+  type ReactNode,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
+import type { StyleProp, ViewProps, ViewStyle } from "react-native";
+import { ScrollView, View } from "react-native";
+import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
+import { NATIVE_RADIUS_CLASS } from "../../../styles/radius";
+import {
   NATIVE_SIDEBAR_BASE_CLASS,
   NATIVE_SIDEBAR_BODY_CLASS,
   NATIVE_SIDEBAR_COLLAPSED_WIDTH_CLASS,
@@ -51,30 +69,13 @@ import {
   NATIVE_SIDEBAR_SECTION_LABEL_ROLE,
   NATIVE_SIDEBAR_TITLE_ROLE,
   NATIVE_SIDEBAR_VARIANT_CLASS,
-  NATIVE_VISUALLY_HIDDEN_CLASS,
-  type Radius,
-  resolveCascade,
-  resolveClassKey,
-  resolveRadiusKey,
-  type TooltipPlacement,
-  type Variant,
-} from "@asheeui/core";
-import {
-  Fragment,
-  type ReactNode,
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
-import type { StyleProp, ViewProps, ViewStyle } from "react-native";
-import { ScrollView, View } from "react-native";
-import { useAsheeNativeConfig } from "../../../provider/AsheeNativeProvider";
-import { classNames } from "../../../utils/class-names";
+} from "../../../styles/sidebar";
+import { NATIVE_VISUALLY_HIDDEN_CLASS } from "../../../styles/visually-hidden";
+import { cn } from "../../../utils/cn";
 import { openDestination } from "../../../utils/open-destination";
 import { Button } from "../../forms/button/Button";
 import { Tooltip } from "../../overlays/tooltip/Tooltip";
-import { Text } from "../../typography/text/Text";
+import { Typography } from "../../typography/text/Text";
 import { Link } from "../link/Link";
 import type { SidebarCollapse } from "./sidebar-collapse";
 import { SidebarCollapseContext } from "./sidebar-collapse";
@@ -268,7 +269,7 @@ export interface SidebarProps<T = string> extends BaseSidebarProps {
  *   const { isCollapsed, collapsible, toggleCollapse } = useSidebarCollapse();
  *   return (
  *     <Pressable disabled={!collapsible} onPress={toggleCollapse}>
- *       <Text>{isCollapsed ? "Expand" : "Collapse"}</Text>
+ *       <Typography>{isCollapsed ? "Expand" : "Collapse"}</Typography>
  *     </Pressable>
  *   );
  * }
@@ -308,7 +309,7 @@ export function Sidebar<T = string>({
   style,
   ...rest
 }: SidebarProps<T>) {
-  const config = useAsheeNativeConfig();
+  const config = useAsheeConfig();
   const sectionConfig = config.components?.sidebar;
 
   const resolvedCollapsible = resolveCascade<boolean>(
@@ -477,7 +478,7 @@ export function Sidebar<T = string>({
     FALLBACK_NATIVE_SIDEBAR_CONFIG.tooltip.variant,
   );
 
-  const resolvedTooltipColor = resolveCascade<ColorRole>(
+  const resolvedTooltipColor = resolveCascade<Color>(
     tooltip?.color,
     sectionConfig?.tooltip?.color,
     undefined,
@@ -541,7 +542,7 @@ export function Sidebar<T = string>({
     const isActive = item.id === activeKey;
     const isDisabled = isSectionDisabled || item.disabled === true;
 
-    const rowClasses = classNames(
+    const rowClasses = cn(
       NATIVE_SIDEBAR_ITEM_BASE_CLASS,
       NATIVE_SIDEBAR_ITEM_CLASS[resolvedSizeKey],
       isCollapsed ? "justify-center px-0" : "justify-start",
@@ -556,7 +557,7 @@ export function Sidebar<T = string>({
       options?.itemClassName,
     );
 
-    const labelTextClasses = classNames(
+    const labelTextClasses = cn(
       NATIVE_SIDEBAR_ITEM_LABEL_CLASS,
       isActive ? activeTextClass : inactiveTextClass,
     );
@@ -598,7 +599,7 @@ export function Sidebar<T = string>({
         }>
         {item.icon && (
           <View
-            className={classNames(
+            className={cn(
               NATIVE_SIDEBAR_ITEM_ICON_CLASS,
               "flex items-center justify-center",
               isCollapsed && "w-full",
@@ -612,12 +613,12 @@ export function Sidebar<T = string>({
           // what the web's truncating span does. Collapsed, the row is named above instead, so
           // the label is not drawn a second time.
           !isCollapsed && (
-            <Text
+            <Typography
               truncate
               role={NATIVE_SIDEBAR_ITEM_ROLE[resolvedSizeKey]}
               className={labelTextClasses}>
               {item.label}
-            </Text>
+            </Typography>
           )
         ) : (
           // A consumer's own label is its own element, so the platform cannot restate its
@@ -626,7 +627,7 @@ export function Sidebar<T = string>({
           // through the platform's visually hidden treatment, which is what the web's
           // `sr-only` span does with the same element.
           <View
-            className={classNames(
+            className={cn(
               NATIVE_SIDEBAR_ITEM_LABEL_CLASS,
               isCollapsed && NATIVE_VISUALLY_HIDDEN_CLASS,
             )}>
@@ -640,7 +641,7 @@ export function Sidebar<T = string>({
             typeof item.badge === "number" ? (
               // A badge written as a count is text, and the platform renders a text node
               // through its own component rather than inside a view.
-              <Text role="label">{item.badge}</Text>
+              <Typography role="label">{item.badge}</Typography>
             ) : (
               item.badge
             )}
@@ -677,7 +678,7 @@ export function Sidebar<T = string>({
     // it is rather than disappearing.
     const isSectionDisabled = section.disabled === true;
 
-    const labelClasses = classNames(
+    const labelClasses = cn(
       NATIVE_SIDEBAR_SECTION_LABEL_CLASS[resolvedSizeKey],
       sectionLabelClassName,
       isSectionDisabled && "opacity-50",
@@ -691,12 +692,12 @@ export function Sidebar<T = string>({
         {!isCollapsed &&
           section.label &&
           (typeof section.label === "string" ? (
-            <Text
+            <Typography
               numberOfLines={1}
               role={NATIVE_SIDEBAR_SECTION_LABEL_ROLE}
               className={labelClasses}>
               {section.label}
-            </Text>
+            </Typography>
           ) : (
             // A consumer's own label is its own element, so the platform only gives it the
             // placement and the spacing a label has.
@@ -711,7 +712,7 @@ export function Sidebar<T = string>({
   return (
     <SidebarCollapseContext.Provider value={collapseState}>
       <View
-        className={classNames(
+        className={cn(
           NATIVE_SIDEBAR_BASE_CLASS,
           widthClass,
           NATIVE_SIDEBAR_VARIANT_CLASS[resolvedVariantKey],
@@ -729,7 +730,7 @@ export function Sidebar<T = string>({
         {(onBack || (!isCollapsed && title)) && (
           <View
             testID="sidebar-header"
-            className={classNames(
+            className={cn(
               NATIVE_SIDEBAR_HEADER_BASE_CLASS,
               NATIVE_SIDEBAR_HEADER_CLASS[resolvedSizeKey],
               isCollapsed && "justify-center px-0",
@@ -753,12 +754,12 @@ export function Sidebar<T = string>({
             {!isCollapsed &&
               title &&
               (typeof title === "string" ? (
-                <Text
+                <Typography
                   numberOfLines={1}
                   role={NATIVE_SIDEBAR_TITLE_ROLE[resolvedSizeKey]}
                   className="flex-1">
                   {title}
-                </Text>
+                </Typography>
               ) : (
                 <View className="flex-1">{title}</View>
               ))}
@@ -767,7 +768,7 @@ export function Sidebar<T = string>({
 
         <ScrollView
           testID="sidebar-body"
-          className={classNames(NATIVE_SIDEBAR_BODY_CLASS, bodyClassName)}>
+          className={cn(NATIVE_SIDEBAR_BODY_CLASS, bodyClassName)}>
           {filteredSections.map(renderSection)}
         </ScrollView>
 
@@ -779,7 +780,7 @@ export function Sidebar<T = string>({
         {footer && (
           <View
             testID="sidebar-footer"
-            className={classNames(
+            className={cn(
               NATIVE_SIDEBAR_FOOTER_CLASS,
               NATIVE_SIDEBAR_FOOTER_PADDING_CLASS[resolvedSizeKey],
               footerClassName,

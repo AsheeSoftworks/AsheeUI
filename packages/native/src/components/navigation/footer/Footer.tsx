@@ -20,6 +20,15 @@
 import {
   type FooterGroup,
   type FooterLinkItem,
+  resolveConfigCascade,
+} from "@asheeui/core";
+import type { ElementType, ReactNode } from "react";
+import type { StyleProp, ViewProps, ViewStyle } from "react-native";
+import { View } from "react-native";
+import { Container } from "../../../layout/Container";
+import { SECTION_SPACING_CLASS } from "../../../layout/layout-styles";
+import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
+import {
   NATIVE_FOOTER_BOTTOM_CLASS,
   NATIVE_FOOTER_BOTTOM_LINKS_CLASS,
   NATIVE_FOOTER_BRAND_COLUMN_CLASS,
@@ -30,16 +39,13 @@ import {
   NATIVE_FOOTER_SOCIAL_ROW_CLASS,
   NATIVE_FOOTER_TOP_CLASS,
   NATIVE_FOOTER_VARIANT_CLASS,
-  resolveConfigCascade,
-} from "@asheeui/core";
-import type { ReactNode } from "react";
-import type { StyleProp, ViewProps, ViewStyle } from "react-native";
-import { View } from "react-native";
-import { Container } from "../../../layout/Container";
-import { SECTION_SPACING_CLASS } from "../../../layout/layout-styles";
-import { useAsheeNativeConfig } from "../../../provider/AsheeNativeProvider";
-import { classNames } from "../../../utils/class-names";
-import { Text } from "../../typography/text/Text";
+} from "../../../styles/footer";
+import { cn } from "../../../utils/cn";
+import {
+  type UnsupportedElementProps,
+  useUnsupportedElementProps,
+} from "../../../utils/unsupported-element-props";
+import { Typography } from "../../typography/text/Text";
 import { Link } from "../link";
 import {
   FALLBACK_NATIVE_FOOTER_CONFIG,
@@ -47,11 +53,23 @@ import {
 } from "./footer-config";
 
 /**
+ * The substitution a footer accepts, under the web renderer's key names.
+ */
+export interface FooterLink {
+  /** Component that replaces the anchor, such as a framework router link. */
+  component?: ElementType;
+
+  /** Additional props for that component, spread last so they win. */
+  props?: Record<string, unknown>;
+}
+
+/**
  * Props for the native Footer.
  */
 export interface FooterProps
   extends NativeFooterConfig,
-    Omit<ViewProps, "children" | "style"> {
+    Omit<ViewProps, "children" | "style">,
+    UnsupportedElementProps {
   /** Brand content, typically a logo and a product name. */
   brand?: ReactNode;
 
@@ -79,6 +97,15 @@ export interface FooterProps
   /** Content below everything else. */
   children?: ReactNode;
 
+  /**
+   * Substitution applied to every link the footer renders.
+   *
+   * A footer's links are data (`{ label, href }`), so the component that renders them is
+   * stated once for the whole footer rather than per item; each link still receives its
+   * own `href`.
+   */
+  link?: FooterLink;
+
   /** Extra classes appended last, so a consumer's own classes win. */
   className?: string;
 
@@ -94,9 +121,11 @@ export interface FooterProps
  */
 function FooterLinkList({
   links,
+  link,
   className,
 }: {
   links: FooterLinkItem[];
+  link?: FooterLink;
   className: string;
 }) {
   return (
@@ -105,6 +134,8 @@ function FooterLinkList({
         <Link
           key={item.id ?? index}
           href={item.href}
+          component={link?.component}
+          componentProps={link?.props}
           startIcon={item.icon}
           isExternal={item.isExternal}
           className={NATIVE_FOOTER_LINK_CLASS}>
@@ -158,16 +189,21 @@ export function Footer({
   legal,
   copyright,
   newsletter,
+  link,
   variant,
   spacing,
   contained,
   containerSize,
+  as,
+  titleAs,
   className,
   style,
   children,
   ...rest
 }: FooterProps) {
-  const config = useAsheeNativeConfig();
+  useUnsupportedElementProps("Footer", { as, titleAs });
+
+  const config = useAsheeConfig();
 
   const resolved = resolveConfigCascade<
     NativeFooterConfig,
@@ -187,11 +223,11 @@ export function Footer({
         <View className={NATIVE_FOOTER_TOP_CLASS}>
           {hasBrandColumn && (
             <View className={NATIVE_FOOTER_BRAND_COLUMN_CLASS}>
-              {brand && <Text role="heading-sm">{brand}</Text>}
+              {brand && <Typography role="heading-sm">{brand}</Typography>}
               {description && (
-                <Text role="body-sm" tone="muted">
+                <Typography role="body-sm" tone="muted">
                   {description}
-                </Text>
+                </Typography>
               )}
               {newsletter}
             </View>
@@ -205,11 +241,12 @@ export function Footer({
                   className={NATIVE_FOOTER_GROUP_CLASS}>
                   {/* A group's title names the column it heads, so it is announced
                       as a heading a reader can move between. */}
-                  <Text role="label" accessibilityRole="header">
+                  <Typography role="label" accessibilityRole="header">
                     {group.title}
-                  </Text>
+                  </Typography>
                   <FooterLinkList
                     links={group.links}
+                    link={link}
                     className={NATIVE_FOOTER_LIST_CLASS}
                   />
                 </View>
@@ -222,21 +259,23 @@ export function Footer({
       {hasBottomRow && (
         <View className={NATIVE_FOOTER_BOTTOM_CLASS}>
           {copyright && (
-            <Text role="caption" tone="muted">
+            <Typography role="caption" tone="muted">
               {copyright}
-            </Text>
+            </Typography>
           )}
 
           <View className={NATIVE_FOOTER_BOTTOM_LINKS_CLASS}>
             {legal && legal.length > 0 && (
               <FooterLinkList
                 links={legal}
+                link={link}
                 className={NATIVE_FOOTER_BOTTOM_LINKS_CLASS}
               />
             )}
             {social && social.length > 0 && (
               <FooterLinkList
                 links={social}
+                link={link}
                 className={NATIVE_FOOTER_SOCIAL_ROW_CLASS}
               />
             )}
@@ -250,7 +289,7 @@ export function Footer({
 
   return (
     <View
-      className={classNames(
+      className={cn(
         NATIVE_FOOTER_VARIANT_CLASS[resolved.variant],
         // The footer paints its own surface and its own rhythm rather than wrapping
         // itself in a `Section`, because a footer's surface is its own vocabulary

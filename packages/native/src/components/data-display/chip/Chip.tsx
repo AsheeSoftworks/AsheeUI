@@ -17,6 +17,24 @@
 
 import {
   type Color,
+  type Radius,
+  resolveCascade,
+  resolveChipVariant,
+  resolveClassKey,
+  resolvePress,
+  type Size,
+  type Variant,
+} from "@asheeui/core";
+import type { ReactNode } from "react";
+import type {
+  GestureResponderEvent,
+  StyleProp,
+  ViewProps,
+  ViewStyle,
+} from "react-native";
+import { Pressable, View } from "react-native";
+import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
+import {
   NATIVE_CHIP_AVATAR_CLASS,
   NATIVE_CHIP_BASE_CLASS,
   NATIVE_CHIP_CLOSE_CLASS,
@@ -31,20 +49,10 @@ import {
   NATIVE_CHIP_SLOT_CLASS,
   NATIVE_CHIP_TEXT_CLASS,
   NATIVE_CHIP_VARIANT_CLASS,
-  NATIVE_RADIUS_CLASS,
-  type Radius,
-  resolveCascade,
-  resolveChipVariant,
-  resolveClassKey,
-  type Size,
-  type Variant,
-} from "@asheeui/core";
-import type { ReactNode } from "react";
-import type { StyleProp, ViewProps, ViewStyle } from "react-native";
-import { Pressable, View } from "react-native";
-import { useAsheeNativeConfig } from "../../../provider/AsheeNativeProvider";
-import { classNames } from "../../../utils/class-names";
-import { Text } from "../../typography/text/Text";
+} from "../../../styles/chip";
+import { NATIVE_RADIUS_CLASS } from "../../../styles/radius";
+import { cn } from "../../../utils/cn";
+import { Typography } from "../../typography/text/Text";
 import {
   FALLBACK_NATIVE_CHIP_CONFIG,
   type NativeChipConfig,
@@ -98,6 +106,15 @@ export interface ChipProps
    */
   onPress?: () => void;
 
+  /**
+   * The web's name for the same act.
+   *
+   * Either name makes the chip a control, which is what the web chip states: a chip with
+   * `onClick` is pressable, and one without is a token. Both run when both are given,
+   * `onClick` first.
+   */
+  onClick?: (event: GestureResponderEvent) => void;
+
   /** The chip's label. */
   children?: ReactNode;
 
@@ -143,13 +160,14 @@ export function Chip({
   onClose,
   closeIcon,
   closeLabel = "Remove chip",
+  onClick,
   onPress,
   children,
   className,
   style,
   ...rest
 }: ChipProps) {
-  const config = useAsheeNativeConfig();
+  const config = useAsheeConfig();
   const sectionConfig = config.components.chip;
 
   // The cascade's last two tiers belong to the platform rather than to the chip, so what
@@ -216,15 +234,19 @@ export function Chip({
     FALLBACK_NATIVE_CHIP_CONFIG.radius,
   );
 
-  const isInteractive = Boolean(onPress);
+  const isInteractive = Boolean(onPress || onClick);
 
   return (
     <Pressable
       accessibilityRole={isInteractive ? "button" : undefined}
       accessibilityState={{ disabled: isDisabled }}
       disabled={isDisabled || !isInteractive}
-      onPress={isDisabled ? undefined : onPress}
-      className={classNames(
+      onPress={
+        isDisabled
+          ? undefined
+          : (pressEvent) => resolvePress({ onClick, onPress }, pressEvent)
+      }
+      className={cn(
         NATIVE_CHIP_BASE_CLASS,
         NATIVE_CHIP_VARIANT_CLASS[resolvedVariant][resolvedColor],
         paddingClass,
@@ -237,7 +259,7 @@ export function Chip({
       {...rest}>
       {dot ? (
         <View
-          className={classNames(
+          className={cn(
             NATIVE_CHIP_DOT_SHAPE_CLASS,
             typeof dot === "string"
               ? undefined
@@ -248,27 +270,27 @@ export function Chip({
       ) : null}
 
       {avatar ? (
-        <View className={classNames(NATIVE_CHIP_AVATAR_CLASS, avatarSizeClass)}>
+        <View className={cn(NATIVE_CHIP_AVATAR_CLASS, avatarSizeClass)}>
           {avatar}
         </View>
       ) : null}
 
       {startIcon && !avatar ? (
-        <View className={classNames(NATIVE_CHIP_SLOT_CLASS, iconSizeClass)}>
+        <View className={cn(NATIVE_CHIP_SLOT_CLASS, iconSizeClass)}>
           {startIcon}
         </View>
       ) : null}
 
-      <Text
-        className={classNames(
+      <Typography
+        className={cn(
           fontClass,
           NATIVE_CHIP_TEXT_CLASS[resolvedVariant][resolvedColor],
         )}>
         {children}
-      </Text>
+      </Typography>
 
       {endIcon && !onClose ? (
-        <View className={classNames(NATIVE_CHIP_SLOT_CLASS, iconSizeClass)}>
+        <View className={cn(NATIVE_CHIP_SLOT_CLASS, iconSizeClass)}>
           {endIcon}
         </View>
       ) : null}
@@ -283,9 +305,11 @@ export function Chip({
           // The remove control is its own target, so a press on it must not also press the
           // chip it sits in.
           hitSlop={6}
-          className={classNames(NATIVE_CHIP_CLOSE_CLASS, iconSizeClass)}>
+          className={cn(NATIVE_CHIP_CLOSE_CLASS, iconSizeClass)}>
           {closeIcon ?? (
-            <Text className={fontClass}>{NATIVE_CHIP_CLOSE_GLYPH}</Text>
+            <Typography className={fontClass}>
+              {NATIVE_CHIP_CLOSE_GLYPH}
+            </Typography>
           )}
         </Pressable>
       ) : null}

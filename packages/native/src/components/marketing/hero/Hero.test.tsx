@@ -10,13 +10,13 @@
 
 import {
   fireEvent,
-  type ReactTestInstance,
   type RenderResult,
   render,
 } from "@testing-library/react-native";
 import type { ReactElement } from "react";
 import { Dimensions, Text } from "react-native";
-import { AsheeNativeProvider } from "../../../provider/AsheeNativeProvider";
+import type { TestInstance } from "test-renderer";
+import { AsheeUIProvider } from "../../../provider/AsheeUIProvider";
 import { openDestination } from "../../../utils/open-destination";
 import { Hero } from "./Hero";
 
@@ -32,9 +32,7 @@ jest.mock("../../../utils/open-destination", () => ({
  * @returns The rendered tree and its queries.
  */
 async function renderHero(ui: ReactElement, config?: object) {
-  return render(
-    <AsheeNativeProvider config={config}>{ui}</AsheeNativeProvider>,
-  );
+  return render(<AsheeUIProvider config={config}>{ui}</AsheeUIProvider>);
 }
 
 /**
@@ -59,9 +57,9 @@ function classesOf(view: RenderResult, testID: string): string {
  * @returns The ancestor, or undefined when there is none.
  */
 function ancestorWithClass(
-  node: ReactTestInstance,
+  node: TestInstance,
   marker: string,
-): ReactTestInstance | undefined {
+): TestInstance | undefined {
   let current = node.parent;
 
   while (current) {
@@ -83,7 +81,7 @@ function ancestorWithClass(
  * @param node - The node, when one was found.
  * @returns Its class string, or an empty one.
  */
-function classesOfNode(node: ReactTestInstance | null | undefined): string {
+function classesOfNode(node: TestInstance | null | undefined): string {
   return ((node?.props ?? {}) as { className?: string }).className ?? "";
 }
 
@@ -277,7 +275,7 @@ describe("Native Hero", () => {
     const silence = jest.spyOn(console, "error").mockImplementation(() => {});
 
     await expect(render(<Hero title="Run your campaigns" />)).rejects.toThrow(
-      /AsheeNativeProvider/,
+      /AsheeUIProvider/,
     );
 
     silence.mockRestore();

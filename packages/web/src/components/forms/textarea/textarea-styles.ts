@@ -10,4 +10,4 @@
 export {
   TEXTAREA_SIZE_CLASS,
   TEXTAREA_STATUS_BORDER_CLASS,
-} from "@asheeui/core";
+} from "../../../styles/textarea";

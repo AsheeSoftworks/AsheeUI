@@ -1,16 +1,18 @@
 /**
- * Spacing token definitions for AsheeUI.
+ * The spacing vocabulary, and where the class maps that used to live here went.
  *
- * This file provides the shared spacing scale that the layout components use
- * for gaps, vertical rhythm and section padding. Every entry is a complete,
- * static Tailwind class string, so the scale never assembles a utility name at
- * runtime (Hard Rule 5) and a layout component can resolve spacing through the
- * standard configuration cascade.
+ * The token names are not declared here. They come from `SPACING_STEP` in `../tokens`, which owns
+ * the scale; `Space` is re-exported from there, so a layout component imports its vocabulary from
+ * one place and a step added to the token map is a type error in every map that has to state it.
  *
- * The token names are not declared here. They come from `SPACING_STEP` in
- * `../tokens`, which owns the scale, and every map below is a `Record<Space,
- * string>`: adding a step to the token map is a type error until each map states
- * its class, so the token scale and the class maps cannot silently disagree.
+ * The `Record<Space, string>` maps that turned a step into a class — `SPACE_GAP_CLASS`,
+ * `SPACE_BLOCK_CLASS`, `SPACE_PADDING_Y_CLASS`, `SPACE_MIN_HEIGHT_CLASS` — are class strings, and
+ * a class string belongs to the renderer that compiles it: Tailwind on the web, NativeWind on the
+ * platform. C2 duplicated them into `packages/web/src/styles/portable.ts` and
+ * `packages/native/src/styles/portable.ts` and deleted them from core, and
+ * `shared/style-parity.test.ts` reads the two copies as text so the pairs it lists cannot drift.
+ * That is why this module is one export and holds no class at all — the vocabulary, without the
+ * strings.
  */
 
 import type { Space } from "../tokens";
@@ -20,78 +22,3 @@ import type { Space } from "../tokens";
  * Derived from `SPACING_STEP` in `../tokens`.
  */
 export type { Space };
-
-/**
- * Flex and grid gap classes for each spacing token.
- * Used by `Stack` and `Grid` for the space between their children.
- */
-export const SPACE_GAP_CLASS: Record<Space, string> = {
-  none: "gap-0",
-  xs: "gap-1",
-  sm: "gap-2",
-  md: "gap-4",
-  lg: "gap-6",
-  xl: "gap-8",
-  "2xl": "gap-12",
-};
-
-/**
- * Vertical rhythm classes for stacked block content.
- * Applied to a container whose direct children are blocks rather than
- * flex or grid items.
- */
-export const SPACE_BLOCK_CLASS: Record<Space, string> = {
-  none: "space-y-0",
-  xs: "space-y-1",
-  sm: "space-y-2",
-  md: "space-y-4",
-  lg: "space-y-6",
-  xl: "space-y-8",
-  "2xl": "space-y-12",
-};
-
-/**
- * Vertical padding classes for a page section.
- * Larger tokens add a wider step at the `md` breakpoint, so the same token
- * reads as a section on a phone and as a band on a wide screen.
- */
-export const SPACE_PADDING_Y_CLASS: Record<Space, string> = {
-  none: "py-0",
-  xs: "py-2",
-  sm: "py-6",
-  md: "py-8 md:py-12",
-  lg: "py-12 md:py-16",
-  xl: "py-16 md:py-24",
-  "2xl": "py-20 md:py-32",
-};
-
-/**
- * Horizontal padding classes for a page gutter.
- * Used by `Container`, where the gutter widens with the viewport.
- */
-export const SPACE_PADDING_X_CLASS: Record<Space, string> = {
-  none: "px-0",
-  xs: "px-1",
-  sm: "px-3",
-  md: "px-4 sm:px-6",
-  lg: "px-4 sm:px-6 lg:px-8",
-  xl: "px-6 sm:px-8 lg:px-12",
-  "2xl": "px-8 sm:px-12 lg:px-16",
-};
-
-/**
- * Minimum height classes for a region that claims space before it places its
- * content.
- * The scale is deliberately coarse: it exists so a layout can claim a region of
- * the page (a centred block, a loading region), not so it can express every
- * height Tailwind supports.
- */
-export const SPACE_MIN_HEIGHT_CLASS: Record<Space, string> = {
-  none: "",
-  xs: "min-h-16",
-  sm: "min-h-24",
-  md: "min-h-48",
-  lg: "min-h-72",
-  xl: "min-h-96",
-  "2xl": "min-h-screen",
-};

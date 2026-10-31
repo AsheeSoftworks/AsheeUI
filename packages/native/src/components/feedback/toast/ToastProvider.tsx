@@ -14,8 +14,6 @@
  */
 
 import {
-  NATIVE_TOAST_CONTAINER_CLASS,
-  NATIVE_TOAST_PLACEMENT_CLASS,
   type Radius,
   resolveCascade,
   type Size,
@@ -26,8 +24,14 @@ import {
 } from "@asheeui/core";
 import { type ReactNode, useCallback, useMemo, useRef, useState } from "react";
 import { View } from "react-native";
-import { useAsheeNativeConfig } from "../../../provider/AsheeNativeProvider";
-import { classNames } from "../../../utils/class-names";
+import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
+import { announce } from "../../../utils/announce";
+import { useUnsupportedProps } from "../../../utils/unsupported-prop";
+import {
+  NATIVE_TOAST_CONTAINER_CLASS,
+  NATIVE_TOAST_PLACEMENT_CLASS,
+} from "../../../styles/toast";
+import { cn } from "../../../utils/cn";
 import { ToastContext } from "./ToastContext";
 import { ToastItem } from "./ToastItem";
 import {
@@ -41,6 +45,17 @@ import {
 export interface ToastProviderProps extends NativeToastConfig {
   /** The application's tree, which the provider wraps. */
   children: ReactNode;
+
+  /**
+   * Whether the web renders its messages into the document.
+   *
+   * The platform's layer is already above the screen, so there is no document to hoist to.
+   * Accepted so a shared root compiles; warns once and changes nothing.
+   */
+  portal?: unknown;
+
+  /** The element the web portals into, for the same reason as {@link portal}. */
+  portalTarget?: unknown;
 }
 
 /**
@@ -59,11 +74,11 @@ export interface ToastProviderProps extends NativeToastConfig {
  *
  * @example
  * ```tsx
- * <AsheeNativeProvider>
+ * <AsheeUIProvider>
  *   <ToastProvider>
  *     <App />
  *   </ToastProvider>
- * </AsheeNativeProvider>
+ * </AsheeUIProvider>
  * ```
  *
  * @see useToast - How a screen shows a message.
@@ -77,9 +92,24 @@ export function ToastProvider({
   animated,
   defaultTimeout,
   maxToasts,
+  portal,
+  portalTarget,
 }: ToastProviderProps) {
-  const config = useAsheeNativeConfig();
+  const config = useAsheeConfig();
   const sectionConfig = config.components.toast;
+
+  useUnsupportedProps("ToastProvider", {
+    portal: {
+      value: portal,
+      substitute:
+        "the native layer already paints above the screen; place the provider at the root",
+    },
+    portalTarget: {
+      value: portalTarget,
+      substitute:
+        "the native layer is positioned against the provider; wrap the screen it should cover",
+    },
+  });
 
   const resolvedSize = resolveCascade<Size>(
     size,
@@ -148,6 +178,18 @@ export function ToastProvider({
         // when one more would be more than the limit allows.
         return next.slice(Math.max(0, next.length - resolvedMaxToasts));
       });
+
+      // A message node has no text to announce; a string is what the reader hears. An
+      // error interrupts, because it is the one a reader has to act on.
+      if (
+        typeof stated.message === "string" ||
+        typeof stated.message === "number"
+      ) {
+        announce(
+          String(stated.message),
+          stated.type === "error" ? "alert" : "status",
+        );
+      }
 
       return id;
     },
@@ -240,7 +282,7 @@ export function ToastProvider({
           <View
             key={groupPlacement}
             accessibilityLabel="Notifications"
-            className={classNames(
+            className={cn(
               NATIVE_TOAST_CONTAINER_CLASS,
               NATIVE_TOAST_PLACEMENT_CLASS[groupPlacement],
             )}

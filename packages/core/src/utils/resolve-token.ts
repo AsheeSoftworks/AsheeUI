@@ -4,6 +4,13 @@
  * precedence hierarchy: instance prop > component config > theme default > hard fallback.
  * These utilities are used throughout the component library to resolve
  * values like variant, color, size, and radius.
+ *
+ * All four resolvers stay in core, for one reason: none of them knows a class string. Three resolve
+ * *values* ({@link resolveCascade}, {@link resolveConfigCascade}, {@link resolveRadiusKey}) and the
+ * fourth resolves a key *against a map the caller supplies* ({@link resolveClassKey}), so a
+ * renderer's own table is an argument rather than a dependency. That is what makes the precedence
+ * rule one rule instead of one per renderer — and it is why `resolveAnimate`, which did know the
+ * web's animation classes, moved to `@asheeui/web` in C2.
  */
 
 import type { Concrete, DeepPartial } from "./types";
@@ -37,34 +44,6 @@ export function resolveCascade<T>(
   hardFallback: T,
 ): T {
   return instance ?? section ?? globalDefault ?? hardFallback;
-}
-
-/**
- * Resolves a value for animation or transition contexts.
- * Similar to resolveCascade but without the global default tier.
- * This is useful for values that should not inherit from theme defaults.
- *
- * @param instance - The prop value passed directly to the component instance.
- * @param section - The value from the component's configuration section.
- * @param hardFallback - The final fallback value if all others are undefined.
- * @returns The resolved value.
- *
- * @example
- * ```tsx
- * const animate = resolveAnimate(
- *   props.animate,                // false
- *   config.components?.button?.animate, // true
- *   true                          // hard fallback
- * );
- * // Returns false because instance prop takes precedence
- * ```
- */
-export function resolveAnimate<T>(
-  instance: T | undefined,
-  section: T | undefined,
-  hardFallback: T,
-): T {
-  return instance ?? section ?? hardFallback;
 }
 
 /**

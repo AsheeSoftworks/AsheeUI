@@ -27,6 +27,9 @@ export type {
  * `closeOnBackdropClick` and `closeOnEscape` are the canonical dismissal names, shared with
  * the Modal; `closeOnOverlayClick` and `closeOnEsc` remain accepted as their deprecated
  * aliases, so either spelling configures the drawer.
+ *
+ * @deprecated Use {@link DrawerConfig} from `@asheeui/core` — the name both renderers
+ * publish.
  */
 export type NativeDrawerConfig = DrawerConfigOptions;
 
@@ -39,6 +42,9 @@ export type NativeDrawerConfig = DrawerConfigOptions;
  * `closeOnOverlayClick: false` before the renderer consults the aliases; registering one
  * spelling keeps the other one's absence visible to the resolution. The values are the same
  * either way.
+ *
+ * @deprecated Use {@link defaultDrawerConfig} — the name both renderers publish. The value is
+ * this one: a fallback states the platform's default, and the name is shared.
  */
 export const defaultNativeDrawerConfig: NativeDrawerConfig = {
   size: "md",
@@ -62,6 +68,9 @@ registerNativeComponentDefaults("drawer", defaultNativeDrawerConfig);
  * Both spellings of each switch are stated, so neither can fall through to `undefined`: the
  * renderer reads the canonical name first, the deprecated alias second, and this is the last
  * tier either of them can reach.
+ *
+ * @deprecated Use {@link FALLBACK_DRAWER_CONFIG} — the name both renderers publish. The value is
+ * this one: a fallback states the platform's default, and the name is shared.
  */
 export const FALLBACK_NATIVE_DRAWER_CONFIG = {
   size: "md",

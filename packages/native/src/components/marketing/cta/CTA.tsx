@@ -18,20 +18,23 @@
  * one.
  */
 
-import {
-  type ActionConfig,
-  NATIVE_CTA_CENTERED_CLASS,
-  NATIVE_CTA_INNER_CLASS,
-  NATIVE_CTA_PANEL_CLASS,
-  resolveConfigCascade,
-} from "@asheeui/core";
+import { type ActionConfig, resolveConfigCascade } from "@asheeui/core";
 import type { ReactNode } from "react";
 import type { StyleProp, ViewProps, ViewStyle } from "react-native";
 import { View } from "react-native";
 import { Container } from "../../../layout/Container";
 import { Section } from "../../../layout/Section";
-import { useAsheeNativeConfig } from "../../../provider/AsheeNativeProvider";
-import { classNames } from "../../../utils/class-names";
+import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
+import {
+  NATIVE_CTA_CENTERED_CLASS,
+  NATIVE_CTA_INNER_CLASS,
+  NATIVE_CTA_PANEL_CLASS,
+} from "../../../styles/cta";
+import { cn } from "../../../utils/cn";
+import {
+  type UnsupportedElementProps,
+  useUnsupportedElementProps,
+} from "../../../utils/unsupported-element-props";
 import { ActionGroup } from "../../layouts/section-kit/ActionGroup";
 import { SectionHeading } from "../../layouts/section-kit/SectionHeading";
 import { FALLBACK_NATIVE_CTA_CONFIG, type NativeCtaConfig } from "./cta-config";
@@ -41,7 +44,8 @@ import { FALLBACK_NATIVE_CTA_CONFIG, type NativeCtaConfig } from "./cta-config";
  */
 export interface CtaProps
   extends NativeCtaConfig,
-    Omit<ViewProps, "children" | "style"> {
+    Omit<ViewProps, "children" | "style">,
+    UnsupportedElementProps {
   /** Short label above the title. */
   eyebrow?: ReactNode;
 
@@ -117,12 +121,16 @@ export function CTA({
   containerSize,
   contained,
   actions,
+  as,
+  titleAs,
   className,
   style,
   children,
   ...rest
 }: CtaProps) {
-  const config = useAsheeNativeConfig();
+  useUnsupportedElementProps("CTA", { as, titleAs });
+
+  const config = useAsheeConfig();
 
   const resolved = resolveConfigCascade<
     NativeCtaConfig,
@@ -136,7 +144,7 @@ export function CTA({
   const body = (
     <View className={NATIVE_CTA_PANEL_CLASS[resolved.panel]}>
       <View
-        className={classNames(
+        className={cn(
           NATIVE_CTA_INNER_CLASS,
           resolved.align === "center" && NATIVE_CTA_CENTERED_CLASS,
         )}>

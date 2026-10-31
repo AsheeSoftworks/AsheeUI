@@ -14,6 +14,12 @@
  * the bar paints the theme's background solidly, because there is no backdrop to blur.
  */
 
+import { resolveConfigCascade } from "@asheeui/core";
+import type { ReactNode } from "react";
+import type { StyleProp, ViewProps, ViewStyle } from "react-native";
+import { View } from "react-native";
+import { Container } from "../../../layout/Container";
+import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
 import {
   NATIVE_PAGE_CLASS,
   NATIVE_PAGE_CONTENT_CLASS,
@@ -24,15 +30,14 @@ import {
   NATIVE_PAGE_HEADER_CLASS,
   NATIVE_PAGE_HEADER_INNER_CLASS,
   NATIVE_PAGE_HEADER_STICKY_CLASS,
-  resolveConfigCascade,
-  SPACE_PADDING_Y_CLASS,
-} from "@asheeui/core";
-import type { ReactNode } from "react";
-import type { StyleProp, ViewProps, ViewStyle } from "react-native";
-import { View } from "react-native";
-import { Container } from "../../../layout/Container";
-import { useAsheeNativeConfig } from "../../../provider/AsheeNativeProvider";
-import { classNames } from "../../../utils/class-names";
+} from "../../../styles/page";
+import { SPACE_PADDING_Y_CLASS } from "../../../styles/portable";
+import { cn } from "../../../utils/cn";
+import { warnUnsupportedProp } from "../../../utils/unsupported-prop";
+import {
+  type UnsupportedElementProps,
+  useUnsupportedElementProps,
+} from "../../../utils/unsupported-element-props";
 import {
   FALLBACK_NATIVE_PAGE_CONFIG,
   type NativePageConfig,
@@ -49,7 +54,18 @@ import {
  * @returns The resolved options.
  */
 function usePagePart(props: NativePageConfig): Required<NativePageConfig> {
-  const config = useAsheeNativeConfig();
+  const config = useAsheeConfig();
+
+  // A page part's `sticky` is the web's scroll-linked positioning; the platform renders
+  // the part where it is placed. The prop is read by the cascade like every other option,
+  // and this is where the no-op says so.
+  if (props.sticky !== undefined) {
+    warnUnsupportedProp(
+      "Page",
+      "sticky",
+      "place the region outside the scrolling container; a device has no scroll-linked positioning",
+    );
+  }
 
   return resolveConfigCascade<NativePageConfig, Required<NativePageConfig>>(
     props,
@@ -66,7 +82,9 @@ function usePagePart(props: NativePageConfig): Required<NativePageConfig> {
  * asked of the shell would have nothing to answer with. `components.page` still configures
  * the shell's parts.
  */
-export interface PageProps extends Omit<ViewProps, "children" | "style"> {
+export interface PageProps
+  extends Omit<ViewProps, "children" | "style">,
+    UnsupportedElementProps {
   /** The bars and the content area the shell holds. */
   children?: ReactNode;
 
@@ -103,10 +121,19 @@ export interface PageProps extends Omit<ViewProps, "children" | "style"> {
  *
  * @see Split - Adds a second column to a screen.
  */
-export function Page({ className, style, children, ...rest }: PageProps) {
+export function Page({
+  className,
+  style,
+  children,
+  as,
+  titleAs,
+  ...rest
+}: PageProps) {
+  useUnsupportedElementProps("Page", { as, titleAs });
+
   return (
     <View
-      className={classNames(NATIVE_PAGE_CLASS, className)}
+      className={cn(NATIVE_PAGE_CLASS, className)}
       style={style}
       {...rest}>
       {children}
@@ -176,7 +203,7 @@ export function PageHeader({
   return (
     <View
       accessibilityRole="header"
-      className={classNames(
+      className={cn(
         NATIVE_PAGE_HEADER_CLASS,
         resolved.sticky && NATIVE_PAGE_HEADER_STICKY_CLASS,
         resolved.divider && NATIVE_PAGE_DIVIDER_CLASS,
@@ -248,7 +275,7 @@ export function PageContent({
 
   const inner = (
     <View
-      className={classNames(
+      className={cn(
         SPACE_PADDING_Y_CLASS[resolved.spacing],
         "flex w-full flex-col",
         className,
@@ -323,7 +350,7 @@ export function PageFooter({
 
   return (
     <View
-      className={classNames(
+      className={cn(
         NATIVE_PAGE_FOOTER_CLASS,
         resolved.divider && NATIVE_PAGE_FOOTER_DIVIDER_CLASS,
         className,

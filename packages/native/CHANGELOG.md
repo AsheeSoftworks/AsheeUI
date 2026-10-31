@@ -1,5 +1,61 @@
 # @asheeui/native
 
+## 2.8.0
+
+### Minor Changes
+
+- # The platform renderer catches up
+  
+  The platform package now publishes the shared vocabulary under the names the web renderer uses, so a
+  shared component compiles on both branches without a platform import.
+  
+  ## Names and contracts
+  
+  - **The shared type vocabulary and configuration sections** are published under the names
+    `@asheeui/core` declares (`ExternalConfig`, `Color`, `Radius`, `Size`, `Space`, `Variant`,
+    `ThemeName`, the per-component `*Config` shapes).
+  - **The provider answers to the web's names**: `AsheeUIProvider`, `AsheeUIProviderProps` and
+    `AsheeConfig`; the earlier platform names stay as deprecated aliases.
+  - **The platform's fallbacks and defaults answer to the shared spellings** (`FALLBACK_X_CONFIG`,
+    `defaultXConfig`), as the same references, with the platform's values (`LAW-2`).
+  - **`useAshee`, `usePrefersReducedMotion` and `useTheme`** exist beside `useAsheeConfig`,
+    `useReduceMotion` and the platform host; `useAsheeConfig()` returns core's `Config` shape plus the
+    platform's density.
+  - **The event names are one vocabulary**: `onClick`, `onPress`, `onChange`, `onChangeText`,
+    `onFilesSelected` and the field's `label`/`typography` are accepted in the same order the resolver
+    states.
+  
+  ## Components
+  
+  - **Composition props**: `Button` gains `startContent`/`endContent`/`icon`, `type="submit"`/`"reset"`
+    and `href`; `Badge` gains `label` and the two slots; `Card` gains `image`/`src`/`alt`/`body` and
+    `isClickable`; `Image` accepts `loading` as a documented no-op.
+  - **Fields**: `Input` maps the web's `type` to `keyboardType`/`autoComplete`/`secureTextEntry`;
+    `PasswordInput` exists; the field family accepts `startContent`/`endContent`, `isLoading`,
+    `fullWidth`, `required` and `labelAlign`; the status role resolves through core's rule.
+  - **Tables**: `Table` and `DataTable` exist, rendering through `RowList`, under the web's names.
+  - **Overlays**: `Modal` and `Drawer` draw a close control (`closeLabel`); `closeOnEscape` maps to the
+    platform's own way out; the announcement contract is installed.
+  - **Substitution**: `Link`, `Image` and `Navbar` accept the shared `Substitution` and
+    `LinkSubstitution`, so a shared screen keeps its router on a device.
+  - **Typography** resolves the shared role table and the four token overrides, and reads
+    `components.typography`.
+  - **`cn`** is the platform's own merge (property families, last one wins, no value rewritten);
+    `classNames` is a deprecated alias of it.
+  
+  ## Accepted but not applied
+  
+  Every prop the web accepts and a device cannot honour now says so once, in development, with a
+  substitute (`warnUnsupportedProp`, `useUnsupportedProps`, `auditUnsupportedConfig`). The ledger is the
+  documentation's "K/R ledger".
+  
+  No deprecated alias is removed in this release: they stay until the next major.
+
+### Patch Changes
+
+- Updated dependencies
+  - @asheeui/core@3.0.0
+
 ## 2.7.0
 
 ### Minor Changes

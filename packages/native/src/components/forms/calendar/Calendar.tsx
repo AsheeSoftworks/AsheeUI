@@ -29,11 +29,22 @@ import {
   formatDisplay,
   getDefaultPlaceholder,
   isFieldInvalid,
+  type Radius,
+  resolveCascade,
+  type Size,
+  type Variant,
+} from "@asheeui/core";
+import { useState } from "react";
+import { Pressable, View } from "react-native";
+import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
+import {
   NATIVE_CALENDAR_TRIGGER_ACTIONS_CLASS,
   NATIVE_CALENDAR_TRIGGER_CLASS,
   NATIVE_CALENDAR_TRIGGER_CLEAR_CLASS,
   NATIVE_CALENDAR_TRIGGER_CLEAR_LABEL_CLASS,
   NATIVE_CALENDAR_TRIGGER_GLYPH_CLASS,
+} from "../../../styles/calendar";
+import {
   NATIVE_INPUT_BASE_CLASS,
   NATIVE_INPUT_DISABLED_CLASS,
   NATIVE_INPUT_EDGE_ACCENT_CLASS,
@@ -42,17 +53,11 @@ import {
   NATIVE_INPUT_EDGE_WIDTH_CLASS,
   NATIVE_INPUT_SIZE_CLASS,
   NATIVE_INPUT_VARIANT_CLASS,
-  NATIVE_RADIUS_CLASS,
-  type Radius,
-  resolveCascade,
-  type Size,
-  type Variant,
-} from "@asheeui/core";
-import { useState } from "react";
-import { Pressable, View } from "react-native";
-import { useAsheeNativeConfig } from "../../../provider/AsheeNativeProvider";
-import { classNames } from "../../../utils/class-names";
-import { Text } from "../../typography/text/Text";
+} from "../../../styles/input";
+import { NATIVE_RADIUS_CLASS } from "../../../styles/radius";
+import { cn } from "../../../utils/cn";
+import { useUnsupportedProps } from "../../../utils/unsupported-prop";
+import { Typography } from "../../typography/text/Text";
 import { FieldShell } from "../field/FieldShell";
 import { CalendarSheet } from "./CalendarSheet";
 import {
@@ -111,6 +116,20 @@ export interface CalendarProps extends NativeCalendarConfig {
 
   /** Identifier prefix for the surface's controls, so a test can reach one. */
   sheetTestID?: string;
+
+  /**
+   * The web's floating-panel configuration.
+   *
+   * The platform's month is a surface presented above the screen; there is no panel to
+   * float beside the field. Accepted so a shared field compiles; warns once.
+   */
+  picker?: unknown;
+
+  /** The web's portal option, for the same reason as {@link picker}. */
+  portal?: unknown;
+
+  /** The web's scroll lock, for the same reason: there is no page to lock. */
+  lockScroll?: unknown;
 }
 
 /**
@@ -143,12 +162,31 @@ export function Calendar({
   message,
   isLoading,
   sheetTitle,
+  picker,
+  portal,
+  lockScroll,
   className,
   testID,
   sheetTestID,
 }: CalendarProps) {
-  const config = useAsheeNativeConfig();
+  const config = useAsheeConfig();
   const sectionConfig = config.components.calendar;
+
+  useUnsupportedProps("Calendar", {
+    picker: {
+      value: picker,
+      substitute:
+        "the month opens as a surface; there is no panel to float beside the field",
+    },
+    portal: {
+      value: portal,
+      substitute: "the month is already presented above the screen",
+    },
+    lockScroll: {
+      value: lockScroll,
+      substitute: "there is no page to lock; the month's surface takes the input itself",
+    },
+  });
   const [isOpen, setIsOpen] = useState(false);
   const [uncontrolledValue, setUncontrolledValue] = useState<Date | null>(
     defaultValue,
@@ -214,7 +252,7 @@ export function Calendar({
   };
 
   const isInvalid = isFieldInvalid(resolvedStatus);
-  const edgeClass = classNames(
+  const edgeClass = cn(
     NATIVE_INPUT_EDGE_WIDTH_CLASS[resolvedVariant],
     isInvalid
       ? NATIVE_INPUT_EDGE_INVALID_CLASS
@@ -247,7 +285,7 @@ export function Calendar({
         }}
         disabled={resolvedDisabled}
         onPress={() => setIsOpen(true)}
-        className={classNames(
+        className={cn(
           NATIVE_INPUT_BASE_CLASS,
           NATIVE_INPUT_SIZE_CLASS[resolvedSize],
           NATIVE_RADIUS_CLASS[resolvedRadius],
@@ -257,7 +295,7 @@ export function Calendar({
           resolvedDisabled && NATIVE_INPUT_DISABLED_CLASS,
           className,
         )}>
-        <Text role="body-md">{shown}</Text>
+        <Typography role="body-md">{shown}</Typography>
         <View className={NATIVE_CALENDAR_TRIGGER_ACTIONS_CLASS}>
           {isClearable && chosen && !resolvedDisabled && (
             <Pressable
@@ -266,22 +304,22 @@ export function Calendar({
               accessibilityLabel="Clear selection"
               onPress={() => commit(null)}
               className={NATIVE_CALENDAR_TRIGGER_CLEAR_CLASS}>
-              <Text
+              <Typography
                 role="body-sm"
                 accessible={false}
                 className={NATIVE_CALENDAR_TRIGGER_CLEAR_LABEL_CLASS}>
                 ✕
-              </Text>
+              </Typography>
             </Pressable>
           )}
           {/* The glyph is decoration: the control's role and its label already say what
               the field is, and a reader who cannot see the glyph loses nothing. */}
-          <Text
+          <Typography
             role="body-md"
             accessible={false}
             className={NATIVE_CALENDAR_TRIGGER_GLYPH_CLASS}>
             {resolvedMode === "time" ? TIME_GLYPH : DATE_GLYPH}
-          </Text>
+          </Typography>
         </View>
       </Pressable>
       <CalendarSheet

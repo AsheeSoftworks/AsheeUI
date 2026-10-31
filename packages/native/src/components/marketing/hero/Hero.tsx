@@ -22,23 +22,26 @@
  * configured for the platform.
  */
 
-import {
-  type ActionConfig,
-  NATIVE_HERO_BASE_CLASS,
-  NATIVE_HERO_COLUMN_CLASS,
-  NATIVE_HERO_MEDIA_CLASS,
-  NATIVE_HERO_ROW_CLASS,
-  NATIVE_HERO_TEXT_COLUMN_CLASS,
-  resolveConfigCascade,
-} from "@asheeui/core";
+import { type ActionConfig, resolveConfigCascade } from "@asheeui/core";
 import type { ReactNode } from "react";
 import type { StyleProp, ViewProps, ViewStyle } from "react-native";
 import { View } from "react-native";
 import { useBreakpoint } from "../../../hooks/use-breakpoint";
 import { Container } from "../../../layout/Container";
 import { Section } from "../../../layout/Section";
-import { useAsheeNativeConfig } from "../../../provider/AsheeNativeProvider";
-import { classNames } from "../../../utils/class-names";
+import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
+import {
+  NATIVE_HERO_BASE_CLASS,
+  NATIVE_HERO_COLUMN_CLASS,
+  NATIVE_HERO_MEDIA_CLASS,
+  NATIVE_HERO_ROW_CLASS,
+  NATIVE_HERO_TEXT_COLUMN_CLASS,
+} from "../../../styles/hero";
+import { cn } from "../../../utils/cn";
+import {
+  type UnsupportedElementProps,
+  useUnsupportedElementProps,
+} from "../../../utils/unsupported-element-props";
 import { ActionGroup } from "../../layouts/section-kit/ActionGroup";
 import { SectionHeading } from "../../layouts/section-kit/SectionHeading";
 import {
@@ -51,7 +54,8 @@ import {
  */
 export interface HeroProps
   extends NativeHeroConfig,
-    Omit<ViewProps, "children" | "style"> {
+    Omit<ViewProps, "children" | "style">,
+    UnsupportedElementProps {
   /** Short label above the title, for example the product category. */
   eyebrow?: ReactNode;
 
@@ -134,12 +138,16 @@ export function Hero({
   containerSize,
   contained,
   actions,
+  as,
+  titleAs,
   className,
   style,
   children,
   ...rest
 }: HeroProps) {
-  const config = useAsheeNativeConfig();
+  useUnsupportedElementProps("Hero", { as, titleAs });
+
+  const config = useAsheeConfig();
   const { isAtLeast } = useBreakpoint();
 
   const resolved = resolveConfigCascade<
@@ -175,7 +183,7 @@ export function Hero({
 
   const body = media ? (
     <View
-      className={classNames(
+      className={cn(
         NATIVE_HERO_BASE_CLASS,
         // The platform decides the arrangement from the window it measures: the
         // framework's `md` window is the first one with room for two columns.

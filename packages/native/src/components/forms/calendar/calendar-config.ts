@@ -21,6 +21,9 @@ import { registerNativeComponentDefaults } from "../../../config/registry";
  *
  * `size`, `radius`, `variant`, `color` and `status` carry the meanings the shared field
  * family gives them, and `mode` carries the meaning the shared calendar gives it.
+ *
+ * @deprecated Use {@link CalendarConfig} from `@asheeui/core` — the name both renderers
+ * publish.
  */
 export interface NativeCalendarConfig
   extends Pick<
@@ -39,6 +42,9 @@ export interface NativeCalendarConfig
  *
  * The density is the shared `md` whose proportions the native scale makes touch-sized:
  * a day the reader cannot press is not a field they can fill in.
+ *
+ * @deprecated Use {@link defaultCalendarConfig} — the name both renderers publish. The value is
+ * this one: a fallback states the platform's default, and the name is shared.
  */
 export const defaultNativeCalendarConfig: NativeCalendarConfig = {
   size: "md",
@@ -59,6 +65,9 @@ registerNativeComponentDefaults("calendar", defaultNativeCalendarConfig);
 /**
  * The values the date field falls back to when no tier provides one.
  * The family's fallbacks with the calendar's own mode beside them: a date field.
+ *
+ * @deprecated Use {@link FALLBACK_CALENDAR_CONFIG} — the name both renderers publish. The value is
+ * this one: a fallback states the platform's default, and the name is shared.
  */
 export const FALLBACK_NATIVE_CALENDAR_CONFIG = {
   size: "md",

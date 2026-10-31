@@ -25,6 +25,20 @@ import {
   ALERT_TYPE_COLOR,
   ALERT_TYPE_ROLE,
   type AlertType,
+  type Radius,
+  resolveCascade,
+  resolveMessageVariant,
+  type Variant,
+} from "@asheeui/core";
+import type { ReactNode } from "react";
+import type { StyleProp, ViewProps, ViewStyle } from "react-native";
+import { Pressable, View } from "react-native";
+import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
+import {
+  NATIVE_ANNOUNCEMENT_LIVE_REGION,
+  resolveNativeAnnouncementRole,
+} from "../../../shared/announcement";
+import {
   NATIVE_ALERT_BASE_CLASS,
   NATIVE_ALERT_BODY_CLASS,
   NATIVE_ALERT_DISMISS_CLASS,
@@ -33,22 +47,14 @@ import {
   NATIVE_ALERT_ICON_CLASS,
   NATIVE_ALERT_TITLE_CLASS,
   NATIVE_ALERT_TYPE_GLYPH,
-  NATIVE_ANNOUNCEMENT_LIVE_REGION,
+} from "../../../styles/alert";
+import {
   NATIVE_MESSAGE_SURFACE_CLASS,
   NATIVE_MESSAGE_TEXT_CLASS,
-  NATIVE_RADIUS_CLASS,
-  type Radius,
-  resolveCascade,
-  resolveMessageVariant,
-  resolveNativeAnnouncementRole,
-  type Variant,
-} from "@asheeui/core";
-import type { ReactNode } from "react";
-import type { StyleProp, ViewProps, ViewStyle } from "react-native";
-import { Pressable, View } from "react-native";
-import { useAsheeNativeConfig } from "../../../provider/AsheeNativeProvider";
-import { classNames } from "../../../utils/class-names";
-import { Text } from "../../typography/text/Text";
+} from "../../../styles/message-surface";
+import { NATIVE_RADIUS_CLASS } from "../../../styles/radius";
+import { cn } from "../../../utils/cn";
+import { Typography } from "../../typography/text/Text";
 import {
   FALLBACK_NATIVE_ALERT_CONFIG,
   type NativeAlertConfig,
@@ -133,7 +139,7 @@ export function Alert({
   children,
   ...rest
 }: AlertProps) {
-  const config = useAsheeNativeConfig();
+  const config = useAsheeConfig();
   const sectionConfig = config.components.alert;
 
   const resolvedType = resolveCascade<AlertType>(
@@ -170,7 +176,7 @@ export function Alert({
       // accessibility props are spread last, so they still win.
       accessibilityRole={resolveNativeAnnouncementRole(role)}
       accessibilityLiveRegion={NATIVE_ANNOUNCEMENT_LIVE_REGION[role]}
-      className={classNames(
+      className={cn(
         NATIVE_ALERT_BASE_CLASS,
         NATIVE_MESSAGE_SURFACE_CLASS[resolvedVariant][colour],
         NATIVE_RADIUS_CLASS[resolvedRadius],
@@ -185,26 +191,26 @@ export function Alert({
         importantForAccessibility="no-hide-descendants"
         className={NATIVE_ALERT_ICON_CLASS}>
         {icon ?? (
-          <Text
+          <Typography
             role="label"
-            className={classNames(NATIVE_ALERT_GLYPH_CLASS, textClass)}>
+            className={cn(NATIVE_ALERT_GLYPH_CLASS, textClass)}>
             {NATIVE_ALERT_TYPE_GLYPH[resolvedType]}
-          </Text>
+          </Typography>
         )}
       </View>
 
       <View className={NATIVE_ALERT_BODY_CLASS}>
         {title && (
-          <Text
+          <Typography
             role="label"
-            className={classNames(NATIVE_ALERT_TITLE_CLASS, textClass)}>
+            className={cn(NATIVE_ALERT_TITLE_CLASS, textClass)}>
             {title}
-          </Text>
+          </Typography>
         )}
         {children && (
-          <Text role="body-sm" className={textClass}>
+          <Typography role="body-sm" className={textClass}>
             {children}
-          </Text>
+          </Typography>
         )}
       </View>
 
@@ -214,11 +220,11 @@ export function Alert({
           accessibilityLabel={closeLabel}
           onPress={onClose}
           className={NATIVE_ALERT_DISMISS_CLASS}>
-          <Text
+          <Typography
             role="label"
-            className={classNames(NATIVE_ALERT_DISMISS_GLYPH_CLASS, textClass)}>
+            className={cn(NATIVE_ALERT_DISMISS_GLYPH_CLASS, textClass)}>
             ✕
-          </Text>
+          </Typography>
         </Pressable>
       )}
     </View>

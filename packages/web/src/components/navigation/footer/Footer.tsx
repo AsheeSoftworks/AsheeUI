@@ -11,8 +11,15 @@
 "use client";
 
 import type { FooterGroup, FooterLinkItem } from "@asheeui/core";
+import { resolveConfigCascade } from "@asheeui/core";
 import {
-  cn,
+  type ElementType,
+  forwardRef,
+  type HTMLAttributes,
+  type ReactNode,
+} from "react";
+import { useAsheeConfig } from "../../../libs/context";
+import {
   FOOTER_BOTTOM_CLASS,
   FOOTER_BOTTOM_LINKS_CLASS,
   FOOTER_BRAND_COLUMN_CLASS,
@@ -23,16 +30,9 @@ import {
   FOOTER_SOCIAL_ROW_CLASS,
   FOOTER_TOP_CLASS,
   FOOTER_VARIANT_CLASS,
-  resolveConfigCascade,
-  SPACE_PADDING_Y_CLASS,
-} from "@asheeui/core";
-import {
-  type ElementType,
-  forwardRef,
-  type HTMLAttributes,
-  type ReactNode,
-} from "react";
-import { useAsheeConfig } from "../../../libs/context";
+} from "../../../styles/footer";
+import { SPACE_PADDING_Y_CLASS } from "../../../styles/portable";
+import { cn } from "../../../utils/cn";
 import { Container } from "../../layouts/container/Container";
 import { Typography } from "../../typography/Typography";
 import { Link } from "../link";

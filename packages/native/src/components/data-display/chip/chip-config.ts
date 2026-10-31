@@ -15,6 +15,9 @@ export type { ChipConfig } from "@asheeui/core";
 
 /**
  * Configuration options for the native Chip.
+ *
+ * @deprecated Use {@link ChipConfig} from `@asheeui/core` — the name both renderers
+ * publish.
  */
 export type NativeChipConfig = ChipConfig;
 
@@ -24,6 +27,9 @@ export type NativeChipConfig = ChipConfig;
  * They are the web's own values: a chip is a medium, fully-rounded token on both
  * platforms. `variant` and `color` are absent on purpose, so they inherit from the
  * platform's default treatment and colour instead of pinning themselves here.
+ *
+ * @deprecated Use {@link defaultChipConfig} — the name both renderers publish. The value is
+ * this one: a fallback states the platform's default, and the name is shared.
  */
 export const defaultNativeChipConfig: NativeChipConfig = {
   size: "md",
@@ -40,6 +46,9 @@ registerNativeComponentDefaults("chip", defaultNativeChipConfig);
 
 /**
  * The values the chip falls back to when no tier provides one.
+ *
+ * @deprecated Use {@link FALLBACK_CHIP_CONFIG} — the name both renderers publish. The value is
+ * this one: a fallback states the platform's default, and the name is shared.
  */
 export const FALLBACK_NATIVE_CHIP_CONFIG = {
   size: "md",

@@ -7,11 +7,8 @@
  * renderer reads the same ones from the same place.
  */
 
-import {
-  ASHEE_LAYER,
-  registerComponentDefaults,
-  type TooltipConfig,
-} from "@asheeui/core";
+import { registerComponentDefaults, type TooltipConfig } from "@asheeui/core";
+import { ASHEE_LAYER } from "../../../utils/stacking";
 
 export type {
   TooltipConfig,

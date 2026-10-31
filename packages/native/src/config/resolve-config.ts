@@ -5,15 +5,29 @@
  * platform-wide defaults plus per-component sections. Resolution goes through the
  * shared cascade, so the precedence rule is one rule rather than two that happen to
  * agree today.
+ *
+ * **What this file shares with the web's resolver, and what it does not.** The shared half is the
+ * cascade (`resolveConfigCascade`), the merge (`mergeObject`), the palette
+ * (`resolveColorConfig`, with the same "a custom theme with no `extends` inherits the configured
+ * theme family" rule) and the validation (`assertValidConfig`, which the web's provider calls and
+ * this one now calls too — a shared configuration object that is invalid must fail the same way on
+ * both platforms). What differs is the values: the platform's density baseline, its radius baseline,
+ * and `defaultSize`, which the web has no equivalent for. Those are stated once, here, in
+ * `NATIVE_FALLBACK_CONFIG`.
  */
 
 import {
-  type ColorRole,
+  assertValidConfig,
+  type ColorConfig,
+  type Color,
+  defaultColorConfig,
   type ExternalConfig,
   mergeObject,
   type Radius,
+  resolveColorConfig,
   resolveConfigCascade,
   type Size,
+  type ThemeName,
   type Variant,
 } from "@asheeui/core";
 import {
@@ -29,7 +43,7 @@ export interface NativePlatformConfig {
   defaultVariant?: Variant;
 
   /** The default colour role for components that resolve one. */
-  defaultColor?: ColorRole;
+  defaultColor?: Color;
 
   /** The default density for components that have one. */
   defaultSize?: Size;
@@ -40,6 +54,9 @@ export interface NativePlatformConfig {
 
 /**
  * The component sections this renderer registers, keyed by the name they are stated under.
+ *
+ * @deprecated Use {@link ComponentsConfig} from `@asheeui/core` — the name both renderers
+ * publish.
  */
 export type NativeComponentsConfig = {
   [K in keyof NativeComponentConfigRegistry]?: Partial<
@@ -74,6 +91,9 @@ type NativeOnlyComponents = Omit<
  * web has no global density and a thumb needs a different baseline from a pointer; stating it
  * in a shared file is harmless on the web, which has no such property, so a shared file should
  * state it only when the file is the device's.
+ *
+ * @deprecated Use {@link ExternalConfig} from `@asheeui/core` — the name both renderers
+ * publish.
  */
 export interface NativeExternalConfig
   extends Omit<ExternalConfig, "components"> {
@@ -93,8 +113,8 @@ export interface NativeExternalConfig
    * object, and a component the web's package declares still has a section on the device.
    */
   components?:
-    | ((NonNullable<ExternalConfig["components"]> & NativeOnlyComponents) |
-        undefined);
+    | (NonNullable<ExternalConfig["components"]> & NativeOnlyComponents)
+    | undefined;
 }
 
 /**
@@ -109,8 +129,26 @@ export type AsheeConfig = NativeExternalConfig;
 
 /**
  * The resolved configuration a component reads.
+ *
+ * It is **core's `Config` plus the platform's density**. Every field a shared component reads —
+ * `color`, `defaultTheme`, `defaultVariant`, `defaultColor`, `defaultRadius`, `components` — is the
+ * one the web renderer's resolved configuration carries, so `useAsheeConfig()` returns the same shape
+ * on both platforms and a component written once reads it once. `defaultSize` is the platform-only
+ * addition: the web has no global density, because a pointer and a thumb want different baselines.
+ *
+ * The palette is the *resolved* one (`resolveColorConfig`), not the consumer's partial override, so a
+ * component that reads a theme's colours does not have to resolve inheritance itself.
+ *
+ * @deprecated Use {@link Config} from `@asheeui/core` — the name both renderers
+ * publish.
  */
 export interface NativeConfig extends Required<NativePlatformConfig> {
+  /** The resolved palettes, every theme filled in from the one it extends. */
+  color: ColorConfig;
+
+  /** The theme the configuration asks for, before the platform's colour scheme resolves "system". */
+  defaultTheme: ThemeName | "system";
+
   /** Per-component options, deep-merged over the registered defaults. */
   components: Partial<NativeComponentConfigRegistry>;
 }
@@ -135,15 +173,27 @@ export const NATIVE_FALLBACK_CONFIG = {
 /**
  * Resolve a consumer's configuration into the configuration components read.
  *
+ * The object a device resolves is a superset of the one the web renderer resolves: the same six
+ * fields, with `defaultSize` added, and it is computed *once* — the provider hands this object to the
+ * context and paints the palette from it, rather than resolving the theme a second time.
+ *
  * @param external - The consumer's configuration, if any.
  * @param registered - The registered component defaults, which the provider reads
  * from the registry.
  * @returns The resolved configuration.
+ * @throws When the configuration contains invalid values — at mount, listing every problem, exactly
+ * as the web provider does.
  */
 export function resolveNativeConfig(
   external: NativeExternalConfig = {},
   registered: Partial<NativeComponentConfigRegistry> = getNativeComponentDefaults(),
 ): NativeConfig {
+  // One validation, the shared one. `defaultSize` is the platform's own key rather than a shared
+  // one, so it is taken out before the shared validator sees the object — otherwise a consumer
+  // stating the density it is entitled to state would be told it is an unknown key.
+  const { defaultSize: _platformDensity, ...shared } = external;
+  assertValidConfig(shared as ExternalConfig);
+
   const platform = resolveConfigCascade<
     NativePlatformConfig,
     Required<NativePlatformConfig>
@@ -156,6 +206,15 @@ export function resolveNativeConfig(
     },
     undefined,
     NATIVE_FALLBACK_CONFIG,
+  );
+
+  // The palette is resolved here, once, by the rule the web renderer's resolver applies — including
+  // the family a custom theme with no `extends` inherits: an application that defaults to dark must
+  // not get a light-based custom theme. The provider paints this object instead of resolving again.
+  const color = resolveColorConfig(
+    defaultColorConfig,
+    external.color,
+    external.defaultTheme === "dark" ? "dark" : "light",
   );
 
   // Merge each component's section the way the web renderer does â€” with `mergeObject`,
@@ -175,6 +234,8 @@ export function resolveNativeConfig(
 
   return {
     ...platform,
+    color,
+    defaultTheme: external.defaultTheme ?? "system",
     components,
   };
 }

@@ -12,6 +12,8 @@
  * shared vocabulary both platforms speak ("step 4" rather than "1rem" or "16dp").
  */
 
+import type { Color } from "./shared/variant";
+
 /**
  * The spacing scale's steps.
  * A step is the Tailwind spacing multiplier: step 4 is 1rem on the web and four
@@ -67,11 +69,6 @@ export const FONT_SIZE_STEP = {
 } as const;
 
 /**
- * The shared typography size token names.
- */
-export type FontSize = keyof typeof FONT_SIZE_STEP;
-
-/**
  * Font weights the scale uses, as Tailwind weight token names.
  */
 export const FONT_WEIGHT_STEP = {
@@ -80,11 +77,6 @@ export const FONT_WEIGHT_STEP = {
   semibold: "semibold",
   bold: "bold",
 } as const;
-
-/**
- * The shared font weight token names.
- */
-export type FontWeight = keyof typeof FONT_WEIGHT_STEP;
 
 /**
  * The semantic colour roles every component resolves through.
@@ -103,8 +95,13 @@ export const COLOR_ROLE = {
 
 /**
  * The shared colour role names.
+ *
+ * @deprecated Use {@link Color} — the name `@asheeui/web` has always published and
+ * `@asheeui/native` now publishes too. The two are one union, not two: this alias is the same
+ * type, and a both-ways assignability test in the native package proves it. It is kept for a
+ * minor because a consumer's import still writes it.
  */
-export type ColorRole = keyof typeof COLOR_ROLE;
+export type ColorRole = Color;
 
 /**
  * The visual treatments a component may support.
@@ -159,11 +156,6 @@ export const ELEVATION_LEVEL = {
   md: 2,
   lg: 3,
 } as const;
-
-/**
- * The shared elevation level names.
- */
-export type Elevation = keyof typeof ELEVATION_LEVEL;
 
 /**
  * The responsive breakpoints, in the unit each platform measures in.

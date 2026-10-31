@@ -10,11 +10,6 @@
 
 import type { Size, Variant } from "@asheeui/core";
 import {
-  CAROUSEL_HEIGHT_CLASS,
-  CAROUSEL_PADDING_CLASS,
-  CAROUSEL_VARIANT_CLASS,
-  cn,
-  RADIUS_CLASS,
   resolveCarouselVariant,
   resolveCascade,
   resolveClassKey,
@@ -36,6 +31,13 @@ import { ChevronLeftIcon } from "../../../icons/ChevronLeftIcon";
 import { ChevronRightIcon } from "../../../icons/ChevronRightIcon";
 import { useAsheeConfig } from "../../../libs/context";
 import { usePrefersReducedMotion } from "../../../libs/use-prefers-reduced-motion";
+import {
+  CAROUSEL_HEIGHT_CLASS,
+  CAROUSEL_VARIANT_CLASS,
+} from "../../../styles/carousel";
+import { CAROUSEL_PADDING_CLASS } from "../../../styles/portable";
+import { RADIUS_CLASS } from "../../../styles/radius";
+import { cn } from "../../../utils/cn";
 import {
   type CarouselConfig,
   type CarouselItem,

@@ -9,16 +9,7 @@
 "use client";
 
 import type { Color, Size } from "@asheeui/core";
-import {
-  cn,
-  LINK_COLOR_CLASS,
-  LINK_ICON_SIZE_CLASS,
-  LINK_SIZE_CLASS,
-  LINK_UNDERLINE_CLASS,
-  LINK_VARIANT_CLASS,
-  resolveCascade,
-  resolveClassKey,
-} from "@asheeui/core";
+import { resolveCascade, resolveClassKey } from "@asheeui/core";
 import {
   type AnchorHTMLAttributes,
   type ElementType,
@@ -27,6 +18,14 @@ import {
 } from "react";
 import { ExternalLinkIcon } from "../../../icons/ExternalLinkIcon";
 import { useAsheeConfig } from "../../../libs/context";
+import {
+  LINK_COLOR_CLASS,
+  LINK_ICON_SIZE_CLASS,
+  LINK_UNDERLINE_CLASS,
+  LINK_VARIANT_CLASS,
+} from "../../../styles/link";
+import { LINK_SIZE_CLASS } from "../../../styles/portable";
+import { cn } from "../../../utils/cn";
 import {
   FALLBACK_LINK_CONFIG,
   type LinkConfig,
@@ -103,6 +102,15 @@ export interface LinkProps extends BaseLinkProps {
    * These take precedence over the props the framework passes itself.
    */
   componentProps?: Record<string, unknown> | undefined;
+
+  /**
+   * Called when the link is activated, under the name the platform package uses.
+   *
+   * `onClick` is the DOM's event and `onPress` is React Native's, and they are the same act:
+   * the guarded handler already refuses a disabled link, so both names reach the same place.
+   * When both are given, both run, `onClick` first.
+   */
+  onPress?: (() => void) | undefined;
 }
 
 /**
@@ -205,6 +213,7 @@ export const Link = forwardRef<HTMLAnchorElement, LinkProps>(
       target,
       rel,
       onClick,
+      onPress,
       component,
       componentProps: componentPropsProp,
       ...props
@@ -301,6 +310,7 @@ export const Link = forwardRef<HTMLAnchorElement, LinkProps>(
         return;
       }
       onClick?.(e);
+      onPress?.();
     };
 
     // ─── 3. Build link props ────────────────────────────────────────────────

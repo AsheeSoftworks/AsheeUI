@@ -28,6 +28,9 @@ import {
   type FieldSizeKey,
   isFutureDay,
   MONTHS,
+} from "@asheeui/core";
+import { useEffect, useState } from "react";import { Pressable, View } from "react-native";
+import {
   NATIVE_CALENDAR_CELL_CLASS,
   NATIVE_CALENDAR_CELL_DISABLED_CLASS,
   NATIVE_CALENDAR_CELL_SIZE_CLASS,
@@ -49,12 +52,11 @@ import {
   NATIVE_CALENDAR_UNAVAILABLE_CLASS,
   NATIVE_CALENDAR_WEEKDAY_CLASS,
   NATIVE_CALENDAR_WEEKDAYS_CLASS,
-} from "@asheeui/core";
-import { useEffect, useState } from "react";
-import { Pressable, View } from "react-native";
-import { classNames } from "../../../utils/class-names";
+} from "../../../styles/calendar";
+import { announce } from "../../../utils/announce";
+import { cn } from "../../../utils/cn";
 import { Surface } from "../../system/surface/Surface";
-import { Text } from "../../typography/text/Text";
+import { Typography } from "../../typography/text/Text";
 import { TimeColumn } from "./TimeColumn";
 
 /**
@@ -212,17 +214,29 @@ export function CalendarSheet({
   }
 
   function prevMonth(): void {
-    if (viewMonth === 0) {
-      setViewMonth(11);
-      setViewYear((year) => year - 1);
-    } else setViewMonth((month) => month - 1);
+    const nextMonth = viewMonth === 0 ? 11 : viewMonth - 1;
+
+    if (viewMonth === 0) setViewYear((year) => year - 1);
+    setViewMonth(nextMonth);
+
+    // The month is drawn, not announced: a screen reader moving between two identical
+    // grids needs to hear which month it landed on.
+    announce(
+      `${MONTHS[nextMonth]} ${viewMonth === 0 ? viewYear - 1 : viewYear}`,
+      "status",
+    );
   }
 
   function nextMonth(): void {
-    if (viewMonth === 11) {
-      setViewMonth(0);
-      setViewYear((year) => year + 1);
-    } else setViewMonth((month) => month + 1);
+    const nextMonth = viewMonth === 11 ? 0 : viewMonth + 1;
+
+    if (viewMonth === 11) setViewYear((year) => year + 1);
+    setViewMonth(nextMonth);
+
+    announce(
+      `${MONTHS[nextMonth]} ${viewMonth === 11 ? viewYear + 1 : viewYear}`,
+      "status",
+    );
   }
 
   const canGoNext =
@@ -253,9 +267,11 @@ export function CalendarSheet({
             onClose();
           }}
           className={NATIVE_CALENDAR_CLEAR_CLASS}>
-          <Text role="label" className={NATIVE_CALENDAR_CLEAR_LABEL_CLASS}>
+          <Typography
+            role="label"
+            className={NATIVE_CALENDAR_CLEAR_LABEL_CLASS}>
             Clear
-          </Text>
+          </Typography>
         </Pressable>
       ) : (
         // The accepting control is held to the right of whatever stands beside it, so an
@@ -268,15 +284,15 @@ export function CalendarSheet({
           accessibilityRole="button"
           accessibilityLabel="Done"
           onPress={onClose}
-          className={classNames(NATIVE_CALENDAR_DONE_CLASS, colorStyles.bg)}>
-          <Text
+          className={cn(NATIVE_CALENDAR_DONE_CLASS, colorStyles.bg)}>
+          <Typography
             role="label"
-            className={classNames(
+            className={cn(
               NATIVE_CALENDAR_DONE_LABEL_CLASS,
               colorStyles.on,
             )}>
             Done
-          </Text>
+          </Typography>
         </Pressable>
       )}
     </View>
@@ -294,16 +310,18 @@ export function CalendarSheet({
                 accessibilityLabel="Previous month"
                 onPress={prevMonth}
                 className={NATIVE_CALENDAR_NAV_CLASS}>
-                <Text
+                <Typography
                   role="body-lg"
                   className={NATIVE_CALENDAR_NAV_LABEL_CLASS}
                   accessible={false}>
                   ‹
-                </Text>
+                </Typography>
               </Pressable>
-              <Text role="body-md" className={NATIVE_CALENDAR_MONTH_CLASS}>
+              <Typography
+                role="body-md"
+                className={NATIVE_CALENDAR_MONTH_CLASS}>
                 {MONTHS[viewMonth]} {viewYear}
-              </Text>
+              </Typography>
               <Pressable
                 testID={testID ? `${testID}-next` : undefined}
                 accessibilityRole="button"
@@ -311,28 +329,28 @@ export function CalendarSheet({
                 accessibilityState={{ disabled: !canGoNext }}
                 disabled={!canGoNext}
                 onPress={nextMonth}
-                className={classNames(
+                className={cn(
                   NATIVE_CALENDAR_NAV_CLASS,
                   !canGoNext && NATIVE_CALENDAR_UNAVAILABLE_CLASS,
                 )}>
-                <Text
+                <Typography
                   role="body-lg"
                   className={NATIVE_CALENDAR_NAV_LABEL_CLASS}
                   accessible={false}>
                   ›
-                </Text>
+                </Typography>
               </Pressable>
             </View>
 
             <View className={NATIVE_CALENDAR_WEEKDAYS_CLASS}>
               {DAYS_OF_WEEK.map((weekday) => (
-                <Text
+                <Typography
                   key={weekday}
                   role="overline"
                   accessible={false}
                   className={NATIVE_CALENDAR_WEEKDAY_CLASS}>
                   {weekday}
-                </Text>
+                </Typography>
               ))}
             </View>
 
@@ -360,22 +378,22 @@ export function CalendarSheet({
                       }}
                       disabled={isDisabled(day)}
                       onPress={() => handleDayPress(day)}
-                      className={classNames(
+                      className={cn(
                         NATIVE_CALENDAR_CELL_CLASS,
                         NATIVE_CALENDAR_CELL_SIZE_CLASS[size],
                         isDisabled(day) && NATIVE_CALENDAR_CELL_DISABLED_CLASS,
                         isSelected(day) && colorStyles.bg,
                         isToday(day) && !isSelected(day) && colorStyles.border,
                       )}>
-                      <Text
+                      <Typography
                         role="body-sm"
-                        className={classNames(
+                        className={cn(
                           NATIVE_CALENDAR_CELL_TEXT_CLASS,
                           isSelected(day) && colorStyles.on,
                           isToday(day) && !isSelected(day) && colorStyles.text,
                         )}>
                         {day}
-                      </Text>
+                      </Typography>
                     </Pressable>
                   ),
                 )}

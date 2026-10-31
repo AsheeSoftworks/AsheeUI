@@ -1,63 +1,21 @@
 /**
  * Grid component configuration for AsheeUI.
- * This file defines the configuration type and defaults for the Grid layout
- * primitive: column counts per breakpoint, gap and alignment. It registers the
- * default configuration with the component registry and provides fallback
- * values for the cascade resolution system.
- */
-
-import {
-  type GridAlign,
-  type GridColumns,
-  registerComponentDefaults,
-  type Space,
-} from "@asheeui/core";
-
-/**
- * The shared grid vocabulary, re-exported so code that already reaches for it
- * here keeps working. The types themselves are declared in `@asheeui/core`, so a
- * grid and a feature grid name one type on both platforms.
- */
-export type { GridAlign, GridColumns };
-
-/**
- * Theme configuration options for the Grid component.
  *
- * Set under `components.grid` in the AsheeUI config. Values feed the
- * component-level fallback tier of the theme cascade.
+ * The *shape* of `components.grid` is `@asheeui/core`'s — the column counts per breakpoint, the gap
+ * and the alignment are declared once, for both platforms, in
+ * `packages/core/src/components/layouts/grid/grid-config.ts`. This module keeps what is the web's:
+ * the defaults it registers and the hard fallbacks it states.
  */
-export interface GridConfig {
-  /**
-   * Column count from the smallest viewport upwards.
-   *
-   * @default 1
-   */
-  columns?: GridColumns | undefined;
 
-  /**
-   * Column count from the `md` breakpoint upwards.
-   */
-  columnsMd?: GridColumns | undefined;
+import type { GridConfig } from "@asheeui/core";
+import { registerComponentDefaults } from "@asheeui/core";
 
-  /**
-   * Column count from the `lg` breakpoint upwards.
-   */
-  columnsLg?: GridColumns | undefined;
-
-  /**
-   * Space between cells.
-   *
-   * @default "md"
-   */
-  gap?: Space | undefined;
-
-  /**
-   * Cross-axis alignment of the cells.
-   *
-   * @default "stretch"
-   */
-  align?: GridAlign | undefined;
-}
+/**
+ * The shared grid vocabulary, re-exported so code that already reaches for it here keeps working.
+ * The types themselves are declared in `@asheeui/core`, so a grid and a feature grid name one type on
+ * both platforms.
+ */
+export type { GridAlign, GridColumns, GridConfig } from "@asheeui/core";
 
 /**
  * Default config values registered for the Grid component.
@@ -67,12 +25,6 @@ export const defaultGridConfig: GridConfig = {
   gap: "md",
   align: "stretch",
 };
-
-declare module "@asheeui/core" {
-  interface ComponentTypeConfigRegistry {
-    grid: GridConfig;
-  }
-}
 
 registerComponentDefaults("grid", defaultGridConfig);
 

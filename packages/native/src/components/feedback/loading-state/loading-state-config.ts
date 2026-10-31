@@ -15,6 +15,9 @@ export type { LoadingStateConfig } from "@asheeui/core";
 
 /**
  * Configuration options for the native LoadingState.
+ *
+ * @deprecated Use {@link LoadingStateConfig} from `@asheeui/core` — the name both renderers
+ * publish.
  */
 export type NativeLoadingStateConfig = LoadingStateConfig;
 
@@ -26,6 +29,9 @@ export type NativeLoadingStateConfig = LoadingStateConfig;
  * padding and the indicator and would reserve nothing at all. It is the same
  * pairing the web state registers, so the region claims the same room on both
  * platforms.
+ *
+ * @deprecated Use {@link defaultLoadingStateConfig} — the name both renderers publish. The value is
+ * this one: a fallback states the platform's default, and the name is shared.
  */
 export const defaultNativeLoadingStateConfig: NativeLoadingStateConfig = {
   label: "Loading",
@@ -47,6 +53,9 @@ registerNativeComponentDefaults(
 
 /**
  * The values the state falls back to when no tier provides one.
+ *
+ * @deprecated Use {@link FALLBACK_LOADING_STATE_CONFIG} — the name both renderers publish. The value is
+ * this one: a fallback states the platform's default, and the name is shared.
  */
 export const FALLBACK_NATIVE_LOADING_STATE_CONFIG = {
   label: "Loading",

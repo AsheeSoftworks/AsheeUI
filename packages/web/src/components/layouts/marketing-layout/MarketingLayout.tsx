@@ -11,13 +11,7 @@
 
 "use client";
 
-import {
-  cn,
-  MARKETING_LAYOUT_BACKGROUND_CLASS,
-  MARKETING_LAYOUT_BASE_CLASS,
-  MARKETING_LAYOUT_MAIN_CLASS,
-  resolveConfigCascade,
-} from "@asheeui/core";
+import { resolveConfigCascade } from "@asheeui/core";
 import {
   type ElementType,
   forwardRef,
@@ -25,6 +19,12 @@ import {
   type ReactNode,
 } from "react";
 import { useAsheeConfig } from "../../../libs/context";
+import {
+  MARKETING_LAYOUT_BACKGROUND_CLASS,
+  MARKETING_LAYOUT_BASE_CLASS,
+  MARKETING_LAYOUT_MAIN_CLASS,
+} from "../../../styles/marketing-layout";
+import { cn } from "../../../utils/cn";
 import { SkipLink } from "../section-kit/SkipLink";
 import {
   FALLBACK_MARKETING_LAYOUT_CONFIG,

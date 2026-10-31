@@ -8,16 +8,15 @@
 "use client";
 
 import type { Radius } from "@asheeui/core";
-import {
-  cn,
-  RADIUS_CLASS,
-  resolveCascade,
-  resolveClassKey,
-  SKELETON_ANIMATION_CLASS,
-  SKELETON_BASE_CLASS,
-} from "@asheeui/core";
+import { resolveCascade, resolveClassKey } from "@asheeui/core";
 import { forwardRef, type HTMLAttributes } from "react";
 import { useAsheeConfig } from "../../../libs/context";
+import { RADIUS_CLASS } from "../../../styles/radius";
+import {
+  SKELETON_ANIMATION_CLASS,
+  SKELETON_BASE_CLASS,
+} from "../../../styles/skeleton";
+import { cn } from "../../../utils/cn";
 import {
   FALLBACK_SKELETON_CONFIG,
   type SkeletonConfig,

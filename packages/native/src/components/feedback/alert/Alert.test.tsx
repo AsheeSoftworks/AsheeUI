@@ -9,10 +9,14 @@
  * the platform's roles and states, as the platform's renderer requires.
  */
 
-import { fireEvent, render } from "@testing-library/react-native";
+import {
+  fireEvent,
+  type RenderResult,
+  render,
+} from "@testing-library/react-native";
 import type { ReactElement } from "react";
 import { View } from "react-native";
-import { AsheeNativeProvider } from "../../../provider/AsheeNativeProvider";
+import { AsheeUIProvider } from "../../../provider/AsheeUIProvider";
 import { Alert } from "./Alert";
 
 /**
@@ -23,9 +27,7 @@ import { Alert } from "./Alert";
  * @returns The rendered tree and its queries.
  */
 async function renderAlert(ui: ReactElement, config?: object) {
-  return render(
-    <AsheeNativeProvider config={config}>{ui}</AsheeNativeProvider>,
-  );
+  return render(<AsheeUIProvider config={config}>{ui}</AsheeUIProvider>);
 }
 
 /**
@@ -35,7 +37,7 @@ async function renderAlert(ui: ReactElement, config?: object) {
  * @param testID - The alert's test identifier.
  * @returns Its class string.
  */
-function classesOf(view: ReturnType<typeof render>, testID: string): string {
+function classesOf(view: RenderResult, testID: string): string {
   return (view.getByTestId(testID).props as { className?: string })
     .className as string;
 }
@@ -151,7 +153,7 @@ describe("Native Alert", () => {
     // colour, which would be invisible there.
     expect(
       (view.getByText("Slow").props as { className?: string }).className,
-    ).toContain("text-background");
+    ).toContain("text-on-solid");
   });
 
   it("keeps its own treatment when the platform's default is a filled one, because a message is not a block", async () => {
@@ -181,7 +183,7 @@ describe("Native Alert", () => {
     const silence = jest.spyOn(console, "error").mockImplementation(() => {});
 
     await expect(render(<Alert title="Saved" />)).rejects.toThrow(
-      /AsheeNativeProvider/,
+      /AsheeUIProvider/,
     );
 
     silence.mockRestore();
