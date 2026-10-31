@@ -30,6 +30,16 @@
           }
         }
       }
+    },
+    {
+      "includes": ["apps/fitness-mobile/global.css"],
+      "linter": {
+        "rules": {
+          "suspicious": {
+            "noUnknownAtRules": "off"
+          }
+        }
+      }
     }
   ],
   "javascript": {

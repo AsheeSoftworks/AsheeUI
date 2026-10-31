@@ -7,7 +7,12 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-apps
+# The playground applications stay local; the fitness demos are checked in because they
+# are the cross-platform test apps the umbrella is exercised by.
+apps/*
+!apps/fitness-shared/
+!apps/fitness-web/
+!apps/fitness-mobile/
 docs
 node_modules
 dist
@@ -43,3 +48,8 @@ apps/expo-playground/dist/
 .env.local
 .env*.local
 .env*
+
+# The web router's generated tree, written by `tsr generate`.
+apps/fitness-web/src/routeTree.gen.ts
+# Expo's local project metadata.
+apps/fitness-mobile/.expo/

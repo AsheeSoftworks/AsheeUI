@@ -1,0 +1,23 @@
+/**
+ * The web application's stylesheet.
+ *
+ * Tailwind first, then the umbrella's stylesheet — the order the install documentation
+ * states. `@source` points at the shared kit, which lives outside this app's directory:
+ * Tailwind compiles a class it can read in a file it is allowed to scan, and the shared
+ * screens are in a workspace package.
+ */
+@import "tailwindcss";
+@import "asheeui/styles";
+@import "@puckeditor/core/puck.css";
+
+@source "../../fitness-shared/src/**/*.tsx";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+}
+
+@layer base {
+  body {
+    min-height: 100dvh;
+  }
+}
