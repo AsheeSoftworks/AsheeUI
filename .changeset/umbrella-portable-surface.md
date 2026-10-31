@@ -6,7 +6,7 @@ The umbrella is the intersection now, not the union.
 
 `asheeui` used to be `export *` over each renderer, so it offered 791 names on the web branch and 1053
 on the native one. Both entries are now generated from `PORTABLE_API` in `@asheeui/core` and publish
-the same 181 portable names (plus the platform-specific `AsheeConfig` type), so a name that is
+the same 182 portable names (plus the platform-specific `AsheeConfig` type), so a name that is
 missing on one platform is a compile error rather than `undefined` at runtime.
 
 **Breaking.** Code that imported a web-only name through `asheeui` — `Breadcrumb` and the keyboard

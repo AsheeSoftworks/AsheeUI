@@ -20,6 +20,7 @@
     "check": "biome check",
     "verify:distribution": "node scripts/verify-distribution.mjs",
     "verify:released": "node scripts/verify-released.mjs",
+    "verify:native-routing": "node scripts/verify-native-routing.mjs",
     "check:changesets": "node scripts/check-changesets.mjs",
     "check:core-charter": "node scripts/check-core-charter.mjs",
     "check:native-parity": "node scripts/check-native-parity.mjs",
