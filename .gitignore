@@ -53,3 +53,10 @@ apps/expo-playground/dist/
 apps/fitness-web/src/routeTree.gen.ts
 # Expo's local project metadata.
 apps/fitness-mobile/.expo/
+
+# Internal planning and audit reports: kept locally for the work, never published.
+# They were removed from the branch's history in a filter-branch rewrite; the ignore
+# rules stop a later `git add -A` from putting them back.
+*-REPORT.md
+IMPLEMENTATION-PLAN.md
+NEXT-SESSION-PROMPT.md
