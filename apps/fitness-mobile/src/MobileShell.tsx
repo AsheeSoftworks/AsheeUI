@@ -11,6 +11,7 @@ import {
   ProgressScreen,
   SettingsScreen,
   StudioScreen,
+  ThemePicker,
   WorkoutDetailScreen,
   WorkoutsScreen,
   destinations,
@@ -39,6 +40,7 @@ export function MobileShell() {
   const insets = useSafeAreaInsets();
   const [route, setRoute] = useState<RouteKey>("dashboard");
   const [workoutId, setWorkoutId] = useState<string | undefined>();
+  const [themeOpen, setThemeOpen] = useState(false);
 
   const go = (next: RouteKey) => {
     setWorkoutId(undefined);
@@ -99,6 +101,14 @@ export function MobileShell() {
               </Badge>
               <Button
                 size="sm"
+                variant="ghost"
+                accessibilityLabel="Theme"
+                onPress={() => setThemeOpen(true)}
+              >
+                ◐
+              </Button>
+              <Button
+                size="sm"
                 variant={route === "settings" ? "solid" : "ghost"}
                 accessibilityLabel="Settings"
                 onPress={() => go("settings")}
@@ -145,6 +155,7 @@ export function MobileShell() {
             </HStack>
           </Card>
         </View>
+        <ThemePicker isOpen={themeOpen} onClose={() => setThemeOpen(false)} />
       </View>
     </Page>
   );

@@ -19,6 +19,15 @@ import {
 } from "asheeui";
 import { ThemeCard } from "./ThemeCard";
 
+/** A readable label for a slug: `lagoon` becomes `Lagoon`, `sunrise-2` becomes `Sunrise 2`. */
+function labelFor(name: string): string {
+  return name
+    .split("-")
+    .filter(Boolean)
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
+}
+
 export interface ThemeSwitcherProps {
   /** Show the “system” choice. Defaults to true. */
   showSystem?: boolean;
@@ -72,7 +81,7 @@ export function ThemeSwitcher({
           {availableThemes.map((name) => (
             <ThemeCard
               key={name}
-              name={name}
+              name={labelFor(name)}
               colors={config.color[name] ?? {}}
               active={theme === name}
               onSelect={() => choose(name)}
@@ -85,7 +94,7 @@ export function ThemeSwitcher({
 
   const options = [
     ...(showSystem ? [{ label: "System", value: "system" }] : []),
-    ...availableThemes.map((name) => ({ label: name, value: name })),
+    ...availableThemes.map((name) => ({ label: labelFor(name), value: name })),
   ];
 
   return (
@@ -104,7 +113,7 @@ export function ThemeSwitcher({
             variant={theme === name ? "faded" : "ghost"}
             onPress={() => choose(name)}
           >
-            {name}
+            {labelFor(name)}
           </Button>
         ))}
       </HStack>

@@ -15,7 +15,6 @@ import {
   PageContent,
   PageFooter,
   Typography,
-  useTheme,
   type NavbarLinkItem,
 } from "asheeui";
 import { Link, useRouterState } from "@tanstack/react-router";
@@ -23,8 +22,9 @@ import {
   forwardRef,
   type AnchorHTMLAttributes,
   type ReactNode,
+  useState,
 } from "react";
-import { destinations, type RouteKey } from "@asheeui/fitness-shared";
+import { destinations, ThemePicker, type RouteKey } from "@asheeui/fitness-shared";
 
 /** The path a destination resolves to in this app's router. */
 export const ROUTE_PATHS: Record<RouteKey, string> = {
@@ -53,7 +53,7 @@ const RouterLink = forwardRef<
 /** The top bar and page frame. */
 export function AppShell({ children }: { children: ReactNode }) {
   const pathname = useRouterState({ select: (state) => state.location.pathname });
-  const { resolvedTheme, setTheme } = useTheme();
+  const [themeOpen, setThemeOpen] = useState(false);
 
   const links: NavbarLinkItem[] = destinations.map((destination) => ({
     label: destination.label,
@@ -83,9 +83,9 @@ export function AppShell({ children }: { children: ReactNode }) {
             <Button
               size="sm"
               variant="ghost"
-              onPress={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
+              onPress={() => setThemeOpen(true)}
             >
-              {resolvedTheme === "dark" ? "Light" : "Dark"}
+              Theme
             </Button>
             <Button size="sm" onPress={() => window.location.assign("/workouts")}>
               Train
@@ -111,6 +111,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           </HStack>
         </HStack>
       </PageFooter>
+      <ThemePicker isOpen={themeOpen} onClose={() => setThemeOpen(false)} />
     </Page>
   );
 }

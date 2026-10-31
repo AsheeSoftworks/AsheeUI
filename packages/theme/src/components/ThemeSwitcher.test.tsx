@@ -41,7 +41,7 @@ describe("ThemeSwitcher", () => {
       </AsheeUIProvider>,
     );
 
-    fireEvent.click(await screen.findByRole("button", { name: "dark" }));
+    fireEvent.click(await screen.findByRole("button", { name: "Dark" }));
 
     await waitFor(() => {
       expect(screen.getByTestId("selection").textContent).toBe("dark");

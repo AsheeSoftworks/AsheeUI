@@ -82,12 +82,70 @@ export interface ScreenProps {
   onOpenWorkout: OpenWorkout;
 }
 
-/** The configuration both applications pass to `AsheeUIProvider`. */
+/**
+ * The configuration both applications pass to `AsheeUIProvider`.
+ *
+ * The light and dark palettes are retuned in place, so `defaultTheme: "system"` follows the
+ * platform while both sides carry the product's colours. `citrus` and `lagoon` are extra
+ * choices the header's theme picker offers; the presets in Settings add more.
+ */
 export const config: ExternalConfig = {
   defaultTheme: "system",
   defaultColor: "primary",
   defaultVariant: "solid",
   defaultRadius: "lg",
+  color: {
+    light: {
+      background: "#fff7f2",
+      foreground: "#241a16",
+      primary: "#be123c",
+      secondary: "#ffe3d3",
+      border: "#f1c3ad",
+      danger: "#b91c1c",
+      warning: "#a16207",
+      success: "#0f766e",
+      scrollbarThumb: "#be123c",
+      scrollbarTrack: "#ffe3d3",
+    },
+    dark: {
+      background: "#0b1020",
+      foreground: "#f4f1ff",
+      primary: "#7c3aed",
+      secondary: "#171b34",
+      border: "#303655",
+      danger: "#fb7185",
+      warning: "#fbbf24",
+      success: "#2dd4bf",
+      scrollbarThumb: "#a78bfa",
+      scrollbarTrack: "#171b34",
+    },
+    citrus: {
+      extends: "light",
+      background: "#f7fee7",
+      foreground: "#1a2e05",
+      primary: "#4d7c0f",
+      secondary: "#ecfccb",
+      border: "#bef264",
+      danger: "#b91c1c",
+      warning: "#a16207",
+      success: "#0f766e",
+      scrollbarThumb: "#4d7c0f",
+      scrollbarTrack: "#ecfccb",
+    },
+    lagoon: {
+      extends: "dark",
+      background: "#061a1b",
+      foreground: "#ecfeff",
+      primary: "#0e7490",
+      secondary: "#0d2b2e",
+      border: "#155e63",
+      danger: "#fb7185",
+      warning: "#fbbf24",
+      success: "#34d399",
+      scrollbarThumb: "#22d3ee",
+      scrollbarTrack: "#0d2b2e",
+    },
+  },
   components: {
     button: { radius: "full" },
     badge: { radius: "full" },
