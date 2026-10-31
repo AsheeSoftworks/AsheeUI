@@ -1,5 +1,28 @@
 # @asheeui/core
 
+## 3.1.0
+
+### Minor Changes
+
+- 22c58b4: Add a `themes` prop to both providers for runtime themes.
+  
+  `AsheeUIProvider` now accepts `themes?: ExternalColorConfig`, merged over `config.color` before
+  resolution. A palette created while the application runs therefore goes through the same `extends`
+  resolution, validation and painting as a configured one: the web registers a new `theme-<name>` block,
+  the device repaints the subtree through `paletteVariables`, and the controller lists the name for
+  `useTheme().setTheme`. Removing a name removes it from the picker and falls back when it was selected.
+  
+  Runtime names are validated as lowercase slugs, `light`/`dark`/`system` are reserved, colours are
+  restricted to the portable hex/rgb set a device can apply, and `extends` must name a declared theme.
+  The controller now accepts owner-scoped theme contributions so a provider's list can shrink without
+  breaking the nested-provider union rule, and `releaseThemes` removes a provider's contribution when it
+  unmounts.
+- b357415: Adds `ColorSwatch` to both renderers and the umbrella, plus the colour parsing and WCAG contrast
+  helpers the theme UI needs. Introduces `@asheeui/theme`, the optional editing layer: `ColorField`,
+  `ThemeSwitcher`, `ThemeCard`, `ThemeEditor`, `ThemeGallery` and `ContrastBadge`, all controlled and
+  built on `asheeui` so the same source runs on web and native. `useTheme().availableThemes` now has
+  its own external-store snapshot, so a provider's initial theme list reaches the first render.
+
 ## 3.0.0
 
 ### Major Changes

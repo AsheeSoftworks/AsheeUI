@@ -1,6 +1,6 @@
 {
   "name": "asheeui",
-  "version": "3.0.0",
+  "version": "3.1.0",
   "description": "The AsheeUI umbrella package: the portable surface of @asheeui/web and @asheeui/native behind one import, routed by the bundler instead of by a runtime check.",
   "author": "Ashee Softworks <asheesoftworks@gmail.com>",
   "homepage": "https://asheeui.com",

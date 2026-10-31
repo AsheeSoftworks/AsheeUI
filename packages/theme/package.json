@@ -1,6 +1,6 @@
 {
   "name": "@asheeui/theme",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Optional theme editing UI for AsheeUI: colour fields, a theme switcher, theme cards and a controlled editor for runtime themes.",
   "author": "Ashee Softworks <asheesoftworks@gmail.com>",
   "homepage": "https://asheeui.com",
