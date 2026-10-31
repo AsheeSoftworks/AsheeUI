@@ -1,5 +1,73 @@
 # @asheeui/core
 
+## 3.0.0
+
+### Major Changes
+
+- # The contract, not the engine
+  
+  `@asheeui/core` stops being a second implementation of both renderers. It keeps the tokens, the
+  rules, the types and the configuration pipeline — the part that is true on both platforms — and every
+  pixel decision moves to the renderer that compiles it. The published package declares **no
+  dependencies** and contains **no class string**.
+  
+  ## The shrink
+  
+  - **Both class dictionaries left core.** The web's 266 constants in 52 modules moved to
+    `@asheeui/web` (`packages/web/src/styles/`); the platform's 397 `NATIVE_*` constants in 53 modules
+    moved to `@asheeui/native`. No name and no value changed — an import changes package and nothing
+    else.
+  - **The 21 strings both renderers compile are duplicated, not shared.** Each renderer states them in
+    its own `portable.ts`, and `core/src/shared/style-parity.test.ts` reads both and fails when a pair
+    stops matching. Core holds no class string at all, and `pnpm check:core-charter` enforces it.
+  - **`cn` and the web's styling helpers are the web renderer's**, in `web/src/utils/` — with `clsx` and
+    `tailwind-merge` moving to web's manifest (they were already its dependencies). The platform has its
+    own `cn` with the platform's merge rules.
+  - **Three native-only rules left**: `resolveSpinnerDurationMs`, the announcement mapping
+    (`resolveNativeAnnouncementRole`, `NATIVE_ANNOUNCEMENT_LIVE_REGION`) and the palette channel
+    conversion (`colorChannels`, `paletteVariables`). Their tests moved with them.
+  
+  ## The contract
+  
+  - **The compatibility matrix moved to `@asheeui/core/dev`.** `COMPONENT_SUPPORT`,
+    `findComponentSupport`, `PlatformSupport` and `PLATFORM_SUPPORT_LABEL` are no longer on the root
+    entry; no name or value changed. The root entry is what a component imports, the subpath is the
+    inventory a tool reads.
+  - **Ten unread names were deleted**: the five `*Contract` types, `_ColorConfigGuards` (its two
+    compile-time assertions moved to `web/src/test/custom-theme.test.tsx`), `FontSize`, `FontWeight`,
+    `Elevation`, and `NATIVE_STEPPER_LABEL_CLASS`.
+  - **`contracts.ts` was retired.** `Substitution` and `LinkSubstitution` live in
+    `shared/substitution.ts`; `ThemedContract` and `InputContract` were deleted with the module. The
+    prose now documents `PORTABLE_API`.
+  - **`PORTABLE_API` declares the umbrella's surface**: every name both renderers publish, its `kind`,
+    the matrix support it inherits, and the package that publishes it (`source`). `pending` is a ratchet
+    that can only shrink.
+  
+  ## One rule where there were two
+  
+  The registry and the seven missing configuration sections; `resolveConfig`/`mergeObject`/
+  `assertValidConfig` on both providers; the event-name pairing table (`onClick`/`onPress`,
+  `onChange`/`onChangeText`); the theme state machine (`createThemeController`) with a DOM host and a
+  platform host; the typography role table and its four token overrides; `resolveGridColumns`,
+  `resolveCardVariant` and the breakpoint names; the field's status-colour rule and `isFieldInvalid`;
+  the announcement contract (`announce`, `ANNOUNCEMENT_ROLE`). The rename mechanism is one helper too:
+  `deprecateMany` and `deprecatedAlias`, so the aliases this release keeps are announced once, in
+  development, rather than each renderer stating its own warning.
+  
+  ## Guards
+  
+  `pnpm check:core-charter` asserts the four rules the shrink leaves behind: no class string, no
+  dependency, no renderer/DOM/styling-engine import, no unread export. `pnpm check:native-parity` now
+  also runs §F13's coverage assertion: the web package's `"."` and `"./section-kit"` entries may not
+  publish a public component the matrix does not classify. `packages/core/src/matrix.test.ts` calls the
+  same evaluator.
+  
+  ## Migration
+  
+  The renderer publishes every moved class constant under the same name, so the codemod is an import
+  path. The consumer-facing guide, including the ten deletions and the `@asheeui/core/dev` move, is the
+  documentation's "Migrating the core layer". `CORE-MIGRATION-REPORT.md` remains the record.
+
 ## 2.5.0
 
 ### Minor Changes

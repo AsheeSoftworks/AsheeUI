@@ -1,5 +1,20 @@
 # @asheeui/cli
 
+## 1.0.1
+
+### Patch Changes
+
+- The Puck integration and the CLI follow the release.
+  
+  - **`@asheeui/puck`** uses the native provider's web names (`AsheeUIProvider`) and the canonical
+    `Typography` in its native block, so the composed page renders on a device under the same names as
+    the rest of the framework.
+  - **`@asheeui/cli`** is covered by the workspace typecheck gate: every published package answers to
+    `check-types`, and CI runs it, so a rename cannot break the CLI without a command noticing.
+  
+  Neither package has a runtime change of its own; the patches keep their versions in step with the
+  release.
+
 ## 1.0.0
 
 ### Major Changes

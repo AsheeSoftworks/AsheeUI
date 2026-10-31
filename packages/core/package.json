@@ -1,6 +1,6 @@
 {
   "name": "@asheeui/core",
-  "version": "2.5.0",
+  "version": "3.0.0",
   "description": "Platform-neutral design language, component contracts and cascade helpers shared by the AsheeUI web and native packages.",
   "author": "Ashee Softworks \u003casheesoftworks@gmail.com\u003e",
   "license": "Apache-2.0",
