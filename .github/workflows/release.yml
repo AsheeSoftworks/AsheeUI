@@ -1,5 +1,10 @@
 name: Release
 
+# Proves that `main` is releasable. Publishing is deliberately manual: run
+# `pnpm changeset version`, review the changelogs, then `pnpm changeset publish` from a
+# maintainer's machine with the npm credentials. Nothing here touches the registry, so a
+# push to `main` can never publish by accident.
+
 on:
   push:
     branches:
@@ -8,19 +13,15 @@ on:
 concurrency: ${{ github.workflow }}-${{ github.ref }}
 
 permissions:
-  contents: write
-  pull-requests: write
-  id-token: write
+  contents: read
 
 jobs:
   release:
-    name: Build, Test & Publish
+    name: Build & Test
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v7
-        with:
-          fetch-depth: 0
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v6
@@ -30,7 +31,6 @@ jobs:
         with:
           node-version: 24
           cache: "pnpm"
-          registry-url: "https://registry.npmjs.org"
 
       - name: Install Dependencies
         run: pnpm install --frozen-lockfile
@@ -38,33 +38,10 @@ jobs:
       - name: Build Packages
         run: pnpm build
 
-      # The release path runs it too: the artifact this step checks is the one about to be
-      # published, and a package that renders unstyled in every consumer is not a release.
+      # The artifact this checks is the one a manual `pnpm changeset publish` would pack,
+      # and a package that renders unstyled in every consumer is not a release.
       - name: Native Artifact
         run: pnpm check:native-artifact
 
       - name: Run Tests
         run: pnpm test
-
-      # The step this workflow was named for. `changeset publish` publishes every package whose
-      # version is not on the registry yet, and the versions are already written by
-      # `pnpm version-packages` — a pending `.changeset/*.md` is not what it looks for, which is
-      # why a release with no changeset files left still publishes.
-      #
-      # It runs before the reset: it packs the package directories as they are, so `dist` has to
-      # still be there. `id-token: write` above is what lets npm attach provenance, which every
-      # publishable package asks for in its `publishConfig`.
-      - name: Publish
-        run: pnpm changeset publish
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-
-      # A publish that reports success while publishing nothing is the failure this repository has
-      # had before, so the registry is asked afterwards.
-      - name: Verify the Release
-        run: pnpm verify:released
-
-      - name: Reset working directory
-        run: |
-          git reset --hard
-          git clean -fd
