@@ -43,6 +43,7 @@ export {
   Centered,
   Chip,
   Clipboard,
+  ColorSwatch,
   Container,
   CopyButton,
   DataTable,

@@ -10,7 +10,7 @@
 import { describe, expect, it } from "vitest";
 import type { ExternalConfig } from "../config/config";
 import { resolveConfig } from "../config/resolve-config";
-import { mergeRuntimeThemes } from "./runtime";
+import { mergeRuntimeThemes, validateRuntimeThemes } from "./runtime";
 
 describe("mergeRuntimeThemes", () => {
   it("returns the configuration unchanged when no runtime themes are given", () => {
@@ -114,5 +114,21 @@ describe("mergeRuntimeThemes", () => {
         system: { extends: "dark" },
       } as never),
     ).toThrow(/follows the platform/);
+  });
+
+  it("reports every issue for an editor", () => {
+    const issues = validateRuntimeThemes(
+      {
+        "My Theme": { extends: "dark", primary: "oklch(0.7 0.2 240)" },
+        ocean: { extends: "missing", background: "#ffffff" },
+      } as never,
+      undefined,
+    );
+
+    expect(issues.map((issue) => issue.path)).toEqual([
+      "themes.My Theme",
+      "themes.ocean.extends",
+    ]);
+    expect(issues[1]?.message).toContain('extends "missing"');
   });
 });

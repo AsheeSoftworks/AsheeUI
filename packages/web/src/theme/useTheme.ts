@@ -68,6 +68,16 @@ export function useTheme() {
     () => "light" as ThemeName,
   );
 
+  // The available names are a snapshot of their own: a provider can configure the controller
+  // before this component's subscription is attached, and a selection-only snapshot would not
+  // notice the list that arrived with it. The controller replaces the array on every rebuild, so
+  // identity is the change signal.
+  const availableThemes = useSyncExternalStore(
+    themeController.subscribe,
+    themeController.getAvailableThemes,
+    () => [] as readonly ThemeName[],
+  );
+
   return {
     /**
      * The user's current theme selection.
@@ -109,6 +119,6 @@ export function useTheme() {
      * ));
      * ```
      */
-    availableThemes: themeController.getAvailableThemes(),
+    availableThemes,
   };
 }

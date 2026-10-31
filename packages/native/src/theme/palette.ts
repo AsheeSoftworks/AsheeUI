@@ -27,6 +27,7 @@ import {
   type OnSolidVariable,
   PALETTE_ROLES,
   type PaletteVariable,
+  parseColor,
 } from "@asheeui/core";
 
 /**
@@ -48,63 +49,10 @@ import {
  * ```
  */
 export function colorChannels(value: string): string | undefined {
-  const colour = value.trim();
+  const colour = parseColor(value);
+  if (!colour) return undefined;
 
-  const hex = /^#([0-9a-f]{3,8})$/i.exec(colour);
-  if (hex) {
-    const digits = hex[1] as string;
-
-    if (digits.length === 3 || digits.length === 4) {
-      // #rgb / #rgba: each digit is doubled, which is what a browser does.
-      return digits
-        .slice(0, 3)
-        .split("")
-        .map((digit) => Number.parseInt(digit + digit, 16))
-        .join(" ");
-    }
-
-    if (digits.length === 6 || digits.length === 8) {
-      return [digits.slice(0, 2), digits.slice(2, 4), digits.slice(4, 6)]
-        .map((pair) => Number.parseInt(pair, 16))
-        .join(" ");
-    }
-
-    return undefined;
-  }
-
-  const functional = /^rgba?\((.*)\)$/i.exec(colour);
-  if (!functional) return undefined;
-
-  const arguments_ = (functional[1] as string)
-    .split(/[\s,/]+/)
-    .filter(Boolean)
-    .slice(0, 3);
-
-  if (arguments_.length !== 3) return undefined;
-
-  const channels = arguments_.map(readChannel);
-  if (channels.some((channel) => channel === undefined)) return undefined;
-
-  return channels.join(" ");
-}
-
-/**
- * Read one channel of an `rgb()` colour.
- *
- * @param argument - A number, or a percentage, as CSS writes them.
- * @returns The channel as an integer from 0 to 255, or `undefined` when it is neither.
- */
-function readChannel(argument: string): number | undefined {
-  if (argument.endsWith("%")) {
-    const share = Number.parseFloat(argument.slice(0, -1));
-    if (Number.isNaN(share)) return undefined;
-    return Math.max(0, Math.min(255, Math.round((share / 100) * 255)));
-  }
-
-  const channel = Number.parseFloat(argument);
-  if (Number.isNaN(channel)) return undefined;
-
-  return Math.max(0, Math.min(255, Math.round(channel)));
+  return `${colour.r} ${colour.g} ${colour.b}`;
 }
 
 /**

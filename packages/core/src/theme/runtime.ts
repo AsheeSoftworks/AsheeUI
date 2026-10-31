@@ -15,6 +15,7 @@
  * merge.
  */
 
+import { isPortableColor } from "../color/parse";
 import type { ExternalConfig } from "../config/config";
 import type { ExternalColorConfig } from "./color";
 
@@ -27,46 +28,44 @@ import type { ExternalColorConfig } from "./color";
  */
 const RUNTIME_THEME_NAME = /^[a-z][a-z0-9-]{0,63}$/;
 
-/** The colours a device can apply, which are also the portable subset. */
-const HEX_COLOR = /^#(?:[0-9a-f]{3,4}|[0-9a-f]{6}|[0-9a-f]{8})$/i;
-const RGB_COLOR = /^rgba?\(\s*[0-9.%\s,/]+\)$/i;
-
-/**
- * Whether a value is a colour both renderers can apply.
- *
- * A browser accepts names, `oklch()` and `var()`; the platform reads channels and accepts only
- * the hex and `rgb()`/`rgba()` forms. A runtime palette is portable, so it states the intersection
- * rather than discovering the difference when a device paints it.
- */
-function isPortableColor(value: unknown): value is string {
-  return (
-    typeof value === "string" &&
-    (HEX_COLOR.test(value.trim()) || RGB_COLOR.test(value.trim()))
-  );
+/** One invalid thing in a runtime theme map. */
+interface ThemeValidationIssue {
+  /** Where the issue is: `themes.ocean.primary`, `themes.ocean.extends`, … */
+  path: string;
+  /** A sentence describing the problem and the accepted form. */
+  message: string;
 }
 
 /**
- * Validate the names and colours of a runtime theme map before it is merged.
+ * Find every invalid name, colour or `extends` target in a runtime theme map.
+ *
+ * This is the editor's validator: it reports all issues rather than throwing on the first one,
+ * so a form can point at each field. {@link mergeRuntimeThemes} calls it and throws the first
+ * issue, which is what a provider that receives an invalid prop should do.
  *
  * @param themes - The runtime definitions.
  * @param config - The configured map, so an `extends` may name a configured theme.
- * @throws When a name is not a slug, a colour is outside the portable set, or `extends` names
- *   nothing declared.
+ * @returns Every issue, in declaration order; an empty array means the map is valid.
  */
-function assertRuntimeThemes(
+export function validateRuntimeThemes(
   themes: ExternalColorConfig,
-  config: ExternalConfig | undefined,
-): void {
+  config?: ExternalConfig,
+): ThemeValidationIssue[] {
   if (
     themes === null ||
     typeof themes !== "object" ||
     Array.isArray(themes)
   ) {
-    throw new Error(
-      "[AsheeUI] `themes` must be an object keyed by theme name, with each value a partial palette.",
-    );
+    return [
+      {
+        path: "themes",
+        message:
+          "`themes` must be an object keyed by theme name, with each value a partial palette.",
+      },
+    ];
   }
 
+  const issues: ThemeValidationIssue[] = [];
   const declared = new Set([
     "light",
     "dark",
@@ -75,52 +74,85 @@ function assertRuntimeThemes(
   ]);
 
   for (const [name, variant] of Object.entries(themes)) {
+    const path = `themes.${name}`;
+
     if (!RUNTIME_THEME_NAME.test(name)) {
-      throw new Error(
-        `[AsheeUI] runtime theme ${JSON.stringify(name)} is not a valid name: use a lowercase slug that starts with a letter and contains letters, digits and hyphens (for example "ocean").`,
-      );
+      issues.push({
+        path,
+        message: `runtime theme ${JSON.stringify(name)} is not a valid name: use a lowercase slug that starts with a letter and contains letters, digits and hyphens (for example "ocean").`,
+      });
+      continue;
     }
 
     if (name === "system") {
-      throw new Error(
-        '`system` is the selection that follows the platform, not a theme name; choose another runtime name.',
-      );
+      issues.push({
+        path,
+        message:
+          "`system` is the selection that follows the platform, not a theme name; choose another runtime name.",
+      });
+      continue;
     }
 
     if (name === "light" || name === "dark") {
-      throw new Error(
-        `[AsheeUI] "${name}" is a built-in theme. Runtime themes are additions; retune the built-ins in \`config.color\`, where they are part of the application's configuration.`,
-      );
+      issues.push({
+        path,
+        message: `"${name}" is a built-in theme. Runtime themes are additions; retune the built-ins in \`config.color\`, where they are part of the application's configuration.`,
+      });
+      continue;
     }
 
-    if (variant === null || typeof variant !== "object") {
-      throw new Error(
-        `[AsheeUI] runtime theme "${name}" must be an object of palette roles.`,
-      );
+    if (
+      variant === null ||
+      typeof variant !== "object" ||
+      Array.isArray(variant)
+    ) {
+      issues.push({
+        path,
+        message: `runtime theme "${name}" must be an object of palette roles.`,
+      });
+      continue;
     }
 
     if (variant.extends !== undefined) {
       if (variant.extends === name) {
-        throw new Error(
-          `[AsheeUI] runtime theme "${name}" cannot extend itself.`,
-        );
-      }
-      if (!declared.has(variant.extends)) {
-        throw new Error(
-          `[AsheeUI] runtime theme "${name}" extends "${variant.extends}", which this configuration does not declare. Declared: ${[...declared].join(", ")}.`,
-        );
+        issues.push({
+          path: `${path}.extends`,
+          message: `runtime theme "${name}" cannot extend itself.`,
+        });
+      } else if (!declared.has(variant.extends)) {
+        issues.push({
+          path: `${path}.extends`,
+          message: `runtime theme "${name}" extends "${variant.extends}", which this configuration does not declare. Declared: ${[...declared].join(", ")}.`,
+        });
       }
     }
 
     for (const [role, value] of Object.entries(variant)) {
       if (role === "extends") continue;
       if (!isPortableColor(value)) {
-        throw new Error(
-          `[AsheeUI] runtime theme "${name}" states "${role}" as ${JSON.stringify(value)}, which a device cannot apply. A runtime theme accepts a hex colour (#rgb, #rrggbb, #rrggbbaa) or rgb()/rgba(); the alpha of rgba() is ignored because the framework's classes carry their own.`,
-        );
+        issues.push({
+          path: `${path}.${role}`,
+          message: `runtime theme "${name}" states "${role}" as ${JSON.stringify(value)}, which a device cannot apply. A runtime theme accepts a hex colour (#rgb, #rrggbb, #rrggbbaa) or rgb()/rgba(); the alpha of rgba() is ignored because the framework's classes carry their own.`,
+        });
       }
     }
   }
+
+  return issues;
+}
+
+/**
+ * Throw the first issue a runtime theme map has.
+ *
+ * @param themes - The runtime definitions.
+ * @param config - The configured map, so an `extends` may name a configured theme.
+ */
+function assertRuntimeThemes(
+  themes: ExternalColorConfig,
+  config: ExternalConfig | undefined,
+): void {
+  const [issue] = validateRuntimeThemes(themes, config);
+  if (issue) throw new Error(`[AsheeUI] ${issue.message}`);
 }
 
 /**

@@ -50,11 +50,20 @@ export function useTheme(): {
     () => "light" as ThemeName,
   );
 
+  // The list gets its own snapshot: a provider configures the controller before this
+  // component's subscription exists, and the selection alone would not notice the names that
+  // arrived with that configuration.
+  const availableThemes = useSyncExternalStore(
+    themeController.subscribe,
+    themeController.getAvailableThemes,
+    () => [] as readonly ThemeName[],
+  );
+
   return {
     theme,
     resolvedTheme,
     setTheme: themeController.setTheme,
     toggleTheme: themeController.toggleTheme,
-    availableThemes: themeController.getAvailableThemes(),
+    availableThemes,
   };
 }

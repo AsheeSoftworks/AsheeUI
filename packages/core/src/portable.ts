@@ -142,6 +142,7 @@ export const PORTABLE_API: readonly PortableExport[] = [
   { name: "Clipboard", kind: "component", support: "shared-api", source: "renderer" },
   { name: "ClipboardState", kind: "type", support: "shared", source: "renderer" },
   { name: "Color", kind: "type", support: "shared", source: "core" },
+  { name: "ColorSwatch", kind: "component", support: "shared", source: "renderer" },
   { name: "ColorVariant", kind: "type", support: "shared", source: "core" },
   { name: "ColumnDef", kind: "type", support: "shared", source: "core" },
   { name: "Container", kind: "component", support: "shared-api", source: "renderer" },

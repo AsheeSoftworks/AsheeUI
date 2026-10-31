@@ -1,0 +1,18 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "rootDir": "./src",
+    "outDir": "./dist",
+    "jsx": "react-jsx",
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "types": ["node", "nativewind/types"],
+    "customConditions": ["react-native"],
+    "paths": {
+      "@asheeui/core": ["../core/dist/index.d.ts"],
+      "asheeui": ["../ui/dist/index.native.d.ts"]
+    }
+  },
+  "include": ["src"],
+  "exclude": ["src/**/*.test.ts", "src/**/*.test.tsx"]
+}

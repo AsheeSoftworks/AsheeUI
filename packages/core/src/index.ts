@@ -31,6 +31,7 @@
  * names on the web, NativeWind class names and style objects on native.
  */
 
+export * from "./color";
 export * from "./components";
 export * from "./components/data-display/avatar/avatar-styles";
 export * from "./components/data-display/marquee/marquee-styles";

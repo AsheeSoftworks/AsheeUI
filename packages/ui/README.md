@@ -4,7 +4,7 @@ The portable surface of AsheeUI: one import, two renderers. `asheeui` exports th
 `@asheeui/web` and `@asheeui/native` both offer — the intersection, generated from `PORTABLE_API` in
 `@asheeui/core` — and the bundler resolves the branch for the platform it is building.
 
-The umbrella offers **182 names**: components, providers, hooks, helpers, constants and types that
+The umbrella offers **183 names**: components, providers, hooks, helpers, constants and types that
 behave the same on both platforms. A name only one renderer has is not here; it stays on the
 renderer that owns it, so code that imports it fails to compile on the platform that lacks it rather
 than finding `undefined` at runtime.

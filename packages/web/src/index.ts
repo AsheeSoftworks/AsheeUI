@@ -56,6 +56,7 @@ export * from "./components/data-display/card";
 export * from "./components/data-display/carousel";
 export * from "./components/data-display/chip";
 export * from "./components/data-display/clipboard";
+export * from "./components/data-display/color-swatch";
 export * from "./components/data-display/data-table";
 export * from "./components/data-display/image";
 export * from "./components/data-display/marquee";

@@ -147,6 +147,7 @@ export const COMPONENT_SUPPORT: readonly ComponentSupport[] = [
     native: "Clipboard",
     note: "Native copies through the platform clipboard module",
   },
+  { name: "ColorSwatch", module: "color-swatch", support: "shared" },
   { name: "CopyButton", module: "copy-button", support: "shared" },
   {
     name: "Container",
