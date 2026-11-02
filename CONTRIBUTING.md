@@ -228,49 +228,24 @@ version bump, a release commit, or tooling that no package publishes — say so
 explicitly with `ALLOW_MISSING_CHANGESET=1` rather than leaving the rule to
 memory.
 
-### What happens to a changeset after it is merged
+### Cutting a release
 
-The `Release` workflow runs `changeset version` when `main` receives a commit that
-carries a changeset, pushes the result to a `changeset-release/main` branch, and
-opens the version pull request that a maintainer merges to publish. Opening that
-pull request needs a repository setting, because GitHub blocks it by default:
-
-**Settings → Actions → General → Workflow permissions → Allow GitHub Actions to
-create and approve pull requests.**
-
-With the setting off, the run versions the packages and pushes the branch, and then
-fails at the pull request rather than opening it, and the failure says so. A
-repository that prefers to publish without a review step would version and publish
-in the same run instead; this repository reviews the version, so the setting is what
-opened the path.
-
-The same release can be prepared without the setting, and that is how this
-repository released `asheeui` 2.0.0 and `@asheeui/cli` 0.7.0 (its version is what
-`pnpm version-packages` prepares; publishing it is the workflow's publish path):
+Publishing is deliberately manual. The `Release` workflow only builds, tests and
+checks the native artifact; it never touches the registry.
 
 ```bash
 pnpm version-packages                      # consumes the changesets, bumps, writes changelogs
+pnpm build                                 # the packages a publish would pack
+pnpm test --concurrency=1                  # the suite release runs one package at a time
+pnpm check:native-artifact
 git add -A && git commit -m "chore(release): version ..."
 git push origin main
+pnpm release                               # build, then changeset publish
 ```
 
-The push carries no pending changesets, so the workflow takes the publish path
-rather than the pull request path. The action's branch is pushed either way, so a
-maintainer can also open the version pull request from `changeset-release/main` by
-hand.
-
-Whichever path publishes, the workflow verifies the result rather than the exit
-code:
-
-```bash
-pnpm verify:released
-```
-
-It reads every non-private manifest and asks the registry for that version,
-retrying a few times, because a version can take a minute or two to become readable
-after it is published. A run that reports success while the registry has no such
-version fails there with the version named — the state that is otherwise a green
-tick, a tag and nothing to install.
+Review the changelogs and package versions before committing. After publishing,
+install one of the new versions from a clean directory; the registry is the only
+proof that matters.
 
 A good changeset is short and specific. The front matter lists the packages and
 the bump type, and the body describes the change in the same style used in
