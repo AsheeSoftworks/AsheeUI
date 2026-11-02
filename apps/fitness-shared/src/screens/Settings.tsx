@@ -286,7 +286,9 @@ export function SettingsScreen(_props: ScreenProps) {
             initialTheme={editingTheme}
             activeTheme={theme}
             onApply={(name) => {
-              setTheme(name);
+              // The provider learns the new map on the next render, so the selection has to wait
+              // for it too; calling `setTheme` here would name a theme the controller cannot see.
+              setPendingTheme(name);
               setEditorOpen(false);
             }}
             onCancel={() => setEditorOpen(false)}

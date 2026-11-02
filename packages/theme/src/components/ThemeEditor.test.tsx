@@ -20,6 +20,14 @@ describe("ThemeEditor", () => {
     });
   });
 
+  it("does not offer Save & apply without an apply handler", () => {
+    renderEditor(<ThemeEditor themes={{}} onChange={() => {}} />);
+
+    expect(
+      screen.queryByRole("button", { name: "Save & apply" }),
+    ).toBeNull();
+  });
+
   it("edits an existing runtime theme", () => {
     const onChange = vi.fn();
     renderEditor(

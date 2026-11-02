@@ -257,9 +257,11 @@ export function ThemeEditor({
         <Button variant="solid" onPress={() => save(false)}>
           Save theme
         </Button>
-        <Button variant="bordered" onPress={() => save(true)}>
-          Save & apply
-        </Button>
+        {onApply && (
+          <Button variant="bordered" onPress={() => save(true)}>
+            Save & apply
+          </Button>
+        )}
         {initialTheme && themes[initialTheme] && (
           <Button variant="ghost" onPress={remove}>
             Delete
