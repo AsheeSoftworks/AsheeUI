@@ -21,7 +21,7 @@
   "devDependencies": {
     "@asheeui/native": "workspace:^",
     "@asheeui/web": "workspace:^",
-    "@puckeditor/core": "^0.23.0",
+    "@puckeditor/core": "^0.24.0",
     "@types/react": "^19.3.0",
     "typescript": "^7.0.2"
   }
