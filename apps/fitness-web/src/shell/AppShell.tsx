@@ -15,6 +15,7 @@ import {
   PageContent,
   PageFooter,
   Typography,
+  useTheme,
   type NavbarLinkItem,
 } from "asheeui";
 import { Link, useRouterState } from "@tanstack/react-router";
@@ -54,6 +55,7 @@ const RouterLink = forwardRef<
 export function AppShell({ children }: { children: ReactNode }) {
   const pathname = useRouterState({ select: (state) => state.location.pathname });
   const [themeOpen, setThemeOpen] = useState(false);
+  const { toggleTheme } = useTheme();
 
   const links: NavbarLinkItem[] = destinations.map((destination) => ({
     label: destination.label,
@@ -86,6 +88,14 @@ export function AppShell({ children }: { children: ReactNode }) {
               onPress={() => setThemeOpen(true)}
             >
               Theme
+            </Button>
+            <Button
+              size="sm"
+              variant="bordered"
+              color="secondary"
+              onPress={() => toggleTheme()}
+            >
+              Toggle Theme
             </Button>
             <Button size="sm" onPress={() => window.location.assign("/workouts")}>
               Train
