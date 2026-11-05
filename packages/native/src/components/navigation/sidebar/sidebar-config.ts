@@ -10,6 +10,12 @@
 import type { SidebarConfig } from "@asheeui/core";
 import { registerNativeComponentDefaults } from "../../../config/registry";
 
+/**
+ * The sidebar's row substitution under the name the web renderer publishes.
+ *
+ * It is the same type as `SidebarLinkSubstitution`, not a second shape: a shared screen
+ * imports one name on either platform.
+ */
 export type {
   SidebarActiveOptionConfig,
   SidebarConfig,
@@ -17,20 +23,13 @@ export type {
   SidebarItem,
   SidebarItems,
   SidebarLinkSubstitution,
+  SidebarLinkSubstitution as SidebarLinkProps,
   SidebarOptionsConfig,
   SidebarSection,
   SidebarSizeKey,
   SidebarTooltipConfig,
   SidebarVariant,
 } from "@asheeui/core";
-
-/**
- * The sidebar's row substitution under the name the web renderer publishes.
- *
- * It is the same type as `SidebarLinkSubstitution`, not a second shape: a shared screen
- * imports one name on either platform.
- */
-export type { SidebarLinkSubstitution as SidebarLinkProps } from "@asheeui/core";
 
 /**
  * Configuration options for the native Sidebar.

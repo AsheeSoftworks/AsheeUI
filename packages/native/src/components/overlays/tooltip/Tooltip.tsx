@@ -330,10 +330,7 @@ export function Tooltip({
             {typeof content === "string" ? (
               <Typography
                 role="label"
-                className={cn(
-                  TOOLTIP_FONT_CLASS[resolvedSize],
-                  textClass,
-                )}>
+                className={cn(TOOLTIP_FONT_CLASS[resolvedSize], textClass)}>
                 {content}
               </Typography>
             ) : (

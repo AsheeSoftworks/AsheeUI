@@ -9,8 +9,8 @@
  */
 
 export * from "@asheeui/core";
+export type { ThemeConfigInput, ThemeSelection } from "./controller";
 export * from "./controller";
-export * from "./useTheme";
 
 /**
  * The names both branches publish, stated explicitly.
@@ -20,4 +20,4 @@ export * from "./useTheme";
  * re-exports, which is core's — the same value a device reads.
  */
 export { THEME_STORAGE_KEY } from "./controller";
-export type { ThemeConfigInput, ThemeSelection } from "./controller";
+export * from "./useTheme";

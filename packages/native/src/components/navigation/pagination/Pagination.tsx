@@ -209,9 +209,7 @@ export function Pagination({
             {...(nextDestination !== undefined
               ? { href: nextDestination, to: nextDestination }
               : {})}
-            onPress={
-              isDisabled ? undefined : () => onPageChange?.(nextPage)
-            }
+            onPress={isDisabled ? undefined : () => onPageChange?.(nextPage)}
             accessibilityRole="link"
             accessibilityState={{ disabled: isDisabled }}
             {...link?.props}>

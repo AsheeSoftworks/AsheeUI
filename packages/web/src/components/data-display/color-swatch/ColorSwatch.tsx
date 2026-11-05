@@ -10,10 +10,7 @@
 "use client";
 
 import type { Radius, Size } from "@asheeui/core";
-import {
-  forwardRef,
-  type HTMLAttributes,
-} from "react";
+import { forwardRef, type HTMLAttributes } from "react";
 import {
   COLOR_SWATCH_BASE_CLASS,
   COLOR_SWATCH_SIZE_CLASS,
@@ -52,15 +49,7 @@ export interface ColorSwatchProps
 /** A labelled block of one colour. */
 export const ColorSwatch = forwardRef<HTMLSpanElement, ColorSwatchProps>(
   function ColorSwatch(
-    {
-      color,
-      label,
-      size = "md",
-      radius = "sm",
-      className,
-      style,
-      ...rest
-    },
+    { color, label, size = "md", radius = "sm", className, style, ...rest },
     ref,
   ) {
     return (

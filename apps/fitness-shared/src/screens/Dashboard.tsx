@@ -21,7 +21,14 @@ import {
 } from "asheeui";
 import { useState } from "react";
 import { Panel, ScreenHeading, StatGrid, WorkoutCard } from "../components";
-import { achievements, profile, today, week, workouts, type DayActivity } from "../data";
+import {
+  achievements,
+  type DayActivity,
+  profile,
+  today,
+  week,
+  workouts,
+} from "../data";
 import type { ScreenProps } from "../theme";
 
 const WEEK_COLUMNS: ColumnDef<DayActivity>[] = [
@@ -48,10 +55,11 @@ function WeekTable() {
           {totalSteps.toLocaleString("en-US")} steps this week
         </Typography>
         <Badge
-          color={totalMinutes >= profile.weeklyGoalMinutes ? "success" : "warning"}
+          color={
+            totalMinutes >= profile.weeklyGoalMinutes ? "success" : "warning"
+          }
           variant="faded"
-          size="sm"
-        >
+          size="sm">
           {totalMinutes} / {profile.weeklyGoalMinutes} active minutes
         </Badge>
       </HStack>
@@ -61,7 +69,8 @@ function WeekTable() {
 
 /** The dashboard. */
 export function DashboardScreen({ onNavigate, onOpenWorkout }: ScreenProps) {
-  const nextWorkout = workouts.find((workout) => !workout.completed) ?? workouts[0];
+  const nextWorkout =
+    workouts.find((workout) => !workout.completed) ?? workouts[0];
   const [dismissed, setDismissed] = useState(false);
 
   return (
@@ -107,11 +116,13 @@ export function DashboardScreen({ onNavigate, onOpenWorkout }: ScreenProps) {
         title="This week"
         description="Steps and active minutes, day by day."
         action={
-          <Button size="sm" variant="ghost" onPress={() => onNavigate("progress")}>
+          <Button
+            size="sm"
+            variant="ghost"
+            onPress={() => onNavigate("progress")}>
             See progress
           </Button>
-        }
-      >
+        }>
         <WeekTable />
       </Panel>
 
@@ -120,11 +131,13 @@ export function DashboardScreen({ onNavigate, onOpenWorkout }: ScreenProps) {
           title="Next session"
           description="The next block in the programme."
           action={
-            <Button size="sm" variant="ghost" onPress={() => onNavigate("workouts")}>
+            <Button
+              size="sm"
+              variant="ghost"
+              onPress={() => onNavigate("workouts")}>
               Library
             </Button>
-          }
-        >
+          }>
           <WorkoutCard workout={nextWorkout} onOpen={onOpenWorkout} />
         </Panel>
 
@@ -138,7 +151,11 @@ export function DashboardScreen({ onNavigate, onOpenWorkout }: ScreenProps) {
             </HStack>
             <VStack gap="sm">
               {achievements.map((achievement) => (
-                <HStack key={achievement.id} justify="between" align="center" gap="sm">
+                <HStack
+                  key={achievement.id}
+                  justify="between"
+                  align="center"
+                  gap="sm">
                   <VStack gap="xs">
                     <Typography role="label">{achievement.title}</Typography>
                     <Typography role="caption" tone="muted">
@@ -151,7 +168,10 @@ export function DashboardScreen({ onNavigate, onOpenWorkout }: ScreenProps) {
                 </HStack>
               ))}
             </VStack>
-            <Button size="sm" variant="bordered" onPress={() => onNavigate("studio")}>
+            <Button
+              size="sm"
+              variant="bordered"
+              onPress={() => onNavigate("studio")}>
               Compose your own view
             </Button>
           </VStack>
@@ -163,10 +183,9 @@ export function DashboardScreen({ onNavigate, onOpenWorkout }: ScreenProps) {
           type="info"
           title="Recovery is part of the plan"
           isClosable
-          onClose={() => setDismissed(true)}
-        >
-          Sleep and hydration move the needle as much as the session does. Tonight's target is
-          eight hours and two more glasses of water.
+          onClose={() => setDismissed(true)}>
+          Sleep and hydration move the needle as much as the session does.
+          Tonight's target is eight hours and two more glasses of water.
         </Alert>
       )}
     </VStack>

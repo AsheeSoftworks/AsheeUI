@@ -84,7 +84,10 @@ function createHost(
 /** One step of the shared script: what to call, and the selection and paint it must produce. */
 interface Step {
   name: string;
-  run(controller: ReturnType<typeof createThemeController>, tester: TestHost): void;
+  run(
+    controller: ReturnType<typeof createThemeController>,
+    tester: TestHost,
+  ): void;
   selection: ThemeSelection;
   resolved: string;
 }
@@ -100,7 +103,10 @@ const SCRIPT: readonly Step[] = [
   {
     name: "configuring with system follows the host",
     run: (controller) =>
-      controller.configure({ defaultTheme: "system", themes: ["light", "dark"] }),
+      controller.configure({
+        defaultTheme: "system",
+        themes: ["light", "dark"],
+      }),
     selection: "system",
     resolved: "light",
   },
@@ -228,11 +234,7 @@ describe("the controller's six rules", () => {
       ownsDocument: false,
     });
 
-    expect(controller.getAvailableThemes()).toEqual([
-      "light",
-      "dark",
-      "brand",
-    ]);
+    expect(controller.getAvailableThemes()).toEqual(["light", "dark", "brand"]);
   });
 
   it("keeps the owner's default when a nested provider configures", () => {

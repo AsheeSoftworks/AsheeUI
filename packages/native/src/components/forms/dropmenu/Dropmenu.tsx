@@ -175,7 +175,8 @@ export function Dropmenu({
   useUnsupportedProps("Dropmenu", {
     name: {
       value: name,
-      substitute: "read the field's value from state; a form name is a DOM concept",
+      substitute:
+        "read the field's value from state; a form name is a DOM concept",
     },
     searchInputName: {
       value: searchInputName,

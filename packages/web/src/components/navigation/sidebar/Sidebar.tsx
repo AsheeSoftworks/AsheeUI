@@ -634,7 +634,14 @@ function SidebarInner<T = string>(
     const isDisabled = isSectionDisabled || item.disabled === true;
 
     const linkClassName = cn(
-      "w-full flex items-center gap-3 transition-all truncate no-underline",
+      // The row is the containing block for its own contents. A folded row keeps its
+      // label as `sr-only` — absolutely positioned so the accessible name survives —
+      // and the column is a containing block because its surface carries a backdrop
+      // filter. Without `relative` the label is therefore positioned against the
+      // column: its static position is the row's place in the nav's scrollable
+      // content, so a list longer than the nav strands the labels below the column,
+      // where they become scrollable overflow the column does not clip.
+      "relative w-full flex items-center gap-3 transition-all truncate no-underline",
       SIDEBAR_ITEM_CLASS[resolvedSizeKey],
       isCollapsed ? "justify-center px-0" : "justify-start",
       isActive && "font-medium",

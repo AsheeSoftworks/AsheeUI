@@ -7,16 +7,16 @@
  */
 import {
   DashboardScreen,
+  destinations,
   NutritionScreen,
   ProgressScreen,
+  type RouteKey,
   SettingsScreen,
   StudioScreen,
   ThemePicker,
   WorkoutDetailScreen,
   WorkoutsScreen,
-  destinations,
   workouts,
-  type RouteKey,
 } from "@asheeui/fitness-shared";
 import {
   Avatar,
@@ -33,7 +33,9 @@ import { ScrollView, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 /** The five destinations the bottom bar carries; settings sits in the header. */
-const PRIMARY = destinations.filter((destination) => destination.key !== "settings");
+const PRIMARY = destinations.filter(
+  (destination) => destination.key !== "settings",
+);
 
 /** The mobile shell. */
 export function MobileShell() {
@@ -84,14 +86,16 @@ export function MobileShell() {
   return (
     <Page>
       <View style={{ flex: 1, paddingTop: insets.top }}>
-        <View style={{ paddingHorizontal: 16, paddingTop: 8, paddingBottom: 4 }}>
+        <View
+          style={{ paddingHorizontal: 16, paddingTop: 8, paddingBottom: 4 }}>
           <HStack justify="between" align="center" gap="sm">
             <HStack gap="sm" align="center">
               <Avatar name="Pulse" size="sm" />
               <VStack gap="xs">
                 <Typography role="heading-sm">Pulse</Typography>
                 <Typography role="caption" tone="muted">
-                  {destinations.find((item) => item.key === route)?.label ?? "Today"}
+                  {destinations.find((item) => item.key === route)?.label ??
+                    "Today"}
                 </Typography>
               </VStack>
             </HStack>
@@ -103,16 +107,14 @@ export function MobileShell() {
                 size="sm"
                 variant="ghost"
                 accessibilityLabel="Theme"
-                onPress={() => setThemeOpen(true)}
-              >
+                onPress={() => setThemeOpen(true)}>
                 ◐
               </Button>
               <Button
                 size="sm"
                 variant={route === "settings" ? "solid" : "ghost"}
                 accessibilityLabel="Settings"
-                onPress={() => go("settings")}
-              >
+                onPress={() => go("settings")}>
                 ⚙
               </Button>
             </HStack>
@@ -126,8 +128,7 @@ export function MobileShell() {
             paddingTop: 12,
             paddingBottom: 120 + insets.bottom,
           }}
-          keyboardShouldPersistTaps="handled"
-        >
+          keyboardShouldPersistTaps="handled">
           {screen}
         </ScrollView>
 
@@ -137,8 +138,7 @@ export function MobileShell() {
             left: 12,
             right: 12,
             bottom: 8 + insets.bottom,
-          }}
-        >
+          }}>
           <Card variant="elevated" size="sm">
             <HStack justify="between" align="center" gap="xs">
               {PRIMARY.map((destination) => (
@@ -147,8 +147,7 @@ export function MobileShell() {
                   size="sm"
                   variant={route === destination.key ? "solid" : "ghost"}
                   accessibilityLabel={destination.label}
-                  onPress={() => go(destination.key)}
-                >
+                  onPress={() => go(destination.key)}>
                   {destination.glyph}
                 </Button>
               ))}

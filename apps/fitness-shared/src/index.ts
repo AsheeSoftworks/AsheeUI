@@ -5,6 +5,8 @@
  * renderer. The web app resolves `asheeui` to its DOM half, the Expo app to its platform
  * half, and these screens are the same source in both bundles.
  */
+
+export type { AsheePuckData } from "@asheeui/puck";
 export * from "./components";
 export * from "./data";
 export * from "./screens/Dashboard";
@@ -14,8 +16,6 @@ export * from "./screens/Settings";
 export * from "./screens/Studio";
 export * from "./screens/WorkoutDetail";
 export * from "./screens/Workouts";
+export * from "./ThemePicker";
 export * from "./theme";
 export * from "./theme-settings";
-export * from "./ThemePicker";
-
-export type { AsheePuckData } from "@asheeui/puck";

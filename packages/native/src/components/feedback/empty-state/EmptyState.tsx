@@ -41,11 +41,11 @@ import {
   NATIVE_EMPTY_STATE_SIZE_CLASS,
 } from "../../../styles/empty-state";
 import { cn } from "../../../utils/cn";
+import { openDestination } from "../../../utils/open-destination";
 import {
   type UnsupportedElementProps,
   useUnsupportedElementProps,
 } from "../../../utils/unsupported-element-props";
-import { openDestination } from "../../../utils/open-destination";
 import { Button } from "../../forms/button/Button";
 import { Typography } from "../../typography/text/Text";
 import {

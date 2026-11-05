@@ -37,14 +37,14 @@ describe("resolvePress", () => {
     const event = { type: "press" as const };
 
     resolvePress(
-      { onClick: record(calls, "onClick"), onPress: () => calls.push(["onPress"]) },
+      {
+        onClick: record(calls, "onClick"),
+        onPress: () => calls.push(["onPress"]),
+      },
       event,
     );
 
-    expect(calls).toEqual([
-      ["onClick", event],
-      ["onPress"],
-    ]);
+    expect(calls).toEqual([["onClick", event], ["onPress"]]);
   });
 
   it("runs the one handler it was given", () => {
@@ -73,9 +73,7 @@ describe("resolvePress", () => {
     ];
 
     for (const handlers of shapes) {
-      expect(() =>
-        resolvePress(handlers, { type: "press" }),
-      ).not.toThrow();
+      expect(() => resolvePress(handlers, { type: "press" })).not.toThrow();
     }
   });
 

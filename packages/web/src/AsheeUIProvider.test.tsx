@@ -14,16 +14,13 @@ import {
   THEME_VARS_STYLE_ID,
 } from "./scripts/AsheeThemeScript";
 import {
-  THEME_STORAGE_KEY,
-  themeController,
-} from "./theme/controller";
-import { useTheme } from "./theme/useTheme";
-import {
   act,
   expectHydrationClean,
   render,
   renderToServerString,
 } from "./test";
+import { THEME_STORAGE_KEY, themeController } from "./theme/controller";
+import { useTheme } from "./theme/useTheme";
 
 /** Test helper: invalid configurations are the point, so typing is bypassed. */
 const asOptions = (value: unknown) => ({
@@ -179,7 +176,9 @@ describe("AsheeUIProvider runtime themes", () => {
 
     act(() => themeController.setTheme("ocean"));
 
-    expect(document.documentElement.classList.contains("theme-ocean")).toBe(true);
+    expect(document.documentElement.classList.contains("theme-ocean")).toBe(
+      true,
+    );
     expect(captured?.resolvedTheme).toBe("ocean");
 
     unmount();
@@ -199,7 +198,9 @@ describe("AsheeUIProvider runtime themes", () => {
     );
 
     act(() => themeController.setTheme("ocean"));
-    expect(document.documentElement.classList.contains("theme-ocean")).toBe(true);
+    expect(document.documentElement.classList.contains("theme-ocean")).toBe(
+      true,
+    );
 
     rerender(
       <AsheeUIProvider config={{ defaultTheme: "light" }} themes={{}}>
@@ -209,7 +210,9 @@ describe("AsheeUIProvider runtime themes", () => {
 
     expect(themeController.getAvailableThemes()).not.toContain("ocean");
     expect(themeController.getSelection()).toBe("light");
-    expect(document.documentElement.classList.contains("theme-ocean")).toBe(false);
+    expect(document.documentElement.classList.contains("theme-ocean")).toBe(
+      false,
+    );
 
     const style = document.getElementById(THEME_VARS_STYLE_ID);
     expect(style?.textContent).not.toContain(".theme-ocean");

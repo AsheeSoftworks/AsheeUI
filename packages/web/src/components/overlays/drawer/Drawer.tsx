@@ -7,11 +7,7 @@
  */
 "use client";
 
-import {
-  CLOSE_LABEL,
-  resolveCascade,
-  resolveClassKey,
-} from "@asheeui/core";
+import { CLOSE_LABEL, resolveCascade, resolveClassKey } from "@asheeui/core";
 import { FloatingFocusManager, FloatingPortal } from "@floating-ui/react";
 import {
   type CSSProperties,
@@ -464,7 +460,9 @@ export const Drawer = forwardRef<HTMLDivElement, DrawerProps>(
               data-ashee-panel=""
               style={style}
               className={cn(
-                "relative z-10 flex flex-col text-foreground shadow-2xl border-border overflow-y-auto",
+                // The panel carries the same hairline as the modal's surface. The
+                // placement class still states which edge faces the page.
+                "relative z-10 flex flex-col text-foreground shadow-2xl border border-border/50 overflow-y-auto",
                 borderPlacementClass,
                 widthClass,
                 heightClass,

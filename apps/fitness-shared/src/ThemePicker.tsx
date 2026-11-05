@@ -6,11 +6,7 @@
  * its name.
  */
 import { ThemeSwitcher } from "@asheeui/theme";
-import {
-  Modal,
-  Typography,
-  VStack,
-} from "asheeui";
+import { Modal, Typography, VStack } from "asheeui";
 
 export interface ThemePickerProps {
   /** Whether the layer is open. */
@@ -31,13 +27,10 @@ export function ThemePicker({ isOpen, onClose }: ThemePickerProps) {
       <VStack gap="md">
         <Typography role="heading-md">Choose a theme</Typography>
         <Typography role="body-sm" tone="muted">
-          The choice is stored by the platform. Every palette is also available in Settings.
+          The choice is stored by the platform. Every palette is also available
+          in Settings.
         </Typography>
-        <ThemeSwitcher
-          variant="cards"
-          showSystem
-          onValueChange={onClose}
-        />
+        <ThemeSwitcher variant="cards" showSystem onValueChange={onClose} />
       </VStack>
     </Modal>
   );

@@ -8,16 +8,16 @@
  */
 
 import {
+  type Color,
+  type ColorRole,
+  resolveFieldStatusColor,
+} from "@asheeui/core";
+import {
   act,
   fireEvent,
   type RenderResult,
   render,
 } from "@testing-library/react-native";
-import {
-  type Color,
-  type ColorRole,
-  resolveFieldStatusColor,
-} from "@asheeui/core";
 import type { ReactElement } from "react";
 import { AsheeUIProvider } from "../../../provider/AsheeUIProvider";
 import { FIELD_STATUS_TEXT_CLASS } from "../../../styles/portable";

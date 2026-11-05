@@ -37,8 +37,8 @@ export const NATIVE_DRAWER_EDGE_CLASS: Record<"top" | "bottom", string> = {
 
 /** The edge the sheet is outlined on, per edge. */
 export const NATIVE_DRAWER_BORDER_CLASS: Record<"top" | "bottom", string> = {
-  top: "border-b border-border",
-  bottom: "border-t border-border",
+  top: "border-b",
+  bottom: "border-t",
 };
 
 /**
@@ -57,4 +57,5 @@ export const NATIVE_DRAWER_SIZE_CLASS: Record<DrawerSize, string> = {
 export const NATIVE_DRAWER_BACKDROP_CLASS = "flex-1 bg-foreground/30";
 
 /** The sheet itself. */
-export const NATIVE_DRAWER_SHEET_CLASS = "w-full bg-background p-4 gap-3";
+export const NATIVE_DRAWER_SHEET_CLASS =
+  "w-full bg-background p-4 gap-3 border border-border/50";

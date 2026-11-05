@@ -25,7 +25,13 @@ import {
 } from "asheeui";
 import { useState } from "react";
 import { Panel, ScreenHeading } from "../components";
-import { achievements, records, week, type DayActivity, type PersonalRecord } from "../data";
+import {
+  achievements,
+  type DayActivity,
+  type PersonalRecord,
+  records,
+  week,
+} from "../data";
 import type { ScreenProps } from "../theme";
 
 const RECORD_COLUMNS: ColumnDef<PersonalRecord>[] = [
@@ -38,8 +44,7 @@ const RECORD_COLUMNS: ColumnDef<PersonalRecord>[] = [
       <Badge
         color={row.change.startsWith("-") ? "success" : "primary"}
         variant="faded"
-        size="sm"
-      >
+        size="sm">
         {row.change}
       </Badge>
     ),
@@ -64,9 +69,14 @@ export function ProgressScreen({ onNavigate }: ScreenProps) {
     <VStack gap="lg">
       <Grid columns={1} columnsMd={3} gap="md">
         {achievements.map((achievement) => (
-          <Panel key={achievement.id} title={achievement.title} description={achievement.detail}>
+          <Panel
+            key={achievement.id}
+            title={achievement.title}
+            description={achievement.detail}>
             <HStack justify="between" align="center">
-              <Typography role="heading-lg">{achievement.title.split(" ")[0]}</Typography>
+              <Typography role="heading-lg">
+                {achievement.title.split(" ")[0]}
+              </Typography>
               <Badge color={achievement.tone} variant="bordered" size="sm">
                 milestone
               </Badge>
@@ -87,11 +97,13 @@ export function ProgressScreen({ onNavigate }: ScreenProps) {
         title="This week"
         description="The days that got you here."
         action={
-          <Button size="sm" variant="ghost" onPress={() => onNavigate("workouts")}>
+          <Button
+            size="sm"
+            variant="ghost"
+            onPress={() => onNavigate("workouts")}>
             Train again
           </Button>
-        }
-      >
+        }>
         <Table data={week} columns={DAY_COLUMNS} variant="striped" />
       </Panel>
     </VStack>
@@ -100,8 +112,7 @@ export function ProgressScreen({ onNavigate }: ScreenProps) {
   const recordList = (
     <Panel
       title="Personal records"
-      description="Every record is a session that worked; the previous number is the one it beat."
-    >
+      description="Every record is a session that worked; the previous number is the one it beat.">
       <VStack gap="md">
         <Table data={records} columns={RECORD_COLUMNS} variant="striped" />
         <Tooltip content="Records are recalculated from the set log, not entered by hand">
@@ -115,7 +126,9 @@ export function ProgressScreen({ onNavigate }: ScreenProps) {
 
   const calendar = (
     <Grid columns={1} columnsLg={2} gap="lg">
-      <Panel title="Training calendar" description="The current training block.">
+      <Panel
+        title="Training calendar"
+        description="The current training block.">
         <Calendar
           label="Pick a day"
           onChange={(next) => setDate(next ?? undefined)}
@@ -125,24 +138,25 @@ export function ProgressScreen({ onNavigate }: ScreenProps) {
       <VStack gap="md">
         <Panel
           title="The selected day"
-          description="What the block held, and what it cost."
-        >
+          description="What the block held, and what it cost.">
           {selected ? (
             <VStack gap="sm">
               <Typography role="heading-lg">{selected.day}</Typography>
               <Typography role="body-sm" tone="muted">
-                {selected.date} — {selected.steps.toLocaleString("en-US")} steps,{" "}
-                {selected.activeMinutes} active minutes and {selected.calories} kcal.
+                {selected.date} — {selected.steps.toLocaleString("en-US")}{" "}
+                steps, {selected.activeMinutes} active minutes and{" "}
+                {selected.calories} kcal.
               </Typography>
               <HStack gap="sm" wrap>
                 <Badge color="primary" variant="faded" size="sm">
-                  {selected.activeMinutes >= 60 ? "on target" : "short of target"}
+                  {selected.activeMinutes >= 60
+                    ? "on target"
+                    : "short of target"}
                 </Badge>
                 <Button
                   size="sm"
                   variant="bordered"
-                  onPress={() => onNavigate("workouts")}
-                >
+                  onPress={() => onNavigate("workouts")}>
                   Repeat the day
                 </Button>
               </HStack>
@@ -156,8 +170,8 @@ export function ProgressScreen({ onNavigate }: ScreenProps) {
           )}
         </Panel>
         <Alert type="success" title="Consistency beats intensity">
-          Four weeks of three sessions is worth more than one perfect week. The block keeps the
-          same shape on purpose.
+          Four weeks of three sessions is worth more than one perfect week. The
+          block keeps the same shape on purpose.
         </Alert>
       </VStack>
     </Grid>
@@ -165,7 +179,9 @@ export function ProgressScreen({ onNavigate }: ScreenProps) {
 
   const states = (
     <Grid columns={1} columnsMd={2} gap="md">
-      <Panel title="Loading" description="A placeholder while the block is fetched.">
+      <Panel
+        title="Loading"
+        description="A placeholder while the block is fetched.">
         <VStack gap="sm">
           <Skeleton />
           <Skeleton />
@@ -190,8 +206,8 @@ export function ProgressScreen({ onNavigate }: ScreenProps) {
         <VStack gap="sm">
           <Typography role="heading-sm">All sessions loaded</Typography>
           <Typography role="body-sm" tone="muted">
-            The state components are part of the same vocabulary as the data ones: a screen
-            picks one, and the page never shows nothing.
+            The state components are part of the same vocabulary as the data
+            ones: a screen picks one, and the page never shows nothing.
           </Typography>
         </VStack>
       </Panel>

@@ -164,7 +164,8 @@ export function Textarea({
   useUnsupportedProps("Textarea", {
     enableVirtualKeyboard: {
       value: enableVirtualKeyboard,
-      substitute: "the system keyboard is always the one that appears on a device",
+      substitute:
+        "the system keyboard is always the one that appears on a device",
     },
   });
   const [isFocused, setIsFocused] = useState(false);
@@ -243,10 +244,7 @@ export function Textarea({
 
   return (
     <View
-      className={cn(
-        "min-w-0",
-        resolvedFullWidth ? "w-full" : "self-start",
-      )}>
+      className={cn("min-w-0", resolvedFullWidth ? "w-full" : "self-start")}>
       <FieldShell
         label={label}
         labelAlign={resolvedLabelAlign}

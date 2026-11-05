@@ -263,9 +263,7 @@ export function Link({
         </View>
       ) : (
         resolvedIsExternal && (
-          <Typography
-            role="label"
-            className={cn(iconSizeClass, colourClass)}>
+          <Typography role="label" className={cn(iconSizeClass, colourClass)}>
             {NATIVE_LINK_EXTERNAL_GLYPH}
           </Typography>
         )

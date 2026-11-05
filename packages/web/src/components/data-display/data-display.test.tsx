@@ -1,6 +1,6 @@
 import {
-  resolveCarouselVariant,
   type ColumnDef,
+  resolveCarouselVariant,
   type Variant,
 } from "@asheeui/core";
 import type { ElementType } from "react";
@@ -36,7 +36,10 @@ import { Clipboard } from "./clipboard/Clipboard";
 import { CopyButton } from "./clipboard/CopyButton";
 import { DataTable } from "./data-table/DataTable";
 import { Image } from "./image/Image";
-import { defaultImageConfig, FALLBACK_IMAGE_CONFIG } from "./image/image-config";
+import {
+  defaultImageConfig,
+  FALLBACK_IMAGE_CONFIG,
+} from "./image/image-config";
 import { Marquee } from "./marquee/Marquee";
 import {
   defaultMarqueeConfig,
@@ -1352,7 +1355,7 @@ describe("Chip", () => {
     expect(onClick).toHaveBeenCalledTimes(2);
     // The handler is given the keystroke that happened, not a fabricated mouse
     // event with coordinates the chip never had.
-    expect(onClick.mock.calls[0]![0].type).toBe("keydown");
+    expect(onClick.mock.calls[0]?.[0].type).toBe("keydown");
   });
 
   it("is a token rather than a tab stop when it has no press", async () => {
@@ -2515,11 +2518,11 @@ describe("Marquee", () => {
 
     expect(inertCopies).toHaveLength(1);
     expect(inertCopies[0]).toHaveAttribute("aria-hidden", "true");
-    expect(inertCopies[0]!.textContent).toContain("Alpha");
+    expect(inertCopies[0]?.textContent).toContain("Alpha");
 
     // The copy the reader reads is still focusable.
     const sets = Array.from(
-      inertCopies[0]!.parentElement?.children ?? [],
+      inertCopies[0]?.parentElement?.children ?? [],
     ) as HTMLElement[];
 
     expect(sets).toHaveLength(2);

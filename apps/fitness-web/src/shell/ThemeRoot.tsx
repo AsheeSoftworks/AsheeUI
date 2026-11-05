@@ -12,11 +12,11 @@
 "use client";
 
 import {
+  type AppThemes,
   config,
   parseStoredThemes,
-  type AppThemes,
-  ThemeSettingsProvider,
   THEME_DEFINITIONS_KEY,
+  ThemeSettingsProvider,
 } from "@asheeui/fitness-shared";
 import {
   AsheeUIProvider,
@@ -42,7 +42,9 @@ function readStoredThemes(): AppThemes {
 /** Capture the reader's selection before the provider can decide it is stale. */
 function readStoredSelection(): ThemeSelection | null {
   if (typeof window === "undefined") return null;
-  return (window.localStorage.getItem(THEME_STORAGE_KEY) as ThemeSelection) ?? null;
+  return (
+    (window.localStorage.getItem(THEME_STORAGE_KEY) as ThemeSelection) ?? null
+  );
 }
 
 /**
@@ -87,7 +89,9 @@ function RestoreSelection({
 export function ThemeRoot({ children }: { children: ReactNode }) {
   const [themes, setThemes] = useState<AppThemes>({});
   const [loaded, setLoaded] = useState(false);
-  const [selection] = useState<ThemeSelection | null>(() => readStoredSelection());
+  const [selection] = useState<ThemeSelection | null>(() =>
+    readStoredSelection(),
+  );
 
   useEffect(() => {
     setThemes(readStoredThemes());
@@ -102,7 +106,11 @@ export function ThemeRoot({ children }: { children: ReactNode }) {
   return (
     <ThemeSettingsProvider themes={themes} onChange={setThemes}>
       <AsheeUIProvider config={config} themes={themes}>
-        <RestoreSelection selection={selection} themes={themes} loaded={loaded} />
+        <RestoreSelection
+          selection={selection}
+          themes={themes}
+          loaded={loaded}
+        />
         {children}
       </AsheeUIProvider>
     </ThemeSettingsProvider>

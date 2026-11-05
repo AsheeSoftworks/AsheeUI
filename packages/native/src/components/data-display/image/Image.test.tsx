@@ -227,7 +227,9 @@ describe("Native Image", () => {
     expect(view.getByLabelText("A photo")).toBeTruthy();
     expect(warn).toHaveBeenCalledTimes(1);
     expect(String(warn.mock.calls[0]?.[0])).toContain("Image.loading");
-    expect(String(warn.mock.calls[0]?.[0])).toContain("fetched when its view mounts");
+    expect(String(warn.mock.calls[0]?.[0])).toContain(
+      "fetched when its view mounts",
+    );
 
     warn.mockRestore();
   });

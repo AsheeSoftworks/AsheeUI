@@ -10,8 +10,8 @@
 
 import { act, fireEvent, render } from "@testing-library/react-native";
 import type { ReactElement } from "react";
-import { Typography } from "../../typography/text/Text";
 import { AsheeUIProvider } from "../../../provider/AsheeUIProvider";
+import { Typography } from "../../typography/text/Text";
 import { PasswordInput } from "./PasswordInput";
 
 /**
@@ -78,9 +78,9 @@ describe("Native PasswordInput", () => {
       fireEvent.press(control);
     });
 
-    expect(view.getByLabelText("Conceal").props.accessibilityState).toMatchObject(
-      { selected: true },
-    );
+    expect(
+      view.getByLabelText("Conceal").props.accessibilityState,
+    ).toMatchObject({ selected: true });
   });
 
   it("accepts the consumer's own icons", async () => {

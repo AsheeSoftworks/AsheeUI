@@ -35,8 +35,8 @@ import {
 import type { ElementType, ReactNode } from "react";
 import {
   Text as NativeText,
-  type StyleProp,
   type TextProps as PlatformTextProps,
+  type StyleProp,
   type TextStyle,
 } from "react-native";
 import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
@@ -203,8 +203,9 @@ export function Typography({
     undefined,
     FALLBACK_NATIVE_TEXT_CONFIG.tone,
   );
-  const resolvedAlign = (align ??
-    sectionConfig?.align) as TypographyAlign | undefined;
+  const resolvedAlign = (align ?? sectionConfig?.align) as
+    | TypographyAlign
+    | undefined;
   const resolvedTruncate = resolveCascade<boolean>(
     truncate,
     sectionConfig?.truncate,
@@ -235,7 +236,9 @@ export function Typography({
       className={cn(
         composeNativeTypographyClass(tokens),
         NATIVE_TYPOGRAPHY_TONE_CLASS[resolvedTone],
-        resolvedAlign ? NATIVE_TYPOGRAPHY_ALIGN_CLASS[resolvedAlign] : undefined,
+        resolvedAlign
+          ? NATIVE_TYPOGRAPHY_ALIGN_CLASS[resolvedAlign]
+          : undefined,
         sectionConfig?.className,
         className,
       )}

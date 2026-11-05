@@ -59,4 +59,3 @@ export function usePrefersReducedMotion(): boolean {
  * @see usePrefersReducedMotion - The web's name for the same hook.
  */
 export const useReduceMotion = usePrefersReducedMotion;
-

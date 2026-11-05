@@ -30,11 +30,11 @@ import {
   NATIVE_FEATURE_ICON_TONE_CLASS,
 } from "../../../styles/feature-grid";
 import { cn } from "../../../utils/cn";
+import { openDestination } from "../../../utils/open-destination";
 import {
   type UnsupportedElementProps,
   useUnsupportedElementProps,
 } from "../../../utils/unsupported-element-props";
-import { openDestination } from "../../../utils/open-destination";
 import { Card } from "../../data-display/card/Card";
 import { SectionHeading } from "../../layouts/section-kit/SectionHeading";
 import { Typography } from "../../typography/text/Text";

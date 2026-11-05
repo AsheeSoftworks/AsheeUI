@@ -75,10 +75,7 @@ export function warnUnsupportedProp(
  */
 export function useUnsupportedProps(
   component: string,
-  stated: Record<
-    string,
-    { value: unknown; substitute: string } | undefined
-  >,
+  stated: Record<string, { value: unknown; substitute: string } | undefined>,
 ): void {
   for (const [prop, entry] of Object.entries(stated)) {
     if (entry === undefined || entry.value === undefined) continue;

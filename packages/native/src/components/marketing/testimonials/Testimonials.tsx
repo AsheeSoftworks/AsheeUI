@@ -24,15 +24,15 @@ import { Grid } from "../../../layout/Grid";
 import { Section } from "../../../layout/Section";
 import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
 import {
-  type UnsupportedElementProps,
-  useUnsupportedElementProps,
-} from "../../../utils/unsupported-element-props";
-import {
   NATIVE_TESTIMONIAL_HEADING_CLASS,
   NATIVE_TESTIMONIAL_PERSON_CLASS,
   NATIVE_TESTIMONIAL_PERSON_TEXT_CLASS,
   NATIVE_TESTIMONIAL_QUOTE_CLASS,
 } from "../../../styles/testimonials";
+import {
+  type UnsupportedElementProps,
+  useUnsupportedElementProps,
+} from "../../../utils/unsupported-element-props";
 import { Avatar } from "../../data-display/avatar/Avatar";
 import { Card } from "../../data-display/card/Card";
 import { SectionHeading } from "../../layouts/section-kit/SectionHeading";

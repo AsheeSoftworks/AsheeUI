@@ -102,11 +102,9 @@ export function PasswordInput({
           onPress={() => setIsVisible((visible) => !visible)}
           hitSlop={8}
           className="p-1">
-          {isVisible ? (
-            (offIcon ?? <Typography role="label">Hide</Typography>)
-          ) : (
-            (onIcon ?? <Typography role="label">Show</Typography>)
-          )}
+          {isVisible
+            ? (offIcon ?? <Typography role="label">Hide</Typography>)
+            : (onIcon ?? <Typography role="label">Show</Typography>)}
         </Pressable>
       }
     />

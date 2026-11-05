@@ -9,9 +9,8 @@
  * defaults still come from `src/shared`, so the platform offers the same two zones.
  */
 
-import { Section } from "@asheeui/web";
+import { cn, Section } from "@asheeui/web";
 import type { SlotComponent } from "@puckeditor/core";
-import { cn } from "@asheeui/web";
 import type {
   AsheeBlock,
   ColumnsBandProps,

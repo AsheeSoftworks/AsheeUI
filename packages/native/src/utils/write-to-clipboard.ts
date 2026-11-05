@@ -38,9 +38,8 @@ import { Clipboard } from "react-native";
  * ```
  */
 export async function writeToClipboard(text: string): Promise<boolean> {
-  const setString = (
-    Clipboard as { setString?: (value: string) => void }
-  ).setString;
+  const setString = (Clipboard as { setString?: (value: string) => void })
+    .setString;
 
   if (typeof setString !== "function") return false;
 

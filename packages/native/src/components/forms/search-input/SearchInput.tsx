@@ -249,11 +249,7 @@ export function SearchInput({
   );
 
   return (
-    <View
-      className={cn(
-        "min-w-0",
-        fullWidth ? "w-full" : "self-start",
-      )}>
+    <View className={cn("min-w-0", fullWidth ? "w-full" : "self-start")}>
       <FieldShell
         label={resolvedHideLabel ? undefined : resolvedLabel}
         labelAlign={labelAlign}

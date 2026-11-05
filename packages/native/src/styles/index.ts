@@ -9,6 +9,7 @@ export * from "./badge";
 export * from "./button";
 export * from "./calendar";
 export * from "./carousel";
+export * from "./checkbox";
 export * from "./chip";
 export * from "./clipboard";
 export * from "./cta";

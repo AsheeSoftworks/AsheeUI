@@ -350,10 +350,7 @@ export function Input({
     // The width belongs to the field rather than to the control, so a field that is not
     // full width takes its label and its message with it.
     <View
-      className={cn(
-        "min-w-0",
-        resolvedFullWidth ? "w-full" : "self-start",
-      )}>
+      className={cn("min-w-0", resolvedFullWidth ? "w-full" : "self-start")}>
       <FieldShell
         label={label}
         labelAlign={resolvedLabelAlign}

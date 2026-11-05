@@ -19,10 +19,7 @@
  * creates one for the document.
  */
 
-import {
-  createThemeController,
-  type ThemeStorage,
-} from "@asheeui/core";
+import { createThemeController, type ThemeStorage } from "@asheeui/core";
 import { Appearance } from "react-native";
 
 /**
@@ -81,5 +78,5 @@ export const themeController = createThemeController({
   },
 });
 
-export { THEME_STORAGE_KEY, type ThemeSelection } from "@asheeui/core";
 export type { ThemeConfigInput, ThemeStorage } from "@asheeui/core";
+export { THEME_STORAGE_KEY, type ThemeSelection } from "@asheeui/core";

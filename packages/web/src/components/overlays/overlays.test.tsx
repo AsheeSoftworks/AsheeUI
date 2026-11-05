@@ -107,6 +107,20 @@ describe("Drawer", () => {
     expect(getByText("Drawer content")).toBeInTheDocument();
   });
 
+  // The panel is the surface the reader deals with, and it carries the same
+  // hairline as the modal so neither layer relies on its shadow alone.
+  it("outlines its panel with a subtle border", () => {
+    renderWithProvider(
+      <Drawer isOpen onClose={() => {}}>
+        Drawer content
+      </Drawer>,
+    );
+    const panel = getDrawerPanel();
+
+    expect(panel).toHaveClass("border");
+    expect(panel).toHaveClass("border-border/50");
+  });
+
   it("renders on the requested edge", () => {
     const { getByRole } = renderWithProvider(
       <Drawer isOpen placement="left" onClose={() => {}}>
@@ -639,6 +653,20 @@ describe("Modal", () => {
 
     expect(getByRole("dialog")).toHaveAttribute("aria-modal", "true");
     expect(getByText("Modal content")).toBeInTheDocument();
+  });
+
+  // A surface drawn on the same background as the backdrop needs an edge of its
+  // own; the border token at half opacity states it without drawing attention.
+  it("outlines its surface with a subtle border", () => {
+    const { getByRole } = renderWithProvider(
+      <Modal isOpen onClose={() => {}}>
+        Modal content
+      </Modal>,
+    );
+    const dialog = getByRole("dialog");
+
+    expect(dialog).toHaveClass("border");
+    expect(dialog).toHaveClass("border-border/50");
   });
 
   // Defect register (M1, D-18): the dialog was rendered inline and managed no

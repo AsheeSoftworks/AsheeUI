@@ -42,7 +42,8 @@ export function ContrastBadge({
   }
 
   const level = contrastLevel(ratio);
-  const tone = level === "fail" ? "danger" : level === "AA" ? "warning" : "success";
+  const tone =
+    level === "fail" ? "danger" : level === "AA" ? "warning" : "success";
   const text = `${ratio.toFixed(1)}:1 · ${level === "fail" ? "fails AA" : level}`;
 
   return (

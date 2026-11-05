@@ -456,10 +456,7 @@ export function RowList<TData>({
         ) : (
           <View
             testID="row-list"
-            className={cn(
-              NATIVE_ROW_LIST_CLASS,
-              resolvedTable.className,
-            )}>
+            className={cn(NATIVE_ROW_LIST_CLASS, resolvedTable.className)}>
             {visibleRows.map((row, index) => {
               const key = rowKeyAccessor ? rowKeyAccessor(row) : index;
               const isSelected =

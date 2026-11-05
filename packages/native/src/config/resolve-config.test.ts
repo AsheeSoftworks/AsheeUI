@@ -180,10 +180,7 @@ describe("the shape a shared component reads", () => {
       } as ExternalConfig);
       const native = resolveNativeConfig({ color: partial, defaultTheme });
 
-      expect([defaultTheme, native.color]).toEqual([
-        defaultTheme,
-        web.color,
-      ]);
+      expect([defaultTheme, native.color]).toEqual([defaultTheme, web.color]);
     }
 
     // The reference is the same call, so the assertion holding is not a coincidence of two

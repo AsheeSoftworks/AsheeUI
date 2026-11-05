@@ -1,4 +1,4 @@
-import { createRef, type ComponentProps, type ReactNode } from "react";
+import { type ComponentProps, createRef, type ReactNode } from "react";
 import { describe, expect, it, vi } from "vitest";
 import { FOOTER_BOTTOM_LINKS_CLASS } from "../../styles/footer";
 import { NAVBAR_BRAND_CLASS } from "../../styles/navbar";
@@ -542,8 +542,8 @@ describe("Navbar", () => {
     const { getAllByRole } = renderWithProvider(<Navbar links={LINKS} />);
     const [campaigns, contacts] = getAllByRole("link");
 
-    expect(campaigns!.getAttribute("aria-current")).toBe("page");
-    expect(contacts!.getAttribute("aria-current")).toBeNull();
+    expect(campaigns?.getAttribute("aria-current")).toBe("page");
+    expect(contacts?.getAttribute("aria-current")).toBeNull();
   });
 
   it("renders the brand as a link when it has a destination", () => {
@@ -1227,6 +1227,21 @@ describe("Sidebar", () => {
     const home = getByRole("link", { name: "Home" });
 
     expect(home.querySelector(".sr-only")?.textContent).toBe("Home");
+  });
+
+  // A collapsed row keeps its name as an `sr-only` label, which is absolutely
+  // positioned. The column is a containing block (its surface carries a backdrop
+  // filter), so without a position on the row the label is laid out against the
+  // column at its static position in the nav's scrollable content: a destination
+  // list longer than the nav strands labels below the column and grows the page.
+  it("positions every row so a collapsed label is contained by the row", () => {
+    const { getByRole } = renderWithProvider(
+      <Sidebar items={ITEMS_WITH_HREF} isCollapsed />,
+    );
+    const row = getByRole("link", { name: "Home" });
+
+    expect(row.className.split(/\s+/)).toContain("relative");
+    expect(row.querySelector(".sr-only")?.textContent).toBe("Home");
   });
 
   // `animated` was registered and documented but the width transition was

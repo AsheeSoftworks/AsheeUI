@@ -1,5 +1,5 @@
-import { AsheeUIProvider, useTheme } from "asheeui";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { AsheeUIProvider, useTheme } from "asheeui";
 import { describe, expect, it } from "vitest";
 import { ContrastBadge } from "./ContrastBadge";
 import { ThemeSwitcher } from "./ThemeSwitcher";

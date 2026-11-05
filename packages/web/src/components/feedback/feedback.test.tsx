@@ -822,7 +822,9 @@ describe("Toast", () => {
         </button>
         <button
           type="button"
-          onClick={() => success("Bottom message", { placement: "bottom-left" })}>
+          onClick={() =>
+            success("Bottom message", { placement: "bottom-left" })
+          }>
           Bottom
         </button>
       </>
@@ -968,8 +970,9 @@ describe("Toast", () => {
     );
 
     const triggers = getAllByRole("button", { name: "Notify" });
-    await user.click(triggers[0]!);
-    await user.click(triggers[1]!);
+    for (const trigger of triggers) {
+      await user.click(trigger);
+    }
 
     expect(await screen.findAllByText("Saved successfully")).toHaveLength(2);
   });

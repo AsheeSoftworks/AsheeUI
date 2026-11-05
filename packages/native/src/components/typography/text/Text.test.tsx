@@ -7,18 +7,18 @@
  * queries come from the rendered view, as the platform's renderer requires.
  */
 
-import { type RenderResult, render } from "@testing-library/react-native";
 import { TYPOGRAPHY_ROLE_TOKEN } from "@asheeui/core";
+import { type RenderResult, render } from "@testing-library/react-native";
 import type { ReactElement } from "react";
 import { AsheeUIProvider } from "../../../provider/AsheeUIProvider";
 import { Text, Typography } from "./Text";
+import * as textStyles from "./text-styles";
 import {
   NATIVE_TYPOGRAPHY_SIZE_CLASS,
   NATIVE_TYPOGRAPHY_TRACKING_CLASS,
   NATIVE_TYPOGRAPHY_WEIGHT_CLASS,
   nativeLineHeight,
 } from "./text-styles";
-import * as textStyles from "./text-styles";
 
 /**
  * Render text inside the framework provider.
@@ -167,17 +167,23 @@ describe("Native Text", () => {
   it("reads the old section, warns once, and still applies it", async () => {
     const warn = jest.spyOn(console, "warn").mockImplementation(() => {});
 
-    const first = await renderText(<Typography testID="text">Save</Typography>, {
-      components: { text: { role: "label", tone: "primary" } },
-    });
+    const first = await renderText(
+      <Typography testID="text">Save</Typography>,
+      {
+        components: { text: { role: "label", tone: "primary" } },
+      },
+    );
     expect(classesOf(first, "text")).toContain("text-sm");
     expect(classesOf(first, "text")).toContain("text-primary");
 
     await first.unmount();
 
-    const second = await renderText(<Typography testID="text">Save</Typography>, {
-      components: { text: { role: "label" } },
-    });
+    const second = await renderText(
+      <Typography testID="text">Save</Typography>,
+      {
+        components: { text: { role: "label" } },
+      },
+    );
     expect(classesOf(second, "text")).toContain("text-sm");
 
     // Two renders of a deprecated section still produce one message, the same rule the
@@ -209,7 +215,9 @@ describe("Native Text", () => {
     // line height are the shared tokens, mapped to this platform's utilities.
     for (const [role, tokens] of Object.entries(TYPOGRAPHY_ROLE_TOKEN)) {
       const view = await renderText(
-        <Typography testID="text" role={role as keyof typeof TYPOGRAPHY_ROLE_TOKEN}>
+        <Typography
+          testID="text"
+          role={role as keyof typeof TYPOGRAPHY_ROLE_TOKEN}>
           {role}
         </Typography>,
       );

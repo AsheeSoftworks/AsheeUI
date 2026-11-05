@@ -13,9 +13,9 @@ import {
   Dropmenu,
   Grid,
   HStack,
-  VStack,
   useAsheeConfig,
   useTheme,
+  VStack,
 } from "asheeui";
 import { ThemeCard } from "./ThemeCard";
 
@@ -71,8 +71,7 @@ export function ThemeSwitcher({
         {showSystem && (
           <Button
             variant={theme === "system" ? "solid" : "bordered"}
-            onPress={() => choose("system")}
-          >
+            onPress={() => choose("system")}>
             Follow the system
           </Button>
         )}
@@ -111,8 +110,7 @@ export function ThemeSwitcher({
             key={name}
             size="sm"
             variant={theme === name ? "faded" : "ghost"}
-            onPress={() => choose(name)}
-          >
+            onPress={() => choose(name)}>
             {labelFor(name)}
           </Button>
         ))}

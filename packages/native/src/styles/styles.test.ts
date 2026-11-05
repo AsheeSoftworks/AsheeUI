@@ -108,6 +108,7 @@ import {
 } from "./cta";
 import {
   NATIVE_DRAWER_BACKDROP_CLASS,
+  NATIVE_DRAWER_SHEET_CLASS,
   NATIVE_DRAWER_SHEET_EDGE,
   NATIVE_DRAWER_SIZE_CLASS,
 } from "./drawer";
@@ -555,6 +556,11 @@ describe("Drawer class dictionaries", () => {
 
   it("dims the screen behind the sheet, so it is clear what is being dealt with", () => {
     expect(NATIVE_DRAWER_BACKDROP_CLASS).toContain("bg-foreground/30");
+  });
+
+  it("outlines the sheet with the same subtle hairline the web draws", () => {
+    expect(NATIVE_DRAWER_SHEET_CLASS).toContain("border");
+    expect(NATIVE_DRAWER_SHEET_CLASS).toContain("border-border/50");
   });
 });
 
@@ -1015,6 +1021,11 @@ describe("Modal class dictionaries", () => {
 
   it("draws the surface on the theme's background", () => {
     expect(NATIVE_MODAL_PANEL_CLASS).toContain("bg-background");
+  });
+
+  it("outlines the surface with the same subtle hairline the web draws", () => {
+    expect(NATIVE_MODAL_PANEL_CLASS).toContain("border");
+    expect(NATIVE_MODAL_PANEL_CLASS).toContain("border-border/50");
   });
 });
 

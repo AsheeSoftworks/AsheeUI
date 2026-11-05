@@ -14,12 +14,8 @@
  * object the styling runtime reads internally; what matters here is the variables it is given.
  */
 
-import {
-  act,
-  render,
-  waitFor,
-} from "@testing-library/react-native";
 import type { ThemeStorage } from "@asheeui/core";
+import { act, render, waitFor } from "@testing-library/react-native";
 import { Text } from "react-native";
 import { THEME_STORAGE_KEY, themeController } from "../theme/controller";
 import { useTheme } from "../theme/useTheme";
@@ -155,7 +151,8 @@ describe("AsheeUIProvider", () => {
 
     await waitFor(() => {
       expect(paintedVariables()["--ashee-primary"]).toBe("17 17 17");
-    });  });
+    });
+  });
 
   it("refuses a colour the platform cannot apply", async () => {
     await expect(

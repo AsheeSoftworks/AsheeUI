@@ -19,9 +19,12 @@ import { Button } from "./forms/button/Button";
 import { Form } from "./forms/form/Form";
 import type { FeatureGridLink } from "./marketing/feature-grid/FeatureGrid";
 import { Footer, type FooterLink } from "./navigation/footer/Footer";
-import { Pagination, type PaginationLink } from "./navigation/pagination/Pagination";
-import type { SidebarLinkProps } from "./navigation/sidebar/sidebar-config";
+import {
+  Pagination,
+  type PaginationLink,
+} from "./navigation/pagination/Pagination";
 import { Sidebar } from "./navigation/sidebar/Sidebar";
+import type { SidebarLinkProps } from "./navigation/sidebar/sidebar-config";
 
 /** What the fake router link received on its last render. */
 type RouterProps = Record<string, unknown> & { children?: ReactNode };

@@ -212,9 +212,7 @@ describe("Native Button", () => {
 
   it("renders content on both sides of its label", async () => {
     const view = await renderWithProvider(
-      <Button
-        startContent={<Text>←</Text>}
-        endContent={<Text>→</Text>}>
+      <Button startContent={<Text>←</Text>} endContent={<Text>→</Text>}>
         Save
       </Button>,
     );

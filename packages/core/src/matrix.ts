@@ -139,6 +139,7 @@ export const COMPONENT_SUPPORT: readonly ComponentSupport[] = [
     native: "Centered",
     note: "Native centres on the axis and claims the height, but has no contained width: the platform's own screen width is the measure",
   },
+  { name: "Checkbox", module: "checkbox", support: "shared" },
   { name: "Chip", module: "chip", support: "shared" },
   {
     name: "Clipboard",
@@ -222,7 +223,12 @@ export const COMPONENT_SUPPORT: readonly ComponentSupport[] = [
     note: "Native expresses columns as a wrapped row of fixed-basis children",
   },
   { name: "Hero", module: "hero", support: "shared-api", native: "Hero" },
-  { name: "Image", module: "image", support: "shared", note: "`loading` is accepted and warns; a native picture is fetched when its view mounts" },
+  {
+    name: "Image",
+    module: "image",
+    support: "shared",
+    note: "`loading` is accepted and warns; a native picture is fetched when its view mounts",
+  },
   { name: "Input", module: "input", support: "shared" },
   {
     name: "Keyboard",
@@ -398,7 +404,12 @@ export const COMPONENT_SUPPORT: readonly ComponentSupport[] = [
     support: "shared-api",
     native: "Testimonials",
   },
-  { name: "Textarea", module: "textarea", support: "shared", note: "`enableVirtualKeyboard` is accepted and warns; the system keyboard is the one that appears" },
+  {
+    name: "Textarea",
+    module: "textarea",
+    support: "shared",
+    note: "`enableVirtualKeyboard` is accepted and warns; the system keyboard is the one that appears",
+  },
   {
     name: "Toast",
     module: "toast",

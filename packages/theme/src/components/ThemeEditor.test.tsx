@@ -1,5 +1,5 @@
-import { AsheeUIProvider } from "asheeui";
 import { fireEvent, render, screen } from "@testing-library/react";
+import { AsheeUIProvider } from "asheeui";
 import { describe, expect, it, vi } from "vitest";
 import { ThemeEditor } from "./ThemeEditor";
 
@@ -23,9 +23,7 @@ describe("ThemeEditor", () => {
   it("does not offer Save & apply without an apply handler", () => {
     renderEditor(<ThemeEditor themes={{}} onChange={() => {}} />);
 
-    expect(
-      screen.queryByRole("button", { name: "Save & apply" }),
-    ).toBeNull();
+    expect(screen.queryByRole("button", { name: "Save & apply" })).toBeNull();
   });
 
   it("edits an existing runtime theme", () => {

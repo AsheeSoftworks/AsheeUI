@@ -293,8 +293,7 @@ export function Card({
 
   if (link?.component) {
     const Substitute = link.component;
-    const destination =
-      link.to !== undefined ? { to: link.to } : {};
+    const destination = link.to !== undefined ? { to: link.to } : {};
 
     return (
       <Substitute
@@ -302,7 +301,11 @@ export function Card({
         onPress={
           isDisabled
             ? undefined
-            : (pressEvent: Parameters<NonNullable<PressableProps["onPress"]>>[0]) =>
+            : (
+                pressEvent: Parameters<
+                  NonNullable<PressableProps["onPress"]>
+                >[0],
+              ) =>
                 resolvePress(
                   {
                     onClick,

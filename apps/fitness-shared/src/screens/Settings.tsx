@@ -4,6 +4,14 @@
  * `useTheme` and `themeController` are the theme engine; the form exercises the field
  * family; the `Modal` and `Drawer` are the destructive and informational layers.
  */
+
+import {
+  THEME_PRESETS,
+  ThemeEditor,
+  ThemeGallery,
+  type ThemePreset,
+  ThemeSwitcher,
+} from "@asheeui/theme";
 import {
   Alert,
   Avatar,
@@ -20,19 +28,12 @@ import {
   Radio,
   RadioGroup,
   Switch,
-  Typography,
   type ThemeName,
+  Typography,
   useTheme,
   useToast,
   VStack,
 } from "asheeui";
-import {
-  THEME_PRESETS,
-  ThemeEditor,
-  ThemeGallery,
-  ThemeSwitcher,
-  type ThemePreset,
-} from "@asheeui/theme";
 import { useEffect, useState } from "react";
 import { Panel, ScreenHeading } from "../components";
 import { profile } from "../data";
@@ -54,7 +55,8 @@ const THEME_LABELS: Record<string, string> = {
 export function SettingsScreen(_props: ScreenProps) {
   const toast = useToast();
   const { theme, resolvedTheme, setTheme } = useTheme();
-  const { themes: customThemes, onChange: setCustomThemes } = useThemeSettings();
+  const { themes: customThemes, onChange: setCustomThemes } =
+    useThemeSettings();
   const [units, setUnits] = useState("metric");
   const [notifications, setNotifications] = useState(true);
   const [weekly, setWeekly] = useState("three");
@@ -126,8 +128,7 @@ export function SettingsScreen(_props: ScreenProps) {
               submitLabel="Save profile"
               onSubmit={() => {
                 toast.success("Profile saved");
-              }}
-            >
+              }}>
               <Input label="Name" defaultValue={profile.name} />
               <Input
                 label="Email"
@@ -142,11 +143,17 @@ export function SettingsScreen(_props: ScreenProps) {
                 onValueChange={(value) => setUnits(String(value))}
               />
             </Form>
-            <CopyButton value={email} label="Copy your email" variant="bordered" />
+            <CopyButton
+              value={email}
+              label="Copy your email"
+              variant="bordered"
+            />
           </VStack>
         </Panel>
 
-        <Panel title="Theme" description="The state machine both renderers share.">
+        <Panel
+          title="Theme"
+          description="The state machine both renderers share.">
           <VStack gap="md">
             <HStack justify="between" align="center">
               <Typography role="body-sm" tone="muted">
@@ -184,23 +191,37 @@ export function SettingsScreen(_props: ScreenProps) {
               />
             </VStack>
             <Typography role="caption" tone="muted">
-              The selection is stored by the platform. Theme definitions live with the
-              application: localStorage on the web, AsyncStorage on a device.
+              The selection is stored by the platform. Theme definitions live
+              with the application: localStorage on the web, AsyncStorage on a
+              device.
             </Typography>
           </VStack>
         </Panel>
 
-        <Panel title="Training preferences" description="What the plan does with your week.">
+        <Panel
+          title="Training preferences"
+          description="What the plan does with your week.">
           <VStack gap="md">
             <RadioGroup
               label="Sessions per week"
               value={weekly}
               onChange={setWeekly}
-              orientation="vertical"
-            >
-              <Radio value="two" label="Two" description="Minimum effective dose" />
-              <Radio value="three" label="Three" description="The programme default" />
-              <Radio value="five" label="Five" description="Performance block" />
+              orientation="vertical">
+              <Radio
+                value="two"
+                label="Two"
+                description="Minimum effective dose"
+              />
+              <Radio
+                value="three"
+                label="Three"
+                description="The programme default"
+              />
+              <Radio
+                value="five"
+                label="Five"
+                description="Performance block"
+              />
             </RadioGroup>
             <Switch
               label="Session reminders"
@@ -208,7 +229,10 @@ export function SettingsScreen(_props: ScreenProps) {
               checked={notifications}
               onChange={setNotifications}
             />
-            <Switch label="Coach messages" description="Only when your coach writes." />
+            <Switch
+              label="Coach messages"
+              description="Only when your coach writes."
+            />
             <Button variant="bordered" onPress={() => setDeleting(true)}>
               Delete account
             </Button>
@@ -217,16 +241,16 @@ export function SettingsScreen(_props: ScreenProps) {
       </Grid>
 
       <Alert type="warning" title="This is a demo account" isClosable>
-        The data in this tracker is a fixture. Nothing is sent anywhere, and deleting the
-        account only closes this dialog.
+        The data in this tracker is a fixture. Nothing is sent anywhere, and
+        deleting the account only closes this dialog.
       </Alert>
 
       <Modal isOpen={deleting} onClose={() => setDeleting(false)} size="sm">
         <VStack gap="md">
           <Typography role="heading-md">Delete the account?</Typography>
           <Typography role="body-sm" tone="muted">
-            The training history, the studio page and the coaching thread would go with it.
-            Export the records first if you want them.
+            The training history, the studio page and the coaching thread would
+            go with it. Export the records first if you want them.
           </Typography>
           <HStack justify="end" gap="sm">
             <Button variant="ghost" onPress={() => setDeleting(false)}>
@@ -243,13 +267,12 @@ export function SettingsScreen(_props: ScreenProps) {
         isOpen={shortcuts}
         onClose={() => setShortcuts(false)}
         placement="right"
-        size="sm"
-      >
+        size="sm">
         <VStack gap="md">
           <Typography role="heading-md">Keyboard shortcuts</Typography>
           <Typography role="body-sm" tone="muted">
-            The web application listens for these; a device has its own gestures, which is why
-            the drawer is the honest place to state them.
+            The web application listens for these; a device has its own
+            gestures, which is why the drawer is the honest place to state them.
           </Typography>
           <VStack gap="sm">
             {[
@@ -274,8 +297,7 @@ export function SettingsScreen(_props: ScreenProps) {
         isOpen={editorOpen}
         onClose={() => setEditorOpen(false)}
         placement="right"
-        size="md"
-      >
+        size="md">
         <VStack gap="md">
           <Typography role="heading-md">
             {editingTheme ? "Edit theme" : "Create a theme"}

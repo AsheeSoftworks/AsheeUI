@@ -10,11 +10,11 @@ import {
   Badge,
   Button,
   Card,
+  type Color,
   Grid,
   HStack,
   Typography,
   VStack,
-  type Color,
 } from "asheeui";
 import type { ReactNode } from "react";
 import type { Metric, Workout } from "./data";
@@ -68,7 +68,9 @@ export function StatCard({ metric }: { metric: Metric }) {
         <Typography role="caption" tone="muted">
           of {metric.goal}
         </Typography>
-        <Typography role="caption" tone={metric.percent >= 85 ? "success" : "muted"}>
+        <Typography
+          role="caption"
+          tone={metric.percent >= 85 ? "success" : "muted"}>
           {metric.trend}
         </Typography>
       </VStack>
@@ -149,8 +151,7 @@ export function WorkoutCard({
                   : "success"
             }
             variant="faded"
-            size="sm"
-          >
+            size="sm">
             {workout.intensity}
           </Badge>
         </HStack>
@@ -190,6 +191,8 @@ export function WorkoutCard({
 }
 
 /** A colour role, named once so the screens agree what a tone means. */
-export function toneColor(tone: "primary" | "success" | "warning" | "secondary"): Color {
+export function toneColor(
+  tone: "primary" | "success" | "warning" | "secondary",
+): Color {
   return tone;
 }

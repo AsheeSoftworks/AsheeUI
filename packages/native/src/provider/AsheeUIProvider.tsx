@@ -61,10 +61,7 @@ import {
   resolveNativeConfig,
 } from "../config/resolve-config";
 import { auditUnsupportedConfig } from "../config/unsupported-config";
-import {
-  setThemeStorage,
-  themeController,
-} from "../theme/controller";
+import { setThemeStorage, themeController } from "../theme/controller";
 import { paletteVariables } from "../theme/palette";
 import { warnWhenStylingIsDisconnected } from "./nativewind-doctor";
 
@@ -224,7 +221,9 @@ export function AsheeUIProvider({
 
   const palette = useMemo(
     () =>
-      paletteVariables(selectTheme(value.color, paintableTheme, scheme).palette),
+      paletteVariables(
+        selectTheme(value.color, paintableTheme, scheme).palette,
+      ),
     [value.color, paintableTheme, scheme],
   );
 

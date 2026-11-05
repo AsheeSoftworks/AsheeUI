@@ -484,9 +484,7 @@ export function DataTable<TData>({
             // stated as `none` rather than left unset, so a configured
             // `components.emptystate.role` cannot turn the first paint into an
             // announcement the table did not have.
-            role={
-              isQueryResult ? ANNOUNCEMENT_ROLE.status : "none"
-            }
+            role={isQueryResult ? ANNOUNCEMENT_ROLE.status : "none"}
             title={resolved.emptyTitle}
             description={resolved.emptyDescription}
           />

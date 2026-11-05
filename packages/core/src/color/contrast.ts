@@ -32,9 +32,7 @@ export function relativeLuminance(value: string): number | undefined {
 
   const linear = (channel: number): number => {
     const share = channel / 255;
-    return share <= 0.04045
-      ? share / 12.92
-      : ((share + 0.055) / 1.055) ** 2.4;
+    return share <= 0.04045 ? share / 12.92 : ((share + 0.055) / 1.055) ** 2.4;
   };
 
   return (

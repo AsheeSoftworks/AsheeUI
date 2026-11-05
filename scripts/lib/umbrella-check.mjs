@@ -251,7 +251,9 @@ export function evaluateUmbrella({ root = process.cwd() } = {}) {
   function readPortableApi() {
     if (!existsSync(PORTABLE_FILE)) return undefined;
 
-    const array = readFileSync(PORTABLE_FILE, "utf8").match(PORTABLE_ARRAY)?.[1];
+    const array = readFileSync(PORTABLE_FILE, "utf8").match(
+      PORTABLE_ARRAY,
+    )?.[1];
     if (!array) return undefined;
 
     return [...array.matchAll(/\{([^{}]*)\}/g)].map((match) => {
@@ -452,9 +454,7 @@ export function evaluateUmbrella({ root = process.cwd() } = {}) {
             entry.source === "core"
               ? `@asheeui/core does not publish: ${entry.name}`
               : `${
-                  !webSet.has(entry.name)
-                    ? "@asheeui/web"
-                    : "@asheeui/native"
+                  !webSet.has(entry.name) ? "@asheeui/web" : "@asheeui/native"
                 } does not publish: ${entry.name}`,
           ),
         ],
@@ -505,8 +505,7 @@ export function evaluateUmbrella({ root = process.cwd() } = {}) {
     );
     const matrixAbsent = promised
       .filter(
-        (entry) =>
-          !namesOf(entry).some((name) => readyPortableSet.has(name)),
+        (entry) => !namesOf(entry).some((name) => readyPortableSet.has(name)),
       )
       .map((entry) => entry.name);
     const unclassified = portable.filter(
@@ -614,7 +613,9 @@ export function evaluateUmbrella({ root = process.cwd() } = {}) {
     ]) {
       for (const target of targetsOf(map[subpath])) {
         if (where === "exports" && !existsSync(resolve(UI_DIRECTORY, target))) {
-          subpathProblems.push(`${subpath} -> ${target} does not exist (${where})`);
+          subpathProblems.push(
+            `${subpath} -> ${target} does not exist (${where})`,
+          );
         }
         if (!isPublished(files, target)) {
           subpathProblems.push(

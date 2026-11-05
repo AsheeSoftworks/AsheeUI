@@ -216,9 +216,7 @@ export function ErrorState({
             <View className={NATIVE_ERROR_STATE_DETAIL_BODY_CLASS}>
               <Typography
                 role="caption"
-                className={cn(
-                  NATIVE_ERROR_STATE_DETAIL_BODY_TEXT_CLASS,
-                )}>
+                className={cn(NATIVE_ERROR_STATE_DETAIL_BODY_TEXT_CLASS)}>
                 {detail}
               </Typography>
             </View>

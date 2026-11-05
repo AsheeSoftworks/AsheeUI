@@ -27,8 +27,7 @@
  *   node scripts/lint-class-vocabulary.mjs --verbose
  */
 
-import { existsSync } from "node:fs";
-import { promises as fs } from "node:fs";
+import { existsSync, promises as fs } from "node:fs";
 import { dirname, join, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -89,7 +88,9 @@ async function sourcesUnder(directory) {
     const path = join(directory, entry.name);
     if (entry.isDirectory()) {
       found.push(...(await sourcesUnder(path)));
-    } else if (SOURCE_EXTENSIONS.has(entry.name.slice(entry.name.lastIndexOf(".")))) {
+    } else if (
+      SOURCE_EXTENSIONS.has(entry.name.slice(entry.name.lastIndexOf(".")))
+    ) {
       found.push(path);
     }
   }
@@ -273,7 +274,9 @@ if (violations.length > 0) {
     `Class vocabulary: ${violations.length} violation(s) — a class a device compiles to nothing.`,
   );
   for (const violation of violations) {
-    console.error(`  ${violation.file}  ${violation.token}  (${violation.scope})`);
+    console.error(
+      `  ${violation.file}  ${violation.token}  (${violation.scope})`,
+    );
   }
   console.error(
     "\nReplace the family with the platform-neutral one, or move the string to the renderer that compiles it.",

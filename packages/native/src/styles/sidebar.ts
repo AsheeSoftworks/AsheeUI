@@ -10,7 +10,13 @@
  * published, character for character.
  */
 
-import type { Color, SidebarSizeKey, SidebarVariant, TypographyRole, Variant } from "@asheeui/core";
+import type {
+  Color,
+  SidebarSizeKey,
+  SidebarVariant,
+  TypographyRole,
+  Variant,
+} from "@asheeui/core";
 
 /**
  * The native sidebar.

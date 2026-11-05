@@ -1,5 +1,5 @@
-import { AsheeUIProvider } from "asheeui";
 import { fireEvent, render, screen } from "@testing-library/react";
+import { AsheeUIProvider } from "asheeui";
 import { describe, expect, it, vi } from "vitest";
 import { THEME_PRESETS } from "../lib/presets";
 import { ThemeGallery } from "./ThemeGallery";
@@ -59,7 +59,9 @@ describe("ThemeGallery", () => {
     );
 
     expect(screen.getByText("Start from a preset")).toBeTruthy();
-    fireEvent.click(screen.getAllByRole("button", { name: "Use" })[0] as HTMLElement);
+    fireEvent.click(
+      screen.getAllByRole("button", { name: "Use" })[0] as HTMLElement,
+    );
 
     expect(onPresetSelect).toHaveBeenCalledWith(THEME_PRESETS[0]);
   });

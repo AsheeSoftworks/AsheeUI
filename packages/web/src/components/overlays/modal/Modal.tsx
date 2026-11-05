@@ -428,7 +428,9 @@ export function Modal({
             aria-modal={isDismissible ? "true" : undefined}
             tabIndex={-1}
             className={cn(
-              "relative z-10 w-full bg-background text-foreground overflow-y-auto max-h-[90vh] outline-none",
+              // A hairline edge separates the surface from the backdrop without
+              // competing with the content the reader opened the dialog for.
+              "relative z-10 w-full bg-background text-foreground border border-border/50 overflow-y-auto max-h-[90vh] outline-none",
               positionClass,
               widthClass,
               radiusClass,
