@@ -38,4 +38,5 @@ export const NATIVE_MODAL_BACKDROP_CLASS =
   "flex-1 items-center bg-foreground/30 p-4";
 
 /** The modal surface itself. */
-export const NATIVE_MODAL_PANEL_CLASS = "w-full bg-background p-4 gap-3";
+export const NATIVE_MODAL_PANEL_CLASS =
+  "w-full bg-background p-4 gap-3 border border-border/50";

@@ -12,6 +12,7 @@ import {
   renderWithProvider,
   within,
 } from "../../test";
+import { Sidebar } from "../navigation/sidebar/Sidebar";
 import { AuthLayout } from "./auth-layout/AuthLayout";
 import { Centered } from "./centered/Centered";
 import { Container } from "./container/Container";
@@ -24,7 +25,6 @@ import { Section } from "./section/Section";
 import { ActionGroup } from "./section-kit/ActionGroup";
 import { SectionHeading } from "./section-kit/SectionHeading";
 import { SidebarLayout } from "./sidebar-layout/SidebarLayout";
-import { Sidebar } from "../navigation/sidebar/Sidebar";
 import { Split } from "./split/Split";
 import { HStack, Stack, VStack } from "./stack/Stack";
 
@@ -649,10 +649,10 @@ describe("MarketingLayout", () => {
 
     // The skip link is the first child, so it is the first thing Tab reaches.
     expect(regions).toHaveLength(4);
-    expect(regions[0]!.tagName).toBe("A");
-    expect(regions[1]!.textContent).toBe("Navigation");
-    expect(regions[2]!.tagName).toBe("MAIN");
-    expect(regions[3]!.textContent).toBe("Footer");
+    expect(regions[0]?.tagName).toBe("A");
+    expect(regions[1]?.textContent).toBe("Navigation");
+    expect(regions[2]?.tagName).toBe("MAIN");
+    expect(regions[3]?.textContent).toBe("Footer");
   });
 
   it("puts the sections inside the main landmark", () => {
@@ -794,7 +794,9 @@ describe("Page", () => {
 
       expect(getByRole("banner")).toBeDefined();
       expect(container.querySelector("header")?.className).toContain("sticky");
-      expect(container.querySelector("header")?.className).toContain("border-b");
+      expect(container.querySelector("header")?.className).toContain(
+        "border-b",
+      );
     });
 
     it("turns stickiness off when it is asked to", () => {
@@ -1572,8 +1574,8 @@ describe("Split", () => {
     expect(root.className).toContain("lg:flex-row");
     expect(root.className).toContain("gap-6");
     expect(root.className).toContain("items-stretch");
-    expect(panes[0]!.className).toContain("lg:basis-1/2");
-    expect(panes[1]!.className).toContain("lg:basis-1/2");
+    expect(panes[0]?.className).toContain("lg:basis-1/2");
+    expect(panes[1]?.className).toContain("lg:basis-1/2");
   });
 
   it("divides the width by the ratio it is given", () => {
@@ -1588,8 +1590,8 @@ describe("Split", () => {
       ).container,
     );
 
-    expect(panes[0]!.className).toContain("md:basis-1/3");
-    expect(panes[1]!.className).toContain("md:basis-2/3");
+    expect(panes[0]?.className).toContain("md:basis-1/3");
+    expect(panes[1]?.className).toContain("md:basis-2/3");
   });
 
   it("draws a divider between the panes, following the flex direction", () => {
@@ -1611,8 +1613,8 @@ describe("Split", () => {
       ).container,
     );
 
-    expect(panes[1]!.className).toContain("sticky");
-    expect(panes[0]!.className).not.toContain("sticky");
+    expect(panes[1]?.className).toContain("sticky");
+    expect(panes[0]?.className).not.toContain("sticky");
   });
 
   it("renders one pane when the layout has one", () => {
@@ -1630,8 +1632,8 @@ describe("Split", () => {
       ).container,
     );
 
-    expect(panes[0]!.textContent).toBe("first");
-    expect(panes[1]!.textContent).toBe("second");
+    expect(panes[0]?.textContent).toBe("first");
+    expect(panes[1]?.textContent).toBe("second");
   });
 
   it("resolves its defaults through configuration", () => {
@@ -1652,8 +1654,8 @@ describe("Split", () => {
     expect(root.className).toContain("sm:flex-row");
     expect(root.className).toContain("gap-2");
     expect(root.className).toContain("sm:divide-x");
-    expect(panes[0]!.className).toContain("sm:basis-2/3");
-    expect(panes[1]!.className).toContain("sm:basis-1/3");
+    expect(panes[0]?.className).toContain("sm:basis-2/3");
+    expect(panes[1]?.className).toContain("sm:basis-1/3");
   });
 
   it("lets an instance prop win over the configured value", () => {
@@ -1704,6 +1706,24 @@ describe("Split", () => {
  * Behaviour tests for the Stack layout primitive and its presets.
  */
 describe("Stack", () => {
+  /**
+   * The row and column a preset test renders, guarded so the pair is known.
+   *
+   * @param container - The render result's container.
+   * @returns The two stacks, row first.
+   */
+  function renderedStacks(
+    container: HTMLElement,
+  ): [row: HTMLElement, column: HTMLElement] {
+    const [row, column] = Array.from(container.children) as HTMLElement[];
+
+    if (!row || !column) {
+      throw new Error("The presets did not render a row and a column.");
+    }
+
+    return [row, column];
+  }
+
   it("lays its children out in a column with a token gap", () => {
     const { container } = renderWithProvider(<Stack>x</Stack>);
     const className = (container.firstElementChild as HTMLElement).className;
@@ -1745,9 +1765,7 @@ describe("Stack", () => {
         <VStack gap="sm">b</VStack>
       </>,
     );
-    const stacks = Array.from(container.children) as HTMLElement[];
-    const row = stacks[0]!;
-    const column = stacks[1]!;
+    const [row, column] = renderedStacks(container);
 
     expect(row.className).toContain("flex-row");
     expect(row.className).toContain("items-center");
@@ -1770,9 +1788,7 @@ describe("Stack", () => {
         }),
       },
     );
-    const stacks = Array.from(container.children) as HTMLElement[];
-    const row = stacks[0]!;
-    const column = stacks[1]!;
+    const [row, column] = renderedStacks(container);
 
     // The preset's row/centre values sit below the component configuration, so
     // `components.stack` reaches both presets.

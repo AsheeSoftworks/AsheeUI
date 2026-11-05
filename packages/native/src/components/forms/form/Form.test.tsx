@@ -104,10 +104,7 @@ describe("Native Form", () => {
       .mockImplementation(() => {});
 
     const view = await renderForm(
-      <Form
-        submitLabel="Continue"
-        submitTestID="submit"
-        onSubmit={() => false}>
+      <Form submitLabel="Continue" submitTestID="submit" onSubmit={() => false}>
         <Input testID="street" label="Street" />
       </Form>,
     );

@@ -174,10 +174,7 @@ export function RadioGroup({
           accessibilityRole="radiogroup"
           accessibilityLabel={label}
           accessibilityHint={description}
-          className={cn(
-            NATIVE_RADIO_GROUP_CLASS[orientation],
-            className,
-          )}>
+          className={cn(NATIVE_RADIO_GROUP_CLASS[orientation], className)}>
           {children}
         </View>
       </RadioContext.Provider>

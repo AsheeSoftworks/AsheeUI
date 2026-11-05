@@ -330,13 +330,7 @@ export const Autocomplete = forwardRef<HTMLInputElement, AutocompleteProps>(
           onValueChange?.(text);
         }
       },
-      [
-        allowCustomValue,
-        onChange,
-        onChangeText,
-        onInputChange,
-        onValueChange,
-      ],
+      [allowCustomValue, onChange, onChangeText, onInputChange, onValueChange],
     );
 
     /**

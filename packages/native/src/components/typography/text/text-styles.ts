@@ -53,15 +53,13 @@ export const NATIVE_TYPOGRAPHY_SIZE_DP: Record<TypographySize, number> = {
 };
 
 /** Font-weight token to the platform's weight utility. */
-export const NATIVE_TYPOGRAPHY_WEIGHT_CLASS: Record<
-  TypographyWeight,
-  string
-> = {
-  normal: "font-normal",
-  medium: "font-medium",
-  semibold: "font-semibold",
-  bold: "font-bold",
-};
+export const NATIVE_TYPOGRAPHY_WEIGHT_CLASS: Record<TypographyWeight, string> =
+  {
+    normal: "font-normal",
+    medium: "font-medium",
+    semibold: "font-semibold",
+    bold: "font-bold",
+  };
 
 /** Letter-spacing token to the platform's utility. */
 export const NATIVE_TYPOGRAPHY_TRACKING_CLASS: Record<

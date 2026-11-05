@@ -2,8 +2,8 @@ import type { AsheePuckData } from "@asheeui/fitness-shared";
 import { StudioScreen } from "@asheeui/fitness-shared";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { readStudioPage } from "../pages/StudioEditor";
 import { useGo } from "../lib/navigation";
+import { readStudioPage } from "../pages/StudioEditor";
 
 export const Route = createFileRoute("/studio")({ component: StudioPage });
 

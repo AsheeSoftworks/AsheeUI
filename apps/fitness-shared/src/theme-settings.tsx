@@ -6,13 +6,10 @@
  * context, so it can edit themes without importing a platform storage module or knowing which shell
  * mounted it.
  */
-import type { ExternalConfig } from "asheeui";
+
 import { validateRuntimeThemes } from "@asheeui/core";
-import {
-  createContext,
-  type ReactNode,
-  useContext,
-} from "react";
+import type { ExternalConfig } from "asheeui";
+import { createContext, type ReactNode, useContext } from "react";
 
 /** The storage key both shells use for the runtime definitions. */
 export const THEME_DEFINITIONS_KEY = "pulse.themes";
@@ -82,11 +79,7 @@ export function parseStoredThemes(
   value: unknown,
   config: ExternalConfig,
 ): AppThemes {
-  if (
-    value === null ||
-    typeof value !== "object" ||
-    Array.isArray(value)
-  ) {
+  if (value === null || typeof value !== "object" || Array.isArray(value)) {
     return {};
   }
 

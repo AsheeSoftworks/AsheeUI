@@ -61,7 +61,9 @@ function matrix(): MatrixEntry[] {
       }
       return entry;
     })
-    .filter((entry) => entry.name && entry.module && entry.support) as MatrixEntry[];
+    .filter(
+      (entry) => entry.name && entry.module && entry.support,
+    ) as MatrixEntry[];
 }
 
 /**
@@ -241,13 +243,14 @@ describe("PORTABLE_API", () => {
     // `check-umbrella` and `generate-umbrella` parse the array literal with
     // `/\{([^{}]*)\}/g`; a nested object would make an entry disappear from what they
     // see. Stating the shape here is what turns that convention into a rule.
-    const source = readFileSync(join(ROOT, "packages/core/src/portable.ts"), "utf8");
+    const source = readFileSync(
+      join(ROOT, "packages/core/src/portable.ts"),
+      "utf8",
+    );
     const array = source.match(/PORTABLE_API[^=]*=\s*\[([\s\S]*?)\n\];/)?.[1];
     expect(array).toBeDefined();
     const objects = [...(array ?? "").matchAll(/\{([^{}]*)\}/g)];
-    const shaped = objects.filter((match) =>
-      /name:\s*"[^"]+"/.test(match[1]),
-    );
+    const shaped = objects.filter((match) => /name:\s*"[^"]+"/.test(match[1]));
 
     expect(shaped.length).toBe(PORTABLE_API.length);
     for (const entry of shaped) {

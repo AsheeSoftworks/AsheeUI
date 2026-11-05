@@ -20,12 +20,7 @@ import {
 } from "@asheeui/core";
 import { type ElementType, type ReactNode, useRef } from "react";
 import type { PressableProps, StyleProp, ViewStyle } from "react-native";
-import {
-  ActivityIndicator,
-  Animated,
-  Pressable,
-  Text,
-} from "react-native";
+import { ActivityIndicator, Animated, Pressable, Text } from "react-native";
 import { useReduceMotion } from "../../../hooks/use-reduce-motion";
 import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
 import {
@@ -277,7 +272,9 @@ export function Button({
     className,
   );
 
-  const handlePress = (pressEvent: Parameters<NonNullable<PressableProps["onPress"]>>[0]) => {
+  const handlePress = (
+    pressEvent: Parameters<NonNullable<PressableProps["onPress"]>>[0],
+  ) => {
     // The platform's callback may read the responder, so it is wrapped rather than
     // dropped; `resolvePress` still owns which name runs first.
     resolvePress(

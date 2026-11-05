@@ -34,7 +34,14 @@ describe("ColorSwatch", () => {
   });
 
   it("lets the consumer override the size and radius", () => {
-    render(<ColorSwatch color="#047857" size="lg" radius="full" data-testid="swatch" />);
+    render(
+      <ColorSwatch
+        color="#047857"
+        size="lg"
+        radius="full"
+        data-testid="swatch"
+      />,
+    );
 
     const swatch = screen.getByTestId("swatch");
     expect(swatch.className).toContain("size-8");

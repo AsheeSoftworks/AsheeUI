@@ -8,19 +8,16 @@
  * first validates it.
  */
 import {
+  type AppThemes,
   config,
   parseStoredThemes,
-  type AppThemes,
-  ThemeSettingsProvider,
   THEME_DEFINITIONS_KEY,
+  ThemeSettingsProvider,
 } from "@asheeui/fitness-shared";
-import {
-  AsheeUIProvider,
-  THEME_STORAGE_KEY,
-} from "asheeui";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { AsheeUIProvider, THEME_STORAGE_KEY } from "asheeui";
 import { useEffect, useState } from "react";
 import { ActivityIndicator, StyleSheet, View } from "react-native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 
 /** The selection cache the controller reads synchronously. */
 let cachedSelection: string | null = null;
@@ -88,8 +85,7 @@ export function ThemeRoot({ children }: { children: React.ReactNode }) {
       <AsheeUIProvider
         config={config}
         themes={themes}
-        persistTheme={themeStorage}
-      >
+        persistTheme={themeStorage}>
         {children}
       </AsheeUIProvider>
     </ThemeSettingsProvider>

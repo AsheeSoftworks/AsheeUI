@@ -178,10 +178,7 @@ function Destinations({
           size="sm"
           component={item.component ?? link?.component}
           componentProps={{ ...link?.props, ...item.componentProps }}
-          className={cn(
-            itemClassName,
-            item.isActive && activeClassName,
-          )}>
+          className={cn(itemClassName, item.isActive && activeClassName)}>
           {item.label}
         </Link>
       ))}

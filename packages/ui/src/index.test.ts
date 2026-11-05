@@ -147,9 +147,7 @@ describe("umbrella surface", () => {
     // Types are erased at runtime and `AsheeConfig` is the one platform-specific alias, so
     // the runtime namespace is every non-type entry. This is the consumer-facing half of
     // assertion 1, checked against the imported entry rather than against its source.
-    const valueNames = PORTABLE_API.filter(
-      (entry) => entry.kind !== "type",
-    )
+    const valueNames = PORTABLE_API.filter((entry) => entry.kind !== "type")
       .map((entry) => entry.name)
       .sort();
 
@@ -297,10 +295,10 @@ describe("install story", () => {
   it("ships one stylesheet, which is the renderer's", () => {
     // The file's documentation names the import a consumer writes, so the comments are
     // removed before the import list is read; what is left is the CSS a bundler compiles.
-    const css = readFileSync(resolve(packageRoot, "styles.css"), "utf8").replaceAll(
-      /\/\*[\s\S]*?\*\//g,
-      "",
-    );
+    const css = readFileSync(
+      resolve(packageRoot, "styles.css"),
+      "utf8",
+    ).replaceAll(/\/\*[\s\S]*?\*\//g, "");
     const imports = [...css.matchAll(/@import\s+"([^"]+)"/g)].map(
       (match) => match[1],
     );

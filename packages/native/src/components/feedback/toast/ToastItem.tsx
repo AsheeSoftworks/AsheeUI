@@ -201,9 +201,7 @@ export function ToastItem({
           importantForAccessibility="no-hide-descendants"
           className={NATIVE_TOAST_ICON_CLASS}>
           {icon ?? (
-            <Typography
-              role="label"
-              className={cn(fontClass, textClass)}>
+            <Typography role="label" className={cn(fontClass, textClass)}>
               {NATIVE_TOAST_TYPE_GLYPH[type ?? "info"]}
             </Typography>
           )}
@@ -218,9 +216,7 @@ export function ToastItem({
               {title}
             </Typography>
           )}
-          <Typography
-            role="body-md"
-            className={cn(fontClass, textClass)}>
+          <Typography role="body-md" className={cn(fontClass, textClass)}>
             {message}
           </Typography>
           {action && (
@@ -234,9 +230,7 @@ export function ToastItem({
             accessibilityLabel="Dismiss notification"
             onPress={handleDismiss}
             className={NATIVE_TOAST_DISMISS_CLASS}>
-            <Typography
-              role="label"
-              className={cn(fontClass, textClass)}>
+            <Typography role="label" className={cn(fontClass, textClass)}>
               ✕
             </Typography>
           </Pressable>

@@ -28,16 +28,19 @@ import {
   NATIVE_FORM_LEGEND_CLASS,
   NATIVE_FORM_SUBMIT_ROW_CLASS,
 } from "../../../styles/form";
-import { setAccessibilityFocus, type ViewRef } from "../../../utils/accessibility";
+import {
+  setAccessibilityFocus,
+  type ViewRef,
+} from "../../../utils/accessibility";
 import { announce } from "../../../utils/announce";
 import { cn } from "../../../utils/cn";
 import { Typography } from "../../typography/text/Text";
 import { Button } from "../button/Button";
-import { type FormControl, FormContext } from "./form-context";
 import {
   FALLBACK_NATIVE_FORM_CONFIG,
   type NativeFormConfig,
 } from "./form-config";
+import { FormContext, type FormControl } from "./form-context";
 
 /**
  * Props for the native Form.
@@ -157,7 +160,8 @@ export function Form({
     FALLBACK_NATIVE_FORM_CONFIG.submitRadius,
   );
 
-  const body = legend ? (    <View className={NATIVE_FORM_GROUP_CLASS}>
+  const body = legend ? (
+    <View className={NATIVE_FORM_GROUP_CLASS}>
       <Typography role="label" className={NATIVE_FORM_LEGEND_CLASS}>
         {legend}
       </Typography>

@@ -28,10 +28,16 @@
  * fixture could not be built at all.
  */
 
-import { mkdirSync, mkdtempSync, rmSync, symlinkSync, writeFileSync } from "node:fs";
-import { dirname, isAbsolute, join, resolve } from "node:path";
+import {
+  mkdirSync,
+  mkdtempSync,
+  rmSync,
+  symlinkSync,
+  writeFileSync,
+} from "node:fs";
 import { createRequire } from "node:module";
 import { tmpdir } from "node:os";
+import { dirname, isAbsolute, join, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
@@ -114,9 +120,7 @@ async function graphOf(build, fixture, native) {
       for (const imported of chunk.imports) imports.add(imported);
       // An external module that only appears as a re-export can be recorded in the code
       // rather than in `imports`; the statement is what a bundler would follow.
-      for (const match of chunk.code.matchAll(
-        /from\s+"(@asheeui\/[^"]+)"/g,
-      )) {
+      for (const match of chunk.code.matchAll(/from\s+"(@asheeui\/[^"]+)"/g)) {
         imports.add(match[1]);
       }
     }

@@ -7,9 +7,9 @@
  */
 
 import type { ExternalColorConfig, ThemeName } from "@asheeui/core";
-import { Button, Grid, Typography, VStack, useAsheeConfig } from "asheeui";
-import { ThemeCard } from "./ThemeCard";
+import { Button, Grid, Typography, useAsheeConfig, VStack } from "asheeui";
 import type { ThemePreset } from "../lib/presets";
+import { ThemeCard } from "./ThemeCard";
 
 export interface ThemeGalleryProps {
   /** The runtime themes the application has. */

@@ -5,27 +5,32 @@
  * navigation at the top in a `Navbar`, while the Expo app puts it at the bottom. Both
  * bars are built from the same umbrella package.
  */
+
+import {
+  destinations,
+  type RouteKey,
+  ThemePicker,
+} from "@asheeui/fitness-shared";
+import { Link, useRouterState } from "@tanstack/react-router";
 import {
   Avatar,
   Badge,
   Button,
   HStack,
   Navbar,
+  type NavbarLinkItem,
   Page,
   PageContent,
   PageFooter,
   Typography,
   useTheme,
-  type NavbarLinkItem,
 } from "asheeui";
-import { Link, useRouterState } from "@tanstack/react-router";
 import {
-  forwardRef,
   type AnchorHTMLAttributes,
+  forwardRef,
   type ReactNode,
   useState,
 } from "react";
-import { destinations, ThemePicker, type RouteKey } from "@asheeui/fitness-shared";
 
 /** The path a destination resolves to in this app's router. */
 export const ROUTE_PATHS: Record<RouteKey, string> = {
@@ -53,7 +58,9 @@ const RouterLink = forwardRef<
 
 /** The top bar and page frame. */
 export function AppShell({ children }: { children: ReactNode }) {
-  const pathname = useRouterState({ select: (state) => state.location.pathname });
+  const pathname = useRouterState({
+    select: (state) => state.location.pathname,
+  });
   const [themeOpen, setThemeOpen] = useState(false);
   const { toggleTheme } = useTheme();
 
@@ -85,19 +92,19 @@ export function AppShell({ children }: { children: ReactNode }) {
             <Button
               size="sm"
               variant="ghost"
-              onPress={() => setThemeOpen(true)}
-            >
+              onPress={() => setThemeOpen(true)}>
               Theme
             </Button>
             <Button
               size="sm"
               variant="bordered"
               color="secondary"
-              onPress={() => toggleTheme()}
-            >
+              onPress={() => toggleTheme()}>
               Toggle Theme
             </Button>
-            <Button size="sm" onPress={() => window.location.assign("/workouts")}>
+            <Button
+              size="sm"
+              onPress={() => window.location.assign("/workouts")}>
               Train
             </Button>
           </HStack>

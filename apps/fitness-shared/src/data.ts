@@ -30,13 +30,55 @@ export interface DayActivity {
 
 /** The current week, oldest first. */
 export const week: DayActivity[] = [
-  { day: "Mon", date: "14 Apr", steps: 9120, calories: 2280, activeMinutes: 62 },
-  { day: "Tue", date: "15 Apr", steps: 6480, calories: 1940, activeMinutes: 41 },
-  { day: "Wed", date: "16 Apr", steps: 11240, calories: 2460, activeMinutes: 78 },
-  { day: "Thu", date: "17 Apr", steps: 7890, calories: 2110, activeMinutes: 52 },
-  { day: "Fri", date: "18 Apr", steps: 10460, calories: 2380, activeMinutes: 69 },
-  { day: "Sat", date: "19 Apr", steps: 4380, calories: 1720, activeMinutes: 24 },
-  { day: "Sun", date: "20 Apr", steps: 8432, calories: 2140, activeMinutes: 54 },
+  {
+    day: "Mon",
+    date: "14 Apr",
+    steps: 9120,
+    calories: 2280,
+    activeMinutes: 62,
+  },
+  {
+    day: "Tue",
+    date: "15 Apr",
+    steps: 6480,
+    calories: 1940,
+    activeMinutes: 41,
+  },
+  {
+    day: "Wed",
+    date: "16 Apr",
+    steps: 11240,
+    calories: 2460,
+    activeMinutes: 78,
+  },
+  {
+    day: "Thu",
+    date: "17 Apr",
+    steps: 7890,
+    calories: 2110,
+    activeMinutes: 52,
+  },
+  {
+    day: "Fri",
+    date: "18 Apr",
+    steps: 10460,
+    calories: 2380,
+    activeMinutes: 69,
+  },
+  {
+    day: "Sat",
+    date: "19 Apr",
+    steps: 4380,
+    calories: 1720,
+    activeMinutes: 24,
+  },
+  {
+    day: "Sun",
+    date: "20 Apr",
+    steps: 8432,
+    calories: 2140,
+    activeMinutes: 54,
+  },
 ];
 
 /** Today's headline numbers, each with the goal it is measured against. */
@@ -409,16 +451,67 @@ export interface Meal {
 }
 
 export const meals: Meal[] = [
-  { id: "m1", name: "Greek yoghurt, berries, almonds", time: "07:10", calories: 380, protein: 24, carbs: 41, fat: 14, tag: "Breakfast" },
-  { id: "m2", name: "Chicken, rice and roasted vegetables", time: "12:40", calories: 640, protein: 48, carbs: 72, fat: 18, tag: "Lunch" },
-  { id: "m3", name: "Protein shake and a banana", time: "16:05", calories: 310, protein: 31, carbs: 38, fat: 5, tag: "Snack" },
-  { id: "m4", name: "Salmon, potatoes, greens", time: "19:20", calories: 710, protein: 44, carbs: 58, fat: 31, tag: "Dinner" },
-  { id: "m5", name: "Cottage cheese and honey", time: "21:30", calories: 210, protein: 22, carbs: 18, fat: 6, tag: "Snack" },
+  {
+    id: "m1",
+    name: "Greek yoghurt, berries, almonds",
+    time: "07:10",
+    calories: 380,
+    protein: 24,
+    carbs: 41,
+    fat: 14,
+    tag: "Breakfast",
+  },
+  {
+    id: "m2",
+    name: "Chicken, rice and roasted vegetables",
+    time: "12:40",
+    calories: 640,
+    protein: 48,
+    carbs: 72,
+    fat: 18,
+    tag: "Lunch",
+  },
+  {
+    id: "m3",
+    name: "Protein shake and a banana",
+    time: "16:05",
+    calories: 310,
+    protein: 31,
+    carbs: 38,
+    fat: 5,
+    tag: "Snack",
+  },
+  {
+    id: "m4",
+    name: "Salmon, potatoes, greens",
+    time: "19:20",
+    calories: 710,
+    protein: 44,
+    carbs: 58,
+    fat: 31,
+    tag: "Dinner",
+  },
+  {
+    id: "m5",
+    name: "Cottage cheese and honey",
+    time: "21:30",
+    calories: 210,
+    protein: 22,
+    carbs: 18,
+    fat: 6,
+    tag: "Snack",
+  },
 ];
 
 /** Today's macro totals, and the targets they count toward. */
 export const macros = [
-  { key: "calories", label: "Calories", value: 2250, target: 2600, unit: "kcal" },
+  {
+    key: "calories",
+    label: "Calories",
+    value: 2250,
+    target: 2600,
+    unit: "kcal",
+  },
   { key: "protein", label: "Protein", value: 169, target: 180, unit: "g" },
   { key: "carbs", label: "Carbs", value: 227, target: 300, unit: "g" },
   { key: "fat", label: "Fat", value: 74, target: 80, unit: "g" },
@@ -434,18 +527,63 @@ export interface PersonalRecord {
 }
 
 export const records: PersonalRecord[] = [
-  { lift: "Trap-bar deadlift", value: "142.5 kg", previous: "137.5 kg", date: "12 Apr", change: "+5 kg" },
-  { lift: "Back squat", value: "112.5 kg", previous: "110 kg", date: "05 Apr", change: "+2.5 kg" },
-  { lift: "Bench press", value: "82.5 kg", previous: "80 kg", date: "29 Mar", change: "+2.5 kg" },
-  { lift: "5 km run", value: "22:41", previous: "23:18", date: "21 Mar", change: "-37 s" },
-  { lift: "Rowing 2 km", value: "7:24", previous: "7:31", date: "16 Mar", change: "-7 s" },
+  {
+    lift: "Trap-bar deadlift",
+    value: "142.5 kg",
+    previous: "137.5 kg",
+    date: "12 Apr",
+    change: "+5 kg",
+  },
+  {
+    lift: "Back squat",
+    value: "112.5 kg",
+    previous: "110 kg",
+    date: "05 Apr",
+    change: "+2.5 kg",
+  },
+  {
+    lift: "Bench press",
+    value: "82.5 kg",
+    previous: "80 kg",
+    date: "29 Mar",
+    change: "+2.5 kg",
+  },
+  {
+    lift: "5 km run",
+    value: "22:41",
+    previous: "23:18",
+    date: "21 Mar",
+    change: "-37 s",
+  },
+  {
+    lift: "Rowing 2 km",
+    value: "7:24",
+    previous: "7:31",
+    date: "16 Mar",
+    change: "-7 s",
+  },
 ];
 
 /** Achievements shown on the progress page. */
 export const achievements = [
-  { id: "streak", title: "12-day streak", detail: "Train or walk every day", tone: "success" as const },
-  { id: "volume", title: "40 t lifted", detail: "Since January", tone: "primary" as const },
-  { id: "consistency", title: "4 weeks on plan", detail: "Three sessions a week", tone: "secondary" as const },
+  {
+    id: "streak",
+    title: "12-day streak",
+    detail: "Train or walk every day",
+    tone: "success" as const,
+  },
+  {
+    id: "volume",
+    title: "40 t lifted",
+    detail: "Since January",
+    tone: "primary" as const,
+  },
+  {
+    id: "consistency",
+    title: "4 weeks on plan",
+    detail: "Three sessions a week",
+    tone: "secondary" as const,
+  },
 ];
 
 /** The options the workout filters offer. */

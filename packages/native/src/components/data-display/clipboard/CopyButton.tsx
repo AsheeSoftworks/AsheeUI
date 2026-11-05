@@ -17,12 +17,12 @@ import { type Radius, resolveCascade } from "@asheeui/core";
 import type { ReactNode } from "react";
 import { useAsheeConfig } from "../../../provider/AsheeUIProvider";
 import { NATIVE_ANNOUNCEMENT_LIVE_REGION } from "../../../shared/announcement";
-import { announce } from "../../../utils/announce";
 import {
   NATIVE_CLIPBOARD_COPIED_GLYPH,
   NATIVE_CLIPBOARD_COPY_GLYPH,
   NATIVE_CLIPBOARD_STATUS_CLASS,
 } from "../../../styles/clipboard";
+import { announce } from "../../../utils/announce";
 import { Button, type ButtonProps } from "../../forms/button/Button";
 import { Typography } from "../../typography/text/Text";
 import { Clipboard } from "./Clipboard";

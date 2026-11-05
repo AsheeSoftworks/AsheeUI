@@ -10,8 +10,8 @@
  */
 
 import {
-  announce as announceOnHost,
   type AnnouncementRole,
+  announce as announceOnHost,
   setAnnouncementHost,
 } from "@asheeui/core";
 import { AccessibilityInfo } from "react-native";

@@ -34,14 +34,7 @@ const UI_DIRECTORY = join(ROOT, "packages/ui");
 /** Where the declared surface's array literal begins in its source file. */
 const PORTABLE_ARRAY = /PORTABLE_API[^=]*=\s*\[([\s\S]*?)\n\];/;
 
-const KINDS = [
-  "component",
-  "provider",
-  "hook",
-  "helper",
-  "type",
-  "constant",
-];
+const KINDS = ["component", "provider", "hook", "helper", "type", "constant"];
 const SOURCES = ["core", "renderer"];
 
 /**
@@ -188,7 +181,7 @@ function render(entries, branch) {
     parts.push('"use client";\n\nimport "@asheeui/web";\n');
     parts.push('import type { ExternalConfig } from "@asheeui/core";\n');
   } else {
-    parts.push('');
+    parts.push("");
   }
 
   parts.push(
@@ -245,7 +238,10 @@ function render(entries, branch) {
 
   parts.push(platformSection(branch));
 
-  const body = parts.join("\n").replace(/\n{3,}/g, "\n\n").trimEnd();
+  const body = parts
+    .join("\n")
+    .replace(/\n{3,}/g, "\n\n")
+    .trimEnd();
   return `${body}\n`;
 }
 

@@ -277,10 +277,7 @@ export function Marquee({
             return (
               <View
                 key={itemKey}
-                className={cn(
-                  NATIVE_MARQUEE_ITEM_CLASS,
-                  itemClassName,
-                )}>
+                className={cn(NATIVE_MARQUEE_ITEM_CLASS, itemClassName)}>
                 {item}
               </View>
             );

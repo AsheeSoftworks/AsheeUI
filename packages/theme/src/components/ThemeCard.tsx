@@ -7,14 +7,7 @@
  */
 
 import type { ColorVariant, ThemeName } from "@asheeui/core";
-import {
-  Badge,
-  Button,
-  Card,
-  ColorSwatch,
-  HStack,
-  VStack,
-} from "asheeui";
+import { Badge, Button, Card, ColorSwatch, HStack, VStack } from "asheeui";
 
 /** The roles a card shows, in the order a palette is usually read. */
 const PREVIEW_ROLES: readonly (keyof ColorVariant)[] = [
@@ -97,8 +90,7 @@ export function ThemeCard({
             )}
           </HStack>
         ) : undefined
-      }
-    >
+      }>
       <VStack gap="sm">
         <HStack gap="sm" wrap>
           {active && (

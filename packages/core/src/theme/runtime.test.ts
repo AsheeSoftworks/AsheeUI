@@ -31,8 +31,14 @@ describe("mergeRuntimeThemes", () => {
       },
     );
 
-    expect(merged.color?.midnight).toEqual({ extends: "dark", primary: "#222222" });
-    expect(merged.color?.ocean).toEqual({ extends: "dark", primary: "#0ea5e9" });
+    expect(merged.color?.midnight).toEqual({
+      extends: "dark",
+      primary: "#222222",
+    });
+    expect(merged.color?.ocean).toEqual({
+      extends: "dark",
+      primary: "#0ea5e9",
+    });
   });
 
   it("keeps a native configuration's platform-only fields", () => {

@@ -10,8 +10,8 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import {
   ANNOUNCEMENT_ROLE,
-  announce,
   type AnnouncementHost,
+  announce,
   setAnnouncementHost,
 } from "./announcement";
 

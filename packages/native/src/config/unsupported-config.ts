@@ -49,7 +49,8 @@ const UNSUPPORTED_OPTIONS: readonly UnsupportedOption[] = [
   {
     section: "calendar",
     prop: "picker",
-    substitute: "the month opens as a surface; there is no panel to float beside the field",
+    substitute:
+      "the month opens as a surface; there is no panel to float beside the field",
   },
   {
     section: "calendar",
@@ -59,7 +60,8 @@ const UNSUPPORTED_OPTIONS: readonly UnsupportedOption[] = [
   {
     section: "calendar",
     prop: "lockScroll",
-    substitute: "there is no page to lock; the month's surface takes the input itself",
+    substitute:
+      "there is no page to lock; the month's surface takes the input itself",
   },
   {
     section: "tooltip",
@@ -75,7 +77,8 @@ const UNSUPPORTED_OPTIONS: readonly UnsupportedOption[] = [
   {
     section: "searchinput",
     prop: "shortcut",
-    substitute: "bind the shortcut in the application; a device has no keyboard",
+    substitute:
+      "bind the shortcut in the application; a device has no keyboard",
   },
   {
     section: "textarea",
@@ -85,7 +88,8 @@ const UNSUPPORTED_OPTIONS: readonly UnsupportedOption[] = [
   {
     section: "dropmenu",
     prop: "name",
-    substitute: "read the field's value from state; a form name is a DOM concept",
+    substitute:
+      "read the field's value from state; a form name is a DOM concept",
   },
   {
     section: "dropmenu",
@@ -95,12 +99,14 @@ const UNSUPPORTED_OPTIONS: readonly UnsupportedOption[] = [
   {
     section: "navbar",
     prop: "mobileOpen",
-    substitute: "the bar scrolls rather than disclosing; every destination stays in the row",
+    substitute:
+      "the bar scrolls rather than disclosing; every destination stays in the row",
   },
   {
     section: "navbar",
     prop: "onMobileOpenChange",
-    substitute: "there is no disclosure to report; the destinations are always reachable",
+    substitute:
+      "there is no disclosure to report; the destinations are always reachable",
   },
   {
     section: "navbar",

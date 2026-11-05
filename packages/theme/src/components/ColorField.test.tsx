@@ -1,5 +1,5 @@
-import { AsheeUIProvider } from "asheeui";
 import { fireEvent, render, screen } from "@testing-library/react";
+import { AsheeUIProvider } from "asheeui";
 import { describe, expect, it, vi } from "vitest";
 import { ColorField } from "./ColorField";
 

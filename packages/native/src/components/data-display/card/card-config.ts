@@ -21,8 +21,6 @@ import {
 } from "@asheeui/core";
 import { registerNativeComponentDefaults } from "../../../config/registry";
 
-export { resolveCardVariant };
-
 export type {
   CardConfig,
   CardImageConfig,
@@ -30,6 +28,7 @@ export type {
   CardImagePosition,
   CardVariant,
 } from "@asheeui/core";
+export { resolveCardVariant };
 
 /**
  * The treatments a native card can draw.

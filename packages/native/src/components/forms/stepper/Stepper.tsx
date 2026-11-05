@@ -163,10 +163,7 @@ export function Stepper({
   return (
     <View
       accessibilityLabel={label}
-      className={cn(
-        NATIVE_STEPPER_LIST_CLASS[resolvedOrientation],
-        className,
-      )}>
+      className={cn(NATIVE_STEPPER_LIST_CLASS[resolvedOrientation], className)}>
       {steps.map((step, index) => {
         const state = stepState(index, currentStep);
         const marker = (

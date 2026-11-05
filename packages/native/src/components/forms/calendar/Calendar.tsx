@@ -184,7 +184,8 @@ export function Calendar({
     },
     lockScroll: {
       value: lockScroll,
-      substitute: "there is no page to lock; the month's surface takes the input itself",
+      substitute:
+        "there is no page to lock; the month's surface takes the input itself",
     },
   });
   const [isOpen, setIsOpen] = useState(false);

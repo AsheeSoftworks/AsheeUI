@@ -5,13 +5,14 @@
  * native provider, lists a runtime theme from the `themes` prop and selects it with the native
  * controller.
  */
-import { AsheeUIProvider, useTheme } from "asheeui";
+
 import {
   fireEvent,
   render,
   screen,
   waitFor,
 } from "@testing-library/react-native";
+import { AsheeUIProvider, useTheme } from "asheeui";
 import { Text } from "react-native";
 import { THEME_PRESETS } from "../lib/presets";
 import { ThemeGallery } from "./ThemeGallery";

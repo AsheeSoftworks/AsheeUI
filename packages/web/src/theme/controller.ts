@@ -56,7 +56,8 @@ export const themeController = createThemeController({
   },
 
   storage: {
-    get: () => (hasWindow() ? window.localStorage.getItem(THEME_STORAGE_KEY) : null),
+    get: () =>
+      hasWindow() ? window.localStorage.getItem(THEME_STORAGE_KEY) : null,
     set: (value) => {
       if (hasWindow()) window.localStorage.setItem(THEME_STORAGE_KEY, value);
     },
@@ -87,6 +88,8 @@ export const themeController = createThemeController({
   },
 });
 
+/** The shape a provider hands `configure`. */
+export type { ThemeConfigInput } from "@asheeui/core";
 /**
  * The selection type and the storage key are the platform-neutral ones.
  *
@@ -94,6 +97,3 @@ export const themeController = createThemeController({
  * a consumer importing them from the web theme entry keeps working.
  */
 export { THEME_STORAGE_KEY, type ThemeSelection } from "@asheeui/core";
-
-/** The shape a provider hands `configure`. */
-export type { ThemeConfigInput } from "@asheeui/core";

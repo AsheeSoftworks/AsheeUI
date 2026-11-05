@@ -70,6 +70,4 @@ export interface UmbrellaSummary {
  * @param options - The repository root; defaults to the working directory.
  * @returns The summary, including the six assertions.
  */
-export function evaluateUmbrella(options?: {
-  root?: string;
-}): UmbrellaSummary;
+export function evaluateUmbrella(options?: { root?: string }): UmbrellaSummary;

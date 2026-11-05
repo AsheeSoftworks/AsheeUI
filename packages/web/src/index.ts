@@ -71,6 +71,7 @@ export * from "./components/feedback/toast";
 export * from "./components/forms/autocomplete";
 export * from "./components/forms/button";
 export * from "./components/forms/calendar";
+export * from "./components/forms/checkbox";
 export * from "./components/forms/dropmenu";
 export * from "./components/forms/file-upload";
 export * from "./components/forms/form";

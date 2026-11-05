@@ -43,7 +43,9 @@ const HANDLER_NAMES: readonly HandlerName[] = [
 ];
 
 /** The two component roots, read as data rather than imported. */
-const WEB = fileURLToPath(new URL("../../../web/src/components/", import.meta.url));
+const WEB = fileURLToPath(
+  new URL("../../../web/src/components/", import.meta.url),
+);
 const NATIVE = fileURLToPath(
   new URL("../../../native/src/components/", import.meta.url),
 );
@@ -248,8 +250,7 @@ function declaredHandlers(body: string): HandlerName[] {
     /\b(on(?:Click|Press|Change|ChangeText|ValueChange))\??\s*:/g,
   )) {
     const name = match[1] as HandlerName;
-    if (HANDLER_NAMES.includes(name) && !found.includes(name))
-      found.push(name);
+    if (HANDLER_NAMES.includes(name) && !found.includes(name)) found.push(name);
   }
   return found;
 }
@@ -561,9 +562,7 @@ describe("the reader itself", () => {
         ["web", WEB, pair.web],
         ["native", NATIVE, pair.native],
       ] as const) {
-        const source = withoutComments(
-          readFileSync(root + side.file, "utf8"),
-        );
+        const source = withoutComments(readFileSync(root + side.file, "utf8"));
         expect(
           declarationOf(source, side.type),
           `${label} ${pair.component} declares ${side.type}`,

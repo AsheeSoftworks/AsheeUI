@@ -5,7 +5,7 @@
  * renderer on the web, the native renderer on a device. On the web the shell also offers
  * the editor; this screen is what a member sees when they are not editing.
  */
-import { PuckPage, type AsheePuckData } from "@asheeui/puck";
+import { type AsheePuckData, PuckPage } from "@asheeui/puck";
 import { Badge, Button, Card, HStack, Typography, VStack } from "asheeui";
 import { Panel, ScreenHeading } from "../components";
 import type { ScreenProps } from "../theme";
@@ -30,7 +30,8 @@ export const studioPage: AsheePuckData = {
       props: {
         id: "features-studio",
         title: "Blocks you can arrange",
-        description: "Drag them in the editor on the web; the device renders the same page.",
+        description:
+          "Drag them in the editor on the web; the device renders the same page.",
         items: [
           {
             title: "Training load",
@@ -65,8 +66,13 @@ export const studioPage: AsheePuckData = {
         id: "cta-studio",
         eyebrow: "Your week",
         title: "Three sessions, one long walk",
-        description: "The plan is a suggestion; the studio is where you make it yours.",
-        primaryAction: { label: "Open the workout library", href: "/workouts", variant: "solid" },
+        description:
+          "The plan is a suggestion; the studio is where you make it yours.",
+        primaryAction: {
+          label: "Open the workout library",
+          href: "/workouts",
+          variant: "solid",
+        },
         align: "center",
         panel: "bordered",
         background: "none",
@@ -104,10 +110,13 @@ export function StudioScreen({
       <Card variant="bordered" size="md">
         <HStack justify="between" align="center" gap="md" wrap>
           <VStack gap="xs">
-            <Typography role="heading-sm">One document, two renderers</Typography>
+            <Typography role="heading-sm">
+              One document, two renderers
+            </Typography>
             <Typography role="body-sm" tone="muted">
-              On the web the editor is beside this page; on a device the same stored blocks are
-              drawn by the native renderer. No block is web-only.
+              On the web the editor is beside this page; on a device the same
+              stored blocks are drawn by the native renderer. No block is
+              web-only.
             </Typography>
           </VStack>
           <HStack gap="sm">
@@ -121,7 +130,9 @@ export function StudioScreen({
         </HStack>
       </Card>
 
-      <Panel title="Rendered page" description="The composition as a member sees it.">
+      <Panel
+        title="Rendered page"
+        description="The composition as a member sees it.">
         <PuckPage data={data ?? studioPage} />
       </Panel>
     </VStack>

@@ -10,11 +10,11 @@
 
 import type { ReactNode } from "react";
 import { Pressable } from "react-native";
-import { Typography } from "../typography/text/Text";
 import {
   NATIVE_LAYER_CLOSE_CLASS,
   NATIVE_LAYER_CLOSE_GLYPH,
 } from "../../styles/layer";
+import { Typography } from "../typography/text/Text";
 
 /**
  * Props for the layer's close control.

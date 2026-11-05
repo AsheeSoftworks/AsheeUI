@@ -1,5 +1,22 @@
 # asheeui
 
+## 3.1.1
+
+### Patch Changes
+
+- Add `Checkbox` and `CheckboxGroup`. A checkbox is a native input drawn as a
+  square a reader ticks, with the field family's label, description, density,
+  accent, rounding and validation status. `CheckboxGroup` owns a set of values on
+  both platforms, renders as a fieldset on the web, and reports the next set
+  through `onChange`. `components.checkbox` configures both, and native publishes
+  the pair alongside the web renderer.
+- Updated dependencies
+- Updated dependencies
+- Updated dependencies
+  - @asheeui/core@3.1.1
+  - @asheeui/web@2.9.1
+  - @asheeui/native@2.9.1
+
 ## 3.1.0
 
 ### Minor Changes

@@ -37,7 +37,11 @@ export interface WorkoutDetailProps {
 }
 
 /** A single workout. */
-export function WorkoutDetailScreen({ workout, onBack, onFinish }: WorkoutDetailProps) {
+export function WorkoutDetailScreen({
+  workout,
+  onBack,
+  onFinish,
+}: WorkoutDetailProps) {
   const toast = useToast();
   const [step, setStep] = useState(0);
   const [resting, setResting] = useState(false);
@@ -57,7 +61,8 @@ export function WorkoutDetailScreen({ workout, onBack, onFinish }: WorkoutDetail
     description: `Set ${index + 1} of ${workout.exercises.length}`,
   }));
 
-  const current = workout.exercises[Math.min(step, workout.exercises.length - 1)];
+  const current =
+    workout.exercises[Math.min(step, workout.exercises.length - 1)];
 
   return (
     <VStack gap="xl">
@@ -74,10 +79,7 @@ export function WorkoutDetailScreen({ workout, onBack, onFinish }: WorkoutDetail
             <Tooltip content="Your coach sees the session once it is finished">
               <Badge variant="bordered">{workout.coach}</Badge>
             </Tooltip>
-            <Button
-              variant="bordered"
-              onPress={() => setFinishing(true)}
-            >
+            <Button variant="bordered" onPress={() => setFinishing(true)}>
               Finish session
             </Button>
           </>
@@ -99,8 +101,7 @@ export function WorkoutDetailScreen({ workout, onBack, onFinish }: WorkoutDetail
                 : "success"
           }
           variant="bordered"
-          size="sm"
-        >
+          size="sm">
           {workout.intensity} intensity
         </Badge>
         {workout.completed ? (
@@ -113,8 +114,7 @@ export function WorkoutDetailScreen({ workout, onBack, onFinish }: WorkoutDetail
       <Grid columns={1} columnsLg={3} gap="lg">
         <Panel
           title="Session plan"
-          description="Open a movement for the cue the coach wrote."
-        >
+          description="Open a movement for the cue the coach wrote.">
           <Accordion
             variant="separated"
             defaultValue={current.id}
@@ -146,8 +146,7 @@ export function WorkoutDetailScreen({ workout, onBack, onFinish }: WorkoutDetail
         <VStack gap="lg">
           <Panel
             title="Set log"
-            description={`Now: ${current.name} — ${current.sets} × ${current.reps}`}
-          >
+            description={`Now: ${current.name} — ${current.sets} × ${current.reps}`}>
             <VStack gap="md">
               <Stepper
                 steps={steps}
@@ -161,16 +160,14 @@ export function WorkoutDetailScreen({ workout, onBack, onFinish }: WorkoutDetail
                 onSubmit={() => {
                   toast.success(`${current.name}: set logged`);
                   if (step < workout.exercises.length - 1) setStep(step + 1);
-                }}
-              >
+                }}>
                 <Input label="Load" defaultValue={current.load} />
                 <Input label="Reps completed" defaultValue={current.reps} />
                 <RadioGroup
                   label="How hard was it?"
                   value={rpe}
                   onChange={setRpe}
-                  orientation="horizontal"
-                >
+                  orientation="horizontal">
                   <Radio value="6" label="6 — easy" />
                   <Radio value="8" label="8 — working" />
                   <Radio value="10" label="10 — limit" />
@@ -184,14 +181,16 @@ export function WorkoutDetailScreen({ workout, onBack, onFinish }: WorkoutDetail
               </Form>
               {painFree ? null : (
                 <Alert type="warning" title="Stop and tell your coach">
-                  Pain is a signal, not a target. End the session and message {workout.coach} from
-                  the coach panel.
+                  Pain is a signal, not a target. End the session and message{" "}
+                  {workout.coach} from the coach panel.
                 </Alert>
               )}
             </VStack>
           </Panel>
 
-          <Panel title="Rest timer" description="Three minutes between heavy sets.">
+          <Panel
+            title="Rest timer"
+            description="Three minutes between heavy sets.">
             <VStack gap="md">
               <HStack justify="between" align="center">
                 <Typography role="heading-lg">
@@ -201,8 +200,7 @@ export function WorkoutDetailScreen({ workout, onBack, onFinish }: WorkoutDetail
               </HStack>
               <Button
                 variant={resting ? "ghost" : "bordered"}
-                onPress={() => setResting(!resting)}
-              >
+                onPress={() => setResting(!resting)}>
                 {resting ? "Stop the timer" : "Start 3-minute rest"}
               </Button>
             </VStack>
@@ -214,8 +212,8 @@ export function WorkoutDetailScreen({ workout, onBack, onFinish }: WorkoutDetail
         <VStack gap="md">
           <Typography role="heading-md">Finish “{workout.title}”?</Typography>
           <Typography role="body-sm" tone="muted">
-            The session will be saved with {workout.calories} kcal and its set log. You can edit
-            it later from the progress page.
+            The session will be saved with {workout.calories} kcal and its set
+            log. You can edit it later from the progress page.
           </Typography>
           <HStack gap="sm" justify="end">
             <Button variant="ghost" onPress={() => setFinishing(false)}>
@@ -226,8 +224,7 @@ export function WorkoutDetailScreen({ workout, onBack, onFinish }: WorkoutDetail
                 setFinishing(false);
                 toast.success("Session saved");
                 onFinish(workout.id);
-              }}
-            >
+              }}>
               Save session
             </Button>
           </HStack>

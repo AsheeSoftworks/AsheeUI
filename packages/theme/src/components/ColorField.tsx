@@ -8,17 +8,8 @@
  * portable hex/rgb set is small enough to type.
  */
 
-import {
-  isPortableColor,
-  normalizeColor,
-} from "@asheeui/core";
-import {
-  Chip,
-  ColorSwatch,
-  HStack,
-  Input,
-  VStack,
-} from "asheeui";
+import { isPortableColor, normalizeColor } from "@asheeui/core";
+import { Chip, ColorSwatch, HStack, Input, VStack } from "asheeui";
 import { useEffect, useState } from "react";
 
 export interface ColorFieldProps {
@@ -114,8 +105,7 @@ export function ColorField({
               key={preset}
               size="sm"
               variant="bordered"
-              onPress={() => commit(preset)}
-            >
+              onPress={() => commit(preset)}>
               <ColorSwatch color={preset} size="sm" label={preset} />
             </Chip>
           ))}

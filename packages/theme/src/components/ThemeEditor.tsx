@@ -24,14 +24,14 @@ import {
   HStack,
   Input,
   Typography,
-  VStack,
   useAsheeConfig,
+  VStack,
 } from "asheeui";
 import { useEffect, useState } from "react";
-import { ContrastBadge } from "./ContrastBadge";
-import { ColorField } from "./ColorField";
-import { ThemeCard } from "./ThemeCard";
 import { isReservedThemeName, slugify } from "../lib/slug";
+import { ColorField } from "./ColorField";
+import { ContrastBadge } from "./ContrastBadge";
+import { ThemeCard } from "./ThemeCard";
 
 export interface ThemeEditorProps {
   /** The runtime themes the application currently has. */
@@ -84,9 +84,7 @@ export function ThemeEditor({
   const [name, setName] = useState(
     initialTheme ? titleCase(initialTheme) : DEFAULT_NAME,
   );
-  const [base, setBase] = useState<ThemeName>(
-    existing?.extends ?? "dark",
-  );
+  const [base, setBase] = useState<ThemeName>(existing?.extends ?? "dark");
   const [colors, setColors] = useState<Partial<ColorVariant>>(
     existing ? extractColors(existing) : {},
   );
@@ -105,10 +103,9 @@ export function ThemeEditor({
   const basePalette = config.color[base] ?? config.color.light;
   const slug = slugify(name);
   const definition = { extends: base, ...colors };
-  const issues = validateRuntimeThemes(
-    slug ? { [slug]: definition } : {},
-    { color: config.color } as ExternalConfig,
-  );
+  const issues = validateRuntimeThemes(slug ? { [slug]: definition } : {}, {
+    color: config.color,
+  } as ExternalConfig);
 
   if (isReservedThemeName(slug)) {
     issues.unshift({
@@ -134,7 +131,8 @@ export function ThemeEditor({
   if (!slug) {
     issues.unshift({
       path: "themes.name",
-      message: "A theme needs a name that contains at least one letter or digit.",
+      message:
+        "A theme needs a name that contains at least one letter or digit.",
     });
   }
 
@@ -215,11 +213,7 @@ export function ThemeEditor({
               />
             )}
             {resolved.primary && (
-              <ColorSwatch
-                color={resolved.primary}
-                size="sm"
-                label="Primary"
-              />
+              <ColorSwatch color={resolved.primary} size="sm" label="Primary" />
             )}
             {resolved.foreground && (
               <ColorSwatch
@@ -246,7 +240,10 @@ export function ThemeEditor({
             Fix these before saving:
           </Typography>
           {issues.map((issue) => (
-            <Typography key={`${issue.path}-${issue.message}`} role="caption" tone="danger">
+            <Typography
+              key={`${issue.path}-${issue.message}`}
+              role="caption"
+              tone="danger">
               {issue.message}
             </Typography>
           ))}

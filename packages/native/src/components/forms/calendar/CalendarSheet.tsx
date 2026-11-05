@@ -29,7 +29,8 @@ import {
   isFutureDay,
   MONTHS,
 } from "@asheeui/core";
-import { useEffect, useState } from "react";import { Pressable, View } from "react-native";
+import { useEffect, useState } from "react";
+import { Pressable, View } from "react-native";
 import {
   NATIVE_CALENDAR_CELL_CLASS,
   NATIVE_CALENDAR_CELL_DISABLED_CLASS,
@@ -287,10 +288,7 @@ export function CalendarSheet({
           className={cn(NATIVE_CALENDAR_DONE_CLASS, colorStyles.bg)}>
           <Typography
             role="label"
-            className={cn(
-              NATIVE_CALENDAR_DONE_LABEL_CLASS,
-              colorStyles.on,
-            )}>
+            className={cn(NATIVE_CALENDAR_DONE_LABEL_CLASS, colorStyles.on)}>
             Done
           </Typography>
         </Pressable>

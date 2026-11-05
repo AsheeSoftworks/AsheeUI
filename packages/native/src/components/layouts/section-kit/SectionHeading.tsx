@@ -116,7 +116,8 @@ export function SectionHeading({
   useUnsupportedProps("SectionHeading", {
     titleId: {
       value: titleId,
-      substitute: "ids address DOM elements; nothing references them on a device",
+      substitute:
+        "ids address DOM elements; nothing references them on a device",
     },
     targetId: {
       value: targetId,

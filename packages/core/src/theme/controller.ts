@@ -241,8 +241,7 @@ export function createThemeController(host: ThemeHost): ThemeController {
 
   const isValid = (candidate: ThemeSelection): boolean => {
     if (candidate === "system") return true;
-    if (availableThemes.length > 0)
-      return availableThemes.includes(candidate);
+    if (availableThemes.length > 0) return availableThemes.includes(candidate);
     return true;
   };
 
@@ -255,8 +254,7 @@ export function createThemeController(host: ThemeHost): ThemeController {
   /** Adopt the stored selection, or the default when there is none. */
   const settleSelection = (): void => {
     const stored = host.storage?.get() ?? null;
-    const hasValidStored =
-      stored !== null && isValid(stored as ThemeSelection);
+    const hasValidStored = stored !== null && isValid(stored as ThemeSelection);
 
     if (!hasValidStored && stored !== null) {
       // Rule 3: a value that names no available theme is a leftover. Dropping it is the

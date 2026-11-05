@@ -25,7 +25,7 @@ import {
 } from "asheeui";
 import { useMemo, useState } from "react";
 import { Panel, ScreenHeading, WorkoutCard } from "../components";
-import { workoutTypes, workouts, type Workout } from "../data";
+import { type Workout, workouts, workoutTypes } from "../data";
 import type { ScreenProps } from "../theme";
 
 const INTENSITIES = [
@@ -50,8 +50,7 @@ const COLUMNS: ColumnDef<Workout>[] = [
               : "success"
         }
         variant="faded"
-        size="sm"
-      >
+        size="sm">
         {row.intensity}
       </Badge>
     ),
@@ -77,7 +76,8 @@ export function WorkoutsScreen({ onOpenWorkout, onNavigate }: ScreenProps) {
     const query = search.trim().toLowerCase();
     return workouts.filter((workout) => {
       if (type !== "all" && workout.type !== type) return false;
-      if (intensity.length > 0 && !intensity.includes(workout.intensity)) return false;
+      if (intensity.length > 0 && !intensity.includes(workout.intensity))
+        return false;
       if (!query) return true;
       return (
         workout.title.toLowerCase().includes(query) ||
@@ -96,7 +96,11 @@ export function WorkoutsScreen({ onOpenWorkout, onNavigate }: ScreenProps) {
     <VStack gap="lg">
       <Grid columns={1} columnsMd={2} columnsLg={3} gap="md">
         {visible.map((workout) => (
-          <WorkoutCard key={workout.id} workout={workout} onOpen={onOpenWorkout} />
+          <WorkoutCard
+            key={workout.id}
+            workout={workout}
+            onOpen={onOpenWorkout}
+          />
         ))}
       </Grid>
       {filtered.length === 0 ? (
@@ -133,11 +137,13 @@ export function WorkoutsScreen({ onOpenWorkout, onNavigate }: ScreenProps) {
         <Button
           size="sm"
           variant="bordered"
-          onPress={() => setPlanned(workouts[0])}
-        >
+          onPress={() => setPlanned(workouts[0])}>
           Add a session to the plan
         </Button>
-        <Button size="sm" variant="ghost" onPress={() => onNavigate("progress")}>
+        <Button
+          size="sm"
+          variant="ghost"
+          onPress={() => onNavigate("progress")}>
           Compare with progress
         </Button>
       </HStack>
@@ -149,7 +155,11 @@ export function WorkoutsScreen({ onOpenWorkout, onNavigate }: ScreenProps) {
       {completed.length > 0 ? (
         <Grid columns={1} columnsMd={2} gap="md">
           {completed.map((workout) => (
-            <WorkoutCard key={workout.id} workout={workout} onOpen={onOpenWorkout} />
+            <WorkoutCard
+              key={workout.id}
+              workout={workout}
+              onOpen={onOpenWorkout}
+            />
           ))}
         </Grid>
       ) : (
@@ -177,8 +187,7 @@ export function WorkoutsScreen({ onOpenWorkout, onNavigate }: ScreenProps) {
 
       <Panel
         title="Find a session"
-        description="The filters narrow the library; the tabs change how it is presented."
-      >
+        description="The filters narrow the library; the tabs change how it is presented.">
         <VStack gap="md">
           <Grid columns={1} columnsMd={3} gap="md">
             <VStack gap="xs">
@@ -213,7 +222,11 @@ export function WorkoutsScreen({ onOpenWorkout, onNavigate }: ScreenProps) {
             tabs={[
               { id: "library", label: "Browse", content: library },
               { id: "compare", label: "Compare", content: compare },
-              { id: "done", label: `Completed (${completed.length})`, content: done },
+              {
+                id: "done",
+                label: `Completed (${completed.length})`,
+                content: done,
+              },
             ]}
           />
         </VStack>
@@ -222,13 +235,15 @@ export function WorkoutsScreen({ onOpenWorkout, onNavigate }: ScreenProps) {
       <Modal
         isOpen={planned !== undefined}
         onClose={() => setPlanned(undefined)}
-        size="sm"
-      >
+        size="sm">
         <VStack gap="md">
-          <Typography role="heading-md">Add “{planned?.title}” to the plan?</Typography>
+          <Typography role="heading-md">
+            Add “{planned?.title}” to the plan?
+          </Typography>
           <Typography role="body-sm" tone="muted">
-            {planned?.durationMinutes} minutes, {planned?.calories} kcal, coached by{" "}
-            {planned?.coach}. It will appear on the next free training day.
+            {planned?.durationMinutes} minutes, {planned?.calories} kcal,
+            coached by {planned?.coach}. It will appear on the next free
+            training day.
           </Typography>
           <HStack gap="sm" justify="end">
             <Button variant="ghost" onPress={() => setPlanned(undefined)}>
@@ -238,8 +253,7 @@ export function WorkoutsScreen({ onOpenWorkout, onNavigate }: ScreenProps) {
               onPress={() => {
                 toast.success(`${planned?.title} added to the plan`);
                 setPlanned(undefined);
-              }}
-            >
+              }}>
               Add session
             </Button>
           </HStack>

@@ -51,11 +51,7 @@ export function validateRuntimeThemes(
   themes: ExternalColorConfig,
   config?: ExternalConfig,
 ): ThemeValidationIssue[] {
-  if (
-    themes === null ||
-    typeof themes !== "object" ||
-    Array.isArray(themes)
-  ) {
+  if (themes === null || typeof themes !== "object" || Array.isArray(themes)) {
     return [
       {
         path: "themes",

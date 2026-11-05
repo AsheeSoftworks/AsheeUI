@@ -1,5 +1,22 @@
 # @asheeui/native
 
+## 2.9.1
+
+### Patch Changes
+
+- Add `Checkbox` and `CheckboxGroup`. A checkbox is a native input drawn as a
+  square a reader ticks, with the field family's label, description, density,
+  accent, rounding and validation status. `CheckboxGroup` owns a set of values on
+  both platforms, renders as a fieldset on the web, and reports the next set
+  through `onChange`. `components.checkbox` configures both, and native publishes
+  the pair alongside the web renderer.
+- Outline `Modal` and `Drawer` surfaces with a very subtle border: one hairline in
+  the border token at half opacity. The modal had no edge of its own, and the
+  drawer drew only its facing edge at full strength; both now carry the same
+  quiet outline on every side, on the web and on the platform.
+- Updated dependencies
+  - @asheeui/core@3.1.1
+
 ## 2.9.0
 
 ### Minor Changes

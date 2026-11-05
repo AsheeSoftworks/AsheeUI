@@ -24,6 +24,7 @@ import {
 import { Autocomplete } from "./autocomplete/Autocomplete";
 import { Button } from "./button/Button";
 import { Calendar } from "./calendar/Calendar";
+import { Checkbox, CheckboxGroup } from "./checkbox";
 import { Dropdown } from "./dropmenu/Dropdown";
 import { Dropmenu } from "./dropmenu/Dropmenu";
 import { FileUpload } from "./file-upload/FileUpload";
@@ -124,7 +125,7 @@ describe("Autocomplete", () => {
 
     const activeId = input.getAttribute("aria-activedescendant");
 
-    expect(activeId).toBe(options[0]!.id);
+    expect(activeId).toBe(options[0]?.id);
     expect(document.getElementById(activeId as string)).toBe(options[0]);
   });
 
@@ -146,7 +147,7 @@ describe("Autocomplete", () => {
 
     const options = within(screen.getByRole("listbox")).getAllByRole("option");
 
-    expect(input.getAttribute("aria-activedescendant")).toBe(options[1]!.id);
+    expect(input.getAttribute("aria-activedescendant")).toBe(options[1]?.id);
 
     await pressKey(user, "Enter");
 
@@ -432,7 +433,11 @@ describe("Calendar", () => {
       .filter((button) => /^\d{1,2}$/.test(button.textContent ?? ""));
 
     expect(dayButtons.length).toBeGreaterThan(0);
-    await user.click(dayButtons[0]!);
+    const [firstDay] = dayButtons;
+    if (!firstDay) {
+      throw new Error("The calendar rendered no day button to click.");
+    }
+    await user.click(firstDay);
   }
   it("starts closed and advertises a popup", () => {
     const { getByRole, queryByRole } = renderWithProvider(
@@ -1252,7 +1257,7 @@ describe("Form", () => {
     fireEvent.submit(form);
 
     expect(onSubmit).toHaveBeenCalledTimes(1);
-    expect(onSubmit.mock.calls[0]![0]).toHaveProperty("type", "submit");
+    expect(onSubmit.mock.calls[0]?.[0]).toHaveProperty("type", "submit");
   });
 
   it("submits from the control it renders", async () => {
@@ -1604,7 +1609,10 @@ describe("MultiSelect", () => {
 
     const option = within(screen.getByRole("listbox")).getAllByRole(
       "option",
-    )[1]!;
+    )[1];
+    if (!option) {
+      throw new Error("The listbox rendered no second option.");
+    }
 
     await user.click(option);
     await user.click(option);
@@ -1762,6 +1770,21 @@ describe("PinInput", () => {
   function boxes(container: HTMLElement): HTMLInputElement[] {
     return Array.from(container.querySelectorAll("input[type='text']"));
   }
+
+  /**
+   * One box of a rendered PinInput, guarded so the test reads a known input.
+   *
+   * @param container - The render result's container.
+   * @param index - The box's position.
+   * @returns The input at that position.
+   */
+  function boxAt(container: HTMLElement, index: number): HTMLInputElement {
+    const box = boxes(container)[index];
+    if (!box) {
+      throw new Error(`PinInput rendered no box at index ${index}.`);
+    }
+    return box;
+  }
   describe("sanitizePinValue", () => {
     it("keeps only the characters the mode accepts", () => {
       expect(sanitizePinValue("12a3", "numeric")).toBe("123");
@@ -1812,7 +1835,7 @@ describe("PinInput", () => {
       />,
     );
 
-    await user.type(boxes(container)[0]!, "1234");
+    await user.type(boxAt(container, 0), "1234");
 
     expect(values).toEqual(["1", "12", "123", "1234"]);
     expect(completions).toEqual(["1234"]);
@@ -1823,17 +1846,17 @@ describe("PinInput", () => {
     const user = userEvent.setup();
     const { container } = renderWithProvider(<PinInput mode="numeric" />);
 
-    await user.type(boxes(container)[0]!, "1a2");
+    await user.type(boxAt(container, 0), "1a2");
 
-    expect(boxes(container)[0]!.value).toBe("1");
-    expect(boxes(container)[1]!.value).toBe("2");
+    expect(boxes(container)[0]?.value).toBe("1");
+    expect(boxes(container)[1]?.value).toBe("2");
   });
 
   it("deletes backwards and packs the remaining characters together", async () => {
     const user = userEvent.setup();
     const { container } = renderWithProvider(<PinInput defaultValue="1234" />);
 
-    boxes(container)[3]!.focus();
+    boxes(container)[3]?.focus();
     await user.keyboard("{Backspace}");
     expect(boxes(container).map((box) => box.value)).toEqual([
       "1",
@@ -1842,7 +1865,7 @@ describe("PinInput", () => {
       "",
     ]);
 
-    boxes(container)[0]!.focus();
+    boxes(container)[0]?.focus();
     await user.keyboard("{Backspace}");
     expect(boxes(container).map((box) => box.value)).toEqual([
       "2",
@@ -1854,7 +1877,7 @@ describe("PinInput", () => {
   describe("PinInput interaction and configuration", () => {
     it("fills the boxes from the start when the whole code is pasted", () => {
       const { container } = renderWithProvider(<PinInput length={6} />);
-      const input = boxes(container)[2]!;
+      const input = boxAt(container, 2);
 
       fireEvent.paste(input, {
         clipboardData: { getData: () => "9876" },
@@ -1874,7 +1897,7 @@ describe("PinInput", () => {
       const { container } = renderWithProvider(
         <PinInput length={4} defaultValue="12" />,
       );
-      const input = boxes(container)[1]!;
+      const input = boxAt(container, 1);
 
       fireEvent.paste(input, {
         clipboardData: { getData: () => "987" },
@@ -1890,7 +1913,7 @@ describe("PinInput", () => {
 
     it("distributes a code that arrives in one box, as an autofill does", () => {
       const { container } = renderWithProvider(<PinInput length={4} />);
-      const input = boxes(container)[0]!;
+      const input = boxAt(container, 0);
 
       fireEvent.change(input, { target: { value: "1234" } });
 
@@ -1907,7 +1930,7 @@ describe("PinInput", () => {
       const { container } = renderWithProvider(<PinInput length={4} />);
       const input = boxes(container);
 
-      input[1]!.focus();
+      input[1]?.focus();
       await user.keyboard("{ArrowRight}");
       expect(document.activeElement).toBe(input[2]);
 
@@ -1930,7 +1953,7 @@ describe("PinInput", () => {
       }
 
       const { container } = renderWithProvider(<Controlled />);
-      await user.type(boxes(container)[0]!, "12");
+      await user.type(boxAt(container, 0), "12");
 
       expect(boxes(container).map((box) => box.value)).toEqual([
         "1",
@@ -2000,7 +2023,7 @@ describe("PinInput", () => {
       });
 
       expect(boxes(container)).toHaveLength(6);
-      expect(boxes(container)[0]!.className).toContain("h-14");
+      expect(boxes(container)[0]?.className).toContain("h-14");
     });
 
     it("renders on the server and hydrates without a mismatch", () => {
@@ -2155,6 +2178,295 @@ describe("Radio", () => {
     expect(group).toHaveAccessibleName("Plan");
     expectDescribedBy(group, getByText("Choose a plan"));
     expectDescribedBy(group, getByText("Required"));
+  });
+});
+
+describe("Checkbox", () => {
+  /**
+   * Controlled harness, which is the usage the group documents.
+   */
+  function ControlledGroup({
+    onChange,
+  }: {
+    onChange?: (value: string[]) => void;
+  }) {
+    const [values, setValues] = useState(["news"]);
+
+    return (
+      <CheckboxGroup
+        label="Interests"
+        name="interests"
+        value={values}
+        onChange={(next) => {
+          setValues(next);
+          onChange?.(next);
+        }}>
+        <Checkbox value="news" label="News" />
+        <Checkbox value="sport" label="Sport" />
+        <Checkbox value="culture" label="Culture" />
+      </CheckboxGroup>
+    );
+  }
+
+  it("exposes the group and its labelled checkboxes", () => {
+    const { getByRole, getByText } = renderWithProvider(<ControlledGroup />);
+
+    expect(getByRole("group")).toBeInTheDocument();
+    expect(getByText("Interests")).toBeInTheDocument();
+    expect(getByRole("checkbox", { name: "News" })).toBeChecked();
+    expect(getByRole("checkbox", { name: "Sport" })).not.toBeChecked();
+    expect(getByRole("checkbox", { name: "Culture" })).not.toBeChecked();
+  });
+
+  it("ticks on click and reports the next set of values", async () => {
+    const user = createUser();
+    const onChange = vi.fn();
+    const { getByRole } = renderWithProvider(
+      <ControlledGroup onChange={onChange} />,
+    );
+
+    await user.click(getByRole("checkbox", { name: "Sport" }));
+
+    expect(onChange).toHaveBeenCalledWith(["news", "sport"]);
+    expect(getByRole("checkbox", { name: "News" })).toBeChecked();
+    expect(getByRole("checkbox", { name: "Sport" })).toBeChecked();
+  });
+
+  it("unticks an already selected value", async () => {
+    const user = createUser();
+    const onChange = vi.fn();
+    const { getByRole } = renderWithProvider(
+      <ControlledGroup onChange={onChange} />,
+    );
+
+    await user.click(getByRole("checkbox", { name: "News" }));
+
+    expect(onChange).toHaveBeenCalledWith([]);
+  });
+
+  it("ticks with the Space key", async () => {
+    const user = createUser();
+    const { getByRole } = renderWithProvider(<ControlledGroup />);
+    const sport = getByRole("checkbox", { name: "Sport" });
+
+    sport.focus();
+    await pressKey(user, " ");
+
+    expect(sport).toBeChecked();
+  });
+
+  it("does not tick a disabled checkbox", async () => {
+    const user = createUser();
+    const onChange = vi.fn();
+    const { getByRole } = renderWithProvider(
+      <CheckboxGroup label="Interests" name="interests" onChange={onChange}>
+        <Checkbox value="news" label="News" />
+        <Checkbox value="sport" label="Sport" disabled />
+      </CheckboxGroup>,
+    );
+    const sport = getByRole("checkbox", { name: "Sport" });
+
+    expectState(sport, { disabled: true });
+
+    await user.click(sport);
+
+    expect(onChange).not.toHaveBeenCalled();
+    expect(sport).not.toBeChecked();
+  });
+
+  it("disables every checkbox in a disabled group", () => {
+    const { getByRole } = renderWithProvider(
+      <CheckboxGroup label="Interests" name="interests" disabled>
+        <Checkbox value="news" label="News" />
+        <Checkbox value="sport" label="Sport" />
+      </CheckboxGroup>,
+    );
+
+    expectState(getByRole("checkbox", { name: "News" }), { disabled: true });
+    expectState(getByRole("checkbox", { name: "Sport" }), { disabled: true });
+  });
+
+  it("ticks from an uncontrolled defaultValue without a controlled parent", async () => {
+    const user = createUser();
+    const onChange = vi.fn();
+    const { getByRole } = renderWithProvider(
+      <CheckboxGroup
+        label="Interests"
+        name="interests"
+        defaultValue={["news"]}
+        onChange={onChange}>
+        <Checkbox value="news" label="News" />
+        <Checkbox value="sport" label="Sport" />
+      </CheckboxGroup>,
+    );
+
+    expect(getByRole("checkbox", { name: "News" })).toBeChecked();
+
+    await user.click(getByRole("checkbox", { name: "Sport" }));
+
+    expect(onChange).toHaveBeenCalledWith(["news", "sport"]);
+    expect(getByRole("checkbox", { name: "News" })).toBeChecked();
+    expect(getByRole("checkbox", { name: "Sport" })).toBeChecked();
+  });
+
+  it("respects a controlled set of values", async () => {
+    const user = createUser();
+    const onChange = vi.fn();
+    const { getByRole } = renderWithProvider(
+      <CheckboxGroup
+        label="Interests"
+        name="interests"
+        value={["news"]}
+        onChange={onChange}>
+        <Checkbox value="news" label="News" />
+        <Checkbox value="sport" label="Sport" />
+      </CheckboxGroup>,
+    );
+
+    await user.click(getByRole("checkbox", { name: "Sport" }));
+
+    expect(onChange).toHaveBeenCalledWith(["news", "sport"]);
+    // The owner decides the values, so the box still shows what the owner gave.
+    expect(getByRole("checkbox", { name: "News" })).toBeChecked();
+    expect(getByRole("checkbox", { name: "Sport" })).not.toBeChecked();
+  });
+
+  it("exposes the group label and description as its name and description", () => {
+    const { getByRole, getByText } = renderWithProvider(
+      <CheckboxGroup
+        label="Interests"
+        name="interests"
+        description="Choose as many as you like"
+        message="Required">
+        <Checkbox value="news" label="News" />
+      </CheckboxGroup>,
+    );
+    const group = getByRole("group");
+
+    expect(group).toHaveAccessibleName("Interests");
+    expectDescribedBy(group, getByText("Choose as many as you like"));
+    expectDescribedBy(group, getByText("Required"));
+  });
+
+  it("keeps a standalone checkbox controlled or uncontrolled", async () => {
+    const user = createUser();
+    const uncontrolled = renderWithProvider(
+      <Checkbox value="terms" label="Accept terms" defaultChecked />,
+    );
+
+    expect(
+      uncontrolled.getByRole("checkbox", { name: "Accept terms" }),
+    ).toBeChecked();
+    await user.click(
+      uncontrolled.getByRole("checkbox", { name: "Accept terms" }),
+    );
+    expect(
+      uncontrolled.getByRole("checkbox", { name: "Accept terms" }),
+    ).not.toBeChecked();
+    uncontrolled.unmount();
+
+    const onChange = vi.fn();
+    const controlled = renderWithProvider(
+      <Checkbox
+        value="terms"
+        label="Accept terms"
+        checked={false}
+        onChange={onChange}
+      />,
+    );
+    const terms = controlled.getByRole("checkbox", { name: "Accept terms" });
+
+    await user.click(terms);
+
+    expect(onChange).toHaveBeenCalledWith(true, "terms", expect.anything());
+    expect(terms).not.toBeChecked();
+  });
+
+  it("gives the checkbox the group's name", () => {
+    const { getByRole } = renderWithProvider(
+      <CheckboxGroup label="Interests" name="interests">
+        <Checkbox value="news" label="News" />
+      </CheckboxGroup>,
+    );
+
+    expect(getByRole("checkbox", { name: "News" })).toHaveAttribute(
+      "name",
+      "interests",
+    );
+  });
+
+  it("takes its density, accent and rounding from configuration", () => {
+    const { container } = renderWithProvider(
+      <Checkbox value="news" label="News" defaultChecked />,
+      {
+        config: makeComponentConfig("checkbox", {
+          size: "lg",
+          color: "danger",
+          radius: "lg",
+        }),
+      },
+    );
+    const box = container.querySelector("label > div") as HTMLElement;
+
+    expect(box).toHaveClass("size-6");
+    expect(box).toHaveClass("rounded-lg");
+    expect(box).toHaveClass("border-danger");
+    expect(box).toHaveClass("bg-danger");
+  });
+
+  it("paints the validation status on an unchecked box", () => {
+    const { container } = renderWithProvider(
+      <Checkbox value="news" label="News" status="error" />,
+    );
+    const box = container.querySelector("label > div") as HTMLElement;
+
+    expect(box).toHaveClass("border-danger");
+    expect(box).toHaveClass("bg-background");
+  });
+
+  it("lets an instance prop win over the configured value", () => {
+    const { container } = renderWithProvider(
+      <Checkbox value="news" label="News" size="sm" />,
+      { config: makeComponentConfig("checkbox", { size: "lg" }) },
+    );
+    const box = container.querySelector("label > div") as HTMLElement;
+
+    expect(box).toHaveClass("size-4");
+    expect(box).not.toHaveClass("size-6");
+  });
+
+  it("carries the consumer's class on the row, appended last", () => {
+    const { container } = renderWithProvider(
+      <Checkbox value="news" label="News" className="mt-2" />,
+    );
+    const row = container.querySelector("label") as HTMLElement;
+
+    expect(row.className.endsWith("mt-2")).toBe(true);
+  });
+
+  it("forwards its ref to the native input", () => {
+    const ref = createRef<HTMLInputElement>();
+    const { getByRole } = renderWithProvider(
+      <Checkbox ref={ref} value="news" label="News" />,
+    );
+
+    expect(ref.current).toBe(getByRole("checkbox", { name: "News" }));
+  });
+
+  it("renders on the server and hydrates without a mismatch", () => {
+    const markup = renderToServerString(
+      <CheckboxGroup label="Interests" name="interests">
+        <Checkbox value="news" label="News" />
+      </CheckboxGroup>,
+    );
+
+    expect(markup).toContain('type="checkbox"');
+    expect(markup).toContain("<fieldset");
+    expectHydrationClean(
+      <CheckboxGroup label="Interests" name="interests" defaultValue={["news"]}>
+        <Checkbox value="news" label="News" />
+      </CheckboxGroup>,
+    );
   });
 });
 
@@ -2378,7 +2690,7 @@ describe("Stepper", () => {
 
     expect(onStepChange).toHaveBeenCalledWith(2);
     // The step the reader is on is not a control, because there is nowhere to go.
-    expect(getAllByRole("listitem")[1]!.querySelector("button")).toBeNull();
+    expect(getAllByRole("listitem")[1]?.querySelector("button")).toBeNull();
   });
 
   it("reports progress only when it is given nothing to change", () => {
@@ -2503,7 +2815,7 @@ describe("Switch", () => {
     await user.click(control);
 
     expect(onChange).toHaveBeenCalledTimes(1);
-    expect(onChange.mock.calls[0]![0]).toBe(true);
+    expect(onChange.mock.calls[0]?.[0]).toBe(true);
     expectState(control, { checked: true });
   });
 

@@ -103,11 +103,7 @@ export function Grid({
 
   return (
     <View
-      className={cn(
-        GRID_BASE_CLASS,
-        GRID_GAP_CLASS[resolved.gap],
-        className,
-      )}
+      className={cn(GRID_BASE_CLASS, GRID_GAP_CLASS[resolved.gap], className)}
       style={style}
       {...rest}>
       {Children.map(children, (cell) => {

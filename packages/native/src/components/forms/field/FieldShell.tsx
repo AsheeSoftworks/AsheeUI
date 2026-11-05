@@ -21,7 +21,6 @@ import {
 } from "@asheeui/core";
 import type { ReactNode } from "react";
 import { View } from "react-native";
-import { cn } from "../../../utils/cn";
 import {
   NATIVE_FIELD_LABEL_ROW_CLASS,
   NATIVE_FIELD_SHELL_CLASS,
@@ -30,6 +29,7 @@ import {
   FIELD_REQUIRED_MARKER_CLASS,
   FIELD_STATUS_TEXT_CLASS,
 } from "../../../styles/portable";
+import { cn } from "../../../utils/cn";
 import { Spinner } from "../../feedback/spinner/Spinner";
 import { Typography } from "../../typography/text/Text";
 

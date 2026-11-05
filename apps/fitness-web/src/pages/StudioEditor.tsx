@@ -5,11 +5,12 @@
  * also the proof that the umbrella carries Puck: the editor writes the document, and the
  * shared `StudioScreen` renders it with the same package on the other platform.
  */
-import { Puck, type Data } from "@puckeditor/core";
-import { asheePuckConfig } from "@asheeui/puck";
+
 import { studioPage } from "@asheeui/fitness-shared";
-import { Button, HStack, LoadingState, Typography, useToast } from "asheeui";
+import { asheePuckConfig } from "@asheeui/puck";
+import { type Data, Puck } from "@puckeditor/core";
 import { useNavigate } from "@tanstack/react-router";
+import { Button, HStack, LoadingState, Typography, useToast } from "asheeui";
 import { useEffect, useState } from "react";
 
 const STORAGE_KEY = "pulse.studio.page";
@@ -29,7 +30,7 @@ export function StudioEditorPage() {
   const navigate = useNavigate();
   const toast = useToast();
   const [mounted, setMounted] = useState(false);
-  const [data, setData] = useState<Data>(() => (studioPage as unknown as Data));
+  const [data, setData] = useState<Data>(() => studioPage as unknown as Data);
 
   useEffect(() => {
     setMounted(true);
@@ -45,11 +46,15 @@ export function StudioEditorPage() {
     <div className="flex h-[calc(100dvh-9rem)] min-h-[40rem] flex-col gap-3">
       <HStack justify="between" align="center" gap="md" wrap>
         <HStack gap="sm" align="center">
-          <Button size="sm" variant="ghost" onPress={() => navigate({ to: "/studio" })}>
+          <Button
+            size="sm"
+            variant="ghost"
+            onPress={() => navigate({ to: "/studio" })}>
             ← Back to the studio
           </Button>
           <Typography role="body-sm" tone="muted">
-            Drag blocks, edit their fields, then publish. The device renders the same document.
+            Drag blocks, edit their fields, then publish. The device renders the
+            same document.
           </Typography>
         </HStack>
         <Button
@@ -59,8 +64,7 @@ export function StudioEditorPage() {
             window.localStorage.removeItem(STORAGE_KEY);
             setData(studioPage as unknown as Data);
             toast.info("Studio page reset");
-          }}
-        >
+          }}>
           Reset
         </Button>
       </HStack>

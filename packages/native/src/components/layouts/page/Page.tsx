@@ -33,11 +33,11 @@ import {
 } from "../../../styles/page";
 import { SPACE_PADDING_Y_CLASS } from "../../../styles/portable";
 import { cn } from "../../../utils/cn";
-import { warnUnsupportedProp } from "../../../utils/unsupported-prop";
 import {
   type UnsupportedElementProps,
   useUnsupportedElementProps,
 } from "../../../utils/unsupported-element-props";
+import { warnUnsupportedProp } from "../../../utils/unsupported-prop";
 import {
   FALLBACK_NATIVE_PAGE_CONFIG,
   type NativePageConfig,
@@ -132,10 +132,7 @@ export function Page({
   useUnsupportedElementProps("Page", { as, titleAs });
 
   return (
-    <View
-      className={cn(NATIVE_PAGE_CLASS, className)}
-      style={style}
-      {...rest}>
+    <View className={cn(NATIVE_PAGE_CLASS, className)} style={style} {...rest}>
       {children}
     </View>
   );

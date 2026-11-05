@@ -1,4 +1,4 @@
-import { workouts, WorkoutDetailScreen } from "@asheeui/fitness-shared";
+import { WorkoutDetailScreen, workouts } from "@asheeui/fitness-shared";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { ErrorState } from "asheeui";
 

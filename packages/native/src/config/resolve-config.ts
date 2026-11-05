@@ -18,8 +18,8 @@
 
 import {
   assertValidConfig,
-  type ColorConfig,
   type Color,
+  type ColorConfig,
   defaultColorConfig,
   type ExternalConfig,
   mergeObject,

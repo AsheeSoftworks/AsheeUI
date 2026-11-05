@@ -41,6 +41,8 @@ export {
   Card,
   Carousel,
   Centered,
+  Checkbox,
+  CheckboxGroup,
   Chip,
   Clipboard,
   ColorSwatch,

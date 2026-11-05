@@ -16,26 +16,26 @@ allowBuilds:
   # workspace runs its build step, because the packages use it only through a
   # consumer's bundler, so its native binding is denied explicitly rather than left
   # unanswered (pnpm fails the install while a decision is missing).
-  '@parcel/watcher': false
-  '@tailwindcss/oxide': true
+  "@parcel/watcher": false
+  "@tailwindcss/oxide": true
   esbuild: true
   sharp: true
   unrs-resolver: true
 minimumReleaseAgeExclude:
-  - '@tanstack/react-start-rsc@0.1.53'
-  - '@tanstack/react-start@1.168.54'
-  - '@tanstack/start-plugin-core@1.171.44'
+  - "@tanstack/react-start-rsc@0.1.53"
+  - "@tanstack/react-start@1.168.54"
+  - "@tanstack/start-plugin-core@1.171.44"
   # The native styling foundation: NativeWind and the CSS interop runtime it
   # depends on. Both are newer than the workspace's minimum release age, and both
   # are pinned to the versions the native package is verified against.
   - nativewind@4.2.7
   - react-native-css-interop@0.2.7
-  - '@expo/cli@57.0.25'
-  - '@expo/router-server@57.0.10'
+  - "@expo/cli@57.0.25"
+  - "@expo/router-server@57.0.10"
   - babel-preset-expo@57.0.12
   - expo@57.0.23
-  - '@asheeui/core@2.3.1'
-  - '@asheeui/web@2.5.0'
+  - "@asheeui/core@2.3.1"
+  - "@asheeui/web@2.5.0"
 # Transitive copies that arrive below a patched release are pinned to the patched
 # version. `brace-expansion` reaches the tree through minimatch, one copy per major
 # (1, 2 and 5); `fast-uri` arrives as a development dependency (ajv, through the

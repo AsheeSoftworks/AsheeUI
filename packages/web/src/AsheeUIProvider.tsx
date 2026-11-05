@@ -8,10 +8,7 @@
  */
 "use client";
 
-import type {
-  ExternalColorConfig,
-  ExternalConfig,
-} from "@asheeui/core";
+import type { ExternalColorConfig, ExternalConfig } from "@asheeui/core";
 import {
   assertValidConfig,
   mergeRuntimeThemes,

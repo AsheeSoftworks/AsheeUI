@@ -61,9 +61,7 @@ const VALUE_KINDS = new Set(["function", "const", "let", "var", "class"]);
  * @returns True when the name is a component a consumer renders.
  */
 function isPublicComponent(name) {
-  return (
-    /^[A-Z]/.test(name) && !name.includes("_") && !/Context$/.test(name)
-  );
+  return /^[A-Z]/.test(name) && !name.includes("_") && !/Context$/.test(name);
 }
 
 /**

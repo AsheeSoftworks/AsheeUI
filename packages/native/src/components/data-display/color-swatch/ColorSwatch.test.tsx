@@ -14,7 +14,9 @@ describe("ColorSwatch", () => {
 
     const swatch = screen.getByTestId("swatch");
     expect(swatch.props.style).toEqual(
-      expect.arrayContaining([expect.objectContaining({ backgroundColor: "#047857" })]),
+      expect.arrayContaining([
+        expect.objectContaining({ backgroundColor: "#047857" }),
+      ]),
     );
   });
 
