@@ -120,6 +120,31 @@ describe("Native Calendar", () => {
     expect(view.getByText("January 2026")).toBeTruthy();
   });
 
+  it("selects a year from the header picker and lands on its days", async () => {
+    const onChange = jest.fn();
+    const view = await renderCalendar(
+      <Calendar
+        testID="date"
+        sheetTestID="sheet"
+        label="Start"
+        defaultValue={JAN}
+        onChange={onChange}
+      />,
+    );
+
+    await press(view, "date");
+    await press(view, "sheet-month-label");
+    await press(view, "sheet-previous-years");
+    await press(view, "sheet-year-2005");
+    await press(view, "sheet-month-2");
+    await press(view, "sheet-day-15");
+
+    const picked = onChange.mock.calls[0][0] as Date;
+    expect(picked.getFullYear()).toBe(2005);
+    expect(picked.getMonth()).toBe(2);
+    expect(picked.getDate()).toBe(15);
+  });
+
   it("keeps the value the consumer owns", async () => {
     const onChange = jest.fn();
     const view = await renderCalendar(

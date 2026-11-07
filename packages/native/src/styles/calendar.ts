@@ -49,6 +49,21 @@ export const NATIVE_CALENDAR_HEADER_CLASS =
 export const NATIVE_CALENDAR_MONTH_CLASS =
   "text-base font-semibold text-foreground";
 
+/** The month/year label when it opens the picker. */
+export const NATIVE_CALENDAR_HEADER_LABEL_CLASS =
+  "text-base font-semibold text-foreground px-2 py-1";
+
+/** The rows of months or years a picker page draws. */
+export const NATIVE_CALENDAR_PICKER_GRID_CLASS = "flex-row flex-wrap";
+
+/** One month or year on a picker page. */
+export const NATIVE_CALENDAR_PICKER_CELL_CLASS =
+  "w-1/3 h-11 items-center justify-center rounded-md border border-transparent";
+
+/** The label inside a month or year cell. */
+export const NATIVE_CALENDAR_PICKER_LABEL_CLASS =
+  "text-sm font-medium text-foreground text-center";
+
 /** A control that moves the surface by one month. */
 export const NATIVE_CALENDAR_NAV_CLASS =
   "w-11 h-11 items-center justify-center";

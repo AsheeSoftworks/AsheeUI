@@ -24,6 +24,7 @@ import { ChevronRightIcon } from "../../../icons/ChevronRightIcon";
 import { useAsheeConfig } from "../../../libs/context";
 import { resolveVariantClass } from "../../../shared/variant";
 import {
+  PAGINATION_ACTIVE_CLASS,
   PAGINATION_BASE_CLASS,
   PAGINATION_CONTROL_CLASS,
   PAGINATION_DISABLED_CLASS,
@@ -267,6 +268,19 @@ export const Pagination = forwardRef<HTMLElement, PaginationProps>(
     );
 
     /**
+     * The current page is the one filled control in the trail.
+     *
+     * The other controls keep the consumer's configured treatment; the reader's
+     * place takes the solid accent so it is visible at rest and not only
+     * announced by `aria-current`.
+     */
+    const currentVariantClass = resolveVariantClass("solid", resolvedColorKey);
+    const otherVariantClass = resolveVariantClass(
+      resolvedVariantKey,
+      resolvedColorKey,
+    );
+
+    /**
      * Moves to a page.
      * The current page and pages outside the collection are ignored, so a
      * consumer never receives a change it cannot act on.
@@ -307,7 +321,8 @@ export const Pagination = forwardRef<HTMLElement, PaginationProps>(
               PAGINATION_CONTROL_CLASS,
               linkControlClass,
               RADIUS_CLASS[resolvedRadiusKey as Radius],
-              resolveVariantClass(resolvedVariantKey, resolvedColorKey),
+              isCurrent ? currentVariantClass : otherVariantClass,
+              isCurrent && PAGINATION_ACTIVE_CLASS,
               isUnavailable && PAGINATION_DISABLED_CLASS,
             )}>
             {content}
@@ -319,12 +334,13 @@ export const Pagination = forwardRef<HTMLElement, PaginationProps>(
         <Button
           type="button"
           size={resolvedSizeKey}
-          variant={resolvedVariantKey}
+          variant={isCurrent ? "solid" : resolvedVariantKey}
           color={resolvedColorKey}
           radius={resolvedRadiusKey as Radius}
           aria-label={controlLabel}
           aria-current={isCurrent ? "page" : undefined}
           isDisabled={isUnavailable}
+          className={isCurrent ? PAGINATION_ACTIVE_CLASS : undefined}
           onClick={() => selectPage(target)}>
           {content}
         </Button>

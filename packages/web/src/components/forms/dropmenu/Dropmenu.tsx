@@ -26,7 +26,7 @@ import { Button } from "../button/Button";
 import { FieldShell } from "../field/FieldShell";
 import type { FieldSizeKey, LabelAlign } from "../field/field-config";
 import type { InputProps } from "../input/Input";
-import { useMenuFloating } from "../menu";
+import { useMenuFloating, useMenuLabelDismiss } from "../menu";
 import { Menu, type MenuProps } from "../menu/Menu";
 import type { MenuOption } from "../menu/menu-config";
 import { type DropmenuConfig, FALLBACK_SELECT_CONFIG } from "./dropmenu-config";
@@ -373,6 +373,10 @@ export const Dropmenu = forwardRef<HTMLButtonElement, DropmenuProps>(
       disabled,
     });
 
+    const labelDismissProps = useMenuLabelDismiss(isOpen, () =>
+      setIsOpen(false),
+    );
+
     // ─── Handlers ────────────────────────────────────────────────────────
 
     /**
@@ -453,7 +457,8 @@ export const Dropmenu = forwardRef<HTMLButtonElement, DropmenuProps>(
         messageId={messageId}
         status={resolvedStatus}
         required={required}
-        isLoading={isLoading}>
+        isLoading={isLoading}
+        {...labelDismissProps}>
         <div className="w-full relative inline-block">
           {/* Trigger Button */}
           <Button

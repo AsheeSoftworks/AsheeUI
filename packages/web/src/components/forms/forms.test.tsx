@@ -73,6 +73,23 @@ describe("Autocomplete", () => {
     expect(screen.queryByText("Alpha")).toBeNull();
   });
 
+  it("closes when the field label is clicked", async () => {
+    const user = createUser();
+    const { getByRole, getByText } = renderWithProvider(
+      <Autocomplete label="Assignee" options={OPTIONS} />,
+    );
+    const input = getByRole("combobox");
+
+    await user.click(input);
+    expect(input).toHaveAttribute("aria-expanded", "true");
+
+    await user.click(getByText("Assignee"));
+
+    await waitFor(() => {
+      expect(input).toHaveAttribute("aria-expanded", "false");
+    });
+  });
+
   it("reports the chosen suggestion", async () => {
     const user = createUser();
     const onValueChange = vi.fn();
@@ -464,6 +481,39 @@ describe("Calendar", () => {
     ).toBeInTheDocument();
   });
 
+  it("selects a year from the header picker and lands on its days", async () => {
+    const user = createUser();
+    const onChange = vi.fn();
+    const { getByRole } = renderWithProvider(
+      <Calendar
+        label="Date"
+        selected={new Date(2026, 4, 14)}
+        onChange={onChange}
+      />,
+    );
+
+    await user.click(getByRole("textbox"));
+    await user.click(getByRole("button", { name: /choose month and year/ }));
+
+    // The picker opens on the block that holds 2026, so one step back reaches
+    // the block that holds 2005.
+    await user.click(getByRole("button", { name: "Previous years" }));
+    await user.click(getByRole("button", { name: "2005" }));
+
+    expect(
+      getByRole("button", { name: "2005, choose year" }),
+    ).toBeInTheDocument();
+
+    await user.click(getByRole("button", { name: "March" }));
+    await user.click(getByRole("button", { name: "15 March 2005" }));
+
+    const picked = onChange.mock.calls.at(-1)?.[0] as Date;
+
+    expect(picked.getFullYear()).toBe(2005);
+    expect(picked.getMonth()).toBe(2);
+    expect(picked.getDate()).toBe(15);
+  });
+
   // The default placeholder names the field's own task rather than the surface
   // that hosts it, so a reader is told what will be collected in each mode.
   it("names the field's task in its default placeholder", () => {
@@ -730,6 +780,48 @@ describe("Dropmenu", () => {
     await user.click(screen.getByText("Two"));
 
     expect(onValueChange).toHaveBeenCalledWith("two");
+
+    await waitFor(() => {
+      expect(trigger).toHaveAttribute("aria-expanded", "false");
+    });
+  });
+
+  it("closes when the field label is clicked", async () => {
+    const user = createUser();
+    const { getByRole, getByText } = renderWithProvider(
+      <Dropmenu
+        label="Choice"
+        options={OPTIONS}
+        description="Pick one option"
+      />,
+    );
+    const trigger = getByRole("combobox");
+
+    await user.click(trigger);
+    expect(trigger).toHaveAttribute("aria-expanded", "true");
+
+    await user.click(getByText("Choice"));
+
+    await waitFor(() => {
+      expect(trigger).toHaveAttribute("aria-expanded", "false");
+    });
+  });
+
+  it("closes when the field description is clicked", async () => {
+    const user = createUser();
+    const { getByRole, getByText } = renderWithProvider(
+      <Dropmenu
+        label="Choice"
+        options={OPTIONS}
+        description="Pick one option"
+      />,
+    );
+    const trigger = getByRole("combobox");
+
+    await user.click(trigger);
+    expect(trigger).toHaveAttribute("aria-expanded", "true");
+
+    await user.click(getByText("Pick one option"));
 
     await waitFor(() => {
       expect(trigger).toHaveAttribute("aria-expanded", "false");
@@ -1561,6 +1653,27 @@ describe("MultiSelect", () => {
     expect(trigger).toHaveAttribute("aria-expanded", "false");
     expect(trigger).toHaveAttribute("aria-haspopup", "listbox");
     expect(queryByText("One")).toBeNull();
+  });
+
+  it("closes when the field label is clicked", async () => {
+    const user = createUser();
+    const { getByRole, getByText } = renderWithProvider(
+      <MultiSelect
+        label="Choices"
+        options={OPTIONS}
+        description="Choose any"
+      />,
+    );
+    const trigger = getByRole("combobox");
+
+    await user.click(trigger);
+    expect(trigger).toHaveAttribute("aria-expanded", "true");
+
+    await user.click(getByText("Choices"));
+
+    await waitFor(() => {
+      expect(trigger).toHaveAttribute("aria-expanded", "false");
+    });
   });
 
   it("selects several options and reports the collected values", async () => {

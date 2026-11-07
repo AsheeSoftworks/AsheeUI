@@ -13,11 +13,14 @@
 
 export {
   buildDayCells,
+  CALENDAR_YEAR_PAGE_SIZE,
   canGoToNextMonth,
   combineDateAndTime,
   DAYS_OF_WEEK,
   formatDisplay,
   getDefaultPlaceholder,
+  getYearPageStart,
+  getYearPageYears,
   isFutureDay,
   MONTHS,
   pad2,

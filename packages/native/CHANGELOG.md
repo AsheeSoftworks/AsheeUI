@@ -1,5 +1,19 @@
 # @asheeui/native
 
+## 2.9.2
+
+### Patch Changes
+
+- Let `Calendar` jump to a specific year. The month/year heading is now a button:
+  it opens a page of twelve years, that year's months, and then the day grid, so a
+  reader can reach a year such as 2005 without stepping month by month. `disableFuture`
+  still refuses years and months after today.
+
+  The shared calendar helpers gain `CALENDAR_YEAR_PAGE_SIZE`, `getYearPageStart` and
+  `getYearPageYears`; both the web panel and the native sheet use them.
+- Updated dependencies
+  - @asheeui/core@3.1.2
+
 ## 2.9.1
 
 ### Patch Changes

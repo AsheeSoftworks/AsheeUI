@@ -47,6 +47,56 @@ export const MONTHS = [
   "December",
 ] as const;
 
+/**
+ * How many years one page of the year picker holds.
+ *
+ * Twelve years is four rows of three on the panel, which is the same shape as the
+ * month picker and keeps the year a reader wants close to the page they opened.
+ */
+export const CALENDAR_YEAR_PAGE_SIZE = 12;
+
+/**
+ * The first year of the page that contains a year.
+ *
+ * Pages move by whole blocks, so a reader who opens the picker on 2026 sees
+ * 2016–2027 and can step back to 2004–2015 with one press. The first page starts
+ * at year 1 rather than at year 0, because a date field has no year zero.
+ *
+ * @param year - The year to place on a page.
+ * @param size - How many years a page holds. Defaults to twelve.
+ * @returns The first year of that page.
+ *
+ * @example
+ * ```ts
+ * getYearPageStart(2005); // 2004, on the 2004–2015 page
+ * ```
+ */
+export function getYearPageStart(
+  year: number,
+  size: number = CALENDAR_YEAR_PAGE_SIZE,
+): number {
+  return Math.max(1, Math.floor(year / size) * size);
+}
+
+/**
+ * The years on one page, in reading order.
+ *
+ * @param start - The first year of the page.
+ * @param size - How many years a page holds. Defaults to twelve.
+ * @returns The page's years.
+ *
+ * @example
+ * ```ts
+ * getYearPageYears(2004); // [2004, 2005, …, 2015]
+ * ```
+ */
+export function getYearPageYears(
+  start: number,
+  size: number = CALENDAR_YEAR_PAGE_SIZE,
+): number[] {
+  return Array.from({ length: size }, (_, index) => start + index);
+}
+
 // ─── Writing and reading a date ───────────────────────────────────────────────
 
 /**

@@ -15,12 +15,7 @@ import {
   resolveFieldStatusColor,
   resolveRadiusKey,
 } from "@asheeui/core";
-import {
-  useClick,
-  useDismiss,
-  useInteractions,
-  useRole,
-} from "@floating-ui/react";
+import { useClick, useInteractions, useRole } from "@floating-ui/react";
 import {
   forwardRef,
   type ReactNode,
@@ -40,7 +35,12 @@ import { FieldShell } from "../field/FieldShell";
 import type { FieldSizeKey, LabelAlign } from "../field/field-config";
 import type { InputProps } from "../input/Input";
 import type { MenuConfig } from "../menu";
-import { type MenuOption, useMenuFloating } from "../menu";
+import {
+  type MenuOption,
+  useMenuDismiss,
+  useMenuFloating,
+  useMenuLabelDismiss,
+} from "../menu";
 import { Menu, type MenuProps } from "../menu/Menu";
 import {
   FALLBACK_MULTI_SELECT_CONFIG,
@@ -479,8 +479,12 @@ export const MultiSelect = forwardRef<HTMLButtonElement, MultiSelectProps>(
         disabled,
       });
 
+    const labelDismissProps = useMenuLabelDismiss(isOpen, () =>
+      setIsOpen(false),
+    );
+
     const click = useClick(context, { enabled: !disabled });
-    const dismiss = useDismiss(context);
+    const dismiss = useMenuDismiss(context);
     const role = useRole(context, { role: "listbox" });
     const { getReferenceProps, getFloatingProps } = useInteractions([
       click,
@@ -611,7 +615,8 @@ export const MultiSelect = forwardRef<HTMLButtonElement, MultiSelectProps>(
         messageId={messageId}
         status={resolvedStatus}
         required={required}
-        isLoading={isLoading}>
+        isLoading={isLoading}
+        {...labelDismissProps}>
         <div
           className={cn("w-full flex flex-col gap-3", containerClassName)}
           style={style}>

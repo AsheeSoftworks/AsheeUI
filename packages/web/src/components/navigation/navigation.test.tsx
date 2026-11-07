@@ -756,6 +756,39 @@ describe("Pagination", () => {
     );
   });
 
+  // The current page was marked only by `aria-current`; every control wore the
+  // same treatment, so a sighted reader could not see where they were.
+  it("fills the current page in the accent and leaves the others configured", () => {
+    const { getByRole } = renderWithProvider(
+      <Pagination page={2} pageCount={3} variant="ghost" />,
+    );
+    const current = getByRole("button", { name: "Page 2" });
+    const other = getByRole("button", { name: "Page 3" });
+
+    expect(current).toHaveClass("bg-primary");
+    expect(current).toHaveClass("font-semibold");
+    expect(other).not.toHaveClass("bg-primary");
+    expect(other).not.toHaveClass("font-semibold");
+  });
+
+  it("fills the current link in the resolved accent", () => {
+    const { getByRole } = renderWithProvider(
+      <Pagination
+        page={2}
+        pageCount={3}
+        color="danger"
+        variant="ghost"
+        hrefForPage={(target) => `/invoices?page=${target}`}
+      />,
+    );
+    const current = getByRole("link", { name: "Page 2" });
+    const other = getByRole("link", { name: "Page 3" });
+
+    expect(current).toHaveClass("bg-danger");
+    expect(current).toHaveClass("font-semibold");
+    expect(other).not.toHaveClass("bg-danger");
+  });
+
   it("reports the chosen page and ignores the current one", async () => {
     const user = createUser();
     const onPageChange = vi.fn();

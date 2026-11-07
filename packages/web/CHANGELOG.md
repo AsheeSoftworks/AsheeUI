@@ -1,5 +1,27 @@
 # @asheeui/web
 
+## 2.9.2
+
+### Patch Changes
+
+- Let `Calendar` jump to a specific year. The month/year heading is now a button:
+  it opens a page of twelve years, that year's months, and then the day grid, so a
+  reader can reach a year such as 2005 without stepping month by month. `disableFuture`
+  still refuses years and months after today.
+
+  The shared calendar helpers gain `CALENDAR_YEAR_PAGE_SIZE`, `getYearPageStart` and
+  `getYearPageYears`; both the web panel and the native sheet use them.
+- Keep a menu's field label from reopening the popup. Clicking the label of
+  `Dropmenu`, `MultiSelect` or `Autocomplete` now dismisses an open menu instead of
+  closing on the outside press and immediately reopening through the label's
+  activation. A label press on a closed field still opens the menu as before.
+- Show the active page in `Pagination`. The current control now takes the solid
+  accent treatment in both button and link modes, with a semibold label, while the
+  other controls keep the configured variant and colour. The reader's place is
+  visible at rest rather than announced only through `aria-current="page"`.
+- Updated dependencies
+  - @asheeui/core@3.1.2
+
 ## 2.9.1
 
 ### Patch Changes

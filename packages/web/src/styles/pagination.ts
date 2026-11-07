@@ -50,3 +50,11 @@ export const PAGINATION_LINK_CONTROL_CLASS: Record<Size, string> = {
 /** The treatment of a control the collection cannot act on. */
 export const PAGINATION_DISABLED_CLASS =
   "opacity-50 pointer-events-none cursor-not-allowed";
+
+/**
+ * The extra weight the current page carries.
+ *
+ * The current control also takes the solid accent treatment; the weight keeps the
+ * reader's place legible when a consumer's own variant makes the fill less distinct.
+ */
+export const PAGINATION_ACTIVE_CLASS = "font-semibold";

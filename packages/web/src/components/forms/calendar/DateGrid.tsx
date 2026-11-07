@@ -13,9 +13,12 @@ import { cn } from "../../../utils/cn";
 import type { FieldSizeKey } from "../field/field-config";
 import {
   buildDayCells,
+  CALENDAR_YEAR_PAGE_SIZE,
   canGoToNextMonth,
   combineDateAndTime,
   DAYS_OF_WEEK,
+  getYearPageStart,
+  getYearPageYears,
   isFutureDay,
   MONTHS,
 } from "./calendar.helpers";
@@ -78,6 +81,12 @@ interface DateGridProps {
 }
 
 /**
+ * The surface the panel is showing: the month grid, the months of a year, or a page
+ * of years. The header moves between them.
+ */
+type CalendarView = "days" | "months" | "years";
+
+/**
  * DateGrid popover component with month navigation and date selection.
  *
  * Memoized so parent-driven renders (the Calendar popover's one-time
@@ -107,6 +116,18 @@ export const DateGrid = memo(function DateGrid({
   const [hours, setHours] = useState<number>(selected?.getHours() ?? 0);
   const [minutes, setMinutes] = useState<number>(selected?.getMinutes() ?? 0);
   const [seconds, setSeconds] = useState<number>(selected?.getSeconds() ?? 0);
+
+  // The picker is a three-level surface: the reader opens the header on the year
+  // page, chooses a year, then a month, and lands back on that month's days.
+  const [view, setView] = useState<CalendarView>("days");
+  const [yearPageStart, setYearPageStart] = useState<number>(() =>
+    getYearPageStart(selected?.getFullYear() ?? today.getFullYear()),
+  );
+  const [focusedMonth, setFocusedMonth] = useState<number>(viewMonth);
+  const [focusedYear, setFocusedYear] = useState<number>(viewYear);
+  const monthButtons = useRef<Record<number, HTMLButtonElement | null>>({});
+  const yearButtons = useRef<Record<number, HTMLButtonElement | null>>({});
+  const focusDayOnReturn = useRef(false);
 
   // The day the grid's keyboard navigation acts on. It starts at the selected
   // day, or at today when nothing is selected (`D-26`).
@@ -150,6 +171,26 @@ export const DateGrid = memo(function DateGrid({
     shouldMoveFocus.current = false;
     dayButtons.current[dateKey(navigatedDate)]?.focus();
   });
+
+  /**
+   * Keeps focus on the cell the picker is showing.
+   *
+   * Opening the year page or stepping through it unmounts the control that had
+   * focus. The cell for the current selection takes it instead, so a keyboard
+   * reader stays inside the surface.
+   */
+  useEffect(() => {
+    if (view === "months") monthButtons.current[focusedMonth]?.focus();
+    else if (view === "years") yearButtons.current[focusedYear]?.focus();
+  }, [view, focusedMonth, focusedYear, yearPageStart]);
+
+  /** Returns focus to the navigated day after a month is chosen. */
+  useEffect(() => {
+    if (view !== "days" || !focusDayOnReturn.current) return;
+
+    focusDayOnReturn.current = false;
+    dayButtons.current[dateKey(navigatedDate)]?.focus();
+  }, [view, navigatedDate]);
 
   /**
    * Keyboard navigation for the day grid (defect register D-26): the arrow keys
@@ -230,18 +271,168 @@ export const DateGrid = memo(function DateGrid({
     if (mode === "date") onClose();
   }
 
+  /**
+   * Shows another month, keeping the navigated day on the same day of the month
+   * where that day exists.
+   */
+  function showMonth(year: number, month: number): void {
+    const nextYear = Math.max(1, year);
+    const daysInMonth = new Date(nextYear, month + 1, 0).getDate();
+
+    setViewYear(nextYear);
+    setViewMonth(month);
+    setNavigatedDate(
+      (current) =>
+        new Date(nextYear, month, Math.min(current.getDate(), daysInMonth)),
+    );
+  }
+
   function prevMonth(): void {
-    if (viewMonth === 0) {
-      setViewMonth(11);
-      setViewYear((y) => y - 1);
-    } else setViewMonth((m) => m - 1);
+    if (viewMonth === 0) showMonth(viewYear - 1, 11);
+    else showMonth(viewYear, viewMonth - 1);
   }
 
   function nextMonth(): void {
-    if (viewMonth === 11) {
-      setViewMonth(0);
-      setViewYear((y) => y + 1);
-    } else setViewMonth((m) => m + 1);
+    if (viewMonth === 11) showMonth(viewYear + 1, 0);
+    else showMonth(viewYear, viewMonth + 1);
+  }
+
+  /** Opens the year page on the block that holds the year being looked at. */
+  function openYears(): void {
+    setYearPageStart(getYearPageStart(viewYear));
+    setFocusedYear(viewYear);
+    setView("years");
+  }
+
+  function shiftYearPage(direction: -1 | 1): void {
+    const start =
+      direction === 1
+        ? yearPageStart + CALENDAR_YEAR_PAGE_SIZE
+        : Math.max(1, yearPageStart - CALENDAR_YEAR_PAGE_SIZE);
+
+    setYearPageStart(start);
+    setFocusedYear(start);
+  }
+
+  /** Picks a year and moves on to its months. */
+  function chooseYear(year: number): void {
+    if (disableFuture && year > today.getFullYear()) return;
+
+    const month =
+      disableFuture && year === today.getFullYear()
+        ? Math.min(viewMonth, today.getMonth())
+        : viewMonth;
+
+    setViewYear(year);
+    setViewMonth(month);
+    setFocusedMonth(month);
+    setView("months");
+  }
+
+  /** Picks a month and returns to its days. */
+  function chooseMonth(month: number): void {
+    if (
+      disableFuture &&
+      viewYear === today.getFullYear() &&
+      month > today.getMonth()
+    ) {
+      return;
+    }
+
+    showMonth(viewYear, month);
+    focusDayOnReturn.current = true;
+    setView("days");
+  }
+
+  /** Moves within the month page of the picker. */
+  function handleMonthKeyDown(
+    event: React.KeyboardEvent<HTMLFieldSetElement>,
+  ): void {
+    let next = focusedMonth;
+
+    switch (event.key) {
+      case "ArrowLeft":
+        next -= 1;
+        break;
+      case "ArrowRight":
+        next += 1;
+        break;
+      case "ArrowUp":
+        next -= 3;
+        break;
+      case "ArrowDown":
+        next += 3;
+        break;
+      case "Home":
+        next = 0;
+        break;
+      case "End":
+        next = 11;
+        break;
+      case "PageUp":
+        event.preventDefault();
+        if (viewYear > 1) {
+          setViewYear(viewYear - 1);
+          setFocusedMonth(viewMonth);
+        }
+        return;
+      case "PageDown":
+        event.preventDefault();
+        if (canGoNextYear) {
+          setViewYear(viewYear + 1);
+          setFocusedMonth(viewMonth);
+        }
+        return;
+      default:
+        return;
+    }
+
+    event.preventDefault();
+    setFocusedMonth(Math.min(11, Math.max(0, next)));
+  }
+
+  /** Moves within the page of the year picker. */
+  function handleYearKeyDown(
+    event: React.KeyboardEvent<HTMLFieldSetElement>,
+  ): void {
+    const index = Math.max(0, yearPage.indexOf(focusedYear));
+    let next = index;
+
+    switch (event.key) {
+      case "ArrowLeft":
+        next -= 1;
+        break;
+      case "ArrowRight":
+        next += 1;
+        break;
+      case "ArrowUp":
+        next -= 3;
+        break;
+      case "ArrowDown":
+        next += 3;
+        break;
+      case "Home":
+        next = 0;
+        break;
+      case "End":
+        next = CALENDAR_YEAR_PAGE_SIZE - 1;
+        break;
+      case "PageUp":
+        event.preventDefault();
+        if (yearPageStart > 1) shiftYearPage(-1);
+        return;
+      case "PageDown":
+        event.preventDefault();
+        if (canGoNextYearPage) shiftYearPage(1);
+        return;
+      default:
+        return;
+    }
+
+    event.preventDefault();
+    const year =
+      yearPage[Math.min(CALENDAR_YEAR_PAGE_SIZE - 1, Math.max(0, next))];
+    if (year !== undefined) setFocusedYear(year);
   }
 
   function isSelected(day: number): boolean {
@@ -269,8 +460,13 @@ export const DateGrid = memo(function DateGrid({
     return isFutureDay(viewYear, viewMonth, day, today);
   }
 
-  const canGoNext =
+  const canGoNextMonth =
     !disableFuture || canGoToNextMonth(viewYear, viewMonth, today);
+  const canGoNextYear = !disableFuture || viewYear < today.getFullYear();
+  const canGoNextYearPage =
+    !disableFuture ||
+    yearPageStart + CALENDAR_YEAR_PAGE_SIZE <= today.getFullYear();
+  const yearPage = getYearPageYears(yearPageStart);
 
   const showCalendar = mode === "date" || mode === "datetime";
   const showTime = mode === "time" || mode === "datetime";
@@ -308,124 +504,287 @@ export const DateGrid = memo(function DateGrid({
           <div className="flex flex-col w-[264px]">
             {/* Month/Year Header */}
             <div className="flex items-center justify-between pb-3 mb-2 border-b border-border/60">
-              <button
-                type="button"
-                onClick={prevMonth}
-                aria-label="Previous month"
-                className={cn(
-                  "p-1.5 text-foreground/70 transition-all active:scale-95",
-                  "hover:text-foreground hover:bg-secondary",
-                  radiusClass,
-                )}>
-                <ChevronLeftIcon />
-              </button>
-              <span className="font-semibold text-sm text-foreground tracking-wide">
-                {MONTHS[viewMonth]} {viewYear}
-              </span>
-              <button
-                type="button"
-                onClick={nextMonth}
-                disabled={!canGoNext}
-                aria-label="Next month"
-                className={cn(
-                  "p-1.5 text-foreground/70 transition-all",
-                  !canGoNext
-                    ? "opacity-30 cursor-not-allowed"
-                    : "hover:text-foreground hover:bg-secondary active:scale-95",
-                  radiusClass,
-                )}>
-                <ChevronRightIcon />
-              </button>
+              {view === "days" && (
+                <>
+                  <button
+                    type="button"
+                    onClick={prevMonth}
+                    aria-label="Previous month"
+                    className={cn(
+                      "p-1.5 text-foreground/70 transition-all active:scale-95",
+                      "hover:text-foreground hover:bg-secondary",
+                      radiusClass,
+                    )}>
+                    <ChevronLeftIcon />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={openYears}
+                    aria-label={`${MONTHS[viewMonth]} ${viewYear}, choose month and year`}
+                    className={cn(
+                      "px-2 py-1 font-semibold text-sm text-foreground tracking-wide transition-colors hover:bg-secondary",
+                      radiusClass,
+                    )}>
+                    {MONTHS[viewMonth]} {viewYear}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={nextMonth}
+                    disabled={!canGoNextMonth}
+                    aria-label="Next month"
+                    className={cn(
+                      "p-1.5 text-foreground/70 transition-all",
+                      !canGoNextMonth
+                        ? "opacity-30 cursor-not-allowed"
+                        : "hover:text-foreground hover:bg-secondary active:scale-95",
+                      radiusClass,
+                    )}>
+                    <ChevronRightIcon />
+                  </button>
+                </>
+              )}
+
+              {view === "months" && (
+                <>
+                  <button
+                    type="button"
+                    onClick={() => showMonth(viewYear - 1, viewMonth)}
+                    aria-label="Previous year"
+                    className={cn(
+                      "p-1.5 text-foreground/70 transition-all active:scale-95",
+                      "hover:text-foreground hover:bg-secondary",
+                      radiusClass,
+                    )}>
+                    <ChevronLeftIcon />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={openYears}
+                    aria-label={`${viewYear}, choose year`}
+                    className={cn(
+                      "px-2 py-1 font-semibold text-sm text-foreground tracking-wide transition-colors hover:bg-secondary",
+                      radiusClass,
+                    )}>
+                    {viewYear}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => showMonth(viewYear + 1, viewMonth)}
+                    disabled={!canGoNextYear}
+                    aria-label="Next year"
+                    className={cn(
+                      "p-1.5 text-foreground/70 transition-all",
+                      !canGoNextYear
+                        ? "opacity-30 cursor-not-allowed"
+                        : "hover:text-foreground hover:bg-secondary active:scale-95",
+                      radiusClass,
+                    )}>
+                    <ChevronRightIcon />
+                  </button>
+                </>
+              )}
+
+              {view === "years" && (
+                <>
+                  <button
+                    type="button"
+                    onClick={() => shiftYearPage(-1)}
+                    disabled={yearPageStart <= 1}
+                    aria-label="Previous years"
+                    className={cn(
+                      "p-1.5 text-foreground/70 transition-all",
+                      yearPageStart <= 1
+                        ? "opacity-30 cursor-not-allowed"
+                        : "hover:text-foreground hover:bg-secondary active:scale-95",
+                      radiusClass,
+                    )}>
+                    <ChevronLeftIcon />
+                  </button>
+                  <span className="px-2 py-1 font-semibold text-sm text-foreground tracking-wide">
+                    {yearPageStart} – {yearPageStart + 11}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => shiftYearPage(1)}
+                    disabled={!canGoNextYearPage}
+                    aria-label="Next years"
+                    className={cn(
+                      "p-1.5 text-foreground/70 transition-all",
+                      !canGoNextYearPage
+                        ? "opacity-30 cursor-not-allowed"
+                        : "hover:text-foreground hover:bg-secondary active:scale-95",
+                      radiusClass,
+                    )}>
+                    <ChevronRightIcon />
+                  </button>
+                </>
+              )}
             </div>
 
             {/* Day Grid. A table carries the month structure, so it reaches
                 assistive technology as rows of cells, and the calendar is a
                 single tab stop: only the navigated day is in the tab order and
                 the arrow keys move it (`COMP-049`). */}
-            <table
-              // biome-ignore lint/a11y/noNoninteractiveElementToInteractiveRole: an interactive month is exposed as a grid, which is the structure the date picker pattern asks for.
-              role="grid"
-              aria-label={`${MONTHS[viewMonth]} ${viewYear}`}
-              tabIndex={-1}
-              onKeyDown={handleGridKeyDown}
-              className="w-full table-fixed border-separate border-spacing-1 text-center">
-              <thead>
-                <tr>
-                  {DAYS_OF_WEEK.map((weekday) => (
-                    <th
-                      key={weekday}
-                      scope="col"
-                      className="text-[11px] font-bold tracking-wider text-foreground/50 uppercase py-1 mb-1">
-                      {weekday}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-
-              <tbody>
-                {weeks.map((week, weekIndex) => (
-                  <tr key={week[0]?.key ?? `week-${weekIndex}`}>
-                    {week.map(({ key, day }) =>
-                      day === null ? (
-                        <td key={key} />
-                      ) : (
-                        <td
-                          key={key}
-                          // biome-ignore lint/a11y/noNoninteractiveElementToInteractiveRole: a day is exposed as a grid cell, and the calendar is the grid its cells belong to.
-                          role="gridcell"
-                          tabIndex={-1}
-                          aria-selected={isSelected(day)}
-                          aria-current={isToday(day) ? "date" : undefined}>
-                          <button
-                            ref={(node) => {
-                              dayButtons.current[
-                                dateKey(new Date(viewYear, viewMonth, day))
-                              ] = node;
-                            }}
-                            type="button"
-                            tabIndex={
-                              navigatedDate.getFullYear() === viewYear &&
-                              navigatedDate.getMonth() === viewMonth &&
-                              navigatedDate.getDate() === day
-                                ? 0
-                                : -1
-                            }
-                            aria-label={`${day} ${MONTHS[viewMonth]} ${viewYear}`}
-                            onClick={() => handleDayClick(day)}
-                            disabled={isDisabled(day)}
-                            className={cn(
-                              "w-full flex items-center justify-center font-medium transition-all duration-200",
-                              DATE_PICKER_CELL_SIZE_CLASS[resolvedSizeKey],
-                              radiusClass,
-                              isDisabled(day)
-                                ? "opacity-30 cursor-not-allowed text-foreground/50"
-                                : "active:scale-90",
-                              !isDisabled(day) &&
-                                !isSelected(day) &&
-                                !isToday(day) &&
-                                colorStyles.hover,
-                              isSelected(day) &&
-                                cn(colorStyles.bg, "font-semibold shadow-sm"),
-                              isToday(day) &&
-                                !isSelected(day) &&
-                                cn(
-                                  "border",
-                                  colorStyles.border,
-                                  colorStyles.text,
-                                ),
-                              !isSelected(day) &&
-                                !isToday(day) &&
-                                "text-foreground",
-                            )}>
-                            {day}
-                          </button>
-                        </td>
-                      ),
-                    )}
+            {view === "days" ? (
+              <table
+                // biome-ignore lint/a11y/noNoninteractiveElementToInteractiveRole: an interactive month is exposed as a grid, which is the structure the date picker pattern asks for.
+                role="grid"
+                aria-label={`${MONTHS[viewMonth]} ${viewYear}`}
+                tabIndex={-1}
+                onKeyDown={handleGridKeyDown}
+                className="w-full table-fixed border-separate border-spacing-1 text-center">
+                <thead>
+                  <tr>
+                    {DAYS_OF_WEEK.map((weekday) => (
+                      <th
+                        key={weekday}
+                        scope="col"
+                        className="text-[11px] font-bold tracking-wider text-foreground/50 uppercase py-1 mb-1">
+                        {weekday}
+                      </th>
+                    ))}
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+
+                <tbody>
+                  {weeks.map((week, weekIndex) => (
+                    <tr key={week[0]?.key ?? `week-${weekIndex}`}>
+                      {week.map(({ key, day }) =>
+                        day === null ? (
+                          <td key={key} />
+                        ) : (
+                          <td
+                            key={key}
+                            // biome-ignore lint/a11y/noNoninteractiveElementToInteractiveRole: a day is exposed as a grid cell, and the calendar is the grid its cells belong to.
+                            role="gridcell"
+                            tabIndex={-1}
+                            aria-selected={isSelected(day)}
+                            aria-current={isToday(day) ? "date" : undefined}>
+                            <button
+                              ref={(node) => {
+                                dayButtons.current[
+                                  dateKey(new Date(viewYear, viewMonth, day))
+                                ] = node;
+                              }}
+                              type="button"
+                              tabIndex={
+                                navigatedDate.getFullYear() === viewYear &&
+                                navigatedDate.getMonth() === viewMonth &&
+                                navigatedDate.getDate() === day
+                                  ? 0
+                                  : -1
+                              }
+                              aria-label={`${day} ${MONTHS[viewMonth]} ${viewYear}`}
+                              onClick={() => handleDayClick(day)}
+                              disabled={isDisabled(day)}
+                              className={cn(
+                                "w-full flex items-center justify-center font-medium transition-all duration-200",
+                                DATE_PICKER_CELL_SIZE_CLASS[resolvedSizeKey],
+                                radiusClass,
+                                isDisabled(day)
+                                  ? "opacity-30 cursor-not-allowed text-foreground/50"
+                                  : "active:scale-90",
+                                !isDisabled(day) &&
+                                  !isSelected(day) &&
+                                  !isToday(day) &&
+                                  colorStyles.hover,
+                                isSelected(day) &&
+                                  cn(colorStyles.bg, "font-semibold shadow-sm"),
+                                isToday(day) &&
+                                  !isSelected(day) &&
+                                  cn(
+                                    "border",
+                                    colorStyles.border,
+                                    colorStyles.text,
+                                  ),
+                                !isSelected(day) &&
+                                  !isToday(day) &&
+                                  "text-foreground",
+                              )}>
+                              {day}
+                            </button>
+                          </td>
+                        ),
+                      )}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            ) : view === "months" ? (
+              <fieldset
+                aria-label={`Choose a month in ${viewYear}`}
+                onKeyDown={handleMonthKeyDown}
+                className="m-0 min-w-0 border-0 p-0 grid grid-cols-3 gap-1">
+                {MONTHS.map((month, index) => {
+                  const unavailable =
+                    disableFuture &&
+                    viewYear === today.getFullYear() &&
+                    index > today.getMonth();
+
+                  return (
+                    <button
+                      key={month}
+                      ref={(node) => {
+                        monthButtons.current[index] = node;
+                      }}
+                      type="button"
+                      tabIndex={focusedMonth === index ? 0 : -1}
+                      aria-pressed={index === viewMonth}
+                      disabled={unavailable}
+                      onClick={() => chooseMonth(index)}
+                      className={cn(
+                        "h-9 text-xs font-medium transition-colors",
+                        radiusClass,
+                        unavailable
+                          ? "opacity-30 cursor-not-allowed text-foreground/50"
+                          : "hover:bg-secondary",
+                        index === viewMonth &&
+                          cn(colorStyles.bg, "font-semibold shadow-sm"),
+                        index !== viewMonth &&
+                          !unavailable &&
+                          "text-foreground",
+                      )}>
+                      {month}
+                    </button>
+                  );
+                })}
+              </fieldset>
+            ) : (
+              <fieldset
+                aria-label={`Choose a year from ${yearPageStart} to ${yearPageStart + 11}`}
+                onKeyDown={handleYearKeyDown}
+                className="m-0 min-w-0 border-0 p-0 grid grid-cols-3 gap-1">
+                {yearPage.map((year) => {
+                  const unavailable =
+                    disableFuture && year > today.getFullYear();
+
+                  return (
+                    <button
+                      key={year}
+                      ref={(node) => {
+                        yearButtons.current[year] = node;
+                      }}
+                      type="button"
+                      tabIndex={focusedYear === year ? 0 : -1}
+                      aria-pressed={year === viewYear}
+                      disabled={unavailable}
+                      onClick={() => chooseYear(year)}
+                      className={cn(
+                        "h-9 text-xs font-medium transition-colors",
+                        radiusClass,
+                        unavailable
+                          ? "opacity-30 cursor-not-allowed text-foreground/50"
+                          : "hover:bg-secondary",
+                        year === viewYear &&
+                          cn(colorStyles.bg, "font-semibold shadow-sm"),
+                        year !== viewYear && !unavailable && "text-foreground",
+                      )}>
+                      {year}
+                    </button>
+                  );
+                })}
+              </fieldset>
+            )}
           </div>
         )}
 

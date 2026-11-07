@@ -1,5 +1,12 @@
 # @asheeui/cli
 
+## 1.0.2
+
+### Patch Changes
+
+- 23d0bb3: Include `checkbox` and `color-swatch` in the component inventory `asheeui list`
+  discovers, so the CLI reports the same public surface the renderer publishes.
+
 ## 1.0.1
 
 ### Patch Changes

@@ -10,12 +10,7 @@
 
 import type { Color, Variant } from "@asheeui/core";
 import { resolveCascade, resolveRadiusKey } from "@asheeui/core";
-import {
-  useDismiss,
-  useFocus,
-  useInteractions,
-  useRole,
-} from "@floating-ui/react";
+import { useFocus, useInteractions, useRole } from "@floating-ui/react";
 import {
   forwardRef,
   type ReactNode,
@@ -27,7 +22,13 @@ import {
 import { useAsheeConfig } from "../../../libs/context";
 import type { FieldSizeKey } from "../field/field-config";
 import { Input, type InputProps } from "../input/Input";
-import { type MenuOption, menuOptionId, useMenuFloating } from "../menu";
+import {
+  type MenuOption,
+  menuOptionId,
+  useMenuDismiss,
+  useMenuFloating,
+  useMenuLabelDismiss,
+} from "../menu";
 import { Menu, type MenuProps } from "../menu/Menu";
 import { edgeOptionIndex, nextOptionIndex } from "../menu/menu-navigation";
 import {
@@ -285,8 +286,12 @@ export const Autocomplete = forwardRef<HTMLInputElement, AutocompleteProps>(
         disabled,
       });
 
+    const labelDismissProps = useMenuLabelDismiss(isOpen, () =>
+      setIsOpen(false),
+    );
+
     const focus = useFocus(context);
-    const dismiss = useDismiss(context);
+    const dismiss = useMenuDismiss(context);
     const role = useRole(context, { role: "combobox" });
     const { getReferenceProps, getFloatingProps } = useInteractions([
       focus,
@@ -437,7 +442,18 @@ export const Autocomplete = forwardRef<HTMLInputElement, AutocompleteProps>(
     );
 
     return (
-      <div className="w-full relative inline-block">
+      <div
+        className="w-full relative inline-block"
+        onPointerDownCapture={(event) => {
+          if ((event.target as HTMLElement).closest("label")) {
+            labelDismissProps.onLabelPointerDown(event);
+          }
+        }}
+        onClickCapture={(event) => {
+          if ((event.target as HTMLElement).closest("label")) {
+            labelDismissProps.onLabelClick(event);
+          }
+        }}>
         {/* Triggering custom Input component */}
         <Input
           ref={(node) => {

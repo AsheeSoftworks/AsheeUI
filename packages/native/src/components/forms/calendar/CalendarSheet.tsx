@@ -20,12 +20,15 @@
 
 import {
   buildDayCells,
+  CALENDAR_YEAR_PAGE_SIZE,
   type CalendarMode,
   type Color,
   canGoToNextMonth,
   combineDateAndTime,
   DAYS_OF_WEEK,
   type FieldSizeKey,
+  getYearPageStart,
+  getYearPageYears,
   isFutureDay,
   MONTHS,
 } from "@asheeui/core";
@@ -43,10 +46,14 @@ import {
   NATIVE_CALENDAR_DONE_LABEL_CLASS,
   NATIVE_CALENDAR_FOOTER_CLASS,
   NATIVE_CALENDAR_HEADER_CLASS,
+  NATIVE_CALENDAR_HEADER_LABEL_CLASS,
   NATIVE_CALENDAR_MONTH_CLASS,
   NATIVE_CALENDAR_MONTH_GRID_CLASS,
   NATIVE_CALENDAR_NAV_CLASS,
   NATIVE_CALENDAR_NAV_LABEL_CLASS,
+  NATIVE_CALENDAR_PICKER_CELL_CLASS,
+  NATIVE_CALENDAR_PICKER_GRID_CLASS,
+  NATIVE_CALENDAR_PICKER_LABEL_CLASS,
   NATIVE_CALENDAR_ROW_CLASS,
   NATIVE_CALENDAR_SHEET_CLASS,
   NATIVE_CALENDAR_TIME_ROW_CLASS,
@@ -134,6 +141,10 @@ export function CalendarSheet({
   const [seconds, setSeconds] = useState(() =>
     (value ?? new Date()).getSeconds(),
   );
+  const [view, setView] = useState<"days" | "months" | "years">("days");
+  const [yearPageStart, setYearPageStart] = useState(() =>
+    getYearPageStart((value ?? new Date()).getFullYear()),
+  );
 
   // The surface opens on the value the field holds, and only then: while it is open, the
   // month the reader has moved to and the time they have set are what it shows, and a value
@@ -148,6 +159,8 @@ export function CalendarSheet({
     setHours(opening.getHours());
     setMinutes(opening.getMinutes());
     setSeconds(opening.getSeconds());
+    setView("days");
+    setYearPageStart(getYearPageStart(opening.getFullYear()));
   }, [isOpen]);
 
   const today = new Date();
@@ -214,34 +227,71 @@ export function CalendarSheet({
     if (mode === "date") onClose();
   }
 
+  function showMonth(year: number, month: number): void {
+    setViewYear(year);
+    setViewMonth(month);
+    announce(`${MONTHS[month]} ${year}`, "status");
+  }
+
   function prevMonth(): void {
-    const nextMonth = viewMonth === 0 ? 11 : viewMonth - 1;
-
-    if (viewMonth === 0) setViewYear((year) => year - 1);
-    setViewMonth(nextMonth);
-
-    // The month is drawn, not announced: a screen reader moving between two identical
-    // grids needs to hear which month it landed on.
-    announce(
-      `${MONTHS[nextMonth]} ${viewMonth === 0 ? viewYear - 1 : viewYear}`,
-      "status",
-    );
+    if (viewMonth === 0) showMonth(viewYear - 1, 11);
+    else showMonth(viewYear, viewMonth - 1);
   }
 
   function nextMonth(): void {
-    const nextMonth = viewMonth === 11 ? 0 : viewMonth + 1;
-
-    if (viewMonth === 11) setViewYear((year) => year + 1);
-    setViewMonth(nextMonth);
-
-    announce(
-      `${MONTHS[nextMonth]} ${viewMonth === 11 ? viewYear + 1 : viewYear}`,
-      "status",
-    );
+    if (viewMonth === 11) showMonth(viewYear + 1, 0);
+    else showMonth(viewYear, viewMonth + 1);
   }
 
-  const canGoNext =
+  function openYears(): void {
+    setYearPageStart(getYearPageStart(viewYear));
+    setView("years");
+  }
+
+  function shiftYearPage(direction: -1 | 1): void {
+    const start =
+      direction === 1
+        ? yearPageStart + CALENDAR_YEAR_PAGE_SIZE
+        : Math.max(1, yearPageStart - CALENDAR_YEAR_PAGE_SIZE);
+
+    setYearPageStart(start);
+  }
+
+  function chooseYear(year: number): void {
+    if (disableFuture && year > today.getFullYear()) return;
+
+    const month =
+      disableFuture && year === today.getFullYear()
+        ? Math.min(viewMonth, today.getMonth())
+        : viewMonth;
+
+    setViewYear(year);
+    setViewMonth(month);
+    setView("months");
+    announce(String(year), "status");
+  }
+
+  function chooseMonth(month: number): void {
+    if (
+      disableFuture &&
+      viewYear === today.getFullYear() &&
+      month > today.getMonth()
+    ) {
+      return;
+    }
+
+    setViewMonth(month);
+    setView("days");
+    announce(`${MONTHS[month]} ${viewYear}`, "status");
+  }
+
+  const canGoNextMonth =
     !disableFuture || canGoToNextMonth(viewYear, viewMonth, today);
+  const canGoNextYear = !disableFuture || viewYear < today.getFullYear();
+  const canGoNextYearPage =
+    !disableFuture ||
+    yearPageStart + CALENDAR_YEAR_PAGE_SIZE <= today.getFullYear();
+  const yearPage = getYearPageYears(yearPageStart);
 
   const showCalendar = mode === "date" || mode === "datetime";
   const showTime = mode === "time" || mode === "datetime";
@@ -302,101 +352,296 @@ export function CalendarSheet({
         {showCalendar && (
           <View className={NATIVE_CALENDAR_MONTH_GRID_CLASS}>
             <View className={NATIVE_CALENDAR_HEADER_CLASS}>
-              <Pressable
-                testID={testID ? `${testID}-previous` : undefined}
-                accessibilityRole="button"
-                accessibilityLabel="Previous month"
-                onPress={prevMonth}
-                className={NATIVE_CALENDAR_NAV_CLASS}>
-                <Typography
-                  role="body-lg"
-                  className={NATIVE_CALENDAR_NAV_LABEL_CLASS}
-                  accessible={false}>
-                  ‹
-                </Typography>
-              </Pressable>
-              <Typography
-                role="body-md"
-                className={NATIVE_CALENDAR_MONTH_CLASS}>
-                {MONTHS[viewMonth]} {viewYear}
-              </Typography>
-              <Pressable
-                testID={testID ? `${testID}-next` : undefined}
-                accessibilityRole="button"
-                accessibilityLabel="Next month"
-                accessibilityState={{ disabled: !canGoNext }}
-                disabled={!canGoNext}
-                onPress={nextMonth}
-                className={cn(
-                  NATIVE_CALENDAR_NAV_CLASS,
-                  !canGoNext && NATIVE_CALENDAR_UNAVAILABLE_CLASS,
-                )}>
-                <Typography
-                  role="body-lg"
-                  className={NATIVE_CALENDAR_NAV_LABEL_CLASS}
-                  accessible={false}>
-                  ›
-                </Typography>
-              </Pressable>
+              {view === "days" && (
+                <>
+                  <Pressable
+                    testID={testID ? `${testID}-previous` : undefined}
+                    accessibilityRole="button"
+                    accessibilityLabel="Previous month"
+                    onPress={prevMonth}
+                    className={NATIVE_CALENDAR_NAV_CLASS}>
+                    <Typography
+                      role="body-lg"
+                      className={NATIVE_CALENDAR_NAV_LABEL_CLASS}
+                      accessible={false}>
+                      ‹
+                    </Typography>
+                  </Pressable>
+                  <Pressable
+                    testID={testID ? `${testID}-month-label` : undefined}
+                    accessibilityRole="button"
+                    accessibilityLabel={`${MONTHS[viewMonth]} ${viewYear}, choose month and year`}
+                    onPress={openYears}
+                    className={NATIVE_CALENDAR_HEADER_LABEL_CLASS}>
+                    <Typography
+                      role="body-md"
+                      className={NATIVE_CALENDAR_MONTH_CLASS}>
+                      {MONTHS[viewMonth]} {viewYear}
+                    </Typography>
+                  </Pressable>
+                  <Pressable
+                    testID={testID ? `${testID}-next` : undefined}
+                    accessibilityRole="button"
+                    accessibilityLabel="Next month"
+                    accessibilityState={{ disabled: !canGoNextMonth }}
+                    disabled={!canGoNextMonth}
+                    onPress={nextMonth}
+                    className={cn(
+                      NATIVE_CALENDAR_NAV_CLASS,
+                      !canGoNextMonth && NATIVE_CALENDAR_UNAVAILABLE_CLASS,
+                    )}>
+                    <Typography
+                      role="body-lg"
+                      className={NATIVE_CALENDAR_NAV_LABEL_CLASS}
+                      accessible={false}>
+                      ›
+                    </Typography>
+                  </Pressable>
+                </>
+              )}
+
+              {view === "months" && (
+                <>
+                  <Pressable
+                    testID={testID ? `${testID}-previous-year` : undefined}
+                    accessibilityRole="button"
+                    accessibilityLabel="Previous year"
+                    onPress={() => showMonth(viewYear - 1, viewMonth)}
+                    className={NATIVE_CALENDAR_NAV_CLASS}>
+                    <Typography
+                      role="body-lg"
+                      className={NATIVE_CALENDAR_NAV_LABEL_CLASS}
+                      accessible={false}>
+                      ‹
+                    </Typography>
+                  </Pressable>
+                  <Pressable
+                    testID={testID ? `${testID}-year-label` : undefined}
+                    accessibilityRole="button"
+                    accessibilityLabel={`${viewYear}, choose year`}
+                    onPress={openYears}
+                    className={NATIVE_CALENDAR_HEADER_LABEL_CLASS}>
+                    <Typography
+                      role="body-md"
+                      className={NATIVE_CALENDAR_MONTH_CLASS}>
+                      {viewYear}
+                    </Typography>
+                  </Pressable>
+                  <Pressable
+                    testID={testID ? `${testID}-next-year` : undefined}
+                    accessibilityRole="button"
+                    accessibilityLabel="Next year"
+                    accessibilityState={{ disabled: !canGoNextYear }}
+                    disabled={!canGoNextYear}
+                    onPress={() => showMonth(viewYear + 1, viewMonth)}
+                    className={cn(
+                      NATIVE_CALENDAR_NAV_CLASS,
+                      !canGoNextYear && NATIVE_CALENDAR_UNAVAILABLE_CLASS,
+                    )}>
+                    <Typography
+                      role="body-lg"
+                      className={NATIVE_CALENDAR_NAV_LABEL_CLASS}
+                      accessible={false}>
+                      ›
+                    </Typography>
+                  </Pressable>
+                </>
+              )}
+
+              {view === "years" && (
+                <>
+                  <Pressable
+                    testID={testID ? `${testID}-previous-years` : undefined}
+                    accessibilityRole="button"
+                    accessibilityLabel="Previous years"
+                    accessibilityState={{ disabled: yearPageStart <= 1 }}
+                    disabled={yearPageStart <= 1}
+                    onPress={() => shiftYearPage(-1)}
+                    className={cn(
+                      NATIVE_CALENDAR_NAV_CLASS,
+                      yearPageStart <= 1 && NATIVE_CALENDAR_UNAVAILABLE_CLASS,
+                    )}>
+                    <Typography
+                      role="body-lg"
+                      className={NATIVE_CALENDAR_NAV_LABEL_CLASS}
+                      accessible={false}>
+                      ‹
+                    </Typography>
+                  </Pressable>
+                  <Typography
+                    testID={testID ? `${testID}-year-range` : undefined}
+                    role="body-md"
+                    className={NATIVE_CALENDAR_MONTH_CLASS}>
+                    {yearPageStart} – {yearPageStart + 11}
+                  </Typography>
+                  <Pressable
+                    testID={testID ? `${testID}-next-years` : undefined}
+                    accessibilityRole="button"
+                    accessibilityLabel="Next years"
+                    accessibilityState={{ disabled: !canGoNextYearPage }}
+                    disabled={!canGoNextYearPage}
+                    onPress={() => shiftYearPage(1)}
+                    className={cn(
+                      NATIVE_CALENDAR_NAV_CLASS,
+                      !canGoNextYearPage && NATIVE_CALENDAR_UNAVAILABLE_CLASS,
+                    )}>
+                    <Typography
+                      role="body-lg"
+                      className={NATIVE_CALENDAR_NAV_LABEL_CLASS}
+                      accessible={false}>
+                      ›
+                    </Typography>
+                  </Pressable>
+                </>
+              )}
             </View>
 
-            <View className={NATIVE_CALENDAR_WEEKDAYS_CLASS}>
-              {DAYS_OF_WEEK.map((weekday) => (
-                <Typography
-                  key={weekday}
-                  role="overline"
-                  accessible={false}
-                  className={NATIVE_CALENDAR_WEEKDAY_CLASS}>
-                  {weekday}
-                </Typography>
-              ))}
-            </View>
+            {view === "days" && (
+              <>
+                <View className={NATIVE_CALENDAR_WEEKDAYS_CLASS}>
+                  {DAYS_OF_WEEK.map((weekday) => (
+                    <Typography
+                      key={weekday}
+                      role="overline"
+                      accessible={false}
+                      className={NATIVE_CALENDAR_WEEKDAY_CLASS}>
+                      {weekday}
+                    </Typography>
+                  ))}
+                </View>
 
-            {weeks.map((week, weekIndex) => (
-              <View
-                // A week is identified by the days it holds; a week that holds none is only
-                // a position in the month.
-                key={week.find((day) => day !== null) ?? `week-${weekIndex}`}
-                className={NATIVE_CALENDAR_ROW_CLASS}>
-                {week.map((day, dayIndex) =>
-                  day === null ? (
-                    <View
-                      key={`empty-slot-${weekIndex}-${dayIndex}`}
-                      className={NATIVE_CALENDAR_CELL_CLASS}
-                    />
-                  ) : (
+                {weeks.map((week, weekIndex) => (
+                  <View
+                    // A week is identified by the days it holds; a week that holds none is only
+                    // a position in the month.
+                    key={
+                      week.find((day) => day !== null) ?? `week-${weekIndex}`
+                    }
+                    className={NATIVE_CALENDAR_ROW_CLASS}>
+                    {week.map((day, dayIndex) =>
+                      day === null ? (
+                        <View
+                          key={`empty-slot-${weekIndex}-${dayIndex}`}
+                          className={NATIVE_CALENDAR_CELL_CLASS}
+                        />
+                      ) : (
+                        <Pressable
+                          key={`day-${day}`}
+                          testID={testID ? `${testID}-day-${day}` : undefined}
+                          accessibilityRole="button"
+                          accessibilityLabel={`${day} ${MONTHS[viewMonth]} ${viewYear}`}
+                          accessibilityState={{
+                            selected: isSelected(day),
+                            disabled: isDisabled(day),
+                          }}
+                          disabled={isDisabled(day)}
+                          onPress={() => handleDayPress(day)}
+                          className={cn(
+                            NATIVE_CALENDAR_CELL_CLASS,
+                            NATIVE_CALENDAR_CELL_SIZE_CLASS[size],
+                            isDisabled(day) &&
+                              NATIVE_CALENDAR_CELL_DISABLED_CLASS,
+                            isSelected(day) && colorStyles.bg,
+                            isToday(day) &&
+                              !isSelected(day) &&
+                              colorStyles.border,
+                          )}>
+                          <Typography
+                            role="body-sm"
+                            className={cn(
+                              NATIVE_CALENDAR_CELL_TEXT_CLASS,
+                              isSelected(day) && colorStyles.on,
+                              isToday(day) &&
+                                !isSelected(day) &&
+                                colorStyles.text,
+                            )}>
+                            {day}
+                          </Typography>
+                        </Pressable>
+                      ),
+                    )}
+                  </View>
+                ))}
+              </>
+            )}
+
+            {view === "months" && (
+              <View className={NATIVE_CALENDAR_PICKER_GRID_CLASS}>
+                {MONTHS.map((month, index) => {
+                  const unavailable =
+                    disableFuture &&
+                    viewYear === today.getFullYear() &&
+                    index > today.getMonth();
+
+                  return (
                     <Pressable
-                      key={`day-${day}`}
-                      testID={testID ? `${testID}-day-${day}` : undefined}
+                      key={month}
+                      testID={testID ? `${testID}-month-${index}` : undefined}
                       accessibilityRole="button"
-                      accessibilityLabel={`${day} ${MONTHS[viewMonth]} ${viewYear}`}
+                      accessibilityLabel={month}
                       accessibilityState={{
-                        selected: isSelected(day),
-                        disabled: isDisabled(day),
+                        selected: index === viewMonth,
+                        disabled: unavailable,
                       }}
-                      disabled={isDisabled(day)}
-                      onPress={() => handleDayPress(day)}
+                      disabled={unavailable}
+                      onPress={() => chooseMonth(index)}
                       className={cn(
-                        NATIVE_CALENDAR_CELL_CLASS,
-                        NATIVE_CALENDAR_CELL_SIZE_CLASS[size],
-                        isDisabled(day) && NATIVE_CALENDAR_CELL_DISABLED_CLASS,
-                        isSelected(day) && colorStyles.bg,
-                        isToday(day) && !isSelected(day) && colorStyles.border,
+                        NATIVE_CALENDAR_PICKER_CELL_CLASS,
+                        index === viewMonth && colorStyles.bg,
+                        unavailable && NATIVE_CALENDAR_UNAVAILABLE_CLASS,
                       )}>
                       <Typography
                         role="body-sm"
                         className={cn(
-                          NATIVE_CALENDAR_CELL_TEXT_CLASS,
-                          isSelected(day) && colorStyles.on,
-                          isToday(day) && !isSelected(day) && colorStyles.text,
+                          NATIVE_CALENDAR_PICKER_LABEL_CLASS,
+                          index === viewMonth && colorStyles.on,
+                          unavailable && "text-foreground/50",
                         )}>
-                        {day}
+                        {month}
                       </Typography>
                     </Pressable>
-                  ),
-                )}
+                  );
+                })}
               </View>
-            ))}
+            )}
+
+            {view === "years" && (
+              <View className={NATIVE_CALENDAR_PICKER_GRID_CLASS}>
+                {yearPage.map((year) => {
+                  const unavailable =
+                    disableFuture && year > today.getFullYear();
+
+                  return (
+                    <Pressable
+                      key={year}
+                      testID={testID ? `${testID}-year-${year}` : undefined}
+                      accessibilityRole="button"
+                      accessibilityLabel={String(year)}
+                      accessibilityState={{
+                        selected: year === viewYear,
+                        disabled: unavailable,
+                      }}
+                      disabled={unavailable}
+                      onPress={() => chooseYear(year)}
+                      className={cn(
+                        NATIVE_CALENDAR_PICKER_CELL_CLASS,
+                        year === viewYear && colorStyles.bg,
+                        unavailable && NATIVE_CALENDAR_UNAVAILABLE_CLASS,
+                      )}>
+                      <Typography
+                        role="body-sm"
+                        className={cn(
+                          NATIVE_CALENDAR_PICKER_LABEL_CLASS,
+                          year === viewYear && colorStyles.on,
+                          unavailable && "text-foreground/50",
+                        )}>
+                        {year}
+                      </Typography>
+                    </Pressable>
+                  );
+                })}
+              </View>
+            )}
           </View>
         )}
 

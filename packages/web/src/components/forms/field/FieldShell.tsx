@@ -14,7 +14,7 @@
  */
 
 import { FALLBACK_FIELD_CONFIG, isFieldInvalid } from "@asheeui/core";
-import type { ReactNode } from "react";
+import type { MouseEventHandler, PointerEventHandler, ReactNode } from "react";
 import {
   FIELD_DESCRIPTION_CLASS,
   FIELD_LABEL_ALIGN_CLASS,
@@ -60,6 +60,23 @@ export interface FieldShellProps {
    * The label text for the field.
    */
   label?: string | undefined;
+
+  /**
+   * Pointer handler for the visible label.
+   *
+   * A popup control uses this to keep a label press from acting as a second
+   * trigger: without it, clicking the label closes the popup on the outside
+   * press and the label's own activation opens it again.
+   */
+  onLabelPointerDown?: PointerEventHandler<HTMLLabelElement> | undefined;
+
+  /**
+   * Click handler for the visible label.
+   *
+   * Runs after the label's pointer handler, before the label activates its
+   * associated control.
+   */
+  onLabelClick?: MouseEventHandler<HTMLLabelElement> | undefined;
 
   /**
    * Alignment of the label relative to the field.
@@ -161,6 +178,8 @@ export function FieldShell({
   labelId,
   htmlFor,
   label,
+  onLabelPointerDown,
+  onLabelClick,
   labelAlign = FALLBACK_FIELD_CONFIG.labelAlign,
   description,
   descriptionId,
@@ -176,9 +195,12 @@ export function FieldShell({
   return (
     <div className={FIELD_SHELL_CLASS}>
       {label && (
+        // biome-ignore lint/a11y/useKeyWithClickEvents: a label is a pointer affordance, not a control; the click handler only suppresses the label's activation while a popup is open.
         <label
           id={labelId}
           htmlFor={labelTarget}
+          onPointerDown={onLabelPointerDown}
+          onClick={onLabelClick}
           className={cn(
             FIELD_LABEL_CLASS,
             FIELD_LABEL_ALIGN_CLASS[labelAlign],

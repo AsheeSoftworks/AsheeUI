@@ -11,7 +11,10 @@
 
 "use client";
 
-import type { UseInteractionsReturn } from "@floating-ui/react";
+import type {
+  FloatingContext,
+  UseInteractionsReturn,
+} from "@floating-ui/react";
 import {
   autoUpdate,
   flip,
@@ -25,6 +28,7 @@ import {
   useInteractions,
   useRole,
 } from "@floating-ui/react";
+import { useCallback, useRef } from "react";
 import { useFloatingZIndex } from "../../../libs/use-floating-z-index";
 import { ASHEE_LAYER } from "../../../utils/stacking";
 
@@ -128,6 +132,98 @@ export interface UseMenuFloatingReturn<T extends HTMLElement> {
 }
 
 /**
+ * Label handlers that keep a field label from acting as a second trigger.
+ *
+ * A menu closes on the outside press that a label click produces. The label's
+ * default action then activates the trigger, which opens the menu again; the
+ * result is a menu that appears to ignore the label press. These handlers
+ * remember whether the press started with the menu open, suppress the label's
+ * activation in that case, and close the menu once. A press that starts while
+ * the menu is closed keeps the label's ordinary behaviour.
+ *
+ * @param isOpen - Whether the menu is open.
+ * @param onClose - Closes the menu.
+ * @returns The two label handlers to spread onto `FieldShell`.
+ */
+export function useMenuLabelDismiss(
+  isOpen: boolean,
+  onClose: () => void,
+): {
+  onLabelPointerDown: (event: React.PointerEvent<HTMLElement>) => void;
+  onLabelClick: (event: React.MouseEvent<HTMLElement>) => void;
+} {
+  const wasOpenOnPress = useRef(false);
+
+  const onLabelPointerDown = useCallback(
+    (event: React.PointerEvent<HTMLElement>) => {
+      wasOpenOnPress.current = isOpen;
+
+      // The outside press closes the menu. Taking the focus out of that press
+      // as well keeps an input-backed trigger from reopening on focus.
+      if (isOpen) event.preventDefault();
+    },
+    [isOpen],
+  );
+
+  const onLabelClick = useCallback(
+    (event: React.MouseEvent<HTMLElement>) => {
+      if (!wasOpenOnPress.current) return;
+
+      wasOpenOnPress.current = false;
+      event.preventDefault();
+      onClose();
+    },
+    [onClose],
+  );
+
+  return { onLabelPointerDown, onLabelClick };
+}
+
+/**
+ * Whether an event happened on the field label of the menu's reference.
+ *
+ * The label is part of the field the trigger belongs to, but it is outside the
+ * trigger and the popup. Treating its press as an ordinary outside press closes
+ * the menu, and the label's default activation then opens it again. The label
+ * handlers close it instead, so dismissal must leave that press to them.
+ *
+ * @param event - The event being tested.
+ * @param reference - The trigger the label describes.
+ * @returns Whether the event target is that trigger's label.
+ */
+export function isMenuFieldLabel(event: Event, reference: unknown): boolean {
+  const target = event.target;
+
+  if (!(target instanceof Element) || !(reference instanceof HTMLElement)) {
+    return false;
+  }
+
+  const label = target.closest("label");
+
+  return (
+    label instanceof HTMLLabelElement &&
+    reference.id !== "" &&
+    label.htmlFor === reference.id
+  );
+}
+
+/**
+ * Dismiss behaviour for a menu field.
+ *
+ * A press on the field's own label is left to `useMenuLabelDismiss`; every other
+ * outside press dismisses the popup normally.
+ *
+ * @param context - The floating context.
+ * @returns The dismiss interaction.
+ */
+export function useMenuDismiss(context: FloatingContext) {
+  return useDismiss(context, {
+    outsidePress: (event) =>
+      !isMenuFieldLabel(event, context.elements.reference),
+  });
+}
+
+/**
  * Shared Floating UI positioning and interaction hook for dropdowns and
  * menus. Generic `T` allows passing `HTMLButtonElement`, `HTMLInputElement`,
  * etc.
@@ -219,7 +315,7 @@ export function useMenuFloating<T extends HTMLElement = HTMLElement>({
   const { context } = floating;
 
   const click = useClick(context, { enabled: !disabled });
-  const dismiss = useDismiss(context);
+  const dismiss = useMenuDismiss(context);
   const roleInteraction = useRole(context, { role });
   const { getReferenceProps, getFloatingProps } = useInteractions([
     click,
