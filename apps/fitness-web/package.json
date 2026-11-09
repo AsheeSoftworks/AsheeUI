@@ -16,9 +16,9 @@
     "@asheeui/fitness-shared": "workspace:^",
     "@asheeui/puck": "workspace:^",
     "@asheeui/web": "workspace:^",
-    "@puckeditor/core": "^0.23.0",
-    "@tanstack/react-router": "1.170.45",
-    "@tanstack/react-start": "1.169.3",
+    "@puckeditor/core": "^0.24.0",
+    "@tanstack/react-router": "1.170.46",
+    "@tanstack/react-start": "1.169.4",
     "asheeui": "workspace:^",
     "react": "^19.3.1",
     "react-dom": "^19.3.1"
